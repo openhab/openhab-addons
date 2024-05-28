@@ -103,6 +103,43 @@
 		<description>TV Art Mode.</description>
 	</channel-type>
 
+	<channel-type id="setartmode" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Set Art Mode</label>
+		<description>Set ArtMode ON/OFF from an external source (needed for >=2022 Frame TV's)</description>
+	</channel-type>
+
+	<channel-type id="artwork" advanced="true">
+		<item-type>Image</item-type>
+		<label>Art Selected</label>
+		<description>Set/get Artwork that will be displayed in artMode</description>
+	</channel-type>
+
+	<channel-type id="artworklabel" advanced="true">
+		<item-type>String</item-type>
+		<label>Artwork Label</label>
+		<description>Set/get label of the artwork to be displayed</description>
+	</channel-type>
+
+	<channel-type id="artworkjson" advanced="true">
+		<item-type>String</item-type>
+		<label>Artwork Json</label>
+		<description>Send and receive JSON from the TV Art channel</description>
+	</channel-type>
+
+	<channel-type id="artworkbrightness" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Artwork Brightness</label>
+		<description>Set/get brightness of the artwork displayed</description>
+	</channel-type>
+
+	<channel-type id="artworkcolortemperature" advanced="true">
+		<item-type>Number</item-type>
+		<label>Artwork Color Temperature</label>
+		<description>Set/get color temperature of the artwork displayed. Minimum value is -5 and
+			maximum 5.</description>
+	</channel-type>
+
 	<channel-type id="sourceapp" advanced="true">
 		<item-type>String</item-type>
 		<label>Application</label>
@@ -135,6 +172,7 @@
 				<option value="KEY_AD">KEY_AD</option>
 				<option value="KEY_ADDDEL">KEY_ADDDEL</option>
 				<option value="KEY_ALT_MHP">KEY_ALT_MHP</option>
+				<option value="KEY_AMBIENT">KEY_AMBIENT</option>
 				<option value="KEY_ANGLE">KEY_ANGLE</option>
 				<option value="KEY_ANTENA">KEY_ANTENA</option>
 				<option value="KEY_ANYNET">KEY_ANYNET</option>
@@ -175,6 +213,7 @@
 				<option value="KEY_AV3">KEY_AV3</option>
 				<option value="KEY_BACK_MHP">KEY_BACK_MHP</option>
 				<option value="KEY_BOOKMARK">KEY_BOOKMARK</option>
+				<option value="KEY_BT_VOICE">KEY_BT_VOICE</option>
 				<option value="KEY_CALLER_ID">KEY_CALLER_ID</option>
 				<option value="KEY_CAPTION">KEY_CAPTION</option>
 				<option value="KEY_CATV_MODE">KEY_CATV_MODE</option>
@@ -283,6 +322,7 @@
 				<option value="KEY_MOVIE1">KEY_MOVIE1</option>
 				<option value="KEY_MS">KEY_MS</option>
 				<option value="KEY_MTS">KEY_MTS</option>
+				<option value="KEY_MULTI_VIEW">KEY_MULTI_VIEW</option>
 				<option value="KEY_MUTE">KEY_MUTE</option>
 				<option value="KEY_NINE_SEPERATE">KEY_NINE_SEPERATE</option>
 				<option value="KEY_OPEN">KEY_OPEN</option>

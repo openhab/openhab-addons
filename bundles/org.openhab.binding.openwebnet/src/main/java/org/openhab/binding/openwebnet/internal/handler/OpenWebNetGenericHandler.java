@@ -23,6 +23,7 @@ import org.openhab.core.types.Command;
 import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereLightAutom;
+import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,8 +70,8 @@ public class OpenWebNetGenericHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return "G";
+    protected Who getManagedWho() {
+        return Who.UNKNOWN;
     }
 
     @Override

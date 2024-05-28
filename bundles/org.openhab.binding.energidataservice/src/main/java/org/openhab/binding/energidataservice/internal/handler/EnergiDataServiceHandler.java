@@ -239,8 +239,9 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
     private void refreshElectricityPrices() {
         RetryStrategy retryPolicy;
         try {
+            boolean spotPricesDownloaded = false;
             if (isLinked(CHANNEL_SPOT_PRICE)) {
-                downloadSpotPrices();
+                spotPricesDownloaded = downloadSpotPrices();
             }
 
             for (DatahubTariff datahubTariff : DatahubTariff.values()) {
@@ -259,6 +260,9 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
 
                 if (numberOfFutureSpotPrices >= 13 || (numberOfFutureSpotPrices == 12
                         && now.isAfter(DAILY_REFRESH_TIME_CET.minusHours(1)) && now.isBefore(DAILY_REFRESH_TIME_CET))) {
+                    if (spotPricesDownloaded) {
+                        triggerChannel(CHANNEL_EVENT, EVENT_DAY_AHEAD_AVAILABLE);
+                    }
                     retryPolicy = RetryPolicyFactory.atFixedTime(DAILY_REFRESH_TIME_CET, NORD_POOL_TIMEZONE);
                 } else {
                     logger.warn("Spot prices are not available, retry scheduled (see details in Thing properties)");
@@ -287,10 +291,10 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         reschedulePriceRefreshJob(retryPolicy);
     }
 
-    private void downloadSpotPrices() throws InterruptedException, DataServiceException {
+    private boolean downloadSpotPrices() throws InterruptedException, DataServiceException {
         if (cacheManager.areSpotPricesFullyCached()) {
             logger.debug("Cached spot prices still valid, skipping download.");
-            return;
+            return false;
         }
         DateQueryParameter start;
         if (cacheManager.areHistoricSpotPricesCached()) {
@@ -307,6 +311,7 @@ public class EnergiDataServiceHandler extends BaseThingHandler {
         } finally {
             updateProperties(properties);
         }
+        return true;
     }
 
     private void downloadTariffs(DatahubTariff datahubTariff) throws InterruptedException, DataServiceException {

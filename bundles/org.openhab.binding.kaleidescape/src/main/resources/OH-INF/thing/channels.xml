@@ -33,6 +33,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -67,6 +68,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -97,6 +99,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -127,6 +130,7 @@
 			<property name="Control Protocol ID">unknown</property>
 			<property name="System Version">unknown</property>
 			<property name="Protocol Version">unknown</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description-ref uri="thing-type:kaleidescape:kaleidescapedevice"/>
@@ -167,6 +171,7 @@
 			<channel id="user_defined_event" typeId="user_defined_event"/>
 			<channel id="user_input" typeId="user_input"/>
 			<channel id="user_input_prompt" typeId="user_input_prompt"/>
+			<channel id="sendcmd" typeId="sendcmd"/>
 		</channels>
 	</channel-group-type>
 
@@ -205,6 +210,7 @@
 			<channel id="user_defined_event" typeId="user_defined_event"/>
 			<channel id="user_input" typeId="user_input"/>
 			<channel id="user_input_prompt" typeId="user_input_prompt"/>
+			<channel id="sendcmd" typeId="sendcmd"/>
 		</channels>
 	</channel-group-type>
 
@@ -247,6 +253,7 @@
 			<channel id="user_defined_event" typeId="user_defined_event"/>
 			<channel id="user_input" typeId="user_input"/>
 			<channel id="user_input_prompt" typeId="user_input_prompt"/>
+			<channel id="sendcmd" typeId="sendcmd"/>
 		</channels>
 	</channel-group-type>
 
@@ -791,6 +798,13 @@
 		<label>Disc Location</label>
 		<description>Indicates where the disc for the selected item is currently residing in the system (ie Vault, Tray, etc.)</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sendcmd" advanced="true">
+		<item-type>String</item-type>
+		<label>Send Command</label>
+		<description>Send a command to the component</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 </thing:thing-descriptions>

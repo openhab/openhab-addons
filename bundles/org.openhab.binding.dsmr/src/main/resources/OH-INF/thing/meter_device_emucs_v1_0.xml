@@ -17,6 +17,7 @@
 			<channel id="p1_emucs_version_output" typeId="p1VersionType"/>
 			<channel id="p1_timestamp" typeId="p1TimestampType"/>
 		</channels>
+
 		<config-description-ref uri="thing-type:dsmr:meterdescriptor"/>
 	</thing-type>
 </thing:thing-descriptions>
