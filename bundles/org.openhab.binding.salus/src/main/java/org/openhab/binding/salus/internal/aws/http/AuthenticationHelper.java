@@ -59,6 +59,24 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.RespondToAu
  * Base on
  * https://github.com/aws-samples/aws-cognito-java-desktop-app/blob/master/src/main/java/com/amazonaws/sample/cognitoui/AuthenticationHelper.java
  * Plus bring up to SDKv2 https://stackoverflow.com/a/67729189/1819402
+ * <p>
+ * Implementation of SRP algorithm http://srp.stanford.edu/design.html
+ * 
+ * <pre>
+ *   N    A large safe prime (N = 2q+1, where q is prime) All arithmetic is done modulo N.
+ *   g    A generator modulo N
+ *   k    Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
+ *   s    User's salt
+ *   I    Username
+ *   p    Cleartext Password
+ *   H()  One-way hash function
+ *   ^    (Modular) Exponentiation
+ *   u    Random scrambling parameter
+ *   a,b  Secret ephemeral values
+ *   A,B  Public ephemeral values
+ *   x    Private key (derived from p and s)
+ *   v    Password verifier
+ * </pre>
  * 
  * @author Martin Grzeslowski
  */
