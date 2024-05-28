@@ -45,6 +45,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1CoapHandler;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapJSonDTO;
 import org.openhab.binding.shelly.internal.api1.Shelly1CoapServer;
 import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList.Shelly2APClient;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
 import org.openhab.binding.shelly.internal.api2.ShellyBluApi;
@@ -463,7 +464,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     break;
                 case CHANNEL_CONTROL_SETTEMP:
                     logger.debug("{}: Set temperature to {}", thingName, command);
-                    api.setValveTemperature(0, getNumber(command).intValue());
+                    api.setValveTemperature(0, getNumber(command).doubleValue());
                     break;
                 case CHANNEL_CONTROL_POSITION:
                     logger.debug("{}: Set position to {}", thingName, command);
@@ -821,6 +822,10 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 case SHELLY_WAKEUPT_POWERON:
                 case SHELLY_WAKEUPT_EXT_POWER:
                 case SHELLY_WAKEUPT_UNKNOWN:
+                case Shelly2ApiJsonDTO.SHELLY2_EVENT_OTASTART:
+                case Shelly2ApiJsonDTO.SHELLY2_EVENT_OTAPROGRESS:
+                case Shelly2ApiJsonDTO.SHELLY2_EVENT_OTADONE:
+                case SHELLY_EVENT_ROLLER_CALIB:
                     logger.debug("{}: {}", thingName, messages.get("event.filtered", event));
                 case ALARM_TYPE_NONE:
                     break;
@@ -1003,7 +1008,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 String saddr = addr.getHostAddress();
                 if (!ip.equals(saddr)) {
                     logger.debug("{}: hostname {} resolved to IP address {}", thingName, config.deviceIp, saddr);
-                    config.deviceIp = saddr + (port.isEmpty() ? ip : ip + ":" + port);
+                    config.deviceIp = saddr + (port.isEmpty() ? "" : ":" + port);
                 }
             } catch (UnknownHostException e) {
                 logger.debug("{}: Unable to resolve hostname {}", thingName, config.deviceIp);
