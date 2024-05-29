@@ -5,9 +5,9 @@
 
 	<thing-type uid="ecotouch:geo">
 		<properties>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
-		<instruction-set targetVersion="2">
+		<instruction-set targetVersion="1">
 			<add-channel id="percent_water_limit_min">
 				<type>Number:Dimensionless</type>
 			</add-channel>
