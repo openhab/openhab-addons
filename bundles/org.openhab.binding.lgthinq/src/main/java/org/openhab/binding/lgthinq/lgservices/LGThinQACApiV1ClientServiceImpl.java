@@ -176,7 +176,7 @@ public class LGThinQACApiV1ClientServiceImpl extends
             throws LGThinqApiException {
         Map<@Nullable String, @Nullable Object> subModeFeatures = Map.of("Jet", currentSnap.getCoolJetMode().intValue(),
                 "PowerSave", currentSnap.getEnergySavingMode().intValue(), "WDirVStep", newStep, "WDirHStep",
-                (int)currentSnap.getStepLeftRightMode());
+                (int) currentSnap.getStepLeftRightMode());
         try {
             RestResult resp = sendCommand(bridgeName, deviceId, "", "Control", "Set", subModeFeatures, null);
             handleGenericErrorResult(resp);
@@ -189,8 +189,8 @@ public class LGThinQACApiV1ClientServiceImpl extends
     public void changeStepLeftRight(String bridgeName, String deviceId, ACCanonicalSnapshot currentSnap, int newStep)
             throws LGThinqApiException {
         Map<@Nullable String, @Nullable Object> subModeFeatures = Map.of("Jet", currentSnap.getCoolJetMode().intValue(),
-                "PowerSave", currentSnap.getEnergySavingMode().intValue(), "WDirVStep", (int)currentSnap.getStepUpDownMode(),
-                "WDirHStep", newStep);
+                "PowerSave", currentSnap.getEnergySavingMode().intValue(), "WDirVStep",
+                (int) currentSnap.getStepUpDownMode(), "WDirHStep", newStep);
         try {
             RestResult resp = sendCommand(bridgeName, deviceId, "", "Control", "Set", subModeFeatures, null);
             handleGenericErrorResult(resp);
