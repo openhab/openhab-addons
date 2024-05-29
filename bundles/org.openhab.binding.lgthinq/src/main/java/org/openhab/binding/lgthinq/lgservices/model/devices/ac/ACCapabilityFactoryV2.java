@@ -89,6 +89,16 @@ public class ACCapabilityFactoryV2 extends AbstractACCapabilityFactory {
     }
 
     @Override
+    protected String getStepUpDownNodeName() {
+        return "airState.wDir.vStep";
+    }
+
+    @Override
+    protected String getStepLeftRightNodeName() {
+        return "airState.wDir.hStep";
+    }
+
+    @Override
     protected String getSupSubRacModeNodeName() {
         return "support.racSubMode";
     }

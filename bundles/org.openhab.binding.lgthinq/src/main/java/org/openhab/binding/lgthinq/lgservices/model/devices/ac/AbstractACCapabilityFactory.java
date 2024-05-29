@@ -79,14 +79,18 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
         }
     }
 
-    private Map<String, String> extractInvertedOptions(JsonNode optionsNode) {
+    private Map<String, String> extractOptions(JsonNode optionsNode, boolean invertKeyValue) {
         if (optionsNode.isMissingNode()) {
             logger.warn("Error extracting options supported by the device");
             return Collections.EMPTY_MAP;
         } else {
             Map<String, String> modes = new HashMap<String, String>();
             optionsNode.fields().forEachRemaining(e -> {
-                modes.put(e.getValue().asText(), e.getKey());
+                if (invertKeyValue) {
+                    modes.put(e.getValue().asText(), e.getKey());
+                } else {
+                    modes.put(e.getKey(), e.getValue().asText());
+                }
             });
             return modes;
         }
@@ -101,10 +105,10 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
             throw new LGThinqApiException("Error extracting capabilities supported by the device");
         }
         // supported operation modes
-        Map<String, String> allOpModes = extractInvertedOptions(
-                valuesNode.path(getOpModeNodeName()).path(getOptionsMapNodeName()));
-        Map<String, String> allFanSpeeds = extractInvertedOptions(
-                valuesNode.path(getFanSpeedNodeName()).path(getOptionsMapNodeName()));
+        Map<String, String> allOpModes = extractOptions(
+                valuesNode.path(getOpModeNodeName()).path(getOptionsMapNodeName()), true);
+        Map<String, String> allFanSpeeds = extractOptions(
+                valuesNode.path(getFanSpeedNodeName()).path(getOptionsMapNodeName()), true);
 
         List<String> supOpModeValues = extractValueOptions(
                 valuesNode.path(getSupOpModeNodeName()).path(getOptionsMapNodeName()));
@@ -139,8 +143,14 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
         JsonNode supRacSubModeOps = valuesNode.path(getSupSubRacModeNodeName()).path(getOptionsMapNodeName());
         if (!supRacSubModeOps.isMissingNode()) {
             supRacSubModeOps.fields().forEachRemaining(f -> {
-                if ("@AC_MAIN_WIND_MODE_COOL_JET_W".equals(f.getValue().asText())) {
+                if (AC_SUB_MODE_COOL_JET.equals(f.getValue().asText())) {
                     acCap.setJetModeAvailable(true);
+                }
+                if (AC_SUB_MODE_STEP_UP_DOWN.equals(f.getValue().asText())) {
+                    acCap.setStepUpDownAvailable(true);
+                }
+                if (AC_SUB_MODE_STEP_LEFT_RIGHT.equals(f.getValue().asText())) {
+                    acCap.setStepLeftRightAvailable(true);
                 }
             });
         }
@@ -159,6 +169,24 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
                 });
             }
         }
+        // ============== Collect Wind Direction (Up-Down, Left-Right) if supported ==================
+        if (acCap.isStepUpDownAvailable()) {
+            Map<String, String> stepUpDownValueMap = extractOptions(
+                    valuesNode.path(getStepUpDownNodeName()).path(getOptionsMapNodeName()), false);
+            // remove options who value doesn't start with @, that indicates for this feature that is not supported
+            stepUpDownValueMap.values().removeIf(v -> !v.startsWith("@"));
+            acCap.setStepUpDown(stepUpDownValueMap);
+        }
+
+        if (acCap.isStepLeftRightAvailable()) {
+            Map<String, String> stepLeftRightValueMap = extractOptions(
+                    valuesNode.path(getStepLeftRightNodeName()).path(getOptionsMapNodeName()), false);
+            // remove options who value doesn't start with @, that indicates for this feature that is not supported
+            stepLeftRightValueMap.values().removeIf(v -> !v.startsWith("@"));
+            acCap.setStepLeftRight(stepLeftRightValueMap);
+        }
+        // =================================================== //
+
         // get Supported RAC Mode
         JsonNode supRACModeOps = valuesNode.path(getSupRacModeNodeName()).path(getOptionsMapNodeName());
 
@@ -167,8 +195,8 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
                 String racOpValue = r.getValue().asText();
                 switch (racOpValue) {
                     case CAP_AC_AUTODRY:
-                        Map<String, String> dryStates = extractInvertedOptions(
-                                valuesNode.path(getAutoDryStateNodeName()).path(getOptionsMapNodeName()));
+                        Map<String, String> dryStates = extractOptions(
+                                valuesNode.path(getAutoDryStateNodeName()).path(getOptionsMapNodeName()), true);
                         if (!dryStates.isEmpty()) { // sanity check
                             acCap.setAutoDryModeAvailable(true);
                             dryStates.forEach((cmdKey, cmdValue) -> {
@@ -183,8 +211,8 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
                         }
                         break;
                     case CAP_AC_AIRCLEAN:
-                        Map<String, String> airCleanStates = extractInvertedOptions(
-                                valuesNode.path(getAirCleanStateNodeName()).path(getOptionsMapNodeName()));
+                        Map<String, String> airCleanStates = extractOptions(
+                                valuesNode.path(getAirCleanStateNodeName()).path(getOptionsMapNodeName()), true);
                         if (!airCleanStates.isEmpty()) {
                             acCap.setAirCleanAvailable(true);
                             airCleanStates.forEach((cmdKey, cmdValue) -> {
@@ -241,6 +269,10 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
     protected abstract String getSupFanSpeedNodeName();
 
     protected abstract String getJetModeNodeName();
+
+    protected abstract String getStepUpDownNodeName();
+
+    protected abstract String getStepLeftRightNodeName();
 
     protected abstract String getSupSubRacModeNodeName();
 

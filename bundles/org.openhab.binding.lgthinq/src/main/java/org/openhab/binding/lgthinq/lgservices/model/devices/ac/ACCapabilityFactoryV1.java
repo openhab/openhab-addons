@@ -97,6 +97,16 @@ public class ACCapabilityFactoryV1 extends AbstractACCapabilityFactory {
     }
 
     @Override
+    protected String getStepUpDownNodeName() {
+        return "WDirVStep";
+    }
+
+    @Override
+    protected String getStepLeftRightNodeName() {
+        return "WDirHStep";
+    }
+
+    @Override
     protected String getSupSubRacModeNodeName() {
         return "SupportRACSubMode";
     }
