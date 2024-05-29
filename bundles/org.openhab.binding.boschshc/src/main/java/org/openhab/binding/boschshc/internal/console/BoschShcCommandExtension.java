@@ -82,7 +82,8 @@ public class BoschShcCommandExtension extends AbstractConsoleCommandExtension im
                 "childprotection", "communicationquality", "hsbcoloractuator", "humiditylevel", "illuminance",
                 "intrusion", "keypad", "latestmotion", "multilevelswitch", "powermeter", "powerswitch", "privacymode",
                 "roomclimatecontrol", "shuttercontact", "shuttercontrol", "silentmode", "smokedetectorcheck",
-                "temperaturelevel", "userstate", "valvetappet");
+                "temperaturelevel", "userstate", "valvetappet", "waterleakagesensor", "waterleakagesensorcheck",
+                "waterleakagesensortilt");
     }
 
     @Override

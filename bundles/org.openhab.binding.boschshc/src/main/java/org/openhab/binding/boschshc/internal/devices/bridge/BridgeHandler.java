@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
-import static org.eclipse.jetty.http.HttpMethod.*;
+import static org.eclipse.jetty.http.HttpMethod.GET;
+import static org.eclipse.jetty.http.HttpMethod.POST;
+import static org.eclipse.jetty.http.HttpMethod.PUT;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -40,6 +42,7 @@ import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Message;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.PublicInformation;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Room;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
@@ -488,8 +491,42 @@ public class BridgeHandler extends BaseBridgeHandler {
                 if (channel != null && isLinked(channel.getUID())) {
                     updateState(channel.getUID(), new StringType(scenario.name));
                 }
+            } else if (serviceState instanceof Message message) {
+                handleMessage(message);
             }
         }
+    }
+
+    private void handleMessage(Message message) {
+        if (Message.SOURCE_TYPE_DEVICE.equals(message.sourceType) && message.sourceId != null) {
+            forwardMessageToDevice(message, message.sourceId);
+        }
+    }
+
+    private void forwardMessageToDevice(Message message, String deviceId) {
+        BoschSHCHandler deviceHandler = findDeviceHandler(deviceId);
+        if (deviceHandler == null) {
+            return;
+        }
+
+        deviceHandler.processMessage(message);
+    }
+
+    @Nullable
+    private BoschSHCHandler findDeviceHandler(String deviceIdToFind) {
+        for (Thing childThing : getThing().getThings()) {
+            @Nullable
+            ThingHandler baseHandler = childThing.getHandler();
+            if (baseHandler instanceof BoschSHCHandler handler) {
+                @Nullable
+                String deviceId = handler.getBoschID();
+
+                if (deviceIdToFind.equals(deviceId)) {
+                    return handler;
+                }
+            }
+        }
+        return null;
     }
 
     /**

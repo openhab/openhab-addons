@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Message;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.AbstractBoschSHCService;
 import org.openhab.binding.boschshc.internal.services.AbstractStatelessBoschSHCService;
@@ -172,6 +173,15 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * @param stateData the new service state serialized as JSON
      */
     public void processChildUpdate(String childDeviceId, String serviceName, @Nullable JsonElement stateData) {
+        // default implementation is empty, subclasses may override
+    }
+
+    /**
+     * Processes a device-specific message from the Bosch Smart Home Controller.
+     * 
+     * @param message the message published by the controller
+     */
+    public void processMessage(Message message) {
         // default implementation is empty, subclasses may override
     }
 

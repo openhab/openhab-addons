@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.boschshc.internal.services.privacymode;
+package org.openhab.binding.boschshc.internal.services.dto;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -19,23 +19,23 @@ import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.OnOffType;
 
 /**
- * Unit tests for {@link PrivacyModeState}.
+ * Unit tests for {@link EnabledDisabledState}.
  * 
  * @author David Pace - Initial contribution
  *
  */
 @NonNullByDefault
-class PrivacyModeStateTest {
+class EnabledDisabledStateTest {
 
     @Test
     void testFromOnOffType() {
-        assertSame(PrivacyModeState.ENABLED, PrivacyModeState.from(OnOffType.ON));
-        assertSame(PrivacyModeState.DISABLED, PrivacyModeState.from(OnOffType.OFF));
+        assertSame(EnabledDisabledState.ENABLED, EnabledDisabledState.from(OnOffType.ON));
+        assertSame(EnabledDisabledState.DISABLED, EnabledDisabledState.from(OnOffType.OFF));
     }
 
     @Test
     void testToOnOffType() {
-        assertSame(OnOffType.ON, PrivacyModeState.ENABLED.toOnOffType());
-        assertSame(OnOffType.OFF, PrivacyModeState.DISABLED.toOnOffType());
+        assertSame(OnOffType.ON, EnabledDisabledState.ENABLED.toOnOffType());
+        assertSame(OnOffType.OFF, EnabledDisabledState.DISABLED.toOnOffType());
     }
 }

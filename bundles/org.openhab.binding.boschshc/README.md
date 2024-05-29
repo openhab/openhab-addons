@@ -26,6 +26,7 @@ Binding for Bosch Smart Home devices.
     - [User-defined States](#user-defined-states)
     - [Universal Switch](#universal-switch)
     - [Universal Switch II](#universal-switch-ii)
+    - [Water Detector](#water-detector)
   - [Limitations](#limitations)
   - [Discovery](#discovery)
   - [Bridge Configuration](#bridge-configuration)
@@ -332,6 +333,23 @@ A universally configurable switch with four buttons.
 | key-name            | String               | &#9744;  | Name of the key that was pressed. Possible values for Universal Switch II: `LOWER_LEFT_BUTTON`, `LOWER_RIGHT_BUTTON`, `UPPER_LEFT_BUTTON`, `UPPER_RIGHT_BUTTON`. |
 | key-event-type      | String               | &#9744;  | Indicates how the key was pressed. Possible values are `PRESS_SHORT`, `PRESS_LONG` and `PRESS_LONG_RELEASED`. |
 | key-event-timestamp | DateTime             | &#9744;  | Timestamp indicating when the key was pressed. |
+
+### Water Detector
+
+Smart water leakage detector.
+
+**Thing Type ID**: `water-detector` 
+
+| Channel Type ID            | Item Type | Writable | Description                                       |
+| -------------------------- | --------- | :------: | ------------------------------------------------- |
+| battery-level              | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery                | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+| signal-strength            | Number    | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
+| water-leakage              | Switch    | &#9744;  | Indicates whether a water leakage was detected.               |
+| push-notifications         | Switch    | &#9745;  | Indicates whether push notifications are enabled.             |
+| acoustic-signals           | Switch    | &#9745;  | Indicates whether acoustic signals are enabled.               |
+| water-leakage-sensor-check | String    | &#9744;  | Provides the result of the last water leakage sensor check.   |
+| sensor-moved               | Trigger   | &#9744;  | Triggered when the sensor is moved.                           |
 
 ## Limitations
 
