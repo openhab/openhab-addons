@@ -44,17 +44,14 @@ public class ACCanonicalSnapshot extends AbstractSnapshotDefinition {
     // ===============================================
 
     private int airWindStrength;
-
     private double targetTemperature;
-
     private double currentTemperature;
-
-    private boolean coolJetModeOn;
-
     private double airCleanMode;
     private double coolJetMode;
     private double autoDryMode;
     private double energySavingMode;
+    private double stepUpDownMode;
+    private double stepLeftRightMode;
 
     private int operationMode;
     @Nullable
@@ -177,6 +174,26 @@ public class ACCanonicalSnapshot extends AbstractSnapshotDefinition {
 
     public void setOperation(Integer operation) {
         this.operation = operation;
+    }
+
+    @JsonProperty("airState.wDir.vStep")
+    @JsonAlias("WDirVStep")
+    public double getStepUpDownMode() {
+        return stepUpDownMode;
+    }
+
+    public void setStepUpDownMode(double stepUpDownMode) {
+        this.stepUpDownMode = stepUpDownMode;
+    }
+
+    @JsonProperty("airState.wDir.hStep")
+    @JsonAlias("WDirHStep")
+    public double getStepLeftRightMode() {
+        return stepLeftRightMode;
+    }
+
+    public void setStepLeftRightMode(double stepLeftRightMode) {
+        this.stepLeftRightMode = stepLeftRightMode;
     }
 
     @JsonIgnore

@@ -28,7 +28,11 @@ public class ACCapability extends AbstractCapability<ACCapability> {
 
     private Map<String, String> opMod = Collections.emptyMap();
     private Map<String, String> fanSpeed = Collections.emptyMap();
+    private Map<String, String> stepUpDown = Collections.emptyMap();
+    private Map<String, String> stepLeftRight = Collections.emptyMap();
     private boolean isJetModeAvailable;
+    private boolean isStepUpDownAvailable;
+    private boolean isStepLeftRightAvailable;
     private boolean isEnergyMonitorAvailable;
     private boolean isFilterMonitorAvailable;
     private boolean isAutoDryModeAvailable;
@@ -45,6 +49,22 @@ public class ACCapability extends AbstractCapability<ACCapability> {
     private String airCleanModeCommandOn = "";
     private String airCleanModeCommandOff = "";
 
+    public Map<String, String> getStepLeftRight() {
+        return stepLeftRight;
+    }
+
+    public void setStepLeftRight(Map<String, String> stepLeftRight) {
+        this.stepLeftRight = stepLeftRight;
+    }
+
+    public Map<String, String> getStepUpDown() {
+        return stepUpDown;
+    }
+
+    public void setStepUpDown(Map<String, String> stepUpDown) {
+        this.stepUpDown = stepUpDown;
+    }
+
     public String getCoolJetModeCommandOff() {
         return coolJetModeCommandOff;
     }
@@ -59,6 +79,22 @@ public class ACCapability extends AbstractCapability<ACCapability> {
 
     public void setCoolJetModeCommandOn(String coolJetModeCommandOn) {
         this.coolJetModeCommandOn = coolJetModeCommandOn;
+    }
+
+    public boolean isStepUpDownAvailable() {
+        return isStepUpDownAvailable;
+    }
+
+    public void setStepUpDownAvailable(boolean stepUpDownAvailable) {
+        isStepUpDownAvailable = stepUpDownAvailable;
+    }
+
+    public boolean isStepLeftRightAvailable() {
+        return isStepLeftRightAvailable;
+    }
+
+    public void setStepLeftRightAvailable(boolean stepLeftRightAvailable) {
+        isStepLeftRightAvailable = stepLeftRightAvailable;
     }
 
     public Map<String, String> getOpMode() {

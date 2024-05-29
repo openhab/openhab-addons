@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WM_POWER_OFF_VALUE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractSnapshotDefinition;
@@ -118,7 +118,8 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
     @JsonProperty("remainTimeMinute")
     @JsonAlias({ "Remain_Time_M" })
     public Double getRemainingMinute() {
-        return remainingMinute;
+        // Issue in some DW when the remainingMinute stay in 1 after complete in some cases
+        return DW_STATE_COMPLETE.equals(getState()) ? 0.0 : remainingMinute;
     }
 
     public void setRemainingMinute(Double remainingMinute) {
@@ -161,7 +162,7 @@ public class DishWasherSnapshot extends AbstractSnapshotDefinition {
 
     public void setState(String state) {
         this.state = state;
-        if (state.equals(WM_POWER_OFF_VALUE)) {
+        if (state.equals(DW_POWER_OFF_VALUE)) {
             powerState = DevicePowerState.DV_POWER_OFF;
         } else {
             powerState = DevicePowerState.DV_POWER_ON;

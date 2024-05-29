@@ -209,6 +209,8 @@ public class LGThinQBindingConstants {
     public static final String CHANNEL_AIR_CLEAN_ID = "air_clean";
     public static final String CHANNEL_AUTO_DRY_ID = "auto_dry";
     public static final String CHANNEL_ENERGY_SAVING_ID = "energy_saving";
+    public static final String CHANNEL_STEP_UP_DOWN_ID = "fan_step_up_down";
+    public static final String CHANNEL_STEP_LEFT_RIGHT_ID = "fan_step_left_right";
 
     public static final String CAP_ACHP_OP_MODE_COOL_KEY = "@AC_MAIN_OPERATION_MODE_COOL_W";
     public static final String CAP_ACHP_OP_MODE_HEAT_KEY = "@AC_MAIN_OPERATION_MODE_HEAT_W";
@@ -217,6 +219,17 @@ public class LGThinQBindingConstants {
             "Heat", "@AC_MAIN_OPERATION_MODE_AIRCLEAN_W", "Air Clean", "@AC_MAIN_OPERATION_MODE_ACO_W", "Auto",
             "@AC_MAIN_OPERATION_MODE_AI_W", "AI", "@AC_MAIN_OPERATION_MODE_ENERGY_SAVING_W", "Eco",
             "@AC_MAIN_OPERATION_MODE_AROMA_W", "Aroma", "@AC_MAIN_OPERATION_MODE_ANTIBUGS_W", "Anti Bugs");
+
+    public static final Map<String, String> CAP_AC_STEP_UP_DOWN_MODE = Map.of("@OFF", "Off", "@1", "Upper", "@2", "Up",
+            "@3", "Middle", "@4", "Down", "@5", "Far Down", "@100", "Circular");
+    public static final Map<String, String> CAP_AC_STEP_LEFT_RIGHT_MODE = Map.of("@OFF", "Off", "@1", "Lefter", "@2",
+            "Left", "@3", "Middle", "@4", "Right", "@5", "Righter", "@13", "Left to Middle", "@35", "Middle to Right",
+            "@100", "Circular");
+
+    // Sub Modes support
+    public static final String AC_SUB_MODE_COOL_JET = "@AC_MAIN_WIND_MODE_COOL_JET_W";
+    public static final String AC_SUB_MODE_STEP_UP_DOWN = "@AC_MAIN_WIND_DIRECTION_STEP_UP_DOWN_W";
+    public static final String AC_SUB_MODE_STEP_LEFT_RIGHT = "@AC_MAIN_WIND_DIRECTION_STEP_LEFT_RIGHT_W";
 
     public static final Map<String, String> CAP_AC_FAN_SPEED = Map.ofEntries(
             entry("@AC_MAIN_WIND_STRENGTH_SLOW_W", "Slow"), entry("@AC_MAIN_WIND_STRENGTH_SLOW_LOW_W", "Slower"),
@@ -350,6 +363,8 @@ public class LGThinQBindingConstants {
 
     // ====================== WASHING MACHINE CONSTANTS =============================
     public static final String DW_SNAPSHOT_WASHER_DRYER_NODE_V2 = "dishwasher";
+    public static final String DW_POWER_OFF_VALUE = "POWEROFF";
+    public static final String DW_STATE_COMPLETE = "END";
     public static final Map<String, String> CAP_DW_DOOR_STATE = Map.of("@CP_OFF_EN_W", "Close", "@CP_ON_EN_W",
             "Opened");
     public static final Map<String, String> CAP_DW_PROCESS_STATE = Map.ofEntries(entry("@DW_STATE_INITIAL_W", "None"),
@@ -359,7 +374,7 @@ public class LGThinQBindingConstants {
             entry("@DW_STATE_CANCEL_W", "Cancelled"));
 
     public static final Map<String, String> CAP_DW_STATE = Map.ofEntries(entry("@DW_STATE_POWER_OFF_W", "Off"),
-            entry("@WM_STATE_INITIAL_W", "Initial"), entry("@DW_STATE_RUNNING_W", "Running"),
+            entry("@DW_STATE_INITIAL_W", "Initial"), entry("@DW_STATE_RUNNING_W", "Running"),
             entry("@DW_STATE_PAUSE_W", "Paused"), entry("@DW_STATE_STANDBY_W", "Stand By"),
             entry("@DW_STATE_COMPLETE_W", "Complete"), entry("@DW_STATE_POWER_FAIL_W", "Power Fail"));
     // ==============================================================================

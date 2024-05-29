@@ -81,6 +81,20 @@
 		<label>Energy Saving</label>
 		<category>Switch</category>
 	</channel-type>
+
+	<channel-type id="fan_step_up_down">
+		<item-type>Number</item-type>
+		<label>Fan VDir</label>
+		<description>Fan Vertical Direction</description>
+	</channel-type>
+
+
+	<channel-type id="fan_step_left_right">
+		<item-type>Number</item-type>
+		<label>Fan HDir</label>
+		<description>Fan Horizontal Direction</description>
+	</channel-type>
+
 	<channel-type id="target-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Target Temperature</label>

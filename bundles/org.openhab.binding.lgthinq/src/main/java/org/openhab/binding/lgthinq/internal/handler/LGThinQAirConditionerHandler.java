@@ -73,6 +73,8 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     private final ChannelUID jetModeChannelUID;
     private final ChannelUID airCleanChannelUID;
     private final ChannelUID autoDryChannelUID;
+    private final ChannelUID stepUpDownChannelUID;
+    private final ChannelUID stepLeftRightChannelUID;
     private final ChannelUID energySavingChannelUID;
     private final ChannelUID extendedInfoCollectorChannelUID;
     private final ChannelUID currentPowerEnergyChannelUID;
@@ -103,6 +105,8 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
         airCleanChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AIR_CLEAN_ID);
         autoDryChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AUTO_DRY_ID);
         energySavingChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_ENERGY_SAVING_ID);
+        stepUpDownChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_STEP_UP_DOWN_ID);
+        stepLeftRightChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_STEP_LEFT_RIGHT_ID);
         powerChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_POWER_ID);
         extendedInfoCollectorChannelUID = new ChannelUID(channelGroupExtendedInfoUID,
                 CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
@@ -145,6 +149,12 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
         updateState(targetTempChannelUID, new DecimalType(BigDecimal.valueOf(shot.getTargetTemperature())));
         try {
             ACCapability acCap = getCapabilities();
+            if (getThing().getChannel(stepUpDownChannelUID) != null) {
+                updateState(stepUpDownChannelUID, new DecimalType(shot.getStepUpDownMode()));
+            }
+            if (getThing().getChannel(stepLeftRightChannelUID) != null) {
+                updateState(stepLeftRightChannelUID, new DecimalType(shot.getStepLeftRightMode()));
+            }
             if (getThing().getChannel(jetModeChannelUID) != null) {
                 Double commandCoolJetOn = Double.valueOf(acCap.getCoolJetModeCommandOn());
                 updateState(jetModeChannelUID,
@@ -214,6 +224,20 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
         }
         if (getThing().getChannel(energySavingChannelUID) == null && acCap.isEnergySavingAvailable()) {
             createDynSwitchChannel(CHANNEL_ENERGY_SAVING_ID, energySavingChannelUID);
+        }
+        if (getThing().getChannel(stepUpDownChannelUID) == null && acCap.isStepUpDownAvailable()) {
+            createDynSwitchChannel(CHANNEL_STEP_UP_DOWN_ID, stepUpDownChannelUID);
+            List<StateOption> options = new ArrayList<>();
+            acCap.getStepUpDown()
+                    .forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_STEP_UP_DOWN_MODE.get(v)))));
+            stateDescriptionProvider.setStateOptions(stepUpDownChannelUID, options);
+        }
+        if (getThing().getChannel(stepLeftRightChannelUID) == null && acCap.isStepLeftRightAvailable()) {
+            createDynSwitchChannel(CHANNEL_STEP_LEFT_RIGHT_ID, stepLeftRightChannelUID);
+            List<StateOption> options = new ArrayList<>();
+            acCap.getStepLeftRight().forEach(
+                    (k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_STEP_LEFT_RIGHT_MODE.get(v)))));
+            stateDescriptionProvider.setStateOptions(stepLeftRightChannelUID, options);
         }
         if (!acCap.getFanSpeed().isEmpty()) {
             List<StateOption> options = new ArrayList<>();
