@@ -86,6 +86,7 @@
 		<item-type>Number</item-type>
 		<label>Fan VDir</label>
 		<description>Fan Vertical Direction</description>
+		<category>wind</category>
 	</channel-type>
 
 
@@ -93,6 +94,7 @@
 		<item-type>Number</item-type>
 		<label>Fan HDir</label>
 		<description>Fan Horizontal Direction</description>
+		<category>wind</category>
 	</channel-type>
 
 	<channel-type id="target-temperature">

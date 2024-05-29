@@ -139,21 +139,20 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     protected void updateDeviceChannels(ACCanonicalSnapshot shot) {
         updateState(powerChannelUID,
                 DevicePowerState.DV_POWER_ON.equals(shot.getPowerStatus()) ? OnOffType.ON : OnOffType.OFF);
-        updateState(opModeChannelUID, new DecimalType(BigDecimal.valueOf(shot.getOperationMode())));
+        updateState(opModeChannelUID, new DecimalType(shot.getOperationMode()));
         if (DeviceTypes.HEAT_PUMP.equals(getDeviceType())) {
-            updateState(hpAirWaterSwitchChannelUID,
-                    new DecimalType(BigDecimal.valueOf(shot.getHpAirWaterTempSwitch())));
+            updateState(hpAirWaterSwitchChannelUID, new DecimalType(shot.getHpAirWaterTempSwitch()));
         }
-        updateState(fanSpeedChannelUID, new DecimalType(BigDecimal.valueOf(shot.getAirWindStrength())));
-        updateState(currTempChannelUID, new DecimalType(BigDecimal.valueOf(shot.getCurrentTemperature())));
-        updateState(targetTempChannelUID, new DecimalType(BigDecimal.valueOf(shot.getTargetTemperature())));
+        updateState(fanSpeedChannelUID, new DecimalType(shot.getAirWindStrength()));
+        updateState(currTempChannelUID, new DecimalType(shot.getCurrentTemperature()));
+        updateState(targetTempChannelUID, new DecimalType(shot.getTargetTemperature()));
         try {
             ACCapability acCap = getCapabilities();
             if (getThing().getChannel(stepUpDownChannelUID) != null) {
-                updateState(stepUpDownChannelUID, new DecimalType(shot.getStepUpDownMode()));
+                updateState(stepUpDownChannelUID, new DecimalType((int) shot.getStepUpDownMode()));
             }
             if (getThing().getChannel(stepLeftRightChannelUID) != null) {
-                updateState(stepLeftRightChannelUID, new DecimalType(shot.getStepLeftRightMode()));
+                updateState(stepLeftRightChannelUID, new DecimalType((int) shot.getStepLeftRightMode()));
             }
             if (getThing().getChannel(jetModeChannelUID) != null) {
                 Double commandCoolJetOn = Double.valueOf(acCap.getCoolJetModeCommandOn());
@@ -226,18 +225,10 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
             createDynSwitchChannel(CHANNEL_ENERGY_SAVING_ID, energySavingChannelUID);
         }
         if (getThing().getChannel(stepUpDownChannelUID) == null && acCap.isStepUpDownAvailable()) {
-            createDynSwitchChannel(CHANNEL_STEP_UP_DOWN_ID, stepUpDownChannelUID);
-            List<StateOption> options = new ArrayList<>();
-            acCap.getStepUpDown()
-                    .forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_STEP_UP_DOWN_MODE.get(v)))));
-            stateDescriptionProvider.setStateOptions(stepUpDownChannelUID, options);
+            createDynChannel(CHANNEL_STEP_UP_DOWN_ID, stepUpDownChannelUID, "Number");
         }
         if (getThing().getChannel(stepLeftRightChannelUID) == null && acCap.isStepLeftRightAvailable()) {
-            createDynSwitchChannel(CHANNEL_STEP_LEFT_RIGHT_ID, stepLeftRightChannelUID);
-            List<StateOption> options = new ArrayList<>();
-            acCap.getStepLeftRight().forEach(
-                    (k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_STEP_LEFT_RIGHT_MODE.get(v)))));
-            stateDescriptionProvider.setStateOptions(stepLeftRightChannelUID, options);
+            createDynChannel(CHANNEL_STEP_LEFT_RIGHT_ID, stepLeftRightChannelUID, "Number");
         }
         if (!acCap.getFanSpeed().isEmpty()) {
             List<StateOption> options = new ArrayList<>();
@@ -249,6 +240,18 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
             List<StateOption> options = new ArrayList<>();
             acCap.getOpMode().forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_OP_MODE.get(v)))));
             stateDescriptionProvider.setStateOptions(opModeChannelUID, options);
+        }
+        if (!acCap.getStepLeftRight().isEmpty()) {
+            List<StateOption> options = new ArrayList<>();
+            acCap.getStepLeftRight().forEach(
+                    (k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_STEP_LEFT_RIGHT_MODE.get(v)))));
+            stateDescriptionProvider.setStateOptions(stepLeftRightChannelUID, options);
+        }
+        if (!acCap.getStepUpDown().isEmpty()) {
+            List<StateOption> options = new ArrayList<>();
+            acCap.getStepUpDown()
+                    .forEach((k, v) -> options.add(new StateOption(k, emptyIfNull(CAP_AC_STEP_UP_DOWN_MODE.get(v)))));
+            stateDescriptionProvider.setStateOptions(stepUpDownChannelUID, options);
         }
     }
 
@@ -323,6 +326,24 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                             ((DecimalType) command).intValue());
                 } else {
                     logger.warn("Received command different of Numeric in FanSpeed Channel. Ignoring");
+                }
+                break;
+            }
+            case CHANNEL_STEP_UP_DOWN_ID: {
+                if (command instanceof DecimalType) {
+                    lgThinqACApiClientService.changeStepUpDown(getBridgeId(), getDeviceId(), getLastShot(),
+                            ((DecimalType) command).intValue());
+                } else {
+                    logger.warn("Received command different of Numeric in Step Up/Down Channel. Ignoring");
+                }
+                break;
+            }
+            case CHANNEL_STEP_LEFT_RIGHT_ID: {
+                if (command instanceof DecimalType) {
+                    lgThinqACApiClientService.changeStepLeftRight(getBridgeId(), getDeviceId(), getLastShot(),
+                            ((DecimalType) command).intValue());
+                } else {
+                    logger.warn("Received command different of Numeric in Step Left/Right Channel. Ignoring");
                 }
                 break;
             }
