@@ -221,7 +221,7 @@ public class LGThinQBindingConstants {
             "@AC_MAIN_OPERATION_MODE_AROMA_W", "Aroma", "@AC_MAIN_OPERATION_MODE_ANTIBUGS_W", "Anti Bugs");
 
     public static final Map<String, String> CAP_AC_STEP_UP_DOWN_MODE = Map.of("@OFF", "Off", "@1", "Upper", "@2", "Up",
-            "@3", "Middle", "@4", "Down", "@5", "Far Down", "@100", "Circular");
+            "@3", "Middle Up", "@4", "Middle Down", "@5", "Down", "@6", "Far Down", "@100", "Circular");
     public static final Map<String, String> CAP_AC_STEP_LEFT_RIGHT_MODE = Map.of("@OFF", "Off", "@1", "Lefter", "@2",
             "Left", "@3", "Middle", "@4", "Right", "@5", "Righter", "@13", "Left to Middle", "@35", "Middle to Right",
             "@100", "Circular");

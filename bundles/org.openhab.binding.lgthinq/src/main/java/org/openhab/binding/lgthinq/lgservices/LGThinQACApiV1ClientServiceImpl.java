@@ -17,6 +17,7 @@ import static org.openhab.binding.lgthinq.internal.api.LGThinqCanonicalModelUtil
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -139,11 +140,6 @@ public class LGThinQACApiV1ClientServiceImpl extends
         turnGenericMode(bridgeName, deviceId, "PowerSave", modeOnOff);
     }
 
-    @Override
-    public void turnBellOnOff(String bridgeName, String deviceId, String modeOnOff) throws LGThinqApiException {
-        turnGenericMode(bridgeName, deviceId, "SpkVolume", modeOnOff);
-    }
-
     protected void turnGenericMode(String bridgeName, String deviceId, String modeName, String modeOnOff)
             throws LGThinqApiException {
         try {
@@ -172,6 +168,34 @@ public class LGThinQACApiV1ClientServiceImpl extends
             handleGenericErrorResult(resp);
         } catch (Exception e) {
             throw new LGThinqApiException("Error adjusting fan speed", e);
+        }
+    }
+
+    @Override
+    public void changeStepUpDown(String bridgeName, String deviceId, ACCanonicalSnapshot currentSnap, int newStep)
+            throws LGThinqApiException {
+        Map<@Nullable String, @Nullable Object> subModeFeatures = Map.of("Jet", currentSnap.getCoolJetMode().intValue(),
+                "PowerSave", currentSnap.getEnergySavingMode().intValue(), "WDirVStep", newStep, "WDirHStep",
+                (int)currentSnap.getStepLeftRightMode());
+        try {
+            RestResult resp = sendCommand(bridgeName, deviceId, "", "Control", "Set", subModeFeatures, null);
+            handleGenericErrorResult(resp);
+        } catch (Exception e) {
+            throw new LGThinqApiException("Error stepUpDown", e);
+        }
+    }
+
+    @Override
+    public void changeStepLeftRight(String bridgeName, String deviceId, ACCanonicalSnapshot currentSnap, int newStep)
+            throws LGThinqApiException {
+        Map<@Nullable String, @Nullable Object> subModeFeatures = Map.of("Jet", currentSnap.getCoolJetMode().intValue(),
+                "PowerSave", currentSnap.getEnergySavingMode().intValue(), "WDirVStep", (int)currentSnap.getStepUpDownMode(),
+                "WDirHStep", newStep);
+        try {
+            RestResult resp = sendCommand(bridgeName, deviceId, "", "Control", "Set", subModeFeatures, null);
+            handleGenericErrorResult(resp);
+        } catch (Exception e) {
+            throw new LGThinqApiException("Error stepUpDown", e);
         }
     }
 

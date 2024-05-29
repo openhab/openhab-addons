@@ -92,11 +92,6 @@ public class LGThinQACApiV2ClientServiceImpl extends
     }
 
     @Override
-    public void turnBellOnOff(String bridgeName, String deviceId, String modeOnOff) throws LGThinqApiException {
-        turnGenericMode(bridgeName, deviceId, "airState.bellSound.appControl", modeOnOff);
-    }
-
-    @Override
     public void changeOperationMode(String bridgeName, String deviceId, int newOpMode) throws LGThinqApiException {
         try {
             RestResult resp = sendBasicControlCommands(bridgeName, deviceId, "Set", "airState.opMode", newOpMode);
@@ -113,6 +108,32 @@ public class LGThinQACApiV2ClientServiceImpl extends
         try {
             RestResult resp = sendBasicControlCommands(bridgeName, deviceId, "Set", "airState.windStrength",
                     newFanSpeed);
+            handleGenericErrorResult(resp);
+        } catch (LGThinqApiException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new LGThinqApiException("Error adjusting operation mode", e);
+        }
+    }
+
+    @Override
+    public void changeStepUpDown(String bridgeName, String deviceId, ACCanonicalSnapshot currentSnap, int newStep)
+            throws LGThinqApiException {
+        try {
+            RestResult resp = sendBasicControlCommands(bridgeName, deviceId, "Set", "airState.wDir.vStep", newStep);
+            handleGenericErrorResult(resp);
+        } catch (LGThinqApiException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new LGThinqApiException("Error adjusting operation mode", e);
+        }
+    }
+
+    @Override
+    public void changeStepLeftRight(String bridgeName, String deviceId, ACCanonicalSnapshot currentSnap, int newStep)
+            throws LGThinqApiException {
+        try {
+            RestResult resp = sendBasicControlCommands(bridgeName, deviceId, "Set", "airState.wDir.hStep", newStep);
             handleGenericErrorResult(resp);
         } catch (LGThinqApiException e) {
             throw e;

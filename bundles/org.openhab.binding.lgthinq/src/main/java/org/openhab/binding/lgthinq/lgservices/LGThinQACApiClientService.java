@@ -31,6 +31,12 @@ public interface LGThinQACApiClientService extends LGThinQApiClientService<ACCap
 
     void changeFanSpeed(String bridgeName, String deviceId, int newFanSpeed) throws LGThinqApiException;
 
+    void changeStepUpDown(String bridgeName, String deviceId, ACCanonicalSnapshot currentSnap, int newStep)
+            throws LGThinqApiException;
+
+    void changeStepLeftRight(String bridgeName, String deviceId, ACCanonicalSnapshot currentSnap, int newStep)
+            throws LGThinqApiException;
+
     void changeTargetTemperature(String bridgeName, String deviceId, ACTargetTmp newTargetTemp)
             throws LGThinqApiException;
 
@@ -41,8 +47,6 @@ public interface LGThinQACApiClientService extends LGThinQApiClientService<ACCap
     void turnAutoDryMode(String bridgeName, String deviceId, String modeOnOff) throws LGThinqApiException;
 
     void turnEnergySavingMode(String bridgeName, String deviceId, String modeOnOff) throws LGThinqApiException;
-
-    void turnBellOnOff(String bridgeName, String deviceId, String modeOnOff) throws LGThinqApiException;
 
     ExtendedDeviceInfo getExtendedDeviceInfo(@NonNull String bridgeName, @NonNull String deviceId)
             throws LGThinqApiException;

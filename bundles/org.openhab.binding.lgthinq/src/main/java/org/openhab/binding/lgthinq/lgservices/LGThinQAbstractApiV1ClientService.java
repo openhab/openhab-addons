@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -61,16 +62,34 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
     }
 
     protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
-            String command, @Nullable String keyName, @Nullable String value, @Nullable ObjectNode extraNode)
+            String command, Map<@Nullable String, @Nullable Object> keyValue, @Nullable ObjectNode extraNode)
             throws Exception {
         ObjectNode payloadNode = JsonNodeFactory.instance.objectNode();
         payloadNode.put("cmd", controlKey).put("cmdOpt", command);
-        if (keyName == null || keyName.isEmpty()) {
-            // value is a simple text
-            payloadNode.put("value", value);
-        } else {
-            payloadNode.putObject("value").put(keyName, value);
-        }
+        keyValue.forEach((k, v) -> {
+            if (k == null || k.isEmpty()) {
+                // value is a simple text
+                if (v instanceof Integer i) {
+                    payloadNode.put("value", i);
+                } else if (v instanceof Double d) {
+                    payloadNode.put("value", d);
+                } else {
+                    payloadNode.put("value", "" + v);
+                }
+            } else {
+                JsonNode valueNode = payloadNode.path("value");
+                if (valueNode.isMissingNode()) {
+                    valueNode = payloadNode.putObject("value");
+                }
+                if (v instanceof Integer i) {
+                    ((ObjectNode) valueNode).put(k, i);
+                } else if (v instanceof Double d) {
+                    ((ObjectNode) valueNode).put(k, d);
+                } else {
+                    ((ObjectNode) valueNode).put(k, "" + v);
+                }
+            }
+        });
         // String payload = String.format(
         // "{\n" + " \"lgedmRoot\":{\n" + " \"cmd\": \"%s\"," + " \"cmdOpt\": \"%s\","
         // + " \"value\": {\"%s\": \"%s\"}," + " \"deviceId\": \"%s\","
@@ -80,6 +99,14 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
             payloadNode.setAll(extraNode);
         }
         return sendCommand(bridgeName, deviceId, payloadNode);
+    }
+
+    protected RestResult sendCommand(String bridgeName, String deviceId, String controlPath, String controlKey,
+            String command, @Nullable String keyName, @Nullable String value, @Nullable ObjectNode extraNode)
+            throws Exception {
+        Map<@Nullable String, @Nullable Object> values = new HashMap<>(1);
+        values.put(keyName, value);
+        return sendCommand(bridgeName, deviceId, controlPath, controlKey, command, values, extraNode);
     }
 
     protected RestResult sendCommand(String bridgeName, String deviceId, Object cmdPayload) throws Exception {
