@@ -78,7 +78,7 @@ public class EpsonProjectorDiscoveryParticipant implements SddpDiscoveryParticip
         if (device.manufacturer.toUpperCase(Locale.ENGLISH).contains(EPSON)
                 && device.type.toUpperCase(Locale.ENGLISH).contains(TYPE_PROJECTOR) && !device.macAddress.isBlank()) {
 
-            logger.debug("Epson projector with id {} found at {}", device.macAddress, device.ipAddress);
+            logger.debug("Epson projector with mac {} found at {}", device.macAddress, device.ipAddress);
             return new ThingUID(THING_TYPE_PROJECTOR_TCP, device.macAddress);
         }
         return null;
