@@ -28,6 +28,10 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class BoschSHCBindingConstants {
 
+    private BoschSHCBindingConstants() {
+        // Class containing constants only
+    }
+
     public static final String BINDING_ID = "boschshc";
 
     // List of all Thing Type UIDs
@@ -55,6 +59,7 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR_2 = new ThingTypeUID(BINDING_ID, "smoke-detector-2");
     public static final ThingTypeUID THING_TYPE_LIGHT_CONTROL_2 = new ThingTypeUID(BINDING_ID, "light-control-2");
     public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
+    public static final ThingTypeUID THING_TYPE_WATER_DETECTOR = new ThingTypeUID(BINDING_ID, "water-detector");
 
     public static final ThingTypeUID THING_TYPE_USER_DEFINED_STATE = new ThingTypeUID(BINDING_ID, "user-defined-state");
 
@@ -102,6 +107,11 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_KEY_NAME = "key-name";
     public static final String CHANNEL_KEY_EVENT_TYPE = "key-event-type";
     public static final String CHANNEL_KEY_EVENT_TIMESTAMP = "key-event-timestamp";
+    public static final String CHANNEL_WATER_LEAKAGE = "water-leakage";
+    public static final String CHANNEL_PUSH_NOTIFICATIONS_ON_MOVE = "push-notifications-on-move";
+    public static final String CHANNEL_ACOUSTIC_SIGNALS_ON_MOVE = "acoustic-signals-on-move";
+    public static final String CHANNEL_WATER_LEAKAGE_SENSOR_CHECK = "water-leakage-sensor-check";
+    public static final String CHANNEL_SENSOR_MOVED = "sensor-moved";
 
     // numbered channels
     // the rationale for introducing numbered channels was discussed in
