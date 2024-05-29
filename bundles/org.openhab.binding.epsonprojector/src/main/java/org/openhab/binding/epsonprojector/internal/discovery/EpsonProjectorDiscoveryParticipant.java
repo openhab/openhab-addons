@@ -60,7 +60,7 @@ public class EpsonProjectorDiscoveryParticipant implements SddpDiscoveryParticip
             final String label = device.manufacturer + " " + device.model;
 
             properties.put(Thing.PROPERTY_MAC_ADDRESS, uid.getId());
-            properties.put(THING_PROPERTY_HOST, device.host);
+            properties.put(THING_PROPERTY_HOST, device.ipAddress);
             properties.put(THING_PROPERTY_PORT, DEFAULT_PORT);
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
