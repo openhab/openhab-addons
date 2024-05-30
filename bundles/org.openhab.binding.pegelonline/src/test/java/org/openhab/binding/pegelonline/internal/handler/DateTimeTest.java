@@ -16,9 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.openhab.binding.pegelonline.internal.PegelOnlineBindingConstants.GSON;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.collections4.map.HashedMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.junit.jupiter.api.Test;
@@ -61,7 +61,7 @@ class DateTimeTest {
         PegelOnlineHandler handler = new PegelOnlineHandler(ti, mock(HttpClient.class));
         handler.setCallback(thc);
         handler.initialize();
-        Map<String, Object> config = new HashedMap<>();
+        Map<String, Object> config = new HashMap<>();
         handler.updateConfiguration(new Configuration(config));
         Measure m = new Measure();
         m.value = 500;
@@ -70,10 +70,10 @@ class DateTimeTest {
         config.put("warningLevel2", 2000);
         handler.updateConfiguration(new Configuration(config));
         handler.initialize();
-        System.out.println("Warnlevel " + handler.getWarnLevel(m));
+        assertEquals(PegelOnlineBindingConstants.NO_WARNING, handler.getWarnLevel(m), "No Warn Level");
         m.value = 1200;
-        System.out.println("Warnlevel " + handler.getWarnLevel(m));
+        assertEquals(PegelOnlineBindingConstants.WARN_LEVEL_1, handler.getWarnLevel(m), "Warn Level 1");
         m.value = 2100;
-        System.out.println("Warnlevel " + handler.getWarnLevel(m));
+        assertEquals(PegelOnlineBindingConstants.WARN_LEVEL_2, handler.getWarnLevel(m), "Warn Level 2");
     }
 }
