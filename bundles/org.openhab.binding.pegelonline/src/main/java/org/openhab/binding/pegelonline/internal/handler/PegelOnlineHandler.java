@@ -20,8 +20,6 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.measure.quantity.Length;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -66,16 +64,16 @@ public class PegelOnlineHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
             if (cache.isPresent()) {
+                Measure m = cache.get();
                 if (MEASURE_CHANNEL.equals(channelUID.getId())) {
-                    QuantityType<Length> measure = QuantityType.valueOf(cache.get().value,
-                            MetricPrefix.CENTI(SIUnits.METRE));
-                    updateChannelState(MEASURE_CHANNEL, measure);
+                    updateChannelState(MEASURE_CHANNEL,
+                            QuantityType.valueOf(m.value, MetricPrefix.CENTI(SIUnits.METRE)));
                 } else if (TREND_CHANNEL.equals(channelUID.getId())) {
-                    DecimalType trend = DecimalType.valueOf(Integer.toString(cache.get().trend));
-                    updateChannelState(TREND_CHANNEL, trend);
+                    updateChannelState(TREND_CHANNEL, DecimalType.valueOf(Integer.toString(m.trend)));
                 } else if (TIMESTAMP_CHANNEL.equals(channelUID.getId())) {
-                    DateTimeType timestamp = DateTimeType.valueOf(cache.get().timestamp);
-                    updateChannelState(TIMESTAMP_CHANNEL, timestamp);
+                    updateChannelState(TIMESTAMP_CHANNEL, DateTimeType.valueOf(m.timestamp));
+                } else if (WARNING_CHANNEL.equals(channelUID.getId())) {
+                    updateChannelState(WARNING_CHANNEL, DecimalType.valueOf(Integer.toString(getWarnLevel(m))));
                 }
             }
         }
@@ -96,12 +94,10 @@ public class PegelOnlineHandler extends BaseThingHandler {
 
     public void updateChannels(Measure m) {
         cache = Optional.of(m);
-        DateTimeType timestamp = DateTimeType.valueOf(m.timestamp);
-        updateChannelState(TIMESTAMP_CHANNEL, timestamp);
-        QuantityType<Length> measure = QuantityType.valueOf(m.value, MetricPrefix.CENTI(SIUnits.METRE));
-        updateChannelState(MEASURE_CHANNEL, measure);
+        updateChannelState(TIMESTAMP_CHANNEL, DateTimeType.valueOf(m.timestamp));
+        updateChannelState(MEASURE_CHANNEL, QuantityType.valueOf(m.value, MetricPrefix.CENTI(SIUnits.METRE)));
         updateChannelState(TREND_CHANNEL, DecimalType.valueOf(Integer.toString(m.trend)));
-        updateChannelState(LEVEL_CHANNEL, DecimalType.valueOf(Integer.toString(getWarnLevel(m))));
+        updateChannelState(WARNING_CHANNEL, DecimalType.valueOf(Integer.toString(getWarnLevel(m))));
     }
 
     int getWarnLevel(Measure m) {

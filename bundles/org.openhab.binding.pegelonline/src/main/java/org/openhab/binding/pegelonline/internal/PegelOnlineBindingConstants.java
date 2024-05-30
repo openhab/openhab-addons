@@ -39,7 +39,7 @@ public class PegelOnlineBindingConstants {
     public static final String TIMESTAMP_CHANNEL = "timestamp";
     public static final String MEASURE_CHANNEL = "measure";
     public static final String TREND_CHANNEL = "trend";
-    public static final String LEVEL_CHANNEL = "level";
+    public static final String WARNING_CHANNEL = "warning";
 
     public static final int NO_WARNING = 0;
     public static final int WARN_LEVEL_1 = 1;
