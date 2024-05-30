@@ -65,15 +65,15 @@ class DateTimeTest {
         handler.updateConfiguration(new Configuration(config));
         Measure m = new Measure();
         m.value = 500;
-        assertEquals(PegelOnlineBindingConstants.HYPHEN, handler.getWarnLevel(m), "No Warn Level");
+        assertEquals(PegelOnlineBindingConstants.NO_WARNING, handler.getWarnLevel(m), "No Warn Level");
         config.put("warningLevel1", 1000);
         config.put("warningLevel2", 2000);
         handler.updateConfiguration(new Configuration(config));
         handler.initialize();
-        System.out.println("Warnlevel" + handler.getWarnLevel(m));
+        System.out.println("Warnlevel " + handler.getWarnLevel(m));
         m.value = 1200;
-        System.out.println("Warnlevel" + handler.getWarnLevel(m));
+        System.out.println("Warnlevel " + handler.getWarnLevel(m));
         m.value = 2100;
-        System.out.println("Warnlevel" + handler.getWarnLevel(m));
+        System.out.println("Warnlevel " + handler.getWarnLevel(m));
     }
 }

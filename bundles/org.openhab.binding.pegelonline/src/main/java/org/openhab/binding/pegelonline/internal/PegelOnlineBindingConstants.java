@@ -41,16 +41,13 @@ public class PegelOnlineBindingConstants {
     public static final String TREND_CHANNEL = "trend";
     public static final String LEVEL_CHANNEL = "level";
 
-    public static final String TREND_RISING = "Rising";
-    public static final String TREND_CONSTANT = "Constant";
-    public static final String TREND_LOWERING = "Lowering";
-
-    public static final String WARN_LEVEL_1 = "warningLevel1";
-    public static final String WARN_LEVEL_2 = "warningLevel2";
-    public static final String WARN_LEVEL_3 = "warningLevel3";
-    public static final String HQ10 = "HQ10";
-    public static final String HQ100 = "hq10";
-    public static final String HQ_EXTREME = "hqExtreme";
+    public static final int NO_WARNING = 0;
+    public static final int WARN_LEVEL_1 = 1;
+    public static final int WARN_LEVEL_2 = 2;
+    public static final int WARN_LEVEL_3 = 3;
+    public static final int HQ10 = 4;
+    public static final int HQ100 = 5;
+    public static final int HQ_EXTREME = 6;
 
     public static final Gson GSON = new Gson();
 

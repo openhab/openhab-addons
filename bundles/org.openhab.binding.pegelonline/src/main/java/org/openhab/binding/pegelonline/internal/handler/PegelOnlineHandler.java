@@ -31,7 +31,6 @@ import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
@@ -61,10 +60,6 @@ public class PegelOnlineHandler extends BaseThingHandler {
     public PegelOnlineHandler(Thing thing, HttpClient hc) {
         super(thing);
         httpClient = hc;
-    }
-
-    private void updateChannelState(String channel, State st) {
-        updateState(new ChannelUID(thing.getUID(), channel), st);
     }
 
     @Override
@@ -101,24 +96,17 @@ public class PegelOnlineHandler extends BaseThingHandler {
 
     public void updateChannels(Measure m) {
         cache = Optional.of(m);
-        // logger.info("update measure {}", cr.getContentAsString());
-
-        QuantityType<Length> measure = QuantityType.valueOf(m.value, MetricPrefix.CENTI(SIUnits.METRE));
-        updateChannelState(MEASURE_CHANNEL, measure);
-
-        StringType trend = StringType.valueOf(getTrend(m));
-        updateChannelState(TREND_CHANNEL, trend);
-
         DateTimeType timestamp = DateTimeType.valueOf(m.timestamp);
         updateChannelState(TIMESTAMP_CHANNEL, timestamp);
-
-        StringType level = StringType.valueOf(getWarnLevel(m));
-        updateChannelState(LEVEL_CHANNEL, level);
+        QuantityType<Length> measure = QuantityType.valueOf(m.value, MetricPrefix.CENTI(SIUnits.METRE));
+        updateChannelState(MEASURE_CHANNEL, measure);
+        updateChannelState(TREND_CHANNEL, DecimalType.valueOf(Integer.toString(m.trend)));
+        updateChannelState(LEVEL_CHANNEL, DecimalType.valueOf(Integer.toString(getWarnLevel(m))));
     }
 
-    String getWarnLevel(Measure m) {
+    int getWarnLevel(Measure m) {
         if (m.value < configuration.get().warningLevel1) {
-            return HYPHEN;
+            return NO_WARNING;
         } else if (m.value < configuration.get().warningLevel2) {
             return WARN_LEVEL_1;
         } else if (m.value < configuration.get().warningLevel3) {
@@ -132,22 +120,6 @@ public class PegelOnlineHandler extends BaseThingHandler {
         } else {
             return HQ_EXTREME;
         }
-    }
-
-    private String getTrend(Measure m) {
-        String trend = UNKNOWN;
-        switch (m.trend) {
-            case 0:
-                trend = TREND_CONSTANT;
-                break;
-            case 1:
-                trend = TREND_RISING;
-                break;
-            case -1:
-                trend = TREND_LOWERING;
-                break;
-        }
-        return trend;
     }
 
     @Override
@@ -170,5 +142,9 @@ public class PegelOnlineHandler extends BaseThingHandler {
     @Override
     public void updateConfiguration(Configuration configuration) {
         super.updateConfiguration(configuration);
+    }
+
+    private void updateChannelState(String channel, State st) {
+        updateState(new ChannelUID(thing.getUID(), channel), st);
     }
 }
