@@ -34,6 +34,7 @@ import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -51,9 +52,9 @@ public class PegelOnlineHandler extends BaseThingHandler {
     private static final String STATIONS_URI = "https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations";
     private Optional<PegelOnlineConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> schedule = Optional.empty();
+    private Optional<Measure> cache = Optional.empty();
     private HttpClient httpClient;
     private String stationUUID = UNKNOWN;
-    private Optional<Measure> cache = Optional.empty();
 
     public PegelOnlineHandler(Thing thing, HttpClient hc) {
         super(thing);
@@ -79,20 +80,49 @@ public class PegelOnlineHandler extends BaseThingHandler {
         }
     }
 
-    private void measure() {
+    @Override
+    public void initialize() {
+        PegelOnlineConfiguration config = getConfigAs(PegelOnlineConfiguration.class);
+        configuration = Optional.of(config);
+        stationUUID = configuration.get().uuid;
+        schedule = Optional.of(scheduler.scheduleWithFixedDelay(this::performMeasurement, 0,
+                configuration.get().refreshInterval, TimeUnit.MINUTES));
+    }
+
+    @Override
+    public void dispose() {
+        if (schedule.isPresent()) {
+            schedule.get().cancel(true);
+        }
+        schedule = Optional.empty();
+    }
+
+    @Override
+    public void updateConfiguration(Configuration configuration) {
+        super.updateConfiguration(configuration);
+    }
+
+    private void performMeasurement() {
         try {
             ContentResponse cr = httpClient.GET(STATIONS_URI + "/" + stationUUID + "/W/currentmeasurement.json");
-            Measure m = GSON.fromJson(cr.getContentAsString(), Measure.class);
-            if (m != null) {
-                updateChannels(m);
-                updateStatus(ThingStatus.ONLINE);
+            int responseStatus = cr.getStatus();
+            if (responseStatus == 200) {
+                Measure m = GSON.fromJson(cr.getContentAsString(), Measure.class);
+                if (m != null) {
+                    updateStatus(ThingStatus.ONLINE);
+                    updateChannels(m);
+                }
+            } else {
+                String description = "@text/pegelonline.handler.status.http-status [\"" + responseStatus + "\"]";
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
             }
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            updateStatus(ThingStatus.OFFLINE);
+            String description = "@text/pegelonline.handler.status.http-exception [\"" + e.getMessage() + "\"]";
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
         }
     }
 
-    public void updateChannels(Measure m) {
+    private void updateChannels(Measure m) {
         cache = Optional.of(m);
         updateChannelState(TIMESTAMP_CHANNEL, DateTimeType.valueOf(m.timestamp));
         updateChannelState(MEASURE_CHANNEL, QuantityType.valueOf(m.value, MetricPrefix.CENTI(SIUnits.METRE)));
@@ -116,28 +146,6 @@ public class PegelOnlineHandler extends BaseThingHandler {
         } else {
             return HQ_EXTREME;
         }
-    }
-
-    @Override
-    public void initialize() {
-        PegelOnlineConfiguration config = getConfigAs(PegelOnlineConfiguration.class);
-        configuration = Optional.of(config);
-        stationUUID = configuration.get().uuid;
-        schedule = Optional.of(scheduler.scheduleWithFixedDelay(this::measure, 0, configuration.get().refreshInterval,
-                TimeUnit.MINUTES));
-    }
-
-    @Override
-    public void dispose() {
-        if (schedule.isPresent()) {
-            schedule.get().cancel(true);
-        }
-        schedule = Optional.empty();
-    }
-
-    @Override
-    public void updateConfiguration(Configuration configuration) {
-        super.updateConfiguration(configuration);
     }
 
     private void updateChannelState(String channel, State st) {
