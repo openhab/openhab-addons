@@ -25,6 +25,7 @@ import org.openhab.binding.huesync.internal.HueSyncConstants;
 import org.openhab.binding.huesync.internal.HueSyncConstants.ENDPOINTS;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDto;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDtoDetailed;
+import org.openhab.binding.huesync.internal.api.dto.execution.HueSyncExecutionDto;
 import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmiDto;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationDto;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequestDto;
@@ -65,6 +66,12 @@ public class HueSyncDeviceConnection {
     public @Nullable HueSyncHdmiDto getHdmiInfo() {
         return this.connection.isRegistered()
                 ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.HDMI, "", HueSyncHdmiDto.class)
+                : null;
+    }
+
+    public @Nullable HueSyncExecutionDto getExecutionInfo() {
+        return this.connection.isRegistered()
+                ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.EXECUTION, "", HueSyncExecutionDto.class)
                 : null;
     }
 

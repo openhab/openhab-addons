@@ -28,6 +28,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDto;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDtoDetailed;
+import org.openhab.binding.huesync.internal.api.dto.execution.HueSyncExecutionDto;
 import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmiDto;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationDto;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
@@ -71,10 +72,6 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private HueSyncConfiguration config;
     private HttpClient httpClient;
-
-    protected class HueSyncProperties {
-
-    };
 
     public HueSyncHandler(Thing thing, HttpClientFactory httpClientFactory)
             throws CertificateException, IOException, URISyntaxException {
@@ -129,8 +126,9 @@ public class HueSyncHandler extends BaseThingHandler {
         } else {
             this.updateStatus(ThingStatus.ONLINE);
 
-            updateFirmwareInformation(deviceStatus);
-            updateHdmiInformation(update.hdmiStatus);
+            this.updateFirmwareInformation(deviceStatus);
+            this.updateHdmiInformation(update.hdmiStatus);
+            this.updateExecutionnformation(update.execution);
         }
     }
 
@@ -174,6 +172,11 @@ public class HueSyncHandler extends BaseThingHandler {
 
         this.updateState(HueSyncConstants.CHANNELS.DEVICE.INFORMATION.FIRMWARE, firmwareState);
         this.updateState(HueSyncConstants.CHANNELS.DEVICE.INFORMATION.FIRMWARE_AVAILABLE, firmwareAvailableState);
+    }
+
+    @SuppressWarnings("null")
+    private void updateExecutionnformation(@Nullable HueSyncExecutionDto executionStatus) {
+        this.updateState(HueSyncConstants.CHANNELS.COMMANDS.MODE, new StringType(executionStatus.getMode()));
     }
 
     private void setRegistration(HueSyncRegistrationDto registration) {

@@ -88,6 +88,8 @@ public class HueSyncConnection {
         this.httpClient = httpClient;
     }
 
+    // TODO: Invalid Token results in "HttpResponseException: HTTP protocol violation: Authentication challenge without
+    // WWW-Authenticate header" exception, Not the expected 401 status.
     protected @Nullable <T> T executeRequest(HttpMethod method, String endpoint, String payload, Class<T> type) {
         try {
             ContentResponse response = this.executeRequest(method, endpoint, payload);

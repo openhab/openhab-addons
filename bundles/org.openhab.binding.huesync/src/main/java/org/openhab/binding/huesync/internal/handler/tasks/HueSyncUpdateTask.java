@@ -53,8 +53,10 @@ public class HueSyncUpdateTask implements Runnable {
                         this.deviceInfo.uniqueId);
 
                 HueSyncUpdateInfo updateInfo = new HueSyncUpdateInfo();
+
                 updateInfo.deviceStatus = this.connection.getDetailedDeviceInfo();
                 updateInfo.hdmiStatus = this.connection.getHdmiInfo();
+                updateInfo.execution = this.connection.getExecutionInfo();
 
                 this.action.accept(updateInfo);
             }

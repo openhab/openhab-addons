@@ -38,6 +38,10 @@ public class HueSyncConstants {
             }
         }
 
+        public static class COMMANDS {
+            public static final String MODE = "device-commands#mode";
+        }
+
         public static class HDMI {
             public static class IN_1 {
                 public static final String NAME = "device-hdmi-in-1#name";

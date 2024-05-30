@@ -23,6 +23,8 @@
 			<channel-group id="device-hdmi-in-4" typeId="device-hdmi-connection-in"></channel-group>
 
 			<channel-group id="device-hdmi-out" typeId="device-hdmi-connection-out"></channel-group>
+
+			<channel-group id="device-commands" typeId="device-commands"></channel-group>
 		</channel-groups>
 
 		<properties>
@@ -63,6 +65,14 @@
 			<channel id="type" typeId="connection-type"></channel>
 			<channel id="status" typeId="connection-status"></channel>
 			<channel id="mode" typeId="connection-lastSyncMode"></channel>
+		</channels>
+	</channel-group-type>
+	<channel-group-type id="device-commands">
+		<label>Hue Sync execution API commands</label>
+		<description>Execution API commands are used to control the real-time behavior of the Philips Hue Sync box. These
+			commands allow you to influence how the lights react to your entertainment.</description>
+		<channels>
+			<channel id="mode" typeId="execution-mode"></channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>
