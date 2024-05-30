@@ -28,7 +28,7 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 ## Discovery
 
-The beinding is using [mDNS](https://en.wikipedia.org/wiki/Multicast_DNS) to discover HDMI Sync devies in the local network.
+The binding is using [mDNS](https://en.wikipedia.org/wiki/Multicast_DNS) to discover HDMI Sync devices in the local network.
 The LED on the Sync Box must be white or red.
 This indicates that the device is connected to the Network.
 If the LED is blinking blue, you need to setup the device using the official [Hue Sync App](https://www.philips-hue.com/en-in/explore-hue/propositions/entertainment/hue-sync).
@@ -115,16 +115,27 @@ Example thing configuration goes here.
 <details>
   <summary> Groups</summary>
 
-|       |                     |              |                           |                     |                      |     |
-| ----- | ------------------- | ------------ | ------------------------- | ------------------- | -------------------- | --- |
-| Group | HueSyncBox          | "HueSyncBox" | <iconify:mdi:tv>          |                     | ["NetworkAppliance"] |     |
-| Group | HueSyncBox_Firmware | "Firmware"   | <iconify:mdi:information> | (HueSyncBox)        | ["Sensor"]           |     |
-| Group | HueSyncBox_Inputs   | "Inputs"     | <receiver>                | (HueSyncBox)        | ["Receiver"]         |     |
-| Group | HueSyncBox_Input_1  | "Input 1"    | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Receiver"]         |     |
-| Group | HueSyncBox_Input_2  | "Input 2"    | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Receiver"]         |     |
-| Group | HueSyncBox_Input_3  | "Input 3"    | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Receiver"]         |     |
-| Group | HueSyncBox_Input_4  | "Input 4"    | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Receiver"]         |     |
-| Group | HueSyncBox_Output   | "Output"     | <iconify:mdi:tv>          | (HueSyncBox)        | ["Screen"]           |     |
+|       |                      |                  |                           |                     |                      |     |
+| ----- | -------------------- | ---------------- | ------------------------- | ------------------- | -------------------- | --- |
+| Group | HueSyncBox           | "HueSyncBox"     | <iconify:mdi:tv>          |                     | ["NetworkAppliance"] |     |
+| Group | HueSyncBox_Execution | "Remote Control" | <iconify:mdi:remote>      | (HueSyncBox)        | ["RemoteControl"]    |     |
+| Group | HueSyncBox_Firmware  | "Firmware"       | <iconify:mdi:information> | (HueSyncBox)        | ["Point"]            |     |
+| Group | HueSyncBox_Inputs    | "Inputs"         | <receiver>                | (HueSyncBox)        | ["Receiver"]         |     |
+| Group | HueSyncBox_Input_1   | "Input 1"        | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Point"]            |     |
+| Group | HueSyncBox_Input_2   | "Input 2"        | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Point"]            |     |
+| Group | HueSyncBox_Input_3   | "Input 3"        | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Point"]            |     |
+| Group | HueSyncBox_Input_4   | "Input 4"        | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Point"]            |     |
+| Group | HueSyncBox_Output    | "Output"         | <iconify:mdi:tv>          | (HueSyncBox)        | ["Screen"]           |     |
+</details>
+
+---
+
+<details>
+  <summary> Remote Control - Channels</summary>
+
+|        |                        |        |                          |                        |                                                                    |     |
+| ------ | ---------------------- | ------ | ------------------------ | ---------------------- | ------------------------------------------------------------------ | --- |
+| String | HueSyncBox_Device_Mode | "Mode" | <iconify:mdi:multimedia> | (HueSyncBox_Execution) | { channel="huesync:huesyncthing:HueSyncBox:device-commands#mode" } |     |
 </details>
 
 ---
