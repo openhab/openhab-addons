@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.pegelonline.internal.config.PegelOnlineConfiguration;
@@ -39,6 +40,8 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link PegelOnlineHandler} is responsible for handling commands, which are
@@ -48,8 +51,8 @@ import org.openhab.core.types.State;
  */
 @NonNullByDefault
 public class PegelOnlineHandler extends BaseThingHandler {
-
     private static final String STATIONS_URI = "https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations";
+    private final Logger logger = LoggerFactory.getLogger(PegelOnlineHandler.class);
     private Optional<PegelOnlineConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> schedule = Optional.empty();
     private Optional<Measure> cache = Optional.empty();
@@ -66,9 +69,8 @@ public class PegelOnlineHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             if (cache.isPresent()) {
                 Measure m = cache.get();
-                if (MEASURE_CHANNEL.equals(channelUID.getId())) {
-                    updateChannelState(MEASURE_CHANNEL,
-                            QuantityType.valueOf(m.value, MetricPrefix.CENTI(SIUnits.METRE)));
+                if (LEVEL_CHANNEL.equals(channelUID.getId())) {
+                    updateChannelState(LEVEL_CHANNEL, QuantityType.valueOf(m.value, MetricPrefix.CENTI(SIUnits.METRE)));
                 } else if (TREND_CHANNEL.equals(channelUID.getId())) {
                     updateChannelState(TREND_CHANNEL, DecimalType.valueOf(Integer.toString(m.trend)));
                 } else if (TIMESTAMP_CHANNEL.equals(channelUID.getId())) {
@@ -108,10 +110,10 @@ public class PegelOnlineHandler extends BaseThingHandler {
             int responseStatus = cr.getStatus();
             if (responseStatus == 200) {
                 String content = cr.getContentAsString();
-                Measure m = GSON.fromJson(content, Measure.class);
-                if (m != null) {
+                Measure measureDto = GSON.fromJson(content, Measure.class);
+                if (isValid(measureDto) && measureDto != null) {
                     updateStatus(ThingStatus.ONLINE);
-                    updateChannels(m);
+                    updateChannels(measureDto);
                 } else {
                     String description = "@text/pegelonline.handler.status.json-error [\"" + content + "\"]";
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, description);
@@ -126,10 +128,24 @@ public class PegelOnlineHandler extends BaseThingHandler {
         }
     }
 
+    private boolean isValid(@Nullable Measure measureDto) {
+        if (measureDto != null) {
+            if (measureDto.timestamp != null) {
+                try {
+                    DateTimeType.valueOf(measureDto.timestamp);
+                    return true;
+                } catch (Throwable t) {
+                    logger.trace("Error converting {} into DateTime: {}", measureDto.timestamp, t.getMessage());
+                }
+            }
+        }
+        return false;
+    }
+
     private void updateChannels(Measure m) {
         cache = Optional.of(m);
         updateChannelState(TIMESTAMP_CHANNEL, DateTimeType.valueOf(m.timestamp));
-        updateChannelState(MEASURE_CHANNEL, QuantityType.valueOf(m.value, MetricPrefix.CENTI(SIUnits.METRE)));
+        updateChannelState(LEVEL_CHANNEL, QuantityType.valueOf(m.value, MetricPrefix.CENTI(SIUnits.METRE)));
         updateChannelState(TREND_CHANNEL, DecimalType.valueOf(Integer.toString(m.trend)));
         updateChannelState(WARNING_CHANNEL, DecimalType.valueOf(Integer.toString(getWarnLevel(m))));
     }

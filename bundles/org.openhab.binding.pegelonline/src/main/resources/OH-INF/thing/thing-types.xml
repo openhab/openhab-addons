@@ -10,7 +10,7 @@
 
 		<channels>
 			<channel id="timestamp" typeId="timestamp"/>
-			<channel id="measure" typeId="measure"/>
+			<channel id="level" typeId="level"/>
 			<channel id="trend" typeId="trend"/>
 			<channel id="warning" typeId="warning"/>
 		</channels>
@@ -60,7 +60,7 @@
 		<label>Timestamp of Last Measurement</label>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
-	<channel-type id="measure">
+	<channel-type id="level">
 		<item-type>Number:Length</item-type>
 		<label>Water Level</label>
 		<state pattern="%d %unit%" readOnly="true"/>

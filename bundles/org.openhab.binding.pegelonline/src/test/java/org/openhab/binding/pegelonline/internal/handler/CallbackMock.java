@@ -43,6 +43,19 @@ import org.openhab.core.types.TimeSeries.Policy;
  */
 @NonNullByDefault
 public class CallbackMock implements ThingHandlerCallback {
+    private @Nullable ThingStatusInfo thingStatus;
+
+    public @Nullable ThingStatusInfo getThingStatus() {
+        synchronized (this) {
+            while (thingStatus == null) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+        return thingStatus;
+    }
 
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
@@ -63,7 +76,12 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
-        System.out.println(thingStatus.getStatus() + " " + thingStatus.getStatusDetail());
+        synchronized (this) {
+            System.out.println(
+                    thingStatus.getStatus() + " " + thingStatus.getStatusDetail() + " " + thingStatus.getDescription());
+            this.thingStatus = thingStatus;
+            notifyAll();
+        }
     }
 
     @Override
