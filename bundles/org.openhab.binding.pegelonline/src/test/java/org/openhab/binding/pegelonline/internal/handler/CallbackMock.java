@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.pegelonline.internal.handler;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,10 +44,9 @@ import org.openhab.core.types.TimeSeries.Policy;
 @NonNullByDefault
 public class CallbackMock implements ThingHandlerCallback {
 
-    Map<String, TimeSeries> seriesMap = new HashMap<String, TimeSeries>();
-
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
+        System.out.println(channelUID.getAsString() + " " + state.toFullString());
     }
 
     @Override
@@ -57,19 +55,15 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
-        seriesMap.put(channelUID.getAsString(), timeSeries);
     }
 
     public TimeSeries getTimeSeries(String cuid) {
-        TimeSeries ts = seriesMap.get(cuid);
-        if (ts == null) {
-            ts = new TimeSeries(Policy.REPLACE);
-        }
-        return ts;
+        return new TimeSeries(Policy.REPLACE);
     }
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
+        System.out.println(thingStatus.getStatus() + " " + thingStatus.getStatusDetail());
     }
 
     @Override

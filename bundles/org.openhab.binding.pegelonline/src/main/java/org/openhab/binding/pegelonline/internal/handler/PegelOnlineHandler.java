@@ -53,8 +53,8 @@ public class PegelOnlineHandler extends BaseThingHandler {
     private Optional<PegelOnlineConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> schedule = Optional.empty();
     private Optional<Measure> cache = Optional.empty();
-    private HttpClient httpClient;
     private String stationUUID = UNKNOWN;
+    private HttpClient httpClient;
 
     public PegelOnlineHandler(Thing thing, HttpClient hc) {
         super(thing);
@@ -107,10 +107,14 @@ public class PegelOnlineHandler extends BaseThingHandler {
             ContentResponse cr = httpClient.GET(STATIONS_URI + "/" + stationUUID + "/W/currentmeasurement.json");
             int responseStatus = cr.getStatus();
             if (responseStatus == 200) {
-                Measure m = GSON.fromJson(cr.getContentAsString(), Measure.class);
+                String content = cr.getContentAsString();
+                Measure m = GSON.fromJson(content, Measure.class);
                 if (m != null) {
                     updateStatus(ThingStatus.ONLINE);
                     updateChannels(m);
+                } else {
+                    String description = "@text/pegelonline.handler.status.json-error [\"" + content + "\"]";
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, description);
                 }
             } else {
                 String description = "@text/pegelonline.handler.status.http-status [\"" + responseStatus + "\"]";
