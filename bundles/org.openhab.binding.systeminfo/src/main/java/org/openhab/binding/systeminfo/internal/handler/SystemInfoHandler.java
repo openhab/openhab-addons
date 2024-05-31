@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.systeminfo.internal.handler;
 
-import static org.openhab.binding.systeminfo.internal.SysteminfoBindingConstants.*;
+import static org.openhab.binding.systeminfo.internal.SystemInfoBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.systeminfo.internal.SysteminfoThingTypeProvider;
+import org.openhab.binding.systeminfo.internal.SystemInfoThingTypeProvider;
 import org.openhab.binding.systeminfo.internal.model.DeviceNotFoundException;
-import org.openhab.binding.systeminfo.internal.model.SysteminfoInterface;
+import org.openhab.binding.systeminfo.internal.model.SystemInfoInterface;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.cache.ExpiringCacheMap;
 import org.openhab.core.config.core.Configuration;
@@ -55,7 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SysteminfoHandler} is responsible for providing real time information about the system
+ * The {@link SystemInfoHandler} is responsible for providing real time information about the system
  * (CPU, Memory, Storage, Display and others).
  *
  * @author Svilen Valkanov - Initial contribution
@@ -65,7 +65,7 @@ import org.slf4j.LoggerFactory;
  * @author Mark Herwege - Processor frequency channels
  */
 @NonNullByDefault
-public class SysteminfoHandler extends BaseThingHandler {
+public class SystemInfoHandler extends BaseThingHandler {
     /**
      * Refresh interval for {@link #highPriorityChannels} in seconds.
      */
@@ -109,9 +109,9 @@ public class SysteminfoHandler extends BaseThingHandler {
      */
     public final String idExtString;
 
-    public final SysteminfoThingTypeProvider thingTypeProvider;
+    public final SystemInfoThingTypeProvider thingTypeProvider;
 
-    private SysteminfoInterface systeminfo;
+    private SystemInfoInterface systeminfo;
 
     private @Nullable ScheduledFuture<?> highPriorityTasks;
     private @Nullable ScheduledFuture<?> mediumPriorityTasks;
@@ -128,10 +128,10 @@ public class SysteminfoHandler extends BaseThingHandler {
     private ExpiringCacheMap<Integer, @Nullable DecimalType> processLoadCache = new ExpiringCacheMap<>(
             MIN_PROCESS_LOAD_REFRESH_INTERVAL_MS);
 
-    private final Logger logger = LoggerFactory.getLogger(SysteminfoHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SystemInfoHandler.class);
 
-    public SysteminfoHandler(Thing thing, SysteminfoThingTypeProvider thingTypeProvider,
-            SysteminfoInterface systeminfo) {
+    public SystemInfoHandler(Thing thing, SystemInfoThingTypeProvider thingTypeProvider,
+            SystemInfoInterface systeminfo) {
         super(thing);
         this.thingTypeProvider = thingTypeProvider;
         this.systeminfo = systeminfo;
@@ -145,7 +145,7 @@ public class SysteminfoHandler extends BaseThingHandler {
                 thing.getThingTypeUID().getId());
         restoreChannelsConfig(); // After a thing type change, previous channel configs will have been stored, and will
                                  // be restored here.
-        if (instantiateSysteminfoLibrary() && isConfigurationValid() && updateProperties()) {
+        if (instantiateSystemInfoLibrary() && isConfigurationValid() && updateProperties()) {
             if (!addDynamicChannels()) { // If there are new channel groups, the thing will get recreated with a new
                                          // thing type and this handler will be disposed. Therefore do not do anything
                                          // further here.
@@ -165,13 +165,13 @@ public class SysteminfoHandler extends BaseThingHandler {
         super.handleRemoval();
     }
 
-    private boolean instantiateSysteminfoLibrary() {
+    private boolean instantiateSystemInfoLibrary() {
         try {
-            systeminfo.initializeSysteminfo();
-            logger.debug("Systeminfo implementation is instantiated!");
+            systeminfo.initializeSystemInfo();
+            logger.debug("SystemInfo implementation is instantiated!");
             return true;
         } catch (Exception e) {
-            logger.warn("Cannot instantiate Systeminfo object!", e);
+            logger.warn("Cannot instantiate SystemInfo object!", e);
             return false;
         }
     }
@@ -428,9 +428,9 @@ public class SysteminfoHandler extends BaseThingHandler {
     }
 
     /**
-     * This method gets the information for specific channel through the {@link SysteminfoInterface}. It uses the
-     * channel ID to call the correct method from the {@link SysteminfoInterface} with deviceIndex parameter (in case of
-     * multiple devices, for reference see {@link #getDeviceIndex(String)}})
+     * This method gets the information for specific channel through the {@link SystemInfoInterface}. It uses the
+     * channel ID to call the correct method from the {@link SystemInfoInterface} with deviceIndex parameter (in case of
+     * multiple devices, for reference see {@link SystemInfoHandler#getDeviceIndex(ChannelUID)}})
      *
      * @param channelUID the UID of the channel
      * @return State object or null, if there is no information for the device with this index
@@ -662,7 +662,7 @@ public class SysteminfoHandler extends BaseThingHandler {
      * first will have deviceIndex=0, the second deviceIndex=1 ant etc).
      * When no device index is specified, default value of 0 (first device in the list) is returned.
      *
-     * @param channelID the ID of the channel
+     * @param channelUID the ID of the channel
      * @return natural number (number >=0)
      */
     private int getDeviceIndex(ChannelUID channelUID) {
