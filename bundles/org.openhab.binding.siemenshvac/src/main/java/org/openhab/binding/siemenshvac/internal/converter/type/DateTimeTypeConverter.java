@@ -66,7 +66,8 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected DateTimeType fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
+    protected DateTimeType fromBinding(JsonElement value, String type, ChannelType tp, Locale locale)
+            throws ConverterException {
         if ("----".equals(value.getAsString())) {
             return new DateTimeType(ZonedDateTime.now(this.timeZoneProvider.getTimeZone()));
         } else {
@@ -86,7 +87,7 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
                     }
 
                     LocalDateTime parsedDate = LocalDateTime.parse(value.getAsString(),
-                            formatterBuilder.toFormatter(Locale.FRENCH));
+                            formatterBuilder.toFormatter(locale));
 
                     ZonedDateTime zdt = parsedDate.atZone(this.timeZoneProvider.getTimeZone());
 

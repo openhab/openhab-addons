@@ -13,6 +13,7 @@
 package org.openhab.binding.siemenshvac.internal.handler;
 
 import java.math.BigDecimal;
+import java.util.Locale;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -221,6 +222,12 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
     public void decodeReadDp(@Nullable JsonObject response, @Nullable String uid, @Nullable String dp, ChannelType tp,
             @Nullable String type) {
+
+        SiemensHvacMetadataRegistry lcMetaDataRegistry = metaDataRegistry;
+        if (lcMetaDataRegistry == null) {
+            return;
+        }
+
         if (response != null && response.has("Data")) {
             JsonObject subResult = (JsonObject) response.get("Data");
 
@@ -236,7 +243,12 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                 if (typer != null) {
                     TypeConverter converter = ConverterFactory.getConverter(typer);
 
-                    State state = converter.convertFromBinding(subResult, tp);
+                    Locale local = lcMetaDataRegistry.getUserLocale();
+                    if (local == null) {
+                        local = Locale.getDefault();
+                    }
+
+                    State state = converter.convertFromBinding(subResult, tp, local);
                     updateState(updateKey, state);
                 }
             } catch (ConverterTypeException ex) {

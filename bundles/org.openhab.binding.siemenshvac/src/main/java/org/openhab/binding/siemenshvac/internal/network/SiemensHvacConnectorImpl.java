@@ -429,7 +429,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
         try {
             c.add(new URI(baseUri), cookie);
         } catch (URISyntaxException ex) {
-            throw new SiemensHvacException(String.format("URI is not correctly formated: %s", baseUri), ex);
+            throw new SiemensHvacException(String.format("URI is not correctly formatted: %s", baseUri), ex);
         }
 
         logger.debug("Execute request: {}", uri);

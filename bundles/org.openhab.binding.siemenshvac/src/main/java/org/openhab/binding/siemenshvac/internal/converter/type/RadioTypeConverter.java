@@ -13,6 +13,7 @@
 package org.openhab.binding.siemenshvac.internal.converter.type;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -76,7 +77,8 @@ public class RadioTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected State fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
+    protected State fromBinding(JsonElement value, String type, ChannelType tp, Locale locale)
+            throws ConverterException {
         State updateVal = UnDefType.UNDEF;
         String valueSt = value.getAsString();
 

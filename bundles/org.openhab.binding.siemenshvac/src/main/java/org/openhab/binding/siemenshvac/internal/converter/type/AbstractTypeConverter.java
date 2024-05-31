@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter.type;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
@@ -53,7 +55,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
     }
 
     @Override
-    public State convertFromBinding(JsonObject dp, ChannelType tp) throws ConverterException {
+    public State convertFromBinding(JsonObject dp, ChannelType tp, Locale locale) throws ConverterException {
         String type = null;
         JsonElement value = null;
 
@@ -82,7 +84,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
             return UnDefType.NULL;
         }
 
-        return fromBinding(value, type, tp);
+        return fromBinding(value, type, tp, locale);
     }
 
     /**
@@ -111,7 +113,8 @@ public abstract class AbstractTypeConverter implements TypeConverter {
     /**
      * Converts the datapoint value to an openHAB type.
      */
-    protected abstract State fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException;
+    protected abstract State fromBinding(JsonElement value, String type, ChannelType tp, Locale locale)
+            throws ConverterException;
 
     /**
      * get underlying channel type to construct channel type UID

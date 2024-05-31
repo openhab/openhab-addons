@@ -51,10 +51,10 @@ public class SiemensHvacBindingConstants {
 
     public static final String CATEGORY_THING_HVAC = "HVAC";
 
-    public static final String CATEGORY_CHANNEL_WIDGETS_NUMBER = "Number";
-    public static final String CATEGORY_CHANNEL_WIDGETS_SWITCH = "Switch";
-    public static final String CATEGORY_CHANNEL_WIDGETS_TEMP = "Temperature";
-    public static final String CATEGORY_CHANNEL_WIDGETS_TIME = "Time";
+    public static final String CATEGORY_CHANNEL_NUMBER = "Number";
+    public static final String CATEGORY_CHANNEL_SWITCH = "Switch";
+    public static final String CATEGORY_CHANNEL_TEMP = "Temperature";
+    public static final String CATEGORY_CHANNEL_TIME = "Time";
 
     public static final String CATEGORY_CHANNEL_CONTROL_HEATING = "Heating";
 }

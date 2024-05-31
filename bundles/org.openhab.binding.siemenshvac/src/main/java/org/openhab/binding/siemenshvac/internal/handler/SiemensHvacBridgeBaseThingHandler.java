@@ -12,6 +12,11 @@
  */
 package org.openhab.binding.siemenshvac.internal.handler;
 
+import java.net.URL;
+import java.net.URLConnection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -96,6 +101,24 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
         scheduler.schedule(this::initializeCode, 1, TimeUnit.SECONDS);
     }
 
+    protected String getBuildDate() {
+        try {
+            ClassLoader cl = getClass().getClassLoader();
+            if (cl != null) {
+                URL res = cl.getResource(getClass().getCanonicalName().replace('.', '/') + ".class");
+                if (res != null) {
+                    URLConnection cnx = res.openConnection();
+                    Date dt = new Date(cnx.getLastModified());
+                    DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+                    return df.format(dt);
+                }
+            }
+
+        } catch (Exception ex) {
+        }
+        return "unknown";
+    }
+
     public static String getStackTrace(final Throwable throwable) {
         StringBuffer sb = new StringBuffer();
 
@@ -124,7 +147,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
             updateStatus(ThingStatus.ONLINE);
         } catch (SiemensHvacException ex) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    String.format("@text/offline.error-gateway-init", ex.getMessage()));
+                    "@text/offline.error-gateway-init[\"" + ex.getMessage() + "\"]");
         }
     }
 

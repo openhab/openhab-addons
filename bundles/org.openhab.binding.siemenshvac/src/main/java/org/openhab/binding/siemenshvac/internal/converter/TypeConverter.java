@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.type.ChannelType;
@@ -37,7 +39,7 @@ public interface TypeConverter {
     /**
      * Converts a siemensHvac value to an openHAB type.
      */
-    State convertFromBinding(JsonObject dp, ChannelType tp) throws ConverterException;
+    State convertFromBinding(JsonObject dp, ChannelType tp, Locale locale) throws ConverterException;
 
     /**
      * get underlying channel type to construct channel type UID

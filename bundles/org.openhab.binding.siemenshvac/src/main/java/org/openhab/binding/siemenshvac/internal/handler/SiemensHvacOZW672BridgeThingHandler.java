@@ -12,12 +12,7 @@
  */
 package org.openhab.binding.siemenshvac.internal.handler;
 
-import java.net.URL;
-import java.net.URLConnection;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,24 +50,6 @@ public class SiemensHvacOZW672BridgeThingHandler extends SiemensHvacBridgeBaseTh
             logger.debug("Initialize() bridge: {}", getBuildDate());
         }
         super.initialize();
-    }
-
-    private String getBuildDate() {
-        try {
-            ClassLoader cl = getClass().getClassLoader();
-            if (cl != null) {
-                URL res = cl.getResource(getClass().getCanonicalName().replace('.', '/') + ".class");
-                if (res != null) {
-                    URLConnection cnx = res.openConnection();
-                    Date dt = new Date(cnx.getLastModified());
-                    DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-                    return df.format(dt);
-                }
-            }
-
-        } catch (Exception ex) {
-        }
-        return "unknown";
     }
 
     @Override

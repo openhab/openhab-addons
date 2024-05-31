@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -96,6 +97,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     private @Nullable SiemensHvacChannelGroupTypeProvider channelGroupTypeProvider;
     private @Nullable SiemensHvacConfigDescriptionProvider configDescriptionProvider;
     private @Nullable SiemensHvacConnector hvacConnector;
+    private @Nullable SiemensHvacMetadataUser user;
+    private @Nullable Locale userLocale;
 
     private final HashMap<String, SiemensHvacMetadataUser> userList;
 
@@ -284,16 +287,19 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             throw new SiemensHvacException("@offline.config-not-init");
         }
 
-        SiemensHvacMetadataUser user = null;
+        SiemensHvacMetadataUser lcUser = null;
 
         String userName = config.userName;
         if (userList.containsKey(userName)) {
-            user = userList.get(userName);
+            lcUser = userList.get(userName);
         }
 
-        if (user == null) {
+        if (lcUser == null) {
             throw new SiemensHvacException("@offline.user-not-find");
         }
+
+        this.user = lcUser;
+        this.userLocale = Locale.forLanguageTag(lcUser.getLanguage());
 
         logger.trace("siemensHvac:Initialization():Begin_0001");
 
@@ -323,12 +329,12 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             logger.trace("siemensHvac:Initialization():BeginReadMenu");
             root = new SiemensHvacMetadataMenu();
 
-            changeLanguage(user, 1);
+            changeLanguage(lcUser, 1);
             readMetaData(root, -1, false);
             lcHvacConnector.waitNoNewRequest();
             lcHvacConnector.waitAllPendingRequest();
 
-            changeLanguage(user, user.getLanguageId());
+            changeLanguage(lcUser, lcUser.getLanguageId());
             readMetaData(root, -1, true);
             lcHvacConnector.waitNoNewRequest();
             lcHvacConnector.waitAllPendingRequest();
@@ -370,6 +376,16 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
 
         logger.trace("siemensHvac:InitDptMap():end");
+    }
+
+    @Override
+    public @Nullable SiemensHvacMetadataUser getUser() {
+        return user;
+    }
+
+    @Override
+    public @Nullable Locale getUserLocale() {
+        return userLocale;
     }
 
     private void generateThingsType(SiemensHvacMetadataDevice device) {
@@ -642,17 +658,17 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         if (dptUnit == null) {
             return "";
         } else if (dptUnit.contains("°C")) {
-            return SiemensHvacBindingConstants.CATEGORY_CHANNEL_WIDGETS_TEMP;
+            return SiemensHvacBindingConstants.CATEGORY_CHANNEL_TEMP;
         } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_DATE_TIME)) {
-            return SiemensHvacBindingConstants.CATEGORY_CHANNEL_WIDGETS_TIME;
+            return SiemensHvacBindingConstants.CATEGORY_CHANNEL_TIME;
         } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_TIMEOFDAY)) {
-            return SiemensHvacBindingConstants.CATEGORY_CHANNEL_WIDGETS_TIME;
+            return SiemensHvacBindingConstants.CATEGORY_CHANNEL_TIME;
         } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_ENUM)) {
-            return SiemensHvacBindingConstants.CATEGORY_CHANNEL_WIDGETS_SWITCH;
+            return SiemensHvacBindingConstants.CATEGORY_CHANNEL_SWITCH;
         } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_RADIO)) {
-            return SiemensHvacBindingConstants.CATEGORY_CHANNEL_WIDGETS_SWITCH;
+            return SiemensHvacBindingConstants.CATEGORY_CHANNEL_SWITCH;
         } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC)) {
-            return SiemensHvacBindingConstants.CATEGORY_CHANNEL_WIDGETS_NUMBER;
+            return SiemensHvacBindingConstants.CATEGORY_CHANNEL_NUMBER;
         } else {
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_CONTROL_HEATING;
         }
@@ -678,109 +694,104 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     }
 
     public void readUserInfo() throws SiemensHvacException {
-        try {
-            SiemensHvacConnector lcHvacConnector = hvacConnector;
-            String request = "main.app?section=settings&subsection=user";
+        SiemensHvacConnector lcHvacConnector = hvacConnector;
+        String request = "main.app?section=settings&subsection=user";
 
-            if (lcHvacConnector != null) {
-                String response = lcHvacConnector.doBasicRequest(request);
+        if (lcHvacConnector != null) {
+            String response = lcHvacConnector.doBasicRequest(request);
 
-                if (response != null) {
-                    String st = response;
-                    st = st.replace("\n", "");
+            if (response != null) {
+                String st = response;
+                st = st.replace("\n", "");
 
-                    Pattern pattern1 = Pattern.compile("table class=\\\"user_table\\\".*?>(.*?)<\\/table>");
-                    Matcher matcher1 = pattern1.matcher(st);
+                Pattern pattern1 = Pattern.compile("table class=\\\"user_table\\\".*?>(.*?)<\\/table>");
+                Matcher matcher1 = pattern1.matcher(st);
 
-                    if (matcher1.find()) {
-                        String userTable = matcher1.group(1);
+                if (matcher1.find()) {
+                    String userTable = matcher1.group(1);
 
-                        Pattern pattern2 = Pattern.compile("<tr.*?>(.*?)<\\/tr>");
-                        Matcher matcher2 = pattern2.matcher(userTable);
+                    Pattern pattern2 = Pattern.compile("<tr.*?>(.*?)<\\/tr>");
+                    Matcher matcher2 = pattern2.matcher(userTable);
 
-                        int idx = 0;
-                        while (matcher2.find()) {
-                            String line = matcher2.group(1);
+                    int idx = 0;
+                    while (matcher2.find()) {
+                        String line = matcher2.group(1);
 
-                            if (idx > 0) {
-                                Pattern pattern3 = Pattern.compile("<td(.*?)>(.*?)<\\/td>");
-                                Matcher matcher3 = pattern3.matcher(line);
+                        if (idx > 0) {
+                            Pattern pattern3 = Pattern.compile("<td(.*?)>(.*?)<\\/td>");
+                            Matcher matcher3 = pattern3.matcher(line);
 
-                                int idxCell = 0;
-                                String userName = "";
-                                String userEdit = "";
-                                String userId = "";
-                                while (matcher3.find()) {
-                                    String cell = matcher3.group(2);
-                                    String header = matcher3.group(1);
+                            int idxCell = 0;
+                            String userName = "";
+                            String userEdit = "";
+                            String userId = "";
+                            while (matcher3.find()) {
+                                String cell = matcher3.group(2);
+                                String header = matcher3.group(1);
 
-                                    if (idxCell == 0) {
-                                        userName = cell;
-                                    } else if (idxCell == 5) {
-                                        userEdit = header;
-                                    }
-                                    idxCell++;
+                                if (idxCell == 0) {
+                                    userName = cell;
+                                } else if (idxCell == 5) {
+                                    userEdit = header;
                                 }
-
-                                if ("".equals(userName)) {
-                                    continue;
-                                }
-
-                                Pattern pattern4 = Pattern.compile("userid=(.+?)");
-                                Matcher matcher4 = pattern4.matcher(userEdit);
-
-                                SiemensHvacMetadataUser user = new SiemensHvacMetadataUser();
-                                user.setName(userName);
-
-                                if (matcher4.find()) {
-                                    userId = matcher4.group(1);
-                                    user.setId(Integer.parseInt(userId));
-                                } else {
-                                    userId = null;
-                                    user.setId(-1);
-                                }
-
-                                request = "main.app?section=settings&subsection=user&action=modify";
-                                if (userId != null) {
-                                    request = request + "&userid=" + userId;
-                                }
-                                response = lcHvacConnector.doBasicRequest(request);
-
-                                Pattern pattern5 = Pattern.compile(
-                                        "<select name=\\\"language\\\".*>((.*|\\n)*?)</select>", Pattern.MULTILINE);
-                                Matcher matcher5 = pattern5.matcher(response);
-
-                                if (matcher5.find()) {
-                                    String optionsList = matcher5.group(1);
-
-                                    Pattern pattern6 = java.util.regex.Pattern.compile(
-                                            "<option value=\\\"([^ ]*)\\\"(.*)>(.*)</option>", Pattern.MULTILINE);
-                                    Matcher matcher6 = pattern6.matcher(optionsList);
-
-                                    while (matcher6.find()) {
-                                        String id = matcher6.group(1);
-                                        String opt = matcher6.group(2);
-                                        String lang = matcher6.group(3);
-
-                                        if (opt.indexOf("selected") >= 0) {
-                                            user.setLanguage(lang);
-                                            user.setLanguageId(Integer.parseInt(id));
-                                        }
-                                    }
-                                }
-
-                                userList.put(userName, user);
+                                idxCell++;
                             }
 
-                            idx++;
+                            if ("".equals(userName)) {
+                                continue;
+                            }
 
+                            Pattern pattern4 = Pattern.compile("userid=(.+?)");
+                            Matcher matcher4 = pattern4.matcher(userEdit);
+
+                            SiemensHvacMetadataUser user = new SiemensHvacMetadataUser();
+                            user.setName(userName);
+
+                            if (matcher4.find()) {
+                                userId = matcher4.group(1);
+                                user.setId(Integer.parseInt(userId));
+                            } else {
+                                userId = null;
+                                user.setId(-1);
+                            }
+
+                            request = "main.app?section=settings&subsection=user&action=modify";
+                            if (userId != null) {
+                                request = request + "&userid=" + userId;
+                            }
+                            response = lcHvacConnector.doBasicRequest(request);
+
+                            Pattern pattern5 = Pattern.compile("<select name=\\\"language\\\".*>((.*|\\n)*?)</select>",
+                                    Pattern.MULTILINE);
+                            Matcher matcher5 = pattern5.matcher(response);
+
+                            if (matcher5.find()) {
+                                String optionsList = matcher5.group(1);
+
+                                Pattern pattern6 = java.util.regex.Pattern
+                                        .compile("<option value=\\\"([^ ]*)\\\"(.*)>(.*)</option>", Pattern.MULTILINE);
+                                Matcher matcher6 = pattern6.matcher(optionsList);
+
+                                while (matcher6.find()) {
+                                    String id = matcher6.group(1);
+                                    String opt = matcher6.group(2);
+                                    String lang = matcher6.group(3);
+
+                                    if (opt.indexOf("selected") >= 0) {
+                                        user.setLanguage(lang);
+                                        user.setLanguageId(Integer.parseInt(id));
+                                    }
+                                }
+                            }
+
+                            userList.put(userName, user);
                         }
+
+                        idx++;
+
                     }
                 }
             }
-        } catch (Exception e) {
-            throw new SiemensHvacException("Error during reading user info", e);
-            // Reset sessionId so we redone _auth on error
         }
     }
 

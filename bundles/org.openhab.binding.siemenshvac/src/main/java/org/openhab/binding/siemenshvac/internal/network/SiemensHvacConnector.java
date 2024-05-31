@@ -29,7 +29,7 @@ import com.google.gson.JsonObject;
 public interface SiemensHvacConnector {
 
     @Nullable
-    String doBasicRequest(String uri) throws Exception;
+    String doBasicRequest(String uri) throws SiemensHvacException;
 
     @Nullable
     JsonObject doRequest(String req);

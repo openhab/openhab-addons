@@ -13,6 +13,7 @@
 package org.openhab.binding.siemenshvac.internal.metadata;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,4 +51,10 @@ public interface SiemensHvacMetadataRegistry {
     SiemensHvacConnector getSiemensHvacConnector();
 
     void invalidate();
+
+    @Nullable
+    SiemensHvacMetadataUser getUser();
+
+    @Nullable
+    Locale getUserLocale();
 }

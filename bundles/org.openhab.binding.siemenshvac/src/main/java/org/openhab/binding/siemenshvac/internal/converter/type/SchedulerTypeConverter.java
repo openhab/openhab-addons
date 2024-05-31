@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter.type;
 
+import java.util.Locale;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
@@ -52,7 +54,8 @@ public class SchedulerTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected DecimalType fromBinding(JsonElement value, String type, ChannelType tp) throws ConverterException {
+    protected DecimalType fromBinding(JsonElement value, String type, ChannelType tp, Locale locale)
+            throws ConverterException {
         throw new ConverterException("NIY");
     }
 
