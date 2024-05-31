@@ -12,7 +12,7 @@ The integration happens directly through the Hue [HDMI Sync Box API](https://dev
     - [Group - "device-hdmi-connection-\[in|out\]"](#group---device-hdmi-connection-inout)
     - [Group - "device-commands"](#group---device-commands)
       - [mode](#mode)
-    - [Item Configuration](#item-configuration)
+  - [Item Configuration](#item-configuration)
 
 <br />
 
@@ -129,7 +129,7 @@ Example thing configuration goes here.
 ``` 
 -->
 
-### Item Configuration
+## Item Configuration
 
 <details>
   <summary> Groups</summary>
