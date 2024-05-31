@@ -52,12 +52,12 @@ import oshi.software.os.OperatingSystem;
 import oshi.util.EdidUtil;
 
 /**
- * This implementation of {@link SysteminfoInterface} is using the open source library OSHI to provide system
+ * This implementation of {@link SystemInfoInterface} is using the open source library OSHI to provide system
  * information. OSHI is a free JNA-based (native) Operating System and Hardware Information library for Java.
  *
  * @author Svilen Valkanov - Initial contribution
  * @author Lyubomir Papazov - Move the initialization logic that could potentially take long time to the
- *         initializeSysteminfo method
+ *         initializeSystemInfo method
  * @author Christoph Weitkamp - Update to OSHI 3.13.0 - Replaced deprecated method
  *         CentralProcessor#getSystemSerialNumber()
  * @author Wouter Born - Update to OSHI 4.0.0 and add null annotations
@@ -68,10 +68,10 @@ import oshi.util.EdidUtil;
  * @see <a href="https://github.com/oshi/oshi">OSHI GitHub repository</a>
  */
 @NonNullByDefault
-@Component(service = SysteminfoInterface.class)
-public class OSHISysteminfo implements SysteminfoInterface {
+@Component(service = SystemInfoInterface.class)
+public class OSHISystemInfo implements SystemInfoInterface {
 
-    private final Logger logger = LoggerFactory.getLogger(OSHISysteminfo.class);
+    private final Logger logger = LoggerFactory.getLogger(OSHISystemInfo.class);
 
     private @NonNullByDefault({}) HardwareAbstractionLayer hal;
 
@@ -101,13 +101,13 @@ public class OSHISysteminfo implements SysteminfoInterface {
      * Some of the methods used in this constructor execute native code and require execute permissions
      *
      */
-    public OSHISysteminfo() {
-        logger.debug("OSHISysteminfo service is created");
+    public OSHISystemInfo() {
+        logger.debug("OSHISystemInfo service is created");
     }
 
     @Override
-    public void initializeSysteminfo() {
-        logger.debug("OSHISysteminfo service starts initializing");
+    public void initializeSystemInfo() {
+        logger.debug("OSHISystemInfo service starts initializing");
 
         SystemInfo systemInfo = new SystemInfo();
         hal = systemInfo.getHardware();
