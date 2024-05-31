@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
+import org.openhab.binding.huesync.internal.HueSyncConstants.CHANNELS.COMMANDS;
 import org.openhab.binding.huesync.internal.HueSyncConstants.ENDPOINTS;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDto;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDtoDetailed;
@@ -49,6 +50,10 @@ public class HueSyncDeviceConnection {
             throws CertificateException, IOException, URISyntaxException {
 
         this.connection = new HueSyncConnection(httpClient, host, port);
+
+        COMMANDS.EXECUTORS.put(COMMANDS.MODE, command -> {
+            this.logger.info("Command executor: {}", command);
+        });
     }
 
     public @Nullable HueSyncDeviceDto getDeviceInfo() {

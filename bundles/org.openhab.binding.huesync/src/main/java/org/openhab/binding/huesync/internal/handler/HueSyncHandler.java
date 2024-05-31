@@ -26,6 +26,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
+import org.openhab.binding.huesync.internal.HueSyncConstants.CHANNELS.COMMANDS;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDto;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDtoDetailed;
 import org.openhab.binding.huesync.internal.api.dto.execution.HueSyncExecutionDto;
@@ -41,12 +42,14 @@ import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 
@@ -128,7 +131,7 @@ public class HueSyncHandler extends BaseThingHandler {
 
             this.updateFirmwareInformation(deviceStatus);
             this.updateHdmiInformation(update.hdmiStatus);
-            this.updateExecutionnformation(update.execution);
+            this.updateExecutionInformation(update.execution);
         }
     }
 
@@ -175,7 +178,7 @@ public class HueSyncHandler extends BaseThingHandler {
     }
 
     @SuppressWarnings("null")
-    private void updateExecutionnformation(@Nullable HueSyncExecutionDto executionStatus) {
+    private void updateExecutionInformation(@Nullable HueSyncExecutionDto executionStatus) {
         this.updateState(HueSyncConstants.CHANNELS.COMMANDS.MODE, new StringType(executionStatus.getMode()));
     }
 
@@ -296,9 +299,35 @@ public class HueSyncHandler extends BaseThingHandler {
         }
     }
 
+    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        this.logger.info("Channel UID: {} - Command: {}", channelUID.getAsString(), command.toFullString());
+        this.logger.trace("Channel UID: {} - Command: {}", channelUID.getAsString(), command.toFullString());
+
+        if (thing.getStatus() != ThingStatus.ONLINE) {
+            this.logger.warn("Device status: {} ➡️ Command {} for chanel {} will be ignored",
+                    thing.getStatus().toString(), command.toFullString(), channelUID.toString());
+            return;
+        }
+
+        Channel channel = thing.getChannel(channelUID);
+
+        if (channel == null) {
+            logger.error("Channel UID:{} does not exist - please report this as an issue", channelUID);
+            return;
+        }
+
+        if (RefreshType.REFRESH.equals(command)) {
+            this.logger.debug("Channel UID: {} - Command: {}", channelUID.getAsString(), command.toFullString());
+            return;
+        }
+        String commandId = channel.getUID().getId();
+
+        if (COMMANDS.EXECUTORS.containsKey(commandId)) {
+            COMMANDS.EXECUTORS.get(commandId).accept(command);
+        } else {
+            this.logger.error("No executor registered for command {} - please report this as an issue", commandId);
+        }
     }
 
     @Override
