@@ -120,6 +120,9 @@ Hayward OmniLogic Connection Parameters:
 | colorLogicLightEnable      | Switch    | Colorlogic Light enable       |     R/W    |
 | colorLogicLightState       | String    | Colorlogic Light state        |      R     |
 | colorLogicLightCurrentShow | String    | Colorlogic Light current show |     R/W    |
+| colorLogicLightBrightness  | String    | Colorlogic Light brightness   |     R/W    |
+| colorLogicLightSpeed       | String    | Colorlogic Light speed        |     R/W    |
+**Brightness and speed channels only available on Hayward V2 lights
 
 ### Filter Channels
 
