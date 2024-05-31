@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.pegelonline.internal.handler;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,7 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
+import org.openhab.core.types.UnDefType;
 
 /**
  * The {@link CallbackMock} is a helper for unit tests to receive callbacks
@@ -43,6 +45,7 @@ import org.openhab.core.types.TimeSeries.Policy;
  */
 @NonNullByDefault
 public class CallbackMock implements ThingHandlerCallback {
+    private Map<String, State> stateMap = new HashMap<>();
     private @Nullable ThingStatusInfo thingStatus;
 
     public @Nullable ThingStatusInfo getThingStatus() {
@@ -59,7 +62,16 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
-        System.out.println(channelUID.getAsString() + " " + state.toFullString());
+        stateMap.put(channelUID.getAsString(), state);
+    }
+
+    public State getState(String channelUID) {
+        State val = stateMap.get(channelUID);
+        if (val == null) {
+            return UnDefType.UNDEF;
+        } else {
+            return val;
+        }
     }
 
     @Override
@@ -77,8 +89,6 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
         synchronized (this) {
-            System.out.println(
-                    thingStatus.getStatus() + " " + thingStatus.getStatusDetail() + " " + thingStatus.getDescription());
             this.thingStatus = thingStatus;
             notifyAll();
         }

@@ -15,6 +15,7 @@ package org.openhab.binding.pegelonline.internal.handler;
 import static org.openhab.binding.pegelonline.internal.PegelOnlineBindingConstants.*;
 
 import java.util.Optional;
+import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -56,6 +57,7 @@ public class PegelOnlineHandler extends BaseThingHandler {
     private Optional<PegelOnlineConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> schedule = Optional.empty();
     private Optional<Measure> cache = Optional.empty();
+    private TreeMap<Integer, Integer> warnMap = new TreeMap<>();
     private String stationUUID = UNKNOWN;
     private HttpClient httpClient;
 
@@ -76,7 +78,8 @@ public class PegelOnlineHandler extends BaseThingHandler {
                 } else if (TIMESTAMP_CHANNEL.equals(channelUID.getId())) {
                     updateChannelState(TIMESTAMP_CHANNEL, DateTimeType.valueOf(m.timestamp));
                 } else if (WARNING_CHANNEL.equals(channelUID.getId())) {
-                    updateChannelState(WARNING_CHANNEL, DecimalType.valueOf(Integer.toString(getWarnLevel(m))));
+                    updateChannelState(WARNING_CHANNEL,
+                            DecimalType.valueOf(Integer.toString(warnMap.floorEntry((int) m.value).getValue())));
                 }
             }
         }
@@ -87,12 +90,20 @@ public class PegelOnlineHandler extends BaseThingHandler {
         PegelOnlineConfiguration config = getConfigAs(PegelOnlineConfiguration.class);
         configuration = Optional.of(config);
         stationUUID = configuration.get().uuid;
+        warnMap.put(0, NO_WARNING);
+        warnMap.put(config.warningLevel1, WARN_LEVEL_1);
+        warnMap.put(config.warningLevel2, WARN_LEVEL_2);
+        warnMap.put(config.warningLevel3, WARN_LEVEL_3);
+        warnMap.put(config.hq10, HQ10);
+        warnMap.put(config.hq100, HQ100);
+        warnMap.put(config.hqExtreme, HQ_EXTREME);
         schedule = Optional.of(scheduler.scheduleWithFixedDelay(this::performMeasurement, 0,
                 configuration.get().refreshInterval, TimeUnit.MINUTES));
     }
 
     @Override
     public void dispose() {
+        warnMap.clear();
         if (schedule.isPresent()) {
             schedule.get().cancel(true);
         }
@@ -104,7 +115,7 @@ public class PegelOnlineHandler extends BaseThingHandler {
         super.updateConfiguration(configuration);
     }
 
-    private void performMeasurement() {
+    void performMeasurement() {
         try {
             ContentResponse cr = httpClient.GET(STATIONS_URI + "/" + stationUUID + "/W/currentmeasurement.json");
             int responseStatus = cr.getStatus();
@@ -142,30 +153,13 @@ public class PegelOnlineHandler extends BaseThingHandler {
         return false;
     }
 
-    private void updateChannels(Measure m) {
-        cache = Optional.of(m);
-        updateChannelState(TIMESTAMP_CHANNEL, DateTimeType.valueOf(m.timestamp));
-        updateChannelState(LEVEL_CHANNEL, QuantityType.valueOf(m.value, MetricPrefix.CENTI(SIUnits.METRE)));
-        updateChannelState(TREND_CHANNEL, DecimalType.valueOf(Integer.toString(m.trend)));
-        updateChannelState(WARNING_CHANNEL, DecimalType.valueOf(Integer.toString(getWarnLevel(m))));
-    }
-
-    int getWarnLevel(Measure m) {
-        if (m.value < configuration.get().warningLevel1) {
-            return NO_WARNING;
-        } else if (m.value < configuration.get().warningLevel2) {
-            return WARN_LEVEL_1;
-        } else if (m.value < configuration.get().warningLevel3) {
-            return WARN_LEVEL_2;
-        } else if (m.value < configuration.get().hq10) {
-            return WARN_LEVEL_3;
-        } else if (m.value > configuration.get().hq100) {
-            return HQ10;
-        } else if (m.value > configuration.get().hqhqExtereme) {
-            return HQ100;
-        } else {
-            return HQ_EXTREME;
-        }
+    private void updateChannels(Measure measureDto) {
+        cache = Optional.of(measureDto);
+        updateChannelState(TIMESTAMP_CHANNEL, DateTimeType.valueOf(measureDto.timestamp));
+        updateChannelState(LEVEL_CHANNEL, QuantityType.valueOf(measureDto.value, MetricPrefix.CENTI(SIUnits.METRE)));
+        updateChannelState(TREND_CHANNEL, DecimalType.valueOf(Integer.toString(measureDto.trend)));
+        updateChannelState(WARNING_CHANNEL,
+                DecimalType.valueOf(Integer.toString(warnMap.floorEntry((int) measureDto.value).getValue())));
     }
 
     private void updateChannelState(String channel, State st) {

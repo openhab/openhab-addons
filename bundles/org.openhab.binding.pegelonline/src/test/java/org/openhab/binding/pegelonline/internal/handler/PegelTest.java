@@ -15,7 +15,7 @@ package org.openhab.binding.pegelonline.internal.handler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.openhab.binding.pegelonline.internal.PegelOnlineBindingConstants.GSON;
+import static org.openhab.binding.pegelonline.internal.PegelOnlineBindingConstants.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,15 +26,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.pegelonline.internal.PegelOnlineBindingConstants;
 import org.openhab.binding.pegelonline.internal.dto.Measure;
 import org.openhab.binding.pegelonline.internal.util.FileReader;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.internal.ThingImpl;
+import org.openhab.core.types.State;
 
 /**
  * The {@link PegelTest} Test helper utils
@@ -112,8 +113,36 @@ class PegelTest {
     }
 
     @Test
-    public void testWarningLevels() {
-        String content = FileReader.readFileInString("src/test/resources/measure.json");
+    public void testWarnings() {
+        CallbackMock callback = new CallbackMock();
+        PegelOnlineHandler handler = getConfiguredHandler(callback, 99);
+        handler.performMeasurement();
+        State state = callback.getState("pegelonline:station:test:warning");
+        assertTrue(state instanceof DecimalType);
+        assertEquals(NO_WARNING, ((DecimalType) state).intValue(), "No warning");
+
+        handler = getConfiguredHandler(callback, 100);
+        handler.performMeasurement();
+        state = callback.getState("pegelonline:station:test:warning");
+        assertTrue(state instanceof DecimalType);
+        assertEquals(WARN_LEVEL_1, ((DecimalType) state).intValue(), "Warn Level 1");
+
+        handler = getConfiguredHandler(callback, 299);
+        handler.performMeasurement();
+        state = callback.getState("pegelonline:station:test:warning");
+        assertTrue(state instanceof DecimalType);
+        assertEquals(WARN_LEVEL_2, ((DecimalType) state).intValue(), "Warn Level 2");
+
+        handler = getConfiguredHandler(callback, 1000);
+        handler.performMeasurement();
+        state = callback.getState("pegelonline:station:test:warning");
+        assertTrue(state instanceof DecimalType);
+        assertEquals(HQ_EXTREME, ((DecimalType) state).intValue(), "HQ extreme");
+    }
+
+    private PegelOnlineHandler getConfiguredHandler(CallbackMock callback, int levelSimulation) {
+        String content = "{  \"timestamp\": \"2021-08-01T16:00:00+02:00\",  \"value\": " + levelSimulation
+                + ",  \"trend\": -1}";
         ContentResponse crMock = mock(ContentResponse.class);
         when(crMock.getStatus()).thenReturn(200);
         when(crMock.getContentAsString()).thenReturn(content);
@@ -124,23 +153,18 @@ class PegelTest {
             fail();
         }
 
-        CallbackMock thc = new CallbackMock();
         ThingImpl ti = new ThingImpl(new ThingTypeUID("pegelonline:station"), "test");
         PegelOnlineHandler handler = new PegelOnlineHandler(ti, httpClientMock);
-        handler.setCallback(thc);
-        handler.initialize();
         Map<String, Object> config = new HashMap<>();
-        handler.updateConfiguration(new Configuration(config));
-        Measure m = new Measure();
-        m.value = 500;
-        assertEquals(PegelOnlineBindingConstants.NO_WARNING, handler.getWarnLevel(m), "No Warn Level");
-        config.put("warningLevel1", 1000);
-        config.put("warningLevel2", 2000);
+        config.put("warningLevel1", 100);
+        config.put("warningLevel2", 200);
+        config.put("warningLevel3", 300);
+        config.put("hq10", 400);
+        config.put("hq100", 500);
+        config.put("hqExtreme", 600);
+        handler.setCallback(callback);
         handler.updateConfiguration(new Configuration(config));
         handler.initialize();
-        assertEquals(PegelOnlineBindingConstants.NO_WARNING, handler.getWarnLevel(m), "No Warn Level");
-        m.value = 1200;
-        assertEquals(PegelOnlineBindingConstants.WARN_LEVEL_1, handler.getWarnLevel(m), "Warn Level 1");
-        m.value = 2100;
+        return handler;
     }
 }

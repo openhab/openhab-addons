@@ -30,6 +30,6 @@ public class PegelOnlineConfiguration {
     public int warningLevel3 = Integer.MAX_VALUE;
     public int hq10 = Integer.MAX_VALUE;
     public int hq100 = Integer.MAX_VALUE;
-    public int hqhqExtereme = Integer.MAX_VALUE;
+    public int hqExtreme = Integer.MAX_VALUE;
     public int refreshInterval = 15;
 }
