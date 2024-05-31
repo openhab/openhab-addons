@@ -89,6 +89,7 @@ Current warning according to configuration
 ## Full Example
 
 ### Things
+
 ```java
 Thing pegelonline:station:giessen "Measurement Station Giessen" [
     uuid="4b386a6a-996e-4a4a-a440-15d6b40226d4", 
@@ -102,6 +103,7 @@ Thing pegelonline:station:giessen "Measurement Station Giessen" [
 ```
 
 ### Items
+
 ```java
 DateTime         Lahn_Giessen_Timestamp      "Measurement timestamp Lahn Giessen"   {channel="pegelonline:station:giessen:timestamp" }                                                                           
 Number:Length    Lahn_Giessen_Level          "Water Level Lahn Giessen]"            {channel="pegelonline:station:giessen:level" }                                                                           

@@ -6,5 +6,7 @@
 	<type>binding</type>
 	<name>PegelOnline Binding</name>
 	<description>This is the binding for PegelOnline.</description>
+	<connection>cloud</connection>
+	<countries>de</countries>
 
 </addon:addon>
