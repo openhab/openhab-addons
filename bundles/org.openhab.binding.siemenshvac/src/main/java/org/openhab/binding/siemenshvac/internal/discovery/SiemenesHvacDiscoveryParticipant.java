@@ -93,7 +93,7 @@ public class SiemenesHvacDiscoveryParticipant implements UpnpDiscoveryParticipan
             if (modelDetails != null && serialNumber != null && !serialNumber.isBlank()) {
                 String modelName = modelDetails.getModelName();
                 if (modelName != null) {
-                    if (modelName.startsWith("Web Server OZW672.01")) {
+                    if (modelName.startsWith("Web Server OZW672")) {
                         return new ThingUID(SiemensHvacBindingConstants.THING_TYPE_OZW672, serialNumber.toLowerCase());
                     }
                 }
