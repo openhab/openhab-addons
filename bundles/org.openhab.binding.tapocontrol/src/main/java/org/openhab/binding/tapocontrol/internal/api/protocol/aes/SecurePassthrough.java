@@ -112,7 +112,7 @@ public class SecurePassthrough implements TapoProtocolInterface {
             logger.trace("({}) encrypted request: '{}' with cookie '{}'", uid, tapoRequest, session.getCookie());
         }
 
-        Request httpRequest = httpDelegator.getHttpClient().newRequest(url).method(HttpMethod.POST.toString());
+        Request httpRequest = httpDelegator.getHttpClient().newRequest(url).method(HttpMethod.POST);
 
         /* set header */
         httpRequest = setHeaders(httpRequest);
@@ -141,7 +141,7 @@ public class SecurePassthrough implements TapoProtocolInterface {
         TapoRequest encryptedRequest = session.encryptRequest(tapoRequest);
         logger.trace("({}) sending encrypted request to '{}' with cookie '{}'", uid, url, session.getCookie());
 
-        Request httpRequest = httpDelegator.getHttpClient().newRequest(url).method(HttpMethod.POST.toString());
+        Request httpRequest = httpDelegator.getHttpClient().newRequest(url).method(HttpMethod.POST);
 
         /* set header */
         httpRequest = setHeaders(httpRequest);
@@ -192,7 +192,7 @@ public class SecurePassthrough implements TapoProtocolInterface {
      */
     @Override
     public void responseReceived(ContentResponse response, String command) throws TapoErrorHandler {
-        logger.trace("({}) recived response: {}", uid, response.getContentAsString());
+        logger.trace("({}) received response: {}", uid, response.getContentAsString());
         TapoResponse tapoResponse = getTapoResponse(response);
         httpDelegator.handleResponse(tapoResponse, command);
         httpDelegator.responsePasstrough(response.getContentAsString(), command);
@@ -266,7 +266,6 @@ public class SecurePassthrough implements TapoProtocolInterface {
      * Set HTTP-Headers
      */
     protected Request setHeaders(Request httpRequest) {
-        httpRequest.header("content-type", CONTENT_TYPE_JSON);
         httpRequest.header("Accept", CONTENT_TYPE_JSON);
         if (session.isHandshakeComplete()) {
             httpRequest.header(HTTP_AUTH_TYPE_COOKIE, session.getCookie());

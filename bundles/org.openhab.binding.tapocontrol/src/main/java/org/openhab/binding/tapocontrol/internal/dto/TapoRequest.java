@@ -13,11 +13,10 @@
 package org.openhab.binding.tapocontrol.internal.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-
-import io.reactivex.annotations.Nullable;
 
 /**
  * Holds data sent to device
@@ -31,7 +30,7 @@ public record TapoRequest(@Expose String method, @Expose @Nullable Object params
     /**
      * Create request with command (method) and data (params) sent to device
      */
-    public TapoRequest(String method, Object params) {
+    public TapoRequest(String method, @Nullable Object params) {
         this(method, params, System.currentTimeMillis());
     }
 
@@ -39,7 +38,7 @@ public record TapoRequest(@Expose String method, @Expose @Nullable Object params
      * Create request with command (method) sent to device
      */
     public TapoRequest(String method) {
-        this(method, "", System.currentTimeMillis());
+        this(method, null, System.currentTimeMillis());
     }
 
     /***********************************************

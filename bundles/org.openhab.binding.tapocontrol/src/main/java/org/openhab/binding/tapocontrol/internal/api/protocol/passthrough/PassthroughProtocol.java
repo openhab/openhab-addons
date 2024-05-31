@@ -95,7 +95,7 @@ public class PassthroughProtocol implements TapoProtocolInterface {
         logger.trace("({}) sending encrypted request to '{}' ", uid, url);
         logger.trace("({}) unencrypted request: '{}'", uid, tapoRequest);
 
-        Request httpRequest = httpDelegator.getHttpClient().newRequest(url).method(HttpMethod.POST.toString());
+        Request httpRequest = httpDelegator.getHttpClient().newRequest(url).method(HttpMethod.POST);
 
         /* set header */
         httpRequest = setHeaders(httpRequest);
@@ -131,7 +131,7 @@ public class PassthroughProtocol implements TapoProtocolInterface {
         logger.trace("({}) sendAsncRequest to '{}'", uid, url);
         logger.trace("({}) command/payload: '{}''{}'", uid, command, tapoRequest.params());
 
-        Request httpRequest = httpDelegator.getHttpClient().newRequest(url).method(HttpMethod.POST.toString());
+        Request httpRequest = httpDelegator.getHttpClient().newRequest(url).method(HttpMethod.POST);
 
         /* set header */
         httpRequest = setHeaders(httpRequest);
@@ -180,7 +180,7 @@ public class PassthroughProtocol implements TapoProtocolInterface {
      */
     @Override
     public void responseReceived(ContentResponse response, String command) throws TapoErrorHandler {
-        logger.trace("({}) recived response: {}", uid, response.getContentAsString());
+        logger.trace("({}) received response: {}", uid, response.getContentAsString());
         TapoResponse tapoResponse = getTapoResponse(response);
         if (!tapoResponse.hasError()) {
             switch (command) {
@@ -222,8 +222,9 @@ public class PassthroughProtocol implements TapoProtocolInterface {
         if (response.getStatus() == 200) {
             return getTapoResponse(response.getContentAsString());
         } else {
-            logger.debug("({}) invalid response received", uid);
-            throw new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, "invalid response receicved");
+            String reason = response.getStatus() + " " + response.getReason();
+            logger.debug("({}) invalid response received - {}", uid, reason);
+            throw new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, reason);
         }
     }
 
@@ -250,7 +251,6 @@ public class PassthroughProtocol implements TapoProtocolInterface {
      * Set HTTP-Headers
      */
     public Request setHeaders(Request httpRequest) {
-        httpRequest.header("content-type", CONTENT_TYPE_JSON);
         httpRequest.header("Accept", CONTENT_TYPE_JSON);
         return httpRequest;
     }
