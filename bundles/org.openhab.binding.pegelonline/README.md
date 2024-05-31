@@ -62,36 +62,53 @@ The picture shows the levels of [measurement station Marburg of federal state He
 | channel              | type                 | description                    |
 |----------------------|----------------------|--------------------------------|
 | timestamp            | DateTime             | Timestamp of Last Measurement  |
-| measure              | Number:Length        | Water Level in cm              |
-| trend                | String               | Water Level Trend              |
-| level                | String               | Actual Level                   |
-| warning-levels       | Number:Dimensionless | Available Warning Levels       |
-| actual-warning-level | Number:Dimensionless | Actual Warning Level           |
+| level                | Number:Length        | Water Level                    |
+| trend                | Number               | Water Level Trend              |
+| warning              | Number               | Current Warning                |
 
 ### Trend
 
 Possible values:
 
-* Rising
-* Constant
-* Lowering
-* Unknown
+* 1 : Rising
+* 0 : Steady
+* -1 : Lowering
 
-### Level
+### Warning
 
-Possible values:
+Current warning according to configuration
 
-* Low
-* Normal
-* High
-* Unknown
-
+* 0 : No Warning
+* 1 : Warning level 1
+* 2 : Warning Level 2
+* 3 : Warning Level 3
+* 4 : Frequent Flooding
+* 5 : Decade Flooding
+* 6 : Extreme Flooding
 
 ## Full Example
 
+### Things
+```java
+Thing pegelonline:station:giessen "Measurement Station Giessen" [
+    uuid="4b386a6a-996e-4a4a-a440-15d6b40226d4", 
+    refreshInterval=15, 
+    warningLevel1=550, 
+    warningLevel2=600, 
+    warningLevel3=650, 
+    hq10=732, 
+    hq100=786
+]
 ```
-Thing pegelonline:station:giessen "Measurement Station Giessen" [uuid="4b386a6a-996e-4a4a-a440-15d6b40226d4", refreshInterval=15, warningLevel1=550, warningLevel2=600, warningLevel3=650, hq10=732, hq100=786]
+
+### Items
+```java
+DateTime         Lahn_Giessen_Timestamp      "Measurement timestamp Lahn Giessen"   {channel="pegelonline:station:giessen:timestamp" }                                                                           
+Number:Length    Lahn_Giessen_Level          "Water Level Lahn Giessen]"            {channel="pegelonline:station:giessen:level" }                                                                           
+Number           Lahn_Giessen_Trend          "Water Level Trend Lahn Giessen"       {channel="pegelonline:station:giessen:trend"}
+Number           Lahn_Giessen_Warning        "Warning Level Lahn Giessen"           {channel="pegelonline:station:giessen:warning"}   
 ```
+
 
 ## Links
 

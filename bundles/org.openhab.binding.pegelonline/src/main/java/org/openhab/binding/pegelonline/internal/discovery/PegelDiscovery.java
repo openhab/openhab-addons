@@ -61,6 +61,8 @@ public class PegelDiscovery extends AbstractDiscoveryService implements Discover
         PointType location = lp.getLocation();
         if (location != null) {
             homeLocation = location;
+        } else {
+            logger.debug("No home location found");
         }
     }
 
@@ -83,14 +85,12 @@ public class PegelDiscovery extends AbstractDiscoveryService implements Discover
                 logger.trace("No stations found in discovery");
             }
         } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            logger.trace("Excpetion during station discovery: {}", e.getMessage());
+            logger.trace("Exception during station discovery: {}", e.getMessage());
         }
     }
 
     public void reportResult(Station s) {
-        String label = "Pegel Messstelle " + Utils.toTitleCase(s.shortname) + " / "
-                + Utils.toTitleCase(s.water.shortname);
-        logger.info("PegelDiscovery report result {}", label);
+        String label = "Pegel Station " + Utils.toTitleCase(s.shortname) + " / " + Utils.toTitleCase(s.water.shortname);
         Map<String, Object> properties = new HashMap<String, Object>();
         properties.put("agency", s.agency);
         properties.put("km", s.km);

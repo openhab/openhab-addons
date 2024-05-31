@@ -70,7 +70,7 @@
 		<label>Water Level Trend</label>
 		<state readOnly="true">
 			<options>
-				<option value="-1">Falling</option>
+				<option value="-1">Lowering</option>
 				<option value="0">Steady</option>
 				<option value="1">Rising</option>
 			</options>
