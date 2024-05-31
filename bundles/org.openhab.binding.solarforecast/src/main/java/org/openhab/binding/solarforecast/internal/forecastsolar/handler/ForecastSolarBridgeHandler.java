@@ -14,6 +14,7 @@ package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
@@ -136,7 +137,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         }
         if (calmDownEnd.isAfter(Instant.now(Utils.getClock()))) {
             // wait until calm down time is expired
-            long minutes = java.time.Duration.between(Instant.now(Utils.getClock()), calmDownEnd).toMinutes();
+            long minutes = Duration.between(Instant.now(Utils.getClock()), calmDownEnd).toMinutes();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/solarforecast.site.status.calmdown [\"" + minutes + "\"]");
             return;
