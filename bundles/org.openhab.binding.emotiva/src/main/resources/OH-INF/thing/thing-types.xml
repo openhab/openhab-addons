@@ -351,7 +351,61 @@
 		<item-type>String</item-type>
 		<label>Radio Tuner Program</label>
 		<description>Radio tuner program: "Country", "Rock", "Classical", etc.</description>
-		<state readOnly="true"/>
+		<state readOnly="true">
+			<options>
+				<option value="Adult Hits">@text/channel-type.emotiva.tuner-program.option.adult-hits</option>
+				<option value="Alarm Test">@text/channel-type.emotiva.tuner-program.option.alarm-test</option>
+				<option value="Alarm">@text/channel-type.emotiva.tuner-program.option.alarm</option>
+				<option value="Children's Programmes">@text/channel-type.emotiva.tuner-program.option.children-programmes</option>
+				<option value="Classic Rock">@text/channel-type.emotiva.tuner-program.option.classic-rock</option>
+				<option value="Classical">@text/channel-type.emotiva.tuner-program.option.classical</option>
+				<option value="College">@text/channel-type.emotiva.tuner-program.option.college</option>
+				<option value="Country Music">@text/channel-type.emotiva.tuner-program.option.country-music</option>
+				<option value="Culture">@text/channel-type.emotiva.tuner-program.option.culture</option>
+				<option value="Current Affairs">@text/channel-type.emotiva.tuner-program.option.current-affairs</option>
+				<option value="Documentary">@text/channel-type.emotiva.tuner-program.option.documentary</option>
+				<option value="Drama">@text/channel-type.emotiva.tuner-program.option.drama</option>
+				<option value="Easy Listening">@text/channel-type.emotiva.tuner-program.option.easy-listening</option>
+				<option value="Education">@text/channel-type.emotiva.tuner-program.option.education</option>
+				<option value="Emergency Test">@text/channel-type.emotiva.tuner-program.option.emergency-test</option>
+				<option value="Emergency">@text/channel-type.emotiva.tuner-program.option.emergency</option>
+				<option value="Finance">@text/channel-type.emotiva.tuner-program.option.finance</option>
+				<option value="Folk Music">@text/channel-type.emotiva.tuner-program.option.folk-music</option>
+				<option value="Information">@text/channel-type.emotiva.tuner-program.option.information</option>
+				<option value="Jazz Music">@text/channel-type.emotiva.tuner-program.option.jazz-music</option>
+				<option value="Jazz">@text/channel-type.emotiva.tuner-program.option.jazz</option>
+				<option value="Language">@text/channel-type.emotiva.tuner-program.option.language</option>
+				<option value="Leisure">@text/channel-type.emotiva.tuner-program.option.leisure</option>
+				<option value="Light Classical">@text/channel-type.emotiva.tuner-program.option.light-classical</option>
+				<option value="National Music">@text/channel-type.emotiva.tuner-program.option.national-music</option>
+				<option value="News">@text/channel-type.emotiva.tuner-program.option.news</option>
+				<option value="Nostalgia">@text/channel-type.emotiva.tuner-program.option.nostalgia</option>
+				<option value="">@text/channel-type.emotiva.tuner-program.option.no-program</option>
+				<option value="Oldies (Music)">@text/channel-type.emotiva.tuner-program.option.oldies</option>
+				<option value="Oldies Music">@text/channel-type.emotiva.tuner-program.option.oldies-music</option>
+				<option value="Other Music">@text/channel-type.emotiva.tuner-program.option.other-music</option>
+				<option value="Personality">@text/channel-type.emotiva.tuner-program.option.personality</option>
+				<option value="Phone-in">@text/channel-type.emotiva.tuner-program.option.phone-in</option>
+				<option value="Popular Music (Pop)">@text/channel-type.emotiva.tuner-program.option.popular-music</option>
+				<option value="Public">@text/channel-type.emotiva.tuner-program.option.public</option>
+				<option value="Religion">@text/channel-type.emotiva.tuner-program.option.religion</option>
+				<option value="Religious Talk">@text/channel-type.emotiva.tuner-program.option.religious-talk</option>
+				<option value="Rhythm &amp; Blues">@text/channel-type.emotiva.tuner-program.option.rhythm-blues</option>
+				<option value="Rock Music">@text/channel-type.emotiva.tuner-program.option.rock-music</option>
+				<option value="Rock">@text/channel-type.emotiva.tuner-program.option.rock</option>
+				<option value="Science">@text/channel-type.emotiva.tuner-program.option.Science</option>
+				<option value="Serious Classical">@text/channel-type.emotiva.tuner-program.option.serious-classical</option>
+				<option value="Social Affairs">@text/channel-type.emotiva.tuner-program.option.social-affairs</option>
+				<option value="Soft Music">@text/channel-type.emotiva.tuner-program.option.soft-music</option>
+				<option value="Soft Rhythm &amp; Blues">@text/channel-type.emotiva.tuner-program.option.soft-rhythm-blues</option>
+				<option value="Soft Rock">@text/channel-type.emotiva.tuner-program.option.soft-rock</option>
+				<option value="Sport">@text/channel-type.emotiva.tuner-program.option.sport</option>
+				<option value="Talk">@text/channel-type.emotiva.tuner-program.option.talk</option>
+				<option value="Top 40">@text/channel-type.emotiva.tuner-program.option.top-40</option>
+				<option value="Travel">@text/channel-type.emotiva.tuner-program.option.travel</option>
+				<option value="Weather">@text/channel-type.emotiva.tuner-program.option.weather</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="tuner-rds">
