@@ -3,17 +3,21 @@
 This binding integrates the [Play HDMI Sync Box](https://www.philips-hue.com/en-us/p/hue-play-hdmi-sync-box-/046677555221) into openHAB.
 The integration happens directly through the Hue [HDMI Sync Box API](https://developers.meethue.com/develop/hue-entertainment/hue-hdmi-sync-box-api/).
 
-![Play HDMI Sync Box](doc/bridge1.png)
-![Play HDMI Sync Box](doc/bridge2.png)
-
 - [HueSync Binding](#huesync-binding)
   - [Discovery](#discovery)
   - [Thing Configuration](#thing-configuration)
-    - [Thing Configuration `huesyncthing`](#thing-configuration-huesyncthing)
+    - [Thing Configuration "huesyncthing"](#thing-configuration-huesyncthing)
   - [Channels](#channels)
-    - [Channel Group `device-firmware`](#channel-group-device-firmware)
-    - [Chanel Group `device-hdmi-connection-in` and `device-hdmi-connection-in`](#chanel-group-device-hdmi-connection-in-and-device-hdmi-connection-in)
+    - [Group - "device-firmware"](#group---device-firmware)
+    - [Group - "device-hdmi-connection-\[in|out\]"](#group---device-hdmi-connection-inout)
+    - [Group - "device-commands"](#group---device-commands)
+      - [mode](#mode)
     - [Item Configuration](#item-configuration)
+
+<br />
+
+![Play HDMI Sync Box](doc/bridge1.png)
+![Play HDMI Sync Box](doc/bridge2.png)
 
 <!-- 
 ## Supported Things
@@ -64,7 +68,7 @@ _This should be mainly about its mandatory and optional configuration parameters
 _Note that it is planned to generate some part of this based on the XML files within ```src/main/resources/OH-INF/thing``` of your binding._ 
 -->
 
-### Thing Configuration `huesyncthing`
+### Thing Configuration "huesyncthing"
 
 | Name                 | Type    | Description                       | Default | Required | Advanced |
 | -------------------- | ------- | --------------------------------- | ------- | -------- | -------- |
@@ -76,7 +80,7 @@ _Note that it is planned to generate some part of this based on the XML files wi
 
 ## Channels
 
-### Channel Group `device-firmware`
+### Group - "device-firmware"
 
 Information about the installed device firmware and available updates.
 
@@ -85,16 +89,31 @@ Information about the installed device firmware and available updates.
 | firmware           | String | R          | Installed firmware version        |
 | available-firmware | String | R          | Latest available firmware version |
 
-### Chanel Group `device-hdmi-connection-in` and `device-hdmi-connection-in`
+### Group - "device-hdmi-connection-[in\|out]"
 
 Information about a HDMI input  connection.
 
 | Channel | Type   | Read/Write | Description                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ------- | ------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| name    | String | R          | Installed firmware version                                                                                                                                                                                                                                                                                                                                                                                             |
 | type    | String | R          | <details><summary>Friendly Type</summary><ul><li>generic</li><li>video</li><li>game</li><li>music</li><li>xbox</li><li>playstation</li><li>nintendoswitch</li><li>phone</li><li>desktop</li><li>laptop</li><li>appletv</li><li>roku</li><li>shield</li><li>chromecast</li><li>firetv</li><li>diskplayer</li><li>settopbox</li><li>satellite</li><li>avreceiver</li><li>soundbar</li><li>hdmiswitch</li></ul></details> |
 | status  | String | R          | <details><summary>Device connection status></summary><ul><li>unplugged</li><li>plugged</li><li>linked</li><li>unknown</li></ul></details>                                                                                                                                                                                                                                                                              |
 | mode    | String | R          | <details><summary>Last sync mode used for this channel.</summary><ul><li>video</li><li>game</li><li>music</li></ul></details>                                                                                                                                                                                                                                                                                          |
+
+### Group - "device-commands"
+
+| Channel | Type   | Read/Write | Description                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ------- | ------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| name    | String | R/W        | <details><summary>Hue Sync operation mode</summary><ul><li>powersave</li><li>passthrough</li><li>video</li><li>game</li><li>music</li><li>ambient</li><li>unknown (read only)</li></ul></details>                                                                                                                                                                                                                                                                                                                                                                                            |
+
+#### mode
+
+- **video** <br /> Analyzes the on-screen visuals, translating colors and brightness into corresponding light effects for an immersive movie-watching experience.
+- **music** <br /> Analyzes the rhythm and beat of your music, creating dynamic light along to your tunes.
+- **game**  <br /> Reacts to the action on your screen, intensifying the in-game atmosphere with bursts of light that correspond to explosions, gunfire, and other gameplay events.\n
+- **ambient**
+- **passthrough**
+- **powersave**
+- **unknown** <br /> The device reports a mode not known to the binding (e.g. intorduced by a new firmware). *NOTE: It is not possible to send this command to the device.*
 
 <!-- 
 ## Full Example
@@ -121,10 +140,10 @@ Example thing configuration goes here.
 | Group | HueSyncBox_Execution | "Remote Control" | <iconify:mdi:remote>      | (HueSyncBox)        | ["RemoteControl"]    |     |
 | Group | HueSyncBox_Firmware  | "Firmware"       | <iconify:mdi:information> | (HueSyncBox)        | ["Point"]            |     |
 | Group | HueSyncBox_Inputs    | "Inputs"         | <receiver>                | (HueSyncBox)        | ["Receiver"]         |     |
-| Group | HueSyncBox_Input_1   | "Input 1"        | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Point"]            |     |
-| Group | HueSyncBox_Input_2   | "Input 2"        | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Point"]            |     |
-| Group | HueSyncBox_Input_3   | "Input 3"        | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Point"]            |     |
-| Group | HueSyncBox_Input_4   | "Input 4"        | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Point"]            |     |
+| Group | HueSyncBox_Input_1   | "Input 1"        | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Equipment"]        |     |
+| Group | HueSyncBox_Input_2   | "Input 2"        | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Equipment"]        |     |
+| Group | HueSyncBox_Input_3   | "Input 3"        | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Equipment"]        |     |
+| Group | HueSyncBox_Input_4   | "Input 4"        | <iconify:mdi:hdmi-port>   | (HueSyncBox_Inputs) | ["Equipment"]        |     |
 | Group | HueSyncBox_Output    | "Output"         | <iconify:mdi:tv>          | (HueSyncBox)        | ["Screen"]           |     |
 </details>
 
