@@ -66,8 +66,6 @@ public class VolumioCommands {
 
     public static final String GET_MULTIROOM_DEVICES = "getMultiRoomDevices";
 
-    /* Queue */
-
     /**
      * Replace the complete queue and play add/play the delivered entry.
      */
