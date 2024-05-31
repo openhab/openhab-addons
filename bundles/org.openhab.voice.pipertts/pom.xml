@@ -18,7 +18,26 @@
     <dependency>
       <groupId>io.github.givimad</groupId>
       <artifactId>piper-jni</artifactId>
-      <version>1.2.0-e5cb84c</version>
+      <version>1.2.0-a0f09cd</version>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/win-*/**</exclude>
+            <exclude>**/debian-*/**</exclude>
+            <exclude>**/macos-*/**</exclude>
+            <exclude>**/espeak-ng-data.zip</exclude>
+            <exclude>**/libtashkeel_model.ort</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>

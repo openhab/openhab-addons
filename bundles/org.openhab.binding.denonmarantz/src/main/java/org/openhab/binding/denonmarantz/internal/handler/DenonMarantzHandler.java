@@ -53,7 +53,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -228,7 +229,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     httpApiUsable = true;
                 }
             } catch (TimeoutException | ExecutionException e) {
-                logger.debug("Error when trying to access AVR using HTTP on port 80, reverting to Telnet mode.", e);
+                logger.debug("Error when trying to access AVR using HTTP on port 80.", e);
             }
 
             if (telnetEnable) {
@@ -238,13 +239,15 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     response = httpClient.newRequest("http://" + host + ":8080/goform/Deviceinfo.xml")
                             .timeout(3, TimeUnit.SECONDS).send();
                     if (response.getStatus() == HttpURLConnection.HTTP_OK) {
-                        logger.debug(
-                                "This model responds to HTTP port 8080, we use this port to retrieve the number of zones.");
+                        logger.debug("This model responds to HTTP port 8080, disabling the Telnet mode by default.");
+                        telnetEnable = false;
                         httpPort = 8080;
                         httpApiUsable = true;
                     }
                 } catch (TimeoutException | ExecutionException e) {
-                    logger.debug("Additionally tried to connect to port 8080, this also failed", e);
+                    logger.debug(
+                            "Additionally tried to connect to port 8080, this also failed. Reverting to Telnet mode.",
+                            e);
                 }
             }
 
@@ -376,14 +379,17 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
 
             // add the channels that were not yet added
             if (!channelsToAdd.isEmpty()) {
-                for (Entry<String, ChannelTypeUID> entry : channelsToAdd) {
-                    String itemType = CHANNEL_ITEM_TYPES.get(entry.getKey());
-                    Channel channel = ChannelBuilder
-                            .create(new ChannelUID(this.getThing().getUID(), entry.getKey()), itemType)
-                            .withType(entry.getValue()).build();
-                    channels.add(channel);
+                ThingHandlerCallback callback = getCallback();
+                if (callback != null) {
+                    for (Entry<String, ChannelTypeUID> entry : channelsToAdd) {
+                        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), entry.getKey());
+                        channels.add(callback.createChannelBuilder(channelUID, entry.getValue())
+                                .withKind(ChannelKind.STATE).build());
+                    }
+                    channelsUpdated = true;
+                } else {
+                    logger.warn("Could not create zone channels");
                 }
-                channelsUpdated = true;
             } else {
                 logger.debug("No zone channels have been added");
             }

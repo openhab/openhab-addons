@@ -90,7 +90,8 @@ public class ChannelStateTransformation {
         try {
             returnValue = transformationService.transform(pattern, value);
         } catch (TransformationException e) {
-            logger.warn("Executing the {}-transformation failed: {}", serviceName, e.getMessage());
+            logger.warn("Executing the {}-transformation failed: {}. Pattern: '{}'. Value: '{}'", serviceName,
+                    e.getMessage(), pattern, value);
         }
         return returnValue;
     }
