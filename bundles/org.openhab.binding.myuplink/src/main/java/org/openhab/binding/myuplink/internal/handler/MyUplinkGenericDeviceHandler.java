@@ -30,6 +30,7 @@ import org.openhab.binding.myuplink.internal.command.device.GetPoints;
 import org.openhab.binding.myuplink.internal.command.device.SetPoints;
 import org.openhab.binding.myuplink.internal.config.MyUplinkConfiguration;
 import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
+import org.openhab.binding.myuplink.internal.provider.ChannelFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
@@ -64,9 +65,12 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
      */
     private final AtomicReference<@Nullable Future<?>> dataPollingJobReference;
 
-    public MyUplinkGenericDeviceHandler(Thing thing) {
+    private final ChannelFactory channelFactory;
+
+    public MyUplinkGenericDeviceHandler(Thing thing, ChannelFactory channelFactory) {
         super(thing);
         this.dataPollingJobReference = new AtomicReference<>(null);
+        this.channelFactory = channelFactory;
     }
 
     @Override
@@ -260,5 +264,10 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
     @Override
     public ThingUID getThingUid() {
         return getThing().getUID();
+    }
+
+    @Override
+    public ChannelFactory getChannelFactory() {
+        return channelFactory;
     }
 }

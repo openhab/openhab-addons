@@ -57,6 +57,6 @@ public class GetSystems extends AbstractPagingCommand {
 
     @Override
     protected String getChannelGroup() {
-        return CHANNEL_GROUP_NONE;
+        return EMPTY;
     }
 }

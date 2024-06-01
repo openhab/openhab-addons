@@ -40,12 +40,32 @@ public class MyUplinkBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCOUNT,
             THING_TYPE_GENERIC_DEVICE);
 
-    // List of all channel groups
-    public static final String CHANNEL_GROUP_NONE = "";
-
     // Channel types
     public static final String CHANNEL_TYPE_UNIT_NONE = "NO_UNIT";
     public static final String CHANNEL_TYPE_PREFIX_RW = "rw";
+    public static final String CHANNEL_TYPE_ENUM_PRFIX = "type-enum-";
+    public static final String CHANNEL_TYPE_DEFAULT_DATATYPE = "Number";
+
+    public static final String CHANNEL_TYPE_ENERGY = "type-energy";
+    public static final String CHANNEL_TYPE_ENERGY_UNIT = "kWh";
+    public static final String CHANNEL_TYPE_PRESSURE = "type-pressure";
+    public static final String CHANNEL_TYPE_PRESSURE_UNIT = "bar";
+    public static final String CHANNEL_TYPE_PERCENT = "type-percent";
+    public static final String CHANNEL_TYPE_PERCENT_UNIT = "%";
+    public static final String CHANNEL_TYPE_TEMPERATURE = "type-temperature";
+    public static final String CHANNEL_TYPE_TEMPERATURE_UNIT = "°C";
+    public static final String CHANNEL_TYPE_FREQUENCY = "type-frequency";
+    public static final String CHANNEL_TYPE_FREQUENCY_UNIT = "Hz";
+    public static final String CHANNEL_TYPE_FLOW = "type-flow";
+    public static final String CHANNEL_TYPE_FLOW_UNIT = "l/m";
+    public static final String CHANNEL_TYPE_ELECTRIC_CURRENT = "type-electric-current";
+    public static final String CHANNEL_TYPE_ELECTRIC_CURRENT_UNIT = "A";
+    public static final String CHANNEL_TYPE_TIME = "type-time";
+    public static final String CHANNEL_TYPE_TIME_UNIT = "h";
+    public static final String CHANNEL_TYPE_INTEGER = "type-number-integer";
+    public static final String CHANNEL_TYPE_DOUBLE = "type-number-double";
+    public static final String CHANNEL_TYPE_ON_OFF = "type-on-off";
+    public static final String CHANNEL_TYPE_RW_SWITCH = "rwtype-switch";
 
     // JSON Keys
     public static final String JSON_KEY_ROOT_DATA = "data";
@@ -131,6 +151,7 @@ public class MyUplinkBindingConstants {
     public static final long POLLING_INITIAL_DELAY = 1;
 
     public static final String GENERIC_NO_VAL = "---";
+    public static final String EMPTY = "";
 
     public static final String THING_CONFIG_ID = "deviceId";
     public static final String THING_CONFIG_SERIAL = "serial";

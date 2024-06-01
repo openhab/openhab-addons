@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.myuplink.internal.command;
 
-import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.CHANNEL_GROUP_NONE;
+import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.EMPTY;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -108,7 +108,7 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
     @Override
     protected String getChannelGroup() {
         // this is a pure write command, thus no channel group needed.
-        return CHANNEL_GROUP_NONE;
+        return EMPTY;
     }
 
     /**
