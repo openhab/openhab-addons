@@ -15,13 +15,13 @@ package org.openhab.binding.pentair.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link PentairIPBridgeConfig } class contains the parameters for IP Bridge
+ * The {@link PentairBaseThingConfig } class contains configuration parameters for all Pentair child things.
  *
  * @author Jeff James - initial contribution
  *
  */
 @NonNullByDefault
-public class PentairIPBridgeConfig {
-    public String address = "";
-    public int port = 10000;
+public class PentairBaseThingConfig {
+    /** ID of thing on the Pentair RS485 bus. */
+    public int id;
 }
