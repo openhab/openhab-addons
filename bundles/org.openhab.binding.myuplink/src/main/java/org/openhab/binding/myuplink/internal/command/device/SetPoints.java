@@ -61,6 +61,6 @@ public class SetPoints extends AbstractWriteCommand {
 
     @Override
     protected String getChannelGroup() {
-        return CHANNEL_GROUP_NONE;
+        return EMPTY;
     }
 }

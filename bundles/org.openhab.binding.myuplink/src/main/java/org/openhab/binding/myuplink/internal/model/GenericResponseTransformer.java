@@ -23,12 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myuplink.internal.Utils;
 import org.openhab.binding.myuplink.internal.handler.ChannelProvider;
 import org.openhab.binding.myuplink.internal.handler.DynamicChannelProvider;
-import org.openhab.core.library.types.DecimalType;
+import org.openhab.binding.myuplink.internal.provider.ChannelFactory;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.types.State;
@@ -69,9 +65,12 @@ public class GenericResponseTransformer {
             var channelId = Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_ID, GENERIC_NO_VAL);
 
             Channel channel;
-            if (dynamicChannelProvider != null) {
-                channel = getOrCreateChannel(dynamicChannelProvider.getThingUid(), channelId,
+            var dcp = dynamicChannelProvider;
+            if (dcp != null) {
+                channel = getOrCreateChannel(dcp.getChannelFactory(), dcp.getThingUid(), channelId,
                         channelData.getAsJsonObject());
+                dcp.registerChannel(channel);
+
             } else {
                 channel = channelProvider.getChannel(group, channelId);
             }
@@ -86,32 +85,37 @@ public class GenericResponseTransformer {
                 } else {
                     try {
                         var channelTypeId = Utils.getChannelTypeId(channel);
-                        var newState = switch (ChannelType.fromTypeName(channelTypeId)) {
-                            case ENERGY ->
-                                new QuantityType<>(Double.parseDouble(value), MetricPrefix.KILO(Units.WATT_HOUR));
-                            case PRESSURE -> new QuantityType<>(Double.parseDouble(value), Units.BAR);
-                            case PERCENT -> new QuantityType<>(Double.parseDouble(value), Units.PERCENT);
-                            case TEMPERATURE -> new QuantityType<>(Double.parseDouble(value), SIUnits.CELSIUS);
-                            case FREQUENCY -> new QuantityType<>(Double.parseDouble(value), Units.HERTZ);
-                            case FLOW ->
-                                new QuantityType<>(Double.parseDouble(value), Units.LITRE.divide(Units.MINUTE));
-                            case ELECTRIC_CURRENT -> new QuantityType<>(Double.parseDouble(value), Units.AMPERE);
-                            case TIME -> new QuantityType<>(Double.parseDouble(value), Units.HOUR);
-                            case INTEGER -> new DecimalType(Double.valueOf(value).longValue());
-                            case DOUBLE -> new DecimalType(Double.parseDouble(value));
-                            case ON_OFF -> new DecimalType(Double.valueOf(value).longValue());
-                            case RW_SWITCH -> convertToOnOffType(value);
-                            case PRIORITY -> new DecimalType(Double.valueOf(value).longValue());
-                            case COMPRESSOR_STATUS -> new DecimalType(Double.valueOf(value).longValue());
 
-                            default -> UnDefType.NULL;
-                        };
+                        logger.warn("accepted type: {}", channel.getAcceptedItemType());
 
-                        if (newState == UnDefType.NULL) {
-                            logger.warn("no mapping implemented for channel type '{}'", channelTypeId);
-                        } else {
-                            result.put(channel, newState);
-                        }
+                        // var newState = switch (MyUplinkChannelType.fromTypeName(channelTypeId)) {
+                        // case ENERGY ->
+                        // new QuantityType<>(Double.parseDouble(value), MetricPrefix.KILO(Units.WATT_HOUR));
+                        // case PRESSURE -> new QuantityType<>(Double.parseDouble(value), Units.BAR);
+                        // case PERCENT -> new QuantityType<>(Double.parseDouble(value), Units.PERCENT);
+                        // case TEMPERATURE -> new QuantityType<>(Double.parseDouble(value), SIUnits.CELSIUS);
+                        // case FREQUENCY -> new QuantityType<>(Double.parseDouble(value), Units.HERTZ);
+                        // case FLOW ->
+                        // new QuantityType<>(Double.parseDouble(value), Units.LITRE.divide(Units.MINUTE));
+                        // case ELECTRIC_CURRENT -> new QuantityType<>(Double.parseDouble(value), Units.AMPERE);
+                        // case TIME -> new QuantityType<>(Double.parseDouble(value), Units.HOUR);
+                        // case INTEGER -> new DecimalType(Double.valueOf(value).longValue());
+                        // case DOUBLE -> new DecimalType(Double.parseDouble(value));
+                        // case ON_OFF -> new DecimalType(Double.valueOf(value).longValue());
+                        // case RW_SWITCH -> convertToOnOffType(value);
+                        // // case PRIORITY -> new DecimalType(Double.valueOf(value).longValue());
+                        // // case COMPRESSOR_STATUS -> new DecimalType(Double.valueOf(value).longValue());
+                        // // case ADD_HEAT_STATUS -> new DecimalType(Double.valueOf(value).longValue());
+                        // case GENERIC_ENUM -> new DecimalType(Double.valueOf(value).longValue());
+
+                        // default -> UnDefType.NULL;
+                        // };
+
+                        // if (newState == UnDefType.NULL) {
+                        // logger.warn("no mapping implemented for channel type '{}'", channelTypeId);
+                        // } else {
+                        // result.put(channel, newState);
+                        // }
                     } catch (NumberFormatException | DateTimeParseException ex) {
                         logger.warn("caught exception while parsing data for channel {} (value '{}'). Exception: {}",
                                 channel.getUID().getId(), value, ex.getMessage());
@@ -122,11 +126,11 @@ public class GenericResponseTransformer {
         return result;
     }
 
-    private Channel getOrCreateChannel(ThingUID thingUID, String channelId, JsonObject channelData) {
-        Channel result = channelProvider.getChannel(CHANNEL_GROUP_NONE, channelId);
+    private Channel getOrCreateChannel(ChannelFactory factory, ThingUID thingUID, String channelId,
+            JsonObject channelData) {
+        var result = channelProvider.getChannel(EMPTY, channelId);
         if (result == null) {
-            result = ChannelFactory.createChannel(thingUID, channelId, channelData);
-            dynamicChannelProvider.registerChannel(result);
+            result = factory.createChannel(thingUID, channelData);
         }
         return result;
     }

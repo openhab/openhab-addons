@@ -13,6 +13,7 @@
 package org.openhab.binding.myuplink.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.myuplink.internal.provider.ChannelFactory;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ThingUID;
 
@@ -25,6 +26,8 @@ import org.openhab.core.thing.ThingUID;
 public interface DynamicChannelProvider {
 
     void registerChannel(Channel channel);
+
+    ChannelFactory getChannelFactory();
 
     ThingUID getThingUid();
 }
