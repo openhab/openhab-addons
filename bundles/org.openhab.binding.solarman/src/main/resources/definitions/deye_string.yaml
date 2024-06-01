@@ -1,0 +1,206 @@
+
+requests:
+  - start: 0x0003
+    end:  0x0070
+    mb_functioncode: 0x03
+
+parameters:
+ - group: solar
+   items: 
+    - name: "PV1 Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [0x006D]
+      icon: 'mdi:solar-power'
+
+    - name: "PV2 Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [0x006F]
+      icon: 'mdi:solar-power'
+
+    - name: "PV1 Current"
+      class: "current"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [0x006E]
+      icon: 'mdi:solar-power'
+
+    - name: "PV2 Current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [0x0070]
+      icon: 'mdi:solar-power'
+
+    - name: "Daily Production"
+      class: "energy"
+      state_class: "total"
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [0x003C]
+      icon: 'mdi:solar-power'
+
+    - name: "Total Production"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 0.1
+      rule: 3
+      registers: [0x003F,0x0040]
+      icon: 'mdi:solar-power'
+      validation:
+        min: 0.1 
+        invalidate_all:
+
+
+
+ - group: Grid
+   items: 
+    - name: "Grid Voltage L-L(A)"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [0x0049]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Grid Voltage L-L(B))"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [0x004A]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Grid Voltage L-L(C)"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [0x004B]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Grid Current A"
+      class: "current"
+      state_class: "measurement"      
+      uom: "A"
+      scale: 0.1
+      rule: 2
+      registers: [0x004C]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Grid Current B"
+      class: "current"
+      state_class: "measurement"      
+      uom: "A"
+      scale: 0.1
+      rule: 2
+      registers: [0x004D]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Grid Current C"
+      class: "current"
+      state_class: "measurement"      
+      uom: "A"
+      scale: 0.1
+      rule: 2
+      registers: [0x004E]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Grid Frequency"
+      class: "frequency"
+      state_class: "measurement"      
+      uom: "Hz"
+      scale: 0.01
+      rule: 1
+      registers: [0x004F]
+      icon: 'mdi:home-lightning-bolt'
+
+ - group: Inverter
+   items: 
+    - name: "Running Status"
+      class: ""
+      state_class: ""      
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x003B]
+      isstr: true
+      lookup: 
+      -  key: 0
+         value: "Stand-by"
+      -  key: 1
+         value: "Self-checking"
+      -  key: 2
+         value: "Normal"
+      -  key: 3
+         value: "FAULT"
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Total Output AC Power"
+      class: "power"
+      state_class: "measurement"      
+      uom: "W"
+      scale: 0.1
+      rule: 3
+      registers: [0x0050,0x0051]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Input Active Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
+      scale: 0.1
+      rule: 3
+      registers: [0x0052, 0x0053]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Output Apparent Power"
+      class: "apparent_power"
+      state_class: "measurement"
+      uom: "VA"
+      scale: 0.1
+      rule: 3
+      registers: [0x0054, 0x0055]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Output Active Power"
+      class: "energy"
+      state_class: "measurement"
+      uom: "W"
+      scale: 0.1
+      rule: 3
+      registers: [0x0056, 0x0057]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Output Reactive Power"
+      class: "reactive_power"
+      state_class: "measurement"
+      uom: "VAR"
+      rule: 3
+      scale: 0.1
+      registers: [0x0058, 0x0059]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Inverter ID"
+      class: ""
+      state_class: ""      
+      uom: ""
+      scale: 1
+      rule: 5
+      registers: [0x0003,0x0004,0x0005,0x0006,0x0007]
+      isstr: true
