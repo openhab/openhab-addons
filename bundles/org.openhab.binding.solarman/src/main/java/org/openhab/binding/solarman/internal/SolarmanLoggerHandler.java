@@ -14,7 +14,10 @@ package org.openhab.binding.solarman.internal;
 
 import static org.openhab.binding.solarman.internal.SolarmanBindingConstants.DYNAMIC_CHANNEL;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -22,8 +25,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.channel.BaseChannelConfig;
@@ -36,7 +37,12 @@ import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnector;
 import org.openhab.binding.solarman.internal.modbus.SolarmanV5Protocol;
 import org.openhab.binding.solarman.internal.state.LoggerState;
 import org.openhab.binding.solarman.internal.updater.SolarmanChannelUpdater;
-import org.openhab.core.thing.*;
+import org.openhab.binding.solarman.internal.util.StringUtils;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
@@ -94,9 +100,11 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
         }
         SolarmanV5Protocol solarmanV5Protocol = new SolarmanV5Protocol(config);
 
-        List<Request> mergedRequests = (StringUtils.isNotEmpty(config.getAdditionalRequests()))
-                ? mergeRequests(inverterDefinition.getRequests(),
-                        extractAdditionalRequests((@NonNull String) config.getAdditionalRequests()))
+        String localAdditionalRequests = config.getAdditionalRequests();
+        String additionalRequests = localAdditionalRequests != null ? localAdditionalRequests : "";
+
+        List<Request> mergedRequests = StringUtils.isNotEmpty(additionalRequests)
+                ? mergeRequests(inverterDefinition.getRequests(), extractAdditionalRequests(additionalRequests))
                 : inverterDefinition.getRequests();
 
         Map<ParameterItem, ChannelUID> paramToChannelMapping = mergeMaps(
@@ -105,7 +113,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
 
         SolarmanChannelUpdater solarmanChannelUpdater = new SolarmanChannelUpdater(this::updateState);
 
-        scheduledFuture = scheduler.scheduleAtFixedRate(() -> {
+        scheduledFuture = scheduler.scheduleWithFixedDelay(() -> {
             boolean fetchSuccessful = solarmanChannelUpdater.fetchDataFromLogger(mergedRequests,
                     solarmanLoggerConnector, solarmanV5Protocol, paramToChannelMapping, loggerState);
 
@@ -133,9 +141,15 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
     private Map<ParameterItem, ChannelUID> extractChannelMappingFromChannels(List<Channel> channels) {
         return channels.stream().map(channel -> {
             BaseChannelConfig bcc = channel.getConfiguration().as(BaseChannelConfig.class);
-            return new AbstractMap.SimpleEntry<>(
-                    new ParameterItem(channel.getLabel(), "N/A", "N/A", bcc.uom, bcc.scale, bcc.rule,
-                            parseRegisters(bcc.registers), "N/A", new Validation(), bcc.offset, Boolean.FALSE),
+
+            @Nullable
+            String label = channel.getLabel();
+            if (label == null) {
+                throw new IllegalStateException("Channel label should not be null");
+            }
+
+            return new AbstractMap.SimpleEntry<>(new ParameterItem(label, "N/A", "N/A", bcc.uom, bcc.scale, bcc.rule,
+                    parseRegisters(bcc.registers), "N/A", new Validation(), bcc.offset, Boolean.FALSE),
                     channel.getUID());
         }).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
@@ -147,7 +161,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                 .map(SolarmanLoggerHandler::parseNumber).collect(Collectors.toList());
     }
 
-    // TODO for now just concatenate the list, in the future, merge overlapping requests
+    // For now just concatenate the list, in the future, merge overlapping requests
     private List<Request> mergeRequests(List<Request> requestList1, List<Request> requestList2) {
         return Stream.concat(requestList1.stream(), requestList2.stream()).collect(Collectors.toList());
     }
@@ -165,9 +179,9 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                 return new Request(functionCode, start, end);
             } catch (NumberFormatException e) {
                 logger.error("Invalid number format in token: {} , ignoring additional requests", matcher.group(), e);
-                return (@NonNull Request) null;
+                return new Request(-1, 0, 0);
             }
-        }).filter(Objects::nonNull).collect(Collectors.toList());
+        }).filter(request -> request.getMbFunctioncode() > 0).collect(Collectors.toList());
     }
 
     private static int parseNumber(String number) {
@@ -202,7 +216,8 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
     public void dispose() {
         super.dispose();
 
-        if (scheduledFuture != null)
+        if (scheduledFuture != null) {
             Objects.requireNonNull(scheduledFuture).cancel(false);
+        }
     }
 }

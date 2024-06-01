@@ -26,5 +26,5 @@ public class SolarmanBindingConstants {
 
     public static final String SOLARMAN_BINDING_ID = "solarman";
     public static final ThingTypeUID THING_TYPE_SOLARMAN_LOGGER = new ThingTypeUID(SOLARMAN_BINDING_ID, "logger");
-    public static final String DYNAMIC_CHANNEL = "dynamic_channel";
+    public static final String DYNAMIC_CHANNEL = "dynamic-channel";
 }

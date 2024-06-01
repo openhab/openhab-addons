@@ -17,24 +17,36 @@ import static org.openhab.binding.solarman.internal.typeprovider.ChannelUtils.ge
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URL;
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.DefinitionParser;
 import org.openhab.binding.solarman.internal.defmodel.InverterDefinition;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
-import org.openhab.core.thing.type.*;
+import org.openhab.binding.solarman.internal.util.StringUtils;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeBuilder;
+import org.openhab.core.thing.type.ChannelTypeProvider;
+import org.openhab.core.thing.type.ChannelTypeUID;
+import org.openhab.core.thing.type.StateChannelTypeBuilder;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Catalin Sanda - Initial contribution
@@ -42,6 +54,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(service = { ChannelTypeProvider.class, SolarmanChannelTypeProvider.class })
 @NonNullByDefault
 public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
+    private final Logger logger = LoggerFactory.getLogger(SolarmanChannelTypeProvider.class);
     private static final DefinitionParser DEFINITION_PARSER = new DefinitionParser();
     private static final Pattern INVERTER_DEFINITION_PATTERN = Pattern.compile("/definitions/([^.]+)\\.yaml");
     private final Map<ChannelTypeUID, ChannelType> channelTypeMap = new ConcurrentHashMap<>();
@@ -55,6 +68,11 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
 
     private Map<ChannelTypeUID, ChannelType> parseInverterDefinition(String inverterDefinitionId) {
         InverterDefinition inverterDefinition = DEFINITION_PARSER.parseDefinition(inverterDefinitionId);
+
+        if (inverterDefinition == null) {
+            logger.error("Unable to parse inverter definition");
+            return Collections.emptyMap();
+        }
 
         return inverterDefinition.getParameters().stream()
                 .flatMap(parameter -> parameter.getItems().stream().map(item -> {
@@ -79,7 +97,6 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
     }
 
     public ChannelType buildChannelType(ChannelTypeUID channelTypeUID, ParameterItem item) {
-
         String itemType = getItemType(item);
 
         StateDescriptionFragmentBuilder stateDescriptionFragmentBuilder = StateDescriptionFragmentBuilder.create()
@@ -97,15 +114,23 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
     private String computePatternForItem(ParameterItem item) {
         long decimalPoints = 0;
 
-        if (item.getScale().compareTo(BigDecimal.ONE) < 0)
-            decimalPoints = Math.abs(Math.round(Math.log10(item.getScale().doubleValue())));
+        @Nullable
+        BigDecimal scale = item.getScale();
+        if (scale == null) {
+            scale = BigDecimal.ONE;
+        }
+
+        if (scale.compareTo(BigDecimal.ONE) < 0) {
+            decimalPoints = Math.abs(Math.round(Math.log10(scale.doubleValue())));
+        }
 
         String pattern = null;
 
-        if (decimalPoints > 0)
+        if (decimalPoints > 0) {
             pattern = "%." + decimalPoints + "f";
-        else
+        } else {
             pattern = "%d";
+        }
 
         return pattern + (StringUtils.isNotEmpty(item.getUom()) ? " %unit%" : "");
     }

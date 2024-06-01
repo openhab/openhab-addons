@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.solarman.internal.state;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Catalin Sanda - Initial contribution
  */
+@NonNullByDefault
 public class LoggerState {
-    public final static Integer NO_FAILED_REQUESTS = 3;
+    public static final Integer NO_FAILED_REQUESTS = 3;
     private State state = State.ONLINE; // Let's assume we're online initially
     private int offlineTryCount = 0;
 

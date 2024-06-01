@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.solarman.internal.defmodel;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -19,11 +21,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Catalin Sanda - Initial contribution
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NonNullByDefault
 public class Request {
-    private Integer start;
-    private Integer end;
+    private Integer start = 0;
+    private Integer end = 0;
     @JsonProperty("mb_functioncode")
-    private Integer mbFunctioncode;
+    private Integer mbFunctioncode = 0x03;
 
     public Request() {
     }

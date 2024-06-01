@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.solarman.internal.defmodel;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -19,11 +21,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Catalin Sanda - Initial contribution
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NonNullByDefault
 public class Validation {
-    private Integer max;
+    private Integer max = 0;
     @JsonProperty("invalidate_all")
-    private Object invalidateAll;
-    private Integer min;
+    private Object invalidateAll = new Object();
+    private Integer min = 0;
 
     public Integer getMax() {
         return max;

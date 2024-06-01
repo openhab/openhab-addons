@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.defmodel.InverterDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +30,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
  *
  * @author Catalin Sanda - Initial contribution
  */
+@NonNullByDefault
 public class DefinitionParser {
     private final Logger logger = LoggerFactory.getLogger(DefinitionParser.class);
 
@@ -37,6 +40,7 @@ public class DefinitionParser {
         mapper = new ObjectMapper(new YAMLFactory());
     }
 
+    @Nullable
     public InverterDefinition parseDefinition(String definitionId) {
         ClassLoader cl = Objects.requireNonNull(getClass().getClassLoader());
         String definitionFileName = String.format("definitions/%s.yaml", definitionId);

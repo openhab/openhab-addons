@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
 
-import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
 import org.openhab.binding.solarman.internal.defmodel.Request;
@@ -43,6 +43,7 @@ import org.openhab.binding.solarman.internal.modbus.SolarmanV5Protocol;
 import org.openhab.binding.solarman.internal.state.LoggerState;
 import org.openhab.binding.solarman.internal.typeprovider.ChannelUtils;
 import org.openhab.binding.solarman.internal.util.StreamUtils;
+import org.openhab.binding.solarman.internal.util.StringUtils;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -55,8 +56,9 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Catalin Sanda - Initial contribution
  */
+@NonNullByDefault
 public class SolarmanChannelUpdater {
-    private final Logger LOGGER = LoggerFactory.getLogger(SolarmanChannelUpdater.class);
+    private final Logger logger = LoggerFactory.getLogger(SolarmanChannelUpdater.class);
     private final StateUpdater stateUpdater;
 
     public SolarmanChannelUpdater(StateUpdater stateUpdater) {
@@ -66,9 +68,9 @@ public class SolarmanChannelUpdater {
     public boolean fetchDataFromLogger(List<Request> requests, SolarmanLoggerConnector solarmanLoggerConnector,
             SolarmanV5Protocol solarmanV5Protocol, Map<ParameterItem, ChannelUID> paramToChannelMapping,
             LoggerState loggerState) {
-
-        try (SolarmanLoggerConnection solarmanLoggerConnection = solarmanLoggerConnector.createConnection()) {
-            LOGGER.debug("Fetching data from logger");
+        try (SolarmanLoggerConnection solarmanLoggerConnection = solarmanLoggerConnector
+                .createConnection(!loggerState.isOffline())) {
+            logger.debug("Fetching data from logger");
 
             Map<Integer, byte[]> readRegistersMap = requests.stream()
                     .map(request -> solarmanV5Protocol.readRegisters(solarmanLoggerConnection,
@@ -76,12 +78,13 @@ public class SolarmanChannelUpdater {
                             !loggerState.isOffline()))
                     .reduce(new HashMap<>(), this::mergeMaps);
 
-            if (!readRegistersMap.isEmpty())
+            if (!readRegistersMap.isEmpty()) {
                 updateChannelsForReadRegisters(paramToChannelMapping, readRegistersMap);
+            }
 
             return !readRegistersMap.isEmpty();
         } catch (Exception e) {
-            LOGGER.error("Error invoking handler", e);
+            logger.error("Error invoking handler", e);
             return false;
         }
     }
@@ -103,7 +106,7 @@ public class SolarmanChannelUpdater {
                     case 9 -> updateChannelWithTime(channelUID, registers, readRegistersMap);
                 }
             } else {
-                LOGGER.error("Unable to update channel {} because its registers were not read", channelUID.getId());
+                logger.error("Unable to update channel {} because its registers were not read", channelUID.getId());
             }
         });
     }
@@ -139,7 +142,7 @@ public class SolarmanChannelUpdater {
 
             stateUpdater.updateState(channelUID, new DateTimeType(dateTime.atZone(ZoneId.systemDefault())));
         } catch (DateTimeParseException e) {
-            LOGGER.error("Unable to parse string date {} to a DateTime object", stringValue);
+            logger.error("Unable to parse string date {} to a DateTime object", stringValue);
         }
     }
 
@@ -169,19 +172,26 @@ public class SolarmanChannelUpdater {
         BigDecimal convertedValue = convertNumericValue(value, parameterItem.getOffset(), parameterItem.getScale());
         if (validateNumericValue(convertedValue, parameterItem.getValidation())) {
             State state;
-            if (StringUtils.isNotEmpty(parameterItem.getUom())) {
+
+            @Nullable
+            String uom = parameterItem.getUom();
+            if (uom == null) {
+                uom = "";
+            }
+
+            if (StringUtils.isNotEmpty(uom)) {
                 try {
-                    Unit<?> unitFromDefinition = ChannelUtils.getUnitFromDefinition(parameterItem.getUom());
-                    if (unitFromDefinition != null)
+                    @Nullable
+                    Unit<?> unitFromDefinition = ChannelUtils.getUnitFromDefinition(uom);
+                    if (unitFromDefinition != null) {
                         state = new QuantityType<>(convertedValue, unitFromDefinition);
-                    else {
-                        LOGGER.debug("Unable to parse unit: {}", parameterItem.getUom());
+                    } else {
+                        logger.debug("Unable to parse unit: {}", uom);
                         state = new DecimalType(convertedValue);
                     }
                 } catch (MeasurementParseException e) {
                     state = new DecimalType(convertedValue);
                 }
-
             } else {
                 state = new DecimalType(convertedValue);
             }
@@ -199,7 +209,7 @@ public class SolarmanChannelUpdater {
         stateUpdater.updateState(channelUID, new StringType(hexString));
     }
 
-    private boolean validateNumericValue(BigDecimal convertedValue, Validation validation) {
+    private boolean validateNumericValue(@Nullable BigDecimal convertedValue, @Nullable Validation validation) {
         return true;
     }
 

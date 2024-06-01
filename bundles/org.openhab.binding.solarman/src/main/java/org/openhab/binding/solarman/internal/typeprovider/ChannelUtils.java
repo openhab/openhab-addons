@@ -13,12 +13,21 @@
 package org.openhab.binding.solarman.internal.typeprovider;
 
 import javax.measure.Unit;
-import javax.measure.quantity.*;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.ElectricCurrent;
+import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Energy;
+import javax.measure.quantity.Frequency;
+import javax.measure.quantity.Power;
+import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
 
-import org.apache.commons.lang3.ClassUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.SolarmanBindingConstants;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
+import org.openhab.binding.solarman.internal.util.ClassUtils;
+import org.openhab.binding.solarman.internal.util.StringUtils;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
@@ -28,17 +37,28 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 /**
  * @author Catalin Sanda - Initial contribution
  */
+@NonNullByDefault
 public class ChannelUtils {
     public static String getItemType(ParameterItem item) {
-        return switch (item.getRule()) {
+        @Nullable
+        Integer rule = item.getRule();
+
+        @Nullable
+        String uom = item.getUom();
+        if (uom == null) {
+            uom = "UNKN";
+        }
+
+        return switch (rule) {
             case 5, 6, 7, 9 -> CoreItemFactory.STRING;
             case 8 -> CoreItemFactory.DATETIME;
-            default -> computeNumberType(item.getUom());
+            default -> {
+                yield computeNumberType(uom);
+            }
         };
     }
 
     private static String computeNumberType(String uom) {
-        // @TODO there is probably a better way to do this
         return switch (uom.toUpperCase()) {
             case "A" -> CoreItemFactory.NUMBER + ":" + ClassUtils.getShortClassName(ElectricCurrent.class);
             case "V" -> CoreItemFactory.NUMBER + ":" + ClassUtils.getShortClassName(ElectricPotential.class);
@@ -53,7 +73,7 @@ public class ChannelUtils {
         };
     }
 
-    public static Unit<?> getUnitFromDefinition(String uom) {
+    public static @Nullable Unit<?> getUnitFromDefinition(String uom) {
         return switch (uom.toUpperCase()) {
             case "A" -> Units.AMPERE;
             case "V" -> Units.VOLT;
@@ -75,12 +95,11 @@ public class ChannelUtils {
 
     public static String escapeName(String name) {
         name = name.replace("+", "plus");
-        name = name.replace("-", "minus");
-        return StringUtils.replaceChars(StringUtils.lowerCase(name), " .()/\\&", "_");
+        return StringUtils.replaceChars(StringUtils.lowerCase(name), " .()/\\&_", "-");
     }
 
     public static ChannelTypeUID computeChannelTypeId(String inverterDefinitionId, String group, String name) {
         return new ChannelTypeUID(SolarmanBindingConstants.SOLARMAN_BINDING_ID,
-                String.format("%s_%s_%s", escapeName(inverterDefinitionId), escapeName(group), escapeName(name)));
+                String.format("%s-%s-%s", escapeName(inverterDefinitionId), escapeName(group), escapeName(name)));
     }
 }

@@ -12,9 +12,12 @@
  */
 package org.openhab.binding.solarman.internal.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * @author Catalin Sanda - Initial contribution
  */
+@NonNullByDefault
 public class CRC16Modbus {
     private static final int[] CRC_TABLE = new int[256];
 

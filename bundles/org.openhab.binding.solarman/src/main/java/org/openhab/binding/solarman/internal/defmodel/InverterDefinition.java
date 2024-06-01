@@ -15,14 +15,17 @@ package org.openhab.binding.solarman.internal.defmodel;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * @author Catalin Sanda - Initial contribution
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NonNullByDefault
 public class InverterDefinition {
-    private String inverterDefinitionId;
+    private String inverterDefinitionId = "";
     private List<Request> requests = new ArrayList<>();
     private List<Parameter> parameters = new ArrayList<>();
 

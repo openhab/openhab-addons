@@ -15,11 +15,14 @@ package org.openhab.binding.solarman.internal.channel;
 import static org.openhab.binding.solarman.internal.SolarmanBindingConstants.DYNAMIC_CHANNEL;
 import static org.openhab.binding.solarman.internal.typeprovider.ChannelUtils.escapeName;
 
+import java.math.BigDecimal;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.defmodel.InverterDefinition;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
 import org.openhab.binding.solarman.internal.typeprovider.ChannelUtils;
@@ -36,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * @author Catalin Sanda - Initial contribution
  */
+@NonNullByDefault
 public class SolarmanChannelManager {
     private final ObjectMapper objectMapper;
 
@@ -48,7 +52,7 @@ public class SolarmanChannelManager {
             String groupName = escapeName(parameter.getGroup());
 
             return parameter.getItems().stream().map(item -> {
-                String channelId = groupName + "_" + escapeName(item.getName());
+                String channelId = groupName + "-" + escapeName(item.getName());
 
                 Channel channel = ChannelBuilder.create(new ChannelUID(thing.getUID(), channelId))
                         .withType(ChannelUtils.computeChannelTypeId(inverterDefinition.getInverterDefinitionId(),
@@ -67,10 +71,20 @@ public class SolarmanChannelManager {
 
         BaseChannelConfig baseChannelConfig = new BaseChannelConfig();
 
-        baseChannelConfig.offset = item.getOffset();
+        @Nullable
+        BigDecimal offset = item.getOffset();
+        if (offset != null) {
+            baseChannelConfig.offset = offset;
+        }
+
+        @Nullable
+        BigDecimal scale = item.getScale();
+        if (scale != null) {
+            baseChannelConfig.scale = scale;
+        }
+
         baseChannelConfig.rule = item.getRule();
         baseChannelConfig.registers = convertRegisters(item.getRegisters());
-        baseChannelConfig.scale = item.getScale();
         baseChannelConfig.uom = item.getUom();
 
         Map<String, Object> configurationMap = objectMapper.convertValue(baseChannelConfig, new TypeReference<>() {

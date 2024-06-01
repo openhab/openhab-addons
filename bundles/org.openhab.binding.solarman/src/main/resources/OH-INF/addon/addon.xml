@@ -6,5 +6,5 @@
 	<type>binding</type>
 	<name>Solarman Logger Binding</name>
 	<description>This is the binding for Solarman Logger</description>
-
+	<connection>local</connection>
 </addon:addon>

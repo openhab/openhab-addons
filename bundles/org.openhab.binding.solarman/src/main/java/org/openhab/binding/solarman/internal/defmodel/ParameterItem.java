@@ -16,33 +16,43 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author Catalin Sanda - Initial contribution
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NonNullByDefault
 public class ParameterItem {
-    private String name;
-    @JsonProperty("class")
+    private String name = "";
+    @Nullable
     private String itemClass;
-    @JsonProperty("state_class")
+    @Nullable
     private String stateClass;
+    @Nullable
     private String uom;
+    @Nullable
     private BigDecimal scale;
-    private Integer rule;
+    private Integer rule = 1;
     private List<Integer> registers = new ArrayList<>();
+    @Nullable
     private String icon;
+    @Nullable
     private Validation validation;
+    @Nullable
     private BigDecimal offset;
+    @Nullable
     private Boolean isstr;
 
     public ParameterItem() {
     }
 
-    public ParameterItem(String name, String itemClass, String stateClass, String uom, BigDecimal scale, Integer rule,
-            List<Integer> registers, String icon, Validation validation, BigDecimal offset, Boolean isstr) {
+    public ParameterItem(String name, @Nullable String itemClass, @Nullable String stateClass, @Nullable String uom,
+            @Nullable BigDecimal scale, Integer rule, List<Integer> registers, @Nullable String icon,
+            @Nullable Validation validation, @Nullable BigDecimal offset, @Nullable Boolean isstr) {
         this.name = name;
         this.itemClass = itemClass;
         this.stateClass = stateClass;
@@ -64,7 +74,7 @@ public class ParameterItem {
         this.name = name;
     }
 
-    public String getStateClass() {
+    public @Nullable String getStateClass() {
         return stateClass;
     }
 
@@ -72,7 +82,7 @@ public class ParameterItem {
         this.stateClass = stateClass;
     }
 
-    public String getUom() {
+    public @Nullable String getUom() {
         return uom;
     }
 
@@ -80,7 +90,7 @@ public class ParameterItem {
         this.uom = uom;
     }
 
-    public BigDecimal getScale() {
+    public @Nullable BigDecimal getScale() {
         return scale;
     }
 
@@ -104,7 +114,7 @@ public class ParameterItem {
         this.registers = registers;
     }
 
-    public String getIcon() {
+    public @Nullable String getIcon() {
         return icon;
     }
 
@@ -112,7 +122,7 @@ public class ParameterItem {
         this.icon = icon;
     }
 
-    public Validation getValidation() {
+    public @Nullable Validation getValidation() {
         return validation;
     }
 
@@ -120,7 +130,7 @@ public class ParameterItem {
         this.validation = validation;
     }
 
-    public BigDecimal getOffset() {
+    public @Nullable BigDecimal getOffset() {
         return offset;
     }
 
@@ -128,7 +138,7 @@ public class ParameterItem {
         this.offset = offset;
     }
 
-    public Boolean getIsstr() {
+    public @Nullable Boolean getIsstr() {
         return isstr;
     }
 
@@ -136,7 +146,7 @@ public class ParameterItem {
         this.isstr = isstr;
     }
 
-    public String getItemClass() {
+    public @Nullable String getItemClass() {
         return itemClass;
     }
 

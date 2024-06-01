@@ -12,11 +12,13 @@
  */
 package org.openhab.binding.solarman.internal.modbus;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
 
 /**
  * @author Catalin Sanda - Initial contribution
  */
+@NonNullByDefault
 public class SolarmanLoggerConnector {
     private final SolarmanLoggerConfiguration solarmanLoggerConfiguration;
 
@@ -24,8 +26,8 @@ public class SolarmanLoggerConnector {
         this.solarmanLoggerConfiguration = solarmanLoggerConfiguration;
     }
 
-    public SolarmanLoggerConnection createConnection() {
+    public SolarmanLoggerConnection createConnection(boolean allowLogging) {
         return new SolarmanLoggerConnection(solarmanLoggerConfiguration.getHostname(),
-                solarmanLoggerConfiguration.getPort());
+                solarmanLoggerConfiguration.getPort(), allowLogging);
     }
 }

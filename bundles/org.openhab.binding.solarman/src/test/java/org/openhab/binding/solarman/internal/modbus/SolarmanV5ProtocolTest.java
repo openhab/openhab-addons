@@ -13,16 +13,18 @@
 package org.openhab.binding.solarman.internal.modbus;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
+import javax.validation.constraints.NotNull;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
 
@@ -30,22 +32,15 @@ import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
  * @author Catalin Sanda - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
+@NonNullByDefault
 class SolarmanV5ProtocolTest {
-    @Mock
-    private SolarmanLoggerConnector solarmanLoggerConnector;
+    SolarmanLoggerConnection solarmanLoggerConnection = (@NotNull SolarmanLoggerConnection) mock(
+            SolarmanLoggerConnection.class);
 
-    @Mock
-    SolarmanLoggerConnection solarmanLoggerConnection;
+    private SolarmanLoggerConfiguration loggerConfiguration = new SolarmanLoggerConfiguration("192.168.1.1", 8899,
+            "1234567890", "sg04lp3", 60, null);
 
-    private SolarmanV5Protocol solarmanV5Protocol;
-
-    @BeforeEach
-    void setUp() {
-        SolarmanLoggerConfiguration loggerConfiguration = new SolarmanLoggerConfiguration("192.168.1.1", 8899,
-                "1234567890", "sg04lp3", 60, null);
-
-        solarmanV5Protocol = new SolarmanV5Protocol(loggerConfiguration);
-    }
+    private SolarmanV5Protocol solarmanV5Protocol = new SolarmanV5Protocol(loggerConfiguration);
 
     @Test
     void testbuildSolarmanV5Frame() {
@@ -63,7 +58,7 @@ class SolarmanV5ProtocolTest {
     @Test
     void testReadRegister0x01() {
         // given
-        when(solarmanLoggerConnection.sendRequest(any(), eq(true))).thenReturn(
+        when(solarmanLoggerConnection.sendRequest(any())).thenReturn(
                 hexStringToByteArray("a5000000000000000000000000000000000000000000000000010301000ac84300000015"));
 
         // when
@@ -77,9 +72,9 @@ class SolarmanV5ProtocolTest {
     }
 
     @Test
-    void testReadRegisters0x02_0x03() {
+    void testReadRegisters0x02to0x03() {
         // given
-        when(solarmanLoggerConnection.sendRequest(any(), eq(true))).thenReturn(
+        when(solarmanLoggerConnection.sendRequest(any())).thenReturn(
                 hexStringToByteArray("a5000000000000000000000000000000000000000000000000010302000a000b13f600000015"));
 
         // when
@@ -95,9 +90,9 @@ class SolarmanV5ProtocolTest {
     }
 
     @Test
-    void testReadRegisterSUN_10K_SG04LP3_EU_part1() {
+    void testReadRegisterSUN10KSG04LP3EUPart1() {
         // given
-        when(solarmanLoggerConnection.sendRequest(any(), eq(true))).thenReturn(hexStringToByteArray(
+        when(solarmanLoggerConnection.sendRequest(any())).thenReturn(hexStringToByteArray(
                 "a53b0010150007482ee38d020121d0060091010000403e486301032800ffffff160a12162420ffffffffffffffffffffffffffffffffffff0001ffff0001ffff000003e81fa45115"));
 
         // when
@@ -113,9 +108,9 @@ class SolarmanV5ProtocolTest {
     }
 
     @Test
-    void testReadRegisterSUN_10K_SG04LP3_EU_part2() {
+    void testReadRegisterSUN10KSG04LP3EUPart2() {
         // given
-        when(solarmanLoggerConnection.sendRequest(any(), eq(true))).thenReturn(hexStringToByteArray(
+        when(solarmanLoggerConnection.sendRequest(any())).thenReturn(hexStringToByteArray(
                 "a5330010150008482ee38d020122d0060091010000403e486301032000010000ffffffffffff0001ffffffffffffffffffff0000ffff0011ffffffff3a005715"));
 
         // when
@@ -139,7 +134,12 @@ class SolarmanV5ProtocolTest {
         return data;
     }
 
-    private static String bytesToHex(byte[] bytes) {
+    @Nullable
+    private static String bytesToHex(byte @Nullable [] bytes) {
+        if (bytes == null) {
+            return null;
+        }
+
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
             sb.append(String.format("%02X", b));

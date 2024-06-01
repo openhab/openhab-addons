@@ -1,11 +1,7 @@
 # Solarman Logger Binding
 
-[![Build Status](https://app.travis-ci.com/catalinsanda/org.openhab.binding.solarman.svg?branch=main)](https://app.travis-ci.com/catalinsanda/org.openhab.binding.solarman)
-
-Binding used to communicate with Solarman (IGEN-Tech) v5 based solar inverter data loggers in direct-mode over the local
-network.
-More information about the different types of stick loggers is available on the
-[Solarman](https://www.solarmanpv.com/products/data-logger/stick-logger/) site.
+Binding used to communicate with Solarman (IGEN-Tech) v5 based solar inverter data loggers in direct-mode over the local network.
+More information about the different types of stick loggers is available on the [Solarman](https://www.solarmanpv.com/products/data-logger/stick-logger/) site.
 
 These data loggers are used by inverters from a lot of manufacturers, just to name a few:
 
@@ -17,36 +13,29 @@ These data loggers are used by inverters from a lot of manufacturers, just to na
 
 ## Supported Things
 
-The `solarman:logger` thing supports reading data from a Solarman LSW-3 Stick Logger (it might also work with LSE-3 and
-maybe others)
-when connected to a supported inverter.
+The `solarman:logger` thing supports reading data from a Solarman LSW-3 Stick Logger (it might also work with LSE-3 and maybe others) when connected to a supported inverter.
 
-It was tested on a SUN-10K-SG04LP3-EU only, but because the implementation uses the inverter definitions created as part
-of
-[Stephan Joubert's Home Assistant plugin](https://github.com/StephanJoubert/home_assistant_solarman)
-it **might** work with the other inverters supported by the plugin.
+It was tested on a SUN-12K-SG04LP3-EU only, but because the implementation uses the inverter definitions created as part of Stephan Joubert's Home Assistant plugin it **might** work with the other inverters supported by the plugin.
 
 ## Thing Configuration
 
-To connect the logger you need the IP address of the logger and its serial number. The IP address can be obtained from
-your router and the serial number can either be read from the label of the logger, or by connecting to the logger with
-a browser (default user/pass: admin/admin) and getting it from the Status page. Please note that you need the
-"Device serial number" from the "Device information" section, not the "Inverter serial number".
+To connect the logger you need the IP address of the logger and its serial number. 
+The IP address can be obtained from your router and the serial number can either be read from the label of the logger, or by connecting to the logger with a browser (default user/pass: admin/admin) and getting it from the Status page. 
+Please note that you need the "Device serial number" from the "Device information" section, not the "Inverter serial number".
 
-### `solarman:logger` Thing Configuration
+### `logger` Thing Configuration
 
-| Name               | Type    | Description                                             | Default      | Required | Advanced |
-|--------------------|---------|---------------------------------------------------------|--------------|----------|----------|
-| hostname           | text    | Hostname or IP address of the Solarman logger           | N/A          | yes      | no       |
-| serialNumber       | text    | Serial number of the Solarman logger                    | N/A          | yes      | no       |
-| inverterType       | text    | The type of inverter connected to the logger            | deye_sg04lp3 | no       | no       |
-| port               | integer | Port of the Solarman logger                             | 8899         | no       | yes      |
-| refreshInterval    | integer | Interval the device is polled in sec.                   | 60           | no       | yes      |
-| additionalRequests | text    | Additional requests besides the ones in the deffinition | N/A          | no       | yes      |
+| Name               | Type    | Description                                             | Default | Required | Advanced |
+|--------------------|---------|---------------------------------------------------------|---------|----------|----------|
+| hostname           | text    | Hostname or IP address of the Solarman logger           | N/A     | yes      | no       |
+| serialNumber       | text    | Serial number of the Solarman logger                    | N/A     | yes      | no       |
+| inverterType       | text    | The type of inverter connected to the logger            | N/A     | yes      | no       |
+| port               | integer | Port of the Solarman logger                             | 8899    | no       | yes      |
+| refreshInterval    | integer | Interval the device is polled in sec.                   | 60      | no       | yes      |
+| additionalRequests | text    | Additional requests besides the ones in the deffinition | N/A     | no       | yes      |
 
 
-The `inverterType` parameter governs what registers the binding will read from the logger and what channels it will
-expose.
+The `inverterType` parameter governs what registers the binding will read from the logger and what channels it will expose.
 
 Possible values:
 
@@ -67,20 +56,19 @@ Possible values:
 The `additionalRequests` allows the user to specify additional address ranges to be polled. The format of the value is `mb_functioncode1:start1-end1, mb_functioncode2:start2-end2,...`
 For example `"0x03:0x27D-0x27E"` will issue an additional read for Holding Registers between `0x27D` and `0x27E`.
 
-This is useful when coupled with user defined channels, for example a thing definition like the one below will also read the register
-for the AC frequency on a Deye inverter, besides the ones pre-defined in the `deye_sg04lp3` inverter definition.
-```java
+This is useful when coupled with user defined channels, for example a thing definition like the one below will also read the register for the AC frequency on a Deye inverter, besides the ones pre-defined in the `deye_sg04lp3` inverter definition.
+
+```
 Thing solarman:logger:local [ hostname="x.x.x.x", inverterType="deye_sg04lp3", serialNumber="1234567890", additionalRequests="0x03:0x27D-0x27E" ] {
         Channels:
-        Type number : Inverter_Frequency [scale="0.01", uom="Hz", rule="3", registers="0x27E"]
+            Type number : Inverter_Frequency [scale="0.01", uom="Hz", rule="3", registers="0x27E"]
 }
 ```
 
 **Please note**
 
-As of this writing inverter types besides the `deye_sg04lp3` were not tested to work. If you have one of those inverters and it
-works,
-please drop me a message, if it doesn't work, please open an issue and I'll try to fix it.
+As of this writing inverter types besides the `deye_sg04lp3` were not tested to work. 
+If you have one of those inverters and it works, please drop me a message, if it doesn't work, please open an issue and I'll try to fix it.
 
 ## Channels
 
@@ -88,131 +76,141 @@ The list of channels is not static, it is generated dynamically based on the inv
 
 This is the list you get for the `deye_sg04lp3` inverter type:
 
-| Channel                          | Type   | Read/Write | Description                                        |
-|----------------------------------|--------|------------|----------------------------------------------------|
-| daily_battery_discharge          | Number | R          | Daily Battery Discharge \[0x0203\]                 |
-| internal_ct_l3_power             | Number | R          | Internal CT L3 Power \[0x025E\]                    |
-| total_battery_discharge          | Number | R          | Total Battery Discharge \[0x0206,0x0207\]          |
-| daily_production                 | Number | R          | Daily Production \[0x0211\]                        |
-| ac_temperature                   | Number | R          | AC Temperature \[0x021D\]                          |
-| pv1_current                      | Number | R          | PV1 Current \[0x02A5\]                             |
-| inverter_l2_power                | Number | R          | Inverter L2 Power \[0x027A\]                       |
-| pv2_voltage                      | Number | R          | PV2 Voltage \[0x02A6\]                             |
-| total_grid_production            | Number | R          | Total Grid Production \[0x020C,0x020D\]            |
-| load_voltage_l3                  | Number | R          | Load Voltage L3 \[0x0286\]                         |
-| load_voltage_l2                  | Number | R          | Load Voltage L2 \[0x0285\]                         |
-| daily_load_consumption           | Number | R          | Daily Load Consumption \[0x020E\]                  |
-| daily_energy_bought              | Number | R          | Daily Energy Bought \[0x0208\]                     |
-| load_voltage_l1                  | Number | R          | Load Voltage L1 \[0x0284\]                         |
-| grid_voltage_l2                  | Number | R          | Grid Voltage L2 \[0x0257\]                         |
-| grid_voltage_l1                  | Number | R          | Grid Voltage L1 \[0x0256\]                         |
-| communication_board_version_no   | Number | R          | Communication Board Version No. \[0x0011\]         |
-| inverter_id                      | String | R          | Inverter ID \[0x0003,0x0004,0x0005,0x0006,0x0007\] |
-| battery_current                  | Number | R          | Battery Current \[0x024F\]                         |
-| battery_temperature              | Number | R          | Battery Temperature \[0x024A\]                     |
-| daily_energy_sold                | Number | R          | Daily Energy Sold \[0x0209\]                       |
-| grid_voltage_l3                  | Number | R          | Grid Voltage L3 \[0x0258\]                         |
-| battery_power                    | Number | R          | Battery Power \[0x024E\]                           |
-| load_l3_power                    | Number | R          | Load L3 Power \[0x028C\]                           |
-| pv2_current                      | Number | R          | PV2 Current \[0x02A7\]                             |
-| external_ct_l2_power             | Number | R          | External CT L2 Power \[0x0269\]                    |
-| total_energy_bought              | Number | R          | Total Energy Bought \[0x020A,0x020B\]              |
-| total_production                 | Number | R          | Total Production \[0x0216,0x0217\]                 |
-| load_l2_power                    | Number | R          | Load L2 Power \[0x028B\]                           |
-| load_l1_power                    | Number | R          | Load L1 Power \[0x028A\]                           |
-| daily_grid_consumption           | Number | R          | Daily Grid Consumption \[0x0210\]                  |
-| external_ct_l1_power             | Number | R          | External CT L1 Power \[0x0268\]                    |
-| inverter_l3_power                | Number | R          | Inverter L3 Power \[0x027B\]                       |
-| pv1_voltage                      | Number | R          | PV1 Voltage \[0x02A4\]                             |
-| total_load_consumption           | Number | R          | Total Load Consumption \[0x0212,0x0213\]           |
-| inverter_l1_power                | Number | R          | Inverter L1 Power \[0x0279\]                       |
-| external_ct_l3_power             | Number | R          | External CT L3 Power \[0x026A\]                    |
-| daily_energy_consumption         | Number | R          | Daily Energy Consumption \[0x020F\]                |
-| total_energy_sold                | Number | R          | Total Energy Sold \[0x0201,0x0202\]                |
-| total_grid_consumption           | Number | R          | Total Grid Consumption \[0x0214,0x0215\]           |
-| inverter_temperature             | Number | R          | Inverter Temperature \[0x027D\]                    |
-| ac_frequency                     | Number | R          | AC Frequency \[0x021C\]                            |
-| battery_voltage                  | Number | R          | Battery Voltage \[0x0248\]                         |
-| battery_soc                      | Number | R          | Battery SOC \[0x0249\]                             |
-| ac_output_power                  | Number | R          | AC Output Power \[0x021B\]                         |
-| total_energy_consumption         | Number | R          | Total Energy Consumption \[0x0218,0x0219\]         |
+| Channel                                    | Type   | Read/Write   | Description                                           |
+|--------------------------------------------|--------|--------------|-------------------------------------------------------|
+| inverter-frequency                         | Number | R            | Number Value \[0x27E\]                                |
+| battery-battery-temperature                | Number | R            | Battery Temperature \[0x024A\]                        |
+| inverter-inverter-l3-power                 | Number | R            | Inverter L3 Power \[0x027B\]                          |
+| inverter-current-l2                        | Number | R            | Current L2 \[0x0277\]                                 |
+| upload-load-voltage-l3                     | Number | R            | Load Voltage L3 \[0x0286\]                            |
+| upload-load-voltage-l2                     | Number | R            | Load Voltage L2 \[0x0285\]                            |
+| grid-grid-voltage-l2                       | Number | R            | Grid Voltage L2 \[0x0257\]                            |
+| upload-daily-load-consumption              | Number | R            | Daily Load Consumption \[0x020E\]                     |
+| inverter-dc-temperature                    | Number | R            | DC Temperature \[0x021C\]                             |
+| grid-external-ct-l2-power                  | Number | R            | External CT L2 Power \[0x0269\]                       |
+| inverter-control-board-version-no          | Number | R            | Control Board Version No \[0x000D\]                   |
+| upload-load-l3-power                       | Number | R            | Load L3 Power \[0x028C\]                              |
+| solar-pv2-voltage                          | Number | R            | PV2 Voltage \[0x02A6\]                                |
+| solar-pv1-power                            | Number | R            | PV1 Power \[0x02A0\]                                  |
+| upload-total-load-power                    | Number | R            | Total Load Power \[0x028D\]                           |
+| solar-pv1-current                          | Number | R            | PV1 Current \[0x02A5\]                                |
+| inverter-ac-temperature                    | Number | R            | AC Temperature \[0x021D\]                             |
+| alert-alert                                | Number | R            | Alert \[0x0229,0x022A,0x022B,0x022C,0x022D,0x022E\]   |
+| grid-daily-energy-sold                     | Number | R            | Daily Energy Sold \[0x0209\]                          |
+| upload-load-l1-power                       | Number | R            | Load L1 Power \[0x028A\]                              |
+| solar-total-production                     | Number | R            | Total Production \[0x0216,0x0217\]                    |
+| battery-total-battery-discharge            | Number | R            | Total Battery Discharge \[0x0206,0x0207\]             |
+| grid-grid-voltage-l1                       | Number | R            | Grid Voltage L1 \[0x0256\]                            |
+| grid-internal-ct-l2-power                  | Number | R            | Internal CT L2 Power \[0x025D\]                       |
+| battery-battery-voltage                    | Number | R            | Battery Voltage \[0x024B\]                            |
+| grid-internal-ct-l3-power                  | Number | R            | Internal CT L3 Power \[0x025E\]                       |
+| grid-total-energy-bought                   | Number | R            | Total Energy Bought \[0x020A,0x020B\]                 |
+| battery-battery-current                    | Number | R            | Battery Current \[0x024F\]                            |
+| inverter-inverter-l1-power                 | Number | R            | Inverter L1 Power \[0x0279\]                          |
+| inverter-inverter-l2-power                 | Number | R            | Inverter L2 Power \[0x027A\]                          |
+| solar-pv2-current                          | Number | R            | PV2 Current \[0x02A7\]                                |
+| grid-grid-voltage-l3                       | Number | R            | Grid Voltage L3 \[0x0258\]                            |
+| solar-pv1-voltage                          | Number | R            | PV1 Voltage \[0x02A4\]                                |
+| upload-load-l2-power                       | Number | R            | Load L2 Power \[0x028B\]                              |
+| inverter-communication-board-version-no    | Number | R            | Communication Board Version No \[0x0011\]             |
+| battery-daily-battery-charge               | Number | R            | Daily Battery Charge \[0x0202\]                       |
+| upload-total-load-consumption              | Number | R            | Total Load Consumption \[0x020F,0x0210\]              |
+| battery-battery-soc                        | Number | R            | Battery SOC \[0x024C\]                                |
+| inverter-current-l1                        | Number | R            | Current L1 \[0x0276\]                                 |
+| battery-battery-power                      | Number | R            | Battery Power \[0x024E\]                              |
+| grid-internal-ct-l1-power                  | Number | R            | Internal CT L1 Power \[0x025C\]                       |
+| inverter-current-l3                        | Number | R            | Current L3 \[0x0278\]                                 |
+| grid-total-grid-power                      | Number | R            | Total Grid Power \[0x0271\]                           |
+| battery-total-battery-charge               | Number | R            | Total Battery Charge \[0x0204,0x0205\]                |
+| solar-daily-production                     | Number | R            | Daily Production \[0x0211\]                           |
+| solar-pv2-power                            | Number | R            | PV2 Power \[0x02A1\]                                  |
+| grid-external-ct-l3-power                  | Number | R            | External CT L3 Power \[0x026A\]                       |
+| inverter-inverter-id                       | String | R            | Inverter ID \[0x0003,0x0004,0x0005,0x0006,0x0007\]    |
+| grid-external-ct-l1-power                  | Number | R            | External CT L1 Power \[0x0268\]                       |
+| grid-daily-energy-bought                   | Number | R            | Daily Energy Bought \[0x0208\]                        |
+| upload-load-voltage-l1                     | Number | R            | Load Voltage L1 \[0x0284\]                            |
+| battery-daily-battery-discharge            | Number | R            | Daily Battery Discharge \[0x0203\]                    |
+| grid-total-grid-production                 | Number | R            | Total Grid Production \[0x020C,0x020D\]               |
+| grid-total-energy-sold                     | Number | R            | Total Energy Sold \[0x020C\]                          |
+
 
 ## Full Example
 
-This example is what I use for my DEYE 12kW (SUN-12K-SG04LP3-EU) hybrid inverter
+This is an example for a DEYE 12kW (SUN-12K-SG04LP3-EU) hybrid inverter
 
-### Thing Configuration
+### `solarman.things`
 
 Please replace the `hostname` and `serialNumber` with the correct values for your logger.
 
-```java
-Thing solarman:logger:local[hostname="x.x.x.x",inverterType="deye_sg04lp3",serialNumber="1234567890"]{
-        }
+```
+Thing solarman:logger:local [hostname="x.x.x.x",inverterType="deye_sg04lp3",serialNumber="1234567890"]
 ```
 
-### Item Configuration
+### `solarman.items`
 
-Items file I use for my SUN-12K-SG04LP3-EU inverter
+Items file example for a SUN-12K-SG04LP3-EU inverter
 
 ```text
-    Number Communication_Board_Version_No "Communication Board Version No [%s]" (solarman) {channel="solarman:logger:local:inverter_communication_board_version_no"}
-    Number Control_Board_Version_No "Control Board Version No [%s]" (solarman) {channel="solarman:logger:local:inverter_control_board_version_no"}
-    String Inverter_Id "Inverter Id [%s]" (solarman) {channel="solarman:logger:local:inverter_inverter_id"}
-    Number Daily_Battery_Charge "Daily Battery Charge [%.1f kWh]" (solarman) {channel="solarman:logger:local:battery_daily_battery_charge"}
-    Number Daily_Battery_Discharge "Daily Battery Discharge [%.1f kWh]" (solarman) {channel="solarman:logger:local:battery_daily_battery_discharge"}
-    Number Total_Battery_Charge "Total Battery Charge [%d kWh]" (solarman) {channel="solarman:logger:local:battery_total_battery_charge"}
-    Number Total_Production "Total Production [%d kWh]" (solarman) {channel="solarman:logger:local:solar_total_production"}
-    Number Total_Grid_Production "Total Grid Feed-in [%.1f kWh]" (solarman) {channel="solarman:logger:local:grid_total_grid_production"}
-    Number Daily_Energy_Sold "Daily Energy Sold [%d Wh]" (solarman) {channel="solarman:logger:local:grid_daily_energy_sold"}
-    Number Daily_Load_Consumption "Daily Load Consumption [%.1f kWh]" (solarman) {channel="solarman:logger:local:upload_daily_load_consumption"}
-    Number AC_Temperature "AC Temperature [%.1f °C]" (solarman) {channel="solarman:logger:local:inverter_ac_temperature"}
-    Number Total_Energy_Sold "Total Energy Sold [%d kWh]" (solarman) {channel="solarman:logger:local:grid_total_energy_sold"}
-    Number Total_Load_Consumption "Total Load Consumption [%d kWh]" (solarman) {channel="solarman:logger:local:upload_total_load_consumption"}
-    Number DC_Temperature "DC Temperature [%.1f °C]" (solarman) {channel="solarman:logger:local:inverter_dc_temperature"}
-    Number Daily_Energy_Bought "Daily Energy Bought [%d kWh]" (solarman) {channel="solarman:logger:local:grid_daily_energy_bought"}
-    Number Daily_Production "Daily Production [%.1f kWh]" (solarman) {channel="solarman:logger:local:solar_daily_production"}
-    Number Alert "Alert [%s]" (solarman) {channel="solarman:logger:local:alert_alert"}
-    Number Total_Battery_Discharge "Total Battery Discharge [%d kWh]" (solarman) {channel="solarman:logger:local:battery_total_battery_discharge"}
-    Number Total_Energy_Bought "Total Energy Bought [%d kWh]" (solarman) {channel="solarman:logger:local:grid_total_energy_bought"}
-    Number Battery_SOC "Battery SOC [%d %%]" (solarman) {channel="solarman:logger:local:battery_battery_soc"}
-    Number Battery_Current "Battery Current [%.1f A]" (solarman) {channel="solarman:logger:local:battery_battery_current"}
-    Number Battery_Power "Battery Power [%d W]" (solarman) {channel="solarman:logger:local:battery_battery_power"}
-    Number Battery_Voltage "Battery Voltage [%.2f V]" (solarman) {channel="solarman:logger:local:battery_battery_voltage"}
-    Number Battery_Temperature "Battery Temperature [%.1f °C]" (solarman) {channel="solarman:logger:local:battery_battery_temperature"}
-    Number Inverter_L2_Power "Inverter L2 Power [%d W]" (solarman) {channel="solarman:logger:local:inverter_inverter_l2_power"}
-    Number External_CT_L1_Power "External CT L1 Power [%d W]" (solarman) {channel="solarman:logger:local:grid_external_ct_l1_power"}
-    Number External_CT_L2_Power "External CT L2 Power [%d W]" (solarman) {channel="solarman:logger:local:grid_external_ct_l2_power"}
-    Number Grid_Voltage_L1 "Grid Voltage L1 [%d W]" (solarman) {channel="solarman:logger:local:grid_grid_voltage_l1"}
-    Number Total_Grid_Power "Total Instant Grid Power [%d W]" (solarman) {channel="solarman:logger:local:grid_total_grid_power"}
-    Number Current_L2 "Current L2 [%.1f A]" (solarman) {channel="solarman:logger:local:inverter_current_l2"}
-    Number Internal_CT_L1_Power "Internal CT L1 Power [%d W]" (solarman) {channel="solarman:logger:local:grid_internal_ct_l1_power"}
-    Number Current_L1 "Current L1 [%.1f A]" (solarman) {channel="solarman:logger:local:inverter_current_l1"}
-    Number Inverter_L1_Power "Inverter L1 Power [%d W]" (solarman) {channel="solarman:logger:local:inverter_inverter_l1_power"}
-    Number Internal_CT_L2_Power "Internal CT L2 Power [%d W]" (solarman) {channel="solarman:logger:local:grid_internal_ct_l2_power"}
-    Number Grid_Voltage_L3 "Grid Voltage L3 [%d V]" (solarman) {channel="solarman:logger:local:grid_grid_voltage_l3"}
-    Number Inverter_L3_Power "Inverter L3 Power [%d W]" (solarman) {channel="solarman:logger:local:inverter_inverter_l3_power"}
-    Number Internal_CT_L3_Power "Internal CT L3 Power [%d W]" (solarman) {channel="solarman:logger:local:grid_internal_ct_l3_power"}
-    Number Current_L3 "Current L3 [%.1f A]" (solarman) {channel="solarman:logger:local:inverter_current_l3"}
-    Number Grid_Voltage_L2 "Grid Voltage L2 [%d V]" (solarman) {channel="solarman:logger:local:grid_grid_voltage_l2"}
-    Number External_CT_L3_Power "External CT L3 Power [%d W]" (solarman) {channel="solarman:logger:local:grid_external_ct_l3_power"}
-    Number Load_L1_Power "Load L1 Power [%d W]" (solarman) {channel="solarman:logger:local:upload_load_l1_power"}
-    Number Total_Load_Power "Total Load Power [%d W]" (solarman) {channel="solarman:logger:local:upload_total_load_power"}
-    Number Load_L2_Power "Load L2 Power [%d W]" (solarman) {channel="solarman:logger:local:upload_load_l2_power"}
-    Number Load_L3_Power "Load Load L3 Power [%d W]" (solarman) {channel="solarman:logger:local:upload_load_l3_power"}
-    Number Load_Voltage_L1 "Load Voltage L1 [%d V]" (solarman) {channel="solarman:logger:local:upload_load_voltage_l1"}
-    Number Load_Voltage_L3 "Load Voltage L3 [%d V]" (solarman) {channel="solarman:logger:local:upload_load_voltage_l3"}
-    Number Load_Voltage_L2 "Load Voltage L2 [%d V]" (solarman) {channel="solarman:logger:local:upload_load_voltage_l2"}
-    Number PV1_Current "PV1 Current [%.1f A]" (solarman) {channel="solarman:logger:local:solar_pv1_current"}
-    Number PV1_Power "PV1 Power [%d W]" (solarman) {channel="solarman:logger:local:solar_pv1_power"}
-    Number PV2_Voltage "PV2 Voltage [%d V]" (solarman) {channel="solarman:logger:local:solar_pv2_voltage"}
-    Number PV2_Current "PV2 Current [%.1f A]" (solarman) {channel="solarman:logger:local:solar_pv2_current"}
-    Number PV2_Power "PV2 Power [%d W]" (solarman) {channel="solarman:logger:local:solar_pv2_power"}
-    Number PV1_Voltage "PV1 Voltage [%d V]" (solarman) {channel="solarman:logger:local:solar_pv1_voltage"}
+Number:Dimensionless      Communication_Board_Version_No  "Communication Board Version No [%s]"  (solarman)  {channel="solarman:logger:local:inverter-communication-board-version-no"}
+Number:Dimensionless      Control_Board_Version_No        "Control Board Version No [%s]"        (solarman)  {channel="solarman:logger:local:inverter-control-board-version-no"}
+String                    Inverter_Id                     "Inverter Id [%s]"                     (solarman)  {channel="solarman:logger:local:inverter-inverter-id"}
+Number:Temperature        AC_Temperature                  "AC Temperature [%.1f °C]"             (solarman)  {channel="solarman:logger:local:inverter-ac-temperature", unit="°C"}
+Number:Temperature        DC_Temperature                  "DC Temperature [%.1f °C]"             (solarman)  {channel="solarman:logger:local:inverter-dc-temperature", unit="°C"}
+Number:Power              Inverter_L1_Power               "Inverter L1 Power [%d W]"             (solarman)  {channel="solarman:logger:local:inverter-inverter-l1-power", unit="W"}
+Number:Power              Inverter_L2_Power               "Inverter L2 Power [%d W]"             (solarman)  {channel="solarman:logger:local:inverter-inverter-l2-power", unit="W"}
+Number:Power              Inverter_L3_Power               "Inverter L3 Power [%d W]"             (solarman)  {channel="solarman:logger:local:inverter-inverter-l3-power", unit="W"}
+Number:ElectricCurrent    Current_L1                      "Current L1 [%.1f A]"                  (solarman)  {channel="solarman:logger:local:inverter-current-l1", unit="A"}
+Number:ElectricCurrent    Current_L2                      "Current L2 [%.1f A]"                  (solarman)  {channel="solarman:logger:local:inverter-current-l2", unit="A"}
+Number:ElectricCurrent    Current_L3                      "Current L3 [%.1f A]"                  (solarman)  {channel="solarman:logger:local:inverter-current-l3", unit="A"}
+Number:Power              External_CT_L1_Power            "External CT L1 Power [%d W]"          (solarman)  {channel="solarman:logger:local:grid-external-ct-l1-power", unit="W"}
+Number:Power              External_CT_L2_Power            "External CT L2 Power [%d W]"          (solarman)  {channel="solarman:logger:local:grid-external-ct-l2-power", unit="W"}
+Number:Power              External_CT_L3_Power            "External CT L3 Power [%d W]"          (solarman)  {channel="solarman:logger:local:grid-external-ct-l3-power", unit="W"}
+Number:Power              Internal_CT_L1_Power            "Internal CT L1 Power [%d W]"          (solarman)  {channel="solarman:logger:local:grid-internal-ct-l1-power", unit="W"}
+Number:Power              Internal_CT_L2_Power            "Internal CT L2 Power [%d W]"          (solarman)  {channel="solarman:logger:local:grid-internal-ct-l2-power", unit="W"}
+Number:Power              Internal_CT_L3_Power            "Internal CT L3 Power [%d W]"          (solarman)  {channel="solarman:logger:local:grid-internal-ct-l3-power", unit="W"}
+Number:ElectricPotential  Grid_Voltage_L1                 "Grid Voltage L1 [%d V]"               (solarman)  {channel="solarman:logger:local:grid-grid-voltage-l1", unit="V"}
+Number:ElectricPotential  Grid_Voltage_L2                 "Grid Voltage L2 [%d V]"               (solarman)  {channel="solarman:logger:local:grid-grid-voltage-l2", unit="V"}
+Number:ElectricPotential  Grid_Voltage_L3                 "Grid Voltage L3 [%d V]"               (solarman)  {channel="solarman:logger:local:grid-grid-voltage-l3", unit="V"}
+Number:Power              Total_Grid_Power                "Total Instant Grid Power [%d W]"      (solarman)  {channel="solarman:logger:local:grid-total-grid-power", unit="W"}
+Number:Energy             Total_Grid_Production           "Total Grid Feed-in [%.1f kWh]"        (solarman)  {channel="solarman:logger:local:grid-total-grid-production", unit="kWh"}
+Number:Energy             Daily_Energy_Sold               "Daily Energy Sold [%d Wh]"            (solarman)  {channel="solarman:logger:local:grid-daily-energy-sold", unit="Wh"}
+Number:Energy             Total_Energy_Sold               "Total Energy Sold [%d kWh]"           (solarman)  {channel="solarman:logger:local:grid-total-energy-sold", unit="kWh"}
+Number:Energy             Total_Energy_Bought             "Total Energy Bought [%d kWh]"         (solarman)  {channel="solarman:logger:local:grid-total-energy-bought", unit="kWh"}
+Number:Energy             Daily_Energy_Bought             "Daily Energy Bought [%d kWh]"         (solarman)  {channel="solarman:logger:local:grid-daily-energy-bought", unit="kWh"}
+Number:Energy             Daily_Production                "Daily Production [%.1f kWh]"          (solarman)  {channel="solarman:logger:local:solar-daily-production", unit="kWh"}
+Number:Energy             Total_Production                "Total Production [%d kWh]"            (solarman)  {channel="solarman:logger:local:solar-total-production", unit="kWh"}
+Number:Energy             Daily_Load_Consumption          "Daily Load Consumption [%.1f kWh]"    (solarman)  {channel="solarman:logger:local:upload-daily-load-consumption", unit="kWh"}
+Number:Energy             Total_Load_Consumption          "Total Load Consumption [%d kWh]"      (solarman)  {channel="solarman:logger:local:upload-total-load-consumption", unit="kWh"}
+Number:Power              Load_L1_Power                   "Load L1 Power [%d W]"                 (solarman)  {channel="solarman:logger:local:upload-load-l1-power", unit="W"}
+Number:Power              Load_L2_Power                   "Load L2 Power [%d W]"                 (solarman)  {channel="solarman:logger:local:upload-load-l2-power", unit="W"}
+Number:Power              Load_L3_Power                   "Load L3 Power [%d W]"                 (solarman)  {channel="solarman:logger:local:upload-load-l3-power", unit="W"}
+Number:Power              Total_Load_Power                "Total Load Power [%d W]"              (solarman)  {channel="solarman:logger:local:upload-total-load-power", unit="W"}
+Number:ElectricPotential  Load_Voltage_L1                 "Load Voltage L1 [%d V]"               (solarman)  {channel="solarman:logger:local:upload-load-voltage-l1", unit="V"}
+Number:ElectricPotential  Load_Voltage_L2                 "Load Voltage L2 [%d V]"               (solarman)  {channel="solarman:logger:local:upload-load-voltage-l2", unit="V"}
+Number:ElectricPotential  Load_Voltage_L3                 "Load Voltage L3 [%d V]"               (solarman)  {channel="solarman:logger:local:upload-load-voltage-l3", unit="V"}
+Number:Energy             Daily_Energy_Consumption        "Daily Energy Consumption [%d kWh]"    (solarman)  {channel="solarman:logger:local:upload-daily-load-consumption", unit="kWh"}
+Number:Energy             Total_Energy_Consumption        "Total Energy Consumption [%d kWh]"    (solarman)  {channel="solarman:logger:local:upload-total-load-consumption", unit="kWh"}
+Number:ElectricCurrent    PV1_Current                     "PV1 Current [%.1f A]"                 (solarman)  {channel="solarman:logger:local:solar-pv1-current", unit="A"}
+Number:Power              PV1_Power                       "PV1 Power [%d W]"                     (solarman)  {channel="solarman:logger:local:solar-pv1-power", unit="W"}
+Number:ElectricPotential  PV1_Voltage                     "PV1 Voltage [%d V]"                   (solarman)  {channel="solarman:logger:local:solar-pv1-voltage", unit="V"}
+Number:ElectricCurrent    PV2_Current                     "PV2 Current [%.1f A]"                 (solarman)  {channel="solarman:logger:local:solar-pv2-current", unit="A"}
+Number:Power              PV2_Power                       "PV2 Power [%d W]"                     (solarman)  {channel="solarman:logger:local:solar-pv2-power", unit="W"}
+Number:ElectricPotential  PV2_Voltage                     "PV2 Voltage [%d V]"                   (solarman)  {channel="solarman:logger:local:solar-pv2-voltage", unit="V"}
+Number:Dimensionless      Battery_SOC                     "Battery SOC [%d %%]"                  (solarman)  {channel="solarman:logger:local:battery-battery-soc", unit="%"}
+Number:ElectricCurrent    Battery_Current                 "Battery Current [%.1f A]"             (solarman)  {channel="solarman:logger:local:battery-battery-current", unit="A"}
+Number:Power              Battery_Power                   "Battery Power [%d W]"                 (solarman)  {channel="solarman:logger:local:battery-battery-power", unit="W"}
+Number:ElectricPotential  Battery_Voltage                 "Battery Voltage [%.2f V]"             (solarman)  {channel="solarman:logger:local:battery-battery-voltage", unit="V"}
+Number:Temperature        Battery_Temperature             "Battery Temperature [%.1f °C]"        (solarman)  {channel="solarman:logger:local:battery-battery-temperature", unit="°C"}
+Number:Energy             Daily_Battery_Charge            "Daily Battery Charge [%.1f kWh]"      (solarman)  {channel="solarman:logger:local:battery-daily-battery-charge", unit="kWh"}
+Number:Energy             Daily_Battery_Discharge         "Daily Battery Discharge [%.1f kWh]"   (solarman)  {channel="solarman:logger:local:battery-daily-battery-discharge", unit="kWh"}
+Number:Energy             Total_Battery_Charge            "Total Battery Charge [%d kWh]"        (solarman)  {channel="solarman:logger:local:battery-total-battery-charge", unit="kWh"}
+Number:Energy             Total_Battery_Discharge         "Total Battery Discharge [%d kWh]"     (solarman)  {channel="solarman:logger:local:battery-total-battery-discharge", unit="kWh"}
+Number                    Alert                           "Alert [%s]"                           (solarman)  {channel="solarman:logger:local:alert-alert"}
 ```
 
-### Sitemap Configuration
+### `solarman.sitemap`
 
-Sitemap I use for my SUN-12K-SG04LP3-EU inverter
+Sitemap example for a SUN-12K-SG04LP3-EU inverter
 
 ```perl
 sitemap solarman label="Solarman"
@@ -292,9 +290,5 @@ sitemap solarman label="Solarman"
 
 ## Acknowledgments
 
-The code's creation draws significant inspiration
-from [Stephan Joubert's Home Assistant plugin](https://github.com/StephanJoubert/home_assistant_solarman), which
-provides the inverter definitions used in the project.
-Additionally, the [pysolarmanv5 module](https://pysolarmanv5.readthedocs.io/en/latest/index.html) was a valuable
-resource,
-as it offers an excellent explanation of the Solarman V5 protocol.
+The code's creation draws significant inspiration from [Stephan Joubert's Home Assistant plugin](https://github.com/StephanJoubert/home_assistant_solarman), which provides the inverter definitions used in the project. 
+Additionally, the [pysolarmanv5 module](https://pysolarmanv5.readthedocs.io/en/latest/index.html) was a valuable resource, as it offers an excellent explanation of the Solarman V5 protocol.

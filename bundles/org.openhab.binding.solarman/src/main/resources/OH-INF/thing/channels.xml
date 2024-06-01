@@ -22,4 +22,10 @@
 		<config-description-ref uri="channel-type-config:solarman:datetime_channel"/>
 	</channel-type>
 
+	<channel-type id="dynamic">
+		<item-type>String</item-type>
+		<label>Dynamic Channel</label>
+		<config-description-ref uri="channel-type-config:solarman:dynamic-channel"/>
+	</channel-type>
+
 </thing:thing-descriptions>
