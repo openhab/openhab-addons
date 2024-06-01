@@ -236,14 +236,14 @@
 		<description>Main zone mode: "Stereo", "Direct", "Auto", etc.</description>
 		<state>
 			<options>
-				<option value="All Stereo">@text/channel-type.emotiva.selected-mode.option.all-stereo</option>
-				<option value="Auto">@text/channel-type.emotiva.selected-mode.option.auto</option>
-				<option value="Direct">@text/channel-type.emotiva.selected-mode.option.direct</option>
-				<option value="Dolby">@text/channel-type.emotiva.selected-mode.option.dolby</option>
-				<option value="DTS">@text/channel-type.emotiva.selected-mode.option.dts</option>
-				<option value="Stereo">@text/channel-type.emotiva.selected-mode.option.stereo</option>
-				<option value="Surround">@text/channel-type.emotiva.selected-mode.option.surround</option>
-				<option value="Reference Stereo">@text/channel-type.emotiva.selected-mode.option.ref-stereo</option>
+				<option value="all-stereo">all-stereo</option>
+				<option value="auto">auto</option>
+				<option value="direct">direct</option>
+				<option value="dolby">dolby</option>
+				<option value="dts">dts</option>
+				<option value="stereo">stereo</option>
+				<option value="surround">surround</option>
+				<option value="ref-stereo">ref-stereo</option>
 			</options>
 		</state>
 	</channel-type>
@@ -260,8 +260,8 @@
 		<description>Speaker preset Name</description>
 		<state>
 			<options>
-				<option value="preset1">@text/channel-type.emotiva.speaker-preset.state.option.preset-1</option>
-				<option value="preset2">@text/channel-type.emotiva.speaker-preset.state.option.preset-2</option>
+				<option value="preset-1">preset-1</option>
+				<option value="preset-2">preset-2</option>
 			</options>
 		</state>
 	</channel-type>
@@ -297,8 +297,8 @@
 		<description>Radio tuner band: "AM" or "FM"</description>
 		<state>
 			<options>
-				<option value="band-am">@text/channel-type.emotiva.tuner-band.state.option.band-am</option>
-				<option value="band-fm">@text/channel-type.emotiva.tuner-band.state.option.band-fm</option>
+				<option value="band-am">band-am</option>
+				<option value="band-fm">band-fm</option>
 			</options>
 		</state>
 	</channel-type>
@@ -316,26 +316,26 @@
 		<description>User select radio tuner channel name</description>
 		<state>
 			<options>
-				<option value="channel-1">@text/channel-type.emotiva.tuner-channel-select.option.channel-1</option>
-				<option value="channel-2">@text/channel-type.emotiva.tuner-channel-select.option.channel-2</option>
-				<option value="channel-3">@text/channel-type.emotiva.tuner-channel-select.option.channel-3</option>
-				<option value="channel-4">@text/channel-type.emotiva.tuner-channel-select.option.channel-4</option>
-				<option value="channel-5">@text/channel-type.emotiva.tuner-channel-select.option.channel-5</option>
-				<option value="channel-6">@text/channel-type.emotiva.tuner-channel-select.option.channel-6</option>
-				<option value="channel-7">@text/channel-type.emotiva.tuner-channel-select.option.channel-7</option>
-				<option value="channel-8">@text/channel-type.emotiva.tuner-channel-select.option.channel-8</option>
-				<option value="channel-9">@text/channel-type.emotiva.tuner-channel-select.option.channel-9</option>
-				<option value="channel-10">@text/channel-type.emotiva.tuner-channel-select.option.channel-10</option>
-				<option value="channel-11">@text/channel-type.emotiva.tuner-channel-select.option.channel-11</option>
-				<option value="channel-12">@text/channel-type.emotiva.tuner-channel-select.option.channel-12</option>
-				<option value="channel-13">@text/channel-type.emotiva.tuner-channel-select.option.channel-13</option>
-				<option value="channel-14">@text/channel-type.emotiva.tuner-channel-select.option.channel-14</option>
-				<option value="channel-15">@text/channel-type.emotiva.tuner-channel-select.option.channel-15</option>
-				<option value="channel-16">@text/channel-type.emotiva.tuner-channel-select.option.channel-16</option>
-				<option value="channel-17">@text/channel-type.emotiva.tuner-channel-select.option.channel-17</option>
-				<option value="channel-18">@text/channel-type.emotiva.tuner-channel-select.option.channel-18</option>
-				<option value="channel-19">@text/channel-type.emotiva.tuner-channel-select.option.channel-19</option>
-				<option value="channel-20">@text/channel-type.emotiva.tuner-channel-select.option.channel-20</option>
+				<option value="channel-1">channel-1</option>
+				<option value="channel-2">channel-2</option>
+				<option value="channel-3">channel-3</option>
+				<option value="channel-4">channel-4</option>
+				<option value="channel-5">channel-5</option>
+				<option value="channel-6">channel-6</option>
+				<option value="channel-7">channel-7</option>
+				<option value="channel-8">channel-8</option>
+				<option value="channel-9">channel-9</option>
+				<option value="channel-10">channel-10</option>
+				<option value="channel-11">channel-11</option>
+				<option value="channel-12">channel-12</option>
+				<option value="channel-13">channel-13</option>
+				<option value="channel-14">channel-14</option>
+				<option value="channel-15">channel-15</option>
+				<option value="channel-16">channel-16</option>
+				<option value="channel-17">channel-17</option>
+				<option value="channel-18">channel-18</option>
+				<option value="channel-19">channel-19</option>
+				<option value="channel-20">channel-20</option>
 			</options>
 		</state>
 	</channel-type>
@@ -353,57 +353,57 @@
 		<description>Radio tuner program: "Country", "Rock", "Classical", etc.</description>
 		<state readOnly="true">
 			<options>
-				<option value="Adult Hits">@text/channel-type.emotiva.tuner-program.option.adult-hits</option>
-				<option value="Alarm Test">@text/channel-type.emotiva.tuner-program.option.alarm-test</option>
-				<option value="Alarm">@text/channel-type.emotiva.tuner-program.option.alarm</option>
-				<option value="Children's Programmes">@text/channel-type.emotiva.tuner-program.option.children-programmes</option>
-				<option value="Classic Rock">@text/channel-type.emotiva.tuner-program.option.classic-rock</option>
-				<option value="Classical">@text/channel-type.emotiva.tuner-program.option.classical</option>
-				<option value="College">@text/channel-type.emotiva.tuner-program.option.college</option>
-				<option value="Country Music">@text/channel-type.emotiva.tuner-program.option.country-music</option>
-				<option value="Culture">@text/channel-type.emotiva.tuner-program.option.culture</option>
-				<option value="Current Affairs">@text/channel-type.emotiva.tuner-program.option.current-affairs</option>
-				<option value="Documentary">@text/channel-type.emotiva.tuner-program.option.documentary</option>
-				<option value="Drama">@text/channel-type.emotiva.tuner-program.option.drama</option>
-				<option value="Easy Listening">@text/channel-type.emotiva.tuner-program.option.easy-listening</option>
-				<option value="Education">@text/channel-type.emotiva.tuner-program.option.education</option>
-				<option value="Emergency Test">@text/channel-type.emotiva.tuner-program.option.emergency-test</option>
-				<option value="Emergency">@text/channel-type.emotiva.tuner-program.option.emergency</option>
-				<option value="Finance">@text/channel-type.emotiva.tuner-program.option.finance</option>
-				<option value="Folk Music">@text/channel-type.emotiva.tuner-program.option.folk-music</option>
-				<option value="Information">@text/channel-type.emotiva.tuner-program.option.information</option>
-				<option value="Jazz Music">@text/channel-type.emotiva.tuner-program.option.jazz-music</option>
-				<option value="Jazz">@text/channel-type.emotiva.tuner-program.option.jazz</option>
-				<option value="Language">@text/channel-type.emotiva.tuner-program.option.language</option>
-				<option value="Leisure">@text/channel-type.emotiva.tuner-program.option.leisure</option>
-				<option value="Light Classical">@text/channel-type.emotiva.tuner-program.option.light-classical</option>
-				<option value="National Music">@text/channel-type.emotiva.tuner-program.option.national-music</option>
-				<option value="News">@text/channel-type.emotiva.tuner-program.option.news</option>
-				<option value="Nostalgia">@text/channel-type.emotiva.tuner-program.option.nostalgia</option>
-				<option value="">@text/channel-type.emotiva.tuner-program.option.no-program</option>
-				<option value="Oldies (Music)">@text/channel-type.emotiva.tuner-program.option.oldies</option>
-				<option value="Oldies Music">@text/channel-type.emotiva.tuner-program.option.oldies-music</option>
-				<option value="Other Music">@text/channel-type.emotiva.tuner-program.option.other-music</option>
-				<option value="Personality">@text/channel-type.emotiva.tuner-program.option.personality</option>
-				<option value="Phone-in">@text/channel-type.emotiva.tuner-program.option.phone-in</option>
-				<option value="Popular Music (Pop)">@text/channel-type.emotiva.tuner-program.option.popular-music</option>
-				<option value="Public">@text/channel-type.emotiva.tuner-program.option.public</option>
-				<option value="Religion">@text/channel-type.emotiva.tuner-program.option.religion</option>
-				<option value="Religious Talk">@text/channel-type.emotiva.tuner-program.option.religious-talk</option>
-				<option value="Rhythm &amp; Blues">@text/channel-type.emotiva.tuner-program.option.rhythm-blues</option>
-				<option value="Rock Music">@text/channel-type.emotiva.tuner-program.option.rock-music</option>
-				<option value="Rock">@text/channel-type.emotiva.tuner-program.option.rock</option>
-				<option value="Science">@text/channel-type.emotiva.tuner-program.option.Science</option>
-				<option value="Serious Classical">@text/channel-type.emotiva.tuner-program.option.serious-classical</option>
-				<option value="Social Affairs">@text/channel-type.emotiva.tuner-program.option.social-affairs</option>
-				<option value="Soft Music">@text/channel-type.emotiva.tuner-program.option.soft-music</option>
-				<option value="Soft Rhythm &amp; Blues">@text/channel-type.emotiva.tuner-program.option.soft-rhythm-blues</option>
-				<option value="Soft Rock">@text/channel-type.emotiva.tuner-program.option.soft-rock</option>
-				<option value="Sport">@text/channel-type.emotiva.tuner-program.option.sport</option>
-				<option value="Talk">@text/channel-type.emotiva.tuner-program.option.talk</option>
-				<option value="Top 40">@text/channel-type.emotiva.tuner-program.option.top-40</option>
-				<option value="Travel">@text/channel-type.emotiva.tuner-program.option.travel</option>
-				<option value="Weather">@text/channel-type.emotiva.tuner-program.option.weather</option>
+				<option value="adult-hits">adult-hits</option>
+				<option value="alarm-test">alarm-test</option>
+				<option value="alarm">alarm</option>
+				<option value="children-programmes">children-programmes</option>
+				<option value="classic-rock">classic-rock</option>
+				<option value="classical">classical</option>
+				<option value="college">college</option>
+				<option value="country-music">country-music</option>
+				<option value="culture">culture</option>
+				<option value="current-affairs">current-affairs</option>
+				<option value="documentary">documentary</option>
+				<option value="drama">drama</option>
+				<option value="easy-listening">easy-listening</option>
+				<option value="education">education</option>
+				<option value="emergency-test">emergency-test</option>
+				<option value="emergency">emergency</option>
+				<option value="finance">finance</option>
+				<option value="folk-music">folk-music</option>
+				<option value="information">information</option>
+				<option value="jazz-music">jazz-music</option>
+				<option value="jazz">jazz</option>
+				<option value="language">language</option>
+				<option value="Leisure">leisure</option>
+				<option value="Light Classical">light-classical</option>
+				<option value="National Music">national-music</option>
+				<option value="News">news</option>
+				<option value="Nostalgia">nostalgia</option>
+				<option value="no-program">no-program</option>
+				<option value="oldies">oldies</option>
+				<option value="oldies-music">oldies-music</option>
+				<option value="other-music">other-music</option>
+				<option value="personality">personality</option>
+				<option value="Phone-in">phone-in</option>
+				<option value="popular-music">popular-music</option>
+				<option value="public">public</option>
+				<option value="religion">religion</option>
+				<option value="religious-talk">religious-talk</option>
+				<option value="rhythm-blues">rhythm-blues</option>
+				<option value="rock-music">rock-music</option>
+				<option value="rock">rock</option>
+				<option value="science">Science</option>
+				<option value="serious-classical">serious-classical</option>
+				<option value="social-affairs">social-affairs</option>
+				<option value="soft-music">soft-music</option>
+				<option value="soft-rhythm-blues">soft-rhythm-blues</option>
+				<option value="soft-rock">soft-rock</option>
+				<option value="sport">sport</option>
+				<option value="talk">talk</option>
+				<option value="top-40">top-40</option>
+				<option value="travel">travel</option>
+				<option value="weather">weather</option>
 			</options>
 		</state>
 	</channel-type>
@@ -474,15 +474,14 @@
 		</description>
 		<state readOnly="true">
 			<options>
-				<option value="All Stereo">@text/channel-type.emotiva.selected-mode.option.all-stereo</option>
-				<option value="Auto">@text/channel-type.emotiva.selected-mode.option.auto</option>
-				<option value="Direct">@text/channel-type.emotiva.selected-mode.option.direct</option>
-				<option value="Dolby">@text/channel-type.emotiva.selected-mode.option.dolby</option>
-				<option value="DTS">@text/channel-type.emotiva.selected-mode.option.dts</option>
-				<option value="Stereo">@text/channel-type.emotiva.selected-mode.option.stereo</option>
-				<option value="Surround">@text/channel-type.emotiva.selected-mode.option.surround</option>
-				<option value="Reference Stereo">@text/channel-type.emotiva.selected-mode.option.ref-stereo</option>
-				<option value="Something">@text/channel-type.emotiva.selected-mode.option.ref-stereodd</option>
+				<option value="all-stereo">all-stereo</option>
+				<option value="auto">auto</option>
+				<option value="direct">direct</option>
+				<option value="dolby">dolby</option>
+				<option value="dts">dts</option>
+				<option value="stereo">stereo</option>
+				<option value="surround">surround</option>
+				<option value="ref-stereo">ref-stereo</option>
 			</options>
 		</state>
 	</channel-type>
@@ -493,8 +492,8 @@
 		<description>User-selected movie or music mode for main zone: "Movie" or "Music"</description>
 		<state readOnly="true">
 			<options>
-				<option value="Movie">@text/channel-type.emotiva.selected-movie-music.option.movie</option>
-				<option value="Music">@text/channel-type.emotiva.selected-movie-music.option.music</option>
+				<option value="movie">movie</option>
+				<option value="music">music</option>
 			</options>
 		</state>
 	</channel-type>
@@ -505,15 +504,14 @@
 		<description>Main zone surround mode: "Auto", "Stereo", "Dolby", ...</description>
 		<state readOnly="true">
 			<options>
-				<option value="All Stereo">@text/channel-type.emotiva.selected-mode.option.all-stereo</option>
-				<option value="Auto">@text/channel-type.emotiva.selected-mode.option.auto</option>
-				<option value="Direct">@text/channel-type.emotiva.selected-mode.option.direct</option>
-				<option value="Dolby">@text/channel-type.emotiva.selected-mode.option.dolby</option>
-				<option value="DTS">@text/channel-type.emotiva.selected-mode.option.dts</option>
-				<option value="Stereo">@text/channel-type.emotiva.selected-mode.option.stereo</option>
-				<option value="Surround">@text/channel-type.emotiva.selected-mode.option.surround</option>
-				<option value="Reference Stereo">@text/channel-type.emotiva.selected-mode.option.ref-stereo</option>
-				<option value="Something">@text/channel-type.emotiva.selected-mode.option.ref-stereodd</option>
+				<option value="all-stereo">all-stereo</option>
+				<option value="auto">auto</option>
+				<option value="direct">direct</option>
+				<option value="dolby">dolby</option>
+				<option value="dts">dts</option>
+				<option value="stereo">stereo</option>
+				<option value="surround">surround</option>
+				<option value="ref-stereo">ref-stereo</option>
 			</options>
 		</state>
 	</channel-type>
