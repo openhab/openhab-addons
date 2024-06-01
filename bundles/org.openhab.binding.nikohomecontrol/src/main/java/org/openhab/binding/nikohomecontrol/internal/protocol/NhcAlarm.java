@@ -87,7 +87,7 @@ public abstract class NhcAlarm {
     /**
      * Set name of the alarm control device.
      *
-     * @param alarm control name
+     * @param name alarm control name
      */
     public void setName(String name) {
         this.name = name;
@@ -105,7 +105,7 @@ public abstract class NhcAlarm {
     /**
      * Set location of the alarm control device.
      *
-     * @param alarm control location
+     * @param location alarm control location
      */
     public void setLocation(@Nullable String location) {
         this.location = location;

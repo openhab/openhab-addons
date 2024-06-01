@@ -849,16 +849,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        ArrayList<NhcMessageParam> params = new ArrayList<>();
+        List<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
-        ArrayList<NhcDevice2> devices = new ArrayList<>();
+        List<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
         devices.add(device);
         param.devices = devices;
         device.uuid = actionId;
-        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
+        List<NhcProperty> deviceProperties = new ArrayList<>();
         NhcProperty property = new NhcProperty();
         deviceProperties.add(property);
         device.properties = deviceProperties;
@@ -925,16 +925,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        ArrayList<NhcMessageParam> params = new ArrayList<>();
+        List<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
-        ArrayList<NhcDevice2> devices = new ArrayList<>();
+        List<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
         devices.add(device);
         param.devices = devices;
         device.uuid = thermostatId;
-        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
+        List<NhcProperty> deviceProperties = new ArrayList<>();
 
         NhcProperty overruleActiveProp = new NhcProperty();
         deviceProperties.add(overruleActiveProp);
@@ -956,16 +956,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        ArrayList<NhcMessageParam> params = new ArrayList<>();
+        List<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
-        ArrayList<NhcDevice2> devices = new ArrayList<>();
+        List<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
         devices.add(device);
         param.devices = devices;
         device.uuid = thermostatId;
-        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
+        List<NhcProperty> deviceProperties = new ArrayList<>();
 
         if (overruleTime > 0) {
             NhcProperty overruleActiveProp = new NhcProperty();
@@ -1001,16 +1001,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        ArrayList<NhcMessageParam> params = new ArrayList<>();
+        List<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
-        ArrayList<NhcDevice2> devices = new ArrayList<>();
+        List<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
         devices.add(device);
         param.devices = devices;
         device.uuid = meterId;
-        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
+        List<NhcProperty> deviceProperties = new ArrayList<>();
 
         NhcProperty reportInstantUsageProp = new NhcProperty();
         deviceProperties.add(reportInstantUsageProp);
@@ -1128,12 +1128,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
-        ArrayList<NhcDevice2> devices = new ArrayList<>();
+        List<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
         devices.add(device);
         param.devices = devices;
         device.uuid = accessId;
-        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
+        List<NhcProperty> deviceProperties = new ArrayList<>();
         NhcProperty property = new NhcProperty();
         deviceProperties.add(property);
         device.properties = deviceProperties;
