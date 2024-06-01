@@ -25,6 +25,7 @@ import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridg
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler2;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAccess;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAlarm;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcMeter;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
@@ -84,6 +85,7 @@ public class NikoHomeControlDiscoveryService
         discoverThermostatDevices(thingHandler, nhcComm);
         discoverMeterDevices(thingHandler, nhcComm);
         discoverAccessDevices(thingHandler, nhcComm);
+        discoverAlarmDevices(thingHandler, nhcComm);
     }
 
     private void discoverActionDevices(NikoHomeControlBridgeHandler bridgeHandler,
@@ -188,6 +190,18 @@ public class NikoHomeControlDiscoveryService
                 default:
                     logger.debug("unrecognized access type {} for {} {}", nhcAccess.getType(), deviceId, thingName);
             }
+        });
+    }
+
+    private void discoverAlarmDevices(NikoHomeControlBridgeHandler bridgeHandler,
+            NikoHomeControlCommunication nhcComm) {
+        Map<String, NhcAlarm> alarmDevices = nhcComm.getAlarmDevices();
+
+        alarmDevices.forEach((deviceId, nhcAlarm) -> {
+            String thingName = nhcAlarm.getName();
+            String thingLocation = nhcAlarm.getLocation();
+            addDevice(new ThingUID(THING_TYPE_ALARM, bridgeHandler.getThing().getUID(), deviceId), CONFIG_ALARM_ID,
+                    deviceId, thingName, thingLocation);
         });
     }
 
