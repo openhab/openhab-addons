@@ -14,14 +14,14 @@ package org.openhab.binding.nikohomecontrol.internal.protocol;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcAlarm2;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * The {@link NhcAlarm} class represents the alarm control Niko Home Control communication object. It contains all
  * fields representing a Niko Home Control alarm control device and has methods to arm/disarm in Niko Home Control
- * and receive alarms. A specific implementation is {@link NhcAlarm2}.
+ * and receive alarms. A specific implementation is {@link
+ * org.openhab.binding.nikohomecontrol.internal.protocol.nhc2.NhcAlarm2}.
  *
  * @author Mark Herwege - Initial Contribution
  */

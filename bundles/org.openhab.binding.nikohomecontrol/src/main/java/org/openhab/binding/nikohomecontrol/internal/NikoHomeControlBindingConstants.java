@@ -64,9 +64,11 @@ public class NikoHomeControlBindingConstants {
     public static final Set<ThingTypeUID> ACCESS_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCESS,
             THING_TYPE_ACCESS_RINGANDCOMEIN);
     public static final Set<ThingTypeUID> ALARM_THING_TYPES_UIDS = Set.of(THING_TYPE_ALARM);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(BRIDGE_THING_TYPES_UIDS.stream(),
-            ACTION_THING_TYPES_UIDS.stream(), THERMOSTAT_THING_TYPES_UIDS.stream(), METER_THING_TYPES_UIDS.stream(),
-            ACCESS_THING_TYPES_UIDS.stream(), ALARM_THING_TYPES_UIDS.stream()).flatMap(i -> i).collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(BRIDGE_THING_TYPES_UIDS.stream(), ACTION_THING_TYPES_UIDS.stream(),
+                    THERMOSTAT_THING_TYPES_UIDS.stream(), METER_THING_TYPES_UIDS.stream(),
+                    ACCESS_THING_TYPES_UIDS.stream(), ALARM_THING_TYPES_UIDS.stream())
+            .flatMap(i -> i).collect(Collectors.toSet());
 
     // List of all Channel ids
     public static final String CHANNEL_BUTTON = "button";
