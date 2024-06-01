@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler;
-import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler2;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAccess;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAlarm;
@@ -133,12 +132,6 @@ public class NikoHomeControlDiscoveryService
 
     private void discoverMeterDevices(NikoHomeControlBridgeHandler bridgeHandler,
             NikoHomeControlCommunication nhcComm) {
-        if (bridgeHandler instanceof NikoHomeControlBridgeHandler2) {
-            // disable discovery of NHC II energy meters to avoid overload in Niko Home Control cloud, can be removed
-            // when Niko solves their issue with the controller sending all live power data to their cloud
-            return;
-        }
-
         Map<String, NhcMeter> meters = nhcComm.getMeters();
 
         meters.forEach((deviceId, nhcMeter) -> {

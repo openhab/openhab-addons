@@ -30,10 +30,10 @@ public interface NhcAlarmEvent extends NhcBaseEvent {
      *
      * @param state
      */
-    public void alarmEvent(String state);
+    void alarmEvent(String state);
 
     /**
      * This method is called when an alarm trigger event is received from the Niko Home Control controller.
      */
-    public void alarmTriggerEvent();
+    void alarmTriggerEvent();
 }

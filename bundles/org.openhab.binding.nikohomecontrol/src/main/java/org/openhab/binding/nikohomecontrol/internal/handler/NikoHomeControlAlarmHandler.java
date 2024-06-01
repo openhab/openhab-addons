@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,7 +65,10 @@ public class NikoHomeControlAlarmHandler extends NikoHomeControlBaseHandler impl
 
         if (REFRESH.equals(command)) {
             alarmEvent(nhcAlarm.getState());
-        } else if ((CHANNEL_CONTROL.equals(channelUID.getId()) || CHANNEL_ARMED.equals(channelUID.getId()))
+            return;
+        }
+
+        if ((CHANNEL_CONTROL.equals(channelUID.getId()) || CHANNEL_ARMED.equals(channelUID.getId()))
                 && command instanceof OnOffType) {
             OnOffType s = (OnOffType) command;
             if (OnOffType.ON.equals(s)) {
@@ -84,8 +87,6 @@ public class NikoHomeControlAlarmHandler extends NikoHomeControlBaseHandler impl
         } else {
             logger.debug("unexpected command for channel {}", channelUID.getId());
         }
-
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -108,7 +109,7 @@ public class NikoHomeControlAlarmHandler extends NikoHomeControlBaseHandler impl
         if ((bridge != null) && ThingStatus.ONLINE.equals(bridge.getStatus())) {
             // We need to do this in a separate thread because we may have to wait for the
             // communication to become active
-            scheduler.submit(this::startCommunication);
+            commStartThread = scheduler.submit(this::startCommunication);
         }
     }
 
