@@ -12,11 +12,11 @@
 			<channel-group id="general" typeId="general"/>
 			<channel-group id="main-zone" typeId="zone">
 				<label>Main Zone Control</label>
-				<description>Channels for the main zone of this processor.</description>
+				<description>Channels for the main zone of this processor</description>
 			</channel-group>
 			<channel-group id="zone2" typeId="zone">
 				<label>Zone 2 Control</label>
-				<description>Channels for zone2 of this processor.</description>
+				<description>Channels for zone2 of this processor</description>
 			</channel-group>
 		</channel-groups>
 
@@ -33,7 +33,7 @@
 
 	<channel-group-type id="general">
 		<label>General Control</label>
-		<description>General channels for this processor.</description>
+		<description>General channels for this processor</description>
 		<channels>
 			<channel id="power" typeId="mainPower"/>
 			<channel id="standby" typeId="standby"/>
@@ -113,7 +113,7 @@
 
 	<channel-group-type id="zone">
 		<label>Zone Control</label>
-		<description>Channels for a zone of this processor.</description>
+		<description>Channels for a zone of this processor</description>
 		<channels>
 			<channel id="power" typeId="zonePower"/>
 			<channel id="volume" typeId="volume"/>
@@ -146,7 +146,7 @@
 	<channel-type id="volume-db" advanced="true">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Volume (dB)</label>
-		<description>Set the volume level (dB). Same as [mainVolume - 96].</description>
+		<description>Set the volume level (dB). Same as [mainVolume - 96]</description>
 		<category>SoundVolume</category>
 		<state min="-96" max="15" step="0.5" pattern="%.1f dB"/>
 	</channel-type>
@@ -257,7 +257,7 @@
 	<channel-type id="speaker-preset">
 		<item-type>String</item-type>
 		<label>Speaker Preset</label>
-		<description>Speaker Preset Name</description>
+		<description>Speaker preset Name</description>
 		<state>
 			<options>
 				<option value="preset1">@text/channel-type.emotiva.speaker-preset.state.option.preset-1</option>
@@ -313,7 +313,7 @@
 	<channel-type id="tuner-channel-select">
 		<item-type>String</item-type>
 		<label>Radio Tuner Channel Name</label>
-		<description>User select radio tuner channel name"</description>
+		<description>User select radio tuner channel name</description>
 		<state>
 			<options>
 				<option value="channel-1">@text/channel-type.emotiva.tuner-channel-select.option.channel-1</option>
@@ -418,7 +418,7 @@
 	<channel-type id="audio-input">
 		<item-type>String</item-type>
 		<label>Audio Input</label>
-		<description>Audio input source</description>
+		<description>Input source for audio on main zone</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -439,7 +439,7 @@
 	<channel-type id="video-input">
 		<item-type>String</item-type>
 		<label>Video Input Source</label>
-		<description>Video input source</description>
+		<description>Input source for video on main zone</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -490,7 +490,7 @@
 	<channel-type id="selected-movie-music">
 		<item-type>String</item-type>
 		<label>User Selected Movie or Music Mode</label>
-		<description>User-selected movie or music mode for main zone: "Movie" or "Music".</description>
+		<description>User-selected movie or music mode for main zone: "Movie" or "Music"</description>
 		<state readOnly="true">
 			<options>
 				<option value="Movie">@text/channel-type.emotiva.selected-movie-music.option.movie</option>
@@ -521,14 +521,14 @@
 	<channel-type id="bar">
 		<item-type>String</item-type>
 		<label>Front Panel Bar</label>
-		<description>Text displayed on front panel bar of device.</description>
+		<description>Text displayed on front panel bar of device</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="menu-display">
 		<item-type>String</item-type>
 		<label>Menu Display</label>
-		<description>Text displayed on a specific menu row and column.</description>
+		<description>Text displayed on a specific menu row and column</description>
 	</channel-type>
 
 </thing:thing-descriptions>
