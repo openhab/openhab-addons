@@ -489,7 +489,7 @@
 
 	<channel-type id="selected-movie-music">
 		<item-type>String</item-type>
-		<label>User Selected Movie or Music Mode</label>
+		<label>Media Mode</label>
 		<description>User-selected movie or music mode for main zone: "Movie" or "Music"</description>
 		<state readOnly="true">
 			<options>
