@@ -30,16 +30,18 @@ import org.openhab.core.thing.Bridge;
  */
 @NonNullByDefault
 public final class AwsCloudBridgeHandler extends AbstractBridgeHandler<AwsCloudBridgeConfig> {
+    private final HttpClientFactory httpClientFactory;
 
     public AwsCloudBridgeHandler(Bridge bridge, HttpClientFactory httpClientFactory) {
         super(bridge, httpClientFactory, AwsCloudBridgeConfig.class);
+        this.httpClientFactory = httpClientFactory;
     }
 
     @Override
     protected SalusApi newSalusApi(AwsCloudBridgeConfig config, RestClient httpClient, GsonMapper gsonMapper) {
-        return new AwsSalusApi(config.getUsername(), config.getPassword().getBytes(UTF_8), config.getUrl(), httpClient,
-                gsonMapper, config.getUserPoolId(), config.getIdentityPoolId(), config.getClientId(),
-                config.getRegion(), config.getCompanyCode(), config.getAwsService());
+        return new AwsSalusApi(httpClientFactory, config.getUsername(), config.getPassword().getBytes(UTF_8),
+                config.getUrl(), httpClient, gsonMapper, config.getUserPoolId(), config.getIdentityPoolId(),
+                config.getClientId(), config.getRegion(), config.getCompanyCode(), config.getAwsService());
     }
 
     @Override

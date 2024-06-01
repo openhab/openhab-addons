@@ -35,6 +35,7 @@ import org.openhab.binding.salus.internal.rest.RestClient;
 import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.UnsuportedSalusApiException;
+import org.openhab.core.io.net.http.HttpClientFactory;
 
 import software.amazon.awssdk.crt.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.crt.auth.signing.AwsSigner;
@@ -42,7 +43,6 @@ import software.amazon.awssdk.crt.auth.signing.AwsSigningConfig;
 import software.amazon.awssdk.crt.auth.signing.AwsSigningResult;
 import software.amazon.awssdk.crt.http.HttpHeader;
 import software.amazon.awssdk.crt.http.HttpRequest;
-import software.amazon.awssdk.regions.Region;
 
 /**
  * The SalusApi class is responsible for interacting with a REST API to perform various operations related to the Salus
@@ -56,13 +56,13 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
     private final AuthenticationHelper authenticationHelper;
     private final String companyCode;
     private final String awsService;
-    private final Region region;
+    private final String region;
     @Nullable
     CogitoCredentials cogitoCredentials;
 
     private AwsSalusApi(String username, byte[] password, String baseUrl, RestClient restClient, GsonMapper mapper,
             Clock clock, AuthenticationHelper authenticationHelper, String companyCode, String awsService,
-            Region region) {
+            String region) {
         super(username, password, baseUrl, restClient, mapper, clock);
         this.authenticationHelper = authenticationHelper;
         this.companyCode = companyCode;
@@ -70,20 +70,20 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
         this.region = region;
     }
 
-    public AwsSalusApi(String username, byte[] password, String baseUrl, RestClient restClient, GsonMapper gsonMapper,
-            String userPoolId, String identityPoolId, String clientId, Region region, String companyCode,
-            String awsService) {
+    public AwsSalusApi(HttpClientFactory httpClientFactory, String username, byte[] password, String baseUrl,
+            RestClient restClient, GsonMapper gsonMapper, String userPoolId, String identityPoolId, String clientId,
+            String region, String companyCode, String awsService) {
         this(username, password, baseUrl, restClient, gsonMapper, Clock.systemDefaultZone(),
-                new AuthenticationHelper(userPoolId, clientId, region.id(), identityPoolId), companyCode, awsService,
-                region);
+                new AuthenticationHelper(httpClientFactory, userPoolId, clientId, region, identityPoolId), companyCode,
+                awsService, region);
     }
 
     @Override
-    protected void login() throws SalusApiException {
+    protected void login() throws AuthSalusApiException {
         logger.debug("Login with username '{}'", username);
-        var result = authenticationHelper.performSRPAuthentication(username, password);
-        var localAuth = authentication = new Authentication(result.accessToken(), result.expiresIn(),
-                result.tokenType(), result.refreshToken(), result.idToken());
+        var result = authenticationHelper.performSrpAuthentication(username, new String(password, UTF_8));
+        var localAuth = authentication = new Authentication(result.getAccessToken(), result.getExpiresIn(),
+                result.getTokenType(), result.getRefreshToken(), result.getIdToken());
         var local = LocalDateTime.now(clock).plusSeconds(localAuth.expiresIn())
                 // this is to account that there is a delay between server setting `expires_in`
                 // and client (OpenHAB) receiving it
@@ -92,11 +92,13 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
 
         var id = authenticationHelper.getId(result);
 
-        var cogito = authenticationHelper.getCredentialsForIdentity(result, id.identityId());
-        cogitoCredentials = new CogitoCredentials(cogito.credentials().accessKeyId(), cogito.credentials().secretKey(),
-                cogito.credentials().sessionToken());
+        var cogito = authenticationHelper.getCredentialsForIdentity(result, id.getIdentityId());
+        cogitoCredentials = new CogitoCredentials(//
+                cogito.getCredentials().getAccessKeyId(), //
+                cogito.getCredentials().getSecretKey(), //
+                cogito.getCredentials().getSessionToken());
 
-        var cogitoExpirationTime = cogito.credentials().expiration();
+        var cogitoExpirationTime = cogito.getCredentials().getExpiration();
         if (cogitoExpirationTime.isBefore(localExpireTime.toInstant())) {
             authTokenExpireTime = ZonedDateTime.ofInstant(cogitoExpirationTime, UTC);
         }
@@ -166,7 +168,7 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
                 new HttpHeader[] { new HttpHeader("host", "") }, null);
         var localCredentials = requireNonNull(cogitoCredentials);
         try (var config = new AwsSigningConfig()) {
-            config.setRegion(region.id());
+            config.setRegion(region);
             config.setService("iotdevicegateway");
             config.setCredentialsProvider(new StaticCredentialsProvider.StaticCredentialsProviderBuilder()
                     .withAccessKeyId(localCredentials.accessKeyId().getBytes(UTF_8))

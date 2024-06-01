@@ -15,17 +15,15 @@ package org.openhab.binding.salus.internal.aws.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.handler.AbstractBridgeConfig;
 
-import software.amazon.awssdk.regions.Region;
-
 /**
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
 public class AwsCloudBridgeConfig extends AbstractBridgeConfig {
-    private String userPoolId = "XGRz3CgoY";
+    private String userPoolId = "eu-central-1_XGRz3CgoY";
     private String identityPoolId = "60912c00-287d-413b-a2c9-ece3ccef9230";
     private String clientId = "4pk5efh3v84g5dav43imsv4fbj";
-    private String region = Region.EU_CENTRAL_1.id();
+    private String region = "eu-central-1";
     private String companyCode = "salus-eu";
     private String awsService = "a24u3z7zzwrtdl-ats";
 
@@ -72,8 +70,8 @@ public class AwsCloudBridgeConfig extends AbstractBridgeConfig {
         this.clientId = clientId;
     }
 
-    public Region getRegion() {
-        return Region.of(region);
+    public String getRegion() {
+        return region;
     }
 
     public void setRegion(String region) {

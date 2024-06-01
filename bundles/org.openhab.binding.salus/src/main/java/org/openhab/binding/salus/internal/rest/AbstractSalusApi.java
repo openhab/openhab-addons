@@ -95,7 +95,7 @@ public abstract class AbstractSalusApi<AuthT> implements SalusApi {
         authTokenExpireTime = null;
     }
 
-    protected abstract void login() throws SalusApiException;
+    protected abstract void login() throws SalusApiException, AuthSalusApiException;
 
     private boolean isExpiredToken() {
         var expireTime = authTokenExpireTime;

@@ -13,443 +13,406 @@
 package org.openhab.binding.salus.internal.aws.http;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.Locale.US;
 import static java.util.Objects.requireNonNull;
-import static java.util.SimpleTimeZone.UTC_TIME;
-import static software.amazon.awssdk.services.cognitoidentityprovider.model.ChallengeNameType.PASSWORD_VERIFIER;
+import static org.eclipse.jetty.http.HttpMethod.POST;
+import static org.openhab.binding.salus.internal.aws.http.CognitoGson.GSON;
 
 import java.math.BigInteger;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
-import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
-import java.util.SimpleTimeZone;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
-import javax.crypto.ShortBufferException;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
-
-import software.amazon.awssdk.auth.credentials.AnonymousCredentialsProvider;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.cognitoidentity.CognitoIdentityClient;
-import software.amazon.awssdk.services.cognitoidentity.model.GetCredentialsForIdentityRequest;
-import software.amazon.awssdk.services.cognitoidentity.model.GetCredentialsForIdentityResponse;
-import software.amazon.awssdk.services.cognitoidentity.model.GetIdRequest;
-import software.amazon.awssdk.services.cognitoidentity.model.GetIdResponse;
-import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.InitiateAuthResponse;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.RespondToAuthChallengeRequest;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
+import org.openhab.core.io.net.http.HttpClientFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Private class for SRP client side math.
- * <p>
- * Base on
- * https://github.com/aws-samples/aws-cognito-java-desktop-app/blob/master/src/main/java/com/amazonaws/sample/cognitoui/AuthenticationHelper.java
- * Plus bring up to SDKv2 https://stackoverflow.com/a/67729189/1819402
- * <p>
- * Implementation of SRP algorithm http://srp.stanford.edu/design.html
- * 
- * <pre>
- *   N    A large safe prime (N = 2q+1, where q is prime) All arithmetic is done modulo N.
- *   g    A generator modulo N
- *   k    Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
- *   s    User's salt
- *   I    Username
- *   p    Cleartext Password
- *   H()  One-way hash function
- *   ^    (Modular) Exponentiation
- *   u    Random scrambling parameter
- *   a,b  Secret ephemeral values
- *   A,B  Public ephemeral values
- *   x    Private key (derived from p and s)
- *   v    Password verifier
- * </pre>
+ * Copied from org.openhab.binding.windcentrale.internal.api.AuthenticationHelper
  * 
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
 class AuthenticationHelper {
-    private static final String HEX_N = "FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD1"
-            + "29024E088A67CC74020BBEA63B139B22514A08798E3404DD"//
-            + "EF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245"//
-            + "E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED"//
-            + "EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3D"//
-            + "C2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F"//
-            + "83655D23DCA3AD961C62F356208552BB9ED529077096966D"//
-            + "670C354E4ABC9804F1746C08CA18217C32905E462E36CE3B"//
-            + "E39E772C180E86039B2783A2EC07A28FB5C55DF06F4C52C9"//
-            + "DE2BCBF6955817183995497CEA956AE515D2261898FA0510"//
-            + "15728E5A8AAAC42DAD33170D04507A33A85521ABDF1CBA64"//
-            + "ECFB850458DBEF0A8AEA71575D060C7DB3970F85A6E1E4C7"//
-            + "ABF5AE8CDB0933D71E8C94E04A25619DCEE3D2261AD2EE6B"//
-            + "F12FFA06D98A0864D87602733EC86A64521F2B18177B200C"//
-            + "BBE117577A615D6C770988C0BAD946E208E24FA074E5AB31"//
+
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationHelper.class);
+
+    private static final String SRP_N_HEX = "FFFFFFFFFFFFFFFFC90FDAA22168C234C4C6628B80DC1CD1" //
+            + "29024E088A67CC74020BBEA63B139B22514A08798E3404DD" //
+            + "EF9519B3CD3A431B302B0A6DF25F14374FE1356D6D51C245" //
+            + "E485B576625E7EC6F44C42E9A637ED6B0BFF5CB6F406B7ED" //
+            + "EE386BFB5A899FA5AE9F24117C4B1FE649286651ECE45B3D" //
+            + "C2007CB8A163BF0598DA48361C55D39A69163FA8FD24CF5F" //
+            + "83655D23DCA3AD961C62F356208552BB9ED529077096966D" //
+            + "670C354E4ABC9804F1746C08CA18217C32905E462E36CE3B" //
+            + "E39E772C180E86039B2783A2EC07A28FB5C55DF06F4C52C9" //
+            + "DE2BCBF6955817183995497CEA956AE515D2261898FA0510" //
+            + "15728E5A8AAAC42DAD33170D04507A33A85521ABDF1CBA64" //
+            + "ECFB850458DBEF0A8AEA71575D060C7DB3970F85A6E1E4C7" //
+            + "ABF5AE8CDB0933D71E8C94E04A25619DCEE3D2261AD2EE6B" //
+            + "F12FFA06D98A0864D87602733EC86A64521F2B18177B200C" //
+            + "BBE117577A615D6C770988C0BAD946E208E24FA074E5AB31" //
             + "43DB5BFCE0FD108E4B82D120A93AD2CAFFFFFFFFFFFFFFFF";
-    /**
-     * N A large safe prime (N = 2q+1, where q is prime) All arithmetic is done modulo N.
-     */
-    private static final BigInteger SRP_N = new BigInteger(HEX_N, 16);
-    /**
-     * g A generator modulo N
-     */
+
+    private static final BigInteger SRP_A;
+    private static final BigInteger SRP_A2;
     private static final BigInteger SRP_G = BigInteger.valueOf(2);
-    /**
-     * k Multiplier parameter (k = H(N, g) in SRP-6a, k = 3 for legacy SRP-6)
-     */
     private static final BigInteger SRP_K;
-    private static final int EPHEMERAL_KEY_LENGTH = 1024;
+    private static final BigInteger SRP_N = new BigInteger(SRP_N_HEX, 16);
+
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
+            .ofPattern("EEE MMM d HH:mm:ss z yyyy", Locale.US).withZone(ZoneId.of("UTC"));
     private static final int DERIVED_KEY_SIZE = 16;
+    private static final int EPHEMERAL_KEY_LENGTH = 1024;
     private static final String DERIVED_KEY_INFO = "Caldera Derived Key";
-    private static final ThreadLocal<MessageDigest> THREAD_MESSAGE_DIGEST = ThreadLocal.withInitial(() -> {
-        try {
-            return MessageDigest.getInstance("SHA-256");
-        } catch (NoSuchAlgorithmException e) {
-            throw new SecurityException("Exception in authentication", e);
-        }
-    });
-    private static final SecureRandom SECURE_RANDOM;
-    private static final String ALGORITHM = "HmacSHA256";
+    private static final Duration REQUEST_TIMEOUT = Duration.ofMinutes(1);
 
-    static {
-        try {
-            SECURE_RANDOM = SecureRandom.getInstance("SHA1PRNG");
-
-            MessageDigest messageDigest = THREAD_MESSAGE_DIGEST.get();
-            messageDigest.reset();
-            messageDigest.update(SRP_N.toByteArray());
-            byte[] digest = messageDigest.digest(SRP_G.toByteArray());
-            SRP_K = new BigInteger(1, digest);
-        } catch (NoSuchAlgorithmException e) {
-            throw new SecurityException(e.getMessage(), e);
-        }
-    }
+    private static final String COGNITO_URL_FORMAT = "https://cognito-idp.%s.amazonaws.com/";
+    private static final String COGNITO_IDENTITY_URL_FORMAT = "https://cognito-identity.%s.amazonaws.com/";
+    private static final String INITIATE_AUTH_TARGET = "AWSCognitoIdentityProviderService.InitiateAuth";
+    private static final String RESPOND_TO_AUTH_TARGET = "AWSCognitoIdentityProviderService.RespondToAuthChallenge";
+    private static final String GET_ID = "AWSCognitoIdentityService.GetId";
+    private static final String GET_CREDENTIALS_FOR_IDENTITY = "AWSCognitoIdentityService.GetCredentialsForIdentity";
 
     /**
-     * a Secret ephemeral values
+     * Internal class for doing the HKDF calculations.
      */
-    private BigInteger srpLowerCaseA;
-    /**
-     * A Public ephemeral values
-     */
-    private BigInteger srpUpperCaseA;
-    private final String userPoolID;
-    private final String clientId;
-    private final String region;
-    private final String identityPoolId;
-
-    AuthenticationHelper(String userPoolID, String clientid, String region, String identityPoolId) {
-        do {
-            srpLowerCaseA = new BigInteger(EPHEMERAL_KEY_LENGTH, SECURE_RANDOM).mod(SRP_N);
-            srpUpperCaseA = SRP_G.modPow(srpLowerCaseA, SRP_N);
-        } while (srpUpperCaseA.mod(SRP_N).equals(BigInteger.ZERO));
-
-        this.userPoolID = userPoolID;
-        this.clientId = clientid;
-        this.region = region;
-        this.identityPoolId = identityPoolId;
-    }
-
-    private byte[] getPasswordAuthenticationKey(String userId, byte[] userPassword, BigInteger B, BigInteger salt)
-            throws ShortBufferException, NoSuchAlgorithmException, InvalidKeyException, SecurityException {
-        // Authenticate the password
-        // u = H(A, B)
-        var messageDigest = THREAD_MESSAGE_DIGEST.get();
-        messageDigest.reset();
-        messageDigest.update(srpUpperCaseA.toByteArray());
-        // u Random scrambling parameter
-        var srpU = new BigInteger(1, messageDigest.digest(B.toByteArray()));
-        if (srpU.equals(BigInteger.ZERO)) {
-            throw new SecurityException("Hash of A and B cannot be zero");
-        }
-
-        // x = H(salt | H(poolName | userId | ":" | password))
-        messageDigest.reset();
-        messageDigest.update(this.userPoolID.getBytes(UTF_8));
-        messageDigest.update(userId.getBytes(UTF_8));
-        messageDigest.update(":".getBytes(UTF_8));
-        var userIdHash = messageDigest.digest(userPassword);
-
-        messageDigest.reset();
-        messageDigest.update(salt.toByteArray());
-        // x Private key (derived from p and s)
-        BigInteger srpX = new BigInteger(1, messageDigest.digest(userIdHash));
-        // s User's salt
-        BigInteger srpS = (B.subtract(SRP_K.multiply(SRP_G.modPow(srpX, SRP_N)))
-                .modPow(srpLowerCaseA.add(srpU.multiply(srpX)), SRP_N)).mod(SRP_N);
-
-        var hkdf = new Hkdf(ALGORITHM);
-        hkdf.init(srpS.toByteArray(), srpU.toByteArray());
-        return hkdf.deriveKey(DERIVED_KEY_INFO, DERIVED_KEY_SIZE);
-    }
-
-    /**
-     * Method to orchestrate the SRP Authentication
-     *
-     * @param username Username for the SRP request
-     * @param password Password for the SRP request
-     * @return the JWT token if the request is successful else null.
-     */
-    public AuthenticationResultType performSRPAuthentication(String username, byte[] password)
-            throws SalusApiException {
-        var authReq = initiateUserSrpAuthRequest(username);
-        var creds = AnonymousCredentialsProvider.create();
-        try (var cognitoClient = CognitoIdentityProviderClient.builder()//
-                .region(Region.of(this.region))//
-                .credentialsProvider(creds)//
-                .build()) {
-            var authRes = cognitoClient.initiateAuth(authReq);
-            if (!authRes.challengeName().equals(PASSWORD_VERIFIER)) {
-                throw new SalusApiException("Unexpected challenge name: " + authRes.challengeName());
-            }
-
-            var challengeRequest = userSrpAuthRequest(authRes, password);
-            var result = cognitoClient.respondToAuthChallenge(challengeRequest);
-
-            return result.authenticationResult();
-        } catch (ShortBufferException | NoSuchAlgorithmException | InvalidKeyException | SecurityException e) {
-            throw new SalusApiException("Cannot perform SRP authentication!", e);
-        }
-    }
-
-    /**
-     * Initialize the authentication request for the first time.
-     *
-     * @param username The user for which the authentication request is created.
-     * @return the Authentication request.
-     */
-    private InitiateAuthRequest initiateUserSrpAuthRequest(String username) {
-        var authParams = Map.of("USERNAME", username, "SRP_A", this.srpUpperCaseA.toString(16));
-
-        return InitiateAuthRequest.builder() //
-                .authFlow(AuthFlowType.USER_SRP_AUTH) //
-                .clientId(this.clientId) //
-                .authParameters(authParams) //
-                .build();
-    }
-
-    /**
-     * Method is used to respond to the Auth challange from the user pool
-     *
-     * @param challenge The authenticaion challange returned from the cognito user pool
-     * @param password The password to be used to respond to the authentication challenge.
-     * @return the Request created for the previous authentication challenge.
-     */
-    private RespondToAuthChallengeRequest userSrpAuthRequest(InitiateAuthResponse challenge, byte[] password)
-            throws ShortBufferException, NoSuchAlgorithmException, InvalidKeyException, SecurityException {
-        var userIdForSRP = requireNonNull(challenge.challengeParameters().get("USER_ID_FOR_SRP"));
-        var usernameInternal = requireNonNull(challenge.challengeParameters().get("USERNAME"));
-
-        var srpB = new BigInteger(challenge.challengeParameters().get("SRP_B"), 16);
-        if (srpB.mod(SRP_N).equals(BigInteger.ZERO)) {
-            throw new SecurityException("SRP error, B cannot be zero");
-        }
-
-        var salt = new BigInteger(challenge.challengeParameters().get("SALT"), 16);
-        var key = getPasswordAuthenticationKey(userIdForSRP, password, srpB, salt);
-
-        var timestamp = new Date();
-        var mac = Mac.getInstance(ALGORITHM);
-        var keySpec = new SecretKeySpec(key, ALGORITHM);
-        mac.init(keySpec);
-        mac.update(this.userPoolID.getBytes(UTF_8));
-        mac.update(userIdForSRP.getBytes(UTF_8));
-        var challengeSecretBlock = requireNonNull(challenge.challengeParameters().get("SECRET_BLOCK"));
-        byte[] secretBlock = Base64.getDecoder().decode(challengeSecretBlock);
-        mac.update(secretBlock);
-        var simpleDateFormat = new SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy", US);
-        simpleDateFormat.setTimeZone(new SimpleTimeZone(UTC_TIME, "UTC"));
-        var dateString = simpleDateFormat.format(timestamp);
-        var dateBytes = dateString.getBytes(UTF_8);
-        var hmac = mac.doFinal(dateBytes);
-
-        var formatTimestamp = new SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy", US);
-        formatTimestamp.setTimeZone(new SimpleTimeZone(UTC_TIME, "UTC"));
-
-        var srpAuthResponses = Map.of("PASSWORD_CLAIM_SECRET_BLOCK", challengeSecretBlock, "PASSWORD_CLAIM_SIGNATURE",
-                new String(Base64.getEncoder().encode(hmac), UTF_8), "TIMESTAMP", formatTimestamp.format(timestamp),
-                "USERNAME", usernameInternal);
-
-        return RespondToAuthChallengeRequest.builder()//
-                .challengeName(challenge.challengeName())//
-                .clientId(clientId)//
-                .session(challenge.session())//
-                .challengeResponses(srpAuthResponses)//
-                .build();
-    }
-
-    public GetIdResponse getId(AuthenticationResultType accessToken) {
-        try (var client = CognitoIdentityClient.builder().region(Region.of(region)).build()) {
-            GetIdRequest getIdRequest = GetIdRequest.builder()
-                    .logins(Map.of("cognito-idp.%s.amazonaws.com/%s_%s".formatted(region, region, userPoolID),
-                            accessToken.idToken()))
-                    .identityPoolId("%s:%s".formatted(region, identityPoolId)).build();
-            return client.getId(getIdRequest);
-        }
-    }
-
-    public GetCredentialsForIdentityResponse getCredentialsForIdentity(AuthenticationResultType accessToken,
-            String identityId) {
-        try (var client = CognitoIdentityClient.builder().region(Region.of(region)).build()) {
-            return client.getCredentialsForIdentity(GetCredentialsForIdentityRequest.builder().identityId(identityId)
-                    .logins(Map.of("cognito-idp.%s.amazonaws.com/%s_%s".formatted(region, region, userPoolID),
-                            accessToken.idToken()))
-                    .build());
-        }
-    }
-
-    /**
-     * Internal class for doing the Hkdf calculations.
-     */
-    @SuppressWarnings("SameParameterValue")
-    static final class Hkdf {
+    private static final class Hkdf {
         private static final int MAX_KEY_SIZE = 255;
-        private static final byte[] EMPTY_ARRAY = new byte[0];
         private final String algorithm;
-        @Nullable
-        private SecretKey prk = null;
+        private @Nullable SecretKey prk;
 
         /**
-         * @param algorithm REQUIRED: The type of HMAC algorithm to be used.
+         * @param algorithm The type of HMAC algorithm to be used
          */
         private Hkdf(String algorithm) {
             if (!algorithm.startsWith("Hmac")) {
                 throw new IllegalArgumentException(
-                        "Invalid algorithm " + algorithm + ". Hkdf may only be used with Hmac algorithms.");
+                        "Invalid algorithm " + algorithm + ". HKDF may only be used with HMAC algorithms.");
             }
             this.algorithm = algorithm;
         }
 
         /**
-         * @param ikm REQUIRED: The input key material.
-         * @param salt REQUIRED: Random bytes for salt.
+         * @param ikm the input key material
+         * @param salt random bytes for salt
          */
-        private void init(byte[] ikm, byte[] salt) throws InvalidKeyException, NoSuchAlgorithmException {
-            var realSalt = salt.clone();
-            var rawKeyMaterial = EMPTY_ARRAY;
-
+        private void init(byte[] ikm, byte[] salt) {
             try {
-                var e = Mac.getInstance(this.algorithm);
-                if (realSalt.length == 0) {
-                    realSalt = new byte[e.getMacLength()];
-                    Arrays.fill(realSalt, (byte) 0);
+                Mac mac = Mac.getInstance(algorithm);
+                byte[] realSalt = salt.length == 0 ? new byte[mac.getMacLength()] : salt.clone();
+                mac.init(new SecretKeySpec(realSalt, algorithm));
+                SecretKeySpec key = new SecretKeySpec(mac.doFinal(ikm), algorithm);
+                unsafeInitWithoutKeyExtraction(key);
+            } catch (InvalidKeyException | NoSuchAlgorithmException e) {
+                throw new IllegalStateException("Failed to initialize HKDF", e);
+            }
+        }
+
+        /**
+         * @param rawKey current secret key
+         */
+        private void unsafeInitWithoutKeyExtraction(SecretKey rawKey) {
+            if (!rawKey.getAlgorithm().equals(algorithm)) {
+                throw new IllegalArgumentException(
+                        "Algorithm for the provided key must match the algorithm for this HKDF. Expected " + algorithm
+                                + " but found " + rawKey.getAlgorithm());
+            } else {
+                prk = rawKey;
+            }
+        }
+
+        private byte[] deriveKey(String info, int length) {
+            if (prk == null) {
+                throw new IllegalStateException("HKDF has not been initialized");
+            }
+
+            if (length < 0) {
+                throw new IllegalArgumentException("Length must be a non-negative value");
+            }
+
+            Mac mac = createMac();
+            if (length > MAX_KEY_SIZE * mac.getMacLength()) {
+                throw new IllegalArgumentException(
+                        "Requested keys may not be longer than 255 times the underlying HMAC length");
+            }
+
+            byte[] result = new byte[length];
+            byte[] bytes = info.getBytes(UTF_8);
+            byte[] t = {};
+            int loc = 0;
+
+            for (byte i = 1; loc < length; ++i) {
+                mac.update(t);
+                mac.update(bytes);
+                mac.update(i);
+                t = mac.doFinal();
+
+                for (int x = 0; x < t.length && loc < length; ++loc) {
+                    result[loc] = t[x];
+                    ++x;
                 }
-
-                e.init(new SecretKeySpec(realSalt, this.algorithm));
-                rawKeyMaterial = e.doFinal(ikm);
-                var key = new SecretKeySpec(rawKeyMaterial, this.algorithm);
-                Arrays.fill(rawKeyMaterial, (byte) 0);
-                this.unsafeInitWithoutKeyExtraction(key);
-            } finally {
-                Arrays.fill(rawKeyMaterial, (byte) 0);
             }
-        }
 
-        /**
-         * @param rawKey REQUIRED: Current secret key.
-         */
-        private void unsafeInitWithoutKeyExtraction(SecretKey rawKey) throws InvalidKeyException {
-            if (!rawKey.getAlgorithm().equals(this.algorithm)) {
-                throw new InvalidKeyException(
-                        "Algorithm for the provided key must match the algorithm for this Hkdf. Expected "
-                                + this.algorithm + " but found " + rawKey.getAlgorithm());
-            }
-            this.prk = rawKey;
-        }
-
-        /**
-         * @param info REQUIRED
-         * @param length REQUIRED
-         * @return converted bytes.
-         */
-        private byte[] deriveKey(String info, int length)
-                throws ShortBufferException, NoSuchAlgorithmException, InvalidKeyException {
-            return this.deriveKey(info.getBytes(UTF_8), length);
-        }
-
-        /**
-         * @param info REQUIRED
-         * @param length REQUIRED
-         * @return converted bytes.
-         */
-        private byte[] deriveKey(byte[] info, int length)
-                throws ShortBufferException, NoSuchAlgorithmException, InvalidKeyException {
-            var result = new byte[length];
-            this.deriveKey(info, length, result, 0);
             return result;
         }
 
         /**
-         * @param info REQUIRED
-         * @param length REQUIRED
-         * @param output REQUIRED
-         * @param offset REQUIRED
+         * @return the generated message authentication code
          */
-        private void deriveKey(byte[] info, int length, byte[] output, int offset)
-                throws ShortBufferException, NoSuchAlgorithmException, InvalidKeyException {
-            this.assertInitialized();
-            if (length < 0) {
-                throw new IllegalArgumentException("Length must be a non-negative value.");
-            }
-
-            if (output.length < offset + length) {
-                throw new ShortBufferException();
-            }
-
-            var mac = this.createMac();
-            if (length > MAX_KEY_SIZE * mac.getMacLength()) {
-                throw new IllegalArgumentException(
-                        "Requested keys may not be longer than 255 times the underlying HMAC length.");
-            }
-
-            byte[] t = EMPTY_ARRAY;
+        private Mac createMac() {
             try {
-                int loc = 0;
+                Mac mac = Mac.getInstance(algorithm);
+                mac.init(prk);
+                return mac;
+            } catch (InvalidKeyException | NoSuchAlgorithmException e) {
+                throw new IllegalStateException("Could not create MAC implementing algorithm: " + algorithm, e);
+            }
+        }
+    }
 
-                for (byte i = 1; loc < length; ++i) {
-                    mac.update(t);
-                    mac.update(info);
-                    mac.update(i);
-                    t = mac.doFinal();
+    static {
+        // Initialize the SRP variables
+        try {
+            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(SRP_N.toByteArray());
 
-                    for (int x = 0; x < t.length && loc < length; ++loc) {
-                        output[loc] = t[x];
-                        ++x;
-                    }
+            byte[] digest = md.digest(SRP_G.toByteArray());
+            SRP_K = new BigInteger(1, digest);
+
+            BigInteger srpA;
+            BigInteger srpA2;
+            do {
+                srpA2 = new BigInteger(EPHEMERAL_KEY_LENGTH, sr).mod(SRP_N);
+                srpA = SRP_G.modPow(srpA2, SRP_N);
+            } while (srpA.mod(SRP_N).equals(BigInteger.ZERO));
+
+            SRP_A = srpA;
+            SRP_A2 = srpA2;
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException("SRP variables cannot be initialized due to missing algorithm", e);
+        }
+    }
+
+    private final HttpClient httpClient;
+    private final String userPoolId;
+    private final String clientId;
+    private final String region;
+    private final String identityPoolId;
+
+    public AuthenticationHelper(HttpClientFactory httpClientFactory, String userPoolId, String clientId, String region,
+            String identityPoolId) {
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+        this.userPoolId = userPoolId;
+        this.clientId = clientId;
+        this.region = region;
+        this.identityPoolId = identityPoolId;
+    }
+
+    /**
+     * Method to orchestrate the SRP Authentication.
+     *
+     * @param username username for the SRP request
+     * @param password password for the SRP request
+     * @return JWT token if the request is successful
+     * @throws AuthSalusApiException when SRP authentication fails
+     */
+    public AuthenticationResultResponse performSrpAuthentication(String username, String password)
+            throws AuthSalusApiException {
+        InitiateAuthRequest initiateAuthRequest = InitiateAuthRequest.userSrpAuth(clientId, username,
+                SRP_A.toString(16));
+        try {
+            ChallengeResponse challengeResponse = postInitiateAuthSrp(initiateAuthRequest);
+            if ("PASSWORD_VERIFIER".equals(challengeResponse.challengeName)) {
+                RespondToAuthChallengeRequest challengeRequest = createRespondToAuthChallengeRequest(challengeResponse,
+                        password);
+                return postRespondToAuthChallenge(challengeRequest);
+            } else {
+                throw new AuthSalusApiException(
+                        "Unsupported authentication challenge: " + challengeResponse.challengeName);
+            }
+        } catch (IllegalStateException | InvalidKeyException | NoSuchAlgorithmException e) {
+            throw new AuthSalusApiException("SRP Authentication failed", e);
+        }
+    }
+
+    public AuthenticationResultResponse performTokenRefresh(String refreshToken) throws AuthSalusApiException {
+        InitiateAuthRequest initiateAuthRequest = InitiateAuthRequest.refreshTokenAuth(clientId, refreshToken);
+        try {
+            return postInitiateAuthRefresh(initiateAuthRequest);
+        } catch (IllegalStateException e) {
+            throw new AuthSalusApiException("Token refresh failed", e);
+        }
+    }
+
+    /**
+     * Creates a response request to the SRP authentication challenge from the user pool.
+     *
+     * @param challengeResponse authentication challenge returned from the Cognito user pool
+     * @param password password to be used to respond to the authentication challenge
+     * @return request created for the previous authentication challenge
+     */
+    private RespondToAuthChallengeRequest createRespondToAuthChallengeRequest(ChallengeResponse challengeResponse,
+            String password) throws InvalidKeyException, NoSuchAlgorithmException {
+        String salt = challengeResponse.getSalt();
+        String secretBlock = challengeResponse.getSecretBlock();
+        String userIdForSrp = challengeResponse.getUserIdForSrp();
+        String usernameInternal = challengeResponse.getUsername();
+
+        if (secretBlock.isEmpty() || userIdForSrp.isEmpty() || usernameInternal.isEmpty()) {
+            throw new IllegalArgumentException("Required authentication response challenge parameters are null");
+        }
+
+        BigInteger srpB = new BigInteger(challengeResponse.getSrpB(), 16);
+        if (srpB.mod(SRP_N).equals(BigInteger.ZERO)) {
+            throw new IllegalStateException("SRP error, B cannot be zero");
+        }
+
+        String timestamp = DATE_TIME_FORMATTER.format(Instant.now());
+
+        byte[] key = getPasswordAuthenticationKey(userIdForSrp, password, srpB, new BigInteger(salt, 16));
+
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec(key, "HmacSHA256"));
+        mac.update(userPoolId.split("_", 2)[1].getBytes(UTF_8));
+        mac.update(userIdForSrp.getBytes(UTF_8));
+        mac.update(Base64.getDecoder().decode(secretBlock));
+        byte[] hmac = mac.doFinal(timestamp.getBytes(UTF_8));
+
+        String signature = new String(Base64.getEncoder().encode(hmac), UTF_8);
+
+        return new RespondToAuthChallengeRequest(clientId, usernameInternal, secretBlock, signature, timestamp);
+    }
+
+    private byte[] getPasswordAuthenticationKey(String userId, String userPassword, BigInteger srpB, BigInteger salt) {
+        try {
+            // Authenticate the password
+            // srpU = H(SRP_A, srpB)
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(SRP_A.toByteArray());
+
+            BigInteger srpU = new BigInteger(1, md.digest(srpB.toByteArray()));
+            if (srpU.equals(BigInteger.ZERO)) {
+                throw new IllegalStateException("Hash of A and B cannot be zero");
+            }
+
+            // srpX = H(salt | H(poolName | userId | ":" | password))
+            md.reset();
+            md.update(userPoolId.split("_", 2)[1].getBytes(UTF_8));
+            md.update(userId.getBytes(UTF_8));
+            md.update(":".getBytes(UTF_8));
+
+            byte[] userIdHash = md.digest(userPassword.getBytes(UTF_8));
+
+            md.reset();
+            md.update(salt.toByteArray());
+
+            BigInteger srpX = new BigInteger(1, md.digest(userIdHash));
+            BigInteger srpS = (srpB.subtract(SRP_K.multiply(SRP_G.modPow(srpX, SRP_N)))
+                    .modPow(SRP_A2.add(srpU.multiply(srpX)), SRP_N)).mod(SRP_N);
+
+            Hkdf hkdf = new Hkdf("HmacSHA256");
+            hkdf.init(srpS.toByteArray(), srpU.toByteArray());
+            return hkdf.deriveKey(DERIVED_KEY_INFO, DERIVED_KEY_SIZE);
+        } catch (NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
+    private ChallengeResponse postInitiateAuthSrp(InitiateAuthRequest request) throws AuthSalusApiException {
+        String responseContent = postJson(INITIATE_AUTH_TARGET, GSON.toJson(request));
+        return requireNonNull(GSON.fromJson(responseContent, ChallengeResponse.class));
+    }
+
+    private AuthenticationResultResponse postInitiateAuthRefresh(InitiateAuthRequest request)
+            throws AuthSalusApiException {
+        String responseContent = postJson(INITIATE_AUTH_TARGET, GSON.toJson(request));
+        return requireNonNull(GSON.fromJson(responseContent, AuthenticationResultResponse.class));
+    }
+
+    private AuthenticationResultResponse postRespondToAuthChallenge(RespondToAuthChallengeRequest request)
+            throws AuthSalusApiException {
+        String responseContent = postJson(RESPOND_TO_AUTH_TARGET, GSON.toJson(request));
+        return requireNonNull(GSON.fromJson(responseContent, AuthenticationResultResponse.class));
+    }
+
+    private String postJson(String target, String requestContent) throws AuthSalusApiException {
+        return postJson(target, requestContent, String.format(COGNITO_URL_FORMAT, region));
+    }
+
+    private String postJson(String target, String requestContent, String url) throws AuthSalusApiException {
+        try {
+            logger.debug("Posting JSON to: {}", url);
+            ContentResponse contentResponse = httpClient.newRequest(url) //
+                    .method(POST) //
+                    .header("x-amz-target", target) //
+                    .content(new StringContentProvider(requestContent), "application/x-amz-json-1.1") //
+                    .timeout(REQUEST_TIMEOUT.toNanos(), TimeUnit.NANOSECONDS).send();
+
+            String response = contentResponse.getContentAsString();
+            if (contentResponse.getStatus() >= 400) {
+                logger.debug("Cognito API error: {}", response);
+
+                CognitoError error = GSON.fromJson(response, CognitoError.class);
+                String message;
+                if (error != null && !error.message.isBlank()) {
+                    message = String.format("Cognito API error: %s (%s)", error.message, error.type);
+                } else {
+                    message = String.format("Cognito API error: %s (HTTP %s)", contentResponse.getReason(),
+                            contentResponse.getStatus());
                 }
-            } finally {
-                Arrays.fill(t, (byte) 0);
+                throw new AuthSalusApiException(message);
+            } else {
+                logger.trace("Response: {}", response);
             }
+            return response;
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            throw new AuthSalusApiException("Cognito API request failed: " + e.getMessage(), e);
         }
+    }
 
-        /**
-         * @return the generates message authentication code.
-         */
-        private Mac createMac() throws NoSuchAlgorithmException, InvalidKeyException {
-            var ex = Mac.getInstance(this.algorithm);
-            ex.init(this.prk);
-            return ex;
-        }
+    public GetIdResponse getId(AuthenticationResultResponse result) throws AuthSalusApiException {
+        var request = Map.of(//
+                "IdentityPoolId", "%s:%s".formatted(region, identityPoolId), //
+                "Logins", Map.of(//
+                        "cognito-idp.%s.amazonaws.com/%s".formatted(region, userPoolId), //
+                        result.getIdToken())//
+        );
+        var json = postJson(GET_ID, GSON.toJson(request), COGNITO_IDENTITY_URL_FORMAT.formatted(region));
+        return requireNonNull(GSON.fromJson(json, GetIdResponse.class));
+    }
 
-        /**
-         * Checks for a valid pseudo-random key.
-         */
-        private void assertInitialized() {
-            if (this.prk == null) {
-                throw new IllegalStateException("Hkdf has not been initialized");
-            }
-        }
+    public GetCredentialsForIdentityResponse getCredentialsForIdentity(AuthenticationResultResponse accessToken,
+            String identityId) throws AuthSalusApiException {
+        var request = Map.of(//
+                "IdentityId", identityId, //
+                "Logins", Map.of(//
+                        "cognito-idp.%s.amazonaws.com/%s".formatted(region, userPoolId), //
+                        accessToken.getIdToken())//
+        );
+        var json = postJson(GET_CREDENTIALS_FOR_IDENTITY, GSON.toJson(request),
+                COGNITO_IDENTITY_URL_FORMAT.formatted(region));
+        return requireNonNull(GSON.fromJson(json, GetCredentialsForIdentityResponse.class));
     }
 }

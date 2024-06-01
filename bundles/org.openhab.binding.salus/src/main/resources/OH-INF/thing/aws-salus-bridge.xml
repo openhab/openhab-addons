@@ -61,7 +61,7 @@
 			</parameter>
 			<parameter name="userPoolId" type="text" groupName="aws">
 				<label>User Pool ID</label>
-				<default>XGRz3CgoY</default>
+				<default>eu-central-1_XGRz3CgoY</default>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="identityPoolId" type="text" groupName="aws">
