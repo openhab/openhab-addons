@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.huesync.internal.HueSyncConstants;
-import org.openhab.binding.huesync.internal.HueSyncConstants.CHANNELS.COMMANDS;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDto;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDtoDetailed;
 import org.openhab.binding.huesync.internal.api.dto.execution.HueSyncExecutionDto;
@@ -132,6 +131,8 @@ public class HueSyncHandler extends BaseThingHandler {
             this.updateFirmwareInformation(deviceStatus);
             this.updateHdmiInformation(update.hdmiStatus);
             this.updateExecutionInformation(update.execution);
+
+            // TODO: Handle Exception(s)
         }
     }
 
@@ -323,8 +324,8 @@ public class HueSyncHandler extends BaseThingHandler {
         }
         String commandId = channel.getUID().getId();
 
-        if (COMMANDS.EXECUTORS.containsKey(commandId)) {
-            COMMANDS.EXECUTORS.get(commandId).accept(command);
+        if (this.connection.DeviceCommandsExecutors.containsKey(commandId)) {
+            this.connection.DeviceCommandsExecutors.get(commandId).accept(command);
         } else {
             this.logger.error("No executor registered for command {} - please report this as an issue", commandId);
         }

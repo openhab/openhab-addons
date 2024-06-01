@@ -12,13 +12,8 @@
  */
 package org.openhab.binding.huesync.internal;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
-import org.openhab.core.types.Command;
 
 /**
  * The {@link HueSyncConstants} class defines common constants, which are
@@ -45,8 +40,6 @@ public class HueSyncConstants {
 
         public static class COMMANDS {
             public static final String MODE = "device-commands#mode";
-
-            public static Map<String, Consumer<Command>> EXECUTORS = new HashMap<>();
         }
 
         public static class HDMI {

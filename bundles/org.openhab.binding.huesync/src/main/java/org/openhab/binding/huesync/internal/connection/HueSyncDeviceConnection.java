@@ -15,7 +15,10 @@ package org.openhab.binding.huesync.internal.connection;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,6 +35,7 @@ import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistra
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequestDto;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
+import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,13 +49,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 public class HueSyncDeviceConnection {
     private HueSyncConnection connection;
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncDeviceConnection.class);
+    public Map<String, Consumer<Command>> DeviceCommandsExecutors = new HashMap<>();
 
     public HueSyncDeviceConnection(HttpClient httpClient, String host, Integer port)
             throws CertificateException, IOException, URISyntaxException {
 
         this.connection = new HueSyncConnection(httpClient, host, port);
 
-        COMMANDS.EXECUTORS.put(COMMANDS.MODE, command -> {
+        this.DeviceCommandsExecutors.put(COMMANDS.MODE, command -> {
             this.logger.info("Command executor: {}", command);
         });
     }
