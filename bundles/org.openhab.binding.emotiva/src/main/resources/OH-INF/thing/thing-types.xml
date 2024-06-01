@@ -260,8 +260,8 @@
 		<description>Speaker Preset Name</description>
 		<state>
 			<options>
-				<option value="preset1">Preset 1</option>
-				<option value="preset2">Preset 2</option>
+				<option value="preset1">@text/channel-type.emotiva.speaker-preset.state.option.preset-1</option>
+				<option value="preset2">@text/channel-type.emotiva.speaker-preset.state.option.preset-2</option>
 			</options>
 		</state>
 	</channel-type>
@@ -286,7 +286,7 @@
 
 	<channel-type id="channel">
 		<item-type>Rollershutter</item-type>
-		<label>Radio Tuner Channel</label>
+		<label>Tuner Channel</label>
 		<description>Radio Tuner Channel</description>
 		<state min="1" max="20"/>
 	</channel-type>
@@ -297,8 +297,8 @@
 		<description>Radio tuner band: "AM" or "FM"</description>
 		<state>
 			<options>
-				<option value="band-am">AM</option>
-				<option value="band-fm">FM</option>
+				<option value="band-am">@text/channel-type.emotiva.tuner-band.state.option.band-am</option>
+				<option value="band-fm">@text/channel-type.emotiva.tuner-band.state.option.band-fm</option>
 			</options>
 		</state>
 	</channel-type>
@@ -316,26 +316,26 @@
 		<description>User select radio tuner channel name"</description>
 		<state>
 			<options>
-				<option value="channel-1">Channel 1</option>
-				<option value="channel-2">Channel 2</option>
-				<option value="channel-3">Channel 3</option>
-				<option value="channel-4">Channel 4</option>
-				<option value="channel-5">Channel 5</option>
-				<option value="channel-6">Channel 6</option>
-				<option value="channel-7">Channel 7</option>
-				<option value="channel-8">Channel 8</option>
-				<option value="channel-9">Channel 9</option>
-				<option value="channel-10">Channel 10</option>
-				<option value="channel-11">Channel 11</option>
-				<option value="channel-12">Channel 12</option>
-				<option value="channel-13">Channel 13</option>
-				<option value="channel-14">Channel 14</option>
-				<option value="channel-15">Channel 15</option>
-				<option value="channel-16">Channel 16</option>
-				<option value="channel-17">Channel 17</option>
-				<option value="channel-18">Channel 18</option>
-				<option value="channel-19">Channel 19</option>
-				<option value="channel-20">Channel 20</option>
+				<option value="channel-1">@text/channel-type.emotiva.tuner-channel-select.option.channel-1</option>
+				<option value="channel-2">@text/channel-type.emotiva.tuner-channel-select.option.channel-2</option>
+				<option value="channel-3">@text/channel-type.emotiva.tuner-channel-select.option.channel-3</option>
+				<option value="channel-4">@text/channel-type.emotiva.tuner-channel-select.option.channel-4</option>
+				<option value="channel-5">@text/channel-type.emotiva.tuner-channel-select.option.channel-5</option>
+				<option value="channel-6">@text/channel-type.emotiva.tuner-channel-select.option.channel-6</option>
+				<option value="channel-7">@text/channel-type.emotiva.tuner-channel-select.option.channel-7</option>
+				<option value="channel-8">@text/channel-type.emotiva.tuner-channel-select.option.channel-8</option>
+				<option value="channel-9">@text/channel-type.emotiva.tuner-channel-select.option.channel-9</option>
+				<option value="channel-10">@text/channel-type.emotiva.tuner-channel-select.option.channel-10</option>
+				<option value="channel-11">@text/channel-type.emotiva.tuner-channel-select.option.channel-11</option>
+				<option value="channel-12">@text/channel-type.emotiva.tuner-channel-select.option.channel-12</option>
+				<option value="channel-13">@text/channel-type.emotiva.tuner-channel-select.option.channel-13</option>
+				<option value="channel-14">@text/channel-type.emotiva.tuner-channel-select.option.channel-14</option>
+				<option value="channel-15">@text/channel-type.emotiva.tuner-channel-select.option.channel-15</option>
+				<option value="channel-16">@text/channel-type.emotiva.tuner-channel-select.option.channel-16</option>
+				<option value="channel-17">@text/channel-type.emotiva.tuner-channel-select.option.channel-17</option>
+				<option value="channel-18">@text/channel-type.emotiva.tuner-channel-select.option.channel-18</option>
+				<option value="channel-19">@text/channel-type.emotiva.tuner-channel-select.option.channel-19</option>
+				<option value="channel-20">@text/channel-type.emotiva.tuner-channel-select.option.channel-20</option>
 			</options>
 		</state>
 	</channel-type>
@@ -489,7 +489,7 @@
 
 	<channel-type id="selected-movie-music">
 		<item-type>String</item-type>
-		<label>User Selected Mode</label>
+		<label>User Selected Movie or Music Mode</label>
 		<description>User-selected movie or music mode for main zone: "Movie" or "Music".</description>
 		<state readOnly="true">
 			<options>

@@ -59,7 +59,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 /**
- * Helper class for marshallering and unmarshalling Emotiva message types.
+ * Helper class for marshalling and unmarshalling Emotiva message types.
  *
  * @author Espen Fossen - Initial contribution
  */

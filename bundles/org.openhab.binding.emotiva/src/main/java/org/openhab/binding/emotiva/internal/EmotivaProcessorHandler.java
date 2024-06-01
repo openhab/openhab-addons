@@ -326,10 +326,9 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         }
 
         if (object instanceof EmotivaAckDTO answerDto) {
-            logger.trace("Processing received '{}' with '{}'", EmotivaAckDTO.class.getSimpleName(),
-                    emotivaUdpResponse.answer());
-
             // Currently not supported to revert a failed command update, just used for logging for now.
+            logger.trace("Processing received '{}' with '{}'", EmotivaAckDTO.class.getSimpleName(), answerDto);
+
         } else if (object instanceof EmotivaBarNotifyWrapper answerDto) {
             logger.trace("Processing received '{}' with '{}'", EmotivaBarNotifyWrapper.class.getSimpleName(),
                     emotivaUdpResponse.answer());
@@ -449,7 +448,7 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             try {
                 localSendingService.sendUpdate(tags, config);
             } catch (InterruptedIOException e) {
-                logger.error("Interrupted during sending of EmotivaUpdate message to device '{}'",
+                logger.debug("Interrupted during sending of EmotivaUpdate message to device '{}'",
                         this.getThing().getThingTypeUID(), e);
             } catch (IOException e) {
                 logger.error("Failed to send EmotivaUpdate message to device '{}'", this.getThing().getThingTypeUID(),

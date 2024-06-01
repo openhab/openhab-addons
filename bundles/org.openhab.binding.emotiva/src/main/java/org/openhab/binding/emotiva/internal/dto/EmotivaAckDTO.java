@@ -43,4 +43,9 @@ public class EmotivaAckDTO {
     public void setCommands(List<Object> commands) {
         this.commands = commands;
     }
+
+    @Override
+    public String toString() {
+        return "EmotivaAckDTO{" + "commands=" + commands + '}';
+    }
 }
