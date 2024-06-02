@@ -44,11 +44,6 @@ public class ArgoClimaConfigurationLocal extends ArgoClimaConfigurationBase {
         CLEARTEXT
     }
 
-    /**
-     * Argo configuration parameters specific to local connection & API stub
-     * These names are defined in thing-types.xml and get injected on instantiation
-     * through {@link org.openhab.core.thing.binding.BaseThingHandler#getConfigAs getConfigAs}
-     */
     private String hostname = "";
     private ConnectionMode connectionMode = ConnectionMode.LOCAL_CONNECTION;
     private int hvacListenPort = 1001;
