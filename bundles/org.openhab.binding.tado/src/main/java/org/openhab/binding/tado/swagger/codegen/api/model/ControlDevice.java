@@ -1,0 +1,66 @@
+package org.openhab.binding.tado.swagger.codegen.api.model;
+
+import java.util.Objects;
+
+import com.google.gson.annotations.SerializedName;
+
+public class ControlDevice {
+    @SerializedName("deviceType")
+    private String deviceType = null;
+
+    @SerializedName("serialNo")
+    private String serialNo = null;
+
+    @SerializedName("batteryState")
+    private String batteryState = null;
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public String getSerialNo() {
+        return serialNo;
+    }
+
+    public String getBatteryState() {
+        return batteryState;
+    }
+
+    @Override
+    public boolean equals(java.lang.Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        ControlDevice controlDevice = (ControlDevice) o;
+        return Objects.equals(this.deviceType, controlDevice.deviceType)
+                && Objects.equals(this.serialNo, controlDevice.serialNo)
+                && Objects.equals(this.batteryState, controlDevice.batteryState);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(deviceType, serialNo, batteryState);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("class ControlDevice {\n");
+
+        sb.append("    deviceType: ").append(toIndentedString(deviceType)).append("\n");
+        sb.append("    serialNo: ").append(toIndentedString(serialNo)).append("\n");
+        sb.append("    batteryState: ").append(toIndentedString(batteryState)).append("\n");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    private String toIndentedString(java.lang.Object o) {
+        if (o == null) {
+            return "null";
+        }
+        return o.toString().replace("\n", "\n    ");
+    }
+}
