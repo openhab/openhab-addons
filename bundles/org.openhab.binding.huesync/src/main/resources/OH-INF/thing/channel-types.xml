@@ -116,12 +116,13 @@
 			Reacts to the action on your screen, intensifying the in-game atmosphere
 			with bursts of light that correspond to explosions, gunfire, and other gameplay events.\n
 
-			"ambient", "passthrough",
+			"passthrough",
 			"powersave",
 			"unknown:"
 			The device reports a mode not known to the binding (e.g. intorduced by a new
 			firmware). NOTE: It
-			is not possible to send this command to the device.
+			is not
+			possible to send this command to the device.
 		</description>
 		<command>
 			<options>
@@ -130,7 +131,6 @@
 				<option value="video"></option>
 				<option value="game"></option>
 				<option value="music"></option>
-				<option value="ambient"></option>
 				<option value="unknown"></option>
 			</options>
 		</command>

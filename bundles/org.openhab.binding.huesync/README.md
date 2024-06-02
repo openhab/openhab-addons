@@ -103,17 +103,16 @@ Information about a HDMI input  connection.
 
 | Channel | Type   | Read/Write | Description                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ------- | ------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| name    | String | R/W        | <details><summary>Hue Sync operation mode</summary><ul><li>powersave</li><li>passthrough</li><li>video</li><li>game</li><li>music</li><li>ambient</li><li>unknown (read only)</li></ul></details>                                                                                                                                                                                                                                                                                                                                                                                            |
+| name    | String | R/W        | <details><summary>Hue Sync operation mode</summary><ul><li>powersave</li><li>passthrough</li><li>video</li><li>game</li><li>music</li><li>unknown (read only)</li></ul></details>                                                                                                                                                                                                                                                                                                                                                                                            |
 
 #### mode
 
 - **video** <br /> Analyzes the on-screen visuals, translating colors and brightness into corresponding light effects for an immersive movie-watching experience.
 - **music** <br /> Analyzes the rhythm and beat of your music, creating dynamic light along to your tunes.
 - **game**  <br /> Reacts to the action on your screen, intensifying the in-game atmosphere with bursts of light that correspond to explosions, gunfire, and other gameplay events.\n
-- **ambient**
 - **passthrough**
 - **powersave**
-- **unknown** <br /> The device reports a mode not known to the binding (e.g. intorduced by a new firmware). *NOTE: It is not possible to send this command to the device.*
+- **unknown** <br /> The device reports a mode not known to the binding (e.g. introduced by a new firmware). *NOTE: It is not possible to send this command to the device.*
 
 <!-- 
 ## Full Example

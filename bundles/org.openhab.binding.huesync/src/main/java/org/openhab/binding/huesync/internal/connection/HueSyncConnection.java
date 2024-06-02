@@ -90,7 +90,8 @@ public class HueSyncConnection {
 
     // TODO: Invalid Token results in "HttpResponseException: HTTP protocol violation: Authentication challenge without
     // WWW-Authenticate header" exception, Not the expected 401 status.
-    protected @Nullable <T> T executeRequest(HttpMethod method, String endpoint, String payload, Class<T> type) {
+    protected @Nullable <T> T executeRequest(HttpMethod method, String endpoint, String payload,
+            @Nullable Class<T> type) {
         try {
             ContentResponse response = this.executeRequest(method, endpoint, payload);
 
@@ -156,7 +157,7 @@ public class HueSyncConnection {
         this.tlsProviderService.unregister();
     }
 
-    private @Nullable <T> T processedResponse(ContentResponse response, Class<T> type) {
+    private @Nullable <T> T processedResponse(ContentResponse response, @Nullable Class<T> type) {
         int status = response.getStatus();
         /*
          * 400 Invalid State:
@@ -174,7 +175,7 @@ public class HueSyncConnection {
          */
         switch (status) {
             case HttpStatus.OK_200:
-                return this.deserialize(response.getContentAsString(), type);
+                return (type != null) ? this.deserialize(response.getContentAsString(), type) : null;
             case HttpStatus.BAD_REQUEST_400:
                 logger.trace("registration in progress: no token received yet");
                 break;

@@ -47,8 +47,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
  */
 @NonNullByDefault
 public class HueSyncDeviceConnection {
-    private HueSyncConnection connection;
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncDeviceConnection.class);
+    private HueSyncConnection connection;
+
     public Map<String, Consumer<Command>> DeviceCommandsExecutors = new HashMap<>();
 
     public HueSyncDeviceConnection(HttpClient httpClient, String host, Integer port)
@@ -58,8 +59,16 @@ public class HueSyncDeviceConnection {
 
         this.DeviceCommandsExecutors.put(COMMANDS.MODE, command -> {
             this.logger.info("Command executor: {}", command);
+
+            if (!this.connection.isRegistered())
+                return;
+
+            String json = String.format("{\"mode\": \"%s\"}", command.toFullString());
+            this.connection.executeRequest(HttpMethod.PUT, ENDPOINTS.EXECUTION, json, null);
         });
     }
+
+    // #region get
 
     public @Nullable HueSyncDeviceDto getDeviceInfo() {
         return this.connection.isRegistered()
@@ -112,6 +121,7 @@ public class HueSyncDeviceConnection {
 
         return null;
     }
+    // #endregion
 
     public boolean isRegistered() {
         return this.connection.isRegistered();
