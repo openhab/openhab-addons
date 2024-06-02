@@ -222,7 +222,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
     public void decodeReadDp(@Nullable JsonObject response, @Nullable String uid, @Nullable String dp, ChannelType tp,
             @Nullable String type) {
-
         SiemensHvacMetadataRegistry lcMetaDataRegistry = metaDataRegistry;
         if (lcMetaDataRegistry == null) {
             return;

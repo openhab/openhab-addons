@@ -712,7 +712,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         int digits = 0;
         if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC)) {
             String digitSt = dpt.getDecimalDigits();
-            if (digitSt != null && !digitSt.equals("")) {
+            if (digitSt != null && !"".equals(digitSt)) {
                 digits = Integer.parseInt(digitSt);
             }
         }

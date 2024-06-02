@@ -78,60 +78,59 @@ public class NumericTypeConverter extends AbstractTypeConverter {
             String itemType = tp.getItemType();
 
             if (itemType != null) {
-
-                if (itemType.equals("Number:Temperature")) {
+                if ("Number:Temperature".equals(itemType)) {
                     Unit<Temperature> targetUnit = null;
 
-                    if (unit.equals("°C")) {
+                    if ("°C".equals(unit)) {
                         targetUnit = SIUnits.CELSIUS;
-                    } else if (unit.equals("°C*min")) {
+                    } else if ("°C*min".equals(unit)) {
                         targetUnit = SIUnits.CELSIUS;
-                    } else if (unit.equals("°F")) {
+                    } else if ("°F".equals(unit)) {
                         targetUnit = ImperialUnits.FAHRENHEIT;
-                    } else if (unit.equals("°F*min")) {
+                    } else if ("°F*min"unit.equals(unit)) {
                         targetUnit = ImperialUnits.FAHRENHEIT;
                     }
 
                     if (targetUnit != null) {
                         return new QuantityType<>(dValue, targetUnit);
                     }
-                } else if (itemType.equals("Number:ElectricPotential")) {
+                } else if ("Number:ElectricPotential".equals(itemType)) {
                     Unit<ElectricPotential> targetUnit = null;
 
-                    if (unit.equals("V")) {
+                    if ("V".equals(unit)) {
                         targetUnit = Units.VOLT;
                     }
 
                     if (targetUnit != null) {
                         return new QuantityType<>(dValue, targetUnit);
                     }
-                } else if (itemType.equals("Number:Time")) {
+                } else if ("Number:Time".equals(itemType)) {
                     Unit<Time> targetUnit = null;
 
-                    if (unit.equals("s")) {
+                    if ("s".equals(unit)) {
                         targetUnit = Units.SECOND;
-                    } else if (unit.equals("m") || unit.equals("min")) {
+                    } else if ("m".equals(unit) || ("min".equals(unit))) {
                         targetUnit = Units.MINUTE;
-                    } else if (unit.equals("h")) {
+                    } else if ("h".equals(unit)) {
                         targetUnit = Units.HOUR;
-                    } else if (unit.equals("Mois")) {
+                    } else if ("Mois".equals(unit)) {
                         targetUnit = Units.MONTH;
                     }
 
                     if (targetUnit != null) {
                         return new QuantityType<>(dValue, targetUnit);
                     }
-                } else if (itemType.equals("Number:Dimensionless")) {
+                } else if ("Number:Dimensionless".equals(itemType)) {
                     Unit<Dimensionless> targetUnit = null;
 
-                    if (unit.equals("%")) {
+                    if ("%".equals(unit)) {
                         targetUnit = Units.PERCENT;
                     }
 
                     if (targetUnit != null) {
                         return new QuantityType<>(dValue, targetUnit);
                     }
-                } else if (itemType.equals("Number")) {
+                } else if ("Number".equals(itemType)) {
                     return new DecimalType(dValue);
                 }
             } else {
@@ -155,7 +154,7 @@ public class NumericTypeConverter extends AbstractTypeConverter {
             return CoreItemFactory.NUMBER;
         }
 
-        if (unit.equals("")) {
+        if ("".equals(unit)) {
             return CoreItemFactory.NUMBER;
         }
 
