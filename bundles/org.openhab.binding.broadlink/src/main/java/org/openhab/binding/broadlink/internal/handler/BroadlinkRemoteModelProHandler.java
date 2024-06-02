@@ -23,9 +23,9 @@ import org.openhab.core.thing.Thing;
  * @author John Marshall/Cato Sognen - Initial contribution
  */
 @NonNullByDefault
-public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
+public class BroadlinkRemoteModelProHandler extends BroadlinkRemoteHandler {
 
-    public BroadlinkRemoteModel2Handler(Thing thing,
+    public BroadlinkRemoteModelProHandler(Thing thing,
             BroadlinkRemoteDynamicCommandDescriptionProvider commandDescriptionProvider,
             StorageService storageService) {
         super(thing, commandDescriptionProvider, storageService);
@@ -42,9 +42,10 @@ public class BroadlinkRemoteModel2Handler extends BroadlinkRemoteHandler {
             byte payload[] = new byte[16];
             payload[0] = 1;
             byte message[] = buildMessage((byte) 0x6a, payload);
-            byte response[] = sendAndReceiveDatagram(message, "RM2 device status");
+            byte response[] = sendAndReceiveDatagram(message, "RM Pro device status");
             if (response == null) {
-                logger.warn("response from RM2 device was null, did you configure the right address for the device?");
+                logger.warn(
+                        "response from RM Pro device was null, did you configure the right address for the device?");
                 return false;
             }
             byte decodedPayload[] = decodeDevicePacket(response);

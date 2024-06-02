@@ -13,8 +13,7 @@
 package org.openhab.binding.broadlink.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 
@@ -22,24 +21,27 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.core.test.storage.VolatileStorageService;
 
 /**
- * Tests the Remote Model 2 handler.
- * 
+ * Tests the Remote Model Pro handler.
+ *
  * @author John Marshall - Initial contribution
  */
 @NonNullByDefault
-public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHandlerTest {
+public class BroadlinkRemoteModelProHandlerTest extends AbstractBroadlinkThingHandlerTest {
 
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
-        configureUnderlyingThing(BroadlinkBindingConstants.THING_TYPE_RM2, "rm2-test");
+        configureUnderlyingThing(BroadlinkBindingConstants.THING_TYPE_RM_PRO, "rm_pro-test");
         MockitoAnnotations.openMocks(this).close();
-        Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
+        Mockito.when(mockSocket.sendAndReceive(ArgumentMatchers.any(byte[].class), ArgumentMatchers.anyString()))
+                .thenReturn(response);
     }
 
     private byte[] response = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -55,7 +57,7 @@ public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHand
         VolatileStorageService storageService = new VolatileStorageService();
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteArrayCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider,
+        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModelProHandler(thing, commandDescriptionProvider,
                 storageService);
         setMocksForTesting(model2);
         reset(trafficObserver);
@@ -76,7 +78,7 @@ public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHand
         VolatileStorageService storageService = new VolatileStorageService();
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider,
+        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModelProHandler(thing, commandDescriptionProvider,
                 storageService);
         setMocksForTesting(model2);
         // Note the length is 12 so as to not require padding
@@ -112,14 +114,14 @@ public class BroadlinkRemoteModel2HandlerTest extends AbstractBroadlinkThingHand
         VolatileStorageService storageService = new VolatileStorageService();
         ArgumentCaptor<Byte> commandCaptor = ArgumentCaptor.forClass(Byte.class);
         ArgumentCaptor<byte[]> byteCaptor = ArgumentCaptor.forClass(byte[].class);
-        BroadlinkRemoteHandler model2 = new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider,
+        BroadlinkRemoteHandler model_pro = new BroadlinkRemoteModelProHandler(thing, commandDescriptionProvider,
                 storageService);
-        setMocksForTesting(model2);
+        setMocksForTesting(model_pro);
         // Note the length is such that padding up to the next multiple of 16 will be needed
         byte[] code = { 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x10,
                 0x11 };
         reset(trafficObserver);
-        model2.sendCode(code);
+        model_pro.sendCode(code);
 
         verify(trafficObserver).onCommandSent(commandCaptor.capture());
         assertEquals(0x6a, commandCaptor.getValue().byteValue());

@@ -4,16 +4,19 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="rm2">
-		<label>Broadlink RM2</label>
-		<description>The Broadlink RM 2/Pro is a Wi-Fi IR/RF transmitter with a temperature sensor.</description>
+	<thing-type id="rmpro">
+		<label>Broadlink RM Pro</label>
+		<description>The Broadlink RM Pro is a Wi-Fi IR/RF transmitter with a temperature sensor.</description>
 		<channels>
 			<channel id="command" typeId="command"/>
-			<channel id="temperature" typeId="temperature"/>
 			<channel id="learningControl" typeId="learningControl"/>
+			<channel id="rfcommand" typeId="rfcommand"/>
+			<channel id="learningRFControl" typeId="learningRFControl"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
-		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
+		<config-description-ref uri="thing-type:broadlink:rmproconfig"/>
 	</thing-type>
 	<thing-type id="rm3">
 		<label>Broadlink RM3</label>

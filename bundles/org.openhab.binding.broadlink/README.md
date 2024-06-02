@@ -14,7 +14,7 @@ This binding supports a range of home networking devices made by (and occasional
 | sp2        | Broadlink SP2 WiFi Smart Socket with night light                        |
 | sp3        | Broadlink SP3/Mini WiFi Smart Socket with night light                   |
 | sp3s       | Broadlink SP3s WiFi Smart Socket with Power Meter                       |
-| rm2        | Broadline RM2/Pro WiFi IR/RF Transmitter with temperature sensor        |
+| rm-pro     | Broadline RM Pro WiFi IR/RF Transmitter with temperature sensor        |
 | rm3        | Broadlink RM3/Mini WiFi IR Transmitter                                  |
 | rm3q       | Broadlink RM3 WiFi IR Transmitter with Firmware v44057                  |
 | rm4        | Broadlink RM4 WiFi IR Transmitter with temperature and humidity sensors |
@@ -47,7 +47,7 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 |------------------|--------------------------|----------------------|-------------------------------------------------|
 | powerOn          | MP2, all SPx             | Switch               | Power on/off for switches/strips                |
 | nightLight       | SP3                      | Switch               | Night light on/off                              |
-| temperature      | A1, RM2, RM4             | Number:Temperature   | Temperature                                     |
+| temperature      | A1, RM Pro, RM4          | Number:Temperature   | Temperature                                     |
 | humidity         | A1, RM4                  | Number:Dimensionless | Air humidity percentage                         |
 | noise            | A1                       | String               | Noise level: `QUIET`/`NORMAL`/`NOISY`/`EXTREME` |
 | light            | A1                       | String               | Light level: `DARK`/`DIM`/`NORMAL`/`BRIGHT`     |
