@@ -148,7 +148,7 @@ public class MyUplinkBindingConstants {
     public static final String STATUS_DEVICE_NOT_FOUND = "@text/status.device.not.found";
 
     // other
-    public static final long POLLING_INITIAL_DELAY = 1;
+    public static final long POLLING_INITIAL_DELAY = 5;
 
     public static final String GENERIC_NO_VAL = "---";
     public static final String EMPTY = "";

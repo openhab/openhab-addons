@@ -64,12 +64,12 @@ public class ChannelFactory {
     }
 
     public Channel createChannel(ThingUID thingUID, JsonObject channelData) {
-        var channelId = Utils.getAsString(channelData, JSON_KEY_CHANNEL_ID, GENERIC_NO_VAL);
-        var label = Utils.getAsString(channelData, JSON_KEY_CHANNEL_LABEL, GENERIC_NO_VAL);
-        var unit = Utils.getAsString(channelData, JSON_KEY_CHANNEL_UNIT, GENERIC_NO_VAL);
-        var strVal = Utils.getAsString(channelData, JSON_KEY_CHANNEL_STR_VAL, GENERIC_NO_VAL);
-        var writable = Utils.getAsBool(channelData, JSON_KEY_CHANNEL_WRITABLE, Boolean.FALSE);
-        var enumValues = Utils.getAsJsonArray(channelData, JSON_KEY_CHANNEL_ENUM_VALUES);
+        final var channelId = Utils.getAsString(channelData, JSON_KEY_CHANNEL_ID, GENERIC_NO_VAL);
+        final var label = Utils.getAsString(channelData, JSON_KEY_CHANNEL_LABEL, GENERIC_NO_VAL);
+        final var unit = Utils.getAsString(channelData, JSON_KEY_CHANNEL_UNIT, GENERIC_NO_VAL);
+        final var strVal = Utils.getAsString(channelData, JSON_KEY_CHANNEL_STR_VAL, GENERIC_NO_VAL);
+        final var writable = Utils.getAsBool(channelData, JSON_KEY_CHANNEL_WRITABLE, Boolean.FALSE);
+        final var enumValues = Utils.getAsJsonArray(channelData, JSON_KEY_CHANNEL_ENUM_VALUES);
 
         ChannelTypeUID channelTypeUID = null;
         if (enumValues.isEmpty()) {
@@ -78,10 +78,10 @@ public class ChannelFactory {
             channelTypeUID = determineEnumChannelTypeUID(channelId, enumValues, writable);
         }
 
-        var channelUID = new ChannelUID(thingUID, channelId);
-        var acceptedType = determineAcceptedType(channelTypeUID, unit);
-        var builder = ChannelBuilder.create(channelUID).withLabel(label).withDescription(label).withType(channelTypeUID)
-                .withAcceptedItemType(acceptedType);
+        final var channelUID = new ChannelUID(thingUID, channelId);
+        final var acceptedType = determineAcceptedType(channelTypeUID, unit);
+        final var builder = ChannelBuilder.create(channelUID).withLabel(label).withDescription(label)
+                .withType(channelTypeUID).withAcceptedItemType(acceptedType);
 
         if (writable) {
             var props = new HashMap<String, String>();
@@ -134,7 +134,8 @@ public class ChannelFactory {
     }
 
     private ChannelTypeUID getOrBuildDynamicEnumType(String channelId, JsonArray enumValues, boolean writable) {
-        var channelTypeUID = new ChannelTypeUID(BINDING_ID, CHANNEL_TYPE_ENUM_PRFIX + channelId);
+        final var prefix = writable ? CHANNEL_TYPE_PREFIX_RW + CHANNEL_TYPE_ENUM_PRFIX : CHANNEL_TYPE_ENUM_PRFIX;
+        final var channelTypeUID = new ChannelTypeUID(BINDING_ID, prefix + channelId);
         var type = channelTypeRegistry.getChannelType(channelTypeUID);
 
         if (type == null) {
@@ -156,7 +157,7 @@ public class ChannelFactory {
         for (var element : enumValues) {
             var enumText = Utils.getAsString(element.getAsJsonObject(), JSON_ENUM_KEY_TEXT);
             var enumOrdinal = Utils.getAsString(element.getAsJsonObject(), JSON_KEY_CHANNEL_VALUE, GENERIC_NO_VAL);
-            list.add(new StateOption(enumOrdinal, enumText));
+            list.add(new StateOption(enumOrdinal, Utils.capitalize(enumText)));
         }
         return list;
     }
