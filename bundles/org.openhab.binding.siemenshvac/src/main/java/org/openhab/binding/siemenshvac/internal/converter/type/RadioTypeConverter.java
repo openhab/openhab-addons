@@ -18,6 +18,7 @@ import java.util.Locale;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -72,12 +73,12 @@ public class RadioTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected boolean fromBindingValidation(JsonElement value, String type) {
+    protected boolean fromBindingValidation(JsonElement value, String unit, String type) {
         return true;
     }
 
     @Override
-    protected State fromBinding(JsonElement value, String type, ChannelType tp, Locale locale)
+    protected State fromBinding(JsonElement value, String unit, String type, ChannelType tp, Locale locale)
             throws ConverterException {
         State updateVal = UnDefType.UNDEF;
         String valueSt = value.getAsString();
@@ -90,9 +91,9 @@ public class RadioTypeConverter extends AbstractTypeConverter {
             StateOption onOpt = options.get(1);
 
             if (valueSt.equals(onOpt.getLabel())) {
-                updateVal = new DecimalType(onOpt.getValue());
+                updateVal = new DecimalType(1);
             } else if (valueSt.equals(offOpt.getLabel())) {
-                updateVal = new DecimalType(offOpt.getValue());
+                updateVal = new DecimalType(0);
             }
         }
 
@@ -100,8 +101,8 @@ public class RadioTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    public String getChannelType(boolean writeAccess) {
-        if (writeAccess) {
+    public String getChannelType(SiemensHvacMetadataDataPoint dpt) {
+        if (dpt.getWriteAccess()) {
             return "switch";
         } else {
             return "contact";
@@ -109,8 +110,8 @@ public class RadioTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    public String getItemType(boolean writeAccess) {
-        if (writeAccess) {
+    public String getItemType(SiemensHvacMetadataDataPoint dpt) {
+        if (dpt.getWriteAccess()) {
             return CoreItemFactory.SWITCH;
         } else {
             return CoreItemFactory.CONTACT;

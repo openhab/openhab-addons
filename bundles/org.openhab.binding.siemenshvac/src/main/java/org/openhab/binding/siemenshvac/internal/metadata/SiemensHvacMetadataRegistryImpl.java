@@ -298,8 +298,30 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             throw new SiemensHvacException("@offline.user-not-find");
         }
 
+        Map<String, Locale> map = new HashMap<String, Locale>();
+        map.put("English", Locale.forLanguageTag("en-UK"));
+        map.put("Deutsch", Locale.forLanguageTag("de-DE"));
+        map.put("Francais", Locale.forLanguageTag("fr-FR"));
+        map.put("Italiano", Locale.forLanguageTag("it-IT"));
+        map.put("Nederlands", Locale.forLanguageTag("nl-NL"));
+        map.put("Polski", Locale.forLanguageTag("pl-PL"));
+        map.put("Ceski", Locale.forLanguageTag("cs-CZ"));
+        map.put("Magyar", Locale.forLanguageTag("hu-HU"));
+        map.put("Espagnol", Locale.forLanguageTag("es-ES"));
+        map.put("Dansk", Locale.forLanguageTag("da-DK"));
+        map.put("Svenska", Locale.forLanguageTag("sv-SE"));
+        map.put("Suomi", Locale.forLanguageTag("fi-FI"));
+        map.put("Portugues", Locale.forLanguageTag("pt-PT"));
+        map.put("Russkij", Locale.forLanguageTag("ru-RU"));
+        map.put("Turkce", Locale.forLanguageTag("tr-TR"));
+        map.put("Slovensky", Locale.forLanguageTag("sl-SV"));
+
         this.user = lcUser;
-        this.userLocale = Locale.forLanguageTag(lcUser.getLanguage());
+        if (map.containsKey(lcUser.getLanguage())) {
+            this.userLocale = map.get(lcUser.getLanguage());
+        } else {
+            this.userLocale = Locale.getDefault();
+        }
 
         logger.trace("siemensHvac:Initialization():Begin_0001");
 
@@ -553,7 +575,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             BigDecimal max = new BigDecimal(dpt.getMax());
             BigDecimal step = new BigDecimal(dpt.getResolution());
 
-            stateFragment = stateFragment.withMinimum(min).withMaximum(max).withStep(step).withReadOnly(false);
+            stateFragment = stateFragment.withPattern(getStatePattern(dpt)).withMinimum(min).withMaximum(max)
+                    .withStep(step).withReadOnly(false);
 
             description = channelTypeUID.toString();
             label = channelTypeUID.getId();
@@ -642,7 +665,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
     public String getItemType(SiemensHvacMetadataDataPoint dpt) throws SiemensHvacException {
         try {
             TypeConverter tp = ConverterFactory.getConverter(dpt.getDptType());
-            return tp.getItemType(dpt.getWriteAccess());
+            return tp.getItemType(dpt);
         } catch (ConverterTypeException ex) {
             throw new SiemensHvacException(String.format("Can't find convertor for type: %s", dpt.getDptType()), ex);
         }
@@ -658,6 +681,8 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         if (dptUnit == null) {
             return "";
         } else if (dptUnit.contains("°C")) {
+            return SiemensHvacBindingConstants.CATEGORY_CHANNEL_TEMP;
+        } else if (dptUnit.contains("°F")) {
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_TEMP;
         } else if (dpType.contains(SiemensHvacBindingConstants.DPT_TYPE_DATE_TIME)) {
             return SiemensHvacBindingConstants.CATEGORY_CHANNEL_TIME;
@@ -684,13 +709,19 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
             return "%d %%";
         }
 
-        if (unit != null && !unit.isEmpty()) {
-            if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC)) {
-                return String.format("%s %s", "%d", "%unit%");
+        int digits = 0;
+        if (dpt.getDptType().equals(SiemensHvacBindingConstants.DPT_TYPE_NUMERIC)) {
+            String digitSt = dpt.getDecimalDigits();
+            if (digitSt != null && !digitSt.equals("")) {
+                digits = Integer.parseInt(digitSt);
             }
         }
 
-        return "";
+        if (unit != null && !unit.isEmpty()) {
+            return String.format("%s %s", "%." + digits + "f", "%unit%");
+        } else {
+            return String.format("%s", "%." + digits + "f");
+        }
     }
 
     public void readUserInfo() throws SiemensHvacException {

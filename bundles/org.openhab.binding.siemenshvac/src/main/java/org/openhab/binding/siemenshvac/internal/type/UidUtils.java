@@ -147,7 +147,7 @@ public class UidUtils {
         try {
             TypeConverter tp = ConverterFactory.getConverter(type);
             if (!tp.hasVariant()) {
-                result = tp.getChannelType(dpt.getWriteAccess());
+                result = tp.getChannelType(dpt);
             }
         } catch (ConverterTypeException ex) {
             throw new SiemensHvacException(String.format("Can't find converter for type: %s", type), ex);

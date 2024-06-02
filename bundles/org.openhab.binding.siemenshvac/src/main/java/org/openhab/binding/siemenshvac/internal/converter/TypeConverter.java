@@ -16,6 +16,7 @@ import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -45,13 +46,13 @@ public interface TypeConverter {
      * get underlying channel type to construct channel type UID
      *
      */
-    String getChannelType(boolean writeAccess);
+    String getChannelType(SiemensHvacMetadataDataPoint dpt);
 
     /**
      * get underlying item type on openhab side for this SiemensHvac type
      *
      */
-    String getItemType(boolean writeAccess);
+    String getItemType(SiemensHvacMetadataDataPoint dpt);
 
     /**
      * tell if this type have different subvariant or not

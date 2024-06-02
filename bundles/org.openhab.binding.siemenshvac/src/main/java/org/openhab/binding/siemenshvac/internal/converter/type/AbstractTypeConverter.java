@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterTypeException;
 import org.openhab.binding.siemenshvac.internal.converter.TypeConverter;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
@@ -57,6 +58,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
     @Override
     public State convertFromBinding(JsonObject dp, ChannelType tp, Locale locale) throws ConverterException {
         String type = null;
+        String unit = "";
         JsonElement value = null;
 
         if (dp.has("Type")) {
@@ -69,6 +71,10 @@ public abstract class AbstractTypeConverter implements TypeConverter {
             value = dp.get("EnumValue");
         }
 
+        if (dp.has("Unit")) {
+            unit = dp.get("Unit").getAsString().trim();
+        }
+
         if (value == null) {
             return UnDefType.NULL;
         }
@@ -78,13 +84,13 @@ public abstract class AbstractTypeConverter implements TypeConverter {
             return UnDefType.NULL;
         }
 
-        if (!fromBindingValidation(value, type)) {
+        if (!fromBindingValidation(value, unit, type)) {
             logger.debug("Can't convert {} value '{}' with {} for '{}'", type, value, this.getClass().getSimpleName(),
                     dp);
             return UnDefType.NULL;
         }
 
-        return fromBinding(value, type, tp, locale);
+        return fromBinding(value, unit, type, tp, locale);
     }
 
     /**
@@ -108,12 +114,12 @@ public abstract class AbstractTypeConverter implements TypeConverter {
     /**
      * Returns true, if the conversion from the binding to openHAB is possible.
      */
-    protected abstract boolean fromBindingValidation(JsonElement value, String type);
+    protected abstract boolean fromBindingValidation(JsonElement value, String unit, String type);
 
     /**
      * Converts the datapoint value to an openHAB type.
      */
-    protected abstract State fromBinding(JsonElement value, String type, ChannelType tp, Locale locale)
+    protected abstract State fromBinding(JsonElement value, String unit, String type, ChannelType tp, Locale locale)
             throws ConverterException;
 
     /**
@@ -121,14 +127,14 @@ public abstract class AbstractTypeConverter implements TypeConverter {
      *
      */
     @Override
-    public abstract String getChannelType(boolean writeAccess);
+    public abstract String getChannelType(SiemensHvacMetadataDataPoint dpt);
 
     /**
      * get underlying item type on openhab side for this SiemensHvac type
      *
      */
     @Override
-    public abstract String getItemType(boolean writeAccess);
+    public abstract String getItemType(SiemensHvacMetadataDataPoint dpt);
 
     /**
      * tell if this type have different subvariant or not

@@ -14,13 +14,24 @@ package org.openhab.binding.siemenshvac.internal.converter.type;
 
 import java.util.Locale;
 
+import javax.measure.Unit;
+import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.ElectricPotential;
+import javax.measure.quantity.Temperature;
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
 
 import com.google.gson.JsonElement;
@@ -52,28 +63,120 @@ public class NumericTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected boolean fromBindingValidation(JsonElement value, String type) {
+    protected boolean fromBindingValidation(JsonElement value, String unit, String type) {
         return true;
     }
 
     @Override
-    protected DecimalType fromBinding(JsonElement value, String type, ChannelType tp, Locale locale)
+    protected State fromBinding(JsonElement value, String unit, String type, ChannelType tp, Locale locale)
             throws ConverterException {
         if ("----".equals(value.getAsString())) {
             return new DecimalType(0);
         } else {
-            return new DecimalType(value.getAsDouble());
+            double dValue = value.getAsDouble();
+
+            String itemType = tp.getItemType();
+
+            if (itemType != null) {
+
+                if (itemType.equals("Number:Temperature")) {
+                    Unit<Temperature> targetUnit = null;
+
+                    if (unit.equals("°C")) {
+                        targetUnit = SIUnits.CELSIUS;
+                    } else if (unit.equals("°C*min")) {
+                        targetUnit = SIUnits.CELSIUS;
+                    } else if (unit.equals("°F")) {
+                        targetUnit = ImperialUnits.FAHRENHEIT;
+                    } else if (unit.equals("°F*min")) {
+                        targetUnit = ImperialUnits.FAHRENHEIT;
+                    }
+
+                    if (targetUnit != null) {
+                        return new QuantityType<>(dValue, targetUnit);
+                    }
+                } else if (itemType.equals("Number:ElectricPotential")) {
+                    Unit<ElectricPotential> targetUnit = null;
+
+                    if (unit.equals("V")) {
+                        targetUnit = Units.VOLT;
+                    }
+
+                    if (targetUnit != null) {
+                        return new QuantityType<>(dValue, targetUnit);
+                    }
+                } else if (itemType.equals("Number:Time")) {
+                    Unit<Time> targetUnit = null;
+
+                    if (unit.equals("s")) {
+                        targetUnit = Units.SECOND;
+                    } else if (unit.equals("m") || unit.equals("min")) {
+                        targetUnit = Units.MINUTE;
+                    } else if (unit.equals("h")) {
+                        targetUnit = Units.HOUR;
+                    } else if (unit.equals("Mois")) {
+                        targetUnit = Units.MONTH;
+                    }
+
+                    if (targetUnit != null) {
+                        return new QuantityType<>(dValue, targetUnit);
+                    }
+                } else if (itemType.equals("Number:Dimensionless")) {
+                    Unit<Dimensionless> targetUnit = null;
+
+                    if (unit.equals("%")) {
+                        targetUnit = Units.PERCENT;
+                    }
+
+                    if (targetUnit != null) {
+                        return new QuantityType<>(dValue, targetUnit);
+                    }
+                } else if (itemType.equals("Number")) {
+                    return new DecimalType(dValue);
+                }
+            } else {
+                return new DecimalType(dValue);
+            }
+
+            return new DecimalType(dValue);
         }
     }
 
     @Override
-    public String getChannelType(boolean writeAccess) {
+    public String getChannelType(SiemensHvacMetadataDataPoint dpt) {
         return "number";
     }
 
     @Override
-    public String getItemType(boolean writeAccess) {
-        return CoreItemFactory.NUMBER;
+    public String getItemType(SiemensHvacMetadataDataPoint dpt) {
+        String unit = dpt.getDptUnit();
+
+        if (unit == null) {
+            return CoreItemFactory.NUMBER;
+        }
+
+        if (unit.equals("")) {
+            return CoreItemFactory.NUMBER;
+        }
+
+        switch (unit) {
+            case "°F":
+            case "°C":
+            case "°C*min":
+                return CoreItemFactory.NUMBER + ":Temperature";
+            case "V":
+                return CoreItemFactory.NUMBER + ":ElectricPotential";
+            case "%":
+                return CoreItemFactory.NUMBER + ":Dimensionless";
+            case "h":
+            case "m":
+            case "s":
+            case "min":
+            case "Mois":
+                return CoreItemFactory.NUMBER + ":Time";
+            default:
+                return CoreItemFactory.NUMBER;
+        }
     }
 
     @Override

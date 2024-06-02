@@ -22,6 +22,7 @@ import java.util.Locale;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
@@ -61,12 +62,12 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected boolean fromBindingValidation(JsonElement value, String type) {
+    protected boolean fromBindingValidation(JsonElement value, String unit, String type) {
         return true;
     }
 
     @Override
-    protected DateTimeType fromBinding(JsonElement value, String type, ChannelType tp, Locale locale)
+    protected DateTimeType fromBinding(JsonElement value, String unit, String type, ChannelType tp, Locale locale)
             throws ConverterException {
         if ("----".equals(value.getAsString())) {
             return new DateTimeType(ZonedDateTime.now(this.timeZoneProvider.getTimeZone()));
@@ -104,12 +105,12 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    public String getChannelType(boolean writeAccess) {
+    public String getChannelType(SiemensHvacMetadataDataPoint dpt) {
         return "datetime";
     }
 
     @Override
-    public String getItemType(boolean writeAccess) {
+    public String getItemType(SiemensHvacMetadataDataPoint dpt) {
         return CoreItemFactory.DATETIME;
     }
 

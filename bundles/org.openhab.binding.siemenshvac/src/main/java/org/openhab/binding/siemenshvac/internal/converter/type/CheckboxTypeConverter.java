@@ -17,6 +17,7 @@ import java.util.Locale;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
+import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.thing.type.ChannelType;
@@ -42,23 +43,23 @@ public class CheckboxTypeConverter extends AbstractTypeConverter {
     }
 
     @Override
-    protected boolean fromBindingValidation(JsonElement value, String type) {
+    protected boolean fromBindingValidation(JsonElement value, String unit, String type) {
         return true;
     }
 
     @Override
-    protected DecimalType fromBinding(JsonElement value, String type, ChannelType tp, Locale locale)
+    protected DecimalType fromBinding(JsonElement value, String unit, String type, ChannelType tp, Locale locale)
             throws ConverterException {
         throw new ConverterException("NIY");
     }
 
     @Override
-    public String getChannelType(boolean writeAccess) {
+    public String getChannelType(SiemensHvacMetadataDataPoint dpt) {
         return "contact";
     }
 
     @Override
-    public String getItemType(boolean writeAccess) {
+    public String getItemType(SiemensHvacMetadataDataPoint dpt) {
         return CoreItemFactory.CONTACT;
     }
 
