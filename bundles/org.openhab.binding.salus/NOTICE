@@ -28,3 +28,8 @@ checker-qual
 * License: GNU General Public License (GPL), version 2, with the classpath exception (https://checkerframework.org/manual/#license)
 * Project: https://checkerframework.org/
 * Source: https://github.com/typetools/checker-framework
+
+aws-crt
+* License: Apache License 2.0
+* Project: https://github.com/awslabs/aws-crt-java
+* Source: https://github.com/awslabs/aws-crt-java
