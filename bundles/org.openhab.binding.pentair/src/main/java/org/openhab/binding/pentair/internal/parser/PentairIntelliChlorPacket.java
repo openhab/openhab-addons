@@ -91,76 +91,43 @@ public class PentairIntelliChlorPacket extends PentairBasePacket {
      * controller to the chlorinator to set the salt output to a specific level.
      */
     public int getSaltOutput() {
-        if (this.getByte(ACTION) != 0x11) {
-            return -1;
-        }
-
-        return buf[SALTOUTPUT] & 0xFF;
+        return (this.getByte(ACTION) == 0x11) ? (buf[SALTOUTPUT] & 0xFF) : -1;
     }
 
     // Salinity and LED status are sent on a packet with action is 0x12. This is sent from the chlorinator.
     public int getSalinity() {
-        if (this.getByte(ACTION) != 0x12) {
-            return -1;
-        }
-
-        return (buf[SALINITY] & 0xFF) * 50;
+        return (this.getByte(ACTION) == 0x12) ? (buf[SALINITY] & 0xFF) * 50 : -1;
     }
 
     public boolean getOk() {
-        if (this.getByte(ACTION) != 0x12) {
-            return false;
-        }
-
-        return ((buf[STATUS] & 0xFF) == 0) || ((buf[STATUS] & 0xFF) == 0x80);
+        return (this.getByte(ACTION) == 0x12) ? ((buf[STATUS] & 0xFF) == 0) || ((buf[STATUS] & 0xFF) == 0x80) : false;
     }
 
     public boolean getLowFlow() {
-        if (this.getByte(ACTION) != 0x12) {
-            return false;
-        }
-        return (buf[STATUS] & 0x01) != 0;
+        return (this.getByte(ACTION) == 0x12) ? (buf[STATUS] & 0x01) != 0 : false;
     }
 
     public boolean getLowSalt() {
-        if (this.getByte(ACTION) != 0x12) {
-            return false;
-        }
-        return (buf[STATUS] & 0x02) != 0;
+        return (this.getByte(ACTION) == 0x12) ? (buf[STATUS] & 0x02) != 0 : false;
     }
 
     public boolean getVeryLowSalt() {
-        if (this.getByte(ACTION) != 0x12) {
-            return false;
-        }
-        return (buf[STATUS] & 0x04) != 0;
+        return (this.getByte(ACTION) == 0x12) ? (buf[STATUS] & 0x04) != 0 : false;
     }
 
     public boolean getHighCurrent() {
-        if (this.getByte(ACTION) != 0x12) {
-            return false;
-        }
-        return (buf[STATUS] & 0x08) != 0;
+        return (this.getByte(ACTION) == 0x12) ? (buf[STATUS] & 0x08) != 0 : false;
     }
 
     public boolean getCleanCell() {
-        if (this.getByte(ACTION) != 0x12) {
-            return false;
-        }
-        return (buf[STATUS] & 0x10) != 0;
+        return (this.getByte(ACTION) == 0x12) ? (buf[STATUS] & 0x10) != 0 : false;
     }
 
     public boolean getLowVoltage() {
-        if (this.getByte(ACTION) != 0x12) {
-            return false;
-        }
-        return (buf[STATUS] & 0x20) != 0;
+        return (this.getByte(ACTION) == 0x12) ? (buf[STATUS] & 0x20) != 0 : false;
     }
 
     public boolean getLowWaterTemp() {
-        if (this.getByte(ACTION) != 0x12) {
-            return false;
-        }
-        return (buf[STATUS] & 0x40) != 0;
+        return (this.getByte(ACTION) == 0x12) ? (buf[STATUS] & 0x40) != 0 : false;
     }
 }

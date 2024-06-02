@@ -71,7 +71,7 @@ public class PentairDiscoveryService extends AbstractDiscoveryService implements
         ThingUID thingUID = new ThingUID(thingTypeUID, bridgeUID, label);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                .withProperty(PARAMETER_ID, id).withLabel(label).build();
+                .withProperty(PARAMETER_ID, id).withRepresentationProperty(PARAMETER_ID).withLabel(label).build();
         thingDiscovered(result);
         logger.debug("Discovered Thing {}", thingUID);
     }

@@ -69,8 +69,6 @@ class PentairHeatStatusTest {
         PentairStandardPacket p = new PentairStandardPacket(packets[0], packets[0].length);
         hs.parsePacket(p);
 
-        logger.info(hs.toString());
-
         assertThat(hs.poolSetPoint, equalTo(85));
         assertThat(hs.poolHeatMode, equalTo(PentairHeatStatus.HeatMode.SOLAR));
         assertThat(hs.spaSetPoint, equalTo(94));

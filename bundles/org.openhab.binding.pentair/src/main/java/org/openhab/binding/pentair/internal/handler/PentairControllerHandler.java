@@ -138,7 +138,6 @@ public class PentairControllerHandler extends PentairBaseThingHandler {
                     "@text/offline.configuration-error.duplicate-controller");
         } else {
             super.goOnline();
-
         }
     }
 
@@ -147,11 +146,11 @@ public class PentairControllerHandler extends PentairBaseThingHandler {
         super.finishOnline();
         actions.initialize(Objects.requireNonNull(getBridgeHandler()).getBaseActions(), getPentairID());
 
-        // setup syncTimeJob to run once a day, initial time to sync is 3 minutes after controller goes online. This is
-        // to prevent collision with main thread queries on initial startup
-        syncTimeJob = scheduler.scheduleWithFixedDelay(this::syncTime, 3, 24 * 60 * 60, TimeUnit.MINUTES);
+        // setup syncTimeJob to run once a day. The initial syncTime is called as part of the initControllerSettings as
+        // part of the controller coming online
+        syncTimeJob = scheduler.scheduleWithFixedDelay(this::syncTime, 1, 1, TimeUnit.DAYS);
 
-        scheduler.execute(() -> readControllerSettings());
+        scheduler.execute(() -> initControllerSettings());
     }
 
     public void syncTime() {
@@ -167,7 +166,7 @@ public class PentairControllerHandler extends PentairBaseThingHandler {
         }
     }
 
-    public void readControllerSettings() {
+    public void initControllerSettings() {
         int i;
 
         actions.getSWVersion();
@@ -184,15 +183,14 @@ public class PentairControllerHandler extends PentairBaseThingHandler {
 
         actions.getLightGroups();
         actions.getValves();
+        syncTime();
     }
 
     @Override
     public void goOffline(ThingStatusDetail detail) {
-        ScheduledFuture<?> syncTimeJob;
-
         super.goOffline(detail);
 
-        syncTimeJob = this.syncTimeJob;
+        ScheduledFuture<?> syncTimeJob = this.syncTimeJob;
         if (syncTimeJob != null) {
             syncTimeJob.cancel(true);
         }

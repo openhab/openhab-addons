@@ -91,11 +91,6 @@ class PentairParserTest {
 
     @Test
     public void test() throws InterruptedException {
-        java.lang.System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "DEBUG");
-
-        logger.debug("debug");
-        logger.info("info");
-
         ByteArrayInputStream inputStream = new ByteArrayInputStream(stream, 0, stream.length);
 
         parser.setInputStream(inputStream);
