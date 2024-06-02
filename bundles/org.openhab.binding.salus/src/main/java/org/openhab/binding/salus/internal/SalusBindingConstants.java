@@ -36,9 +36,10 @@ public class SalusBindingConstants {
     public static final ThingTypeUID SALUS_DEVICE_TYPE = new ThingTypeUID(BINDING_ID, "salus-device");
     public static final ThingTypeUID SALUS_IT600_DEVICE_TYPE = new ThingTypeUID(BINDING_ID, "salus-it600-device");
     public static final ThingTypeUID SALUS_SERVER_TYPE = new ThingTypeUID(BINDING_ID, "salus-cloud-bridge");
+    public static final ThingTypeUID SALUS_AWS_TYPE = new ThingTypeUID(BINDING_ID, "salus-aws-bridge");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(SALUS_DEVICE_TYPE,
-            SALUS_IT600_DEVICE_TYPE, SALUS_SERVER_TYPE);
+            SALUS_IT600_DEVICE_TYPE, SALUS_SERVER_TYPE, SALUS_AWS_TYPE);
 
     public static class SalusCloud {
         public static final String DEFAULT_URL = "https://eu.salusconnect.io";

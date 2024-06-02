@@ -24,28 +24,31 @@ import java.util.List;
 import java.util.Random;
 import java.util.TreeSet;
 
+import javax.validation.constraints.NotNull;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.salus.internal.handler.CloudApi;
-import org.openhab.binding.salus.internal.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.rest.Device;
-import org.openhab.binding.salus.internal.rest.SalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.thing.ThingUID;
 
 /**
  * @author Martin Grześlowski - Initial contribution
  */
-public class CloudDiscoveryTest {
+@NonNullByDefault
+public class SalusDiscoveryTest {
 
     @Test
     @DisplayName("Method filters out disconnected devices and adds connected devices as things using addThing method")
-    void testFiltersOutDisconnectedDevicesAndAddsConnectedDevicesAsThings() throws SalusApiException {
+    void testFiltersOutDisconnectedDevicesAndAddsConnectedDevicesAsThings() throws Exception {
         // Given
         var cloudApi = mock(CloudApi.class);
-        var bridgeHandler = mock(CloudBridgeHandler.class);
         var bridgeUid = new ThingUID("salus", "salus-device", "boo");
-        var discoveryService = new CloudDiscovery(bridgeHandler, cloudApi, bridgeUid);
+        var discoveryService = new SalusDiscovery(cloudApi, bridgeUid);
         var discoveryListener = mock(DiscoveryListener.class);
         discoveryService.addDiscoveryListener(discoveryListener);
         var device1 = randomDevice(true);
@@ -73,12 +76,11 @@ public class CloudDiscoveryTest {
 
     @Test
     @DisplayName("Cloud API throws an exception during device retrieval, method logs the error")
-    void testLogsErrorWhenCloudApiThrowsException() throws SalusApiException {
+    void testLogsErrorWhenCloudApiThrowsException() throws Exception {
         // Given
         var cloudApi = mock(CloudApi.class);
-        var bridgeHandler = mock(CloudBridgeHandler.class);
         var bridgeUid = mock(ThingUID.class);
-        var discoveryService = new CloudDiscovery(bridgeHandler, cloudApi, bridgeUid);
+        var discoveryService = new SalusDiscovery(cloudApi, bridgeUid);
 
         given(cloudApi.findDevices()).willThrow(new SalusApiException("API error"));
 
@@ -91,10 +93,10 @@ public class CloudDiscoveryTest {
 
     private Device randomDevice(boolean connected) {
         var random = new Random();
-        var map = new HashMap<String, Object>();
+        var map = new HashMap<@NotNull String, @Nullable Object>();
         if (connected) {
             map.put("connection_status", "online");
         }
-        return new Device("dsn-" + random.nextInt(), "name-" + random.nextInt(), map);
+        return new Device("dsn-" + random.nextInt(), "name-" + random.nextInt(), connected, map);
     }
 }

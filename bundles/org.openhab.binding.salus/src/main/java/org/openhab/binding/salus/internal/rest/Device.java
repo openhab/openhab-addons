@@ -23,25 +23,20 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
-public record Device(@NotNull String dsn, @NotNull String name,
+public record Device(@NotNull String dsn, @NotNull String name, boolean connected,
         @NotNull Map<@NotNull String, @Nullable Object> properties) implements Comparable<Device> {
     public Device {
         requireNonNull(dsn, "DSN is required!");
         requireNonNull(name, "name is required!");
         requireNonNull(properties, "properties is required!");
+
+        dsn = dsn.trim();
+        name = name.trim();
     }
 
     @Override
     public int compareTo(Device o) {
         return dsn.compareTo(o.dsn);
-    }
-
-    public boolean isConnected() {
-        if (properties.containsKey("connection_status")) {
-            var connectionStatus = properties.get("connection_status");
-            return connectionStatus != null && "online".equalsIgnoreCase(connectionStatus.toString());
-        }
-        return false;
     }
 
     @Override

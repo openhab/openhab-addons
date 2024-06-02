@@ -8,6 +8,7 @@
 	<thing-type id="salus-device">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="salus-cloud-bridge"/>
+			<bridge-type-ref id="salus-aws-bridge"/>
 		</supported-bridge-type-refs>
 		<label>Salus Device</label>
 		<description>
