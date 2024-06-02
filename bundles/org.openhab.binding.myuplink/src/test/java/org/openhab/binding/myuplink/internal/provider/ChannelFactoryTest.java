@@ -66,8 +66,8 @@ public class ChannelFactoryTest {
             {"category":"NIBEF VVM 320 E","parameterId":"49993","parameterName":"Int elec add heat","parameterUnit":"","writable":false,"timestamp":"2024-05-05T13:41:27+00:00","value":4.0,"strVal":"Blocked","smartHomeCategories":[],"minValue":null,"maxValue":null,"stepValue":1.0,"enumValues":[{"value":"0","text":"Alarm","icon":""},{"value":"1","text":"Alarm","icon":""},{"value":"2","text":"Active","icon":""},{"value":"3","text":"Off","icon":""},{"value":"4","text":"Blocked","icon":""},{"value":"5","text":"Off","icon":""},{"value":"6","text":"Active","icon":""}],"scaleValue":"1","zoneId":null}
             """;
 
-    private final String testChannelEnumHeatPumpStatus = """
-            { "category": "Heat pump 1", "parameterId": "62017", "parameterName": "Status", "parameterUnit": "", "writable": false, "timestamp": "2024-05-21T16:22:21+00:00", "value": 1, "strVal": "Off, ready to start", "smartHomeCategories": [], "minValue": null, "maxValue": null, "stepValue": 1, "enumValues": [ { "value": "0", "text": "Off, start delay", "icon": "" }, { "value": "1", "text": "Off, ready to start", "icon": "" }, { "value": "2", "text": "Wait until flow", "icon": "" }, { "value": "3", "text": "On", "icon": "" }, { "value": "4", "text": "Defrost", "icon": "" }, { "value": "5", "text": "Cooling", "icon": "" }, { "value": "6", "text": "Blocked", "icon": "" }, { "value": "7", "text": "Off, alarm", "icon": "" }, { "value": "8", "text": "Function test", "icon": "" }, { "value": "30", "text": "Not defined", "icon": "" }, { "value": "31", "text": "Comp. disabled", "icon": "" }, { "value": "32", "text": "Comm. error", "icon": "" }, { "value": "33", "text": "Hot water", "icon": "" } ], "scaleValue": "1", "zoneId": null }
+    private final String testChannelEnumHeatPumpStatusWithLowerCaseTexts = """
+            { "category": "Heat pump 1", "parameterId": "62017", "parameterName": "Status", "parameterUnit": "", "writable": false, "timestamp": "2024-05-21T16:22:21+00:00", "value": 1, "strVal": "Off, ready to start", "smartHomeCategories": [], "minValue": null, "maxValue": null, "stepValue": 1, "enumValues": [ { "value": "0", "text": "Off, start delay", "icon": "" }, { "value": "1", "text": "OFF, ready to start", "icon": "" }, { "value": "2", "text": "Wait until flow", "icon": "" }, { "value": "3", "text": "On", "icon": "" }, { "value": "4", "text": "Defrost", "icon": "" }, { "value": "5", "text": "Cooling", "icon": "" }, { "value": "6", "text": "Blocked", "icon": "" }, { "value": "7", "text": "Off, alarm", "icon": "" }, { "value": "8", "text": "Function test", "icon": "" }, { "value": "30", "text": "not defined", "icon": "" }, { "value": "31", "text": "Comp. disabled", "icon": "" }, { "value": "32", "text": "Comm. error", "icon": "" }, { "value": "33", "text": "Hot Water", "icon": "" } ], "scaleValue": "1", "zoneId": null }
             """;
 
     @Test
@@ -155,7 +155,7 @@ public class ChannelFactoryTest {
     @Test
     public void testFromJsonDataEnumHeatPumpStatus() {
         var gson = new Gson();
-        var json = gson.fromJson(testChannelEnumHeatPumpStatus, JsonObject.class);
+        var json = gson.fromJson(testChannelEnumHeatPumpStatusWithLowerCaseTexts, JsonObject.class);
         json = json == null ? new JsonObject() : json;
 
         var result = channelFactory.createChannel(TEST_THING_UID, json);
@@ -170,7 +170,7 @@ public class ChannelFactoryTest {
     @Test
     public void testHeatPumpStatusEnumValues() {
         var gson = new Gson();
-        var json = gson.fromJson(testChannelEnumHeatPumpStatus, JsonObject.class);
+        var json = gson.fromJson(testChannelEnumHeatPumpStatusWithLowerCaseTexts, JsonObject.class);
         json = json == null ? new JsonObject() : json;
 
         var enumValues = Utils.getAsJsonArray(json, JSON_KEY_CHANNEL_ENUM_VALUES);
@@ -180,19 +180,19 @@ public class ChannelFactoryTest {
 
         list.forEach(enumMapping -> {
             switch (enumMapping.getValue()) {
-                case "0" -> assertThat(enumMapping.getLabel(), is("Off, start delay"));
-                case "1" -> assertThat(enumMapping.getLabel(), is("Off, ready to start"));
-                case "2" -> assertThat(enumMapping.getLabel(), is("Wait until flow"));
+                case "0" -> assertThat(enumMapping.getLabel(), is("Off, Start Delay"));
+                case "1" -> assertThat(enumMapping.getLabel(), is("Off, Ready To Start"));
+                case "2" -> assertThat(enumMapping.getLabel(), is("Wait Until Flow"));
                 case "3" -> assertThat(enumMapping.getLabel(), is("On"));
                 case "4" -> assertThat(enumMapping.getLabel(), is("Defrost"));
                 case "5" -> assertThat(enumMapping.getLabel(), is("Cooling"));
                 case "6" -> assertThat(enumMapping.getLabel(), is("Blocked"));
-                case "7" -> assertThat(enumMapping.getLabel(), is("Off, alarm"));
-                case "8" -> assertThat(enumMapping.getLabel(), is("Function test"));
-                case "30" -> assertThat(enumMapping.getLabel(), is("Not defined"));
-                case "31" -> assertThat(enumMapping.getLabel(), is("Comp. disabled"));
-                case "32" -> assertThat(enumMapping.getLabel(), is("Comm. error"));
-                case "33" -> assertThat(enumMapping.getLabel(), is("Hot water"));
+                case "7" -> assertThat(enumMapping.getLabel(), is("Off, Alarm"));
+                case "8" -> assertThat(enumMapping.getLabel(), is("Function Test"));
+                case "30" -> assertThat(enumMapping.getLabel(), is("Not Defined"));
+                case "31" -> assertThat(enumMapping.getLabel(), is("Comp. Disabled"));
+                case "32" -> assertThat(enumMapping.getLabel(), is("Comm. Error"));
+                case "33" -> assertThat(enumMapping.getLabel(), is("Hot Water"));
                 default -> assertNotNull(null, "unknown enum value");
             }
         });
