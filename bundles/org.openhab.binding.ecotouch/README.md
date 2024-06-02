@@ -71,6 +71,7 @@ Advanced channels:
 | enable_pool                      | Switch               | no        | Enable Pool                                                             |
 | enable_pv                        | Switch               | no        | Enable PV                                                               |
 | hysteresis_heating               | Number:Temperature   | no        | Hysteresis Heating                                                      |
+| hysteresis_warmwater             | Number:Temperature   | no        | Hysteresis Warm Water                                                   |
 | interruptions                    | Number:Dimensionless | yes       | Interruptions                                                           |
 | manual_4wayvalve                 | Number:Dimensionless | no        | Operating Mode 4Way Valve                                               |
 | manual_coolvalve                 | Number:Dimensionless | no        | Operating Mode Cooling Valve                                            |
