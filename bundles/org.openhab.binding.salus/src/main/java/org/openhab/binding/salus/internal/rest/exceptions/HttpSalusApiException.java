@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.salus.internal.rest;
+package org.openhab.binding.salus.internal.rest.exceptions;
 
 import java.io.Serial;
 
@@ -21,7 +21,6 @@ import org.eclipse.jetty.client.HttpResponseException;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-@SuppressWarnings("SerializableHasSerializationMethods")
 public class HttpSalusApiException extends SalusApiException {
     @Serial
     private static final long serialVersionUID = 1L;
