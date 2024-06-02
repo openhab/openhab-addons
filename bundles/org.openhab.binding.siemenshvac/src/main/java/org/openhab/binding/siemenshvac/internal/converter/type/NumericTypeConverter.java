@@ -87,7 +87,7 @@ public class NumericTypeConverter extends AbstractTypeConverter {
                         targetUnit = SIUnits.CELSIUS;
                     } else if ("°F".equals(unit)) {
                         targetUnit = ImperialUnits.FAHRENHEIT;
-                    } else if ("°F*min"unit.equals(unit)) {
+                    } else if ("°F*min".equals(unit)) {
                         targetUnit = ImperialUnits.FAHRENHEIT;
                     }
 
