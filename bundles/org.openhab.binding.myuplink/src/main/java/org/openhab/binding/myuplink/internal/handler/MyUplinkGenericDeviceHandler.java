@@ -180,19 +180,6 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
     }
 
     /**
-     * updates online status depending on online information received from the API. this is called by the SiteState
-     * Command which retrieves whole site data inclusing charger status.
-     *
-     */
-    public void setOnline(boolean isOnline) {
-        if (isOnline) {
-            super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-        } else {
-            super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, STATUS_NO_CONNECTION);
-        }
-    }
-
-    /**
      * result processor to handle online status updates
      *
      * @param status of command execution
@@ -238,7 +225,7 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
      */
     @Override
     public void updateChannelStatus(Map<Channel, State> values) {
-        logger.debug("Handling charger channel update.");
+        logger.debug("Handling heatpump channel update.");
 
         for (Channel channel : values.keySet()) {
             if (getThing().getChannels().contains(channel)) {
