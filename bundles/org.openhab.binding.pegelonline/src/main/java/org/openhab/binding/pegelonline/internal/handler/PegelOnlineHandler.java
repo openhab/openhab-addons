@@ -27,6 +27,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.pegelonline.internal.config.PegelOnlineConfiguration;
 import org.openhab.binding.pegelonline.internal.dto.Measure;
+import org.openhab.binding.pegelonline.internal.dto.Station;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -88,8 +89,11 @@ public class PegelOnlineHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         PegelOnlineConfiguration config = getConfigAs(PegelOnlineConfiguration.class);
+        stationUUID = config.uuid;
+        if (!checkStationUuid()) {
+            return;
+        }
         configuration = Optional.of(config);
-        stationUUID = configuration.get().uuid;
         warnMap.put(0, NO_WARNING);
         warnMap.put(config.warningLevel1, WARN_LEVEL_1);
         warnMap.put(config.warningLevel2, WARN_LEVEL_2);
@@ -127,7 +131,7 @@ public class PegelOnlineHandler extends BaseThingHandler {
                     updateChannels(measureDto);
                 } else {
                     String description = "@text/pegelonline.handler.status.json-error [\"" + content + "\"]";
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, description);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
                 }
             } else {
                 String description = "@text/pegelonline.handler.status.http-status [\"" + responseStatus + "\"]";
@@ -145,8 +149,8 @@ public class PegelOnlineHandler extends BaseThingHandler {
                 try {
                     DateTimeType.valueOf(measureDto.timestamp);
                     return true;
-                } catch (Throwable t) {
-                    logger.trace("Error converting {} into DateTime: {}", measureDto.timestamp, t.getMessage());
+                } catch (Exception e) {
+                    logger.trace("Error converting {} into DateTime: {}", measureDto.timestamp, e.getMessage());
                 }
             }
         }
@@ -164,5 +168,35 @@ public class PegelOnlineHandler extends BaseThingHandler {
 
     private void updateChannelState(String channel, State st) {
         updateState(new ChannelUID(thing.getUID(), channel), st);
+    }
+
+    private boolean checkStationUuid() {
+        try {
+            ContentResponse stationResponse = httpClient.GET(STATIONS_URI);
+            if (stationResponse.getStatus() == 200) {
+                Station[] stationArray = GSON.fromJson(stationResponse.getContentAsString(), Station[].class);
+                if (stationArray != null) {
+                    for (Station station : stationArray) {
+                        if (stationUUID.equals(station.uuid)) {
+                            return true;
+                        }
+                    }
+                } else {
+                    logger.trace("No stations found for evaluation");
+                }
+                String description = "@text/pegelonline.handler.status.uuid-not-found [\"" + stationUUID + "\"]";
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
+            } else {
+                String description = "@text/pegelonline.handler.status.uuid-verification [\"" + stationUUID + "\"]";
+                updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.CONFIGURATION_PENDING, description);
+                scheduler.schedule(this::checkStationUuid, 1, TimeUnit.MINUTES);
+            }
+        } catch (ExecutionException | TimeoutException | InterruptedException e) {
+            logger.trace("Exception during station evaluation: {}", e.getMessage());
+            String description = "@text/pegelonline.handler.status.uuid-verification [\"" + stationUUID + "\"]";
+            updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.CONFIGURATION_PENDING, description);
+            scheduler.schedule(this::checkStationUuid, 1, TimeUnit.MINUTES);
+        }
+        return false;
     }
 }

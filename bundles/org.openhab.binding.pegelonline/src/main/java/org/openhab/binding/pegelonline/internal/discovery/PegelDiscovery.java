@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.pegelonline")
-public class PegelDiscovery extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
+public class PegelDiscovery extends AbstractDiscoveryService implements ThingHandlerService {
     private final Logger logger = LoggerFactory.getLogger(PegelDiscovery.class);
     private Optional<PegelOnlineHandler> handler = Optional.empty();
     private PointType homeLocation = UNDEF_LOCATION;
@@ -74,11 +74,11 @@ public class PegelDiscovery extends AbstractDiscoveryService implements Discover
             ContentResponse cr = httpClientFactory.getCommonHttpClient().GET(STATIONS_URI);
             Station[] stationArray = GSON.fromJson(cr.getContentAsString(), Station[].class);
             if (stationArray != null) {
-                for (Station s : stationArray) {
-                    double distance = Utils.getDistanceFromLatLonInKm(homeLat, homeLon, s.latitude, s.longitude);
+                for (Station station : stationArray) {
+                    double distance = Utils.calculateDistance(homeLat, homeLon, station.latitude, station.longitude);
                     if (distance < DISCOVERY_RADIUS) {
-                        logger.trace("Station in range {},{}", s.longname, s.water.shortname);
-                        reportResult(s);
+                        logger.trace("Station in range {},{}", station.longname, station.water.shortname);
+                        reportResult(station);
                     }
                 }
             } else {
@@ -109,9 +109,9 @@ public class PegelDiscovery extends AbstractDiscoveryService implements Discover
     }
 
     @Override
-    public void setThingHandler(ThingHandler h) {
-        if (h instanceof PegelOnlineHandler) {
-            handler = Optional.of((PegelOnlineHandler) h);
+    public void setThingHandler(ThingHandler thingHandler) {
+        if (thingHandler instanceof PegelOnlineHandler pegelOnlineHandler) {
+            handler = Optional.of(pegelOnlineHandler);
         }
     }
 

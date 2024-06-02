@@ -27,8 +27,6 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link PegelOnlineHandlerFactory} is responsible for creating things and thing
@@ -39,7 +37,6 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.pegelonline", service = ThingHandlerFactory.class)
 public class PegelOnlineHandlerFactory extends BaseThingHandlerFactory {
-    private final Logger logger = LoggerFactory.getLogger(PegelOnlineHandlerFactory.class);
     private final HttpClientFactory httpClientFactory;
 
     @Activate
@@ -55,8 +52,6 @@ public class PegelOnlineHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        logger.info("createHandler {}", thing.getLabel());
-
         if (STATION_THING.equals(thingTypeUID)) {
             return new PegelOnlineHandler(thing, httpClientFactory.getCommonHttpClient());
         }

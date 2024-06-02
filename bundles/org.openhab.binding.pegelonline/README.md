@@ -22,9 +22,9 @@ Found Things are added in your Inbox.
 
 Thing configuration contains 3 sections
 
-* Station selection
-* Warning Levels of selected station
-* Refresh rate
+* [Station selection](station_selection)
+* [Warning Levels of selected station](warning_levels)
+* [Refresh rate](configuration_parameters)
 
 ### Station selection
 
@@ -39,29 +39,33 @@ Configure a station manually with the [list of all available stations](https://w
 Each station has specific warning levels
 
 * Warning Levels 1 to 3
-* Flooding Levels frequent, occasionally and extreme
+* Flooding Levels 
 
 Unfortunately these levels cannot be queried automatically. 
 Please select your [federal state](https://www.hochwasserzentralen.de/) and check if which levels they provide.
 The picture shows the levels of [measurement station Marburg of federal state Hesse](https://www.hlnug.de/static/pegel/wiskiweb2/stations/25830056/station.html?v=20210802152952)
 
-| configuration    | content   | unit | description               |
-|------------------|-----------|------|---------------------------|
-| uuid             | text      |  -   | Unique Station Identifier |
-| warningLevel1    | integer   |  cm  | Warning Level 1           |
-| warningLevel2    | integer   |  cm  | Warning Level 2           |
-| warningLevel3    | integer   |  cm  | Warning Level 3           |
-| hq10             | integer   |  cm  | Frequent Flooding Level   |
-| hq100            | integer   |  cm  | Century Flooding Level    |
-| hqEx             | integer   |  cm  | Extreme Flooding Level    |
-| refreshInterval  | integer   |  min | Refresh Interval          |
+If you cannot evaluate warning or flooding levels leave the parameter empty.
+
+### Configuration parameters
+
+| configuration    | content   | unit | description               | required | default | 
+|------------------|-----------|------|---------------------------|----------|---------|
+| uuid             | text      |  -   | Unique Station Identifier |     X    | N/A     |
+| warningLevel1    | integer   |  cm  | Warning Level 1           |          | N/A     |
+| warningLevel2    | integer   |  cm  | Warning Level 2           |          | N/A     |
+| warningLevel3    | integer   |  cm  | Warning Level 3           |          | N/A     |
+| hq10             | integer   |  cm  | Decade Flooding           |          | N/A     |
+| hq100            | integer   |  cm  | Century Flooding          |          | N/A     |
+| hqEx             | integer   |  cm  | Extreme Flooding          |          | N/A     |
+| refreshInterval  | integer   |  min | Refresh Interval          |     X    | 15      |
 
 ## Channels
 
 
-| channel              | type                 | description                    |
+| channel id           | type                 | description                    |
 |----------------------|----------------------|--------------------------------|
-| timestamp            | DateTime             | Timestamp of Last Measurement  |
+| timestamp            | DateTime             | Last Measurement               |
 | level                | Number:Length        | Water Level                    |
 | trend                | Number               | Water Level Trend              |
 | warning              | Number               | Current Warning                |
@@ -82,8 +86,8 @@ Current warning according to configuration
 * 1 : Warning level 1
 * 2 : Warning Level 2
 * 3 : Warning Level 3
-* 4 : Frequent Flooding
-* 5 : Decade Flooding
+* 4 : Decade Flooding
+* 5 : Century Flooding
 * 6 : Extreme Flooding
 
 ## Full Example

@@ -12,10 +12,11 @@
  */
 package org.openhab.binding.pegelonline.internal.utils;
 
-import static org.openhab.binding.pegelonline.internal.PegelOnlineBindingConstants.*;
+import static org.openhab.binding.pegelonline.internal.PegelOnlineBindingConstants.UNKNOWN;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.util.StringUtils;
 
 /**
  * {@link Utils} Utilities for binding
@@ -24,42 +25,49 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class Utils {
+    public static final int EARTH_RADIUS = 6371;
 
-    public static double getDistanceFromLatLonInKm(double lat1, double lon1, double lat2, double lon2) {
-        var earthRadius = 6371; // Radius of the earth in km
-        var dLat = deg2rad(lat2 - lat1); // deg2rad below
-        var dLon = deg2rad(lon2 - lon1);
-        var a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
-                + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        var d = earthRadius * c; // Distance in km
-        return d;
+    /**
+     * Calculate the Distance Using Equirectangular Distance Approximation
+     *
+     * @param lat1 - Latitude of coordinate 1
+     * @param lon1 - Longitude of coordinate 1
+     * @param lat2 - Latitude of coordinate 2
+     * @param lon2 - Longitude of coordinate 2
+     * @return distance in km
+     *
+     * @see https://www.baeldung.com/java-find-distance-between-points#equirectangular-distance-approximation
+     *
+     */
+    public static double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+        double lat1Rad = Math.toRadians(lat1);
+        double lat2Rad = Math.toRadians(lat2);
+        double lon1Rad = Math.toRadians(lon1);
+        double lon2Rad = Math.toRadians(lon2);
+
+        double x = (lon2Rad - lon1Rad) * Math.cos((lat1Rad + lat2Rad) / 2);
+        double y = (lat2Rad - lat1Rad);
+        double distance = Math.sqrt(x * x + y * y) * EARTH_RADIUS;
+
+        return distance;
     }
 
-    public static double deg2rad(double deg) {
-        return deg * (Math.PI / 180);
-    }
-
+    /**
+     * Converts String from "all upper case" into "title case" after space and hyphen
+     *
+     * @param input - string to convert
+     * @return title case string
+     */
     public static String toTitleCase(@Nullable String input) {
         if (input == null) {
             return toTitleCase(UNKNOWN);
         } else {
-            String lower = input.replaceAll(UNDERLINE, SPACE).toLowerCase();
-            String converted = toTitleCase(lower, SPACE);
-            converted = toTitleCase(converted, HYPHEN);
-            return converted;
-        }
-    }
-
-    private static String toTitleCase(String input, String splitter) {
-        String[] arr = input.split(splitter);
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < arr.length; i++) {
-            if (i > 0) {
-                sb.append(splitter.replaceAll("\\\\", EMPTY));
+            StringBuffer titleCaseString = new StringBuffer();
+            for (String string : StringUtils.splitByCharacterType(input)) {
+                String converted = StringUtils.capitalize(string.toLowerCase());
+                titleCaseString.append(converted);
             }
-            sb.append(Character.toUpperCase(arr[i].charAt(0))).append(arr[i].substring(1));
+            return titleCaseString.toString();
         }
-        return sb.toString().trim();
     }
 }
