@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.tado.swagger.codegen.api.client;
 
 import java.io.IOException;
@@ -29,6 +41,11 @@ import org.openhab.binding.tado.swagger.codegen.api.model.ZoneState;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+/**
+ * Static imported copy of class created by Swagger Codegen
+ *
+ * @author Andrew Fiddian-Green - Initial contribution
+ */
 public class HomeApi {
     private static final HttpClient CLIENT = new HttpClient(new SslContextFactory());
 
@@ -83,7 +100,6 @@ public class HomeApi {
         if (statusCode >= HttpStatus.BAD_REQUEST_400) {
             throw new ApiException(response, "Operation deleteZoneOverlay failed with error " + statusCode);
         }
-
     }
 
     public HomeState homeState(Long homeId) throws IOException, ApiException {
@@ -546,7 +562,6 @@ public class HomeApi {
         if (statusCode >= HttpStatus.BAD_REQUEST_400) {
             throw new ApiException(response, "Operation updatePresenceLock failed with error " + statusCode);
         }
-
     }
 
     public Overlay updateZoneOverlay(Long homeId, Long zoneId, Overlay json) throws IOException, ApiException {

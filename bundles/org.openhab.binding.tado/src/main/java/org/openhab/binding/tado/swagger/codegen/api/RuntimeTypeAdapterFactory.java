@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.tado.swagger.codegen.api;
 
 import java.io.IOException;
@@ -13,16 +25,25 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
-// Adapted version of gson-extras RuntimeTypeAdapterFactory, but without using
-// internal packages and fallback to basetype instead of error.
+/**
+ * Static imported copy of the Java file originally created by Swagger Codegen.
+ * <p>
+ * Adapted version of gson-extras RuntimeTypeAdapterFactory, but without using
+ * internal packages and fallback to basetype instead of error.
+ *
+ * @author Andrew Fiddian-Green - Initial contribution
+ */
 public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
+
     private final Class<?> baseType;
+
     private final String typeFieldName;
+
     private final Map<String, Class<?>> labelToSubtype = new LinkedHashMap<String, Class<?>>();
 
     private RuntimeTypeAdapterFactory(Class<?> baseType, String typeFieldName) {
         if (typeFieldName == null || baseType == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         }
         this.baseType = baseType;
         this.typeFieldName = typeFieldName;
@@ -34,7 +55,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
 
     public RuntimeTypeAdapterFactory<T> registerSubtype(Class<? extends T> type, String label) {
         if (type == null || label == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         }
 
         if (labelToSubtype.containsKey(label)) {
