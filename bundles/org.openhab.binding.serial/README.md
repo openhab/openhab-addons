@@ -55,9 +55,9 @@ The configuration for the `serialBridge` consists of the following parameters:
 
 The configuration for the `serialDevice` consists of the following parameters:
 
-| Parameter    | Description                                                                                           |
-| ------------ | ----------------------------------------------------------------------------------------------------- |
-| patternMatch | Regular expression used to identify device from received data (must match the whole line) (mandatory) |
+| Parameter    | Description                                                                                                                                        |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| patternMatch | Regular expression used to identify device from received data (must match the whole line). Use .* when having only one device attached. (mandatory)|
 
 ## Channels
 

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="salus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="salus-device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="salus-cloud-bridge"/>
+			<bridge-type-ref id="salus-aws-bridge"/>
+		</supported-bridge-type-refs>
+		<label>Salus Device</label>
+		<description>
+			This is a device type that represents a generic 'thing' for the Salus Binding, working in conjunction
+			with the Salus cloud bridge. Channels will be discovered and established at runtime.
+			The 'dsn' (ID in Salus cloud
+			system) is a mandatory configuration parameter.
+		</description>
+		<!-- Note: Channels will be discovered at runtime -->
+		<representation-property>dsn</representation-property>
+		<config-description>
+			<parameter name="dsn" type="text" required="true">
+				<label>DSN</label>
+				<description>
+					Data Source Name (DSN) — This is a unique identifier used to establish a connection with the Salus
+					cloud system. It's crucial for the correct operation of the Salus device,
+					enabling communication between the device
+					and the cloud.
+				</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Generic String -->
+	<channel-type id="generic-output-channel">
+		<item-type>String</item-type>
+		<label>Generic Output</label>
+		<description>
+			This channel type represents a generic output.
+			The channel is read-only and its state is represented as a
+			string.
+		</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="generic-input-channel">
+		<item-type>String</item-type>
+		<label>Generic Input</label>
+		<description>
+			This channel type represents a generic input.
+			The channel is write-only and its state is represented as a
+			string.
+		</description>
+	</channel-type>
+	<!-- Generic Bool -->
+	<channel-type id="generic-output-bool-channel">
+		<item-type>Switch</item-type>
+		<label>Generic Bool Output</label>
+		<description>
+			This channel type represents a generic output.
+			The channel is read-only and its state is represented as a
+			boolean.
+		</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="generic-input-bool-channel">
+		<item-type>Switch</item-type>
+		<label>Generic Bool Input</label>
+		<description>
+			This channel type represents a generic input.
+			The channel is write-only and its state is represented as a
+			boolean.
+		</description>
+	</channel-type>
+	<!-- Generic Number -->
+	<channel-type id="generic-output-number-channel">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Generic Number Output</label>
+		<description>
+			This channel type represents a generic output.
+			The channel is read-only and its state is represented as a
+			numeric.
+		</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="generic-input-number-channel">
+		<item-type>Number:Dimensionsless</item-type>
+		<label>Generic Number Input</label>
+		<description>
+			This channel type represents a generic input.
+			The channel is write-only and its state is represented as a
+			numeric.
+		</description>
+	</channel-type>
+	<!-- Temp channels -->
+	<channel-type id="temperature-output-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Generic Output Temperature</label>
+		<description>
+			This channel type represents a generic output.
+			The channel is read-only and its state is represented as a
+			temperature (numeric).
+		</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="temperature-input-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Generic Input Temperature</label>
+		<description>
+			This channel type represents a generic input.
+			The channel is write-only and its state is represented as a
+			temperature (numeric).
+		</description>
+		<category>Temperature</category>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>

@@ -30,20 +30,26 @@ You can add as much `air-pollution` things for different locations to your setup
 
 #### One Call API Version
 
-New Subscribers to the One Call API will require setting the API version to 3.0 (The API key will not work with 2.5). Existing subscribers can continue to use their existing API key with version 2.5.
+New users of the One Call API will require setting the API version to 3.0 (the API key will not work with 2.5) and **existing users have to switch to API version 3.0 before June 2024**.
+One Call API version 2.5 is shutting down in June 2024.
 
- One Call API Version 3.0 [requires payment details](https://openweathermap.org/price) for future forecast information. However, it is possible to set a [daily API call limit to 1000](https://openweathermap.org/faq#onecall), which will avoid charges.
+To switch to One Call API version 3.0, [log in](https://home.openweathermap.org/users/sign_in) to your OpenWeatherMap account and provide payment details.
+Remember to set the [daily API call limit to 1000](https://openweathermap.org/faq#onecall) to avoid charges.
+Finally, configure the [OpenWeatherMap Account](#openweathermap-account) Thing to use API version 3.0.
+
+One Call API Version 3.0 [requires payment details](https://openweathermap.org/price) for future forecast information.
+However, it is possible to set a [daily API call limit to 1000](https://openweathermap.org/faq#onecall), which will avoid charges.
 
 ### One Call API Weather and Forecast
 
-The thing `onecall` supports the [current and forecast weather data](https://openweathermap.org/api/one-call-api#how) for a specific location using the One Call API.
+The thing `onecall` supports the [current and forecast weather data](https://openweathermap.org/api/one-call-3#current) for a specific location using the One Call API.
 It requires coordinates of the location of your interest.
 You can add as many `onecall` things for different locations to your setup as you like to observe.
 It also supports persisting forecast data using time series support, please read [Persisting Time Series](#persisting-time-series).
 
 ### One Call API History Data
 
-The thing `onecall-history` supports the [historical weather data](https://openweathermap.org/api/one-call-api#history) for a specific location using the One Call API.
+The thing `onecall-history` supports the [historical weather data](https://openweathermap.org/api/one-call-3#history) for a specific location using the One Call API.
 It requires coordinates of the location of your interest.
 You can add as many `onecall-history` things for different locations to your setup as you like to observe.
 For every day in history you have to create a different thing.
@@ -61,15 +67,16 @@ Once the system location will be changed, the background discovery updates the c
 |-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | apikey          | API key to access the OpenWeatherMap API. **Mandatory**                                                                                                                                                                                                                           |
 | refreshInterval | Specifies the refresh interval (in minutes). Optional, the default value is 60, the minimum value is 1.                                                                                                                                                                           |
+| apiVersion      | Set API version to use, new OpenWeather accounts have to use 3.0, older have to switch to 3.0 before June 2024. Valid values are: `2.5`, `3.0`.                                                                                                                                   |
 | language        | Language to be used by the OpenWeatherMap API. Optional, valid values are: `ar`, `bg`, `ca`, `de`, `el`, `en`, `es`, `fa`, `fi`, `fr`, `gl`, `hr`, `hu`, `it`, `ja`, `kr`, `la`, `lt`, `mk`,  `nl`, `pl`, `pt`, `ro`, `ru`, `se`, `sk`, `sl`, `tr`, `ua`, `vi`, `zh_cn`, `zh_tw`. |
 
 ### Current Weather And Forecast
 
-| Parameter      | Description                                                                                                                    |
-|----------------|--------------------------------------------------------------------------------------------------------------------------------|
-| location       | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                   |
-| forecastHours  | Number of hours for hourly forecast. Optional, the default value is 12 (min="0", max="120", step="3").                         |
-| forecastDays   | Number of days for daily forecast (including todays forecast). Optional, the default value is 6 (min="0", max="16", step="1"). |
+| Parameter     | Description                                                                                                                     |
+|---------------|---------------------------------------------------------------------------------------------------------------------------------|
+| location      | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                    |
+| forecastHours | Number of hours for hourly forecast. Optional, the default value is 12 (min="0", max="120", step="3").                          |
+| forecastDays  | Number of days for daily forecast (including today's forecast). Optional, the default value is 6 (min="0", max="16", step="1"). |
 
 Once the parameters `forecastHours` or `forecastDays` will be changed, the available channel groups on the thing will be created or removed accordingly.
 
@@ -84,13 +91,13 @@ Once the parameter `forecastHours` will be changed, the available channel groups
 
 ### One Call API Weather and Forecast
 
-| Parameter       | Description                                                                                                                           |
-|-----------------|---------------------------------------------------------------------------------------------------------------------------------------|
-| location        | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                          |
-| forecastMinutes | Number of minutes for minutely precipitation forecast as minutely channels. Optional, the default value is 0 (min="0", max="60").     |
-| forecastHours   | Number of hours for hourly forecast as hourly channels. Optional, the default value is 12 (min="0", max="48").                        |
-| forecastDays    | Number of days for daily forecast (including todays forecast) as daily channels. Optional, the default value is 6 (min="0", max="8"). |
-| numberOfAlerts  | Number of alerts to be shown. Optional, the default value is 0 (min="0", max="5").                                                    |
+| Parameter       | Description                                                                                                                            |
+|-----------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| location        | Location of weather in geographical coordinates (latitude/longitude/altitude). **Mandatory**                                           |
+| forecastMinutes | Number of minutes for minutely precipitation forecast as minutely channels. Optional, the default value is 0 (min="0", max="60").      |
+| forecastHours   | Number of hours for hourly forecast as hourly channels. Optional, the default value is 12 (min="0", max="48").                         |
+| forecastDays    | Number of days for daily forecast (including today's forecast) as daily channels. Optional, the default value is 6 (min="0", max="8"). |
+| numberOfAlerts  | Number of alerts to be shown. Optional, the default value is 0 (min="0", max="5").                                                     |
 
 Set `forecastMinutes`, `forecastHours` and `forecastDays` to `0` if you only want to use the channels with time series support.
 In a future release, this will become the default setting as usage of the time series channels instead is encouraged.
@@ -287,7 +294,7 @@ Bridge openweathermap:weather-api:api "OpenWeatherMap Account" [apikey="AAA", re
 #### One Call API Version
 
 ```java
-Bridge openweathermap:weather-api:api "OpenWeatherMap Account" [apikey="Add your API key", refreshInterval=60, language="de"] {
+Bridge openweathermap:weather-api:api "OpenWeatherMap Account" [apikey="Add your API key", refreshInterval=60, language="de", apiVersion="3.0"] {
     Thing onecall local "Local Weather and Forecast" [location="xxx,yyy"]
     Thing onecall-history local-history "Local History" [location="xxx,yyy", historyDay=1]
 }

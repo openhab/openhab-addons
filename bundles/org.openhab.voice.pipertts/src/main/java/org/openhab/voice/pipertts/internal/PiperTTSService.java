@@ -20,11 +20,15 @@ import static org.openhab.voice.pipertts.internal.PiperTTSConstants.SERVICE_PID;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -32,7 +36,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.jar.JarEntry;
 import java.util.stream.Collectors;
 
 import javax.sound.sampled.AudioFileFormat;
@@ -45,6 +52,7 @@ import org.openhab.core.OpenHAB;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.ByteArrayAudioStream;
+import org.openhab.core.common.ThreadPoolManager;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.voice.AbstractCachedTTSService;
@@ -78,13 +86,25 @@ import io.github.givimad.piperjni.PiperVoice;
 @ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
         + " Text-to-Speech", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 public class PiperTTSService extends AbstractCachedTTSService {
+    // piper-jni version from pom.xml
+    private static final String PIPER_VERSION = "1.2.0-a0f09cd";
     private static final Path PIPER_FOLDER = Path.of(OpenHAB.getUserDataFolder(), "piper");
+    private static final Path LIB_FOLDER = PIPER_FOLDER.resolve("lib-" + PIPER_VERSION);
+    private static final Path JAR_FILE = PIPER_FOLDER.resolve("piper-jni-" + PIPER_VERSION + ".jar");
+    private static final String JAR_URL = "https://repo1.maven.org/maven2/io/github/givimad/piper-jni/" + PIPER_VERSION
+            + "/piper-jni-" + PIPER_VERSION + ".jar";
     private final Logger logger = LoggerFactory.getLogger(PiperTTSService.class);
     private final Object modelLock = new Object();
+    private final ExecutorService executor = ThreadPoolManager.getPool("voice-pipertts");
     private PiperTTSConfiguration config = new PiperTTSConfiguration();
+    private Map<String, List<Voice>> cachedVoicesByModel = new HashMap<>();
+    private boolean ready = false;
     private @Nullable VoiceModel preloadedModel;
     private @Nullable PiperJNI piper;
-    private Map<String, List<Voice>> cachedVoicesByModel = new HashMap<>();
+    private @Nullable Future<?> activateTask;
+    static {
+        System.setProperty("io.github.givimad.piperjni.libdir", LIB_FOLDER.toAbsolutePath().toString());
+    }
 
     @Activate
     public PiperTTSService(final @Reference TTSCache ttsCache) {
@@ -93,15 +113,87 @@ public class PiperTTSService extends AbstractCachedTTSService {
 
     @Activate
     protected void activate(Map<String, Object> config) {
-        try {
-            piper = new PiperJNI();
-            piper.initialize(true, false);
-            logger.debug("Using Piper version {}", piper.getPiperVersion());
-        } catch (IOException e) {
-            logger.warn("Piper registration failed, the add-on will not work: {}", e.getMessage());
-        }
         tryCreatePiperDirectory();
+        activateTask = executor.submit(() -> {
+            try {
+                setupNativeDependencies();
+                piper = new PiperJNI();
+                piper.initialize(true, false);
+                logger.debug("Using Piper version {}", piper.getPiperVersion());
+                ready = true;
+            } catch (IOException e) {
+                logger.warn("Piper registration failed, the add-on will not work: {}", e.getMessage());
+            }
+        });
         configChange(config);
+    }
+
+    @Deactivate
+    private void deactivate() {
+        if (activateTask != null && !activateTask.isDone()) {
+            activateTask.cancel(true);
+        }
+    }
+
+    private void setupNativeDependencies() throws IOException {
+        String folderName = "";
+        String osName = System.getProperty("os.name").toLowerCase();
+        String osArch = System.getProperty("os.arch").toLowerCase();
+        if (osName.contains("win")) {
+            if (osArch.contains("amd64") || osArch.contains("x86_64")) {
+                folderName = "win-amd64";
+            }
+        } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("aix")) {
+            if (osArch.contains("amd64") || osArch.contains("x86_64")) {
+                folderName = "debian-amd64";
+            } else if (osArch.contains("aarch64") || osArch.contains("arm64")) {
+                folderName = "debian-arm64";
+            } else if (osArch.contains("armv7") || osArch.contains("arm")) {
+                folderName = "debian-armv7l";
+            }
+        } else if (osName.contains("mac") || osName.contains("darwin")) {
+            if (osArch.contains("amd64") || osArch.contains("x86_64")) {
+                folderName = "macos-amd64";
+            } else if (osArch.contains("aarch64") || osArch.contains("arm64")) {
+                folderName = "macos-arm64";
+            }
+        }
+        if (folderName.isBlank()) {
+            throw new IOException("Incompatible platform, unable to setup add-on");
+        }
+        if (!Files.exists(LIB_FOLDER)) {
+            Files.createDirectory(LIB_FOLDER);
+        }
+        if (!Files.exists(JAR_FILE)) {
+            logger.debug("Downloading file: {}", JAR_URL);
+            InputStream in = new URL(JAR_URL).openStream();
+            Files.copy(in, JAR_FILE, StandardCopyOption.REPLACE_EXISTING);
+        }
+        try (java.util.jar.JarFile jar = new java.util.jar.JarFile(JAR_FILE.toFile())) {
+            Enumeration<JarEntry> enumEntries = jar.entries();
+            while (enumEntries.hasMoreElements()) {
+                java.util.jar.JarEntry file = enumEntries.nextElement();
+                String filename = file.getName();
+                if (!filename.startsWith(folderName) && !"espeak-ng-data.zip".equals(filename)
+                        && !"libtashkeel_model.ort".equals(filename)) {
+                    continue;
+                }
+                Path targetPath = LIB_FOLDER.resolve(file.getName());
+                if (Files.exists(targetPath)) {
+                    logger.debug("Found piper native dependency: {}", file.getName());
+                    continue;
+                }
+                if (file.isDirectory()) {
+                    logger.debug("Creating dir: {}", targetPath);
+                    Files.createDirectory(targetPath);
+                    continue;
+                }
+                logger.debug("Extracting piper native dependency: {}", file.getName());
+                try (var is = jar.getInputStream(file)) {
+                    Files.copy(is, targetPath, StandardCopyOption.REPLACE_EXISTING);
+                }
+            }
+        }
     }
 
     @Modified
@@ -241,6 +333,9 @@ public class PiperTTSService extends AbstractCachedTTSService {
 
     @Override
     public AudioStream synthesizeForCache(String text, Voice voice, AudioFormat audioFormat) throws TTSException {
+        if (!ready) {
+            throw new TTSException("Add-on is not loaded");
+        }
         if (!(voice instanceof PiperTTSVoice ttsVoice)) {
             throw new TTSException("No piper voice provided");
         }

@@ -90,6 +90,19 @@ The recommended persistence strategy is `forecast`, as it ensures a clean histor
 Prices from the past 24 hours and all forthcoming prices will be stored.
 Any changes that impact published prices (e.g. selecting or deselecting VAT Profile) will result in the replacement of persisted prices within this period.
 
+##### Manually Persisting History
+
+During extended service interruptions, data unavailability, or openHAB downtime, historic prices may be absent from persistence.
+A console command is provided to fill gaps: `energidataservice update [SpotPrice|GridTariff|SystemTariff|TransmissionGridTariff|ElectricityTax|ReducedElectricitytax] <StartDate> [<EndDate>]`.
+
+Example:
+
+```shell
+energidataservice update spotprice 2024-04-12 2024-04-14
+```
+
+This can also be useful for retrospectively changing the [VAT profile](https://www.openhab.org/addons/transformations/vat/).
+
 #### Grid Tariff
 
 Discounts are automatically taken into account for channel `grid-tariff` so that it represents the actual price.
@@ -153,6 +166,17 @@ When the binding is started, or a new item is linked, or a linked item receives 
 Channel `co2-emission-prognosis` provides estimated prognosis for future emissions and is refreshed every 15 minutes.
 Depending on the time of the day, an update of the prognosis may include estimates for more than 9 hours, but every update will have at least 9 hours into the future.
 A persistence configuration is required for this channel.
+
+Please note that the CO₂ emission channels only apply to Denmark.
+These channels will not be updated when the configured price area is not DK1 or DK2.
+
+#### Trigger Channels
+
+Advanced channel `event` can trigger the following events:
+
+| Event                | Description                    |
+|----------------------|--------------------------------|
+| DAY_AHEAD_AVAILABLE  | Day-ahead prices are available |
 
 ## Thing Actions
 
@@ -303,6 +327,7 @@ var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant()
 **Result:** Price as `BigDecimal`.
 
 This action calculates the price for using given amount of power in the period from `start` till `end`.
+Returns `null` if the calculation cannot be performed due to missing price data within the requested period.
 
 Example:
 
@@ -402,7 +427,9 @@ var priceMap = actions.getPrices("SpotPrice,GridTariff");
 logInfo("Current spot price + grid tariff excl. VAT", priceMap.get(hourStart).toString)
 
 var price = actions.calculatePrice(Instant.now, now.plusHours(1).toInstant, 150 | W)
-logInfo("Total price for using 150 W for the next hour", price.toString)
+if (price != null) {
+    logInfo("Total price for using 150 W for the next hour", price.toString)
+}
 
 val ArrayList<Duration> durationPhases = new ArrayList<Duration>()
 durationPhases.add(Duration.ofMinutes(37))
@@ -467,7 +494,9 @@ utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,GridTariff")).forEach((valu
 console.log("Current spot price + grid tariff excl. VAT: " + priceMap.get(hourStart.toString()));
 
 var price = edsActions.calculatePrice(time.Instant.now(), time.Instant.now().plusSeconds(3600), Quantity("150 W"));
-console.log("Total price for using 150 W for the next hour: " + price.toString());
+if (price !== null) {
+    console.log("Total price for using 150 W for the next hour: " + price.toString());
+}
 
 var durationPhases = [];
 durationPhases.push(time.Duration.ofMinutes(37));
@@ -535,6 +564,39 @@ logInfo("Spot price two hours from now", price.toString)
 var hourStart = time.toZDT().plusHours(2).truncatedTo(time.ChronoUnit.HOURS);
 var price = items.SpotPrice.history.historicState(hourStart).quantityState;
 console.log("Spot price two hours from now: " + price);
+```
+
+:::
+
+::::
+
+### Trigger Channel Example
+
+:::: tabs
+
+::: tab DSL
+
+```javascript
+rule "Day-ahead event"
+when
+    Channel 'energidataservice:service:energidataservice:electricity#event' triggered 'DAY_AHEAD_AVAILABLE'
+then
+    logInfo("Day-ahead", "Day-ahead prices for the next day are now available")
+end
+```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+rules.when()
+    .channel('energidataservice:service:energidataservice:electricity#event').triggered('DAY_AHEAD_AVAILABLE')
+    .then(event =>
+    {
+        console.log('Day-ahead prices for the next day are now available');
+    })
+    .build("Day-ahead event");
 ```
 
 :::

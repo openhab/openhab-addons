@@ -12,13 +12,13 @@
 
   <artifactId>org.openhab.binding.systeminfo</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Systeminfo Binding</name>
+  <name>openHAB Add-ons :: Bundles :: SystemInfo Binding</name>
 
   <dependencies>
     <dependency>
       <groupId>com.github.oshi</groupId>
       <artifactId>oshi-core</artifactId>
-      <version>6.4.12</version>
+      <version>6.5.0</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
