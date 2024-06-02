@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -166,8 +165,7 @@ public class NeoBaseHandler extends BaseThingHandler {
             if (channel != null) {
                 Configuration config = channel.getConfiguration();
                 Object holdOnlineState = config.get(PARAM_HOLD_ONLINE_STATE);
-                if (holdOnlineState != null && (holdOnlineState instanceof Boolean)
-                        && ((Boolean) holdOnlineState).booleanValue()) {
+                if (holdOnlineState instanceof Boolean booleanValue && booleanValue.booleanValue()) {
                     /*
                      * the Configuration Parameter "holdOnlineState" is True so do NOT send a
                      * state update to OpenHAB
@@ -236,11 +234,9 @@ public class NeoBaseHandler extends BaseThingHandler {
     protected @Nullable NeoHubHandler getNeoHub() {
         @Nullable
         Bridge b;
-        @Nullable
-        BridgeHandler h;
 
-        if ((b = getBridge()) != null && (h = b.getHandler()) != null && h instanceof NeoHubHandler) {
-            return (NeoHubHandler) h;
+        if ((b = getBridge()) != null && (b.getHandler() instanceof NeoHubHandler neoHubHandler)) {
+            return neoHubHandler;
         }
 
         return null;

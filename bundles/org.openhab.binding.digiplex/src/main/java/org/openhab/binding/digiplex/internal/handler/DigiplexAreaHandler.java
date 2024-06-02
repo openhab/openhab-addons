@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,8 +121,8 @@ public class DigiplexAreaHandler extends BaseThingHandler {
             case AREA_CONTROL:
                 if (command == RefreshType.REFRESH) {
                     updateState(AREA_CONTROL, lastCommandResult);
-                } else if (command instanceof StringType) {
-                    processControlCommand(((StringType) command).toString());
+                } else if (command instanceof StringType stringCommand) {
+                    processControlCommand(stringCommand.toString());
                 }
                 break;
         }

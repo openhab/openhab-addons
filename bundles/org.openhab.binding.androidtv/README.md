@@ -1,8 +1,9 @@
 # AndroidTV Binding
 
 This binding is designed to emulate different protocols to interact with the AndroidTV platform.
-Currently it emulates both the Google Video App to interact with a variety of AndroidTVs for purposes of remote control.
+Currently it emulates the Google Video App to interact with a variety of AndroidTVs for purposes of remote control.
 It also currently emulates the Nvidia ShieldTV Android App to interact with an Nvidia ShieldTV for purposes of remote control.
+It also currently emulates the PhilipsTV App to interact with a 2016+ PhilipsTV for purposes of remote control.
 
 ## Supported Things
 
@@ -10,14 +11,15 @@ This binding supports two thing types:
 
 - **googletv** - An AndroidTV running Google Video
 - **shieldtv** - An Nvidia ShieldTV
+- **philipstv** - A 2016+ Philips TV
 
 ## Discovery
 
-Both GoogleTVs and ShieldTVs should be added automatically to the inbox through the mDNS discovery process.  
+All relevant thing types should be added automatically to the inbox through the mDNS discovery process.  
 
-In the case of the ShieldTV, openHAB will likely create an inbox entry for both a GoogleTV and a ShieldTV device.
-Only the ShieldTV device should be configured, the GoogleTV can be ignored.
-There is no benefit to configuring two things for a ShieldTV device.
+In the case of the ShieldTV or PhilipsTV, openHAB will likely create an inbox entry for both a GoogleTV and a ShieldTV or PhilipsTV device.
+Only the ShieldTV or PhilipsTV device should be configured, the GoogleTV can be ignored.
+There is no benefit to configuring two things for a ShieldTV or PhilipsTV device.
 This could cause undesired effects.
 
 ## Binding Configuration
@@ -30,34 +32,58 @@ This binding requires GoogleTV to be installed on the device (https://play.googl
 
 ## Thing Configuration
 
-There are three required fields to connect successfully to a ShieldTV.
+The is one required field to connect to the devices.  All other fields are optional.
 
 | Name             | Type    | Description                           | Default | Required | Advanced |
 |------------------|---------|---------------------------------------|---------|----------|----------|
 | ipAddress        | text    | IP address of the device              | N/A     | yes      | no       |
-| keystore         | text    | Location of the Java Keystore         | N/A     | no       | no       |
-| keystorePassword | text    | Password of the Java Keystore         | N/A     | no       | no       |
+| googletvPort     | text    | TCP Port for GoogleTV                 | 6466    | no       | yes      |
+| shieldtvPort     | text    | TCP Port for ShieldTV                 | 8987    | no       | yes      |
+| philipstvPort    | text    | TCP Port for PhilipsTV                | 1926    | no       | yes      |
+| keystoreFileName | text    | Location of the Java Keystore         | N/A     | no       | yes      |
+| keystorePassword | text    | Password of the Java Keystore         | N/A     | no       | yes      |
+| reconnect        | text    | Delay between reconnections           | 60      | no       | yes      |
+| heartbeat        | text    | Frequency of heartbeats               | 5       | no       | yes      |
+| delay            | text    | Delay between messages                | 0       | no       | yes      |
+| refreshRate      | text    | Refresh interval of PhilipsTV         | 10      | no       | yes      |
+| useUpnpDiscovery | boolean | Enables UPnP Discovery for PhilipsTV  | true    | no       | yes      |
+| gtvEnabled       | boolean | Enable/Disable the GoogleTV protocol  | true    | no       | yes      |
 
 ```java
 Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 Thing androidtv:googletv:theater [ ipAddress="192.168.1.3" ]
+Thing androidtv:philipstv:bedroom [ ipAddress="192.168.1.4" ]
 ```
 
 ## Channels
 
-| Channel    | Type   | Description                 | GoogleTV | ShieldTV |
-|------------|--------|-----------------------------|----------|----------|
-| keyboard   | String | Keyboard Data Entry         |    RW    |    RW    | 
-| keypress   | String | Manual Key Press Entry      |    RW    |    RW    |
-| keycode    | String | Direct KEYCODE Entry        |    RW    |    RW    |
-| pincode    | String | PIN Code Entry              |    RW    |    RW    |
-| app        | String | App Control                 |    RO    |    RW    |
-| appname    | String | App Name                    |    N/A   |    RW    |
-| appurl     | String | App URL                     |    N/A   |    RW    |
-| player     | Player | Player Control              |    RW    |    RW    |
-| power      | Switch | Power Control               |    RW    |    RW    |
-| volume     | Dimmer | Volume Control              |    RO    |    RO    |
-| mute       | Switch | Mute Control                |    RW    |    RW    |
+| Channel              | Type   | Description                          | GoogleTV | ShieldTV | PhilipsTV |
+|----------------------|--------|--------------------------------------|----------|----------|-----------|
+| keyboard             | String | Keyboard Data Entry                  |    RW    |    RW    |     RW    |
+| keypress             | String | Manual Key Press Entry               |    RW    |    RW    |     RW    |
+| keycode              | String | Direct KEYCODE Entry                 |    RW    |    RW    |     RW    |
+| pincode              | String | PIN Code Entry                       |    RW    |    RW    |     RW    |
+| app                  | String | App Control                          |    RO    |    RW    |     RW    |
+| appname              | String | App Name                             |    N/A   |    RW    |     RW    |
+| appurl               | String | App URL                              |    N/A   |    RO    |     N/A   |
+| appicon              | Image  | App Icon                             |    N/A   |    N/A   |     RO    |
+| player               | Player | Player Control                       |    RW    |    RW    |     RW    |
+| power                | Switch | Power Control                        |    RW    |    RW    |     RW    |
+| volume               | Dimmer | Volume Control                       |    RO    |    RO    |     RW    |
+| mute                 | Switch | Mute Control                         |    RW    |    RW    |     RW    |
+| tvChannel            | String | TV Channel Control                   |    N/A   |    N/A   |     RW    |
+| brightness           | Dimmer | Brightness Control                   |    N/A   |    N/A   |     RW    |
+| contrast             | Dimmer | Contrast Control                     |    N/A   |    N/A   |     RW    |
+| sharpness            | Dimmer | Sharpness Control                    |    N/A   |    N/A   |     RW    |
+| searchContent        | String | Google Assistant search              |    N/A   |    N/A   |     RW    |
+| ambilightPower       | Switch | Ambilight power control              |    N/A   |    N/A   |     RW    |
+| ambilightHuePower    | Switch | Ambilight + Hue power control        |    N/A   |    N/A   |     RW    |
+| ambilightStyle       | String | Ambilight Style plus algorithm used  |    N/A   |    N/A   |     RW    |
+| ambilightColor       | Color  | Color for all Ambilight Sides        |    N/A   |    N/A   |     RW    |
+| ambilightLeftColor   | Color  | Color for left Ambilight Side        |    N/A   |    N/A   |     RW    |
+| ambilightRightColor  | Color  | Color for right Ambilight Side       |    N/A   |    N/A   |     RW    |
+| ambilightTopColor    | Color  | Color for top Ambilight Side         |    N/A   |    N/A   |     RW    |
+| ambilightBottomColor | Color  | Color for bottom Ambilight Side      |    N/A   |    N/A   |     RW    |
 
 
 ```java
@@ -72,6 +98,32 @@ Player ShieldTV_PLAYER "PLAYER [%s]" { channel = "androidtv:shieldtv:livingroom:
 Switch ShieldTV_POWER "POWER [%s]" { channel = "androidtv:shieldtv:livingroom:power" }
 Dimmer ShieldTV_VOLUME "VOLUME [%s]" { channel = "androidtv:shieldtv:livingroom:volume" }
 Switch ShieldTV_MUTE "MUTE [%s]" { channel = "androidtv:shieldtv:livingroom:mute" }
+
+String PhilipsTV_KEYBOARD "KEYBOARD [%s]" { channel = "androidtv:philipstv:bedroom:keyboard" }
+String PhilipsTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:philipstv:bedroom:keypress" }
+String PhilipsTV_KEYCODE "KEYCODE [%s]" { channel = "androidtv:philipstv:bedroom:keycode" }
+String PhilipsTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:philipstv:bedroom:pincode" }
+String PhilipsTV_APP "APP [%s]" { channel = "androidtv:philipstv:bedroom:app" }
+String PhilipsTV_APPNAME "APPNAME [%s]" { channel = "androidtv:philipstv:bedroom:appname" }
+Image  PhilipsTV_APPICON "APPICON [%s]" { channel = "androidtv:philipstv:bedroom:appicon" }
+Player PhilipsTV_PLAYER "PLAYER [%s]" { channel = "androidtv:philipstv:bedroom:player" }
+Switch PhilipsTV_POWER "POWER" { channel = "androidtv:philipstv:bedroom:power" }
+Dimmer PhilipsTV_VOLUME "VOLUME [%s]" { channel = "androidtv:philipstv:bedroom:volume" }
+Switch PhilipsTV_MUTE "MUTE [%s]" { channel = "androidtv:philipstv:bedroom:mute" }
+String PhilipsTV_TVCHANNEL "TVCHANNEL [%s]" { channel = "androidtv:philipstv:bedroom:tvChannel" }
+String PhilipsTV_SEARCHCONTENT "SEARCH CONTENT [%s]" { channel = "androidtv:philipstv:bedroom:searchContent" }
+Switch PhilipsTV_AMBILIGHTPOWER "AMBILIGHT POWER [%s]" { channel = "androidtv:philipstv:bedroom:ambilightPower" }
+Switch PhilipsTV_AMBILIGHTHUEPOWER "AMBILIGHT HUE POWER [%s]" { channel = "androidtv:philipstv:bedroom:ambilightHuePower" }
+Switch PhilipsTV_AMBILIGHTLOUNGEPOWER "AMBILIGHT LOUNGE POWER" { channel = "androidtv:philipstv:bedroom:ambilightLoungePower" }
+String PhilipsTV_AMBILIGHTSTYLE "AMBILIGHT STYLE" { channel = "androidtv:philipstv:bedroom:ambilightStyle" }
+Color PhilipsTV_AMBILIGHTALLCOLOR "ALL SIDES AMBILIGHT COLOR [%s]" { channel = "androidtv:philipstv:bedroom:ambilightColor" }
+Color PhilipsTV_AMBILIGHTLEFTCOLOR "LEFT SIDE AMBILIGHT COLOR [%s]" { channel = "androidtv:philipstv:bedroom:ambilightLeftColor" }
+Color PhilipsTV_AMBILIGHTRIGHTCOLOR "RIGHT SIDE AMBILIGHT COLOR [%s]" { channel = "androidtv:philipstv:bedroom:ambilightRightColor" }
+Color PhilipsTV_AMBILIGHTTOPCOLOR "TOP SIDE AMBILIGHT COLOR [%s]" { channel = "androidtv:philipstv:bedroom:ambilightTopColor" }
+Color PhilipsTV_AMBILIGHTBOTTOMCOLOR "BOTTOM SIDE AMBILIGHT COLOR [%s]" { channel = "androidtv:philipstv:bedroom:ambilightBottomColor" }
+Dimmer PhilipsTV_BRIGHTNESS "BRIGHTNESS [%s]" { channel = "androidtv:philipstv:bedroom:brightness" }
+Dimmer PhilipsTV_CONTRAST "CONTRAST [%s]" { channel = "androidtv:philipstv:bedroom:contrast" }
+Dimmer PhilipsTV_SHARPNESS "SHARPNESS [%s]" { channel = "androidtv:philipstv:bedroom:sharpness" }
 
 String GoogleTV_KEYBOARD "KEYBOARD [%s]" { channel = "androidtv:googletv:theater:keyboard" }
 String GoogleTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:googletv:theater:keypress" }
@@ -165,7 +217,7 @@ openhab> openhab:androidtv androidtv:googletv:theater pincode abc123
 
 The display should return back to where it was originally.
 
-If you are on a ShieldTV you must run that process a second time to authenticate the GoogleTV protocol stack.
+If you are on a ShieldTV or PhilipsTV you must run that process a second time to authenticate the GoogleTV protocol stack.
 
 This completes the PIN process.
 
@@ -176,6 +228,7 @@ Upon reconnection (either from reconfiguration or a restart of OpenHAB), you sho
 ```java
 Thing androidtv:shieldtv:livingroom [ ipAddress="192.168.1.2" ]
 Thing androidtv:googletv:theater [ ipAddress="192.168.1.3" ]
+Thing androidtv:philipstv:bedroom [ ipAddress="192.168.1.4" ]
 ```
 
 ```java
@@ -190,6 +243,32 @@ Player ShieldTV_PLAYER "PLAYER [%s]" { channel = "androidtv:shieldtv:livingroom:
 Switch ShieldTV_POWER "POWER [%s]" { channel = "androidtv:shieldtv:livingroom:power" }
 Dimmer ShieldTV_VOLUME "VOLUME [%s]" { channel = "androidtv:shieldtv:livingroom:volume" }
 Switch ShieldTV_MUTE "MUTE [%s]" { channel = "androidtv:shieldtv:livingroom:mute" }
+
+String PhilipsTV_KEYBOARD "KEYBOARD [%s]" { channel = "androidtv:philipstv:bedroom:keyboard" }
+String PhilipsTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:philipstv:bedroom:keypress" }
+String PhilipsTV_KEYCODE "KEYCODE [%s]" { channel = "androidtv:philipstv:bedroom:keycode" }
+String PhilipsTV_PINCODE  "PINCODE [%s]" { channel = "androidtv:philipstv:bedroom:pincode" }
+String PhilipsTV_APP "APP [%s]" { channel = "androidtv:philipstv:bedroom:app" }
+String PhilipsTV_APPNAME "APPNAME [%s]" { channel = "androidtv:philipstv:bedroom:appname" }
+Image  PhilipsTV_APPICON "APPICON [%s]" { channel = "androidtv:philipstv:bedroom:appicon" }
+Player PhilipsTV_PLAYER "PLAYER [%s]" { channel = "androidtv:philipstv:bedroom:player" }
+Switch PhilipsTV_POWER "POWER" { channel = "androidtv:philipstv:bedroom:power" }
+Dimmer PhilipsTV_VOLUME "VOLUME [%s]" { channel = "androidtv:philipstv:bedroom:volume" }
+Switch PhilipsTV_MUTE "MUTE [%s]" { channel = "androidtv:philipstv:bedroom:mute" }
+String PhilipsTV_TVCHANNEL "TVCHANNEL [%s]" { channel = "androidtv:philipstv:bedroom:tvChannel" }
+String PhilipsTV_SEARCHCONTENT "SEARCH CONTENT [%s]" { channel = "androidtv:philipstv:bedroom:searchContent" }
+Switch PhilipsTV_AMBILIGHTPOWER "AMBILIGHT POWER [%s]" { channel = "androidtv:philipstv:bedroom:ambilightPower" }
+Switch PhilipsTV_AMBILIGHTHUEPOWER "AMBILIGHT HUE POWER [%s]" { channel = "androidtv:philipstv:bedroom:ambilightHuePower" }
+Switch PhilipsTV_AMBILIGHTLOUNGEPOWER "AMBILIGHT LOUNGE POWER" { channel = "androidtv:philipstv:bedroom:ambilightLoungePower" }
+String PhilipsTV_AMBILIGHTSTYLE "AMBILIGHT STYLE" { channel = "androidtv:philipstv:bedroom:ambilightStyle" }
+Color PhilipsTV_AMBILIGHTALLCOLOR "ALL SIDES AMBILIGHT COLOR [%s]" { channel = "androidtv:philipstv:bedroom:ambilightColor" }
+Color PhilipsTV_AMBILIGHTLEFTCOLOR "LEFT SIDE AMBILIGHT COLOR [%s]" { channel = "androidtv:philipstv:bedroom:ambilightLeftColor" }
+Color PhilipsTV_AMBILIGHTRIGHTCOLOR "RIGHT SIDE AMBILIGHT COLOR [%s]" { channel = "androidtv:philipstv:bedroom:ambilightRightColor" }
+Color PhilipsTV_AMBILIGHTTOPCOLOR "TOP SIDE AMBILIGHT COLOR [%s]" { channel = "androidtv:philipstv:bedroom:ambilightTopColor" }
+Color PhilipsTV_AMBILIGHTBOTTOMCOLOR "BOTTOM SIDE AMBILIGHT COLOR [%s]" { channel = "androidtv:philipstv:bedroom:ambilightBottomColor" }
+Dimmer PhilipsTV_BRIGHTNESS "BRIGHTNESS [%s]" { channel = "androidtv:philipstv:bedroom:brightness" }
+Dimmer PhilipsTV_CONTRAST "CONTRAST [%s]" { channel = "androidtv:philipstv:bedroom:contrast" }
+Dimmer PhilipsTV_SHARPNESS "SHARPNESS [%s]" { channel = "androidtv:philipstv:bedroom:sharpness" }
 
 String GoogleTV_KEYBOARD "KEYBOARD [%s]" { channel = "androidtv:googletv:theater:keyboard" }
 String GoogleTV_KEYPRESS "KEYPRESS [%s]" { channel = "androidtv:googletv:theater:keypress" }

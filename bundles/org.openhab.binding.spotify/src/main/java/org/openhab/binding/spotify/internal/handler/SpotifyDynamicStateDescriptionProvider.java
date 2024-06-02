@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.spotify.internal.handler;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -41,9 +42,9 @@ public class SpotifyDynamicStateDescriptionProvider extends BaseDynamicStateDesc
     public void setDevices(ChannelUID channelUID, List<Device> spotifyDevices) {
         final List<Device> devices = devicesByChannel.get(channelUID);
 
-        if (devices == null || (spotifyDevices.size() != devices.size()
-                || !spotifyDevices.stream().allMatch(sd -> devices.stream().anyMatch(
-                        d -> sd.getId() == d.getId() && d.getName() != null && d.getName().equals(sd.getName()))))) {
+        if (devices == null || (spotifyDevices.size() != devices.size() || !spotifyDevices.stream()
+                .allMatch(sd -> devices.stream().anyMatch(d -> Objects.equals(sd.getId(), d.getId())
+                        && d.getName() != null && d.getName().equals(sd.getName()))))) {
             devicesByChannel.put(channelUID, spotifyDevices);
             setStateOptions(channelUID, spotifyDevices.stream()
                     .map(device -> new StateOption(device.getId(), device.getName())).collect(Collectors.toList()));

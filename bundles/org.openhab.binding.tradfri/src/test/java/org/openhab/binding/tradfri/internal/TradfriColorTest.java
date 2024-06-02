@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,8 +82,8 @@ public class TradfriColorTest {
     @Test
     public void testFromHSBTypeKnownGood1() {
         TradfriColor color = new TradfriColor(HSBType.RED);
-        assertEquals(45789, (int) color.xyX);
-        assertEquals(19490, (int) color.xyY);
+        assertEquals(45792, (int) color.xyX);
+        assertEquals(19492, (int) color.xyY);
         assertEquals(254, (int) color.brightness);
         HSBType hsbType = color.getHSB();
         assertNotNull(hsbType);
@@ -95,8 +95,8 @@ public class TradfriColorTest {
     @Test
     public void testFromHSBTypeKnownGood2() {
         TradfriColor color = new TradfriColor(new HSBType("0,100,1"));
-        assertEquals(45789, (int) color.xyX);
-        assertEquals(19490, (int) color.xyY);
+        assertEquals(45792, (int) color.xyX);
+        assertEquals(19492, (int) color.xyY);
         assertEquals(2, (int) color.brightness);
         HSBType hsbType = color.getHSB();
         assertNotNull(hsbType);
@@ -109,8 +109,8 @@ public class TradfriColorTest {
     public void testConversionReverse() {
         // convert from HSBType
         TradfriColor color = new TradfriColor(HSBType.GREEN);
-        assertEquals(11298, (int) color.xyX);
-        assertEquals(48935, (int) color.xyY);
+        assertEquals(11299, (int) color.xyX);
+        assertEquals(48941, (int) color.xyY);
         assertEquals(254, (int) color.brightness);
         HSBType hsbType = color.getHSB();
         assertNotNull(hsbType);
@@ -119,8 +119,8 @@ public class TradfriColorTest {
         assertEquals(100, hsbType.getBrightness().intValue());
         // convert the result again based on the XY values
         TradfriColor reverse = new TradfriColor(color.xyX, color.xyY, color.brightness);
-        assertEquals(11298, (int) reverse.xyX);
-        assertEquals(48935, (int) reverse.xyY);
+        assertEquals(11299, (int) reverse.xyX);
+        assertEquals(48941, (int) reverse.xyY);
         assertEquals(254, (int) reverse.brightness);
         HSBType hsbTypeReverse = color.getHSB();
         assertNotNull(hsbTypeReverse);

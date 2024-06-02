@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -54,7 +54,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
     private String smartthingsName;
     private int timeout;
     private SmartthingsHandlerFactory smartthingsHandlerFactory;
-    private Map<ChannelUID, SmartthingsConverter> converters = new HashMap<ChannelUID, SmartthingsConverter>();
+    private Map<ChannelUID, SmartthingsConverter> converters = new HashMap<>();
 
     private final String smartthingsConverterName = "smartthings-converter";
 
@@ -128,8 +128,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
      * @return channel id
      */
     private String getSmartthingsAttributeFromChannel(ChannelUID channelUID) {
-        String id = channelUID.getId();
-        return id;
+        return channelUID.getId();
     }
 
     /**
@@ -211,8 +210,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
         try {
             Constructor<?> constr = Class.forName(converterClassName.toString()).getDeclaredConstructor(Thing.class);
             constr.setAccessible(true);
-            SmartthingsConverter cvtr = (SmartthingsConverter) constr.newInstance(thing);
-            return cvtr;
+            return (SmartthingsConverter) constr.newInstance(thing);
         } catch (ClassNotFoundException e) {
             // Most of the time there is no channel specific converter, the default converter is all that is needed.
             logger.trace("No Custom converter exists for {} ({})", converterName, converterClassName);
@@ -245,7 +243,7 @@ public class SmartthingsThingHandler extends ConfigStatusThingHandler {
 
     @Override
     public Collection<ConfigStatusMessage> getConfigStatus() {
-        Collection<ConfigStatusMessage> configStatusMessages = new LinkedList<ConfigStatusMessage>();
+        Collection<ConfigStatusMessage> configStatusMessages = new LinkedList<>();
 
         // The name must be provided
         String stName = config.smartthingsName;

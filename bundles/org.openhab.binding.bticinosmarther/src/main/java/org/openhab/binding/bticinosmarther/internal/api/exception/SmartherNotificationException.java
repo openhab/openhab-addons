@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ public class SmartherNotificationException extends RuntimeException {
      *
      * @param message
      *            the error message returned from the API gateway
-     * @param cause
+     * @param exception
      *            the cause (a null value is permitted, and indicates that the cause is nonexistent or unknown)
      */
     public SmartherNotificationException(String message, Throwable exception) {

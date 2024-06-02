@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -97,7 +97,8 @@ public class PriceListParserTest {
         PriceListParser priceListParser = new PriceListParser(
                 Clock.fixed(Instant.parse("2022-12-31T12:00:00Z"), EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistN1.json", DatahubPricelistRecords.class);
-        Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList(), "CD");
+        Map<Instant, BigDecimal> tariffMap = priceListParser
+                .toHourly(Arrays.stream(records.records()).filter(r -> r.chargeTypeCode().equals("CD")).toList());
 
         assertThat(tariffMap.size(), is(60));
         assertThat(tariffMap.get(Instant.parse("2022-12-31T22:00:00Z")), is(equalTo(new BigDecimal("0.407717"))));
@@ -110,8 +111,8 @@ public class PriceListParserTest {
         PriceListParser priceListParser = new PriceListParser(
                 Clock.fixed(Instant.parse("2022-12-31T12:00:00Z"), EnergiDataServiceBindingConstants.DATAHUB_TIMEZONE));
         DatahubPricelistRecords records = getObjectFromJson("DatahubPricelistN1.json", DatahubPricelistRecords.class);
-        Map<Instant, BigDecimal> tariffMap = priceListParser.toHourly(Arrays.stream(records.records()).toList(),
-                "CD R");
+        Map<Instant, BigDecimal> tariffMap = priceListParser
+                .toHourly(Arrays.stream(records.records()).filter(r -> r.chargeTypeCode().equals("CD R")).toList());
 
         assertThat(tariffMap.size(), is(60));
         assertThat(tariffMap.get(Instant.parse("2022-12-31T22:00:00Z")), is(equalTo(new BigDecimal("-0.407717"))));

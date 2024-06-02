@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import org.openhab.core.thing.ThingUID;
 /**
  * Interface for listeners to receive messages from LIRC server
  *
- * @author Andrew Nagle
+ * @author Andrew Nagle - Initial contribution
  */
 public interface LIRCMessageListener {
 

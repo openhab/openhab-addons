@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class QSIOHandler extends BaseKeypadHandler {
 
-    private static enum Component implements KeypadComponent {
+    private enum Component implements KeypadComponent {
         CCI1(1, "cci1", "CCI 1", ComponentType.CCI),
         CCI2(2, "cci2", "CCI 2", ComponentType.CCI),
         CCI3(3, "cci3", "CCI 3", ComponentType.CCI),

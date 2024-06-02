@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
  * Due to nature of Paradox communication receive queue is with priority, i.e. if there is anything in receive queue we
  * attempt to read the socket first and only after receive queue is empty then we attempt to send. We never send any
  * packet if we have something to read.
- * For more details about usage see method {@link AbstractCommunicator.submitRequest()}
+ * For more details about usage see method {@link AbstractCommunicator#submitRequest(IRequest)}
  *
  * @author Konstantin Polihronov - Initial contribution
  */

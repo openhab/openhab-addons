@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,26 +14,23 @@ package org.openhab.binding.vesync.internal.discovery;
 
 import static org.openhab.binding.vesync.internal.VeSyncConstants.*;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBaseDeviceHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncBridgeHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirHumidifierHandler;
 import org.openhab.binding.vesync.internal.handlers.VeSyncDeviceAirPurifierHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * The {@link VeSyncDiscoveryService} is an implementation of a discovery service for VeSync devices. The meta-data is
@@ -42,22 +39,20 @@ import org.osgi.service.component.annotations.Component;
  * @author David Godyear - Initial contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.vesync")
-public class VeSyncDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService, DeviceMetaDataUpdatedHandler {
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+@Component(scope = ServiceScope.PROTOTYPE, service = VeSyncDiscoveryService.class, configurationPid = "discovery.vesync")
+public class VeSyncDiscoveryService extends AbstractThingHandlerDiscoveryService<VeSyncBridgeHandler>
+        implements DeviceMetaDataUpdatedHandler {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
     private static final int DISCOVER_TIMEOUT_SECONDS = 5;
 
-    private @NonNullByDefault({}) VeSyncBridgeHandler bridgeHandler;
     private @NonNullByDefault({}) ThingUID bridgeUID;
 
     /**
      * Creates a VeSyncDiscoveryService with enabled autostart.
      */
     public VeSyncDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS);
+        super(VeSyncBridgeHandler.class, SUPPORTED_THING_TYPES, DISCOVER_TIMEOUT_SECONDS);
     }
 
     @Override
@@ -73,49 +68,33 @@ public class VeSyncDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof VeSyncBridgeHandler) {
-            bridgeHandler = (VeSyncBridgeHandler) handler;
-            bridgeUID = bridgeHandler.getUID();
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+    public void initialize() {
+        bridgeUID = thingHandler.getUID();
+        super.initialize();
     }
 
     @Override
     protected void startBackgroundDiscovery() {
-        if (bridgeHandler != null) {
-            bridgeHandler.registerMetaDataUpdatedHandler(this);
-        }
+        thingHandler.registerMetaDataUpdatedHandler(this);
     }
 
     @Override
     protected void stopBackgroundDiscovery() {
-        if (bridgeHandler != null) {
-            bridgeHandler.unregisterMetaDataUpdatedHandler(this);
-        }
+        thingHandler.unregisterMetaDataUpdatedHandler(this);
     }
 
     @Override
     protected void startScan() {
         // If the bridge is not online no other thing devices can be found, so no reason to scan at this moment.
         removeOlderResults(getTimestampOfLastScan());
-        if (ThingStatus.ONLINE.equals(bridgeHandler.getThing().getStatus())) {
-            bridgeHandler.runDeviceScanSequenceNoAuthErrors();
+        if (ThingStatus.ONLINE.equals(thingHandler.getThing().getStatus())) {
+            thingHandler.runDeviceScanSequenceNoAuthErrors();
         }
     }
 
     @Override
     public void handleMetadataRetrieved(VeSyncBridgeHandler handler) {
-        bridgeHandler.getAirPurifiersMetadata().map(apMeta -> {
+        thingHandler.getAirPurifiersMetadata().map(apMeta -> {
             final Map<String, Object> properties = new HashMap<>(6);
             final String deviceUUID = apMeta.getUuid();
             properties.put(DEVICE_PROP_DEVICE_NAME, apMeta.getDeviceName());
@@ -133,7 +112,7 @@ public class VeSyncDiscoveryService extends AbstractDiscoveryService
                     .withRepresentationProperty(DEVICE_PROP_DEVICE_MAC_ID).build();
         }).forEach(this::thingDiscovered);
 
-        bridgeHandler.getAirHumidifiersMetadata().map(apMeta -> {
+        thingHandler.getAirHumidifiersMetadata().map(apMeta -> {
             final Map<String, Object> properties = new HashMap<>(6);
             final String deviceUUID = apMeta.getUuid();
             properties.put(DEVICE_PROP_DEVICE_NAME, apMeta.getDeviceName());

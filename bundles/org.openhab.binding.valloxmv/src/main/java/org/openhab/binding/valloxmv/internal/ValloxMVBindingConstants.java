@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,6 @@
  */
 package org.openhab.binding.valloxmv.internal;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -241,28 +238,24 @@ public class ValloxMVBindingConstants {
     /**
      * Set of writable channels that are Switches
      */
-    public static final Set<String> WRITABLE_CHANNELS_SWITCHES = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(CHANNEL_ONOFF, CHANNEL_BOOST_TIMER_ENABLED,
-                    CHANNEL_FIREPLACE_TIMER_ENABLED, CHANNEL_EXTRA_TIMER_ENABLED, CHANNEL_WEEKLY_TIMER_ENABLED)));
+    public static final Set<String> WRITABLE_CHANNELS_SWITCHES = Set.of(CHANNEL_ONOFF, CHANNEL_BOOST_TIMER_ENABLED,
+            CHANNEL_FIREPLACE_TIMER_ENABLED, CHANNEL_EXTRA_TIMER_ENABLED, CHANNEL_WEEKLY_TIMER_ENABLED);
 
     /**
      *
      * Set of writable channels that are dimensionless
      */
-    public static final Set<String> WRITABLE_CHANNELS_DIMENSIONLESS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(CHANNEL_EXTR_FAN_BALANCE_BASE, CHANNEL_SUPP_FAN_BALANCE_BASE,
-                    CHANNEL_HOME_SPEED_SETTING, CHANNEL_AWAY_SPEED_SETTING, CHANNEL_BOOST_SPEED_SETTING,
-                    CHANNEL_BOOST_TIME, CHANNEL_BOOST_TIMER_ENABLED, CHANNEL_FIREPLACE_EXTR_FAN,
-                    CHANNEL_FIREPLACE_SUPP_FAN, CHANNEL_FIREPLACE_TIME, CHANNEL_FIREPLACE_TIMER_ENABLED,
-                    CHANNEL_EXTRA_EXTR_FAN, CHANNEL_EXTRA_SUPP_FAN, CHANNEL_EXTRA_TIME, CHANNEL_EXTRA_TIMER_ENABLED,
-                    CHANNEL_WEEKLY_TIMER_ENABLED)));
+    public static final Set<String> WRITABLE_CHANNELS_DIMENSIONLESS = Set.of(CHANNEL_EXTR_FAN_BALANCE_BASE,
+            CHANNEL_SUPP_FAN_BALANCE_BASE, CHANNEL_HOME_SPEED_SETTING, CHANNEL_AWAY_SPEED_SETTING,
+            CHANNEL_BOOST_SPEED_SETTING, CHANNEL_BOOST_TIME, CHANNEL_BOOST_TIMER_ENABLED, CHANNEL_FIREPLACE_EXTR_FAN,
+            CHANNEL_FIREPLACE_SUPP_FAN, CHANNEL_FIREPLACE_TIME, CHANNEL_FIREPLACE_TIMER_ENABLED, CHANNEL_EXTRA_EXTR_FAN,
+            CHANNEL_EXTRA_SUPP_FAN, CHANNEL_EXTRA_TIME, CHANNEL_EXTRA_TIMER_ENABLED, CHANNEL_WEEKLY_TIMER_ENABLED);
 
     /**
      * Set of writable channels that are temperatures
      */
-    public static final Set<String> WRITABLE_CHANNELS_TEMPERATURE = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(CHANNEL_HOME_AIR_TEMP_TARGET, CHANNEL_AWAY_AIR_TEMP_TARGET,
-                    CHANNEL_BOOST_AIR_TEMP_TARGET, CHANNEL_EXTRA_AIR_TEMP_TARGET)));
+    public static final Set<String> WRITABLE_CHANNELS_TEMPERATURE = Set.of(CHANNEL_HOME_AIR_TEMP_TARGET,
+            CHANNEL_AWAY_AIR_TEMP_TARGET, CHANNEL_BOOST_AIR_TEMP_TARGET, CHANNEL_EXTRA_AIR_TEMP_TARGET);
 
     // Thing configuration
     /**

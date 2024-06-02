@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,7 +66,7 @@ public class WebhookServlet extends NetatmoServlet {
     @Override
     public void startListening() {
         super.startListening();
-        URI uri = UriBuilder.fromUri(webHookUrl).path(path + webHookPostfix).build();
+        URI uri = UriBuilder.fromUri(webHookUrl).path(getPath() + webHookPostfix).build();
         try {
             logger.info("Setting up WebHook at Netatmo to {}", uri.toString());
             hookSet = securityApi.addwebhook(uri);

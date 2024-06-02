@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -112,7 +112,6 @@ public class NeatoRobot {
             return HttpUtil.executeUrl("POST",
                     "https://nucleo.neatocloud.com:4443/vendors/neato/robots/" + this.serialNumber + "/messages",
                     headers, stream, "text/html; charset=ISO-8859-1", 20000);
-
         } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             throw new NeatoCommunicationException(e);
         }

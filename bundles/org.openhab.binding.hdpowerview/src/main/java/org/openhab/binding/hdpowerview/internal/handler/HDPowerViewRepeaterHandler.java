@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
 import org.openhab.core.library.types.HSBType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.StringType;
@@ -37,6 +38,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
@@ -54,6 +56,7 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
 
     private static final int REFRESH_INTERVAL_MINUTES = 5;
     private static final int IDENTITY_PERIOD_SECONDS = 3;
+    private static final int BRIGHTNESS_STEP_PERCENT = 5;
     private static final String COMMAND_IDENTIFY = "IDENTIFY";
 
     private @Nullable ScheduledFuture<?> refreshStatusFuture = null;
@@ -94,40 +97,17 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
             logger.warn("Missing bridge handler");
             return;
         }
+        if (command == RefreshType.REFRESH) {
+            scheduleRefreshJob();
+            return;
+        }
         HDPowerViewWebTargets webTargets = bridge.getWebTargets();
         try {
             RepeaterData repeaterData;
 
             switch (channelUID.getId()) {
                 case CHANNEL_REPEATER_COLOR:
-                    if (command instanceof HSBType hsbCommand) {
-                        Color currentColor = webTargets.getRepeater(repeaterId).color;
-                        if (currentColor != null) {
-                            var color = new Color(currentColor.brightness, ColorUtil.hsbTosRgb(hsbCommand));
-                            repeaterData = webTargets.setRepeaterColor(repeaterId, color);
-                            scheduler.submit(() -> updatePropertyAndStates(repeaterData));
-                        }
-                    } else if (command instanceof OnOffType) {
-                        Color currentColor = webTargets.getRepeater(repeaterId).color;
-                        if (currentColor != null) {
-                            var color = command == OnOffType.ON
-                                    ? new Color(currentColor.brightness, java.awt.Color.WHITE)
-                                    : new Color(currentColor.brightness, java.awt.Color.BLACK);
-                            repeaterData = webTargets.setRepeaterColor(repeaterId, color);
-                            scheduler.submit(() -> updatePropertyAndStates(repeaterData));
-                        }
-                    }
-                    break;
-                case CHANNEL_REPEATER_BRIGHTNESS:
-                    if (command instanceof PercentType brightnessCommand) {
-                        Color currentColor = webTargets.getRepeater(repeaterId).color;
-                        if (currentColor != null) {
-                            var color = new Color(brightnessCommand.intValue(), currentColor.red, currentColor.green,
-                                    currentColor.blue);
-                            repeaterData = webTargets.setRepeaterColor(repeaterId, color);
-                            scheduler.submit(() -> updatePropertyAndStates(repeaterData));
-                        }
-                    }
+                    handleColorCommand(command, webTargets);
                     break;
                 case CHANNEL_REPEATER_IDENTIFY:
                     if (command instanceof StringType stringCommand) {
@@ -163,6 +143,54 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
         }
     }
 
+    private void handleColorCommand(Command command, HDPowerViewWebTargets webTargets) throws HubException {
+        if (command instanceof HSBType hsbCommand) {
+            var color = new Color(hsbCommand.getBrightness().intValue(), ColorUtil.hsbTosRgb(hsbCommand));
+            RepeaterData repeaterData = webTargets.setRepeaterColor(repeaterId, color);
+            scheduler.submit(() -> updatePropertyAndStates(repeaterData));
+            return;
+        }
+        Color currentColor = webTargets.getRepeater(repeaterId).color;
+        if (currentColor == null) {
+            return;
+        }
+        Color newColor;
+        if (command instanceof PercentType brightnessCommand) {
+            newColor = applyBrightnessToColor(currentColor, brightnessCommand.intValue());
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+            int brightness = switch (increaseDecreaseCommand) {
+                case INCREASE -> currentColor.brightness + BRIGHTNESS_STEP_PERCENT;
+                case DECREASE -> currentColor.brightness - BRIGHTNESS_STEP_PERCENT;
+            };
+            brightness = brightness < 0 ? 0 : brightness > 100 ? 100 : brightness;
+            newColor = applyBrightnessToColor(currentColor, brightness);
+        } else if (command instanceof OnOffType) {
+            // Light is turned off either by RGB black or zero brightness.
+            int brightness;
+            if (command == OnOffType.ON) {
+                // Turn on with maximum brightness level per default,
+                // if no existing brightness level is available.
+                brightness = currentColor.brightness > 0 ? currentColor.brightness : 100;
+            } else {
+                // Turn off by zero brightness to preserve color.
+                brightness = 0;
+            }
+            newColor = applyBrightnessToColor(currentColor, brightness);
+        } else {
+            logger.warn("Unsupported command: {}", command);
+            return;
+        }
+        RepeaterData repeaterData = webTargets.setRepeaterColor(repeaterId, newColor);
+        scheduler.submit(() -> updatePropertyAndStates(repeaterData));
+    }
+
+    private Color applyBrightnessToColor(Color currentColor, int brightness) {
+        // If light is off by RGB black, then reset to white since otherwise brightness
+        // would have no effect; otherwise preserve color.
+        return currentColor.isBlack() ? new Color(brightness, java.awt.Color.WHITE)
+                : new Color(brightness, currentColor);
+    }
+
     private void cancelResetIdentifyStateJob() {
         ScheduledFuture<?> scheduledJob = resetIdentifyStateFuture;
         if (scheduledJob != null) {
@@ -182,7 +210,7 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
     private void cancelRefreshJob() {
         ScheduledFuture<?> future = this.refreshStatusFuture;
         if (future != null) {
-            future.cancel(false);
+            future.cancel(true);
         }
         this.refreshStatusFuture = null;
     }
@@ -228,10 +256,17 @@ public class HDPowerViewRepeaterHandler extends AbstractHubbedThingHandler {
         Color color = repeaterData.color;
         if (color != null) {
             logger.debug("Repeater color data received: {}", color.toString());
-            updateState(CHANNEL_REPEATER_COLOR, HSBType.fromRGB(color.red, color.green, color.red));
-            updateState(CHANNEL_REPEATER_BRIGHTNESS, new PercentType(color.brightness));
+            HSBType hsb;
+            if (color.isBlack()) {
+                // Light is off when RGB black, so discard brightness as otherwise it would appear on.
+                hsb = HSBType.BLACK;
+            } else {
+                hsb = HSBType.fromRGB(color.red, color.green, color.blue);
+                hsb = new HSBType(hsb.getHue(), hsb.getSaturation(), new PercentType(color.brightness));
+            }
+            updateState(CHANNEL_REPEATER_COLOR, hsb);
         }
 
-        updateState(CHANNEL_REPEATER_BLINKING_ENABLED, repeaterData.blinkEnabled ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_REPEATER_BLINKING_ENABLED, OnOffType.from(repeaterData.blinkEnabled));
     }
 }

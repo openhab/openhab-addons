@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,8 +73,8 @@ public class F6_02_02 extends F6_02 {
     @Override
     protected void convertFromCommandImpl(String channelId, String channelTypeId, Command command,
             Function<String, State> getCurrentStateFunc, @Nullable Configuration config) {
-        if (command instanceof StringType) {
-            String s = ((StringType) command).toString();
+        if (command instanceof StringType stringCommand) {
+            String s = stringCommand.toString();
 
             if (s.equals(CommonTriggerEvents.DIR1_RELEASED) || s.equals(CommonTriggerEvents.DIR2_RELEASED)) {
                 setStatus(_RPSMessage.T21_FLAG);

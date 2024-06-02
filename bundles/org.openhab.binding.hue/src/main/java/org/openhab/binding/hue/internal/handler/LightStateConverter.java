@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,12 +16,12 @@ import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.dto.ColorTemperature;
-import org.openhab.binding.hue.internal.dto.State;
-import org.openhab.binding.hue.internal.dto.State.AlertMode;
-import org.openhab.binding.hue.internal.dto.State.ColorMode;
-import org.openhab.binding.hue.internal.dto.State.Effect;
-import org.openhab.binding.hue.internal.dto.StateUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.ColorTemperature;
+import org.openhab.binding.hue.internal.api.dto.clip1.State;
+import org.openhab.binding.hue.internal.api.dto.clip1.State.AlertMode;
+import org.openhab.binding.hue.internal.api.dto.clip1.State.ColorMode;
+import org.openhab.binding.hue.internal.api.dto.clip1.State.Effect;
+import org.openhab.binding.hue.internal.api.dto.clip1.StateUpdate;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -30,6 +30,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * The {@link LightStateConverter} is responsible for mapping to/from jue types.
@@ -276,7 +277,7 @@ public class LightStateConverter {
 
     private static HSBType fromXYtoHSBType(State lightState) {
         float[] xy = lightState.getXY();
-        HSBType hsb = HSBType.fromXY(xy[0], xy[1]);
+        HSBType hsb = ColorUtil.xyToHsb(new double[] { xy[0], xy[1] });
 
         int brightnessInPercent = (int) Math.ceil(lightState.getBrightness() / BRIGHTNESS_FACTOR);
         brightnessInPercent = restrictToBounds(brightnessInPercent);
@@ -293,7 +294,7 @@ public class LightStateConverter {
      *            <li>{@value #ALERT_MODE_NONE}.
      *            <li>{@value #ALERT_MODE_SELECT}.
      *            <li>{@value #ALERT_MODE_LONG_SELECT}.
-     *            <ul>
+     *            </ul>
      * @return light state containing the {@link AlertMode} or <b><code>null </code></b> if the provided
      *         {@link StringType} represents unsupported mode.
      */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,12 +37,12 @@ public class CallManager extends RestManager {
     private static class Calls extends Response<Call> {
     }
 
-    public static enum Type {
+    public enum Type {
         ACCEPTED,
         MISSED,
         OUTGOING,
         INCOMING,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Call(Type type, //

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.openhab.binding.plclogo.internal.PLCLogoBindingConstants.*;
 import java.time.DateTimeException;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -61,7 +60,7 @@ import Moka7.S7Client;
 @NonNullByDefault
 public class PLCBridgeHandler extends BaseBridgeHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DEVICE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DEVICE);
 
     private final Logger logger = LoggerFactory.getLogger(PLCBridgeHandler.class);
 
@@ -281,11 +280,10 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
-        if (childHandler instanceof PLCCommonHandler) {
-            PLCCommonHandler handler = (PLCCommonHandler) childHandler;
+        if (childHandler instanceof PLCCommonHandler plcCommonHandler) {
             synchronized (handlers) {
-                if (!handlers.contains(handler)) {
-                    handlers.add(handler);
+                if (!handlers.contains(plcCommonHandler)) {
+                    handlers.add(plcCommonHandler);
                 }
             }
         }
@@ -293,11 +291,10 @@ public class PLCBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof PLCCommonHandler) {
-            PLCCommonHandler handler = (PLCCommonHandler) childHandler;
+        if (childHandler instanceof PLCCommonHandler plcCommonHandler) {
             synchronized (handlers) {
-                if (handlers.contains(handler)) {
-                    handlers.remove(handler);
+                if (handlers.contains(plcCommonHandler)) {
+                    handlers.remove(plcCommonHandler);
                 }
             }
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -116,8 +116,8 @@ public class BlindHandler extends LutronHandler {
     }
 
     private void handleLiftCommand(Command command) {
-        if (command instanceof PercentType) {
-            int level = ((PercentType) command).intValue();
+        if (command instanceof PercentType liftPercent) {
+            int level = liftPercent.intValue();
             output(TargetType.BLIND, OutputCommand.ACTION_LIFTLEVEL, level, null, null);
         } else if (command.equals(UpDownType.UP)) {
             output(TargetType.BLIND, OutputCommand.ACTION_STARTRAISINGLIFT, null, null, null);
@@ -131,8 +131,8 @@ public class BlindHandler extends LutronHandler {
     }
 
     private void handleTiltCommand(Command command) {
-        if (command instanceof PercentType) {
-            int level = ((PercentType) command).intValue();
+        if (command instanceof PercentType tiltPercent) {
+            int level = tiltPercent.intValue();
             output(TargetType.BLIND, OutputCommand.ACTION_TILTLEVEL, Math.min(level, tiltMax), null, null);
         } else if (command.equals(UpDownType.UP)) {
             output(TargetType.BLIND, OutputCommand.ACTION_STARTRAISINGTILT, null, null, null);

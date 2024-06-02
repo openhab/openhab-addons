@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -264,8 +264,8 @@ public class HydrawiseGraphQLClient {
     private void sendGraphQLMutation(String content)
             throws HydrawiseConnectionException, HydrawiseAuthenticationException, HydrawiseCommandException {
         Mutation mutation = new Mutation(content);
-        logger.debug("Sending Mutation {}", gson.toJson(mutation).toString());
-        String response = sendGraphQLRequest(gson.toJson(mutation).toString());
+        logger.debug("Sending Mutation {}", gson.toJson(mutation));
+        String response = sendGraphQLRequest(gson.toJson(mutation));
         logger.debug("Mutation response {}", response);
         try {
             MutationResponse mResponse = gson.fromJson(response, MutationResponse.class);
@@ -273,7 +273,7 @@ public class HydrawiseGraphQLClient {
                 throw new HydrawiseCommandException("Malformed response: " + response);
             }
             Optional<MutationResponseStatus> status = mResponse.data.values().stream().findFirst();
-            if (!status.isPresent()) {
+            if (status.isEmpty()) {
                 throw new HydrawiseCommandException("Unknown response: " + response);
             }
             if (status.get().status != StatusCode.OK) {
@@ -324,6 +324,8 @@ public class HydrawiseGraphQLClient {
         } catch (ExecutionException e) {
             // Hydrawise returns back a 40x status, but without a valid Realm , so jetty throws an exception,
             // this allows us to catch this in a callback and handle accordingly
+            logger.debug("ExecutionException", e);
+            logger.debug("ExecutionException {} {}", responseCode.get(), responseMessage);
             switch (responseCode.get()) {
                 case 401:
                 case 403:

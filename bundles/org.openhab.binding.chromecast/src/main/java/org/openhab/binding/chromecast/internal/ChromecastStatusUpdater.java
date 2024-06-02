@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -124,7 +124,7 @@ public class ChromecastStatusUpdater {
             name = new StringType(application.name);
             id = new StringType(application.id);
             statusText = new StringType(application.statusText);
-            idling = application.isIdleScreen ? OnOffType.ON : OnOffType.OFF;
+            idling = OnOffType.from(application.isIdleScreen);
         }
 
         callback.updateState(CHANNEL_APP_NAME, name);
@@ -142,7 +142,7 @@ public class ChromecastStatusUpdater {
         this.volume = value;
 
         callback.updateState(CHANNEL_VOLUME, value);
-        callback.updateState(CHANNEL_MUTE, volume.muted ? OnOffType.ON : OnOffType.OFF);
+        callback.updateState(CHANNEL_MUTE, OnOffType.from(volume.muted));
     }
 
     public void updateMediaStatus(final @Nullable MediaStatus mediaStatus) {
@@ -318,8 +318,8 @@ public class ChromecastStatusUpdater {
             state = new DecimalType(((Integer) value).longValue());
         } else if (value instanceof String) {
             state = new StringType(value.toString());
-        } else if (value instanceof ZonedDateTime) {
-            state = new DateTimeType((ZonedDateTime) value);
+        } else if (value instanceof ZonedDateTime datetime) {
+            state = new DateTimeType(datetime);
         } else {
             state = UnDefType.UNDEF;
             logger.warn("Update channel {}: Unsupported value type {}", channelUID, value.getClass().getSimpleName());

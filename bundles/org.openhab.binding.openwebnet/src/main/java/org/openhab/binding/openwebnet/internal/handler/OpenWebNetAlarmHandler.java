@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     private static long lastAllDevicesRefreshTS = 0; // ts when last all device refresh was sent for this handler
 
-    private static Set<OpenWebNetAlarmHandler> zoneHandlers = new HashSet<OpenWebNetAlarmHandler>();
+    private static Set<OpenWebNetAlarmHandler> zoneHandlers = new HashSet<>();
 
     private static final String BATTERY_OK = "OK";
     private static final String BATTERY_FAULT = "FAULT";
@@ -116,7 +116,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     @Override
     protected long getRefreshAllLastTS() {
         return lastAllDevicesRefreshTS;
-    };
+    }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
@@ -272,8 +272,8 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return Who.BURGLAR_ALARM.value().toString();
+    protected Who getManagedWho() {
+        return Who.BURGLAR_ALARM;
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ public class PlugwiseMessageSender {
 
     private class MessageSenderThread extends Thread {
 
-        private int messageWaitTime;
+        private final int messageWaitTime;
 
         public MessageSenderThread(int messageWaitTime) {
             super("OH-binding-" + context.getBridgeUID() + "-message-sender");

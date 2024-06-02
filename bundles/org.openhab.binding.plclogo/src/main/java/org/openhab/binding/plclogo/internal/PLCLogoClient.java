@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,7 +102,7 @@ public class PLCLogoClient extends S7Client {
             // read first portion directly to data
             result = super.ReadArea(Area, DBNumber, Start, packet, WordLength, Data);
             while ((result == 0) && (offset < Amount)) {
-                byte buffer[] = new byte[Math.min(Amount - offset, packet)];
+                byte[] buffer = new byte[Math.min(Amount - offset, packet)];
                 result = super.ReadArea(Area, DBNumber, offset, buffer.length, WordLength, buffer);
                 System.arraycopy(buffer, 0, Data, offset, buffer.length);
                 offset = offset + buffer.length;

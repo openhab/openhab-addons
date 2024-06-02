@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import inet.ipaddr.mac.MACAddress;
 /**
  * The {@link HostConfiguration} is responsible for holding
  * configuration informations associated to a Freebox Network Device
- * thing type
  *
  * @author Gaël L'hopital - Initial contribution
  */

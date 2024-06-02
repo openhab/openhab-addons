@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,9 +12,7 @@
  */
 package org.openhab.binding.miele.internal.handler;
 
-import static org.openhab.binding.miele.internal.MieleBindingConstants.MIELE_DEVICE_CLASS_WASHING_MACHINE;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.POWER_CONSUMPTION_CHANNEL_ID;
-import static org.openhab.binding.miele.internal.MieleBindingConstants.WATER_CONSUMPTION_CHANNEL_ID;
+import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.math.BigDecimal;
 
@@ -26,6 +24,7 @@ import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -49,7 +48,8 @@ import com.google.gson.JsonElement;
 public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineChannelSelector>
         implements ExtendedDeviceStateListener {
 
-    private static final int POWER_CONSUMPTION_BYTE_POSITION = 51;
+    private static final int LAUNDRY_WEIGHT_BYTE_POSITION = 44;
+    private static final int ENERGY_CONSUMPTION_BYTE_POSITION = 51;
     private static final int WATER_CONSUMPTION_BYTE_POSITION = 53;
     private static final int EXTENDED_STATE_MIN_SIZE_BYTES = 54;
 
@@ -123,6 +123,7 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
         updateSwitchStartStopFromState(dp);
     }
 
+    @Override
     public void onApplianceExtendedStateChanged(byte[] extendedDeviceState) {
         if (extendedDeviceState.length < EXTENDED_STATE_MIN_SIZE_BYTES) {
             logger.debug("Insufficient extended state data to extract consumption values: {}", extendedDeviceState);
@@ -130,12 +131,18 @@ public class WashingMachineHandler extends MieleApplianceHandler<WashingMachineC
         }
 
         BigDecimal kiloWattHoursTenths = BigDecimal
-                .valueOf(extendedDeviceState[POWER_CONSUMPTION_BYTE_POSITION] & 0xff);
+                .valueOf(extendedDeviceState[ENERGY_CONSUMPTION_BYTE_POSITION] & 0xff);
         var kiloWattHours = new QuantityType<>(kiloWattHoursTenths.divide(BigDecimal.valueOf(10)), Units.KILOWATT_HOUR);
-        updateExtendedState(POWER_CONSUMPTION_CHANNEL_ID, kiloWattHours);
+        updateExtendedState(ENERGY_CONSUMPTION_CHANNEL_ID, kiloWattHours);
 
         var litres = new QuantityType<>(BigDecimal.valueOf(extendedDeviceState[WATER_CONSUMPTION_BYTE_POSITION] & 0xff),
                 Units.LITRE);
         updateExtendedState(WATER_CONSUMPTION_CHANNEL_ID, litres);
+
+        var weight = new QuantityType<>(
+                BigDecimal.valueOf(256 * (extendedDeviceState[LAUNDRY_WEIGHT_BYTE_POSITION] & 0xff)
+                        + (extendedDeviceState[LAUNDRY_WEIGHT_BYTE_POSITION + 1] & 0xff)),
+                SIUnits.GRAM);
+        updateExtendedState(LAUNDRY_WEIGHT_CHANNEL_ID, weight);
     }
 }

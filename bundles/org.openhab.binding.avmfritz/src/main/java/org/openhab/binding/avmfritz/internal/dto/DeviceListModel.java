@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  * devicelist version 1 (currently used by AVM) response:
  *
  * <pre>
+ * {@code
  * <devicelist version="1">
  * <device identifier="##############" id="##" functionbitmask="2944" fwversion="03.83" manufacturer="AVM" productname=
  * "FRITZ!DECT 200">
@@ -73,8 +74,8 @@ import javax.xml.bind.annotation.XmlType;
  * </hkr>
  * </device>
  * </devicelist>
- *
- * <pre>
+ * }
+ * </pre>
  *
  * @author Robert Bausdorf - Initial contribution
  * @author Christoph Weitkamp - Added support for groups

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,21 +13,20 @@
 package org.openhab.binding.mybmw.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.mybmw.internal.MyBMWConfiguration;
+import org.openhab.binding.mybmw.internal.MyBMWBridgeConfiguration;
 import org.openhab.binding.mybmw.internal.discovery.VehicleDiscovery;
-import org.openhab.binding.mybmw.internal.dto.network.NetworkError;
-import org.openhab.binding.mybmw.internal.dto.vehicle.Vehicle;
-import org.openhab.binding.mybmw.internal.utils.BimmerConstants;
+import org.openhab.binding.mybmw.internal.handler.backend.MyBMWFileProxy;
+import org.openhab.binding.mybmw.internal.handler.backend.MyBMWHttpProxy;
+import org.openhab.binding.mybmw.internal.handler.backend.MyBMWProxy;
 import org.openhab.binding.mybmw.internal.utils.Constants;
-import org.openhab.binding.mybmw.internal.utils.Converter;
+import org.openhab.binding.mybmw.internal.utils.MyBMWConfigurationChecker;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -40,102 +39,118 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link MyBMWBridgeHandler} is responsible for handling commands, which are
+ * The {@link MyBMWBridgeHandler} is responsible for handling commands, which
+ * are
  * sent to one of the channels.
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Martin Grassl - refactored, all discovery functionality moved to VehicleDiscovery
  */
 @NonNullByDefault
-public class MyBMWBridgeHandler extends BaseBridgeHandler implements StringResponseCallback {
-    private final Logger logger = LoggerFactory.getLogger(MyBMWBridgeHandler.class);
-    private HttpClientFactory httpClientFactory;
-    private Optional<VehicleDiscovery> discoveryService = Optional.empty();
-    private Optional<MyBMWProxy> proxy = Optional.empty();
-    private Optional<ScheduledFuture<?>> initializerJob = Optional.empty();
-    private Optional<String> troubleshootFingerprint = Optional.empty();
-    private String localeLanguage;
+public class MyBMWBridgeHandler extends BaseBridgeHandler {
 
-    public MyBMWBridgeHandler(Bridge bridge, HttpClientFactory hcf, String language) {
+    private static final String ENVIRONMENT = "ENVIRONMENT";
+    private static final String TEST = "test";
+    private static final String TESTUSER = "testuser";
+
+    private final Logger logger = LoggerFactory.getLogger(MyBMWBridgeHandler.class);
+
+    private HttpClientFactory httpClientFactory;
+    private Optional<MyBMWProxy> myBmwProxy = Optional.empty();
+    private Optional<ScheduledFuture<?>> initializerJob = Optional.empty();
+    private Optional<VehicleDiscovery> vehicleDiscovery = Optional.empty();
+    private LocaleProvider localeProvider;
+
+    public MyBMWBridgeHandler(Bridge bridge, HttpClientFactory hcf, LocaleProvider localeProvider) {
         super(bridge);
         httpClientFactory = hcf;
-        localeLanguage = language;
+        this.localeProvider = localeProvider;
+    }
+
+    public void setVehicleDiscovery(VehicleDiscovery vehicleDiscovery) {
+        logger.trace("MyBMWBridgeHandler.setVehicleDiscovery");
+        this.vehicleDiscovery = Optional.of(vehicleDiscovery);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // no commands available
+        logger.trace("MyBMWBridgeHandler.handleCommand");
     }
 
     @Override
     public void initialize() {
-        troubleshootFingerprint = Optional.empty();
+        logger.trace("MyBMWBridgeHandler.initialize");
         updateStatus(ThingStatus.UNKNOWN);
-        MyBMWConfiguration config = getConfigAs(MyBMWConfiguration.class);
+        MyBMWBridgeConfiguration config = getConfigAs(MyBMWBridgeConfiguration.class);
         if (config.language.equals(Constants.LANGUAGE_AUTODETECT)) {
-            config.language = localeLanguage;
+            config.language = localeProvider.getLocale().getLanguage().toLowerCase();
         }
-        if (!checkConfiguration(config)) {
+        if (!MyBMWConfigurationChecker.checkConfiguration(config)) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
         } else {
-            proxy = Optional.of(new MyBMWProxy(httpClientFactory, config));
-            initializerJob = Optional.of(scheduler.schedule(this::requestVehicles, 2, TimeUnit.SECONDS));
+            // there is no risk in this functionality as several steps have to happen to get the file proxy working:
+            // 1. environment variable ENVIRONMENT has to be available
+            // 2. username of the myBMW account must be set to "testuser" which is anyhow no valid username
+            // 3. the jar file must contain the fingerprints which will only happen if it has been built with the
+            // test-jar profile
+            String environment = System.getenv(ENVIRONMENT);
+
+            if (environment == null) {
+                environment = "";
+            }
+
+            createMyBmwProxy(config, environment);
+            initializerJob = Optional.of(scheduler.schedule(this::discoverVehicles, 2, TimeUnit.SECONDS));
         }
     }
 
-    public static boolean checkConfiguration(MyBMWConfiguration config) {
-        if (Constants.EMPTY.equals(config.userName) || Constants.EMPTY.equals(config.password)) {
-            return false;
-        } else {
-            return BimmerConstants.EADRAX_SERVER_MAP.containsKey(config.region);
+    private synchronized void createMyBmwProxy(MyBMWBridgeConfiguration config, String environment) {
+        if (!myBmwProxy.isPresent()) {
+            if (!(TEST.equals(environment) && TESTUSER.equals(config.userName))) {
+                myBmwProxy = Optional.of(new MyBMWHttpProxy(httpClientFactory, config));
+            } else {
+                myBmwProxy = Optional.of(new MyBMWFileProxy(httpClientFactory, config));
+            }
+            logger.trace("MyBMWBridgeHandler proxy set");
         }
     }
 
     @Override
     public void dispose() {
+        logger.trace("MyBMWBridgeHandler.dispose");
         initializerJob.ifPresent(job -> job.cancel(true));
     }
 
-    public void requestVehicles() {
-        proxy.ifPresent(prox -> prox.requestVehicles(this));
+    public void vehicleDiscoveryError() {
+        logger.trace("MyBMWBridgeHandler.vehicleDiscoveryError");
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Request vehicles failed");
     }
 
-    private void logFingerPrint() {
-        logger.debug("###### Discovery Fingerprint Data - BEGIN ######");
-        logger.debug("{}", troubleshootFingerprint.get());
-        logger.debug("###### Discovery Fingerprint Data - END ######");
+    public void vehicleDiscoverySuccess() {
+        logger.trace("MyBMWBridgeHandler.vehicleDiscoverySuccess");
+        updateStatus(ThingStatus.ONLINE);
     }
 
-    /**
-     * Response for vehicle request
-     */
-    @Override
-    public synchronized void onResponse(@Nullable String response) {
-        if (response != null) {
-            updateStatus(ThingStatus.ONLINE);
-            List<Vehicle> vehicleList = Converter.getVehicleList(response);
-            discoveryService.get().onResponse(vehicleList);
-            troubleshootFingerprint = Optional.of(Converter.anonymousFingerprint(response));
-            logFingerPrint();
-        }
-    }
+    private void discoverVehicles() {
+        logger.trace("MyBMWBridgeHandler.requestVehicles");
 
-    @Override
-    public void onError(NetworkError error) {
-        troubleshootFingerprint = Optional.of(error.toJson());
-        logFingerPrint();
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, error.reason);
+        MyBMWBridgeConfiguration config = getConfigAs(MyBMWBridgeConfiguration.class);
+
+        myBmwProxy.ifPresent(proxy -> proxy.setBridgeConfiguration(config));
+
+        vehicleDiscovery.ifPresent(discovery -> discovery.discoverVehicles());
     }
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(VehicleDiscovery.class);
+        logger.trace("MyBMWBridgeHandler.getServices");
+        return List.of(VehicleDiscovery.class);
     }
 
-    public Optional<MyBMWProxy> getProxy() {
-        return proxy;
-    }
-
-    public void setDiscoveryService(VehicleDiscovery discoveryService) {
-        this.discoveryService = Optional.of(discoveryService);
+    public Optional<MyBMWProxy> getMyBmwProxy() {
+        logger.trace("MyBMWBridgeHandler.getProxy");
+        createMyBmwProxy(getConfigAs(MyBMWBridgeConfiguration.class), ENVIRONMENT);
+        return myBmwProxy;
     }
 }

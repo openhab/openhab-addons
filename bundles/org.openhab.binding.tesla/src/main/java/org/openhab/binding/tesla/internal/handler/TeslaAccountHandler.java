@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -77,6 +76,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
     // REST Client API variables
     private final WebTarget teslaTarget;
     WebTarget vehiclesTarget; // this cannot be marked final as it is used in the runnable
+    WebTarget productsTarget; // this cannot be marked final as it is used in the runnable
     final WebTarget vehicleTarget;
     final WebTarget dataRequestTarget;
     final WebTarget commandTarget;
@@ -108,8 +108,10 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
         this.thingTypeMigrationService = thingTypeMigrationService;
 
         this.vehiclesTarget = teslaTarget.path(API_VERSION).path(VEHICLES);
+        this.productsTarget = teslaTarget.path(API_VERSION).path(PRODUCTS);
         this.vehicleTarget = vehiclesTarget.path(PATH_VEHICLE_ID);
-        this.dataRequestTarget = vehicleTarget.path(PATH_DATA_REQUEST);
+        this.dataRequestTarget = vehicleTarget.path(PATH_DATA_REQUEST).queryParam("endpoints",
+                "location_data;charge_state;climate_state;vehicle_state;gui_settings;vehicle_config");
         this.commandTarget = vehicleTarget.path(PATH_COMMAND);
         this.wakeUpTarget = vehicleTarget.path(PATH_WAKE_UP);
     }
@@ -211,7 +213,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
         if (authHeader != null) {
             // get a list of vehicles
-            Response response = vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
+            Response response = productsTarget.request(MediaType.APPLICATION_JSON_TYPE)
                     .header("Authorization", authHeader).get();
 
             logger.debug("Querying the vehicle: Response: {}: {}", response.getStatus(),
@@ -374,7 +376,7 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
                 if (authenticationResult.getStatus() == ThingStatus.ONLINE) {
                     // get a list of vehicles
-                    Response response = vehiclesTarget.request(MediaType.APPLICATION_JSON_TYPE)
+                    Response response = productsTarget.request(MediaType.APPLICATION_JSON_TYPE)
                             .header("Authorization", "Bearer " + logonToken.access_token).get();
 
                     if (response != null && response.getStatus() == 200 && response.hasEntity()) {
@@ -472,6 +474,6 @@ public class TeslaAccountHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(TeslaVehicleDiscoveryService.class);
+        return List.of(TeslaVehicleDiscoveryService.class);
     }
 }

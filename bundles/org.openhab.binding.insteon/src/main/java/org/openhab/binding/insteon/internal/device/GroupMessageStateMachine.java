@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -89,8 +89,8 @@ public class GroupMessageStateMachine {
     enum GroupMessage {
         BCAST,
         CLEAN,
-        SUCCESS;
-    };
+        SUCCESS
+    }
 
     /**
      * The state of the machine (i.e. what message we are expecting next).
@@ -100,7 +100,7 @@ public class GroupMessageStateMachine {
         EXPECT_BCAST,
         EXPECT_CLEAN,
         EXPECT_SUCCESS
-    };
+    }
 
     private State state = State.EXPECT_BCAST;
     private long lastUpdated = 0;

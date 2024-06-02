@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ public interface InfluxDBRepository {
     /**
      * Return all stored item names with its count of stored points
      *
-     * @return Map with <ItemName,ItemCount> entries
+     * @return Map with {@code <ItemName,ItemCount>} entries
      */
     Map<String, Integer> getStoredItemsCount();
 
@@ -72,7 +72,7 @@ public interface InfluxDBRepository {
      * Write points to database
      *
      * @param influxPoints {@link List<InfluxPoint>} to write
-     * @returns <code>true</code> if points have been written, <code>false</code> otherwise
+     * @return <code>true</code> if points have been written, <code>false</code> otherwise
      */
     boolean write(List<InfluxPoint> influxPoints);
 

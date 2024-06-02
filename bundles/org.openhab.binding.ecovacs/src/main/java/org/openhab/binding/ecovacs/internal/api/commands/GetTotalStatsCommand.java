@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,8 +55,8 @@ public class GetTotalStatsCommand extends IotDeviceCommand<GetTotalStatsCommand.
     @Override
     public TotalStats convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            return ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson, TotalStats.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            return jsonResponse.getResponsePayloadAs(gson, TotalStats.class);
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();
             String area = XPathUtils.getFirstXPathMatch(payload, "//@a").getNodeValue();

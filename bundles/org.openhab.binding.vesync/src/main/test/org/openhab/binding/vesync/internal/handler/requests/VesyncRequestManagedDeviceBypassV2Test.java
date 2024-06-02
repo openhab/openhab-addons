@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,7 +46,7 @@ public class VesyncRequestManagedDeviceBypassV2Test {
     public void checkEmptyPayload() {
         final VesyncRequestManagedDeviceBypassV2.EmptyPayload testPaylaod = new VesyncRequestManagedDeviceBypassV2.EmptyPayload();
         final String contentTest1 = VeSyncConstants.GSON.toJson(testPaylaod);
-        assertEquals(true, contentTest1.equals("{}"));
+        assertEquals(true, "{}".equals(contentTest1));
     }
 
     @Test

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.bluetooth.bluegiga.internal.factory;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -48,8 +47,8 @@ import org.osgi.service.component.annotations.Reference;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.bluegiga")
 public class BlueGigaHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(BlueGigaAdapterConstants.THING_TYPE_BLUEGIGA);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(BlueGigaAdapterConstants.THING_TYPE_BLUEGIGA);
 
     private final Map<ThingUID, ServiceRegistration<?>> serviceRegs = new HashMap<>();
 
@@ -90,8 +89,8 @@ public class BlueGigaHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof BluetoothAdapter) {
-            UID uid = ((BluetoothAdapter) thingHandler).getUID();
+        if (thingHandler instanceof BluetoothAdapter bluetoothAdapter) {
+            UID uid = bluetoothAdapter.getUID();
             ServiceRegistration<?> serviceReg = this.serviceRegs.remove(uid);
             if (serviceReg != null) {
                 serviceReg.unregister();

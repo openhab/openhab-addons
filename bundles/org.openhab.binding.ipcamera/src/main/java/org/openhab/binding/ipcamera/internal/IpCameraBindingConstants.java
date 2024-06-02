@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,8 +34,9 @@ public class IpCameraBindingConstants {
     public static final String COMMON_HANDLER = "commonHandler";
     public static final String INSTAR_HANDLER = "instarHandler";
     public static final String REOLINK_HANDLER = "reolinkHandler";
+    public static final String HIKVISION_HANDLER = "hikvisionHandler";
 
-    public static enum FFmpegFormat {
+    public enum FFmpegFormat {
         HLS,
         GIF,
         RECORD,
@@ -70,12 +71,11 @@ public class IpCameraBindingConstants {
     public static final String REOLINK_THING = "reolink";
     public static final ThingTypeUID THING_TYPE_REOLINK = new ThingTypeUID(BINDING_ID, REOLINK_THING);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
             Arrays.asList(THING_TYPE_ONVIF, THING_TYPE_GENERIC, THING_TYPE_AMCREST, THING_TYPE_DAHUA, THING_TYPE_INSTAR,
                     THING_TYPE_FOSCAM, THING_TYPE_DOORBIRD, THING_TYPE_HIKVISION, THING_TYPE_REOLINK));
 
-    public static final Set<ThingTypeUID> GROUP_SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>(
-            Arrays.asList(THING_TYPE_GROUP));
+    public static final Set<ThingTypeUID> GROUP_SUPPORTED_THING_TYPES = new HashSet<>(Arrays.asList(THING_TYPE_GROUP));
 
     // List of all Thing Config items
     public static final String CONFIG_IPADDRESS = "ipAddress";
@@ -117,8 +117,10 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_TRIGGER_EXTERNAL_ALARM_INPUT = "triggerExternalAlarmInput";
     public static final String CHANNEL_EXTERNAL_ALARM_INPUT = "externalAlarmInput";
     public static final String CHANNEL_EXTERNAL_ALARM_INPUT2 = "externalAlarmInput2";
+    public static final String CHANNEL_AUTO_WHITE_LED = "autoWhiteLED";
     public static final String CHANNEL_AUTO_LED = "autoLED";
     public static final String CHANNEL_ENABLE_LED = "enableLED";
+    public static final String CHANNEL_WHITE_LED = "whiteLED";
     public static final String CHANNEL_ENABLE_PIR_ALARM = "enablePirAlarm";
     public static final String CHANNEL_PIR_ALARM = "pirAlarm";
     public static final String CHANNEL_CELL_MOTION_ALARM = "cellMotionAlarm";
@@ -143,5 +145,7 @@ public class IpCameraBindingConstants {
     public static final String CHANNEL_HUMAN_ALARM = "humanAlarm";
     public static final String CHANNEL_ANIMAL_ALARM = "animalAlarm";
     public static final String CHANNEL_ENABLE_FTP = "enableFTP";
+    public static final String CHANNEL_ENABLE_EMAIL = "enableEmail";
+    public static final String CHANNEL_ENABLE_PUSH = "enablePush";
     public static final String CHANNEL_ENABLE_RECORDINGS = "enableRecordings";
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,14 +76,10 @@ public class RetryPolicyFactory {
     /**
      * Determine {@link RetryStrategy} when expected spot price data is missing.
      *
-     * @param utcTime the time of daily data request in UTC time-zone
      * @return retry strategy
      */
-    public static RetryStrategy whenExpectedSpotPriceDataMissing(LocalTime localTime, ZoneId zoneId) {
-        LocalTime now = LocalTime.now(zoneId);
-        if (now.isAfter(localTime)) {
-            return new ExponentialBackoff().withMinimum(Duration.ofMinutes(10)).withJitter(0.2);
-        }
-        return atFixedTime(localTime, zoneId);
+    public static RetryStrategy whenExpectedSpotPriceDataMissing() {
+        return new ExponentialBackoff().withMinimum(Duration.ofMinutes(10)).withMaximum(Duration.ofHours(1))
+                .withJitter(0.2);
     }
 }

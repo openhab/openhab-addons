@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -51,6 +51,8 @@ import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sun.mail.imap.IMAPInputStream;
 
 /**
  * The {@link POP3IMAPHandler} is responsible for handling commands, which are
@@ -169,9 +171,9 @@ public class POP3IMAPHandler extends BaseThingHandler {
                                 }
                                 Object rawContent = message.getContent();
                                 String contentAsString;
-                                if (rawContent instanceof String) {
+                                if (rawContent instanceof String str) {
                                     logger.trace("Detected plain text message");
-                                    contentAsString = (String) rawContent;
+                                    contentAsString = str;
                                 } else if (rawContent instanceof MimeMessage mimeMessage) {
                                     logger.trace("Detected MIME message");
                                     try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
@@ -183,6 +185,14 @@ public class POP3IMAPHandler extends BaseThingHandler {
                                     try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
                                         mimeMultipart.writeTo(os);
                                         contentAsString = os.toString();
+                                    }
+                                } else if (rawContent instanceof IMAPInputStream imapInputStream) {
+                                    logger.trace("Detected IMAPInputStream message");
+                                    try {
+                                        contentAsString = new String(imapInputStream.readAllBytes());
+                                    } catch (IOException e) {
+                                        logger.warn("Could not read from stream: {}", e.getMessage(), e);
+                                        continue;
                                     }
                                 } else {
                                     logger.warn(

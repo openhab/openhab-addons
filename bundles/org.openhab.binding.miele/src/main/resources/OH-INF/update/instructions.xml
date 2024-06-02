@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="miele:coffeemachine">
+		<instruction-set targetVersion="1">
+			<add-channel id="info">
+				<type>miele:info</type>
+			</add-channel>
+			<add-channel id="failure">
+				<type>miele:failure</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="miele:dishwasher">
+		<instruction-set targetVersion="1">
+			<add-channel id="energyConsumption">
+				<type>miele:energy-consumption</type>
+			</add-channel>
+			<update-channel id="waterConsumption">
+				<type>miele:water-consumption</type>
+			</update-channel>
+			<remove-channel id="powerConsumption"/>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="info">
+				<type>miele:info</type>
+			</add-channel>
+			<add-channel id="failure">
+				<type>miele:failure</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="miele:fridge">
+		<instruction-set targetVersion="1">
+			<add-channel id="info">
+				<type>miele:info</type>
+			</add-channel>
+			<add-channel id="failure">
+				<type>miele:failure</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="miele:fridgefreezer">
+		<instruction-set targetVersion="1">
+			<add-channel id="info">
+				<type>miele:info</type>
+			</add-channel>
+			<add-channel id="failure">
+				<type>miele:failure</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="miele:oven">
+		<instruction-set targetVersion="1">
+			<add-channel id="info">
+				<type>miele:info</type>
+			</add-channel>
+			<add-channel id="failure">
+				<type>miele:failure</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="miele:tumbledryer">
+		<instruction-set targetVersion="1">
+			<add-channel id="info">
+				<type>miele:info</type>
+			</add-channel>
+			<add-channel id="failure">
+				<type>miele:failure</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="miele:washingmachine">
+		<instruction-set targetVersion="1">
+			<add-channel id="energyConsumption">
+				<type>miele:energy-consumption</type>
+			</add-channel>
+			<update-channel id="waterConsumption">
+				<type>miele:water-consumption</type>
+			</update-channel>
+			<remove-channel id="powerConsumption"/>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="info">
+				<type>miele:info</type>
+			</add-channel>
+			<add-channel id="failure">
+				<type>miele:failure</type>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="3">
+			<add-channel id="laundryWeight">
+				<type>miele:laundry-weight</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

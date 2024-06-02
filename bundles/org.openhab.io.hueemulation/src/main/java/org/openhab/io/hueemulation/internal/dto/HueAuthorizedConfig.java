@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,8 +91,7 @@ public class HueAuthorizedConfig extends HueUnauthorizedConfig {
         public JsonElement serialize(HueAuthorizedConfig src, Type typeOfSrc, JsonSerializationContext context) {
             src.UTC = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
             src.localtime = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-            JsonElement jsonSubscription = context.serialize(src, HueAuthorizedConfigHelper.class);
-            return jsonSubscription;
+            return context.serialize(src, HueAuthorizedConfigHelper.class);
         }
     }
 }

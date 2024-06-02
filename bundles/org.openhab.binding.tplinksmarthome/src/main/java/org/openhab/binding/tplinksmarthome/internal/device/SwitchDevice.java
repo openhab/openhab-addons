@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,7 +41,7 @@ public class SwitchDevice extends SmartHomeDevice {
 
     @Override
     public boolean handleCommand(ChannelUID channelUid, Command command) throws IOException {
-        return command instanceof OnOffType && handleOnOffType(channelUid, (OnOffType) command);
+        return command instanceof OnOffType onOffCommand && handleOnOffType(channelUid, onOffCommand);
     }
 
     /**

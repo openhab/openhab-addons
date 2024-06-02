@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -299,7 +299,7 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                     if (distributioninfo != null) {
                         responseCode = distributioninfo.getResponseCode();
                         localRole = distributioninfo.getRole();
-                        if (command.toString().equals("")) {
+                        if ("".equals(command.toString())) {
                             action = "unlink";
                             groupId = distributioninfo.getGroupId();
                         } else if (command.toString().contains("***")) {
@@ -354,12 +354,12 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                                         httpResponse = startDistribution(mclinkSetupServer);
                                         localDefaultAfterMCLink = getThing().getConfiguration()
                                                 .get("defaultAfterMCLink").toString();
-                                        httpResponse = setInput(localDefaultAfterMCLink.toString(), zone, this.host);
+                                        httpResponse = setInput(localDefaultAfterMCLink, zone, this.host);
                                     } else if ("".equals(mclinkSetupServer)) {
                                         // fallback in case client is removed from group by ending group on server side
                                         localDefaultAfterMCLink = getThing().getConfiguration()
                                                 .get("defaultAfterMCLink").toString();
-                                        httpResponse = setInput(localDefaultAfterMCLink.toString(), zone, this.host);
+                                        httpResponse = setInput(localDefaultAfterMCLink, zone, this.host);
                                     }
                                 }
                             }
@@ -795,8 +795,8 @@ public class YamahaMusiccastHandler extends BaseThingHandler {
                         JsonObject presetObject = pr.getAsJsonObject();
                         String text = presetObject.get("text").getAsString();
                         if (!"".equals(text)) {
-                            optionsPresets.add(new StateOption(String.valueOf(presetCounter),
-                                    "#" + String.valueOf(presetCounter) + " " + text));
+                            optionsPresets.add(
+                                    new StateOption(String.valueOf(presetCounter), "#" + presetCounter + " " + text));
                             if (inputText.equals(text)) {
                                 currentPreset = presetCounter;
                             }

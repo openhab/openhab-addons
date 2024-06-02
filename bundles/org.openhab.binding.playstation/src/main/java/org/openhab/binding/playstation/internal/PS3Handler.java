@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -155,7 +155,7 @@ public class PS3Handler extends BaseThingHandler {
 
     private void wakeMethod(DatagramPacket srchPacket, DatagramPacket receivePacket, DatagramPacket wakePacket,
             int triesLeft) {
-        try (DatagramSocket searchSocket = new DatagramSocket(); DatagramSocket wakeSocket = new DatagramSocket();) {
+        try (DatagramSocket searchSocket = new DatagramSocket(); DatagramSocket wakeSocket = new DatagramSocket()) {
             wakeSocket.setBroadcast(true);
             searchSocket.setBroadcast(true);
             searchSocket.setSoTimeout(1000);

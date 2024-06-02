@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,7 +94,7 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
     }
 
     private OnOffType booleanToSwitchState(boolean value) {
-        return value ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(value);
     }
 
     @Override
@@ -131,8 +131,7 @@ public class ParadoxZoneHandler extends EntityBaseHandler {
             return null;
         }
 
-        Zone zone = zones.get(index);
-        return zone;
+        return zones.get(index);
     }
 
     private ParadoxIP150BridgeHandler getBridgeHandler() {

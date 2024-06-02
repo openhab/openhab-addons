@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,11 +23,28 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class NikoHomeControlConstants {
 
     // Action types abstracted from NhcI and NhcII action types
-    public static enum ActionType {
+    public enum ActionType {
         TRIGGER,
         RELAY,
         DIMMER,
         ROLLERSHUTTER,
+        GENERIC
+    }
+
+    // Access control types abstracted from NhcI and NhcII access control types
+    public static enum AccessType {
+        BASE,
+        RINGANDCOMEIN,
+        BELLBUTTON,
+        GENERIC
+    }
+
+    // Meter types abstracted from NhcI and NhcII meter types
+    public static enum MeterType {
+        ENERGY_LIVE,
+        ENERGY,
+        GAS,
+        WATER,
         GENERIC
     }
 
@@ -44,6 +61,13 @@ public class NikoHomeControlConstants {
     public static final String NHCDOWN = "Down";
     public static final String NHCUP = "Up";
     public static final String NHCSTOP = "Stop";
+
+    // doorlock, bell and video constants in the Nhc layer
+    public static final String NHCOPEN = "Open";
+    public static final String NHCCLOSED = "Closed";
+    public static final String NHCIDLE = "Idle";
+    public static final String NHCRINGING = "Ringing";
+    public static final String NHCACTIVE = "Active";
 
     // NhcII thermostat modes
     public static final String[] THERMOSTATMODES = { "Day", "Night", "Eco", "Off", "Cool", "Prog1", "Prog2", "Prog3" };

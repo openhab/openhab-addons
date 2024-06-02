@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -310,7 +310,7 @@ public class ZWayBridgeHandler extends BaseBridgeHandler implements IZWayApiCall
             updateProperties(properties);
 
             // Update channels
-            if (zwaveController.getData().getSecureInclusion().getValue().equals("true")) {
+            if ("true".equals(zwaveController.getData().getSecureInclusion().getValue())) {
                 updateState(SECURE_INCLUSION_CHANNEL, OnOffType.ON);
             } else {
                 updateState(SECURE_INCLUSION_CHANNEL, OnOffType.OFF);

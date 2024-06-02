@@ -9,4 +9,16 @@
 		to household devices from brands like Bosch and Siemens.</description>
 	<connection>cloud</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_homeconnect._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

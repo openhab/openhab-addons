@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -146,7 +146,6 @@ public abstract class A5_09 extends _4BSMessage {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (CHANNEL_CO.equals(channelId)) {
             return EEPHelper.calculateState(getUnscaledCOValue(), getScaledCOMin(), getScaledCOMax(),
                     getUnscaledCOMin(), getUnscaledCOMax(), Units.PARTS_PER_MILLION);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,7 +83,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
-
     private static final int DECLARATION_MAX_LEN = 80;
     private static final long HTTP_REQUEST_TIMEOUT = 60; // seconds
     private static final int DISCOVERY_SERVICE_TIMEOUT = 90; // seconds
@@ -240,10 +239,10 @@ public class LutronDeviceDiscoveryService extends AbstractDiscoveryService {
         context.push(area.getName());
 
         for (DeviceNode deviceNode : area.getDeviceNodes()) {
-            if (deviceNode instanceof DeviceGroup) {
-                processDeviceGroup(area, (DeviceGroup) deviceNode, context);
-            } else if (deviceNode instanceof Device) {
-                processDevice(area, (Device) deviceNode, context);
+            if (deviceNode instanceof DeviceGroup group) {
+                processDeviceGroup(area, group, context);
+            } else if (deviceNode instanceof Device device) {
+                processDevice(area, device, context);
             }
         }
 

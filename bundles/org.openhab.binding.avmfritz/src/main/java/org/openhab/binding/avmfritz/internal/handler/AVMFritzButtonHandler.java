@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,8 +78,7 @@ public class AVMFritzButtonHandler extends DeviceHandler {
         if (thing.getUID().equals(thingUID)) {
             super.onDeviceUpdated(thingUID, device);
 
-            if (device instanceof DeviceModel) {
-                DeviceModel deviceModel = (DeviceModel) device;
+            if (device instanceof DeviceModel deviceModel) {
                 if (deviceModel.isHANFUNButton()) {
                     updateHANFUNButton(deviceModel.getButtons());
                 }
@@ -131,8 +130,7 @@ public class AVMFritzButtonHandler extends DeviceHandler {
         if (lowBattery == null) {
             updateThingChannelState(lowBatteryChannelId, UnDefType.UNDEF);
         } else {
-            updateThingChannelState(lowBatteryChannelId,
-                    BatteryModel.BATTERY_ON.equals(lowBattery) ? OnOffType.ON : OnOffType.OFF);
+            updateThingChannelState(lowBatteryChannelId, OnOffType.from(BatteryModel.BATTERY_ON.equals(lowBattery)));
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -192,7 +192,6 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
                 Thread.sleep(500 * attempts);
                 attempts++;
             }
-
         } catch (JsonSyntaxException | NumberFormatException e) {
             logger.debug("Received Invalid JSON Data", e);
             throw new FroniusCommunicationException("Invalid JSON data received", e);

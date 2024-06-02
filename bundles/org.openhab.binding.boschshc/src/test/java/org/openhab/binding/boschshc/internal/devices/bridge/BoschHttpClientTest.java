@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.exceptions.PairingFailedException;
 import org.openhab.binding.boschshc.internal.services.binaryswitch.dto.BinarySwitchServiceState;
+import org.openhab.binding.boschshc.internal.services.userstate.dto.UserStateServiceState;
 import org.slf4j.Logger;
 
 /**
@@ -95,6 +96,19 @@ class BoschHttpClientTest {
     }
 
     @Test
+    void getServiceStateUrlForUserState() {
+        assertEquals("https://127.0.0.1:8444/smarthome/userdefinedstates/testDevice/state",
+                httpClient.getServiceStateUrl("testService", "testDevice", UserStateServiceState.class));
+    }
+
+    @Test
+    void getServiceStateUrlForChildDevice() {
+        assertEquals(
+                "https://127.0.0.1:8444/smarthome/devices/hdm:ZigBee:70ac08fffe5294ea%233/services/PowerSwitch/state",
+                httpClient.getServiceStateUrl("PowerSwitch", "hdm:ZigBee:70ac08fffe5294ea#3"));
+    }
+
+    @Test
     void isAccessPossible() throws InterruptedException {
         assertFalse(httpClient.isAccessPossible());
     }
@@ -114,7 +128,7 @@ class BoschHttpClientTest {
         // mock a logger using reflection to avoid NPEs during logger calls
         Logger mockedLogger = mock(Logger.class);
         List<Field> fields = ReflectionSupport.findFields(BoschHttpClient.class,
-                f -> f.getName().equalsIgnoreCase("logger"), HierarchyTraversalMode.TOP_DOWN);
+                f -> "logger".equalsIgnoreCase(f.getName()), HierarchyTraversalMode.TOP_DOWN);
         Field field = fields.iterator().next();
         field.setAccessible(true);
         field.set(mockedHttpClient, mockedLogger);
@@ -137,7 +151,7 @@ class BoschHttpClientTest {
         // mock a logger using reflection to avoid NPEs during logger calls
         Logger mockedLogger = mock(Logger.class);
         List<Field> fields = ReflectionSupport.findFields(BoschHttpClient.class,
-                f -> f.getName().equalsIgnoreCase("logger"), HierarchyTraversalMode.TOP_DOWN);
+                f -> "logger".equalsIgnoreCase(f.getName()), HierarchyTraversalMode.TOP_DOWN);
         Field field = fields.iterator().next();
         field.setAccessible(true);
         field.set(mockedHttpClient, mockedLogger);
@@ -165,6 +179,15 @@ class BoschHttpClientTest {
 
     @Test
     void createRequestWithObject() {
+        UserStateServiceState userState = new UserStateServiceState();
+        userState.setState(true);
+        Request request = httpClient.createRequest("https://127.0.0.1", HttpMethod.GET, userState);
+        assertNotNull(request);
+        assertEquals("true", StandardCharsets.UTF_8.decode(request.getContent().iterator().next()).toString());
+    }
+
+    @Test
+    void createRequestForUserDefinedState() {
         BinarySwitchServiceState binarySwitchState = new BinarySwitchServiceState();
         binarySwitchState.on = true;
         Request request = httpClient.createRequest("https://127.0.0.1", HttpMethod.GET, binarySwitchState);
@@ -210,9 +233,7 @@ class BoschHttpClientTest {
                 "{\"@type\": \"JsonRestExceptionResponseEntity\", \"errorCode\": \"500\", \"statusCode\": \"500\"}");
 
         BoschSHCException e = assertThrows(BoschSHCException.class, () -> httpClient.sendRequest(request, Device.class,
-                Device::isValid, (Integer statusCode, String content) -> {
-                    return new BoschSHCException("test exception");
-                }));
+                Device::isValid, (Integer statusCode, String content) -> new BoschSHCException("test exception")));
         assertEquals("test exception", e.getMessage());
     }
 
@@ -240,9 +261,7 @@ class BoschHttpClientTest {
         when(response.getContentAsString()).thenReturn(
                 "{\"@type\": \"JsonRestExceptionResponseEntity\", \"errorCode\": \"500\", \"statusCode\": \"500\"}");
         ExecutionException e = assertThrows(ExecutionException.class,
-                () -> httpClient.sendRequest(request, SubscribeResult.class, sr -> {
-                    return false;
-                }, null));
+                () -> httpClient.sendRequest(request, SubscribeResult.class, sr -> false, null));
         String actualMessage = e.getMessage();
         assertTrue(actualMessage.contains(
                 "Received invalid content for type org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult:"));
@@ -257,9 +276,7 @@ class BoschHttpClientTest {
         when(response.getStatus()).thenReturn(200);
         when(response.getContentAsString()).thenReturn("{\"@type\": \"JsonRestExceptionResponseEntity}");
         ExecutionException e = assertThrows(ExecutionException.class,
-                () -> httpClient.sendRequest(request, SubscribeResult.class, sr -> {
-                    return false;
-                }, null));
+                () -> httpClient.sendRequest(request, SubscribeResult.class, sr -> false, null));
         assertEquals(
                 "Received invalid content in response, expected type org.openhab.binding.boschshc.internal.devices.bridge.dto.SubscribeResult: com.google.gson.stream.MalformedJsonException: Unterminated string at line 1 column 44 path $.@type",
                 e.getMessage());

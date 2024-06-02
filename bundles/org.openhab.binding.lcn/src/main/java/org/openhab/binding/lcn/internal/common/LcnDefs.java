@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,14 +86,14 @@ public final class LcnDefs {
         OFF,
         ON,
         BLINK,
-        FLICKER;
+        FLICKER
     }
 
     /** Possible states for LCN logic-operations. */
     public enum LogicOpStatus {
         NOT,
         OR, // Note: Actually not correct since AND won't be OR also
-        AND;
+        AND
     }
 
     /** Time units used for several LCN commands. */
@@ -101,7 +101,7 @@ public final class LcnDefs {
         SECONDS,
         MINUTES,
         HOURS,
-        DAYS;
+        DAYS
     }
 
     /** Relay-state modifiers used in LCN commands. */
@@ -160,7 +160,7 @@ public final class LcnDefs {
     /**
      * Generates an array of booleans from an input integer (actually a byte).
      *
-     * @param input the input byte (0..255)
+     * @param inputByte the input byte (0..255)
      * @return the array of 8 booleans
      * @throws IllegalArgumentException if input is out of range (not a byte)
      */

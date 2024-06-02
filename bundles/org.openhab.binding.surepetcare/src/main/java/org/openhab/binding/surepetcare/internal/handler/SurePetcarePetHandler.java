@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,8 +17,6 @@ import static org.openhab.binding.surepetcare.internal.SurePetcareConstants.*;
 import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-
-import javax.measure.quantity.Mass;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -72,11 +70,11 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
             switch (channelUID.getId()) {
                 case PET_CHANNEL_LOCATION:
                     logger.debug("Received location update command: {}", command.toString());
-                    if (command instanceof StringType) {
+                    if (command instanceof StringType commandAsStringType) {
                         synchronized (petcareAPI) {
                             SurePetcarePet pet = petcareAPI.getPet(thing.getUID().getId());
                             if (pet != null) {
-                                String newLocationIdStr = ((StringType) command).toString();
+                                String newLocationIdStr = commandAsStringType.toString();
                                 try {
                                     Integer newLocationId = Integer.valueOf(newLocationIdStr);
                                     // Only update if location has changed. (Needed for Group:Switch item)
@@ -103,11 +101,11 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                     break;
                 case PET_CHANNEL_LOCATION_TIMEOFFSET:
                     logger.debug("Received location time offset update command: {}", command.toString());
-                    if (command instanceof StringType) {
+                    if (command instanceof StringType commandAsStringType) {
                         synchronized (petcareAPI) {
                             SurePetcarePet pet = petcareAPI.getPet(thing.getUID().getId());
                             if (pet != null) {
-                                String commandIdStr = ((StringType) command).toString();
+                                String commandIdStr = commandAsStringType.toString();
                                 try {
                                     Integer commandId = Integer.valueOf(commandIdStr);
                                     Integer currentLocation = pet.status.activity.where;
@@ -183,7 +181,7 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                 updateState(PET_CHANNEL_DATE_OF_BIRTH, pet.dateOfBirth == null ? UnDefType.UNDEF
                         : new DateTimeType(pet.dateOfBirth.atStartOfDay(ZoneId.systemDefault())));
                 updateState(PET_CHANNEL_WEIGHT,
-                        pet.weight == null ? UnDefType.UNDEF : new QuantityType<Mass>(pet.weight, SIUnits.KILOGRAM));
+                        pet.weight == null ? UnDefType.UNDEF : new QuantityType<>(pet.weight, SIUnits.KILOGRAM));
                 if (pet.tagId != null) {
                     SurePetcareTag tag = petcareAPI.getTag(pet.tagId.toString());
                     if (tag != null) {
@@ -200,13 +198,13 @@ public class SurePetcarePetHandler extends SurePetcareBaseObjectHandler {
                         if (numBowls > 0) {
                             if (bowlId == BOWL_ID_ONE_BOWL_USED) {
                                 updateState(PET_CHANNEL_FEEDER_LAST_CHANGE,
-                                        new QuantityType<Mass>(feeding.feedChange.get(0), SIUnits.GRAM));
+                                        new QuantityType<>(feeding.feedChange.get(0), SIUnits.GRAM));
                             } else if (bowlId == BOWL_ID_TWO_BOWLS_USED) {
                                 updateState(PET_CHANNEL_FEEDER_LAST_CHANGE_LEFT,
-                                        new QuantityType<Mass>(feeding.feedChange.get(0), SIUnits.GRAM));
+                                        new QuantityType<>(feeding.feedChange.get(0), SIUnits.GRAM));
                                 if (numBowls > 1) {
                                     updateState(PET_CHANNEL_FEEDER_LAST_CHANGE_RIGHT,
-                                            new QuantityType<Mass>(feeding.feedChange.get(1), SIUnits.GRAM));
+                                            new QuantityType<>(feeding.feedChange.get(1), SIUnits.GRAM));
                                 }
                             }
                         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelDefinition;
-import org.openhab.core.thing.type.ChannelDefinitionBuilder;
+import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
@@ -79,8 +79,8 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
 
     /**
      * Parse node properties. This will not subscribe to properties though. Call
-     * {@link Device#startChannels(MqttBrokerConnection)} as soon as the returned future has
-     * completed.
+     * {@link Device#startChannels(MqttBrokerConnection, ScheduledExecutorService, int, HomieThingHandler)}
+     * as soon as the returned future has completed.
      */
     public CompletableFuture<@Nullable Void> subscribe(MqttBrokerConnection connection,
             ScheduledExecutorService scheduler, int timeout) {
@@ -101,12 +101,12 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
 
     public void nodeRestoredFromConfig() {
         initialized = true;
+        attributes.name = nodeID;
     }
 
     /**
      * Unsubscribe from node attribute and also all property attributes and the property value
      *
-     * @param connection A broker connection
      * @return Returns a future that completes as soon as all unsubscriptions have been performed.
      */
     public CompletableFuture<@Nullable Void> stop() {
@@ -119,10 +119,13 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
      */
     public ChannelGroupType type() {
         final List<ChannelDefinition> channelDefinitions = properties.stream()
-                .map(c -> new ChannelDefinitionBuilder(c.propertyID, c.channelTypeUID).build())
-                .collect(Collectors.toList());
+                .map(p -> Objects.requireNonNull(p.getChannelDefinition())).collect(Collectors.toList());
         return ChannelGroupTypeBuilder.instance(channelGroupTypeUID, attributes.name)
                 .withChannelDefinitions(channelDefinitions).build();
+    }
+
+    public ChannelGroupDefinition getChannelGroupDefinition() {
+        return new ChannelGroupDefinition(channelGroupUID.getId(), channelGroupTypeUID, attributes.name, null);
     }
 
     /**
@@ -156,7 +159,7 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     /**
      * <p>
      * The properties of a node are determined by the node attribute "$properties". If that attribute changes,
-     * {@link #attributeChanged(CompletableFuture, String, Object, MqttBrokerConnection, ScheduledExecutorService)} is
+     * {@link #attributeChanged(String, Object, MqttBrokerConnection, ScheduledExecutorServic, boolean)} is
      * called. The {@link #properties} map will be synchronized and this method will be called for every removed
      * property.
      * </p>

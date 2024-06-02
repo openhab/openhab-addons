@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,9 +87,10 @@ public interface HomematicGateway {
      * @param dpConfig The configuration of the datapoint
      * @param newValue The new value for the datapoint
      * @param rxMode The rxMode with which the value should be sent to the device
-     *            ({@link HomematicBindingConstants#RX_BURST_MODE "BURST"} for burst mode,
-     *            {@link HomematicBindingConstants#RX_WAKEUP_MODE "WAKEUP"} for wakeup mode, or null for the default
-     *            mode)
+     *            ({@link org.openhab.binding.homematic.internal.HomematicBindingConstants#RX_BURST_MODE "BURST"}
+     *            for burst mode,
+     *            {@link org.openhab.binding.homematic.internal.HomematicBindingConstants#RX_WAKEUP_MODE "WAKEUP"}
+     *            for wakeup mode, or null for the default mode)
      */
     void sendDatapoint(HmDatapoint dp, HmDatapointConfig dpConfig, Object newValue, String rxMode)
             throws IOException, HomematicClientException;

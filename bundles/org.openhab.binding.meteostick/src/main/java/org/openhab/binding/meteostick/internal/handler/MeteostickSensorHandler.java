@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,8 @@ import java.util.concurrent.TimeUnit;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.scheduler.CronScheduler;
+import org.openhab.core.scheduler.ScheduledCompletableFuture;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -48,25 +50,33 @@ import org.slf4j.LoggerFactory;
  *
  * @author Chris Jackson - Initial contribution
  * @author John Cocula - Added variable spoon size, UoM, wind stats, bug fixes
+ * @author Cor Hoogendoorn - Added option for wind vanes not facing North and cumulative rainfall for today
  */
 public class MeteostickSensorHandler extends BaseThingHandler implements MeteostickEventListener {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_DAVIS);
+    private static final String DAILY_MIDNIGHT = "1 0 0 * * ? *";
+    private final CronScheduler cronScheduler;
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_DAVIS);
 
     private final Logger logger = LoggerFactory.getLogger(MeteostickSensorHandler.class);
 
     private int channel = 0;
+    private int deltawinddir = 0;
+    private int rainspoonold = -1;
+    private BigDecimal rainfallToday = BigDecimal.ZERO;
     private BigDecimal spoon = new BigDecimal(PARAMETER_SPOON_DEFAULT);
     private MeteostickBridgeHandler bridgeHandler;
     private RainHistory rainHistory = new RainHistory(HOUR_IN_MSEC);
     private WindHistory windHistory = new WindHistory(2 * 60 * 1000); // 2 minutes
     private ScheduledFuture<?> rainHourlyJob;
+    private ScheduledCompletableFuture<?> rainMidnightJob;
     private ScheduledFuture<?> wind2MinJob;
     private ScheduledFuture<?> offlineTimerJob;
 
     private Date lastData;
 
-    public MeteostickSensorHandler(Thing thing) {
+    public MeteostickSensorHandler(Thing thing, final CronScheduler scheduler) {
         super(thing);
+        this.cronScheduler = scheduler;
     }
 
     @Override
@@ -79,10 +89,14 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         if (spoon == null) {
             spoon = new BigDecimal(PARAMETER_SPOON_DEFAULT);
         }
-        logger.debug("Initializing MeteoStick handler - Channel {}, Spoon size {} mm.", channel, spoon);
+
+        deltawinddir = ((BigDecimal) getConfig().get(PARAMETER_WINDVANE)).intValue();
+
+        logger.debug("Initializing MeteoStick handler - Channel {}, Spoon size {} mm, Wind vane offset {} °", channel,
+                spoon, deltawinddir);
 
         Runnable rainRunnable = () -> {
-            BigDecimal rainfall = rainHistory.getTotal(spoon);
+            BigDecimal rainfall = rainHistory.getTotal();
             rainfall.setScale(1, RoundingMode.DOWN);
             updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_LASTHOUR),
                     new QuantityType<>(rainfall, MILLI(METRE)));
@@ -91,6 +105,9 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         // Scheduling a job on each hour to update the last hour rainfall
         long start = HOUR_IN_SEC - ((System.currentTimeMillis() % HOUR_IN_MSEC) / 1000);
         rainHourlyJob = scheduler.scheduleWithFixedDelay(rainRunnable, start, HOUR_IN_SEC, TimeUnit.SECONDS);
+
+        // Scheduling a job at midnight to reset today's rainfall to 0
+        rainMidnightJob = cronScheduler.schedule(this::dailyJob, DAILY_MIDNIGHT);
 
         Runnable windRunnable = () -> {
             WindStats stats = windHistory.getStats();
@@ -112,6 +129,10 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     public void dispose() {
         if (rainHourlyJob != null) {
             rainHourlyJob.cancel(true);
+        }
+
+        if (rainMidnightJob != null) {
+            rainMidnightJob.cancel(true);
         }
 
         if (wind2MinJob != null) {
@@ -173,7 +194,7 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
     }
 
     private void processBattery(boolean batteryLow) {
-        OnOffType state = batteryLow ? OnOffType.ON : OnOffType.OFF;
+        OnOffType state = OnOffType.from(batteryLow);
 
         updateState(new ChannelUID(getThing().getUID(), CHANNEL_LOW_BATTERY), state);
     }
@@ -193,18 +214,43 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
                 processSignalStrength(data[3]);
                 processBattery(data.length == 5);
 
-                rainHistory.put(rain);
+                rain &= 0x7F;
+                int totalspoon = 0;
+                if (rainspoonold < 0) {
+                    rainspoonold = rain;
+                }
+                if (rain < rainspoonold) {
+                    totalspoon = 128 - rainspoonold + rain;
+                } else {
+                    totalspoon = rain - rainspoonold;
+                }
 
-                BigDecimal rainfall = rainHistory.getTotal(spoon);
+                BigDecimal rainincrease = BigDecimal.valueOf(totalspoon).multiply(spoon);
+                rainHistory.put(rainincrease);
+
+                BigDecimal rainfall = rainHistory.getTotal();
                 rainfall.setScale(1, RoundingMode.DOWN);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_CURRENTHOUR),
                         new QuantityType<>(rainfall, MILLI(METRE)));
+
+                rainfallToday = rainfallToday.add(rainincrease);
+                rainfallToday.setScale(1, RoundingMode.DOWN);
+                updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_TODAY),
+                        new QuantityType<>(rainfallToday, MILLI(METRE)));
+                rainspoonold = rain;
                 break;
             case "W": // Wind
                 BigDecimal windSpeed = new BigDecimal(data[2]);
                 int windDirection = Integer.parseInt(data[3]);
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_SPEED),
                         new QuantityType<>(windSpeed, METRE_PER_SECOND));
+                if (deltawinddir != 0) {
+                    if (windDirection < (360 - deltawinddir)) {
+                        windDirection += deltawinddir;
+                    } else {
+                        windDirection -= (360 - deltawinddir);
+                    }
+                }
                 updateState(new ChannelUID(getThing().getUID(), CHANNEL_WIND_DIRECTION),
                         new QuantityType<>(windDirection, DEGREE_ANGLE));
 
@@ -265,43 +311,24 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
         }
     }
 
-    class RainHistory extends SlidingTimeWindow<Integer> {
+    class RainHistory extends SlidingTimeWindow<BigDecimal> {
 
         public RainHistory(long period) {
             super(period);
         }
 
-        public BigDecimal getTotal(BigDecimal spoon) {
+        public BigDecimal getTotal() {
             removeOldEntries();
-
-            int least = -1;
-            int total = 0;
-
+            BigDecimal raintotalmap = BigDecimal.ZERO;
             synchronized (storage) {
-                for (int value : storage.values()) {
+                for (BigDecimal value : storage.values()) {
 
-                    /*
-                     * Rain counters have been seen to wrap at 127 and also at 255.
-                     * The Meteostick documentation only mentions 255 at the time of
-                     * this writing. This potential difference is solved by having
-                     * all rain counters wrap at 127 (0x7F) by removing the high bit.
-                     */
-                    value &= 0x7F;
+                    raintotalmap = raintotalmap.add(value);
 
-                    if (least == -1) {
-                        least = value;
-                        continue;
-                    }
-
-                    if (value < least) {
-                        total = 128 - least + value;
-                    } else {
-                        total = value - least;
-                    }
                 }
             }
 
-            return BigDecimal.valueOf(total).multiply(spoon);
+            return raintotalmap;
         }
     }
 
@@ -391,5 +418,12 @@ public class MeteostickSensorHandler extends BaseThingHandler implements Meteost
 
         // Scheduling a job on each hour to update the last hour rainfall
         offlineTimerJob = scheduler.schedule(pollingRunnable, 90, TimeUnit.SECONDS);
+    }
+
+    private void dailyJob() {
+        // Daily job to reset the daily rain accumulation
+        rainfallToday = BigDecimal.ZERO;
+        updateState(new ChannelUID(getThing().getUID(), CHANNEL_RAIN_TODAY),
+                new QuantityType<>(rainfallToday, MILLI(METRE)));
     }
 }

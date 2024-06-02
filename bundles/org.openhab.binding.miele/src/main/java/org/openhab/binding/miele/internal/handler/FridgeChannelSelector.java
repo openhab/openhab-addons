@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,6 +78,18 @@ public enum FridgeChannelSelector implements ApplianceChannelSelector {
             return UnDefType.UNDEF;
         }
     },
+    INFO("signalInfo", "info", OnOffType.class, false) {
+        @Override
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            return OnOffType.from("true".equals(s));
+        }
+    },
+    FAILURE("signalFailure", "failure", OnOffType.class, false) {
+        @Override
+        public State getState(String s, @Nullable DeviceMetaData dmd, MieleTranslationProvider translationProvider) {
+            return OnOffType.from("true".equals(s));
+        }
+    },
     START("", "start", OnOffType.class, false);
 
     private final Logger logger = LoggerFactory.getLogger(FridgeChannelSelector.class);
@@ -141,6 +153,7 @@ public enum FridgeChannelSelector implements ApplianceChannelSelector {
         }
     }
 
+    @Override
     public State getState(String s) {
         try {
             Method valueOf = typeClass.getMethod("valueOf", String.class);

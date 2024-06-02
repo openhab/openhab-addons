@@ -19,43 +19,49 @@ The channels (i.e. measurements) associated with the Binding:
 
 Tibber Default:
 
-| Channel ID         | Description                                             | Read-only |
-|--------------------|---------------------------------------------------------|-----------|
-| Current Total      | Current Total Price (energy + tax)                      | True      |
-| Starts At          | Current Price Timestamp                                 | True      |
-| Current Level      | Current Price Level                                     | True      |
-| Daily Cost         | Daily Cost (last/previous day)                          | True      |
-| Daily Consumption  | Daily Consumption (last/previous day)                   | True      |
-| Daily From         | Timestamp (daily from)                                  | True      |
-| Daily To           | Timestamp (daily to)                                    | True      |
-| Hourly Cost        | Hourly Cost (last/previous hour)                        | True      |
-| Hourly Consumption | Hourly Consumption (last/previous hour)                 | True      |
-| Hourly From        | Timestamp (hourly from)                                 | True      |
-| Hourly To          | Timestamp (hourly to)                                   | True      |
-| Tomorrow prices    | JSON array of tomorrow's prices. See below for example. | True      |
-| Today prices       | JSON array of today's prices. See below for example.    | True      |
+| Channel ID           | Description                                             | Read-only | Forecast |
+|----------------------|---------------------------------------------------------|-----------|----------|
+| current_total        | Current Total Price (energy + tax)                      | True      | yes      |
+| current_startsAt     | Current Price Timestamp                                 | True      | no       |
+| current_level        | Current Price Level                                     | True      | no       |
+| daily_cost           | Daily Cost (last/previous day)                          | True      | no       |
+| daily_consumption    | Daily Consumption (last/previous day)                   | True      | no       |
+| daily_from           | Timestamp (daily from)                                  | True      | no       |
+| daily_to             | Timestamp (daily to)                                    | True      | no       |
+| hourly_cost          | Hourly Cost (last/previous hour)                        | True      | no       |
+| hourly_consumption   | Hourly Consumption (last/previous hour)                 | True      | no       |
+| hourly_from          | Timestamp (hourly from)                                 | True      | no       |
+| hourly_to            | Timestamp (hourly to)                                   | True      | no       |
+| tomorrow_prices      | JSON array of tomorrow's prices. See below for example. | True      | no       |
+| today_prices         | JSON array of today's prices. See below for example.    | True      | no       |
 
 Tibber Pulse (optional):
 
-| Channel ID              | Description                              | Read-only |
-|-------------------------|------------------------------------------|-----------|
-| Timestamp               | Timestamp for live measurements          | True      |
-| Power                   | Live Power Consumption                   | True      |
-| Last Meter Consumption  | Last Recorded Meter Consumption          | True      |
-| Accumulated Consumption | Accumulated Consumption since Midnight   | True      |
-| Accumulated Cost        | Accumulated Cost since Midnight          | True      |
-| Accumulated Reward      | Accumulated Reward since Midnight        | True      |
-| Currency                | Currency of Cost                         | True      |
-| Min Power               | Min Power Consumption since Midnight     | True      |
-| Average Power           | Average Power Consumption since Midnight | True      |
-| Max Power               | Max Power Consumption since Midnight     | True      |
-| Voltage 1-3             | Voltage per Phase                        | True      |
-| Current 1-3             | Current per Phase                        | True      |
-| Power Production        | Live Power Production                    | True      |
-| Accumulated Production  | Accumulated Production since Midnight    | True      |
-| Last Meter Production   | Last Recorded Meter Production           | True      |
-| Min Power Production    | Min Power Production since Midnight      | True      |
-| Max Power Production    | Max Power Production since Midnight      | True      |
+| Channel ID                          | Description                                   | Read-only |
+|-------------------------------------|-----------------------------------------------|-----------|
+| live_timestamp                      | Timestamp for live measurements               | True      |
+| live_power                          | Live Power Consumption                        | True      |
+| live_lastMeterConsumption           | Last Recorded Meter Consumption               | True      |
+| live_accumulatedConsumption         | Accumulated Consumption since Midnight        | True      |
+| live_accumulatedConsumptionThisHour | Accumulated Consumption since last hour shift | True      |
+| live_accumulatedCost                | Accumulated Cost since Midnight               | True      |
+| live_accumulatedReward              | Accumulated Reward since Midnight             | True      |
+| live_currency                       | Currency of Cost                              | True      |
+| live_minPower                       | Min Power Consumption since Midnight          | True      |
+| live_averagePower                   | Average Power Consumption since Midnight      | True      |
+| live_maxPower                       | Max Power Consumption since Midnight          | True      |
+| live_voltage1                       | Voltage Phase 1                               | True      |
+| live_voltage2                       | Voltage Phase  2                              | True      |
+| live_voltage3                       | Voltage Phase 3                               | True      |
+| live_current1                       | Current Phase 1                               | True      |
+| live_current2                       | Current Phase 2                               | True      |
+| live_current3                       | Current Phase 3                               | True      |
+| live_powerProduction                | Live Power Production                         | True      |
+| live_accumulatedProduction          | Accumulated Production since Midnight         | True      |
+| live_accumulatedProductionThisHour  | Accumulated Production since last hour shift  | True      |
+| live_lastMeterProduction            | Last Recorded Meter Production                | True      |
+| live_minPowerproduction             | Min Power Production since Midnight           | True      |
+| live_maxPowerproduction             | Max Power Production since Midnight           | True      |
 
 ## Binding Configuration
 
@@ -102,6 +108,7 @@ Tibber API will be auto discovered if provided input is correct.
 
 ## Tomorrow and Today Prices
 
+The today and tomorrow prices are served as forecast on the `current_total` channel and as JSON data on the channels `today_prices` and `tomorrow_prices`.
 Example of tomorrow and today prices data structure - an array of tuples:
 
 ```json
@@ -233,6 +240,7 @@ DateTime                   TibberAPILiveTimestamp                "Timestamp - Li
 Number:Power               TibberAPILivePower                    "Live Power Consumption [%.0f W]"           {channel="tibber:tibberapi:7cfae492:live_power"}
 Number:Energy              TibberAPILiveLastMeterConsumption     "Last Meter Consumption [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_lastMeterConsumption"}
 Number:Energy              TibberAPILiveAccumulatedConsumption   "Accumulated Consumption [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedConsumption"}
+Number:Energy              TibberAPILiveAccumulatedConsumptionThisHour   "kWh consumed since since last hour shift [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedConsumptionLastHour"}
 Number:Dimensionless       TibberAPILiveAccumulatedCost          "Accumulated Cost [%.2f NOK]"               {channel="tibber:tibberapi:7cfae492:live_accumulatedCost"}
 Number:Dimensionless       TibberAPILiveAccumulatedReward        "Accumulated Reward [%.2f NOK]"             {channel="tibber:tibberapi:7cfae492:live_accumulatedReward"}
 String                     TibberAPILiveCurrency                 "Currency"                                  {channel="tibber:tibberapi:7cfae492:live_currency"}
@@ -247,6 +255,7 @@ Number:ElectricCurrent     TibberAPILiveCurrent2                 "Live Current P
 Number:ElectricCurrent     TibberAPILiveCurrent3                 "Live Current Phase 3 [%.1 A]"              {channel="tibber:tibberapi:7cfae492:live_current3"}
 Number:Power               TibberAPILivePowerProduction          "Live Power Production [%.0f W]"            {channel="tibber:tibberapi:7cfae492:live_powerProduction"}
 Number:Energy              TibberAPILiveAccumulatedProduction    "Accumulated Production [%.2f kWh]"         {channel="tibber:tibberapi:7cfae492:live_accumulatedProduction"}
+Number:Energy              TibberAPILiveAccumulatedProductionThisHour   "Net kWh produced since last hour shift [%.2f kWh]"        {channel="tibber:tibberapi:7cfae492:live_accumulatedProductionThisHour"}
 Number:Energy              TibberAPILiveLastMeterProduction      "Min Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_lastMeterProduction"}
 Number:Power               TibberAPILiveMinPowerproduction       "Min Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_minPowerproduction"}
 Number:Power               TibberAPILiveMaxPowerproduction       "Max Power Production [%.0f W]"             {channel="tibber:tibberapi:7cfae492:live_maxPowerproduction"}

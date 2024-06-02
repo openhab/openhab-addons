@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -98,7 +98,7 @@ public class UDPConnector extends NibeHeatPumpBaseConnector {
     public void sendDatagram(NibeHeatPumpMessage msg) throws NibeHeatPumpException {
         logger.debug("Sending request: {}", msg.toHexString());
 
-        byte data[] = msg.decodeMessage();
+        byte[] data = msg.decodeMessage();
         int port = -1;
 
         if (msg instanceof ModbusWriteRequestMessage) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -1754,7 +1754,7 @@ public class LivisiDeviceHandlerTest {
         ThingUID thingUID = new ThingUID(thingTypeUID, device.getId());
 
         Configuration thingConfiguration = new Configuration();
-        thingConfiguration.setProperties(Collections.singletonMap(PROPERTY_ID, device.getId()));
+        thingConfiguration.setProperties(Map.of(PROPERTY_ID, device.getId()));
 
         Thing thingMock = mock(Thing.class);
         when(thingMock.getBridgeUID()).thenReturn(bridgeThingUID);

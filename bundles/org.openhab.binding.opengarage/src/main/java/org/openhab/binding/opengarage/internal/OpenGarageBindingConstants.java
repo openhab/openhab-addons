@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.opengarage.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -35,11 +34,12 @@ public class OpenGarageBindingConstants {
     // List of all Channel ids
     public static final String CHANNEL_OG_DISTANCE = "distance";
     public static final String CHANNEL_OG_STATUS = "status"; // now deprecated
+    public static final String CHANNEL_OG_STATUS_TEXT = "status-text";
     public static final String CHANNEL_OG_STATUS_SWITCH = "status-switch";
     public static final String CHANNEL_OG_STATUS_CONTACT = "status-contact";
     public static final String CHANNEL_OG_STATUS_ROLLERSHUTTER = "status-rollershutter";
     public static final String CHANNEL_OG_VEHICLE = "vehicle"; // now deprecated
     public static final String CHANNEL_OG_VEHICLE_STATUS = "vehicle-status";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(OPENGARAGE_THING);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(OPENGARAGE_THING);
 }

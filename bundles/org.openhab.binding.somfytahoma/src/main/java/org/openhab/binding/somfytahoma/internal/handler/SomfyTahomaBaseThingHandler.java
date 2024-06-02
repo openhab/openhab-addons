@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -475,20 +475,19 @@ public abstract class SomfyTahomaBaseThingHandler extends BaseThingHandler {
     }
 
     public int toInteger(Command command) {
-        return (command instanceof DecimalType) ? ((DecimalType) command).intValue() : 0;
+        return (command instanceof DecimalType dateTimeCommand) ? dateTimeCommand.intValue() : 0;
     }
 
     public @Nullable BigDecimal toTemperature(Command command) {
         BigDecimal temperature = null;
-        if (command instanceof QuantityType<?>) {
-            QuantityType<?> quantity = (QuantityType<?>) command;
-            QuantityType<?> convertedQuantity = quantity.toUnit(getTemperatureUnit());
+        if (command instanceof QuantityType<?> quantityCommand) {
+            QuantityType<?> convertedQuantity = quantityCommand.toUnit(getTemperatureUnit());
             if (convertedQuantity != null) {
-                quantity = convertedQuantity;
+                quantityCommand = convertedQuantity;
             }
-            temperature = quantity.toBigDecimal();
-        } else if (command instanceof DecimalType) {
-            temperature = ((DecimalType) command).toBigDecimal();
+            temperature = quantityCommand.toBigDecimal();
+        } else if (command instanceof DecimalType decimalCommand) {
+            temperature = decimalCommand.toBigDecimal();
         }
         return temperature;
     }

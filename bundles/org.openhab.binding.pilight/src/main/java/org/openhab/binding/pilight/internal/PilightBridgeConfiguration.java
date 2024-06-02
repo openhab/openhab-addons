@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,6 +26,7 @@ public class PilightBridgeConfiguration {
     private String ipAddress = "";
     private int port = 0;
     private int delay = 500;
+    private boolean backgroundDiscovery = true;
 
     public String getIpAddress() {
         return ipAddress;
@@ -49,5 +50,13 @@ public class PilightBridgeConfiguration {
 
     public void setDelay(Integer delay) {
         this.delay = delay;
+    }
+
+    public boolean getBackgroundDiscovery() {
+        return backgroundDiscovery;
+    }
+
+    public void setBackgroundDiscovery(boolean flag) {
+        backgroundDiscovery = flag;
     }
 }

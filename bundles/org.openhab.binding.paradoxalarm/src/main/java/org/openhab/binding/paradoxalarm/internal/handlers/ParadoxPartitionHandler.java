@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,6 +48,7 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
         if (partition != null) {
             updateState(PARTITION_LABEL_CHANNEL_UID, new StringType(partition.getLabel()));
             updateState(PARTITION_STATE_CHANNEL_UID, new StringType(partition.getState().getMainState()));
+            updateState(PARTITION_DETAILED_STATE_CHANNEL_UID, new StringType(partition.getState().getDetailedState()));
             updateState(PARTITION_ADDITIONAL_STATES_CHANNEL_UID,
                     new StringType("Deprecated field. Use direct channels instead"));
             updateState(PARTITION_READY_TO_ARM_CHANNEL_UID, booleanToSwitchState(partition.getState().isReadyToArm()));
@@ -83,7 +84,7 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
     }
 
     private OnOffType booleanToSwitchState(boolean value) {
-        return value ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(value);
     }
 
     @Override
@@ -121,7 +122,6 @@ public class ParadoxPartitionHandler extends EntityBaseHandler {
             return null;
         }
 
-        Partition partition = partitions.get(index);
-        return partition;
+        return partitions.get(index);
     }
 }

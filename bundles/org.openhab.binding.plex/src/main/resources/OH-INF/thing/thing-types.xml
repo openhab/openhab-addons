@@ -31,7 +31,13 @@
 			<channel id="thumb" typeId="thumb"/>
 			<channel id="player" typeId="player"/>
 			<channel id="user" typeId="user"/>
+			<channel id="ratingKey" typeId="ratingKey"/>
+			<channel id="parentRatingKey" typeId="parentRatingKey"/>
+			<channel id="grandparentRatingKey" typeId="grandparentRatingKey"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description-ref uri="thing-type:plex:player"/>
 	</thing-type>
 
@@ -63,6 +69,25 @@
 		<item-type>String</item-type>
 		<label>Player Title</label>
 		<description>The title of media that is playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="ratingKey" advanced="true">
+		<item-type>String</item-type>
+		<label>Rating Key</label>
+		<description>The unique key in the Plex library identifying the media that is playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="parentRatingKey" advanced="true">
+		<item-type>String</item-type>
+		<label>Parent Rating Key</label>
+		<description>The unique key in the Plex library identifying the parent (TV show season or album) of the media that is
+			playing</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="grandparentRatingKey" advanced="true">
+		<item-type>String</item-type>
+		<label>Grandparent Rating Key</label>
+		<description>The unique key in the Plex library identifying the grandparent (TV show) of the media that is playing</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="type">

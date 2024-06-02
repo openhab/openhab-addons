@@ -84,7 +84,7 @@
 		</config-description>
 	</channel-type>
 	<channel-type id="humidity-wifi">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>This zone measures humidity</description>
 		<state readOnly="true"/>
@@ -265,7 +265,7 @@
 		</config-description>
 	</channel-type>
 	<channel-type id="humidity-pro">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>This zone measures humidity</description>
 		<state readOnly="true"/>

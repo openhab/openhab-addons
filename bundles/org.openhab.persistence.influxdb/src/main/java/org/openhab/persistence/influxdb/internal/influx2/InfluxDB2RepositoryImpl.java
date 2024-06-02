@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,7 +76,8 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
 
     @Override
     public boolean isConnected() {
-        return client != null;
+        InfluxDBClient client = this.client;
+        return client != null && client.ping();
     }
 
     @Override
@@ -95,9 +96,10 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         this.client = createdClient;
 
         queryAPI = createdClient.getQueryApi();
-        writeAPI = createdClient.getWriteApi();
+        writeAPI = createdClient.makeWriteApi();
         deleteAPI = createdClient.getDeleteApi();
-        logger.debug("Successfully connected to InfluxDB. Instance ready={}", createdClient.ready());
+
+        logger.debug("Successfully connected to InfluxDB. Instance pingable={}", createdClient.ping());
 
         return checkConnectionStatus();
     }
@@ -115,8 +117,16 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     public boolean checkConnectionStatus() {
         final InfluxDBClient currentClient = client;
         if (currentClient != null) {
+            boolean isUp = false;
             Ready ready = currentClient.ready();
-            boolean isUp = ready != null && ready.getStatus() == Ready.StatusEnum.READY;
+            if (ready != null) {
+                isUp = ready.getStatus() == Ready.StatusEnum.READY;
+            } else {
+                logger.debug(
+                        "Failure resolving database readiness. Falling back to ping check. This is normal when using InfluxDB Cloud Serverless.");
+                isUp = currentClient.ping();
+            }
+
             if (isUp) {
                 logger.debug("database status is OK");
             } else {
@@ -186,12 +196,12 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         Point clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime(), WritePrecision.MS);
         @Nullable
         Object value = point.getValue();
-        if (value instanceof String) {
-            clientPoint.addField(FIELD_VALUE_NAME, (String) value);
-        } else if (value instanceof Number) {
-            clientPoint.addField(FIELD_VALUE_NAME, (Number) value);
-        } else if (value instanceof Boolean) {
-            clientPoint.addField(FIELD_VALUE_NAME, (Boolean) value);
+        if (value instanceof String string) {
+            clientPoint.addField(FIELD_VALUE_NAME, string);
+        } else if (value instanceof Number number) {
+            clientPoint.addField(FIELD_VALUE_NAME, number);
+        } else if (value instanceof Boolean boolean1) {
+            clientPoint.addField(FIELD_VALUE_NAME, boolean1);
         } else if (value == null) {
             clientPoint.addField(FIELD_VALUE_NAME, (String) null);
         } else {

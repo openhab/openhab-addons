@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -312,13 +312,29 @@ public class Enigma2ClientTest {
     }
 
     private void whenAllServices() throws IOException {
-        when(enigma2HttpClient.get(HOST + Enigma2Client.PATH_ALL_SERVICES))
-                .thenReturn("<e2servicelistrecursive>" + "<e2bouquet>" + "<e2servicelist>" + "<e2service>"
-                        + "<e2servicereference>1</e2servicereference>" + "<e2servicename>Channel 1</e2servicename>"
-                        + "</e2service>" + "<e2service>" + "<e2servicereference>2</e2servicereference>"
-                        + "<e2servicename>Channel 2</e2servicename>" + "</e2service>" + "</e2servicelist>"
-                        + "</e2bouquet>" + "<e2bouquet>" + "<e2servicelist>" + "<e2service>"
-                        + "<e2servicereference>3</e2servicereference>" + "<e2servicename>Channel 3</e2servicename>"
-                        + "</e2service>" + "</e2servicelist>" + "</e2bouquet>" + "</e2servicelistrecursive>");
+        when(enigma2HttpClient.get(HOST + Enigma2Client.PATH_ALL_SERVICES)).thenReturn("""
+                <e2servicelistrecursive>\
+                <e2bouquet>\
+                <e2servicelist>\
+                <e2service>\
+                <e2servicereference>1</e2servicereference>\
+                <e2servicename>Channel 1</e2servicename>\
+                </e2service>\
+                <e2service>\
+                <e2servicereference>2</e2servicereference>\
+                <e2servicename>Channel 2</e2servicename>\
+                </e2service>\
+                </e2servicelist>\
+                </e2bouquet>\
+                <e2bouquet>\
+                <e2servicelist>\
+                <e2service>\
+                <e2servicereference>3</e2servicereference>\
+                <e2servicename>Channel 3</e2servicename>\
+                </e2service>\
+                </e2servicelist>\
+                </e2bouquet>\
+                </e2servicelistrecursive>\
+                """);
     }
 }

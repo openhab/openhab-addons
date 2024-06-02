@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Message;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.AbstractBoschSHCService;
 import org.openhab.binding.boschshc.internal.services.AbstractStatelessBoschSHCService;
@@ -49,6 +50,7 @@ import com.google.gson.JsonElement;
  * @author Stefan Kästle - Initial contribution
  * @author Christian Oeing - refactorings of e.g. server registration
  * @author David Pace - Handler abstraction
+ * @author David Pace - Support for child device updates
  */
 @NonNullByDefault
 public abstract class BoschSHCHandler extends BaseThingHandler {
@@ -113,8 +115,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     public abstract @Nullable String getBoschID();
 
     /**
-     * Initializes this handler. Use this method to register all services of the device with
-     * {@link #registerService(BoschSHCService)}.
+     * Initializes this handler.
      */
     @Override
     public void initialize() {
@@ -155,7 +156,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
      * @param stateData Current state of device service. Serialized as JSON.
      */
     public void processUpdate(String serviceName, @Nullable JsonElement stateData) {
-        // Check services of device to correctly
+        // Find service(s) with the specified name and propagate new state to them
         for (DeviceService<? extends BoschSHCServiceState> deviceService : this.services) {
             BoschSHCService<? extends BoschSHCServiceState> service = deviceService.service;
             if (serviceName.equals(service.getServiceName())) {
@@ -165,9 +166,31 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     }
 
     /**
-     * Should be used by handlers to create their required services.
+     * Processes an update for a logical child device.
+     * 
+     * @param childDeviceId the ID of the logical child device
+     * @param serviceName the name of the service this update is targeted at
+     * @param stateData the new service state serialized as JSON
+     */
+    public void processChildUpdate(String childDeviceId, String serviceName, @Nullable JsonElement stateData) {
+        // default implementation is empty, subclasses may override
+    }
+
+    /**
+     * Processes a device-specific message from the Bosch Smart Home Controller.
+     * 
+     * @param message the message published by the controller
+     */
+    public void processMessage(Message message) {
+        // default implementation is empty, subclasses may override
+    }
+
+    /**
+     * Use this method to register all services of the device with
+     * {@link #registerService(BoschSHCService, Consumer, Collection, boolean)}.
      */
     protected void initializeServices() throws BoschSHCException {
+        // default implementation is empty, subclasses may override
     }
 
     /**
@@ -193,7 +216,7 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
     /**
      * Query the Bosch Smart Home Controller for the state of the service with the specified name.
      *
-     * @note Use services instead of directly requesting a state.
+     * @implNote Use services instead of directly requesting a state.
      *
      * @param stateName Name of the service to query
      * @param classOfT Class to convert the resulting JSON to

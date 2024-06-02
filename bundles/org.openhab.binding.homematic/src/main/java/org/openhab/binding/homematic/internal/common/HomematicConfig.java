@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,8 +58,11 @@ public class HomematicConfig {
     private int bufferSize = 2048;
 
     private HmGatewayInfo gatewayInfo;
-    private int callbackRegistrationRetries;
     private int callbackRegTimeout;
+
+    private boolean useAuthentication;
+    private String userName;
+    private String password;
 
     /**
      * Returns the Homematic gateway address.
@@ -274,6 +277,48 @@ public class HomematicConfig {
     }
 
     /**
+     * Returns true if authorization for the gateway has to be used; otherwise false
+     */
+    public boolean getUseAuthentication() {
+        return useAuthentication;
+    }
+
+    /**
+     * Sets if authorization for the gateway has to be used
+     */
+    public void setUseAuthentication(Boolean useAuthentication) {
+        this.useAuthentication = useAuthentication;
+    }
+
+    /**
+     * Returns the user name for authorize against the gateway
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * Sets the user name for authorize against the gateway
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    /**
+     * Returns the password for authorize against the gateway
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * Sets the password for authorize against the gateway
+     */
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
      * Returns the Homematic gateway port of the interfaces.
      */
     public int getRpcPort(HmInterface hmInterface) {
@@ -361,7 +406,7 @@ public class HomematicConfig {
     }
 
     /**
-     * Returns the encoding that is suitable on requests to & responds from the Homematic gateway.
+     * Returns the encoding that is suitable on requests to and responds from the Homematic gateway.
      */
     public Charset getEncoding() {
         if (gatewayInfo != null && gatewayInfo.isHomegear()) {
@@ -394,12 +439,12 @@ public class HomematicConfig {
 
     @Override
     public String toString() {
-        return String.format(
-                "%s[gatewayAddress=%s,callbackHost=%s,xmlCallbackPort=%d,binCallbackPort=%d,"
-                        + "gatewayType=%s,rfPort=%d,wiredPort=%d,hmIpPort=%d,cuxdPort=%d,groupPort=%d,timeout=%d,"
-                        + "discoveryTimeToLive=%d,installModeDuration=%d,socketMaxAlive=%d]",
-                getClass().getSimpleName(), gatewayAddress, callbackHost, xmlCallbackPort, binCallbackPort, gatewayType,
-                getRfPort(), getWiredPort(), getHmIpPort(), getCuxdPort(), getGroupPort(), timeout, discoveryTimeToLive,
-                installModeDuration, socketMaxAlive);
+        return String.format("""
+                %s[gatewayAddress=%s,callbackHost=%s,xmlCallbackPort=%d,binCallbackPort=%d,\
+                gatewayType=%s,rfPort=%d,wiredPort=%d,hmIpPort=%d,cuxdPort=%d,groupPort=%d,timeout=%d,\
+                discoveryTimeToLive=%d,installModeDuration=%d,socketMaxAlive=%d]\
+                """, getClass().getSimpleName(), gatewayAddress, callbackHost, xmlCallbackPort, binCallbackPort,
+                gatewayType, getRfPort(), getWiredPort(), getHmIpPort(), getCuxdPort(), getGroupPort(), timeout,
+                discoveryTimeToLive, installModeDuration, socketMaxAlive);
     }
 }

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solax"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="frequency">
+		<item-type>Number:Frequency</item-type>
+		<label>Electric Frequency</label>
+		<description>Frequency of the electricity to/from the inverter</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Frequency</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<description>Battery Temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="inverter-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Inverter Temperature</label>
+		<description>Inverter Temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="inverter-workmode">
+		<item-type>String</item-type>
+		<label>Inverter Workmode</label>
+		<description>Inverter Workmode</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">Waiting</option>
+				<option value="1">Checking</option>
+				<option value="2">Normal</option>
+				<option value="3">Fault</option>
+				<option value="4">Permanent Fault</option>
+				<option value="5">Updating</option>
+				<option value="6">EPS Check</option>
+				<option value="7">EPS Normal</option>
+				<option value="8">Self Test</option>
+				<option value="9">Idle</option>
+				<option value="10">Standby</option>
+				<option value="11">PV Wake-up Battery</option>
+				<option value="12">GEN Check</option>
+				<option value="13">GEN Run</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="inverter-workmode-cloud">
+		<item-type>String</item-type>
+		<label>Inverter Workmode</label>
+		<description>Inverter Workmode</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="100">Waiting</option>
+				<option value="101">Checking</option>
+				<option value="102">Normal</option>
+				<option value="103">Fault</option>
+				<option value="104">Permanent Fault</option>
+				<option value="105">Updating</option>
+				<option value="106">EPS Check</option>
+				<option value="107">EPS Normal</option>
+				<option value="108">Self Test</option>
+				<option value="109">Idle</option>
+				<option value="110">Standby</option>
+				<option value="111">PV Wake-up Battery</option>
+				<option value="112">GEN Check</option>
+				<option value="113">GEN Run</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="last-retrieve-time-stamp">
+		<item-type>DateTime</item-type>
+		<label>Last Retrieve Time Stamp</label>
+		<description>Last time with a successful retrieval of data</description>
+		<category>Time</category>
+		<state pattern="yyyy-MM-dd HH:mm:ss" readOnly="true"/>
+	</channel-type>
+	<channel-type id="raw-data-type" advanced="true">
+		<item-type>String</item-type>
+		<label>Raw Data</label>
+		<description>The raw JSON data retrieved from the inverter's Wi-Fi module.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

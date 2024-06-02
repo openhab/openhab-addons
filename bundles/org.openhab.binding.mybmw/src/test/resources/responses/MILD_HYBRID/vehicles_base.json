@@ -1,0 +1,48 @@
+[
+    {
+        "vin": "anonymousMILD_HYBRID",
+        "mappingInfo": {
+            "isAssociated": true,
+            "isLmmEnabled": false,
+            "mappingStatus": "CONFIRMED",
+            "isPrimaryUser": true
+        },
+        "appVehicleType": "CONNECTED",
+        "attributes": {
+            "lastFetched": "2022-12-21T17:30:40.363Z",
+            "model": "M340i xDrive",
+            "year": 2022,
+            "color": 4284572001,
+            "brand": "BMW",
+            "driveTrain": "MILD_HYBRID",
+            "headUnitType": "MGU",
+            "headUnitRaw": "HU_MGU",
+            "hmiVersion": "ID7",
+            "softwareVersionCurrent": {
+                "puStep": {
+                    "month": 7,
+                    "year": 22
+                },
+                "iStep": 558,
+                "seriesCluster": "S18A"
+            },
+            "softwareVersionExFactory": {
+                "puStep": {
+                    "month": 3,
+                    "year": 22
+                },
+                "iStep": 560,
+                "seriesCluster": "S18A"
+            },
+            "telematicsUnit": "ATM2",
+            "bodyType": "G21",
+            "countryOfOrigin": "DE",
+            "driverGuideInfo": {
+                "androidAppScheme": "com.bmwgroup.driversguide.row",
+                "iosAppScheme": "bmwdriversguide:///open",
+                "androidStoreUrl": "https://play.google.com/store/apps/details?id=com.bmwgroup.driversguide.row",
+                "iosStoreUrl": "https://apps.apple.com/de/app/id714042749?mt=8"
+            }
+        }
+    }
+]

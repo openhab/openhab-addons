@@ -44,6 +44,20 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
+	<channel-type id="co2_concentration">
+		<item-type>Number:DimensionLess</item-type>
+		<label>CO2 concentration</label>
+		<description>A CO2 sensor carbon dioxide concentration in ppm</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="noise">
+		<item-type>Number:DimensionLess</item-type>
+		<label>Noise</label>
+		<description>A noise sensor noise in decibel</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
 	<channel-type id="alarm_command">
 		<item-type>String</item-type>
 		<label>Command</label>
@@ -142,7 +156,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<description>The current relative humidity</description>
 		<state readOnly="true" min="0" max="100" pattern="%f.1 %unit%"/>

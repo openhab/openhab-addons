@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ public class EncryptionHelper {
         }
 
         // build encryption/decryption key based on given password
-        byte passwordBytes[] = keyString.getBytes();
+        byte[] passwordBytes = keyString.getBytes();
         byte[] keyBytes = new byte[24];
 
         for (int i = 0; i < 12; ++i) {
@@ -67,7 +67,7 @@ public class EncryptionHelper {
      * @throws GeneralSecurityException
      *             on decryption errors
      */
-    public void decrypt(byte buffer[]) throws GeneralSecurityException {
+    public void decrypt(byte[] buffer) throws GeneralSecurityException {
         byte[] cv = new byte[16];
         byte[] c = new byte[16];
         byte[] temp = new byte[16];
@@ -104,7 +104,7 @@ public class EncryptionHelper {
      * @param buffer bytes to encrypt
      * @throws GeneralSecurityException on encryption errors
      */
-    public void encrypt(byte buffer[]) throws GeneralSecurityException {
+    public void encrypt(byte[] buffer) throws GeneralSecurityException {
         byte[] cv = new byte[16];
         byte[] p = new byte[16];
         int count = buffer.length;

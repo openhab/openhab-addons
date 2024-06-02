@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -125,9 +125,11 @@ public class DSMRBridgeDiscoveryService extends DSMRDiscoveryService implements 
                     logger.trace("Possible port to check:{}, owned:{} by:{}", currentScannedPortName,
                             portIdentifier.isCurrentlyOwned(), portIdentifier.getCurrentOwner());
                     if (DSMR_PORT_NAME.equals(portIdentifier.getCurrentOwner())) {
-                        logger.debug("The port {} is owned by this binding. If no DSMR meters will be found it "
-                                + "might indicate the port is locked by an older instance of this binding. "
-                                + "Restart the system to unlock the port.", currentScannedPortName);
+                        logger.debug("""
+                                The port {} is owned by this binding. If no DSMR meters will be found it \
+                                might indicate the port is locked by an older instance of this binding. \
+                                Restart the system to unlock the port.\
+                                """, currentScannedPortName);
                     }
                 } else {
                     logger.debug("Start discovery on serial port: {}", currentScannedPortName);

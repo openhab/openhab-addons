@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -81,7 +81,7 @@ public abstract class DeviceChannel {
     /**
      * Format the commnd using the configured format
      * 
-     * @param data the command to transform
+     * @param command the command to transform
      * @return the formatted data. The orginal data is returned if there is no format string
      *         or if there is an error performing the format.
      */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,6 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
      *
      * @param portName the port where the device is connected as defined in openHAB configuration.
      * @param baudrate
-     * @throws IOException
      */
     public SmlSerialConnector(Supplier<SerialPortManager> serialPortManagerSupplier, String portName, int baudrate,
             int baudrateChangeDelay) {
@@ -139,7 +138,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
     }
 
     /**
-     * @{inheritDoc}
+     * {@inheritDoc}
      */
     @Override
     public void closeConnection() {

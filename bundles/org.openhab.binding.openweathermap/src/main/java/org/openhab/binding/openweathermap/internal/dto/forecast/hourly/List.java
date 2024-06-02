@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,8 @@ import org.openhab.binding.openweathermap.internal.dto.weather.Main;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Generated Plain Old Java Objects class for {@link List} from JSON.
+ * Holds the data from the <code>list</code> object of the JSON response of the Hourly forecast API and the 5 day
+ * weather forecast API.
  *
  * @author Christoph Weitkamp - Initial contribution
  */
@@ -42,71 +43,35 @@ public class List {
         return dt;
     }
 
-    public void setDt(Integer dt) {
-        this.dt = dt;
-    }
-
     public Main getMain() {
         return main;
-    }
-
-    public void setMain(Main main) {
-        this.main = main;
     }
 
     public java.util.List<Weather> getWeather() {
         return weather;
     }
 
-    public void setWeather(java.util.List<Weather> weather) {
-        this.weather = weather;
-    }
-
     public Clouds getClouds() {
         return clouds;
-    }
-
-    public void setClouds(Clouds clouds) {
-        this.clouds = clouds;
     }
 
     public Wind getWind() {
         return wind;
     }
 
-    public void setWind(Wind wind) {
-        this.wind = wind;
-    }
-
     public @Nullable Precipitation getRain() {
         return rain;
-    }
-
-    public void setRain(Precipitation rain) {
-        this.rain = rain;
     }
 
     public @Nullable Precipitation getSnow() {
         return snow;
     }
 
-    public void setSnow(Precipitation snow) {
-        this.snow = snow;
-    }
-
     public Sys getSys() {
         return sys;
     }
 
-    public void setSys(Sys sys) {
-        this.sys = sys;
-    }
-
     public String getDtTxt() {
         return dtTxt;
-    }
-
-    public void setDtTxt(String dtTxt) {
-        this.dtTxt = dtTxt;
     }
 }

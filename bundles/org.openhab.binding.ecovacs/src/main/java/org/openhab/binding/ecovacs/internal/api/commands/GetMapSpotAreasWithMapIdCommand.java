@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,9 +65,8 @@ public class GetMapSpotAreasWithMapIdCommand extends IotDeviceCommand<List<Strin
     @Override
     public List<String> convertResponse(AbstractPortalIotCommandResponse response, ProtocolVersion version, Gson gson)
             throws DataParsingException {
-        if (response instanceof PortalIotCommandJsonResponse) {
-            MapSetReport resp = ((PortalIotCommandJsonResponse) response).getResponsePayloadAs(gson,
-                    MapSetReport.class);
+        if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
+            MapSetReport resp = jsonResponse.getResponsePayloadAs(gson, MapSetReport.class);
             return resp.subsets.stream().map(i -> i.id).collect(Collectors.toList());
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();

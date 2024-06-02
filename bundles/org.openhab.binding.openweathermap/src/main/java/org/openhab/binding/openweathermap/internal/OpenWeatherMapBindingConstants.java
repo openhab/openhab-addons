@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,6 @@ public class OpenWeatherMapBindingConstants {
     // Thing
     public static final ThingTypeUID THING_TYPE_WEATHER_AND_FORECAST = new ThingTypeUID(BINDING_ID,
             "weather-and-forecast");
-    public static final ThingTypeUID THING_TYPE_UVINDEX = new ThingTypeUID(BINDING_ID, "uvindex");
     public static final ThingTypeUID THING_TYPE_AIR_POLLUTION = new ThingTypeUID(BINDING_ID, "air-pollution");
     // One Call API forecast
     public static final ThingTypeUID THING_TYPE_ONECALL_WEATHER_AND_FORECAST = new ThingTypeUID(BINDING_ID, "onecall");
@@ -53,8 +52,6 @@ public class OpenWeatherMapBindingConstants {
             "hourlyForecast");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_DAILY_FORECAST = new ChannelGroupTypeUID(BINDING_ID,
             "dailyForecast");
-    public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_UVINDEX_FORECAST = new ChannelGroupTypeUID(BINDING_ID,
-            "uvindexForecast");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_AIR_POLLUTION_FORECAST = new ChannelGroupTypeUID(
             BINDING_ID, "airPollutionForecast");
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_ONECALL_MINUTELY_FORECAST = new ChannelGroupTypeUID(
@@ -73,7 +70,6 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_GROUP_CURRENT_WEATHER = "current";
     public static final String CHANNEL_GROUP_FORECAST_TODAY = "forecastToday";
     public static final String CHANNEL_GROUP_FORECAST_TOMORROW = "forecastTomorrow";
-    public static final String CHANNEL_GROUP_CURRENT_UVINDEX = "current";
     public static final String CHANNEL_GROUP_CURRENT_AIR_POLLUTION = "current";
     public static final String CHANNEL_GROUP_ONECALL_CURRENT = "current";
     public static final String CHANNEL_GROUP_ONECALL_HISTORY = "history";
@@ -87,6 +83,9 @@ public class OpenWeatherMapBindingConstants {
     public static final String CHANNEL_TIME_STAMP = "time-stamp";
     public static final String CHANNEL_SUNRISE = "sunrise";
     public static final String CHANNEL_SUNSET = "sunset";
+    public static final String CHANNEL_MOONRISE = "moonrise";
+    public static final String CHANNEL_MOONSET = "moonset";
+    public static final String CHANNEL_MOON_PHASE = "moon-phase";
     public static final String CHANNEL_CONDITION = "condition";
     public static final String CHANNEL_CONDITION_ID = "condition-id";
     public static final String CHANNEL_CONDITION_ICON = "icon";

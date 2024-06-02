@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,10 +82,8 @@ public class KodiUpnpDiscoveryParticipant implements UpnpDiscoveryParticipant {
                 Map<String, Object> properties = new HashMap<>();
                 properties.put(HOST_PARAMETER, device.getIdentity().getDescriptorURL().getHost());
 
-                DiscoveryResult result = DiscoveryResultBuilder.create(thingUid).withLabel(label)
-                        .withProperties(properties).withRepresentationProperty(HOST_PARAMETER).build();
-
-                return result;
+                return DiscoveryResultBuilder.create(thingUid).withLabel(label).withProperties(properties)
+                        .withRepresentationProperty(HOST_PARAMETER).build();
             }
         }
         return null;

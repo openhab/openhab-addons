@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,8 @@
 package org.openhab.binding.mycroft.internal.api.dto;
 
 import org.openhab.binding.mycroft.internal.api.MessageType;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * This message informs the bus clients that Mycroft
@@ -29,7 +31,8 @@ public class MessageRecognizerLoopRecordBegin extends BaseMessage {
     }
 
     public static class Context {
-        public String client_name = "";
+        @SerializedName("client_name")
+        public String clientName = "";
         public String source = "";
         public String destination = "";
     }

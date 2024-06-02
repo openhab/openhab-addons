@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,14 +46,11 @@ public class MelCloudHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_MELCLOUD_ACCOUNT.equals(thingTypeUID)) {
-            MelCloudAccountHandler handler = new MelCloudAccountHandler((Bridge) thing);
-            return handler;
+            return new MelCloudAccountHandler((Bridge) thing);
         } else if (THING_TYPE_ACDEVICE.equals(thingTypeUID)) {
-            MelCloudDeviceHandler handler = new MelCloudDeviceHandler(thing);
-            return handler;
+            return new MelCloudDeviceHandler(thing);
         } else if (THING_TYPE_HEATPUMPDEVICE.equals(thingTypeUID)) {
-            MelCloudHeatpumpDeviceHandler handler = new MelCloudHeatpumpDeviceHandler(thing);
-            return handler;
+            return new MelCloudHeatpumpDeviceHandler(thing);
         }
 
         return null;

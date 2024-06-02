@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,6 +42,7 @@ import org.openwebnet4j.message.BaseOpenMessage;
 import org.openwebnet4j.message.OpenMessage;
 import org.openwebnet4j.message.Where;
 import org.openwebnet4j.message.WhereZigBee;
+import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -175,15 +176,15 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
      *
      * @param msg the OpenMessage to be sent
      */
-    public @Nullable Response send(OpenMessage msg) throws OWNException {
+    public @Nullable Response send(@Nullable OpenMessage msg) throws OWNException {
         OpenWebNetBridgeHandler bh = bridgeHandler;
-        if (bh != null) {
+        if (msg != null && bh != null) {
             OpenGateway gw = bh.gateway;
             if (gw != null) {
                 return gw.send(msg);
             }
         }
-        logger.warn("Couldn't send message {}: handler or gateway is null", msg);
+        logger.warn("Couldn't send message {}: handler, gateway or message is null", msg);
         return null;
     }
 
@@ -251,7 +252,7 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
      */
     protected long getRefreshAllLastTS() {
         return -1;
-    };
+    }
 
     /**
      * Refresh all devices for this handler
@@ -330,10 +331,10 @@ public abstract class OpenWebNetThingHandler extends BaseThingHandler {
     }
 
     /**
-     * Returns a prefix String for ownId specific for each handler.
+     * Returns the Who managed by the handler.
      * To be implemented by sub-classes.
      *
-     * @return
+     * @return Who managed by the handler
      */
-    protected abstract String ownIdPrefix();
+    protected abstract Who getManagedWho();
 }

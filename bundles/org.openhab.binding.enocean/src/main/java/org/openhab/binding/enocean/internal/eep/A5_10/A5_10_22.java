@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,15 +14,22 @@ package org.openhab.binding.enocean.internal.eep.A5_10;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.types.State;
 
 /**
  *
  * @author Daniel Weber - Initial contribution
  */
 @NonNullByDefault
-public class A5_10_22 extends A5_10 {
+public class A5_10_22 extends A5_10_10 {
 
     public A5_10_22(ERP1Message packet) {
         super(packet);
+    }
+
+    @Override
+    protected State getFanSpeedStage() {
+        return new DecimalType((getDB0Value() >>> 5) - 1);
     }
 }

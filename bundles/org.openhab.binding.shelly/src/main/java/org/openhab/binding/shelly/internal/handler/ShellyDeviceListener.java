@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * {@link DeviceUpdateListener} can register on the {@link TradfriGatewayHandler} to be informed about details about
+ * {@link ShellyDeviceListener} can register on the {@link ShellyBaseHandler} to be informed about details about
  * devices.
  *
  * @author Markus Michels - Initial contribution

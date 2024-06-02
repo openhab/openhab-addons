@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ public interface ChannelStateUpdateListener {
      * The channel is of kind Trigger.
      *
      * @param channelUID The channel uid
-     * @param value The new value. Doesn't necessarily need to be different than the value before.
+     * @param eventPayload The new value. Doesn't necessarily need to be different than the value before.
      */
     void triggerChannel(ChannelUID channelUID, String eventPayload);
 }

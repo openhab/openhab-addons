@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,25 +45,25 @@ public class RepeaterManager extends ListableRest<RepeaterManager.Repeater, Repe
     public static record RepeaterLed(int id, boolean ledActivated) {
     }
 
-    private static enum Connection {
+    private enum Connection {
         CONNECTED,
         DISCONNECTED,
-        UNKNOWN;
+        UNKNOWN
     }
 
-    private static enum Status {
+    private enum Status {
         STARTING,
         RUNNING,
         REBOOTING,
         UPDATING,
         REBOOT_FAILURE,
         UPDATE_FAILURE,
-        UNKNOWN;
+        UNKNOWN
     }
 
-    public static enum Model {
+    public enum Model {
         FBXWMR, // Répéteur Wifi
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Repeater(int id, boolean ledActivated, boolean enabled, MACAddress mainMac,

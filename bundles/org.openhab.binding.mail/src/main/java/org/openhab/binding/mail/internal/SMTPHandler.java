@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,8 +115,7 @@ public class SMTPHandler extends BaseThingHandler {
                 Field dataField = dataSource.getClass().getDeclaredField("data");
                 dataField.setAccessible(true);
                 Object data = dataField.get(dataSource);
-                if (data instanceof MimeMultipart) {
-                    MimeMultipart mimeMultipart = (MimeMultipart) data;
+                if (data instanceof MimeMultipart mimeMultipart) {
                     for (int i = 0; i < mimeMultipart.getCount(); i++) {
                         Part mimePart = mimeMultipart.getBodyPart(i);
                         mimePart.getDataHandler().setCommandMap(commandMap);

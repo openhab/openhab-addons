@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.harmonyhub.internal.HarmonyHubDynamicTypeProvider;
 import org.openhab.binding.harmonyhub.internal.config.HarmonyHubConfig;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.RewindFastforwardType;
@@ -126,26 +125,20 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
 
         switch (channel.getUID().getId()) {
             case CHANNEL_CURRENT_ACTIVITY:
-                if (command instanceof DecimalType) {
+                try {
                     try {
-                        client.startActivity(((DecimalType) command).intValue());
-                    } catch (Exception e) {
-                        logger.warn("Could not start activity", e);
+                        // try starting by ID
+                        client.startActivity(command.toString());
+                    } catch (IllegalArgumentException ignored) {
+                        // if that fails, try starting by name
+                        client.startActivityByName(command.toString());
                     }
-                } else {
-                    try {
-                        try {
-                            int actId = Integer.parseInt(command.toString());
-                            client.startActivity(actId);
-                        } catch (NumberFormatException ignored) {
-                            client.startActivityByName(command.toString());
-                        }
-                    } catch (IllegalArgumentException e) {
-                        logger.warn("Activity '{}' is not known by the hub, ignoring it.", command);
-                    } catch (Exception e) {
-                        logger.warn("Could not start activity", e);
-                    }
+                } catch (IllegalArgumentException e) {
+                    logger.warn("Activity '{}' is not known by the hub, ignoring it.", command);
+                } catch (Exception e) {
+                    logger.warn("Could not start activity", e);
                 }
+
                 break;
             case CHANNEL_BUTTON_PRESS:
                 client.pressButtonCurrentActivity(command.toString());
@@ -358,7 +351,7 @@ public class HarmonyHubHandler extends BaseBridgeHandler implements HarmonyClien
                 // trigger of power-off activity (with ID=-1)
                 getConfigFuture().thenAccept(config -> {
                     if (config != null) {
-                        Activity powerOff = config.getActivityById(-1);
+                        Activity powerOff = config.getActivityById("-1");
                         if (powerOff != null) {
                             triggerChannel(CHANNEL_ACTIVITY_STARTING_TRIGGER, getEventName(powerOff));
                         }

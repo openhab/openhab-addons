@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,7 +87,7 @@ public class DLinkSmartHomeDiscoveryParticipant implements MDNSDiscoveryParticip
 
         if (model == null) {
             return null;
-        } else if (model.equals("DCH-S150")) {
+        } else if ("DCH-S150".equals(model)) {
             return THING_TYPE_DCHS150;
         } else {
             logger.debug("D-Link HNAP Type: {}", model);

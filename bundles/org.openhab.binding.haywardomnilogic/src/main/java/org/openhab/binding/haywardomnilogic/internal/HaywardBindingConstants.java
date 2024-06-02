@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.haywardomnilogic.internal;
 
 import java.util.Set;
@@ -27,7 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class HaywardBindingConstants {
 
-    private static final String BINDING_ID = "haywardomnilogic";
+    public static final String BINDING_ID = "haywardomnilogic";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BACKYARD = new ThingTypeUID(BINDING_ID, "backyard");
@@ -88,8 +87,13 @@ public class HaywardBindingConstants {
 
     // List of all Channel ids (colorlogic)
     public static final String CHANNEL_COLORLOGIC_ENABLE = "colorLogicLightEnable";
-    public static final String CHANNEL_COLORLOGIC_LIGHTSTATE = "colorLogicLightState";
+    public static final String CHANNEL_COLORLOGIC_STATE = "colorLogicLightState";
     public static final String CHANNEL_COLORLOGIC_CURRENTSHOW = "colorLogicLightCurrentShow";
+    public static final String CHANNEL_COLORLOGIC_BRIGHTNESS = "colorLogicLightBrightness";
+    public static final String CHANNEL_COLORLOGIC_SPEED = "colorLogicLightSpeed";
+
+    public static final String TYPE_COLORLOGIC_LIGHTBRIGHTNESS = "lightBrightness";
+    public static final String TYPE_COLORLOGIC_LIGHTSPEED = "lightSpeed";
 
     public static final String PROPERTY_COLORLOGIC_TYPE = "colorlogicType";
 
@@ -174,11 +178,13 @@ public class HaywardBindingConstants {
     // Hayward Command html
     public static final String COMMAND_PARAMETERS = "<?xml version=\"1.0\" encoding=\"utf-8\"?><Request>";
 
-    public static final String COMMAND_SCHEDULE = "<Parameter name=\"IsCountDownTimer\" dataType=\"bool\">false</Parameter>"
-            + "<Parameter name=\"StartTimeHours\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"StartTimeMinutes\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"EndTimeHours\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"EndTimeMinutes\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"DaysActive\" dataType=\"int\">0</Parameter>"
-            + "<Parameter name=\"Recurring\" dataType=\"bool\">false</Parameter>";
+    public static final String COMMAND_SCHEDULE = """
+            <Parameter name="IsCountDownTimer" dataType="bool">false</Parameter>\
+            <Parameter name="StartTimeHours" dataType="int">0</Parameter>\
+            <Parameter name="StartTimeMinutes" dataType="int">0</Parameter>\
+            <Parameter name="EndTimeHours" dataType="int">0</Parameter>\
+            <Parameter name="EndTimeMinutes" dataType="int">0</Parameter>\
+            <Parameter name="DaysActive" dataType="int">0</Parameter>\
+            <Parameter name="Recurring" dataType="bool">false</Parameter>\
+            """;
 }

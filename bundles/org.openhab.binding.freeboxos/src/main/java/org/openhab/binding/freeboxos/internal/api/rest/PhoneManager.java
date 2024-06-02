@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,9 +37,9 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
     protected class StatusResponse extends Response<Status> {
     }
 
-    private static enum NetworkStatus {
+    private enum NetworkStatus {
         WORKING,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Config(NetworkStatus network, boolean dectEcoMode, String dectPin, int dectRingPattern,
@@ -49,7 +49,7 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
     public enum Type {
         FXS,
         DECT,
-        UNKNOWN;
+        UNKNOWN
     }
 
     public static record Status(int id, boolean isRinging, boolean onHook, boolean hardwareDefect, Type type,

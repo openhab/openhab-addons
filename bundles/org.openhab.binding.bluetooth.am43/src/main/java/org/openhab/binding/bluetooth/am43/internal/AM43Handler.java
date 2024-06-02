@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -235,27 +235,28 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
         }
         switch (channelUID.getId()) {
             case AM43BindingConstants.CHANNEL_ID_POSITION:
-                if (command instanceof PercentType) {
+                if (command instanceof PercentType percentCommand) {
                     MotorSettings settings = motorSettings;
                     if (settings == null) {
                         logger.warn("Cannot set position before settings have been received.");
                         return;
                     }
                     if (!settings.isTopLimitSet() || !settings.isBottomLimitSet()) {
-                        logger.warn("Cannot set position of blinds. Top or bottom limits have not been set. "
-                                + "Please configure manually.");
+                        logger.warn("""
+                                Cannot set position of blinds. Top or bottom limits have not been set. \
+                                Please configure manually.\
+                                """);
                         return;
                     }
-                    PercentType percent = (PercentType) command;
-                    int value = percent.intValue();
+                    int value = percentCommand.intValue();
                     if (getAM43Config().invertPosition) {
                         value = 100 - value;
                     }
                     submitCommand(new SetPositionCommand(value));
                     return;
                 }
-                if (command instanceof StopMoveType) {
-                    switch ((StopMoveType) command) {
+                if (command instanceof StopMoveType stopMoveCommand) {
+                    switch (stopMoveCommand) {
                         case STOP:
                             submitCommand(new ControlCommand(ControlAction.STOP));
                             return;
@@ -264,8 +265,8 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
                             return;
                     }
                 }
-                if (command instanceof UpDownType) {
-                    switch ((UpDownType) command) {
+                if (command instanceof UpDownType upDownCommand) {
+                    switch (upDownCommand) {
                         case UP:
                             submitCommand(new ControlCommand(ControlAction.OPEN));
                             return;
@@ -276,11 +277,10 @@ public class AM43Handler extends ConnectedBluetoothHandler implements ResponseLi
                 }
                 return;
             case AM43BindingConstants.CHANNEL_ID_SPEED:
-                if (command instanceof DecimalType) {
+                if (command instanceof DecimalType decimalCommand) {
                     MotorSettings settings = motorSettings;
                     if (settings != null) {
-                        DecimalType speedType = (DecimalType) command;
-                        settings.setSpeed(speedType.intValue());
+                        settings.setSpeed(decimalCommand.intValue());
                         submitCommand(new SetSettingsCommand(settings));
                     } else {
                         logger.warn("Cannot set Speed before setting have been received");

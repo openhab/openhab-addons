@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,7 @@ import org.openhab.binding.velbus.internal.handler.VelbusSerialBridgeHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMB1TSHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMB4ANHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMB7INHandler;
+import org.openhab.binding.velbus.internal.handler.VelbusVMBDALIHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBELHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBELOHandler;
 import org.openhab.binding.velbus.internal.handler.VelbusVMBGPHandler;
@@ -50,6 +51,7 @@ import org.osgi.service.component.annotations.Reference;
  * handlers.
  *
  * @author Cedric Boon - Initial contribution
+ * @author Daniel Rosengarten - Add VMB1RYS, VMBDALI
  */
 @NonNullByDefault
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.velbus")
@@ -106,6 +108,8 @@ public class VelbusHandlerFactory extends BaseThingHandlerFactory {
             thingHandler = new VelbusVMB4ANHandler(thing);
         } else if (VelbusVMB1TSHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             thingHandler = new VelbusVMB1TSHandler(thing);
+        } else if (VelbusVMBDALIHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
+            thingHandler = new VelbusVMBDALIHandler(thing);
         }
 
         return thingHandler;

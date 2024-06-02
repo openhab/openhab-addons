@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,7 +59,7 @@ public class WebInterface implements AtomicReferenceTrait {
     /**
      * handler for updating bridge status
      */
-    private final StatusHandler statusHandler;
+    private final StatusHandler bridgeStatusHandler;
 
     /**
      * holds authentication status
@@ -135,7 +135,8 @@ public class WebInterface implements AtomicReferenceTrait {
 
             switch (status.getHttpCode()) {
                 case BAD_REQUEST:
-                    statusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
+                    bridgeStatusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                            msg);
                     setAuthenticated(false);
                     break;
                 case OK:
@@ -148,17 +149,18 @@ public class WebInterface implements AtomicReferenceTrait {
                         tokenRefreshDate = Instant.now();
                         tokenExpiry = tokenRefreshDate.plusSeconds(expiresInSeconds);
 
-                        logger.debug("access token refreshed: {}, expiry: {}", Utils.formatDate(tokenRefreshDate),
-                                Utils.formatDate(tokenExpiry));
+                        logger.debug("access token refreshed: {}, expiry: {}", tokenRefreshDate.toString(),
+                                tokenExpiry.toString());
 
-                        statusHandler.updateStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
+                        bridgeStatusHandler.updateStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE,
                                 STATUS_TOKEN_VALIDATED);
                         setAuthenticated(true);
                         handler.startDiscovery();
                         break;
                     }
                 default:
-                    statusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
+                    bridgeStatusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            msg);
                     setAuthenticated(false);
             }
         }
@@ -207,8 +209,7 @@ public class WebInterface implements AtomicReferenceTrait {
          */
         private synchronized void authenticate() {
             setAuthenticated(false);
-            EaseeCommand loginCommand = new Login(handler);
-            loginCommand.registerResultProcessor(this::processAuthenticationResult);
+            EaseeCommand loginCommand = new Login(handler, this::processAuthenticationResult);
             try {
                 loginCommand.performAction(httpClient, accessToken);
             } catch (ValidationException e) {
@@ -225,10 +226,10 @@ public class WebInterface implements AtomicReferenceTrait {
             if (now.plus(WEB_REQUEST_TOKEN_EXPIRY_BUFFER_MINUTES, ChronoUnit.MINUTES).isAfter(tokenExpiry)
                     || now.isAfter(tokenRefreshDate.plus(WEB_REQUEST_TOKEN_MAX_AGE_MINUTES, ChronoUnit.MINUTES))) {
                 logger.debug("access token needs to be refreshed, last refresh: {}, expiry: {}",
-                        Utils.formatDate(tokenRefreshDate), Utils.formatDate(tokenExpiry));
+                        tokenRefreshDate.toString(), tokenExpiry.toString());
 
-                EaseeCommand refreshCommand = new RefreshToken(handler, accessToken, refreshToken);
-                refreshCommand.registerResultProcessor(this::processAuthenticationResult);
+                EaseeCommand refreshCommand = new RefreshToken(handler, accessToken, refreshToken,
+                        this::processAuthenticationResult);
                 try {
                     refreshCommand.performAction(httpClient, accessToken);
                 } catch (ValidationException e) {
@@ -245,39 +246,18 @@ public class WebInterface implements AtomicReferenceTrait {
         private void executeCommand() throws ValidationException {
             EaseeCommand command = commandQueue.poll();
             if (command != null) {
-                command.registerResultProcessor(this::processExecutionResult);
                 command.performAction(httpClient, accessToken);
-            }
-        }
-
-        private void processExecutionResult(CommunicationStatus status, JsonObject jsonObject) {
-            String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR_TITLE);
-            if (msg == null || msg.isBlank()) {
-                msg = status.getMessage();
-            }
-
-            switch (status.getHttpCode()) {
-                case OK:
-                case ACCEPTED:
-                    // no action needed as the thing is already online.
-                    break;
-                default:
-                    statusHandler.updateStatusInfo(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, msg);
-                    setAuthenticated(false);
-
             }
         }
     }
 
     /**
      * Constructor to set up interface
-     *
-     * @param config Bridge configuration
      */
     public WebInterface(ScheduledExecutorService scheduler, EaseeBridgeHandler handler, HttpClient httpClient,
-            StatusHandler statusHandler) {
+            StatusHandler bridgeStatusHandler) {
         this.handler = handler;
-        this.statusHandler = statusHandler;
+        this.bridgeStatusHandler = bridgeStatusHandler;
         this.scheduler = scheduler;
         this.httpClient = httpClient;
         this.tokenExpiry = OUTDATED_DATE;

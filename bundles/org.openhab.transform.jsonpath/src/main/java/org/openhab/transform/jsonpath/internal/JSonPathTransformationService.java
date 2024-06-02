@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,12 +30,10 @@ import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.PathNotFoundException;
 
 /**
- * <p>
- * The implementation of {@link TransformationService} which transforms the input by JSonPath Expressions.
+ * The implementation of a {@link TransformationService} which transforms the input by JSonPath Expressions.
  *
- * @author Gaël L'hopital
- * @author Sebastian Janzen
- *
+ * @author Gaël L'hopital - Initial contribution
+ * @author Sebastian Janzen - Initial contribution
  */
 @NonNullByDefault
 @Component(property = { "openhab.transform=JSONPATH" })
@@ -46,7 +44,7 @@ public class JSonPathTransformationService implements TransformationService {
     /**
      * Transforms the input <code>source</code> by JSonPath expression.
      *
-     * @param function JsonPath expression
+     * @param jsonPathExpression JsonPath expression
      * @param source String which contains JSON
      * @throws TransformationException If the JsonPath expression is invalid, an {@link InvalidPathException} is thrown,
      *             which is encapsulated in a {@link TransformationException}.
@@ -68,8 +66,8 @@ public class JSonPathTransformationService implements TransformationService {
             logger.debug("transformation resulted in '{}'", transformationResult);
             if (transformationResult == null) {
                 return null;
-            } else if (transformationResult instanceof List) {
-                return flattenList((List<?>) transformationResult);
+            } else if (transformationResult instanceof List<?> list) {
+                return flattenList(list);
             } else {
                 return transformationResult.toString();
             }
@@ -98,10 +96,10 @@ public class JSonPathTransformationService implements TransformationService {
     }
 
     private String createNumberList(List<?> list) {
-        return list.stream().map(n -> String.valueOf(n)).collect(Collectors.joining(", ", "[", "]"));
+        return list.stream().map(String::valueOf).collect(Collectors.joining(", ", "[", "]"));
     }
 
     private String createStringList(List<?> list) {
-        return list.stream().map(n -> "\"" + String.valueOf(n) + "\"").collect(Collectors.joining(", ", "[", "]"));
+        return list.stream().map(n -> "\"" + n + "\"").collect(Collectors.joining(", ", "[", "]"));
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,8 +35,17 @@ public class BsbLanApiContentConverterTests {
 
     @Test
     public void parseBsbLanApiParameterQueryResponse() {
-        String content = "{\r\n" + "\"700\": {\r\n" + "\"name\": \"Betriebsart\",\r\n" + "\"value\": \"0\",\r\n"
-                + "\"unit\": \"\",\r\n" + "\"desc\": \"Schutzbetrieb\",\r\n" + "\"dataType\": 1\r\n" + "}\r\n" + "}";
+        String content = """
+                {
+                "700": {
+                "name": "Betriebsart",
+                "value": "0",
+                "unit": "",
+                "desc": "Schutzbetrieb",
+                "dataType": 1
+                }
+                }\
+                """;
 
         BsbLanApiParameterQueryResponseDTO r = BsbLanApiContentConverter.fromJson(content,
                 BsbLanApiParameterQueryResponseDTO.class);

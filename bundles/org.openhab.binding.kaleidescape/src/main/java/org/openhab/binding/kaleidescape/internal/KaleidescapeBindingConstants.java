@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,6 +78,7 @@ public class KaleidescapeBindingConstants {
     public static final String USER_DEFINED_EVENT = "ui#user_defined_event";
     public static final String USER_INPUT = "ui#user_input";
     public static final String USER_INPUT_PROMPT = "ui#user_input_prompt";
+    public static final String CHANNEL_TYPE_SENDCMD = "ui#sendcmd";
 
     public static final String MUSIC = "music#";
     public static final String MUSIC_CONTROL = "music#control";
@@ -126,11 +127,10 @@ public class KaleidescapeBindingConstants {
 
     // make a list of all allowed metatdata channels,
     // used to filter out what we don't want from the component
-    public static final Set<String> METADATA_CHANNELS = new HashSet<String>(
-            Arrays.asList(DETAIL_TITLE, DETAIL_ALBUM_TITLE, DETAIL_COVER_URL, DETAIL_HIRES_COVER_URL, DETAIL_RATING,
-                    DETAIL_YEAR, DETAIL_RUNNING_TIME, DETAIL_ACTORS, DETAIL_ARTIST, DETAIL_DIRECTORS, DETAIL_GENRES,
-                    DETAIL_RATING_REASON, DETAIL_SYNOPSIS, DETAIL_REVIEW, DETAIL_COLOR_DESCRIPTION, DETAIL_COUNTRY,
-                    DETAIL_ASPECT_RATIO, DETAIL_DISC_LOCATION));
+    public static final Set<String> METADATA_CHANNELS = new HashSet<>(Arrays.asList(DETAIL_TITLE, DETAIL_ALBUM_TITLE,
+            DETAIL_COVER_URL, DETAIL_HIRES_COVER_URL, DETAIL_RATING, DETAIL_YEAR, DETAIL_RUNNING_TIME, DETAIL_ACTORS,
+            DETAIL_ARTIST, DETAIL_DIRECTORS, DETAIL_GENRES, DETAIL_RATING_REASON, DETAIL_SYNOPSIS, DETAIL_REVIEW,
+            DETAIL_COLOR_DESCRIPTION, DETAIL_COUNTRY, DETAIL_ASPECT_RATIO, DETAIL_DISC_LOCATION));
 
     public static final String STANDBY_MSG = "Device is in standby";
     public static final String PROPERTY_COMPONENT_TYPE = "Component Type";
@@ -183,6 +183,7 @@ public class KaleidescapeBindingConstants {
     public static final String MUSIC_RANDOM_ON = "MUSIC_RANDOM_ON";
     public static final String MUSIC_RANDOM_OFF = "MUSIC_RANDOM_OFF";
 
+    public static final String SEND_TO_SYSLOG = "SEND_TO_SYSLOG:INFORMATION:";
     public static final String SEND_EVENT_VOLUME_CAPABILITIES_15 = "SEND_EVENT:VOLUME_CAPABILITIES=15";
     public static final String SEND_EVENT_VOLUME_LEVEL_EQ = "SEND_EVENT:VOLUME_LEVEL=";
     public static final String SEND_EVENT_MUTE = "SEND_EVENT:MUTE_";

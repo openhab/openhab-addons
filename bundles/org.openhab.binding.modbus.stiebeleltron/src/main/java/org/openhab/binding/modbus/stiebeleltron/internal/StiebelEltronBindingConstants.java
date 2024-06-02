@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import org.openhab.binding.modbus.ModbusBindingConstants;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link Modbus.StiebelEltronBindingConstants} class defines common
+ * The {@link StiebelEltronBindingConstants} class defines common
  * constants, which are used across the whole binding.
  *
  * @author Paul Frank - Initial contribution

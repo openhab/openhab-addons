@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,250 +12,145 @@
  */
 package org.openhab.binding.tapocontrol.internal.api;
 
+import static org.openhab.binding.tapocontrol.internal.TapoControlHandlerFactory.GSON;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
-import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
-import static org.openhab.binding.tapocontrol.internal.helpers.TapoUtils.jsonObjectToInt;
 
 import java.net.InetAddress;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tapocontrol.internal.device.TapoBridgeHandler;
-import org.openhab.binding.tapocontrol.internal.device.TapoDevice;
-import org.openhab.binding.tapocontrol.internal.helpers.PayloadBuilder;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolEnum;
+import org.openhab.binding.tapocontrol.internal.api.protocol.TapoProtocolInterface;
+import org.openhab.binding.tapocontrol.internal.api.protocol.aes.SecurePassthrough;
+import org.openhab.binding.tapocontrol.internal.api.protocol.klap.KlapProtocol;
+import org.openhab.binding.tapocontrol.internal.api.protocol.passthrough.PassthroughProtocol;
+import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
+import org.openhab.binding.tapocontrol.internal.devices.dto.TapoChildDeviceData;
+import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoBaseDeviceHandler;
+import org.openhab.binding.tapocontrol.internal.dto.TapoBaseRequestInterface;
+import org.openhab.binding.tapocontrol.internal.dto.TapoChildRequest;
+import org.openhab.binding.tapocontrol.internal.dto.TapoMultipleRequest;
+import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
+import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
-import org.openhab.binding.tapocontrol.internal.structures.TapoChild;
-import org.openhab.binding.tapocontrol.internal.structures.TapoChildData;
-import org.openhab.binding.tapocontrol.internal.structures.TapoDeviceInfo;
-import org.openhab.binding.tapocontrol.internal.structures.TapoEnergyData;
-import org.openhab.binding.tapocontrol.internal.structures.TapoSubRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 
 /**
- * Handler class for TAPO Smart Home device connections.
+ * Connection handler class for TAPO wifi devices.
  * This class uses asynchronous HttpClient-Requests
  *
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
-public class TapoDeviceConnector extends TapoDeviceHttpApi {
-
+public class TapoDeviceConnector implements TapoConnectorInterface {
     private final Logger logger = LoggerFactory.getLogger(TapoDeviceConnector.class);
-
-    private TapoDeviceInfo deviceInfo = new TapoDeviceInfo();
-    private TapoEnergyData energyData = new TapoEnergyData();
-    private TapoChildData childData = new TapoChildData();
+    private final TapoBaseDeviceHandler device;
+    private final TapoBridgeHandler bridge;
+    private final String uid;
+    private TapoProtocolInterface protocolHandler;
+    private TapoResponse queryResponse = new TapoResponse();
     private long lastQuery = 0L;
     private long lastSent = 0L;
     private long lastLogin = 0L;
+    private boolean queryAfterCommand = false;
 
-    /**
-     * INIT CLASS
-     *
-     * @param config TapoControlConfiguration class
-     */
-    public TapoDeviceConnector(TapoDevice device, TapoBridgeHandler bridgeThingHandler) {
-        super(device, bridgeThingHandler);
+    /***********************
+     * Init Class
+     **********************/
+
+    public TapoDeviceConnector(TapoBaseDeviceHandler tapoDeviceHandler, TapoBridgeHandler bridgeThingHandler) {
+        bridge = bridgeThingHandler;
+        device = tapoDeviceHandler;
+        uid = device.getThingUID().toString() + " / DeviceConnector";
+        protocolHandler = setProtocol(device.getDeviceConfig().protocol);
     }
 
-    /***********************************
-     *
+    /**
+     * Set DeviceProtocol which is used for communication
+     */
+    protected TapoProtocolInterface setProtocol(String protocol) {
+        switch (TapoProtocolEnum.valueOfString(protocol)) {
+            case PASSTHROUGH:
+                logger.trace("({}) selected passtrough-protocol '{}'", uid, protocol);
+                return new PassthroughProtocol(this);
+            case SECUREPASSTROUGH:
+                logger.trace("({}) selected secure-passtrough-protocol '{}'", uid, protocol);
+                return new SecurePassthrough(this);
+            case KLAP:
+                logger.trace("({}) selected klap-protocol '{}'", uid, protocol);
+                return new KlapProtocol(this);
+            default:
+                logger.debug("({}) unknown protocol '{}'", uid, protocol);
+                handleError(new TapoErrorHandler(NO_ERROR, protocol));
+                return new PassthroughProtocol(this);
+        }
+    }
+
+    /***********************
      * LOGIN FUNCTIONS
-     *
-     ************************************/
-    /**
-     * login
-     *
-     * @return true if success
-     */
+     **********************/
+
     public boolean login() {
-        if (this.pingDevice()) {
-            logger.trace("({}) sending login to url '{}'", uid, deviceURL);
-
+        if (pingDevice()) {
             long now = System.currentTimeMillis();
-            if (now > this.lastLogin + TAPO_LOGIN_MIN_GAP_MS) {
-                this.lastLogin = now;
-                unsetToken();
-                unsetCookie();
-
-                /* create ssl-handschake (cookie) */
-                String cookie = createHandshake();
-                if (!cookie.isBlank()) {
-                    setCookie(cookie);
-                    String token = queryToken();
-                    setToken(token);
+            if (now > lastLogin + TAPO_LOGIN_MIN_GAP_MS) {
+                lastLogin = now;
+                try {
+                    protocolHandler.login(bridge.getCredentials());
+                } catch (TapoErrorHandler tapoError) {
+                    logger.debug("({}) exception while login '{}'", uid, tapoError.toString());
+                    handleError(tapoError);
                 }
-            } else {
-                logger.trace("({}) not done cause of min_gap '{}'", uid, TAPO_LOGIN_MIN_GAP_MS);
             }
-            return this.loggedIn();
         } else {
-            logger.debug("({}) no ping while login '{}'", uid, this.ipAddress);
+            logger.debug("({}) no ping while login '{}'", uid, device.getIpAddress());
             handleError(new TapoErrorHandler(ERR_BINDING_DEVICE_OFFLINE, "no ping while login"));
-            return false;
         }
+        return protocolHandler.isLoggedIn();
     }
 
-    /***********************************
-     *
+    public void logout() {
+        protocolHandler.logout();
+    }
+
+    public boolean isLoggedIn() {
+        return protocolHandler.isLoggedIn();
+    }
+
+    /***********************
      * DEVICE ACTIONS
-     *
-     ************************************/
+     **********************/
 
     /**
-     * send custom command to device
-     *
-     * @param plBuilder Payloadbuilder with unencrypted payload
+     * Send raw (unsecured) request to device
      */
-    public void sendCustomQuery(String queryMethod) {
-        /* create payload */
-        PayloadBuilder plBuilder = new PayloadBuilder();
-        plBuilder.method = queryMethod;
-        sendCustomPayload(plBuilder);
-    }
-
-    /**
-     * send custom command to device
-     *
-     * @param plBuilder Payloadbuilder with unencrypted payload
-     */
-    public void sendCustomPayload(PayloadBuilder plBuilder) {
-        long now = System.currentTimeMillis();
-        if (now > this.lastSent + TAPO_SEND_MIN_GAP_MS) {
-            String payload = plBuilder.getPayload();
-            sendSecurePasstrhroug(payload, DEVICE_CMD_CUSTOM);
-        } else {
-            logger.debug("({}) command not sent becauso of min_gap: {}", uid, now + " <- " + lastSent);
+    public void sendRawCommand(TapoRequest request) {
+        try {
+            PassthroughProtocol passtrhough = new PassthroughProtocol(this);
+            passtrhough.sendAsyncRequest(request);
+        } catch (TapoErrorHandler tapoError) {
+            logger.debug("({}) send raw command failed '{}'", uid, tapoError.toString());
+            handleError(tapoError);
         }
     }
 
     /**
-     * send "set_device_info" command to device
+     * Send DeviceQueryCommand to Device
      *
-     * @param name Name of command to send
-     * @param value Value to send to control
+     * @param queryCommand Command to be queried
      */
-    public void sendDeviceCommand(String name, Object value) {
-        sendDeviceCommand(DEVICE_CMD_SETINFO, name, value);
-    }
-
-    /**
-     * send "set_device_info" command to device
-     *
-     * @param method Method command belongs to
-     * @param name Name of command to send
-     * @param value Value to send to control
-     */
-    public void sendDeviceCommand(String method, String name, Object value) {
-        long now = System.currentTimeMillis();
-        if (now > this.lastSent + TAPO_SEND_MIN_GAP_MS) {
-            this.lastSent = now;
-
-            /* create payload */
-            PayloadBuilder plBuilder = new PayloadBuilder();
-            plBuilder.method = method;
-            plBuilder.addParameter(name, value);
-            String payload = plBuilder.getPayload();
-
-            sendSecurePasstrhroug(payload, method);
-        } else {
-            logger.debug("({}) command not sent becauso of min_gap: {}", uid, now + " <- " + lastSent);
-        }
-    }
-
-    /**
-     * send "set_device_info" command to child's device
-     *
-     * @param index of the child
-     * @param childProperty to modify
-     * @param value for the property
-     */
-    public void sendChildCommand(Integer index, String childProperty, Object value) {
-        long now = System.currentTimeMillis();
-        if (now > this.lastSent + TAPO_SEND_MIN_GAP_MS) {
-            this.lastSent = now;
-            getChild(index).ifPresent(child -> {
-                child.setDeviceOn(Boolean.valueOf((Boolean) value));
-                TapoSubRequest request = new TapoSubRequest(child.getDeviceId(), DEVICE_CMD_SETINFO, child);
-                sendSecurePasstrhroug(GSON.toJson(request), request.method());
-            });
-        } else {
-            logger.debug("({}) command not sent because of min_gap: {}", uid, now + " <- " + lastSent);
-        }
-    }
-
-    /**
-     * send multiple "set_device_info" commands to device
-     *
-     * @param map HashMap<String, Object> (name, value of parameter)
-     */
-    public void sendDeviceCommands(HashMap<String, Object> map) {
-        sendDeviceCommands(DEVICE_CMD_SETINFO, map);
-    }
-
-    /**
-     * send multiple commands to device
-     *
-     * @param method Method command belongs to
-     * @param map HashMap<String, Object> (name, value of parameter)
-     */
-    public void sendDeviceCommands(String method, HashMap<String, Object> map) {
-        long now = System.currentTimeMillis();
-        if (now > this.lastSent + TAPO_SEND_MIN_GAP_MS) {
-            this.lastSent = now;
-
-            /* create payload */
-            PayloadBuilder plBuilder = new PayloadBuilder();
-            plBuilder.method = method;
-            for (HashMap.Entry<String, Object> entry : map.entrySet()) {
-                plBuilder.addParameter(entry.getKey(), entry.getValue());
-            }
-            String payload = plBuilder.getPayload();
-
-            sendSecurePasstrhroug(payload, method);
-        } else {
-            logger.debug("({}) command not sent becauso of min_gap: {}", uid, now + " <- " + lastSent);
-        }
-    }
-
-    /**
-     * Query Info from Device and refresh deviceInfo
-     */
-    public void queryInfo() {
-        queryInfo(false);
-    }
-
-    /**
-     * Query Info from Device and refresh deviceInfo
-     *
-     *
-     * @param ignoreGap ignore gap to last query. query anyway
-     */
-    public void queryInfo(boolean ignoreGap) {
-        logger.trace("({}) DeviceConnector_queryInfo from '{}'", uid, deviceURL);
-        queryCommand(DEVICE_CMD_GETINFO, ignoreGap);
-    }
-
-    /**
-     * Query Info from Child Devices and refresh deviceInfo
-     */
-    @Override
-    public void queryChildDevices() {
-        logger.trace("({}) DeviceConnector_queryChildDevices from '{}'", uid, deviceURL);
-        queryCommand(DEVICE_CMD_CHILD_DEVICE_LIST, true);
-    }
-
-    /**
-     * Get energy usage from device
-     */
-    public void getEnergyUsage() {
-        queryCommand(DEVICE_CMD_GETENERGY, true);
+    public void sendQueryCommand(String queryCommand) {
+        sendQueryCommand(queryCommand, false);
     }
 
     /**
@@ -264,197 +159,312 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
      * @param queryCommand Command to be queried
      * @param ignoreGap ignore gap to last query. query anyway
      */
-    public void queryCommand(String queryCommand, boolean ignoreGap) {
-        logger.trace("({}) DeviceConnector_queryCommand '{}' from '{}'", uid, queryCommand, deviceURL);
+    public void sendQueryCommand(String queryCommand, boolean ignoreGap) {
+        queryAfterCommand = false;
         long now = System.currentTimeMillis();
-        if (ignoreGap || now > this.lastQuery + TAPO_SEND_MIN_GAP_MS) {
-            this.lastQuery = now;
-
-            /* create payload */
-            PayloadBuilder plBuilder = new PayloadBuilder();
-            plBuilder.method = queryCommand;
-            String payload = plBuilder.getPayload();
-
-            sendSecurePasstrhroug(payload, queryCommand);
+        if (ignoreGap || now > lastQuery + TAPO_QUERY_MIN_GAP_MS) {
+            lastQuery = now;
+            sendAsyncRequest(new TapoRequest(queryCommand));
         } else {
-            logger.debug("({}) command not sent because of min_gap: {}", uid, now + " <- " + lastQuery);
+            logger.debug("({}) command not sent because of min_gap: {} <- {}", uid, now, lastQuery);
         }
     }
 
     /**
-     * SEND SECUREPASSTHROUGH
-     * encprypt payload and send to device
-     *
-     * @param payload payload sent to device
-     * @param command command executed - this will handle result
+     * Send "set_device_info" command to device and query info immediately
+     * 
+     * @param deviceDataClass clazz contains devicedata which should be sent
      */
-    protected void sendSecurePasstrhroug(String payload, String command) {
-        /* encrypt payload */
-        logger.trace("({}) encrypting payload '{}'", uid, payload);
-        String encryptedPayload = encryptPayload(payload);
-
-        /* create secured payload */
-        PayloadBuilder plBuilder = new PayloadBuilder();
-        plBuilder.method = "securePassthrough";
-        plBuilder.addParameter("request", encryptedPayload);
-        String securePassthroughPayload = plBuilder.getPayload();
-
-        sendAsyncRequest(deviceURL, securePassthroughPayload, command);
+    public void sendDeviceCommand(Object deviceDataClass) {
+        sendDeviceCommand(DEVICE_CMD_SETINFO, deviceDataClass);
     }
 
-    /***********************************
+    /**
+     * Send command to device with params and query info immediately
+     * 
+     * @param command command
+     * @param deviceDataClass clazz contains devicedata which should be sent
+     */
+    public void sendDeviceCommand(String command, Object deviceDataClass) {
+        sendDeviceCommand(command, deviceDataClass, false);
+    }
+
+    /**
+     * Send command to device with params
+     * 
+     * @param command command
+     * @param deviceDataClass clazz contains devicedata which should be sent
+     * @param ignoreGap ignore gap to last query. query anyway
+     */
+    public void sendDeviceCommand(String command, Object deviceDataClass, boolean ignoreGap) {
+        queryAfterCommand = false;
+        long now = System.currentTimeMillis();
+        if (ignoreGap || now > lastSent + TAPO_SEND_MIN_GAP_MS) {
+            sendAsyncRequest(new TapoRequest(command, deviceDataClass));
+        } else {
+            logger.debug("({}) command not sent because of min_gap: {} <- {}", uid, now, lastSent);
+        }
+    }
+
+    /**
+     * Send command to device with params and query info immediately
+     * 
+     * @param deviceDataClass clazz contains devicedata which should be sent
+     * @param multipleRequestSupported set to true if device supports multipleRequests
+     */
+    public void sendCommandAndQuery(Object deviceDataClass, boolean multipleRequestSupported) {
+        sendCommandAndQuery(DEVICE_CMD_SETINFO, deviceDataClass, multipleRequestSupported);
+    }
+
+    /**
+     * Send command to device with params and query info immediately
+     * 
+     * @param command command
+     * @param deviceDataClass clazz contains devicedata which should be sent
+     * @param multipleRequestSupported set to true if device supports multipleRequests
+     */
+    public void sendCommandAndQuery(String command, Object deviceDataClass, boolean multipleRequestSupported) {
+        if (multipleRequestSupported) {
+            List<TapoRequest> requests = new ArrayList<>();
+            requests.add(new TapoRequest(command, deviceDataClass));
+            requests.add(new TapoRequest(DEVICE_CMD_GETINFO));
+            sendAsyncRequest(new TapoMultipleRequest(requests));
+        } else {
+            sendDeviceCommand(command, deviceDataClass, true);
+            queryAfterCommand = true;
+        }
+    }
+
+    /**
+     * Send command to child device
+     * 
+     * @param childData ChildDeviceData-Class
+     */
+    public void sendChildCommand(TapoChildDeviceData childData) {
+        sendChildCommand(childData, false);
+    }
+
+    /**
+     * Send command to child device
+     * 
+     * @param childData ChildDeviceData-Class
+     * @param ignoreGap ignore gap to last query. query anyway
+     */
+    public void sendChildCommand(TapoChildDeviceData childData, boolean ignoreGap) {
+        long now = System.currentTimeMillis();
+        if (ignoreGap || now > lastSent + TAPO_SEND_MIN_GAP_MS) {
+            lastSent = now;
+            sendAsyncRequest(new TapoChildRequest(childData));
+        } else {
+            logger.debug("({}) command not sent because of min_gap: {} <- {}", uid, now, lastSent);
+        }
+    }
+
+    /**
+     * send asynchronous multi-request
      *
-     * HANDLE RESPONSES
-     *
-     ************************************/
+     * @param requests list of TapoRequests should be sent to device
+     */
+    public void sendMultipleRequest(List<TapoRequest> requests) {
+        sendMultipleRequest(requests, false);
+    }
+
+    /**
+     * send asynchronous multi-request igrnoring min-gap
+     * 
+     * @param requests list of TapoRequests should be sent to device
+     * @param ignoreGap ignoreGap ignore gap to last query. query anyway
+     */
+    public void sendMultipleRequest(List<TapoRequest> requests, boolean ignoreGap) {
+        queryAfterCommand = false;
+        long now = System.currentTimeMillis();
+        if (ignoreGap || now > lastQuery + TAPO_QUERY_MIN_GAP_MS) {
+            lastQuery = now;
+            sendAsyncRequest(new TapoMultipleRequest(requests));
+        } else {
+            logger.debug("({}) command not sent because of min_gap: {} <- {}", uid, now, lastSent);
+        }
+    }
+
+    /**
+     * send asynchron multi-request
+     * 
+     * @param requests array of TapoRequest
+     */
+    public void sendMultipleRequest(TapoRequest... requests) {
+        sendMultipleRequest(requests);
+    }
+
+    /**
+     * send asynchron request to protocol handler
+     * 
+     * @param tapoRequest Request inherits TapoBaseRequestInterface
+     */
+    public void sendAsyncRequest(TapoBaseRequestInterface tapoRequest) {
+        try {
+            protocolHandler.sendAsyncRequest(tapoRequest);
+        } catch (TapoErrorHandler tapoError) {
+            handleError(tapoError);
+        }
+    }
+
+    /***********************
+     * Response-Handling
+     **********************/
+
+    /**
+     * Return class object from json formated string
+     * 
+     * @param json json formatted string
+     * @param clazz class string should parsed to
+     */
+    private <T> T getObjectFromJson(String json, Class<T> clazz) {
+        try {
+            @Nullable
+            T result = GSON.fromJson(json, clazz);
+            if (result == null) {
+                throw new JsonParseException("result is null");
+            }
+            return result;
+        } catch (Exception e) {
+            logger.debug("({}) error parsing string {} to class: {}", uid, json, clazz.getName());
+            device.setError(new TapoErrorHandler(ERR_API_JSON_DECODE_FAIL));
+            return Objects.requireNonNull(GSON.fromJson(json, clazz));
+        }
+    }
+
+    /**
+     * Return class object from JsonObject
+     * 
+     * @param jso JsonOject
+     * @param clazz class string should parsed to
+     */
+    private <T> T getObjectFromJson(JsonObject jso, Class<T> clazz) {
+        return getObjectFromJson(jso.toString(), clazz);
+    }
+
+    /**
+     * handle and decrypt response from device
+     * 
+     * @param response TapoResponse was received
+     * @param command was sent to device belonging to response
+     */
+    @Override
+    public void handleResponse(TapoResponse response, String command) {
+        if (!response.hasError()) {
+            if (DEVICE_CMD_MULTIPLE_REQ.equals(command)) {
+                handleMultipleRespone(response);
+            } else {
+                handleSingleResponse(response, command);
+            }
+        } else {
+            device.setError(new TapoErrorHandler(response.errorCode()));
+        }
+    }
+
+    /**
+     * Handle response got from single-request
+     * 
+     * @param response response from request
+     * @param command command was sent
+     */
+    private void handleSingleResponse(TapoResponse response, String command) {
+        logger.trace("({}) handle singleResponse from command '{}'", uid, command);
+        if (DEVICE_CMDLIST_QUERY.contains(command)) {
+            handleQueryResult(response, command);
+        } else if (DEVICE_CMDLIST_SET.contains(command)) {
+            handleSuccessResponse(response);
+        } else {
+            device.responsePasstrough(response);
+        }
+    }
+
+    /**
+     * Handle response got from multiple-request
+     * 
+     * @param response response from request
+     */
+    private void handleMultipleRespone(TapoResponse response) {
+        logger.trace("({}) handle multipleResponse '{}'", uid, response);
+        for (TapoResponse results : response.responses()) {
+            handleSingleResponse(results, results.method());
+        }
+    }
+
+    /**
+     * Parse responsedata from result to object and inform device about new data
+     * 
+     * @param response response from request
+     * @param command command was sent
+     */
+    private void handleQueryResult(TapoResponse response, String command) {
+        if (!response.hasError()) {
+            logger.trace("({}) queryResponse successfull '{}'", uid, response);
+            queryResponse = response;
+            device.newDataResult(command);
+        } else {
+            logger.debug("({}) query response returned error: {}", uid, response);
+            device.setError(new TapoErrorHandler(queryResponse.errorCode()));
+        }
+    }
 
     /**
      * Handle SuccessResponse (setDeviceInfo)
-     *
-     * @param responseBody String with responseBody from device
+     * 
+     * @param response response from request
      */
-    @Override
-    protected void handleSuccessResponse(String responseBody) {
-        JsonObject jsnResult = getJsonFromResponse(responseBody);
-        Integer errorCode = jsonObjectToInt(jsnResult, "error_code", ERR_API_JSON_DECODE_FAIL.getCode());
-        if (errorCode != 0) {
-            logger.debug("({}) set deviceInfo not successful: {}", uid, jsnResult);
-            this.device.handleConnectionState();
-        }
-        this.device.responsePasstrough(responseBody);
-    }
-
-    /**
-     *
-     * handle JsonResponse (getDeviceInfo)
-     *
-     * @param responseBody String with responseBody from device
-     */
-    @Override
-    protected void handleDeviceResult(String responseBody) {
-        JsonObject jsnResult = getJsonFromResponse(responseBody);
-        if (jsnResult.has(JSON_KEY_ID)) {
-            this.deviceInfo = new TapoDeviceInfo(jsnResult);
-            this.device.setDeviceInfo(deviceInfo);
+    private void handleSuccessResponse(TapoResponse response) {
+        if (response.hasError()) {
+            logger.debug("({}) set deviceInfo not successful: {}", uid, response);
+            device.setError(new TapoErrorHandler(response.errorCode()));
         } else {
-            this.deviceInfo = new TapoDeviceInfo();
-            this.device.handleConnectionState();
+            logger.trace("({}) setcommand successfull '{}'", uid, response);
+            if (queryAfterCommand) {
+                sendQueryCommand(DEVICE_CMD_GETINFO, true);
+            }
         }
-        this.device.responsePasstrough(responseBody);
+        queryAfterCommand = false;
+        this.device.responsePasstrough(response);
     }
 
     /**
-     * handle JsonResponse (getEnergyData)
+     * Handle custom response
      *
-     * @param responseBody String with responseBody from device
+     * @param response response from request
      */
-    @Override
-    protected void handleEnergyResult(String responseBody) {
-        JsonObject jsnResult = getJsonFromResponse(responseBody);
-        if (jsnResult.has(JSON_KEY_ENERGY_POWER)) {
-            this.energyData = new TapoEnergyData(jsnResult);
-            this.device.setEnergyData(energyData);
-        } else {
-            this.energyData = new TapoEnergyData();
-        }
-        this.device.responsePasstrough(responseBody);
-    }
-
-    /**
-     * handle JsonResponse (getChildDeviceList)
-     *
-     * @param responseBody String with responseBody from device
-     */
-    @Override
-    protected void handleChildDevices(String responseBody) {
-        JsonObject jsnResult = getJsonFromResponse(responseBody);
-        if (jsnResult.has(JSON_KEY_CHILD_START_INDEX)) {
-            this.childData = Objects.requireNonNull(GSON.fromJson(jsnResult, TapoChildData.class));
-            this.device.setChildData(childData);
-        } else {
-            this.childData = new TapoChildData();
-        }
-        this.device.responsePasstrough(responseBody);
-    }
-
-    /**
-     * handle custom response
-     *
-     * @param responseBody String with responseBody from device
-     */
-    @Override
-    protected void handleCustomResponse(String responseBody) {
-        this.device.responsePasstrough(responseBody);
+    protected void handleCustomResponse(TapoResponse response) {
+        logger.trace("({}) handle custom response '{}'", uid, response);
+        this.device.responsePasstrough(response);
     }
 
     /**
      * handle error
-     *
-     * @param te TapoErrorHandler
      */
     @Override
-    protected void handleError(TapoErrorHandler tapoError) {
-        this.device.setError(tapoError);
+    public void handleError(TapoErrorHandler tapoError) {
+        logger.debug("({}) handle error '{}'", uid, tapoError.getMessage());
+        device.setError(tapoError);
     }
 
-    /**
-     * get Json from response
-     *
-     * @param responseBody
-     * @return JsonObject with result
-     */
-    private JsonObject getJsonFromResponse(String responseBody) {
-        JsonObject jsonObject = GSON.fromJson(responseBody, JsonObject.class);
-        /* get errocode (0=success) */
-        if (jsonObject != null) {
-            Integer errorCode = jsonObjectToInt(jsonObject, "error_code");
-            if (errorCode == 0) {
-                /* decrypt response */
-                jsonObject = GSON.fromJson(responseBody, JsonObject.class);
-                logger.trace("({}) received result: {}", uid, responseBody);
-                if (jsonObject != null) {
-                    /* return result if set / else request was successful */
-                    if (jsonObject.has("result")) {
-                        return jsonObject.getAsJsonObject("result");
-                    } else {
-                        return jsonObject;
-                    }
-                }
-            } else {
-                /* return errorcode from device */
-                TapoErrorHandler te = new TapoErrorHandler(errorCode, "device answers with errorcode");
-                logger.debug("({}) device answers with errorcode {} - {}", uid, errorCode, te.getMessage());
-                handleError(te);
-                return jsonObject;
-            }
-        }
-        logger.debug("({}) sendPayload exception {}", uid, responseBody);
-        handleError(new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE));
-        return new JsonObject();
-    }
-
-    /***********************************
-     *
-     * GET RESULTS
-     *
-     ************************************/
+    /***********************
+     * Get Values
+     **********************/
 
     /**
      * Check if device is online
      *
      * @return true if device is online
      */
-    public Boolean isOnline() {
+    public boolean isOnline() {
         return isOnline(false);
     }
 
     /**
      * Check if device is online
      *
-     * @param raiseError if true
-     * @return true if device is online
+     * @param raiseError if true - if false it will be only logout();
      */
-    public Boolean isOnline(Boolean raiseError) {
+    public boolean isOnline(boolean raiseError) {
         if (pingDevice()) {
             return true;
         } else {
@@ -462,28 +472,26 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
             if (raiseError) {
                 handleError(new TapoErrorHandler(ERR_BINDING_DEVICE_OFFLINE));
             }
-            logout();
+            protocolHandler.logout();
             return false;
         }
     }
 
     /**
-     * IP-Adress
-     *
-     * @return String ipAdress
+     * Get Dataobject from response
+     * 
+     * @param clazz object class response should be transformed
      */
-    public String getIP() {
-        return this.ipAddress;
+    public <T> T getResponseData(Class<T> clazz) {
+        return getObjectFromJson(queryResponse.result(), clazz);
     }
 
     /**
-     * PING IP Adress
-     *
-     * @return true if ping successfull
+     * Ping to IP of device - return true if successfull
      */
-    public Boolean pingDevice() {
+    public boolean pingDevice() {
         try {
-            InetAddress address = InetAddress.getByName(this.ipAddress);
+            InetAddress address = InetAddress.getByName(device.getIpAddress());
             return address.isReachable(TAPO_PING_TIMEOUT_MS);
         } catch (Exception e) {
             logger.debug("({}) InetAdress throws: {}", uid, e.getMessage());
@@ -491,7 +499,23 @@ public class TapoDeviceConnector extends TapoDeviceHttpApi {
         }
     }
 
-    private Optional<TapoChild> getChild(int position) {
-        return childData.getChildDeviceList().stream().filter(child -> child.getPosition() == position).findFirst();
+    @Override
+    public HttpClient getHttpClient() {
+        return bridge.getHttpClient();
+    }
+
+    @Override
+    public void responsePasstrough(String response, String command) {
+        throw new UnsupportedOperationException("Unimplemented method 'responsePasstrough'");
+    }
+
+    @Override
+    public String getBaseUrl() {
+        return device.getIpAddress() + ":" + device.getDeviceConfig().httpPort;
+    }
+
+    @Override
+    public String getThingUID() {
+        return device.getThingUID().toString();
     }
 }

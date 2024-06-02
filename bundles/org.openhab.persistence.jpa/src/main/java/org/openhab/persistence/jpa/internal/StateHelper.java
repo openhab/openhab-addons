@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,14 +36,13 @@ public class StateHelper {
      * @return state converted as string
      */
     public static String toString(State state) {
-        if (state instanceof DateTimeType) {
-            return String.valueOf(((DateTimeType) state).getZonedDateTime().toInstant().toEpochMilli());
+        if (state instanceof DateTimeType type) {
+            return String.valueOf(type.getZonedDateTime().toInstant().toEpochMilli());
         }
-        if (state instanceof DecimalType) {
-            return String.valueOf(((DecimalType) state).doubleValue());
+        if (state instanceof DecimalType type) {
+            return String.valueOf(type.doubleValue());
         }
-        if (state instanceof PointType) {
-            PointType pType = (PointType) state;
+        if (state instanceof PointType pType) {
             return String.format(Locale.ENGLISH, "%f;%f;%f", pType.getLatitude().doubleValue(),
                     pType.getLongitude().doubleValue(), pType.getAltitude().doubleValue());
         }

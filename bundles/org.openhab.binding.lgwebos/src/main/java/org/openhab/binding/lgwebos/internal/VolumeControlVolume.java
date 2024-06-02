@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,12 +49,12 @@ public class VolumeControlVolume extends BaseChannelHandler<Float> {
             handler.getSocket().getVolume(createResponseListener(channelId, handler));
             return;
         }
-        if (command instanceof PercentType) {
-            percent = (PercentType) command;
-        } else if (command instanceof DecimalType) {
-            percent = new PercentType(((DecimalType) command).toBigDecimal());
-        } else if (command instanceof StringType) {
-            percent = new PercentType(((StringType) command).toString());
+        if (command instanceof PercentType percentCommand) {
+            percent = percentCommand;
+        } else if (command instanceof DecimalType decimalCommand) {
+            percent = new PercentType(decimalCommand.toBigDecimal());
+        } else if (command instanceof StringType stringCommand) {
+            percent = new PercentType(stringCommand.toString());
         } else {
             percent = null;
         }
@@ -79,7 +79,7 @@ public class VolumeControlVolume extends BaseChannelHandler<Float> {
     }
 
     private ResponseListener<Float> createResponseListener(String channelUID, LGWebOSHandler handler) {
-        return new ResponseListener<Float>() {
+        return new ResponseListener<>() {
 
             @Override
             public void onError(@Nullable String error) {

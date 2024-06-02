@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.max.internal.command;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link N_CubeCommand} starts the inclusion mode for new MAX! devices.
+ * The {@link NCommand} starts the inclusion mode for new MAX! devices.
  *
  * @author Marcel Verpaalen - Initial Contribution
  */

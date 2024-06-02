@@ -333,7 +333,7 @@
 		</parameter>
 		<parameter name="counter1PulseMultiplier" type="decimal">
 			<label>Counter 1 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 1</description>
+			<description>The pulse multiplier for counter 1.</description>
 			<default>1</default>
 			<options>
 				<option value="1">x1</option>
@@ -356,7 +356,7 @@
 		</parameter>
 		<parameter name="counter2PulseMultiplier" type="decimal">
 			<label>Counter 2 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 2</description>
+			<description>The pulse multiplier for counter 2.</description>
 			<default>1</default>
 			<options>
 				<option value="1">x1</option>
@@ -379,7 +379,7 @@
 		</parameter>
 		<parameter name="counter3PulseMultiplier" type="decimal">
 			<label>Counter 3 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 3</description>
+			<description>The pulse multiplier for counter 3.</description>
 			<default>1</default>
 			<options>
 				<option value="1">x1</option>
@@ -402,7 +402,7 @@
 		</parameter>
 		<parameter name="counter4PulseMultiplier" type="decimal">
 			<label>Counter 4 Pulse Multiplier</label>
-			<description>The pulse multiplier for counter 4</description>
+			<description>The pulse multiplier for counter 4.</description>
 			<default>1</default>
 			<options>
 				<option value="1">x1</option>
@@ -529,6 +529,12 @@
 		<parameter name="address" type="text" required="true">
 			<label>Address</label>
 			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="subaddress1" type="text" required="true">
+			<label>Channel CH9 Address</label>
+			<description>The velbus sub-address of the device (FF = disabled). In the VelbusLink application it's identified by
+				Sensor or Thermostat.</description>
+			<default>FF</default>
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
 			<label>Refresh Interval</label>
@@ -689,6 +695,30 @@
 		<parameter name="address" type="text" required="true">
 			<label>Address</label>
 			<description>The velbus address of the device</description>
+		</parameter>
+		<parameter name="subaddress1" type="text" required="true">
+			<label>Channel CH9..CH16 Address</label>
+			<description>The velbus sub-address 1 of the device (FF = disabled). In the VelbusLink application it's identified by
+				Page 3-4 or Pushbuttons 9-16.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress2" type="text" required="true">
+			<label>Channel CH17..CH24 Address</label>
+			<description>The velbus sub-address 2 of the device (FF = disabled). In the VelbusLink application it's identified by
+				Page 5-6 or Pushbuttons 17-24.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress3" type="text" required="true">
+			<label>Channel CH25..CH32 Address</label>
+			<description>The velbus sub-address 3 of the device (FF = disabled). In the VelbusLink application it's identified by
+				Page 7-8 or Pushbuttons 25-32.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress4" type="text" required="true">
+			<label>Channel CH33 Address</label>
+			<description>The velbus sub-address 4 of the device (FF = disabled). In the VelbusLink application it's identified by
+				Sensor or Thermostat.</description>
+			<default>FF</default>
 		</parameter>
 		<parameter name="refresh" type="integer" unit="s">
 			<label>Refresh Interval</label>
@@ -896,4 +926,688 @@
 			<advanced>true</advanced>
 		</parameter>
 	</config-description>
+
+	<config-description uri="thing-type:velbus:81channelDevice">
+		<parameter name="address" type="text" required="true">
+			<label>Address</label>
+			<description>The velbus address of the device. In the VelbusLink application it's identified by DALI Address A0..A7
+				or Channel CH1..CH8.</description>
+		</parameter>
+		<parameter name="subaddress1" type="text" required="true">
+			<label>Channel CH9..CH16 Address</label>
+			<description>The velbus sub-address 1 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A8..A15 or Channel CH9..CH16.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress2" type="text" required="true">
+			<label>Channel CH17..CH24 Address</label>
+			<description>The velbus sub-address 2 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A16..A23 or Channel CH17..CH24.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress3" type="text" required="true">
+			<label>Channel CH25..CH32 Address</label>
+			<description>The velbus sub-address 3 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A24..A31 or Channel CH25..CH32.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress4" type="text" required="true">
+			<label>Channel CH33..CH40 Address</label>
+			<description>The velbus sub-address 4 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A32..A39 or Channel CH33..CH40.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress5" type="text" required="true">
+			<label>Channel CH41..CH48 Address</label>
+			<description>The velbus sub-address 5 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A40..A47 or Channel CH41..CH48.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress6" type="text" required="true">
+			<label>Channel CH49..CH56 Address</label>
+			<description>The velbus sub-address 6 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A48..A55 or Channel CH49..CH56.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress7" type="text" required="true">
+			<label>Channel CH57..CH64 Address</label>
+			<description>The velbus sub-address 7 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Address A56..A63 or Channel CH57..CH64.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress8" type="text" required="true">
+			<label>Channel CH65..CH72 Address</label>
+			<description>The velbus sub-address 8 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Group G0..G7 or Channel CH65..CH72.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="subaddress9" type="text" required="true">
+			<label>Channel CH73..CH80 Address</label>
+			<description>The velbus sub-address 9 of the device (FF = disabled). In the VelbusLink application it's identified by
+				DALI Group G8..G15 or Channel CH73..CH80.</description>
+			<default>FF</default>
+		</parameter>
+		<parameter name="refresh" type="integer" unit="s">
+			<label>Refresh Interval</label>
+			<description>Refresh interval for the temperature sensor (in seconds), default 300. If set to 0 or left empty, no
+				refresh will be scheduled.</description>
+			<default>300</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH1" type="text">
+			<label>CH1 Name</label>
+			<description>The name of CH1.</description>
+			<default>A0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH2" type="text">
+			<label>CH2 Name</label>
+			<description>The name of CH2.</description>
+			<default>A1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH3" type="text">
+			<label>CH3 Name</label>
+			<description>The name of CH3.</description>
+			<default>A2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH4" type="text">
+			<label>A3 Name</label>
+			<description>The name of CH4.</description>
+			<default>CH4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH5" type="text">
+			<label>CH5 Name</label>
+			<description>The name of CH5.</description>
+			<default>A4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH6" type="text">
+			<label>CH6 Name</label>
+			<description>The name of CH6.</description>
+			<default>A5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH7" type="text">
+			<label>CH7 Name</label>
+			<description>The name of CH7.</description>
+			<default>A6</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH8" type="text">
+			<label>CH8 Name</label>
+			<description>The name of CH8.</description>
+			<default>A7</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH9" type="text">
+			<label>CH9 Name</label>
+			<description>The name of CH9.</description>
+			<default>A8</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH10" type="text">
+			<label>CH10 Name</label>
+			<description>The name of CH10.</description>
+			<default>A9</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH11" type="text">
+			<label>CH11 Name</label>
+			<description>The name of CH11.</description>
+			<default>A10</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH12" type="text">
+			<label>CH12 Name</label>
+			<description>The name of CH12.</description>
+			<default>A11</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH13" type="text">
+			<label>CH13 Name</label>
+			<description>The name of CH13.</description>
+			<default>A12</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH14" type="text">
+			<label>CH14 Name</label>
+			<description>The name of CH14.</description>
+			<default>A13</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH15" type="text">
+			<label>CH15 Name</label>
+			<description>The name of CH15.</description>
+			<default>A14</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH16" type="text">
+			<label>CH16 Name</label>
+			<description>The name of CH16.</description>
+			<default>A15</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH17" type="text">
+			<label>CH17 Name</label>
+			<description>The name of CH17.</description>
+			<default>A16</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH18" type="text">
+			<label>CH18 Name</label>
+			<description>The name of CH18.</description>
+			<default>A17</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH19" type="text">
+			<label>CH19 Name</label>
+			<description>The name of CH19.</description>
+			<default>A18</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH20" type="text">
+			<label>CH20 Name</label>
+			<description>The name of CH20.</description>
+			<default>A19</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH21" type="text">
+			<label>CH21 Name</label>
+			<description>The name of CH21.</description>
+			<default>A20</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH22" type="text">
+			<label>CH22 Name</label>
+			<description>The name of CH22.</description>
+			<default>A21</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH23" type="text">
+			<label>CH23 Name</label>
+			<description>The name of CH23.</description>
+			<default>A22</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH24" type="text">
+			<label>CH24 Name</label>
+			<description>The name of CH24.</description>
+			<default>A23</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH25" type="text">
+			<label>CH25 Name</label>
+			<description>The name of CH25.</description>
+			<default>A24</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH26" type="text">
+			<label>CH26 Name</label>
+			<description>The name of CH26.</description>
+			<default>A25</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH27" type="text">
+			<label>CH27 Name</label>
+			<description>The name of CH27.</description>
+			<default>A26</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH28" type="text">
+			<label>CH28 Name</label>
+			<description>The name of CH28.</description>
+			<default>A27</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH29" type="text">
+			<label>CH29 Name</label>
+			<description>The name of CH29.</description>
+			<default>A28</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH30" type="text">
+			<label>CH30 Name</label>
+			<description>The name of CH30.</description>
+			<default>A29</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH31" type="text">
+			<label>CH31 Name</label>
+			<description>The name of CH31.</description>
+			<default>A30</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH32" type="text">
+			<label>CH32 Name</label>
+			<description>The name of CH32.</description>
+			<default>A31</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH33" type="text">
+			<label>CH33 Name</label>
+			<description>The name of CH33.</description>
+			<default>A32</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH34" type="text">
+			<label>CH34 Name</label>
+			<description>The name of CH34.</description>
+			<default>A33</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH35" type="text">
+			<label>CH35 Name</label>
+			<description>The name of CH35.</description>
+			<default>A34</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH36" type="text">
+			<label>CH36 Name</label>
+			<description>The name of CH36.</description>
+			<default>A35</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH37" type="text">
+			<label>CH37 Name</label>
+			<description>The name of CH37.</description>
+			<default>A36</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH38" type="text">
+			<label>CH38 Name</label>
+			<description>The name of CH38.</description>
+			<default>A37</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH39" type="text">
+			<label>CH39 Name</label>
+			<description>The name of CH39.</description>
+			<default>A38</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH40" type="text">
+			<label>CH40 Name</label>
+			<description>The name of CH40.</description>
+			<default>A39</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH41" type="text">
+			<label>CH41 Name</label>
+			<description>The name of CH41.</description>
+			<default>A40</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH42" type="text">
+			<label>CH42 Name</label>
+			<description>The name of CH42.</description>
+			<default>A41</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH43" type="text">
+			<label>CH43 Name</label>
+			<description>The name of CH43.</description>
+			<default>A42</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH44" type="text">
+			<label>CH44 Name</label>
+			<description>The name of CH44.</description>
+			<default>A43</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH45" type="text">
+			<label>CH45 Name</label>
+			<description>The name of CH45.</description>
+			<default>A44</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH46" type="text">
+			<label>CH46 Name</label>
+			<description>The name of CH46.</description>
+			<default>A45</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH47" type="text">
+			<label>CH47 Name</label>
+			<description>The name of CH47.</description>
+			<default>A46</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH48" type="text">
+			<label>CH48 Name</label>
+			<description>The name of CH48.</description>
+			<default>A47</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH49" type="text">
+			<label>CH49 Name</label>
+			<description>The name of CH49.</description>
+			<default>A48</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH50" type="text">
+			<label>CH50 Name</label>
+			<description>The name of CH50.</description>
+			<default>A39</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH51" type="text">
+			<label>CH51 Name</label>
+			<description>The name of CH51.</description>
+			<default>A50</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH52" type="text">
+			<label>CH52 Name</label>
+			<description>The name of CH52.</description>
+			<default>A51</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH53" type="text">
+			<label>CH53 Name</label>
+			<description>The name of CH53.</description>
+			<default>A52</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH54" type="text">
+			<label>CH54 Name</label>
+			<description>The name of CH54.</description>
+			<default>A53</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH55" type="text">
+			<label>CH55 Name</label>
+			<description>The name of CH55.</description>
+			<default>A54</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH56" type="text">
+			<label>CH56 Name</label>
+			<description>The name of CH56.</description>
+			<default>A55</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH57" type="text">
+			<label>CH57 Name</label>
+			<description>The name of CH57.</description>
+			<default>A56</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH58" type="text">
+			<label>CH58 Name</label>
+			<description>The name of CH58.</description>
+			<default>A57</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH59" type="text">
+			<label>CH59 Name</label>
+			<description>The name of CH59.</description>
+			<default>A58</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH60" type="text">
+			<label>CH60 Name</label>
+			<description>The name of CH60.</description>
+			<default>A59</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH61" type="text">
+			<label>CH61 Name</label>
+			<description>The name of CH61.</description>
+			<default>A60</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH62" type="text">
+			<label>CH62 Name</label>
+			<description>The name of CH62.</description>
+			<default>A61</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH63" type="text">
+			<label>CH63 Name</label>
+			<description>The name of CH63.</description>
+			<default>A62</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH64" type="text">
+			<label>CH64 Name</label>
+			<description>The name of CH64.</description>
+			<default>A63</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH65" type="text">
+			<label>CH65 Name</label>
+			<description>The name of CH65.</description>
+			<default>G0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH66" type="text">
+			<label>CH66 Name</label>
+			<description>The name of CH66.</description>
+			<default>G1</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH67" type="text">
+			<label>CH67 Name</label>
+			<description>The name of CH67.</description>
+			<default>G2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH68" type="text">
+			<label>CH68 Name</label>
+			<description>The name of CH68.</description>
+			<default>G3</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH69" type="text">
+			<label>CH69 Name</label>
+			<description>The name of CH69.</description>
+			<default>G4</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH70" type="text">
+			<label>CH70 Name</label>
+			<description>The name of CH70.</description>
+			<default>G5</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH71" type="text">
+			<label>CH71 Name</label>
+			<description>The name of CH71.</description>
+			<default>G6</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH72" type="text">
+			<label>CH72 Name</label>
+			<description>The name of CH72.</description>
+			<default>G7</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH73" type="text">
+			<label>CH73 Name</label>
+			<description>The name of CH73.</description>
+			<default>G8</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH74" type="text">
+			<label>CH74 Name</label>
+			<description>The name of CH74.</description>
+			<default>G9</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH75" type="text">
+			<label>CH75 Name</label>
+			<description>The name of CH75.</description>
+			<default>G10</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH76" type="text">
+			<label>CH76 Name</label>
+			<description>The name of CH76.</description>
+			<default>G11</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH77" type="text">
+			<label>CH77 Name</label>
+			<description>The name of CH77.</description>
+			<default>G12</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH78" type="text">
+			<label>CH78 Name</label>
+			<description>The name of CH78.</description>
+			<default>G13</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH79" type="text">
+			<label>CH79 Name</label>
+			<description>The name of CH79.</description>
+			<default>G14</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH80" type="text">
+			<label>CH80 Name</label>
+			<description>The name of CH80.</description>
+			<default>G15</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="CH81" type="text">
+			<label>CH81 Name</label>
+			<description>The name of CH81.</description>
+			<default>Broadcast</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL1" type="text">
+			<label>Virtual Light 1</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH1,CH2,CH3,CH4)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL2" type="text">
+			<label>Virtual Light 2</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH5,CH6,CH7,CH8)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL3" type="text">
+			<label>Virtual Light 3</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH9,CH10,CH11,CH12)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL4" type="text">
+			<label>Virtual Light 4</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH13,CH14,CH15,CH16)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL5" type="text">
+			<label>Virtual Light 5</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH17,CH18,CH19,CH20)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL6" type="text">
+			<label>Virtual Light 6</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH21,CH22,CH23,CH24)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL7" type="text">
+			<label>Virtual Light 7</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH25,CH26,CH27,CH28)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL8" type="text">
+			<label>Virtual Light 8</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH29,CH30,CH31,CH32)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL9" type="text">
+			<label>Virtual Light 9</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH33,CH34,CH35,CH36)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL10" type="text">
+			<label>Virtual Light 10</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH37,CH38,CH39,CH40)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL11" type="text">
+			<label>Virtual Light 11</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH41,CH42,CH43,CH44)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL12" type="text">
+			<label>Virtual Light 12</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH45,CH46,CH47,CH48)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL13" type="text">
+			<label>Virtual Light 13</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH49,CH50,CH51,CH52)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL14" type="text">
+			<label>Virtual Light 14</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH53,CH54,CH55,CH56)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL15" type="text">
+			<label>Virtual Light 15</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH57,CH58,CH59,CH60)</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="VL16" type="text">
+			<label>Virtual Light 16</label>
+			<description>Create a virtual color light from 3 or 4 channels. Format:
+				Red_channel,Green_channel,Blue_channel,White_channel. White_channel is optionnal. From CH1 to
+				CH64. (e.g.
+				CH61,CH62,CH63,CH64)</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
 </config-description:config-descriptions>

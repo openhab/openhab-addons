@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 import static org.openhab.binding.mielecloud.internal.util.MieleCloudBindingIntegrationTestConstants.*;
 import static org.openhab.binding.mielecloud.internal.util.ReflectionUtil.*;
 
-import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -117,9 +117,8 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
         Bridge bridge = BridgeBuilder
                 .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
                         MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
-                .withConfiguration(
-                        new Configuration(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
-                                MieleCloudBindingIntegrationTestConstants.EMAIL)))
+                .withConfiguration(new Configuration(Map.of(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
+                        MieleCloudBindingIntegrationTestConstants.EMAIL)))
                 .withLabel(MIELE_CLOUD_ACCOUNT_LABEL).build();
         assertNotNull(bridge);
 
@@ -141,9 +140,8 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
         Bridge bridge = BridgeBuilder
                 .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
                         MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
-                .withConfiguration(
-                        new Configuration(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
-                                MieleCloudBindingIntegrationTestConstants.EMAIL)))
+                .withConfiguration(new Configuration(Map.of(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
+                        MieleCloudBindingIntegrationTestConstants.EMAIL)))
                 .withLabel(MIELE_CLOUD_ACCOUNT_LABEL).build();
         assertNotNull(bridge);
 
@@ -194,8 +192,8 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
 
         // when:
         Thing device = ThingBuilder.create(thingTypeUid, thingUid)
-                .withConfiguration(new Configuration(Collections
-                        .singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, DEVICE_IDENTIFIER)))
+                .withConfiguration(new Configuration(
+                        Map.of(MieleCloudBindingConstants.CONFIG_PARAM_DEVICE_IDENTIFIER, DEVICE_IDENTIFIER)))
                 .withLabel(label).withProperty("thingTypeVersion", thingTypeVersion).build();
 
         assertNotNull(device);
@@ -208,9 +206,8 @@ public class MieleHandlerFactoryTest extends JavaOSGiTest {
         Bridge bridge = BridgeBuilder
                 .create(MieleCloudBindingConstants.THING_TYPE_BRIDGE,
                         MieleCloudBindingIntegrationTestConstants.BRIDGE_THING_UID)
-                .withConfiguration(
-                        new Configuration(Collections.singletonMap(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
-                                MieleCloudBindingIntegrationTestConstants.EMAIL)))
+                .withConfiguration(new Configuration(Map.of(MieleCloudBindingConstants.CONFIG_PARAM_EMAIL,
+                        MieleCloudBindingIntegrationTestConstants.EMAIL)))
                 .withLabel(MIELE_CLOUD_ACCOUNT_LABEL).build();
         assertNotNull(bridge);
 

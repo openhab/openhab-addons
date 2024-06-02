@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -242,7 +242,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     @Override
     public VeluxBridgeConfiguration veluxBridgeConfiguration() {
         return veluxBridgeConfiguration;
-    };
+    }
 
     /**
      * Information retrieved by {@link VeluxBridgeActuators#getProducts}
@@ -250,7 +250,7 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     @Override
     public VeluxExistingProducts existingProducts() {
         return bridgeParameters.actuators.getChannel().existingProducts;
-    };
+    }
 
     /**
      * Information retrieved by {@link VeluxBridgeScenes#getScenes}
@@ -914,7 +914,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
      * Exported method (called by an OpenHAB Rules Action) to move an actuator relative to its current position
      *
      * @param nodeId the node to be moved
-     * @param relativePercent relative position change to the current position (-100% <= relativePercent <= +100%)
+     * @param relativePercent relative position change to the current position
+     *            ({@code -100% <= relativePercent <= +100%})
      * @return true if the command could be issued
      */
     public boolean moveRelative(int nodeId, int relativePercent) {
@@ -1029,8 +1030,8 @@ public class VeluxBridgeHandler extends ExtendedBaseBridgeHandler implements Vel
     private void updateDynamicChannels() {
         getThing().getThings().stream().forEach(thing -> {
             ThingHandler thingHandler = thing.getHandler();
-            if (thingHandler instanceof VeluxHandler) {
-                ((VeluxHandler) thingHandler).updateDynamicChannels(this);
+            if (thingHandler instanceof VeluxHandler veluxHandler) {
+                veluxHandler.updateDynamicChannels(this);
             }
         });
     }

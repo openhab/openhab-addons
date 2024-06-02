@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -96,7 +96,7 @@ public class KonnectedHTTPUtils {
      *
      * @param urlAddress the address to send the request
      * @param payload the json payload you want to send as part of the request, may be null.
-     * @param retry the number of retries before throwing the IOexpcetion back to the handler
+     * @param retryCount the number of retries before throwing the IOexpcetion back to the handler
      */
     public synchronized String doGet(String urlAddress, String payload, int retryCount)
             throws KonnectedHttpRetryExceeded {
@@ -126,7 +126,7 @@ public class KonnectedHTTPUtils {
      *
      * @param urlAddress the address to send the request
      * @param payload the json payload you want to send as part of the request
-     * @param retry the number of retries before throwing the IOexpcetion back to the handler
+     * @param retryCount the number of retries before throwing the IOexpcetion back to the handler
      */
     public synchronized String doPut(String urlAddress, String payload, int retryCount)
             throws KonnectedHttpRetryExceeded {

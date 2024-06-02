@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,8 +71,8 @@ public abstract class BsbLanBaseThingHandler extends BaseThingHandler {
                 return null;
             }
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof BsbLanBridgeHandler) {
-                this.bridgeHandler = (BsbLanBridgeHandler) handler;
+            if (handler instanceof BsbLanBridgeHandler lanBridgeHandler) {
+                this.bridgeHandler = lanBridgeHandler;
             }
         }
         return this.bridgeHandler;

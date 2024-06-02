@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.samsungtv.internal.protocol;
 
-import java.util.List;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -21,6 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * The {@link RemoteController} is the base class for handling remote control keys for the Samsung TV.
  *
  * @author Arjan Mels - Initial contribution
+ * @author Nick Waterton - added getArtmodeStatus(), sendKeyPress()
  */
 @NonNullByDefault
 public abstract class RemoteController implements AutoCloseable {
@@ -40,9 +39,23 @@ public abstract class RemoteController implements AutoCloseable {
 
     public abstract boolean isConnected();
 
-    public abstract void sendKey(KeyCode key) throws RemoteControllerException;
+    public abstract void sendUrl(String command);
 
-    public abstract void sendKeys(List<KeyCode> keys) throws RemoteControllerException;
+    public abstract void sendSourceApp(String command);
+
+    public abstract boolean closeApp();
+
+    public abstract void getAppStatus(String id);
+
+    public abstract void updateCurrentApp();
+
+    public abstract boolean noApps();
+
+    public abstract void sendKeyPress(KeyCode key, int duration);
+
+    public abstract void sendKey(Object key);
+
+    public abstract void getArtmodeStatus(String... optionalRequests);
 
     @Override
     public abstract void close() throws RemoteControllerException;

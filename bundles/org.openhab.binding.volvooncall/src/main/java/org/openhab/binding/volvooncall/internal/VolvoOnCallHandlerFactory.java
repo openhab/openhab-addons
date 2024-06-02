@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,8 +70,8 @@ public class VolvoOnCallHandlerFactory extends BaseThingHandlerFactory {
                                 jsonDeserializationContext) -> json.getAsBoolean() ? OpenClosedType.OPEN
                                         : OpenClosedType.CLOSED)
                 .registerTypeAdapter(OnOffType.class,
-                        (JsonDeserializer<OnOffType>) (json, type,
-                                jsonDeserializationContext) -> json.getAsBoolean() ? OnOffType.ON : OnOffType.OFF)
+                        (JsonDeserializer<OnOffType>) (json, type, jsonDeserializationContext) -> OnOffType
+                                .from(json.getAsBoolean()))
                 .registerTypeAdapter(StringType.class, (JsonDeserializer<StringType>) (json, type,
                         jsonDeserializationContext) -> StringType.valueOf(json.getAsString()))
                 .create();

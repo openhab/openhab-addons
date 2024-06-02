@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -94,7 +94,7 @@ class LxControlMeter extends LxControl {
     }
 
     private void handleResetCommands(Command command) throws IOException {
-        if (command instanceof OnOffType && (OnOffType) command == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand && onOffCommand == OnOffType.ON) {
             sendAction(CMD_RESET);
         }
     }

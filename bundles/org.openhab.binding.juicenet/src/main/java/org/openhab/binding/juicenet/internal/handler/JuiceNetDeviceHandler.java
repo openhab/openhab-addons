@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -252,6 +252,13 @@ public class JuiceNetDeviceHandler extends BaseThingHandler {
                     }
 
                     api.setOverride(Objects.requireNonNull(token), energyAtPlugin, overrideTime, energyToAdd);
+
+                    break;
+                }
+                case CHANNEL_OVERRIDE: {
+                    if (command instanceof OnOffType onOffCommand && OnOffType.OFF.equals(onOffCommand)) {
+                        api.setOverride(Objects.requireNonNull(token), 0, ((long) 0), 0);
+                    }
 
                     break;
                 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,9 +16,9 @@ import static org.openhab.binding.freebox.internal.FreeboxBindingConstants.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -92,7 +92,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(FreeboxDiscoveryService.class);
+        return Set.of(FreeboxDiscoveryService.class);
     }
 
     @Override
@@ -494,8 +494,8 @@ public class FreeboxHandler extends BaseBridgeHandler {
                     continue;
                 }
                 ThingHandler handler = thing.getHandler();
-                if (handler instanceof FreeboxThingHandler) {
-                    ((FreeboxThingHandler) handler).updateNetInfo(hosts);
+                if (handler instanceof FreeboxThingHandler thingHandler) {
+                    thingHandler.updateNetInfo(hosts);
                 }
             }
 
@@ -519,8 +519,8 @@ public class FreeboxHandler extends BaseBridgeHandler {
                     continue;
                 }
                 ThingHandler handler = thing.getHandler();
-                if (handler instanceof FreeboxThingHandler) {
-                    ((FreeboxThingHandler) handler).updateAirPlayDevice(devices);
+                if (handler instanceof FreeboxThingHandler thingHandler) {
+                    thingHandler.updateAirPlayDevice(devices);
                 }
             }
 
@@ -542,12 +542,10 @@ public class FreeboxHandler extends BaseBridgeHandler {
             } else if (command instanceof OnOffType) {
                 updateChannelDecimalState(LCDBRIGHTNESS,
                         apiManager.setLcdBrightness((command == OnOffType.ON) ? 100 : 0));
-            } else if (command instanceof DecimalType) {
-                updateChannelDecimalState(LCDBRIGHTNESS,
-                        apiManager.setLcdBrightness(((DecimalType) command).intValue()));
-            } else if (command instanceof PercentType) {
-                updateChannelDecimalState(LCDBRIGHTNESS,
-                        apiManager.setLcdBrightness(((PercentType) command).intValue()));
+            } else if (command instanceof DecimalType decimalCommand) {
+                updateChannelDecimalState(LCDBRIGHTNESS, apiManager.setLcdBrightness(decimalCommand.intValue()));
+            } else if (command instanceof PercentType percentCommand) {
+                updateChannelDecimalState(LCDBRIGHTNESS, apiManager.setLcdBrightness(percentCommand.intValue()));
             } else {
                 logger.debug("Thing {}: invalid command {} from channel {}", getThing().getUID(), command,
                         channelUID.getId());
@@ -559,9 +557,9 @@ public class FreeboxHandler extends BaseBridgeHandler {
     }
 
     private void setOrientation(ChannelUID channelUID, Command command) {
-        if (command instanceof DecimalType) {
+        if (command instanceof DecimalType orientation) {
             try {
-                FreeboxLcdConfig config = apiManager.setLcdOrientation(((DecimalType) command).intValue());
+                FreeboxLcdConfig config = apiManager.setLcdOrientation(orientation.intValue());
                 updateChannelDecimalState(LCDORIENTATION, config.getOrientation());
                 updateChannelSwitchState(LCDFORCED, config.isOrientationForced());
             } catch (FreeboxException e) {
@@ -708,7 +706,7 @@ public class FreeboxHandler extends BaseBridgeHandler {
     }
 
     private void updateChannelSwitchState(String channel, boolean state) {
-        updateState(new ChannelUID(getThing().getUID(), channel), state ? OnOffType.ON : OnOffType.OFF);
+        updateState(new ChannelUID(getThing().getUID(), channel), OnOffType.from(state));
     }
 
     private void updateChannelDecimalState(String channel, int state) {

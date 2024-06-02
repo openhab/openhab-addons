@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,13 +23,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.events.Event;
 import org.openhab.core.events.EventFilter;
 import org.openhab.io.neeo.NeeoService;
 import org.openhab.io.neeo.internal.servletservices.ServletService;
+import org.openhab.io.neeo.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,7 +115,7 @@ public abstract class AbstractServlet extends HttpServlet implements AutoCloseab
             return;
         }
 
-        final String[] paths = StringUtils.split(pathInfo.startsWith("/") ? pathInfo.substring(1) : pathInfo, '/');
+        final String[] paths = StringUtils.split(pathInfo.startsWith("/") ? pathInfo.substring(1) : pathInfo, "/");
         final ServletService service = getService(paths);
 
         if (service == null) {
@@ -142,7 +142,7 @@ public abstract class AbstractServlet extends HttpServlet implements AutoCloseab
         }
 
         final String pathInfo = NeeoUtil.decodeURIComponent(req.getPathInfo());
-        final String[] paths = StringUtils.split(pathInfo.startsWith("/") ? pathInfo.substring(1) : pathInfo, '/');
+        final String[] paths = StringUtils.split(pathInfo.startsWith("/") ? pathInfo.substring(1) : pathInfo, "/");
         final ServletService service = getService(paths);
 
         if (service == null) {

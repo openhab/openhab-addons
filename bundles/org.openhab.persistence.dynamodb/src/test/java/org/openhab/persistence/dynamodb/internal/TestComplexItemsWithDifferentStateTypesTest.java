@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.persistence.dynamodb.internal;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -305,8 +305,6 @@ public class TestComplexItemsWithDifferentStateTypesTest extends BaseIntegration
 
     @Test
     public void testGroupDummyItem() {
-        // Do not want to slow down CI runs
-        assumeFalse(isRunningInCI());
         // only with the fast local server
         assumeTrue(hasFakeServer());
         try {

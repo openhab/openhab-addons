@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -396,8 +396,8 @@ public class SomneoHandler extends BaseThingHandler {
                     }
                     break;
                 case CHANNEL_ALARM_SOUND:
-                    if (command instanceof StringType) {
-                        connector.setAlarmSound(alarmPosition, (StringType) command);
+                    if (command instanceof StringType stringCommand) {
+                        connector.setAlarmSound(alarmPosition, stringCommand);
                     }
                     break;
                 case CHANNEL_ALARM_VOLUME:

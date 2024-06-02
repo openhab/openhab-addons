@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public class DTOTest {
         SensorData d = valueArray[0];
         // Assure latest data is taken
         String dateStr = d.getTimeStamp();
-        if (dateStr.equals("2020-06-09 06:38:08")) {
+        if ("2020-06-09 06:38:08".equals(dateStr)) {
             // take newer one
             d = valueArray[1];
         }

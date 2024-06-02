@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public class ThingTypeTableGenerator {
         // write actual rows
         rows.forEach(row -> {
             writer.append(writeRow(maxColumns, row, ' ')).append('\n');
-            if (row == headerRow) {
+            if (headerRow.equals(row)) {
                 writer.append(writeRow(maxColumns, new String[] { "", "", "" }, '-')).append('\n');
             }
         });

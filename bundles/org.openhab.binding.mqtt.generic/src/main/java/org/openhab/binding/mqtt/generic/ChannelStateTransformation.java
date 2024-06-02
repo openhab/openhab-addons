@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,7 +90,8 @@ public class ChannelStateTransformation {
         try {
             returnValue = transformationService.transform(pattern, value);
         } catch (TransformationException e) {
-            logger.warn("Executing the {}-transformation failed: {}", serviceName, e.getMessage());
+            logger.warn("Executing the {}-transformation failed: {}. Pattern: '{}'. Value: '{}'", serviceName,
+                    e.getMessage(), pattern, value);
         }
         return returnValue;
     }

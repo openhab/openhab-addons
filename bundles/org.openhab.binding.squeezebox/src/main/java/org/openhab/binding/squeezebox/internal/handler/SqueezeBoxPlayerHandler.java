@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,9 +39,11 @@ import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.RewindFastforwardType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -73,8 +75,7 @@ import org.slf4j.LoggerFactory;
 public class SqueezeBoxPlayerHandler extends BaseThingHandler implements SqueezeBoxPlayerEventListener {
     private final Logger logger = LoggerFactory.getLogger(SqueezeBoxPlayerHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(SQUEEZEBOXPLAYER_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(SQUEEZEBOXPLAYER_THING_TYPE);
 
     /**
      * We need to remember some states to change offsets in volume, time index,
@@ -244,8 +245,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 }
                 break;
             case CHANNEL_VOLUME:
-                if (command instanceof PercentType) {
-                    squeezeBoxServerHandler.setVolume(mac, ((PercentType) command).intValue());
+                if (command instanceof PercentType percentCommand) {
+                    squeezeBoxServerHandler.setVolume(mac, percentCommand.intValue());
                 } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
                     squeezeBoxServerHandler.volumeUp(mac, currentVolume());
                 } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
@@ -298,7 +299,14 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 squeezeBoxServerHandler.playPlaylistItem(mac, ((DecimalType) command).intValue());
                 break;
             case CHANNEL_CURRENT_PLAYING_TIME:
-                squeezeBoxServerHandler.setPlayingTime(mac, ((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    squeezeBoxServerHandler.setPlayingTime(mac, decimalCommand.intValue());
+                } else if (command instanceof QuantityType<?> quantityCommand) {
+                    QuantityType<?> quantitySeconds = quantityCommand.toUnit(Units.SECOND);
+                    if (quantitySeconds != null) {
+                        squeezeBoxServerHandler.setPlayingTime(mac, quantitySeconds.intValue());
+                    }
+                }
                 break;
             case CHANNEL_CURRENT_PLAYLIST_SHUFFLE:
                 squeezeBoxServerHandler.setShuffleMode(mac, ((DecimalType) command).intValue());
@@ -317,8 +325,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
                 }
                 break;
             case CHANNEL_SLEEP:
-                if (command instanceof DecimalType) {
-                    Duration sleepDuration = Duration.ofMinutes(((DecimalType) command).longValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    Duration sleepDuration = Duration.ofMinutes(decimalCommand.longValue());
                     if (sleepDuration.isNegative() || sleepDuration.compareTo(Duration.ofDays(1)) > 0) {
                         logger.debug("Sleep timer of {} minutes must be >= 0 and <= 1 day", sleepDuration.toMinutes());
                         return;
@@ -338,7 +346,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void powerChangeEvent(String mac, boolean power) {
-        updateChannel(mac, CHANNEL_POWER, power ? OnOffType.ON : OnOffType.OFF);
+        updateChannel(mac, CHANNEL_POWER, OnOffType.from(power));
         if (!power && isMe(mac)) {
             playing = false;
         }
@@ -347,8 +355,8 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     @Override
     public synchronized void modeChangeEvent(String mac, String mode) {
         updateChannel(mac, CHANNEL_CONTROL, "play".equals(mode) ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
-        updateChannel(mac, CHANNEL_PLAY_PAUSE, "play".equals(mode) ? OnOffType.ON : OnOffType.OFF);
-        updateChannel(mac, CHANNEL_STOP, "stop".equals(mode) ? OnOffType.ON : OnOffType.OFF);
+        updateChannel(mac, CHANNEL_PLAY_PAUSE, OnOffType.from("play".equals(mode)));
+        updateChannel(mac, CHANNEL_STOP, OnOffType.from("stop".equals(mode)));
         if (isMe(mac)) {
             playing = "play".equalsIgnoreCase(mode);
         }
@@ -381,7 +389,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void muteChangeEvent(String mac, boolean mute) {
-        updateChannel(mac, CHANNEL_MUTE, mute ? OnOffType.ON : OnOffType.OFF);
+        updateChannel(mac, CHANNEL_MUTE, OnOffType.from(mute));
     }
 
     @Override
@@ -391,7 +399,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     @Override
     public void currentPlayingTimeEvent(String mac, int time) {
-        updateChannel(mac, CHANNEL_CURRENT_PLAYING_TIME, new DecimalType(time));
+        updateChannel(mac, CHANNEL_CURRENT_PLAYING_TIME, new QuantityType<>(time, Units.SECOND));
         if (isMe(mac)) {
             currentTime = time;
         }
@@ -403,7 +411,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
             logger.debug("Channel 'duration' does not exist.  Delete and readd player thing to pick up channel.");
             return;
         }
-        updateChannel(mac, CHANNEL_DURATION, new DecimalType(duration));
+        updateChannel(mac, CHANNEL_DURATION, new QuantityType<>(duration, Units.SECOND));
     }
 
     @Override
@@ -647,7 +655,15 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
 
     private int cachedStateAsInt(String key) {
         State state = stateMap.get(key);
-        return state instanceof DecimalType ? ((DecimalType) state).intValue() : 0;
+        if (state instanceof DecimalType decimalValue) {
+            return decimalValue.intValue();
+        } else if (state instanceof QuantityType<?> quantityValue) {
+            QuantityType<?> quantitySeconds = quantityValue.toUnit(Units.SECOND);
+            if (quantitySeconds != null) {
+                return quantitySeconds.intValue();
+            }
+        }
+        return 0;
     }
 
     /**
@@ -656,7 +672,7 @@ public class SqueezeBoxPlayerHandler extends BaseThingHandler implements Squeeze
     private void timeCounter() {
         timeCounterJob = scheduler.scheduleWithFixedDelay(() -> {
             if (playing) {
-                updateChannel(mac, CHANNEL_CURRENT_PLAYING_TIME, new DecimalType(currentTime++));
+                updateChannel(mac, CHANNEL_CURRENT_PLAYING_TIME, new QuantityType<>(currentTime++, Units.SECOND));
             }
         }, 0, 1, TimeUnit.SECONDS);
     }

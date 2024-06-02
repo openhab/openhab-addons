@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,13 +120,16 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
 
         for (Channel channel : getThing().getChannels()) {
             KNXChannel knxChannel = KNXChannelFactory.createKnxChannel(channel);
-            knxChannels.put(channel.getUID(), knxChannel);
-            groupAddresses.addAll(knxChannel.getAllGroupAddresses());
 
             if (knxChannel.getChannelType().startsWith("number")) {
                 // check if we need to update the accepted item-type
                 List<InboundSpec> inboundSpecs = knxChannel.getAllGroupAddresses().stream()
                         .map(knxChannel::getListenSpec).filter(Objects::nonNull).map(Objects::requireNonNull).toList();
+                if (inboundSpecs.isEmpty()) {
+                    logger.warn("Skipping {}: group address / DPT not according to Group Address Notation",
+                            channel.getUID());
+                    continue;
+                }
 
                 String dpt = inboundSpecs.get(0).getDPT(); // there can be only one DPT on number channels
                 Unit<?> unit = UnitUtils.parseUnit(DPTUnits.getUnitForDpt(dpt));
@@ -149,6 +152,10 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                     modified = true;
                 }
             }
+
+            // add channels only if they could be successfully processed
+            knxChannels.put(channel.getUID(), knxChannel);
+            groupAddresses.addAll(knxChannel.getAllGroupAddresses());
         }
 
         if (modified) {
@@ -293,7 +300,7 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
         if (knxChannel == null) {
             return;
         }
-        Set<GroupAddress> rsa = knxChannel.getWriteAddresses();
+        List<GroupAddress> rsa = knxChannel.getWriteAddresses();
         if (!rsa.isEmpty()) {
             logger.trace("onGroupRead size '{}'", rsa.size());
             OutboundSpec os = groupAddressesRespondingSpec.get(destination);
@@ -414,18 +421,22 @@ public class DeviceThingHandler extends BaseThingHandler implements GroupAddress
                     if (oldFuture != null) {
                         oldFuture.cancel(true);
                     }
-                    if (value instanceof IncreaseDecreaseType type) {
-                        channelFutures.put(channelUID, scheduler.scheduleWithFixedDelay(
-                                () -> postCommand(channelUID, type), 0, frequency, TimeUnit.MILLISECONDS));
+                    if (value instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                        channelFutures.put(channelUID,
+                                scheduler.scheduleWithFixedDelay(() -> postCommand(channelUID, increaseDecreaseCommand),
+                                        0, frequency, TimeUnit.MILLISECONDS));
                     }
                 } else {
                     if (value instanceof Command command) {
-                        logger.trace("processDataReceived postCommand new value '{}' for GA '{}'", asdu, address);
+                        logger.trace("processDataReceived postCommand to channel '{}' new value '{}' for GA '{}'",
+                                channelUID, asdu, destination);
                         postCommand(channelUID, command);
                     }
                 }
             } else {
                 if (value instanceof State state && !(value instanceof UnDefType)) {
+                    logger.trace("processDataReceived updateState to channel '{}' new value '{}' for GA '{}'",
+                            knxChannel.getChannelUID(), value, destination);
                     updateState(knxChannel.getChannelUID(), state);
                 }
             }

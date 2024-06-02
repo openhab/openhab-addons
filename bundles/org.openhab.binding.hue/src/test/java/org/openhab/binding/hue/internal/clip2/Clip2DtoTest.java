@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,42 +18,55 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
-import org.openhab.binding.hue.internal.dto.clip2.ActionEntry;
-import org.openhab.binding.hue.internal.dto.clip2.Alerts;
-import org.openhab.binding.hue.internal.dto.clip2.Button;
-import org.openhab.binding.hue.internal.dto.clip2.Dimming;
-import org.openhab.binding.hue.internal.dto.clip2.Event;
-import org.openhab.binding.hue.internal.dto.clip2.LightLevel;
-import org.openhab.binding.hue.internal.dto.clip2.MetaData;
-import org.openhab.binding.hue.internal.dto.clip2.MirekSchema;
-import org.openhab.binding.hue.internal.dto.clip2.Motion;
-import org.openhab.binding.hue.internal.dto.clip2.Power;
-import org.openhab.binding.hue.internal.dto.clip2.ProductData;
-import org.openhab.binding.hue.internal.dto.clip2.RelativeRotary;
-import org.openhab.binding.hue.internal.dto.clip2.Resource;
-import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
-import org.openhab.binding.hue.internal.dto.clip2.Resources;
-import org.openhab.binding.hue.internal.dto.clip2.Rotation;
-import org.openhab.binding.hue.internal.dto.clip2.RotationEvent;
-import org.openhab.binding.hue.internal.dto.clip2.Temperature;
-import org.openhab.binding.hue.internal.dto.clip2.enums.ActionType;
-import org.openhab.binding.hue.internal.dto.clip2.enums.Archetype;
-import org.openhab.binding.hue.internal.dto.clip2.enums.BatteryStateType;
-import org.openhab.binding.hue.internal.dto.clip2.enums.ButtonEventType;
-import org.openhab.binding.hue.internal.dto.clip2.enums.DirectionType;
-import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
-import org.openhab.binding.hue.internal.dto.clip2.enums.RotationEventType;
-import org.openhab.binding.hue.internal.dto.clip2.enums.ZigbeeStatus;
-import org.openhab.binding.hue.internal.dto.clip2.helper.Setters;
+import org.openhab.binding.hue.internal.api.dto.clip2.ActionEntry;
+import org.openhab.binding.hue.internal.api.dto.clip2.Alerts;
+import org.openhab.binding.hue.internal.api.dto.clip2.Button;
+import org.openhab.binding.hue.internal.api.dto.clip2.ContactReport;
+import org.openhab.binding.hue.internal.api.dto.clip2.Dimming;
+import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
+import org.openhab.binding.hue.internal.api.dto.clip2.Event;
+import org.openhab.binding.hue.internal.api.dto.clip2.LightLevel;
+import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
+import org.openhab.binding.hue.internal.api.dto.clip2.MirekSchema;
+import org.openhab.binding.hue.internal.api.dto.clip2.Motion;
+import org.openhab.binding.hue.internal.api.dto.clip2.Power;
+import org.openhab.binding.hue.internal.api.dto.clip2.ProductData;
+import org.openhab.binding.hue.internal.api.dto.clip2.RelativeRotary;
+import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
+import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
+import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
+import org.openhab.binding.hue.internal.api.dto.clip2.Rotation;
+import org.openhab.binding.hue.internal.api.dto.clip2.RotationEvent;
+import org.openhab.binding.hue.internal.api.dto.clip2.TamperReport;
+import org.openhab.binding.hue.internal.api.dto.clip2.Temperature;
+import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.BatteryStateType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ButtonEventType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.DirectionType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.RotationEventType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ZigbeeStatus;
+import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
+import org.openhab.binding.hue.internal.api.serialization.InstantDeserializer;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
@@ -62,6 +75,7 @@ import org.openhab.core.types.UnDefType;
 import org.openhab.core.util.ColorUtil;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -75,7 +89,8 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 class Clip2DtoTest {
 
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
+            .create();
     private static final Double MINIMUM_DIMMING_LEVEL = Double.valueOf(12.34f);
 
     /**
@@ -99,6 +114,24 @@ class Clip2DtoTest {
     @Test
     void testButton() {
         String json = load(ResourceType.BUTTON.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.BUTTON, item.getType());
+        Button button = item.getButton();
+        assertNotNull(button);
+        assertEquals(new DecimalType(2003),
+                item.getButtonEventState(Map.of("00000000-0000-0000-0000-000000000001", 2)));
+        assertEquals(new DateTimeType("2023-09-17T18:51:36.959+0000"),
+                item.getButtonLastUpdatedState(ZoneId.of("UTC")));
+    }
+
+    @Test
+    void testButtonDeprecated() {
+        String json = load(ResourceType.BUTTON.name().toLowerCase() + "_deprecated");
         Resources resources = GSON.fromJson(json, Resources.class);
         assertNotNull(resources);
         List<Resource> list = resources.getResources();
@@ -313,6 +346,24 @@ class Clip2DtoTest {
         Boolean enabled = item.getEnabled();
         assertNotNull(enabled);
         assertTrue(enabled);
+        assertEquals(QuantityType.valueOf("1.2792921774337476 lx"), item.getLightLevelState());
+        assertEquals(new DateTimeType("2023-09-11T19:20:02.958+0000"),
+                item.getLightLevelLastUpdatedState(ZoneId.of("UTC")));
+    }
+
+    @Test
+    void testLightLevelDeprecated() {
+        String json = load(ResourceType.LIGHT_LEVEL.name().toLowerCase() + "_deprecated");
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.LIGHT_LEVEL, item.getType());
+        Boolean enabled = item.getEnabled();
+        assertNotNull(enabled);
+        assertTrue(enabled);
         LightLevel lightLevel = item.getLightLevel();
         assertNotNull(lightLevel);
         assertEquals(12725, lightLevel.getLightLevel());
@@ -320,8 +371,8 @@ class Clip2DtoTest {
     }
 
     @Test
-    void testRelativeRotary() {
-        String json = load(ResourceType.RELATIVE_ROTARY.name().toLowerCase());
+    void testRelativeRotaryDeprecated() {
+        String json = load(ResourceType.RELATIVE_ROTARY.name().toLowerCase() + "_deprecated");
         Resources resources = GSON.fromJson(json, Resources.class);
         assertNotNull(resources);
         List<Resource> list = resources.getResources();
@@ -455,8 +506,48 @@ class Clip2DtoTest {
     }
 
     @Test
+    void testSmartScene() {
+        String json = load(ResourceType.SMART_SCENE.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        ResourceReference group = item.getGroup();
+        assertNotNull(group);
+        String groupId = group.getId();
+        assertNotNull(groupId);
+        assertFalse(groupId.isBlank());
+        ResourceType type = group.getType();
+        assertNotNull(type);
+        assertEquals(ResourceType.ROOM, type);
+        Optional<Boolean> state = item.getSmartSceneActive();
+        assertTrue(state.isPresent());
+        assertFalse(state.get());
+    }
+
+    @Test
     void testSensor2Motion() {
         String json = load(ResourceType.MOTION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.MOTION, item.getType());
+        Boolean enabled = item.getEnabled();
+        assertNotNull(enabled);
+        assertTrue(enabled);
+        assertEquals(OnOffType.ON, item.getMotionState());
+        assertEquals(new DateTimeType("2023-09-04T20:04:30.395+0000"),
+                item.getMotionLastUpdatedState(ZoneId.of("UTC")));
+    }
+
+    @Test
+    void testSensor2MotionDeprecated() {
+        String json = load(ResourceType.MOTION.name().toLowerCase() + "_deprecated");
         Resources resources = GSON.fromJson(json, Resources.class);
         assertNotNull(resources);
         List<Resource> list = resources.getResources();
@@ -537,6 +628,27 @@ class Clip2DtoTest {
         assertEquals(1, list.size());
         Resource item = list.get(0);
         assertEquals(ResourceType.TEMPERATURE, item.getType());
+        Boolean enabled = item.getEnabled();
+        assertNotNull(enabled);
+        assertTrue(enabled);
+        assertEquals(QuantityType.valueOf("23.34 °C"), item.getTemperatureState());
+        assertEquals(new DateTimeType("2023-09-06T18:22:07.016+0000"),
+                item.getTemperatureLastUpdatedState(ZoneId.of("UTC")));
+    }
+
+    @Test
+    void testTemperatureDeprecated() {
+        String json = load(ResourceType.TEMPERATURE.name().toLowerCase() + "_deprecated");
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource item = list.get(0);
+        assertEquals(ResourceType.TEMPERATURE, item.getType());
+        Boolean enabled = item.getEnabled();
+        assertNotNull(enabled);
+        assertTrue(enabled);
         Temperature temperature = item.getTemperature();
         assertNotNull(temperature);
         assertEquals(17.2, temperature.getTemperature(), 0.1);
@@ -596,5 +708,201 @@ class Clip2DtoTest {
         assertNotNull(service);
         assertEquals("db4fd630-3798-40de-b642-c1ef464bf770", service.getId());
         assertEquals(ResourceType.GROUPED_LIGHT, service.getType());
+    }
+
+    @Test
+    void testSecurityContact() {
+        String json = load(ResourceType.CONTACT.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource resource = list.get(0);
+        assertEquals(ResourceType.CONTACT, resource.getType());
+
+        assertEquals(OpenClosedType.CLOSED, resource.getContactState());
+        assertEquals(new DateTimeType("2023-10-10T19:10:55.919Z"),
+                resource.getContactLastUpdatedState(ZoneId.of("UTC")));
+
+        resource.setContactReport(new ContactReport().setLastChanged(Instant.now()).setContactState("no_contact"));
+        assertEquals(OpenClosedType.OPEN, resource.getContactState());
+        assertTrue(resource.getContactLastUpdatedState(ZoneId.of("UTC")) instanceof DateTimeType);
+    }
+
+    @Test
+    void testSecurityTamper() {
+        String json = load(ResourceType.TAMPER.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource resource = list.get(0);
+        assertEquals(ResourceType.TAMPER, resource.getType());
+
+        assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
+        assertEquals(new DateTimeType("2023-01-01T00:00:00.001Z"),
+                resource.getTamperLastUpdatedState(ZoneId.of("UTC")));
+
+        Instant start = Instant.now();
+        List<TamperReport> tamperReports;
+        State state;
+
+        tamperReports = new ArrayList<>();
+        tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start));
+        resource.setTamperReports(tamperReports);
+        assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
+        state = resource.getTamperLastUpdatedState(ZoneId.of("UTC"));
+        assertTrue(state instanceof DateTimeType);
+        assertEquals(start, ((DateTimeType) state).getInstant());
+
+        tamperReports = new ArrayList<>();
+        tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start));
+        tamperReports.add(new TamperReport().setTamperState("tampered").setLastChanged(start.plusSeconds(1)));
+        resource.setTamperReports(tamperReports);
+        assertEquals(OpenClosedType.OPEN, resource.getTamperState());
+        state = resource.getTamperLastUpdatedState(ZoneId.of("UTC"));
+        assertTrue(state instanceof DateTimeType);
+        assertEquals(start.plusSeconds(1), ((DateTimeType) state).getInstant());
+
+        tamperReports = new ArrayList<>();
+        tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start));
+        tamperReports.add(new TamperReport().setTamperState("tampered").setLastChanged(start.plusSeconds(1)));
+        tamperReports.add(new TamperReport().setTamperState("not_tampered").setLastChanged(start.plusSeconds(2)));
+        resource.setTamperReports(tamperReports);
+        assertEquals(OpenClosedType.CLOSED, resource.getTamperState());
+        state = resource.getTamperLastUpdatedState(ZoneId.of("UTC"));
+        assertTrue(state instanceof DateTimeType);
+        assertEquals(start.plusSeconds(2), ((DateTimeType) state).getInstant());
+    }
+
+    @Test
+    void testCameraMotion() {
+        String json = load(ResourceType.CAMERA_MOTION.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        Resource resource = list.get(0);
+        assertEquals(ResourceType.CAMERA_MOTION, resource.getType());
+
+        Boolean enabled = resource.getEnabled();
+        assertNotNull(enabled);
+        assertTrue(enabled);
+        assertEquals(OnOffType.ON, resource.getMotionState());
+        assertEquals(new DateTimeType("2020-04-01T20:04:30.395Z"),
+                resource.getMotionLastUpdatedState(ZoneId.of("UTC")));
+    }
+
+    void testFixedEffectSetter() {
+        Resource source;
+        Resource target;
+        Effects resultEffect;
+
+        // no source effects
+        source = new Resource(ResourceType.LIGHT);
+        target = new Resource(ResourceType.LIGHT);
+        Setters.setResource(target, source);
+        assertNull(target.getFixedEffects());
+
+        // valid source fixed effects
+        source = new Resource(ResourceType.LIGHT).setFixedEffects(
+                new Effects().setStatusValues(List.of("NO_EFFECT", "SPARKLE", "CANDLE")).setEffect(EffectType.SPARKLE));
+        target = new Resource(ResourceType.LIGHT);
+        Setters.setResource(target, source);
+        resultEffect = target.getFixedEffects();
+        assertNotNull(resultEffect);
+        assertEquals(EffectType.SPARKLE, resultEffect.getEffect());
+        assertEquals(3, resultEffect.getStatusValues().size());
+
+        // valid but different source and target fixed effects
+        source = new Resource(ResourceType.LIGHT).setFixedEffects(
+                new Effects().setStatusValues(List.of("NO_EFFECT", "SPARKLE", "CANDLE")).setEffect(EffectType.SPARKLE));
+        target = new Resource(ResourceType.LIGHT).setFixedEffects(
+                new Effects().setStatusValues(List.of("NO_EFFECT", "FIRE")).setEffect(EffectType.FIRE));
+        Setters.setResource(target, source);
+        resultEffect = target.getFixedEffects();
+        assertNotNull(resultEffect);
+        assertNotEquals(EffectType.SPARKLE, resultEffect.getEffect());
+        assertEquals(3, resultEffect.getStatusValues().size());
+
+        // partly valid source fixed effects
+        source = new Resource(ResourceType.LIGHT).setFixedEffects(new Effects().setStatusValues(List.of("SPARKLE"))
+                .setEffect(EffectType.SPARKLE).setStatusValues(List.of()));
+        target = new Resource(ResourceType.LIGHT);
+        Setters.setResource(target, source);
+        resultEffect = target.getFixedEffects();
+        assertNotNull(resultEffect);
+        assertEquals(EffectType.SPARKLE, resultEffect.getEffect());
+        assertEquals(0, resultEffect.getStatusValues().size());
+        assertFalse(resultEffect.allows(EffectType.SPARKLE));
+        assertFalse(resultEffect.allows(EffectType.NO_EFFECT));
+    }
+
+    @Test
+    void testTimedEffectSetter() {
+        Resource source;
+        Resource target;
+        Effects resultEffect;
+
+        // no source effects
+        source = new Resource(ResourceType.LIGHT);
+        target = new Resource(ResourceType.LIGHT);
+        Setters.setResource(target, source);
+        assertNull(target.getTimedEffects());
+
+        // valid source timed effects
+        source = new Resource(ResourceType.LIGHT).setTimedEffects((TimedEffects) new TimedEffects()
+                .setStatusValues(List.of("NO_EFFECT", "SUNRISE")).setEffect(EffectType.NO_EFFECT));
+        target = new Resource(ResourceType.LIGHT);
+        Setters.setResource(target, source);
+        resultEffect = target.getTimedEffects();
+        assertNotNull(resultEffect);
+        assertEquals(EffectType.NO_EFFECT, resultEffect.getEffect());
+        assertEquals(2, resultEffect.getStatusValues().size());
+
+        // valid but different source and target timed effects
+        source = new Resource(ResourceType.LIGHT)
+                .setTimedEffects((TimedEffects) new TimedEffects().setDuration(Duration.ofMinutes(11))
+                        .setStatusValues(List.of("NO_EFFECT", "SPARKLE", "CANDLE")).setEffect(EffectType.SPARKLE));
+        target = new Resource(ResourceType.LIGHT).setTimedEffects((TimedEffects) new TimedEffects()
+                .setStatusValues(List.of("NO_EFFECT", "FIRE")).setEffect(EffectType.FIRE));
+        Setters.setResource(target, source);
+        resultEffect = target.getTimedEffects();
+        assertNotNull(resultEffect);
+        assertNotEquals(EffectType.SPARKLE, resultEffect.getEffect());
+        assertEquals(3, resultEffect.getStatusValues().size());
+        assertTrue(resultEffect instanceof TimedEffects);
+        assertEquals(Duration.ofMinutes(11), ((TimedEffects) resultEffect).getDuration());
+
+        // partly valid source timed effects
+        source = new Resource(ResourceType.LIGHT).setTimedEffects((TimedEffects) new TimedEffects()
+                .setStatusValues(List.of("SUNRISE")).setEffect(EffectType.SUNRISE).setStatusValues(List.of()));
+        target = new Resource(ResourceType.LIGHT);
+        Setters.setResource(target, source);
+        resultEffect = target.getTimedEffects();
+        assertNotNull(resultEffect);
+        assertEquals(EffectType.SUNRISE, resultEffect.getEffect());
+        assertEquals(0, resultEffect.getStatusValues().size());
+        assertFalse(resultEffect.allows(EffectType.SPARKLE));
+        assertFalse(resultEffect.allows(EffectType.NO_EFFECT));
+        assertTrue(resultEffect instanceof TimedEffects);
+        assertNull(((TimedEffects) resultEffect).getDuration());
+
+        target.setTimedEffectsDuration(Duration.ofSeconds(22));
+        assertEquals(Duration.ofSeconds(22), ((TimedEffects) resultEffect).getDuration());
+
+        // source timed effect with duration
+        source = new Resource(ResourceType.LIGHT)
+                .setTimedEffects((TimedEffects) new TimedEffects().setDuration(Duration.ofMillis(44))
+                        .setStatusValues(List.of("SUNRISE")).setEffect(EffectType.SUNRISE).setStatusValues(List.of()));
+        target = new Resource(ResourceType.LIGHT);
+        Setters.setResource(target, source);
+        resultEffect = target.getTimedEffects();
+        assertNotNull(resultEffect);
+        assertTrue(resultEffect instanceof TimedEffects);
+        assertEquals(Duration.ofMillis(44), ((TimedEffects) resultEffect).getDuration());
     }
 }

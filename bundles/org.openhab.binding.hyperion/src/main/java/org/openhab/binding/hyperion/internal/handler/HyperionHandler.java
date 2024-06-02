@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -255,10 +255,9 @@ public class HyperionHandler extends BaseThingHandler {
     }
 
     private void handleBrightness(Command command) throws IOException, CommandUnsuccessfulException {
-        if (command instanceof PercentType) {
-            PercentType percent = (PercentType) command;
+        if (command instanceof PercentType percentCommand) {
             Transform transform = new Transform();
-            transform.setLuminanceGain(percent.doubleValue() / 100);
+            transform.setLuminanceGain(percentCommand.doubleValue() / 100);
             TransformCommand transformCommand = new TransformCommand(transform);
             sendCommand(transformCommand);
         } else {
@@ -267,9 +266,8 @@ public class HyperionHandler extends BaseThingHandler {
     }
 
     private void handleColor(Command command) throws IOException, CommandUnsuccessfulException {
-        if (command instanceof HSBType) {
-            HSBType color = (HSBType) command;
-            Color c = new Color(color.getRGB());
+        if (command instanceof HSBType hsbCommand) {
+            Color c = new Color(hsbCommand.getRGB());
             int r = c.getRed();
             int g = c.getGreen();
             int b = c.getBlue();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ import org.openhab.core.types.State;
  * <p>
  * This class tests the commands for the astro thing.
  *
- * @author Petar Valchev - Initial implementation
+ * @author Petar Valchev - Initial contribution
  * @author Svilen Valkanov - Reworked to plain unit tests
  * @author Christoph Weitkamp - Migrated tests to pure Java
  */

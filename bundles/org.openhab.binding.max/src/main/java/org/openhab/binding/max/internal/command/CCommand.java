@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.max.internal.command;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link C_CubeCommand} to request configuration of a new MAX! device after inclusion.
+ * The {@link CubeCommand} to request configuration of a new MAX! device after inclusion.
  *
  * @author Marcel Verpaalen - Initial Contribution
  */
@@ -29,8 +29,7 @@ public class CCommand extends CubeCommand {
 
     @Override
     public String getCommandString() {
-        String cmd = "c:" + rfAddress + '\r' + '\n';
-        return cmd;
+        return "c:" + rfAddress + '\r' + '\n';
     }
 
     @Override

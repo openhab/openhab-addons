@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.groupepsa.internal.GroupePSABindingConstants.T
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -53,7 +52,7 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class GroupePSABridgeHandler extends BaseBridgeHandler {
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
     private static final long DEFAULT_POLLING_INTERVAL_M = TimeUnit.HOURS.toMinutes(1);
 
     private final OAuthFactory oAuthFactory;
@@ -218,7 +217,7 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * @param id The id of the mower to query
+     * @param vin The VIN to query
      * @return A detailed status of the mower with the specified id
      * @throws GroupePSACommunicationException In case the query cannot be executed
      *             successfully
@@ -229,6 +228,6 @@ public class GroupePSABridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(GroupePSADiscoveryService.class);
+        return Set.of(GroupePSADiscoveryService.class);
     }
 }

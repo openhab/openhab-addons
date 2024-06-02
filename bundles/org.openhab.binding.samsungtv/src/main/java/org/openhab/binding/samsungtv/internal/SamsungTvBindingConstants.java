@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,11 +16,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link SamsungTvBinding} class defines common constants, which are used
+ * The {@link SamsungTvBindingConstants} class defines common constants, which are used
  * across the whole binding.
  *
  * @author Pauli Anttila - Initial contribution
  * @author Arjan Mels - Added constants for websocket based remote controller
+ * @author Nick Waterton - Added artMode channels
  */
 @NonNullByDefault
 public class SamsungTvBindingConstants {
@@ -33,6 +34,7 @@ public class SamsungTvBindingConstants {
     public static final String KEY_CODE = "keyCode";
     public static final String POWER = "power";
     public static final String ART_MODE = "artMode";
+    public static final String SET_ART_MODE = "setArtMode";
     public static final String SOURCE_APP = "sourceApp";
 
     // List of all media renderer thing channel id's
@@ -51,4 +53,11 @@ public class SamsungTvBindingConstants {
     public static final String CHANNEL_NAME = "channelName";
     public static final String BROWSER_URL = "url";
     public static final String STOP_BROWSER = "stopBrowser";
+
+    // List of all artMode channels (Frame TV's only)
+    public static final String ART_IMAGE = "artImage";
+    public static final String ART_LABEL = "artLabel";
+    public static final String ART_JSON = "artJson";
+    public static final String ART_BRIGHTNESS = "artBrightness";
+    public static final String ART_COLOR_TEMPERATURE = "artColorTemperature";
 }

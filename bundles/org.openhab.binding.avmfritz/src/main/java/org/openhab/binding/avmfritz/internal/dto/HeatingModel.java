@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -222,8 +222,8 @@ public class HeatingModel implements BatteryModel {
 
     /**
      * Converts a celsius value to a FRITZ!Box value.
-     * Valid celsius values: 8 to 28 °C > 16 to 56
-     * 16 <= 8°C, 17 = 8.5°C...... 56 >= 28°C, 254 = ON, 253 = OFF
+     * Valid celsius values: 8 to 28 °C > 16 to 56,
+     * 16 &lt;= 8°C, 17 = 8.5°C...... 56 >= 28°C, 254 = ON, 253 = OFF
      *
      * @param celsiusValue The celsius value to be converted
      * @return The FRITZ!Box value

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,8 +67,8 @@ import org.slf4j.LoggerFactory;
  * </p>
  * <p>
  * If a {@link ConnectionManager} is given at the constructor, the session-token is not needed by requests and the
- * {@link ConnectionListener}, which is registered at the {@link ConnectionManager}, will be automatically informed
- * about
+ * {@link org.openhab.binding.digitalstrom.internal.lib.listener.ConnectionListener}, which is registered at the
+ * {@link ConnectionManager}, will be automatically informed about
  * connection state changes through the {@link #execute(String, int, int)} method.
  * </p>
  *

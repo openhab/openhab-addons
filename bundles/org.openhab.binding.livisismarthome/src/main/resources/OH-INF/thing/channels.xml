@@ -96,7 +96,7 @@
 
 	<!-- HumiditySensor -->
 	<channel-type id="humiditySensorHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Actual Humidity</label>
 		<description>Actual measured room humidity</description>
 		<category>Humidity</category>

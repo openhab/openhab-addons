@@ -74,6 +74,7 @@ SELECT
 TIVO  
 LIVETV  
 GUIDE  
+BACK  
 INFO  
 EXIT  
 THUMBSUP  
@@ -107,6 +108,7 @@ ACTION_D
 CC_ON  
 CC_OFF  
 FIND_REMOTE  
+STANDBY  
 ASPECT_CORRECTION_FULL  
 ASPECT_CORRECTION_PANEL  
 ASPECT_CORRECTION_ZOOM  
@@ -142,31 +144,32 @@ Number      TiVo_Recording      "Recording        [MAP(tivo.map):rec-%s]" {chann
 String      TiVo_IRCmd          "Ir Cmd"          {channel="tivo:sckt:Living_Room:irCommand", autoupdate="false"}
 String      TiVo_KbdCmd         "Keyboard Cmd"    {channel="tivo:sckt:Living_Room:kbdCommand", autoupdate="false"}
 String      TiVo_KeyboardStr    "Search String"
-Switch      TiVo_Search         "Search Demo"
 ```
 
 - The item `TiVo_SetChannelName` depends upon a valid `tivo.map` file to translate channel numbers to channel names. The openHAB **MAP** transformation service must also be installed.
-- See [this discussion thread] (<https://community.openhab.org/t/bogob-big-ol-grid-o-buttons-is-this-even-possible-yes-yes-it-is/115343>) for an example of setting up an advanced UI to simulate the look of the TiVo remote.
+- A simulated remote control widget is available using the Buttongrid sitemap element described below.
+- A more advanced simulated remote can also be implemented as described here: (<https://community.openhab.org/t/bogob-big-ol-grid-o-buttons-is-this-even-possible-yes-yes-it-is/115343>).
 
 ### tivo.sitemap
 
 ```perl
 sitemap tivo label="Tivo Central" {
     Frame label="Tivo" {
-        Text    item=TiVo_SetChannel          label="Current Channel [%s]"  icon="screen"
-        Text        item=TiVo_SetChannelName  label="Channel Name" icon="screen"
-        Text        item=TiVo_Recording       label="Recording"    icon="screen"
-        Switch      item=TiVo_IRCmd           label="Channel"      icon="screen"   mappings=["CHANNELDOWN"="CH -","CHANNELUP"="CH +"]
-        Switch      item=TiVo_IRCmd           label="Media"        icon="screen"   mappings=["REVERSE"="⏪", "PAUSE"="⏸", "PLAY"="▶", /*(DVD TiVo only!) "STOP"="⏹",*/ "FORWARD"="⏩", "RECORD"="⏺" ]
-        Switch      item=TiVo_MenuScreen      label="Menus"        icon="screen"   mappings=["TIVO"="Home", "LIVETV"="Live Tv", "GUIDE"="Guide", "NOWPLAYING"="My Shows", "NETFLIX"="Netflix", SEARCH="Search" ]
-        Switch      item=TiVo_SetChannel      label="Fav TV"       icon="screen"   mappings=[2.1="CBS", 4.1="NBC", 7.1="ABC", 11.1="FOX", 5.2="AntennaTV"]
-        Switch      item=TiVo_IRCmd           label="Navigation"   icon="screen"   mappings=["UP"="˄", "DOWN"="˅", "LEFT"="<", "RIGHT"=">", "SELECT"="Select", "EXIT"="Exit" ]
-        Switch      item=TiVo_IRCmd           label="Actions"      icon="screen"   mappings=["ACTION_A"="Red","ACTION_B"="Green","ACTION_C"="Yellow","ACTION_D"="Blue"]
-        Switch      item=TiVo_IRCmd           label="Likes"        icon="screen"   mappings=["THUMBSUP"="Thumbs Up", "THUMBSDOWN"="Thumbs Down"]
-        Switch      item=TiVo_IRCmd           label="Remote"       icon="screen"   mappings=["FIND_REMOTE"="Find Remote"]
-        Switch      item=TiVo_IRCmd           label="Standby"      icon="screen"   mappings=["STANDBY"="Standby","TIVO"="Wake Up"]
-        Text        item=TiVo_Status          label="Status"       icon="screen"
-        Switch      item=TiVo_Search          mappings=[ON="Search Demo"]
+        Text        item=TiVo_SetChannel      label="Current Channel [%s]"  icon="screen"
+        Text        item=TiVo_SetChannelName  label="Channel Name"   icon="screen"
+        Text        item=TiVo_Recording       label="Recording"      icon="screen"
+        // Note the TiVo_IRCmd Switch elements are deprecated in favor of the Buttongrid element below
+        Switch      item=TiVo_IRCmd           label="Channel"        icon="screen"   mappings=["CHANNELDOWN"="CH -","CHANNELUP"="CH +"]
+        Switch      item=TiVo_IRCmd           label="Media"          icon="screen"   mappings=["REVERSE"="⏪", "PAUSE"="⏸", "PLAY"="▶", /*(DVD TiVo only!) "STOP"="⏹",*/ "FORWARD"="⏩", "RECORD"="⏺" ]
+        Switch      item=TiVo_MenuScreen      label="Menus"          icon="screen"   mappings=["TIVO"="Home", "LIVETV"="Live Tv", "GUIDE"="Guide", "NOWPLAYING"="My Shows", "NETFLIX"="Netflix", SEARCH="Search" ]
+        Switch      item=TiVo_SetChannel      label="Fav TV"         icon="screen"   mappings=[2.1="CBS", 4.1="NBC", 7.1="ABC", 11.1="FOX", 5.2="AntennaTV"]
+        Switch      item=TiVo_IRCmd           label="Navigation"     icon="screen"   mappings=["UP"="˄", "DOWN"="˅", "LEFT"="<", "RIGHT"=">", "SELECT"="Select", "EXIT"="Exit" ]
+        Switch      item=TiVo_IRCmd           label="Actions"        icon="screen"   mappings=["ACTION_A"="Red","ACTION_B"="Green","ACTION_C"="Yellow","ACTION_D"="Blue"]
+        Switch      item=TiVo_IRCmd           label="Likes"          icon="screen"   mappings=["THUMBSUP"="Thumbs Up", "THUMBSDOWN"="Thumbs Down"]
+        Switch      item=TiVo_IRCmd           label="Remote"         icon="screen"   mappings=["FIND_REMOTE"="Find Remote"]
+        Switch      item=TiVo_IRCmd           label="Standby"        icon="screen"   mappings=["STANDBY"="Standby","TIVO"="Wake Up"]
+        Input       item=TiVo_KeyboardStr     label="Search"         staticIcon=zoom inputHint="text"
+        Buttongrid  item=TiVo_IRCmd           label="Remote Control" staticIcon=material:tv_remote buttons=[1:1:GUIDE="Guide", 1:2:TIVO="Home", 1:3:LIVETV="LiveTV", 2:2:UP="Up"=f7:arrowtriangle_up, 3:1:LEFT="Left"=f7:arrowtriangle_left, 3:2:SELECT="OK", 3:3:RIGHT="Right"=f7:arrowtriangle_right, 4:2:DOWN="Down"=f7:arrowtriangle_down, 5:1:BACK="Back", 5:2:INFO="Info", 5:3:EXIT="Exit", 6:1:THUMBSUP="Thumbs Up"=f7:hand_thumbsup, 6:3:CHANNELUP="Channel +", 7:1:THUMBSDOWN="Thumbs Down"=f7:hand_thumbsdown, 7:3:CHANNELDOWN="Channel -", 8:2:PLAY="Play"=f7:play, 9:1:REVERSE="Reverse"=f7:backward, 9:2:PAUSE="Pause"=f7:pause, 9:3:FORWARD="Forward"=f7:forward, 10:2:SLOW="Slow"=f7:play_circle, 11:1:REPLAY="Replay", 11:2:RECORD="Record"=f7:circle, 11:3:ADVANCE="Advance", 12:1:ACTION_A="A (Yellow)", 12:2:ACTION_B="B (Blue)", 12:3:ACTION_C="C (Red)", 13:1:ACTION_D="D (Green)", 13:2:CC_ON="CC On",  13:3:CC_OFF="CC Off", 14:1:NUM1="1", 14:2:NUM2="2", 14:3:NUM3="3", 15:1:NUM4="4", 15:2:NUM5="5", 15:3:NUM6="6", 16:1:NUM7="7", 16:2:NUM8="8", 16:3:NUM9="9", 17:1:CLEAR="Clear", 17:2:NUM0="0", 17:3:ENTER="Enter", 18:1:STANDBY="Stand By", 18:3:FIND_REMOTE="Find Remote"]
     }
 }
 ```
@@ -197,25 +200,14 @@ etc...
 
 ### tivo.rules
 
-- This rule was used to overcome limitations within the HABpanel user interface at the moment when using transform/map functionality.
-
-- The following rule shows how a string change to the item `TiVo_KeyboardStr` is split into individual characters and sent to the TiVo. The method to send a keystroke multiple times is used to simulate rapid keystrokes required to achieve number based searched.
-
-- A simple custom template widget can be used within the HABpanel user interface for tablet-based searches. See [this discussion thread] (<https://community.openhab.org/t/tivo-1-1-protocol-new-binding-contribution/5572/21?u=andymb>).
+- The following rule shows how a string change to the item `TiVo_KeyboardStr` is split into individual characters and sent to the Tivo.
 
 ```java
-rule "TiVo Search Command"
-when
-  Item TiVo_Search received command
-then
-  TiVo_KeyboardStr.sendCommand("Evening News")
-end
-
 rule "TiVo Search"
 when
     Item TiVo_KeyboardStr received update
 then
-    if (TiVo_KeyboardStr.state != NULL && TiVo_KeyboardStr.state.toString.length > 0) {
+    if (newState != NULL && newState.toString.length > 0) {
 
         // Command to get us to the TiVo search menu
         sendCommand(TiVo_MenuScreen, "SEARCH")
@@ -223,7 +215,7 @@ then
 
         var i = 0
         var char txt = ""
-        var srch = TiVo_KeyboardStr.state.toString.toUpperCase
+        var srch = newState.toString.toUpperCase
         logInfo("tivo.search"," Searching for: " + srch)
 
         while (i < (srch.length)) {
@@ -246,5 +238,4 @@ then
         }
     }
 end
-
 ```

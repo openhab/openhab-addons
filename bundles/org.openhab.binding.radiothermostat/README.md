@@ -47,14 +47,16 @@ If one or more time or setpoint fields are left blank in a given schedule and th
 A heating or cooling schedule with all fields left blank will be ignored by the binding.
 In that case, the existing schedule on the thermostat will remain untouched.
 
+### Cloud Service Discontinued
+
 The MyRadioThermostat/EnergyHub cloud service that previously enabled remote control and scheduling of the thermostat is now defunct.
 As such, disabling cloud connectivity on a thermostat that was previously connected to the cloud service may slightly improve the speed and reliability of accessing the local API.
 
 The thermostat can de-provisioned from the cloud by issuing the following `curl` commands:
 
 ```shell
-curl http://$THERMOSTAT_IP/cloud -d '{"enabled":0}' -X POST
-curl http://$THERMOSTAT_IP/cloud -d '{"authkey":""}' -X POST
+curl http://$THERMOSTAT_IP/cloud -d '{"enabled":0}'
+curl http://$THERMOSTAT_IP/cloud -d '{"authkey":""}'
 ```
 
 ### Some notes
@@ -62,37 +64,38 @@ curl http://$THERMOSTAT_IP/cloud -d '{"authkey":""}' -X POST
 - The main caveat for using this binding is to keep in mind that the web server in the thermostat is very slow. Do not over load it with excessive amounts of simultaneous commands.
 - When changing the thermostat mode, the current temperature set point is cleared and a refresh of the thermostat data is done to get the new mode's set point.
 - Since retrieving the thermostat's data is the slowest operation, it will take several seconds after changing the mode before the new set point is displayed.
-- Clock sync will not occur if `override` flag is on (i.e. the program setpoint has been manually overridden) because syncing time will reset the temperature back to the program setpoint.
+- Clock sync will not occur while the `override` flag is on (i.e. the program setpoint has been manually overridden) because syncing time will reset the temperature back to the program setpoint.
 - The `override` flag is not reported correctly on older thermostat versions (i.e. /tstat/model reports v1.09)
 - The 'Program Mode' command is untested and according to the published API is only available on a CT80 Rev B.
 - Humidity information is available only when using a CT80 thermostat.
+- If `remote_temp` or `message` channels are used, their values in the thermostat will be cleared during binding shutdown.
 
 ## Channels
 
 The thermostat information that is retrieved is available as these channels:
 
-| Channel ID             | Item Type            | Description                                                                                                                        |
-|------------------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| temperature            | Number:Temperature   | The current temperature reading of the thermostat                                                                                  |
-| humidity               | Number:Dimensionless | The current humidity reading of the thermostat (CT80 only)                                                                         |
-| mode                   | Number               | The current operating mode of the HVAC system                                                                                      |
-| fan_mode               | Number               | The current operating mode of the fan                                                                                              |
-| program_mode           | Number               | The program schedule that the thermostat is running (CT80 Rev B only)                                                              |
-| set_point              | Number:Temperature   | The current temperature set point of the thermostat                                                                                |
-| status                 | Number               | Indicates the current running status of the HVAC system                                                                            |
-| fan_status             | Number               | Indicates the current fan status of the HVAC system                                                                                |
-| override               | Number               | Indicates if the normal program set-point has been manually overridden                                                             |
-| hold                   | Switch               | Indicates if the current set point temperature is to be held indefinitely                                                          |
-| remote_temp            | Number:Temperature   | Override the internal temperature as read by the thermostat's temperature sensor; Set to -1 to return to internal temperature mode |
-| day                    | Number               | The current day of the week reported by the thermostat (0 = Monday)                                                                |
-| hour                   | Number               | The current hour of the day reported by the thermostat (24 hr)                                                                     |
-| minute                 | Number               | The current minute past the hour reported by the thermostat                                                                        |
-| dt_stamp               | String               | The current day of the week and time reported by the thermostat (E HH:mm)                                                          |
-| today_heat_runtime     | Number:Time          | The total number of minutes of heating run-time today                                                                              |
-| today_cool_runtime     | Number:Time          | The total number of minutes of cooling run-time today                                                                              |
-| yesterday_heat_runtime | Number:Time          | The total number of minutes of heating run-time yesterday                                                                          |
-| yesterday_cool_runtime | Number:Time          | The total number of minutes of cooling run-time yesterday                                                                          |
-| message                | String (Write Only)  | Used to display a number in the upper left 'price message' area of the thermostat's screen where the time is normally displayed    |
+| Channel ID             | Item Type            | Description                                                                                                                             |
+|------------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
+| temperature            | Number:Temperature   | The current temperature reading (°F) of the thermostat                                                                                  |
+| humidity               | Number:Dimensionless | The current humidity reading of the thermostat (CT80 only)                                                                              |
+| mode                   | Number               | The current operating mode of the HVAC system                                                                                           |
+| fan_mode               | Number               | The current operating mode of the fan                                                                                                   |
+| program_mode           | Number               | The program schedule that the thermostat is running (CT80 Rev B only)                                                                   |
+| set_point              | Number:Temperature   | The current temperature set point (°F) of the thermostat                                                                                |
+| status                 | Number               | Indicates the current running status of the HVAC system                                                                                 |
+| fan_status             | Number               | Indicates the current fan status of the HVAC system                                                                                     |
+| override               | Number               | Indicates if the normal program set-point has been manually overridden                                                                  |
+| hold                   | Switch               | Indicates if the current set point temperature is to be held indefinitely                                                               |
+| remote_temp            | Number:Temperature   | Override the internal temperature (°F) as read by the thermostat's temperature sensor; Set to -1 to return to internal temperature mode |
+| day                    | Number               | The current day of the week reported by the thermostat (0 = Monday)                                                                     |
+| hour                   | Number               | The current hour of the day reported by the thermostat (24 hr)                                                                          |
+| minute                 | Number               | The current minute past the hour reported by the thermostat                                                                             |
+| dt_stamp               | String               | The current day of the week and time reported by the thermostat (E HH:mm)                                                               |
+| today_heat_runtime     | Number:Time          | The total number of minutes of heating run-time today                                                                                   |
+| today_cool_runtime     | Number:Time          | The total number of minutes of cooling run-time today                                                                                   |
+| yesterday_heat_runtime | Number:Time          | The total number of minutes of heating run-time yesterday                                                                               |
+| yesterday_cool_runtime | Number:Time          | The total number of minutes of cooling run-time yesterday                                                                               |
+| message                | String (Write Only)  | Used to display a number in the upper left 'price message' area of the thermostat's screen where the time is normally displayed         |
 
 ## Full Example
 
@@ -157,25 +160,25 @@ Number Therm_Mode               "Thermostat Mode [MAP(radiotherm.map):%s_mode]" 
 Number Therm_Fmode              "Fan Mode [MAP(radiotherm.map):%s_fan]"         { channel="radiothermostat:rtherm:mytherm1:fan_mode" }
 // Program Mode only supported on CT80 Rev B
 Number Therm_Pmode              "Program Mode [MAP(radiotherm.map):%s_pgm]"     { channel="radiothermostat:rtherm:mytherm1:program_mode" }
-Number:Temperature  Therm_Setpt "Set Point [%d]" <temperature>                  { channel="radiothermostat:rtherm:mytherm1:set_point" }
+Number:Temperature Therm_Setpt  "Set Point [%d]" <temperature>                  { channel="radiothermostat:rtherm:mytherm1:set_point" }
 Number Therm_Status             "Status [MAP(radiotherm.map):%s_stus]"          { channel="radiothermostat:rtherm:mytherm1:status" }
 Number Therm_FanStatus          "Fan Status [MAP(radiotherm.map):%s_fstus]"     { channel="radiothermostat:rtherm:mytherm1:fan_status" }
 Number Therm_Override           "Override [MAP(radiotherm.map):%s_over]"        { channel="radiothermostat:rtherm:mytherm1:override" }
 Switch Therm_Hold               "Hold"                                          { channel="radiothermostat:rtherm:mytherm1:hold" }
 
-Number Therm_Day       "Thermostat Day [%d]"                                 { channel="radiothermostat:rtherm:mytherm1:day" }
-Number Therm_Hour      "Thermostat Hour [%d]"                                { channel="radiothermostat:rtherm:mytherm1:hour" }
-Number Therm_Minute    "Thermostat Minute [%d]"                              { channel="radiothermostat:rtherm:mytherm1:minute" }
-String Therm_Dstmp     "Thermostat DateStamp [%s]" <time>                    { channel="radiothermostat:rtherm:mytherm1:dt_stamp" }
+Number Therm_Day                "Thermostat Day [%d]"                           { channel="radiothermostat:rtherm:mytherm1:day" }
+Number Therm_Hour               "Thermostat Hour [%d]"                          { channel="radiothermostat:rtherm:mytherm1:hour" }
+Number Therm_Minute             "Thermostat Minute [%d]"                        { channel="radiothermostat:rtherm:mytherm1:minute" }
+String Therm_Dstmp              "Thermostat DateStamp [%s]" <time>              { channel="radiothermostat:rtherm:mytherm1:dt_stamp" }
 
-Number:Time Therm_todayheat "Today's Heating Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime" }
-Number:Time Therm_todaycool "Today's Cooling Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime" }
-Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime" }
-Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"   { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime" }
-String Therm_Message   "Message: [%s]"                                      { channel="radiothermostat:rtherm:mytherm1:message" }
+Number:Time Therm_todayheat     "Today's Heating Runtime [%d %unit%]"           { channel="radiothermostat:rtherm:mytherm1:today_heat_runtime", unit="min" }
+Number:Time Therm_todaycool     "Today's Cooling Runtime [%d %unit%]"           { channel="radiothermostat:rtherm:mytherm1:today_cool_runtime", unit="min" }
+Number:Time Therm_yesterdayheat "Yesterday's Heating Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:yesterday_heat_runtime", unit="min" }
+Number:Time Therm_yesterdaycool "Yesterday's Cooling Runtime [%d %unit%]"       { channel="radiothermostat:rtherm:mytherm1:yesterday_cool_runtime", unit="min" }
+String Therm_Message            "Message: [%s]"                                 { channel="radiothermostat:rtherm:mytherm1:message" }
 
 // Override the thermostat's temperature reading with a value from an external sensor, set to -1 to revert to internal temperature mode
-Number:Temperature Therm_Rtemp  "Remote Temperature [%d]" <temperature>     { channel="radiothermostat:rtherm:mytherm1:remote_temp" }
+Number:Temperature Therm_Rtemp  "Remote Temperature [%d]" <temperature>         { channel="radiothermostat:rtherm:mytherm1:remote_temp" }
 
 // A virtual switch used to trigger a rule to send a json command to the thermostat
 Switch Therm_mysetting   "Send my preferred setting"
@@ -256,8 +259,13 @@ when
 then
   // Display up to 5 numbers in the thermostat's Price Message Area (PMA)
   // A decimal point can be used. CT80 can display a negative '-' number
-  // Send null or empty string to clear the number and restore the time display
-  var Number temp = Math.round((OutsideTemp.state as DecimalType).doubleValue).intValue
+  // Sends empty string to clear the number and restore the time display if OutsideTemp is undefined
+  var temp = ""
+
+  if (newState != null && newState != UNDEF) {
+      temp = Math.round((newState as DecimalType).doubleValue).intValue.toString
+  }
+
   Therm_Message.sendCommand(temp)
 end
 ```

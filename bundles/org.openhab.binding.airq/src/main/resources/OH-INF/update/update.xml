@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="airq:airq">
+		<instruction-set targetVersion="1">
+			<add-channel id="h2s">
+				<type>airq:h2s</type>
+				<label>Hydrogen Sulfide (H₂S)</label>
+			</add-channel>
+			<add-channel id="h2s_maxerr">
+				<type>airq:h2s_maxerr</type>
+				<label>Max. Error H₂S Conc.</label>
+			</add-channel>
+		</instruction-set>
+		<instruction-set targetVersion="2">
+			<add-channel id="healthIndex">
+				<type>airq:health_index</type>
+				<label>Health Index</label>
+			</add-channel>
+			<add-channel id="performanceIndex">
+				<type>airq:performance_index</type>
+				<label>Performance Index</label>
+			</add-channel>
+
+			<update-channel id="co">
+				<type>airq:co</type>
+				<label>Carbon Monoxide (CO)</label>
+			</update-channel>
+			<update-channel id="no2">
+				<type>airq:no2</type>
+				<label>Nitrogen Dioxide (NO₂)</label>
+			</update-channel>
+			<update-channel id="o3">
+				<type>airq:o3</type>
+				<label>Ozone (O₃)</label>
+			</update-channel>
+
+			<update-channel id="fineDustConc01">
+				<type>airq:pm1</type>
+				<label>Fine Dust 1μm</label>
+			</update-channel>
+			<update-channel id="fineDustConc02_5">
+				<type>airq:pm2_5</type>
+				<label>Fine Dust 2.5μm</label>
+			</update-channel>
+			<update-channel id="fineDustConc10">
+				<type>airq:pm10</type>
+				<label>Fine Dust 10μm</label>
+			</update-channel>
+
+			<update-channel id="fineDustCnt00_3">
+				<type>airq:cnt0_3</type>
+				<label>Fine Dust Count 0.3μm</label>
+			</update-channel>
+			<update-channel id="fineDustCnt00_5">
+				<type>airq:cnt0_5</type>
+				<label>Fine Dust Count 0.5μm</label>
+			</update-channel>
+			<update-channel id="fineDustCnt01">
+				<type>airq:cnt1</type>
+				<label>Fine Dust Count 1μm</label>
+			</update-channel>
+			<update-channel id="fineDustCnt02_5">
+				<type>airq:cnt2_5</type>
+				<label>Fine Dust Count 2.5μm</label>
+			</update-channel>
+			<update-channel id="fineDustCnt05">
+				<type>airq:cnt5</type>
+				<label>Fine Dust Count 5μm</label>
+			</update-channel>
+			<update-channel id="fineDustCnt10">
+				<type>airq:cnt10</type>
+				<label>Fine Dust Count 10μm</label>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

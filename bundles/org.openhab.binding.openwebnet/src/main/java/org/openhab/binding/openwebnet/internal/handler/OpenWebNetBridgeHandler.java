@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,9 +29,11 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.openwebnet.internal.OpenWebNetBindingConstants;
+import org.openhab.binding.openwebnet.internal.actions.OpenWebNetBridgeActions;
 import org.openhab.binding.openwebnet.internal.discovery.OpenWebNetDeviceDiscoveryService;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetBusBridgeConfig;
 import org.openhab.binding.openwebnet.internal.handler.config.OpenWebNetZigBeeBridgeConfig;
+import org.openhab.binding.openwebnet.internal.serial.SerialPortProviderAdapter;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -64,6 +66,7 @@ import org.openwebnet4j.message.Scenario;
 import org.openwebnet4j.message.Thermoregulation;
 import org.openwebnet4j.message.What;
 import org.openwebnet4j.message.Where;
+import org.openwebnet4j.message.WhereLightAutom;
 import org.openwebnet4j.message.WhereZigBee;
 import org.openwebnet4j.message.Who;
 import org.slf4j.Logger;
@@ -105,6 +108,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     // WHO.WHERE
     private Map<String, @Nullable OpenWebNetThingHandler> registeredDevices = new ConcurrentHashMap<>();
     private Map<String, Long> discoveringDevices = new ConcurrentHashMap<>();
+
+    protected @Nullable LightAutomHandlersMap lightsMap; // a LightAutomHandlersMap storing lights handlers organised by
+                                                         // the AREA they belong to
 
     protected @Nullable OpenGateway gateway;
     private boolean isBusGateway = false;
@@ -179,7 +185,11 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                     "@text/offline.conf-error-no-serial-port");
             return null;
         } else {
-            return new USBGateway(serialPort);
+            USBGateway tmpUSBGateway = new USBGateway(serialPort);
+            tmpUSBGateway.setSerialPortProvider(new SerialPortProviderAdapter());
+            logger.debug("**** -SPI- ****  OpenWebNetBridgeHandler :: setSerialPortProvider to: {}",
+                    tmpUSBGateway.getSerialPortProvider());
+            return tmpUSBGateway;
         }
     }
 
@@ -266,15 +276,22 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         reconnecting = false;
     }
 
+    /**
+     * Return the OpenGateway linked to this BridgeHandler
+     *
+     * @return the linked OpenGateway
+     */
+    public @Nullable OpenGateway getGateway() {
+        return gateway;
+    }
+
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(OpenWebNetDeviceDiscoveryService.class);
+        return Set.of(OpenWebNetDeviceDiscoveryService.class, OpenWebNetBridgeActions.class);
     }
 
     /**
      * Search for devices connected to this bridge handler's gateway
-     *
-     * @param listener to receive device found notifications
      */
     public synchronized void searchDevices() {
         scanIsActive = true;
@@ -419,8 +436,50 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @param ownId the device OpenWebNet id
      * @return the registered device Thing handler or null if the id cannot be found
      */
-    public @Nullable OpenWebNetThingHandler getRegisteredDevice(String ownId) {
+    public @Nullable OpenWebNetThingHandler getRegisteredDevice(@Nullable String ownId) {
         return registeredDevices.get(ownId);
+    }
+
+    /**
+     * Adds a light handler to the light map for this bridge, grouped by Area
+     *
+     * @param area the light area
+     * @param lightHandler the light handler to be added
+     */
+    protected void addLight(int area, OpenWebNetThingHandler lightHandler) {
+        if (lightsMap == null) {
+            lightsMap = new LightAutomHandlersMap();
+        }
+        LightAutomHandlersMap lm = lightsMap;
+        if (lm != null) {
+            lm.add(area, lightHandler);
+            logger.debug("Added APL {} to lightsMap", lightHandler.ownId);
+        }
+    }
+
+    /**
+     * Remove a light handler to the light map for this bridge
+     *
+     * @param area the light area
+     * @param lightHandler the light handler to be removed
+     */
+    protected void removeLight(int area, OpenWebNetThingHandler lightHandler) {
+        LightAutomHandlersMap lightsMap = this.lightsMap;
+        if (lightsMap != null) {
+            lightsMap.remove(area, lightHandler);
+            logger.debug("Removed APL {} from lightsMap", lightHandler.ownId);
+        }
+    }
+
+    @Nullable
+    protected List<OpenWebNetThingHandler> getAllLights() {
+        LightAutomHandlersMap lightsMap = this.lightsMap;
+        return (lightsMap != null) ? lightsMap.getAllHandlers() : null;
+    }
+
+    @Nullable
+    public LightAutomHandlersMap getLightsMap() {
+        return this.lightsMap;
     }
 
     private void refreshAllBridgeDevices() {
@@ -446,8 +505,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
                 }
             } else if (System.currentTimeMillis() - lastRegisteredDeviceTS < REFRESH_ALL_DEVICES_DELAY_MSEC) {
                 // a device has been registered with the bridge just now, let's wait for other
-                // devices: re-schedule
-                // refreshAllDevices
+                // devices: re-schedule refreshAllDevices
                 logger.debug("--- REGISTER device just called... re-scheduling refreshAllBridgeDevices()");
                 refreshAllSchedule = scheduler.schedule(this::refreshAllBridgeDevices, REFRESH_ALL_DEVICES_DELAY_MSEC,
                         TimeUnit.MILLISECONDS);
@@ -505,15 +563,30 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             return; // we ignore ACKS/NACKS
         }
         // GATEWAY MANAGEMENT
-        if (msg instanceof GatewayMgmt) {
-            GatewayMgmt gwMsg = (GatewayMgmt) msg;
+        if (msg instanceof GatewayMgmt gwMsg) {
             if (dateTimeSynch && GatewayMgmt.DimGatewayMgmt.DATETIME.equals(gwMsg.getDim())) {
                 checkDateTimeDiff(gwMsg);
             }
             return;
         }
 
+        // LIGHTING multiple messages for BUS
+        if (msg instanceof Lighting lmsg && isBusGateway) {
+            WhereLightAutom whereLightAutom = (WhereLightAutom) lmsg.getWhere();
+            if (whereLightAutom != null && (whereLightAutom.isGeneral() || whereLightAutom.isArea())) {
+                LightAutomHandlersMap lightsMap = this.lightsMap;
+                if (lightsMap != null && !lightsMap.isEmpty()) {
+                    OpenWebNetLightingHandler lightingHandler = (OpenWebNetLightingHandler) lightsMap.getOneHandler();
+                    if (lightingHandler != null) {
+                        lightingHandler.handleMultipleMessage(lmsg);
+                    }
+                }
+                return;
+            }
+        }
+
         BaseOpenMessage baseMsg = (BaseOpenMessage) msg;
+
         // let's try to get the Thing associated with this message...
         if (baseMsg instanceof Lighting || baseMsg instanceof Automation || baseMsg instanceof EnergyManagement
                 || baseMsg instanceof Thermoregulation || baseMsg instanceof CEN || baseMsg instanceof Auxiliary
@@ -573,9 +646,9 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
             logger.warn("received onConnected() but gateway is null");
             return;
         }
-        if (gw instanceof USBGateway) {
+        if (gw instanceof USBGateway usbGateway) {
             logger.info("---- CONNECTED to Zigbee USB gateway bridge '{}' (serialPort: {})", thing.getUID(),
-                    ((USBGateway) gw).getSerialPortName());
+                    usbGateway.getSerialPortName());
         } else {
             logger.info("---- CONNECTED to BUS gateway bridge '{}' ({}:{})", thing.getUID(),
                     ((BUSGateway) gw).getHost(), ((BUSGateway) gw).getPort());
@@ -685,7 +758,8 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @return the ownId String
      */
     protected String ownIdFromDeviceWhere(Where where, OpenWebNetThingHandler handler) {
-        return handler.ownIdPrefix() + "." + normalizeWhere(where);
+        Who w = handler.getManagedWho();
+        return w.value().toString() + "." + normalizeWhere(w, where);
     }
 
     /**
@@ -696,7 +770,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
      * @return the ownId String
      */
     public String ownIdFromWhoWhere(Who who, Where where) {
-        return who.value() + "." + normalizeWhere(where);
+        return who.value() + "." + normalizeWhere(who, where);
     }
 
     /**
@@ -709,7 +783,7 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
         @Nullable
         Where w = baseMsg.getWhere();
         if (w != null) {
-            return baseMsg.getWho().value() + "." + normalizeWhere(w);
+            return baseMsg.getWho().value() + "." + normalizeWhere(baseMsg.getWho(), w);
         } else if (baseMsg instanceof Alarm) { // null and Alarm
             return baseMsg.getWho().value() + "." + "0"; // Alarm System --> where=0
         } else {
@@ -719,32 +793,39 @@ public class OpenWebNetBridgeHandler extends ConfigStatusBridgeHandler implement
     }
 
     /**
-     * Transform a Where address into a Thing id string
+     * Given a Who and a Where address, return a Thing id string
      *
+     * @param who the Who
      * @param where the Where address
      * @return the thing Id string
      */
-    public String thingIdFromWhere(Where where) {
-        return normalizeWhere(where); // '#' cannot be used in ThingUID;
+    public String thingIdFromWhoWhere(Who who, Where where) {
+        return normalizeWhere(who, where); // '#' cannot be used in ThingUID;
     }
 
     /**
-     * Normalize a Where address to generate ownId and Thing id
+     * Normalize, based on Who, a Where address. Used to generate ownId and Thing id
      *
+     * @param who the Who
      * @param where the Where address
      * @return the normalized address as String
      */
-    public String normalizeWhere(Where where) {
+    public String normalizeWhere(Who who, Where where) {
         String str = where.value();
-        if (where instanceof WhereZigBee) {
-            str = ((WhereZigBee) where).valueWithUnit(WhereZigBee.UNIT_ALL); // 76543210X#9 --> 765432100#9
+        if (where instanceof WhereZigBee whereZigBee) {
+            str = whereZigBee.valueWithUnit(WhereZigBee.UNIT_ALL); // 76543210X#9 --> 765432100#9
         } else {
             if (str.indexOf("#4#") == -1) { // skip APL#4#bus case
-                if (str.indexOf('#') == 0) { // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z,
-                                             // Alarm Zone (#Z) --> Z
-                    str = str.substring(1);
-                } else if (str.indexOf('#') > 0 && str.charAt(0) != '0') { // Thermo zone Z and actuator N (Z#N,
-                                                                           // Z=[1-99], N=[1-9]) --> Z
+                if (str.indexOf('#') == 0) {
+                    if (who.equals(Who.THERMOREGULATION) || who.equals(Who.THERMOREGULATION_DIAGNOSTIC)
+                            || who.equals(Who.BURGLAR_ALARM)) {
+                        // Thermo central unit (#0) or zone via central unit (#Z, Z=[1-99]) --> Z
+                        // or Alarm zone #Z --> Z
+                        str = str.substring(1);
+                    } // else leave the initial hash (for example for LightAutomWhere GROUPs #GR -->
+                      // hGR)
+                } else if (str.indexOf('#') > 0 && str.charAt(0) != '0') {
+                    // Thermo zone Z and actuator N (Z#N, Z=[1-99], N=[1-9]) --> Z)
                     str = str.substring(0, str.indexOf('#'));
                 }
             }

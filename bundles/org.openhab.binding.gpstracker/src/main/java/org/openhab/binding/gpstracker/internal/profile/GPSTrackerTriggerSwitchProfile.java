@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,7 +69,7 @@ public class GPSTrackerTriggerSwitchProfile implements TriggerProfile {
     @Override
     public void onTriggerFromHandler(String payload) {
         if (payload.startsWith(regionName)) {
-            OnOffType state = payload.endsWith("enter") ? OnOffType.ON : OnOffType.OFF;
+            OnOffType state = OnOffType.from(payload.endsWith("enter"));
             callback.sendCommand(state);
             logger.debug("Transition trigger {} handled for region {} by profile: {}", payload, regionName, state);
         }

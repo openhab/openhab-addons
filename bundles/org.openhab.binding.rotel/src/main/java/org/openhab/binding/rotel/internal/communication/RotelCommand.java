@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -150,6 +150,7 @@ public enum RotelCommand {
             "main_zone_video5"),
     MAIN_ZONE_SOURCE_VIDEO6("Main Zone Source Video 6", MAIN_ZONE_CMD, (byte) 0x94, "main_zone_video6",
             "main_zone_video6"),
+    MAIN_ZONE_SOURCE_PHONO("Main Zone Source Phono", MAIN_ZONE_CMD, (byte) 0x35, "main_zone_phono", "main_zone_phono"),
     MAIN_ZONE_SOURCE_USB("Main Zone Source Front USB", MAIN_ZONE_CMD, (byte) 0x8E, "main_zone_usb", "main_zone_usb"),
     MAIN_ZONE_SOURCE_MULTI_INPUT("Main Zone Source Multi Input", MAIN_ZONE_CMD, (byte) 0x15, "main_zone_multi_input",
             "main_zone_multi_input"),
@@ -166,6 +167,7 @@ public enum RotelCommand {
     RECORD_SOURCE_VIDEO4("Record Source Video 4", RECORD_SRC_CMD, (byte) 0x08, "record_video4", "record_video4"),
     RECORD_SOURCE_VIDEO5("Record Source Video 5", RECORD_SRC_CMD, (byte) 0x09, "record_video5", "record_video5"),
     RECORD_SOURCE_VIDEO6("Record Source Video 6", RECORD_SRC_CMD, (byte) 0x94, "record_video6", "record_video6"),
+    RECORD_SOURCE_PHONO("Record Source Phono", RECORD_SRC_CMD, (byte) 0x35, "record_phono", "record_phono"),
     RECORD_SOURCE_USB("Record Source Front USB", RECORD_SRC_CMD, (byte) 0x8E, "record_usb", "record_usb"),
     RECORD_SOURCE_MAIN("Record Follow Main Zone Source", RECORD_SRC_CMD, (byte) 0x6B, "record_follow_main",
             "record_follow_main"),
@@ -178,6 +180,7 @@ public enum RotelCommand {
     ZONE2_SOURCE_VIDEO4("Zone 2 Source Video 4", ZONE2_CMD, (byte) 0x08, "zone2_video4", "zone2_video4"),
     ZONE2_SOURCE_VIDEO5("Zone 2 Source Video 5", ZONE2_CMD, (byte) 0x09, "zone2_video5", "zone2_video5"),
     ZONE2_SOURCE_VIDEO6("Zone 2 Source Video 6", ZONE2_CMD, (byte) 0x94, "zone2_video6", "zone2_video6"),
+    ZONE2_SOURCE_PHONO("Zone 2 Source Phono", ZONE2_CMD, (byte) 0x35, "zone2_phono", "zone2_phono"),
     ZONE2_SOURCE_USB("Zone 2 Source Front USB", ZONE2_CMD, (byte) 0x8E, "zone2_usb", "zone2_usb"),
     ZONE2_SOURCE_MAIN("Zone 2 Follow Main Zone Source", ZONE2_CMD, (byte) 0x6B, "zone2_follow_main",
             "zone2_follow_main"),
@@ -194,6 +197,7 @@ public enum RotelCommand {
     ZONE3_SOURCE_VIDEO4("Zone 3 Source Video 4", ZONE3_CMD, (byte) 0x08, "zone3_video4", "zone3_video4"),
     ZONE3_SOURCE_VIDEO5("Zone 3 Source Video 5", ZONE3_CMD, (byte) 0x09, "zone3_video5", "zone3_video5"),
     ZONE3_SOURCE_VIDEO6("Zone 3 Source Video 6", ZONE3_CMD, (byte) 0x94, "zone3_video6", "zone3_video6"),
+    ZONE3_SOURCE_PHONO("Zone 3 Source Phono", ZONE3_CMD, (byte) 0x35, "zone3_phono", "zone3_phono"),
     ZONE3_SOURCE_USB("Zone 3 Source Front USB", ZONE3_CMD, (byte) 0x8E, "zone3_usb", "zone3_usb"),
     ZONE3_SOURCE_MAIN("Zone 3 Follow Main Zone Source", ZONE3_CMD, (byte) 0x6B, "zone3_follow_main",
             "zone3_follow_main"),
@@ -210,6 +214,7 @@ public enum RotelCommand {
     ZONE4_SOURCE_VIDEO4("Zone 4 Source Video 4", ZONE4_CMD, (byte) 0x08, "zone4_video4", "zone4_video4"),
     ZONE4_SOURCE_VIDEO5("Zone 4 Source Video 5", ZONE4_CMD, (byte) 0x09, "zone4_video5", "zone4_video5"),
     ZONE4_SOURCE_VIDEO6("Zone 4 Source Video 6", ZONE4_CMD, (byte) 0x94, "zone4_video6", "zone4_video6"),
+    ZONE4_SOURCE_PHONO("Zone 4 Source Phono", ZONE4_CMD, (byte) 0x35, "zone4_phono", "zone4_phono"),
     ZONE4_SOURCE_USB("Zone 4 Source Front USB", ZONE4_CMD, (byte) 0x8E, "zone4_usb", "zone4_usb"),
     ZONE4_SOURCE_MAIN("Zone 4 Follow Main Zone Source", ZONE4_CMD, (byte) 0x6B, "zone4_follow_main",
             "zone4_follow_main"),
@@ -520,7 +525,8 @@ public enum RotelCommand {
             RDS_PTY, RDS_TP, RDS_TA, FM_MONO_TOGGLE);
     public static final List<RotelCommand> TUNER_CMDS_SET2 = List.of(TUNE_UP, TUNE_DOWN, PRESET_UP, PRESET_DOWN,
             FREQUENCY_UP, FREQUENCY_DOWN, MEMORY, BAND_TOGGLE, AM, FM, TUNE_PRESET_TOGGLE, TUNING_MODE_SELECT,
-            PRESET_MODE_SELECT, FREQUENCY_DIRECT, PRESET_SCAN, TUNER_DISPLAY, RDS_PTY, RDS_TP, RDS_TA, FM_MONO_TOGGLE);
+            PRESET_MODE_SELECT, FREQUENCY_DIRECT, PRESET_SCAN, FM_MONO_TOGGLE);
+    public static final List<RotelCommand> TUNER_CMDS_SET3 = List.of(TUNER_DISPLAY, RDS_PTY, RDS_TP, RDS_TA);
     public static final List<RotelCommand> ZONE2_TUNER_CMDS_SET1 = List.of(ZONE2_TUNE_UP, ZONE2_TUNE_DOWN,
             ZONE2_BAND_TOGGLE, ZONE2_AM, ZONE2_FM, ZONE2_TUNE_PRESET_TOGGLE, ZONE2_TUNING_MODE_SELECT,
             ZONE2_PRESET_MODE_SELECT, ZONE2_PRESET_SCAN, ZONE2_FM_MONO_TOGGLE);
@@ -563,17 +569,18 @@ public enum RotelCommand {
     public static final List<RotelCommand> OTHER_CMDS_SET1 = List.of(RECORD_FONCTION_SELECT, TONE_CONTROL_SELECT,
             DYNAMIC_RANGE, DIGITAL_INPUT_SELECT, ZONE_TOGGLE, CENTER_TRIM, SUB_TRIM, SURROUND_TRIM, CINEMA_EQ_TOGGLE);
     public static final List<RotelCommand> OTHER_CMDS_SET2 = List.of(POWER_OFF_ALL_ZONES, PARTY_MODE_TOGGLE,
-            ZONE2_PARTY_MODE_TOGGLE, ZONE3_PARTY_MODE_TOGGLE, ZONE4_PARTY_MODE_TOGGLE, OUTPUT_RESOLUTION, HDMI_AMP_MODE,
-            HDMI_TV_MODE);
+            ZONE2_PARTY_MODE_TOGGLE, ZONE3_PARTY_MODE_TOGGLE, ZONE4_PARTY_MODE_TOGGLE);
     public static final List<RotelCommand> OTHER_CMDS_SET3 = List.of(RECORD_FONCTION_SELECT, DYNAMIC_RANGE,
             DIGITAL_INPUT_SELECT, ZONE_TOGGLE, CENTER_TRIM, SUB_TRIM, SURROUND_TRIM, CINEMA_EQ_TOGGLE);
-    public static final List<RotelCommand> OTHER_CMDS_SET4 = List.of(POWER_OFF_ALL_ZONES, PARTY_MODE_TOGGLE,
-            ZONE2_PARTY_MODE_TOGGLE, ZONE3_PARTY_MODE_TOGGLE, ZONE4_PARTY_MODE_TOGGLE, OUTPUT_RESOLUTION, HDMI_AMP_MODE,
-            HDMI_TV_MODE, ROOM_EQ_TOGGLE, SPEAKER_SETTING_TOGGLE, RESET_FACTORY);
+    public static final List<RotelCommand> OTHER_CMDS_SET4 = List.of(OUTPUT_RESOLUTION, HDMI_AMP_MODE, HDMI_TV_MODE);
     public static final List<RotelCommand> OTHER_CMDS_SET5 = List.of(POWER_MODE, POWER_MODE_QUICK, POWER_MODE_NORMAL,
             RESET_FACTORY);
     public static final List<RotelCommand> OTHER_CMDS_SET6 = List.of(POWER_MODE, RESET_FACTORY);
     public static final List<RotelCommand> OTHER_CMDS_SET7 = List.of(NEXT_MODE, RESET_FACTORY);
+    public static final List<RotelCommand> OTHER_CMDS_SET8 = List.of(ROOM_EQ_TOGGLE, SPEAKER_SETTING_TOGGLE,
+            RESET_FACTORY);
+    public static final List<RotelCommand> OTHER_CMDS_SET9 = List.of(RECORD_FONCTION_SELECT, TONE_CONTROL_SELECT,
+            ZONE_TOGGLE);
 
     public static final byte PRIMARY_COMMAND = (byte) 0x10;
 
@@ -765,5 +772,28 @@ public enum RotelCommand {
             List<RotelCommand> list7, List<RotelCommand> list8, List<RotelCommand> list9) {
         return Stream.of(list1, list2, list3, list4, list5, list6, list7, list8, list9).flatMap(Collection::stream)
                 .collect(Collectors.toList());
+    }
+
+    public static List<RotelCommand> concatenate(List<RotelCommand> list1, List<RotelCommand> list2,
+            List<RotelCommand> list3, List<RotelCommand> list4, List<RotelCommand> list5, List<RotelCommand> list6,
+            List<RotelCommand> list7, List<RotelCommand> list8, List<RotelCommand> list9, List<RotelCommand> list10) {
+        return Stream.of(list1, list2, list3, list4, list5, list6, list7, list8, list9, list10)
+                .flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    public static List<RotelCommand> concatenate(List<RotelCommand> list1, List<RotelCommand> list2,
+            List<RotelCommand> list3, List<RotelCommand> list4, List<RotelCommand> list5, List<RotelCommand> list6,
+            List<RotelCommand> list7, List<RotelCommand> list8, List<RotelCommand> list9, List<RotelCommand> list10,
+            List<RotelCommand> list11) {
+        return Stream.of(list1, list2, list3, list4, list5, list6, list7, list8, list9, list10, list11)
+                .flatMap(Collection::stream).collect(Collectors.toList());
+    }
+
+    public static List<RotelCommand> concatenate(List<RotelCommand> list1, List<RotelCommand> list2,
+            List<RotelCommand> list3, List<RotelCommand> list4, List<RotelCommand> list5, List<RotelCommand> list6,
+            List<RotelCommand> list7, List<RotelCommand> list8, List<RotelCommand> list9, List<RotelCommand> list10,
+            List<RotelCommand> list11, List<RotelCommand> list12) {
+        return Stream.of(list1, list2, list3, list4, list5, list6, list7, list8, list9, list10, list11, list12)
+                .flatMap(Collection::stream).collect(Collectors.toList());
     }
 }

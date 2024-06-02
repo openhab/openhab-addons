@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -129,7 +129,7 @@ import com.google.gson.stream.MalformedJsonException;
  * <pre>
  * {
  *     &#64;code
- *     RuntimeTypeAdapterFactory<Shape> shapeAdapterFactory = RuntimeTypeAdapterFactory.of(Shape.class, "type");
+ *     RuntimeTypeAdapterFactory&lt;Shape> shapeAdapterFactory = RuntimeTypeAdapterFactory.of(Shape.class, "type");
  * }
  * </pre>
  *
@@ -159,7 +159,7 @@ import com.google.gson.stream.MalformedJsonException;
  * <pre>
  * {
  *     &#64;code
- *     RuntimeTypeAdapterFactory<Shape> shapeAdapterFactory = RuntimeTypeAdapterFactory.of(Shape.class)
+ *     RuntimeTypeAdapterFactory&lt;Shape> shapeAdapterFactory = RuntimeTypeAdapterFactory.of(Shape.class)
  *             .registerSubtype(Rectangle.class).registerSubtype(Circle.class).registerSubtype(Diamond.class);
  * }
  * </pre>
@@ -170,8 +170,8 @@ import com.google.gson.stream.MalformedJsonException;
 public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
     private final Class<?> baseType;
     private final String typeFieldName;
-    private final Map<String, Class<?>> labelToSubtype = new LinkedHashMap<String, Class<?>>();
-    private final Map<Class<?>, String> subtypeToLabel = new LinkedHashMap<Class<?>, String>();
+    private final Map<String, Class<?>> labelToSubtype = new LinkedHashMap<>();
+    private final Map<Class<?>, String> subtypeToLabel = new LinkedHashMap<>();
 
     private RuntimeTypeAdapterFactory(Class<?> baseType, String typeFieldName) {
         if (typeFieldName == null || baseType == null) {
@@ -186,7 +186,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
      * typeFieldName} as the type field name. Type field names are case sensitive.
      */
     public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType, String typeFieldName) {
-        return new RuntimeTypeAdapterFactory<T>(baseType, typeFieldName);
+        return new RuntimeTypeAdapterFactory<>(baseType, typeFieldName);
     }
 
     /**
@@ -194,7 +194,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
      * the type field name.
      */
     public static <T> RuntimeTypeAdapterFactory<T> of(Class<T> baseType) {
-        return new RuntimeTypeAdapterFactory<T>(baseType, "type");
+        return new RuntimeTypeAdapterFactory<>(baseType, "type");
     }
 
     /**
@@ -233,8 +233,8 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
             return null;
         }
 
-        final Map<String, TypeAdapter<?>> labelToDelegate = new LinkedHashMap<String, TypeAdapter<?>>();
-        final Map<Class<?>, TypeAdapter<?>> subtypeToDelegate = new LinkedHashMap<Class<?>, TypeAdapter<?>>();
+        final Map<String, TypeAdapter<?>> labelToDelegate = new LinkedHashMap<>();
+        final Map<Class<?>, TypeAdapter<?>> subtypeToDelegate = new LinkedHashMap<>();
         for (Map.Entry<String, Class<?>> entry : labelToSubtype.entrySet()) {
             TypeAdapter<?> delegate = gson.getDelegateAdapter(this, TypeToken.get(entry.getValue()));
             labelToDelegate.put(entry.getKey(), delegate);
@@ -320,7 +320,7 @@ public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {
         RuntimeTypeAdapterFactory.JSON_ELEMENT.write(writer, element);
     }
 
-    private static final TypeAdapter<JsonElement> JSON_ELEMENT = new TypeAdapter<JsonElement>() {
+    private static final TypeAdapter<JsonElement> JSON_ELEMENT = new TypeAdapter<>() {
         @Override
         public @Nullable JsonElement read(@Nullable JsonReader in) throws IOException {
             switch (in.peek()) {

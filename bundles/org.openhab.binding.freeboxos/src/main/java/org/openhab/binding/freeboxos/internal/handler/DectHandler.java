@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,15 +66,14 @@ public class DectHandler extends FxsHandler {
                 return true;
             }
         }
-        if (command instanceof PercentType) {
-            PercentType percent = (PercentType) command;
+        if (command instanceof PercentType percentCommand) {
             if (GAIN_RX.equals(channelId)) {
-                phoneManager.setGainRx(getClientId(), percent.intValue());
-                updateIfActive(GAIN_RX, percent);
+                phoneManager.setGainRx(getClientId(), percentCommand.intValue());
+                updateIfActive(GAIN_RX, percentCommand);
                 return true;
             } else if (GAIN_TX.equals(channelId)) {
-                phoneManager.setGainTx(getClientId(), percent.intValue());
-                updateIfActive(GAIN_RX, percent);
+                phoneManager.setGainTx(getClientId(), percentCommand.intValue());
+                updateIfActive(GAIN_RX, percentCommand);
                 return true;
             }
         }

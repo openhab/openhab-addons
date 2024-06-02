@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -171,9 +171,9 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                     if (command == RefreshType.REFRESH) {
                         StringType input = new StringType(device.getInputStatus().getResult().getValue());
                         updateState(PJLinkDeviceBindingConstants.CHANNEL_INPUT, input);
-                    } else if (command instanceof StringType) {
+                    } else if (command instanceof StringType stringCommand) {
                         logger.trace("Received input command {}", command);
-                        Input input = new Input(((StringType) command).toString());
+                        Input input = new Input(stringCommand.toString());
                         device.setInput(input);
                     } else {
                         logger.debug("Received unknown channel command {}", command);
@@ -181,16 +181,21 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                     break;
                 case CHANNEL_TYPE_AUDIO_MUTE:
                 case CHANNEL_TYPE_VIDEO_MUTE:
+                case CHANNEL_TYPE_AUDIO_AND_VIDEO_MUTE:
                     boolean isAudioMute = channelTypeId.equals(PJLinkDeviceBindingConstants.CHANNEL_TYPE_AUDIO_MUTE);
                     boolean isVideoMute = channelTypeId.equals(PJLinkDeviceBindingConstants.CHANNEL_TYPE_VIDEO_MUTE);
-                    if (isVideoMute || isAudioMute) {
+                    boolean isAudioAndVideoMute = channelTypeId
+                            .equals(PJLinkDeviceBindingConstants.CHANNEL_TYPE_AUDIO_AND_VIDEO_MUTE);
+                    if (isVideoMute || isAudioMute || isAudioAndVideoMute) {
                         if (command == RefreshType.REFRESH) {
                             // refresh both video and audio mute, as it's one request
                             MuteQueryResponseValue muteStatus = device.getMuteStatus();
                             updateState(PJLinkDeviceBindingConstants.CHANNEL_AUDIO_MUTE,
-                                    muteStatus.isAudioMuted() ? OnOffType.ON : OnOffType.OFF);
+                                    OnOffType.from(muteStatus.isAudioMuted()));
                             updateState(PJLinkDeviceBindingConstants.CHANNEL_VIDEO_MUTE,
-                                    muteStatus.isVideoMuted() ? OnOffType.ON : OnOffType.OFF);
+                                    OnOffType.from(muteStatus.isVideoMuted()));
+                            updateState(PJLinkDeviceBindingConstants.CHANNEL_TYPE_AUDIO_AND_VIDEO_MUTE,
+                                    OnOffType.from(muteStatus.isAudioAndVideoMuted()));
                         } else {
                             if (isAudioMute) {
                                 logger.trace("Received audio mute command {}", command);
@@ -201,6 +206,11 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                                 logger.trace("Received video mute command {}", command);
                                 boolean muteOn = command == OnOffType.ON;
                                 device.setMute(MuteInstructionChannel.VIDEO, muteOn);
+                            }
+                            if (isAudioAndVideoMute) {
+                                logger.trace("Received video mute command {}", command);
+                                boolean muteOn = command == OnOffType.ON;
+                                device.setMute(MuteInstructionChannel.AUDIO_AND_VIDEO, muteOn);
                             }
                         }
                     } else {
@@ -226,8 +236,7 @@ public class PJLinkDeviceHandler extends BaseThingHandler {
                                 try {
                                     LampState lampState = lampStates.get(lampNumber - 1);
                                     if (isLampActiveChannel) {
-                                        updateState(lampChannel.getUID(),
-                                                lampState.isActive() ? OnOffType.ON : OnOffType.OFF);
+                                        updateState(lampChannel.getUID(), OnOffType.from(lampState.isActive()));
                                     }
                                     if (isLampHoursChannel) {
                                         updateState(lampChannel.getUID(), new DecimalType(lampState.getLampHours()));

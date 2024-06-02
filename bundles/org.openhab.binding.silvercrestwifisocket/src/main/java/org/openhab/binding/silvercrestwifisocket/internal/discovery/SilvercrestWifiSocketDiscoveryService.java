@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,7 @@ public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryServ
     /**
      * Used by OSGI to unset the mediator in the discovery service.
      *
-     * @param mediator the mediator
+     * @param mitsubishiMediator the mediator
      */
     public void unsetMediator(final SilvercrestWifiSocketMediator mitsubishiMediator) {
         logger.debug("Mediator has been unsetted from discovery service.");
@@ -67,7 +67,7 @@ public class SilvercrestWifiSocketDiscoveryService extends AbstractDiscoveryServ
     /**
      * Constructor of the discovery service.
      *
-     * @throws IllegalArgumentException if the timeout < 0
+     * @throws IllegalArgumentException if the timeout {@literal < 0}
      */
     public SilvercrestWifiSocketDiscoveryService() throws IllegalArgumentException {
         super(SilvercrestWifiSocketBindingConstants.SUPPORTED_THING_TYPES_UIDS,

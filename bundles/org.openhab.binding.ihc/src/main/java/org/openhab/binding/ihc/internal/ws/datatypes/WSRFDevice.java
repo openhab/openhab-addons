@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,7 +69,7 @@ public class WSRFDevice {
     /**
      * Sets the device type value for this WSRFDevice.
      *
-     * @param device type
+     * @param deviceType device type
      */
     public void setDeviceType(int deviceType) {
         this.deviceType = deviceType;
@@ -87,7 +87,7 @@ public class WSRFDevice {
     /**
      * Sets the serial number value for this WSRFDevice.
      *
-     * @param Serial number
+     * @param serialNumber Serial number
      */
     public void setSerialNumber(long serialNumber) {
         this.serialNumber = serialNumber;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -159,9 +159,6 @@ public class WSUser {
 
     /**
      * Sets the value of the firstname property.
-     *
-     * @return possible object is {@link String }
-     *
      */
     public void setFirstname(String value) {
         this.firstname = value;
@@ -189,9 +186,6 @@ public class WSUser {
 
     /**
      * Gets the value of the phone property.
-     *
-     * @param value allowed object is {@link String }
-     *
      */
     public String getPhone() {
         return phone;

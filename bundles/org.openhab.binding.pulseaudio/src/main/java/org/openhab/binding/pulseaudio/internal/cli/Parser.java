@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.pulseaudio.internal.cli;
 
+import static org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants.MODULE_SIMPLE_PROTOCOL_TCP_NAME;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pulseaudio.internal.PulseaudioClient;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
 import org.openhab.binding.pulseaudio.internal.items.Module;
+import org.openhab.binding.pulseaudio.internal.items.SimpleProtocolTCPModule;
 import org.openhab.binding.pulseaudio.internal.items.Sink;
 import org.openhab.binding.pulseaudio.internal.items.SinkInput;
 import org.openhab.binding.pulseaudio.internal.items.Source;
@@ -82,9 +86,20 @@ public class Parser {
                 }
             }
             if (properties.containsKey("name")) {
-                Module module = new Module(id, properties.get("name"));
-                if (properties.containsKey("argument")) {
-                    module.setArgument(properties.get("argument"));
+                Module module;
+                if (MODULE_SIMPLE_PROTOCOL_TCP_NAME.equals(properties.get("name"))) {
+                    String arguments = properties.get("argument");
+                    Optional<String> portString = arguments != null ? extractArgumentFromLine("port", arguments)
+                            : Optional.empty();
+                    if (portString.isEmpty()) {
+                        LOGGER.warn("Unable to parse module-simple-protocol-tcp module {} info it will not work", id);
+                        module = new Module(id, properties.get("name"), properties.get("argument"));
+                    } else {
+                        int port = Integer.parseInt(portString.get());
+                        module = new SimpleProtocolTCPModule(id, properties.get("name"), port, arguments);
+                    }
+                } else {
+                    module = new Module(id, properties.get("name"), properties.get("argument"));
                 }
                 modules.add(module);
             }
@@ -182,7 +197,7 @@ public class Parser {
             try {
                 id = Integer.valueOf(lines[0].trim());
             } catch (NumberFormatException e) {
-                // sometime the line feed is missing here
+                // some times the line feed is missing here
                 Matcher matcher = FALL_BACK_PATTERN.matcher(lines[0].trim());
                 if (matcher.find()) {
                     id = Integer.valueOf(matcher.group(1));
@@ -243,7 +258,7 @@ public class Parser {
             try {
                 id = Integer.valueOf(lines[0].trim());
             } catch (NumberFormatException e) {
-                // sometime the line feed is missing here
+                // some times the line feed is missing here
                 Matcher matcher = FALL_BACK_PATTERN.matcher(lines[0].trim());
                 if (matcher.find()) {
                     id = Integer.valueOf(matcher.group(1));
@@ -339,6 +354,22 @@ public class Parser {
             }
         }
         return items;
+    }
+
+    public static Optional<String> extractArgumentFromLine(String argumentWanted, @Nullable String argumentLine) {
+        String argument = null;
+        if (argumentLine != null) {
+            int startPortIndex = argumentLine.indexOf(argumentWanted + "=");
+            if (startPortIndex != -1) {
+                startPortIndex = startPortIndex + argumentWanted.length() + 1;
+                int endPortIndex = argumentLine.indexOf(" ", startPortIndex);
+                if (endPortIndex == -1) {
+                    endPortIndex = argumentLine.length();
+                }
+                argument = argumentLine.substring(startPortIndex, endPortIndex);
+            }
+        }
+        return Optional.ofNullable(argument);
     }
 
     /**

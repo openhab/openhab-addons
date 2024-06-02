@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,7 +45,7 @@ public class DataUtil {
 
     @SuppressWarnings("null")
     public Reader openDataReader(String fileName) throws FileNotFoundException {
-        String packagePath = (DataUtil.class.getPackage().getName()).replaceAll("\\.", "/");
+        String packagePath = (DataUtil.class.getPackage().getName()).replace(".", "/");
         String filePath = "src/test/resources/" + packagePath + "/" + fileName;
 
         InputStream inputStream = new FileInputStream(filePath);

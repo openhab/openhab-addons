@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,10 +28,13 @@ import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.Type;
 import org.openhab.core.types.TypeParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,16 +195,16 @@ public class ChannelState implements MqttMessageSubscriber {
 
         Command command = TypeParser.parseCommand(cachedValue.getSupportedCommandTypes(), strValue);
         if (command == null) {
-            logger.warn("Incoming payload '{}' not supported by type '{}'", strValue,
+            logger.warn("Incoming payload '{}' on '{}' not supported by type '{}'", strValue, topic,
                     cachedValue.getClass().getSimpleName());
             receivedOrTimeout();
             return;
         }
 
-        Command parsedCommand;
+        Type parsedType;
         // Map the string to a command, update the cached value and post the command to the framework
         try {
-            parsedCommand = cachedValue.parseMessage(command);
+            parsedType = cachedValue.parseMessage(command);
         } catch (IllegalArgumentException | IllegalStateException e) {
             logger.warn("Command '{}' from channel '{}' not supported by type '{}': {}", strValue, channelUID,
                     cachedValue.getClass().getSimpleName(), e.getMessage());
@@ -209,18 +212,23 @@ public class ChannelState implements MqttMessageSubscriber {
             return;
         }
 
-        // things that are only Commands _must_ be posted as a command (like STOP)
-        if (!(parsedCommand instanceof State)) {
-            channelStateUpdateListener.postChannelCommand(channelUID, parsedCommand);
+        if (parsedType instanceof State parsedState) {
+            cachedValue.update(parsedState);
+        } else {
+            // things that are only Commands _must_ be posted as a command (like STOP)
+            channelStateUpdateListener.postChannelCommand(channelUID, (Command) parsedType);
             receivedOrTimeout();
             return;
         }
-        cachedValue.update((State) parsedCommand);
 
-        if (config.postCommand) {
-            channelStateUpdateListener.postChannelCommand(channelUID, (Command) cachedValue.getChannelState());
+        State newState = cachedValue.getChannelState();
+        // If the user explicitly wants a command sent, not an update, do that. But
+        // we have to check that the state is even possible to send as a command
+        // (i.e. not UNDEF)
+        if (config.postCommand && newState instanceof Command newCommand) {
+            channelStateUpdateListener.postChannelCommand(channelUID, newCommand);
         } else {
-            channelStateUpdateListener.updateChannelState(channelUID, cachedValue.getChannelState());
+            channelStateUpdateListener.updateChannelState(channelUID, newState);
         }
         receivedOrTimeout();
     }
@@ -372,7 +380,13 @@ public class ChannelState implements MqttMessageSubscriber {
 
         // Outgoing transformations
         for (ChannelStateTransformation t : transformationsOut) {
-            String commandString = mqttFormatter.getMQTTpublishValue(mqttCommandValue, null);
+            Command cValue = mqttCommandValue;
+            // Only pass numeric value for QuantityType.
+            if (mqttCommandValue instanceof QuantityType<?> qtCommandValue) {
+                cValue = new DecimalType(qtCommandValue.toBigDecimal());
+
+            }
+            String commandString = mqttFormatter.getMQTTpublishValue(cValue, "%s");
             String transformedValue = t.processValue(commandString);
             if (transformedValue != null) {
                 mqttFormatter = new TextValue();
@@ -389,7 +403,13 @@ public class ChannelState implements MqttMessageSubscriber {
         // Formatter: Applied before the channel state value is published to the MQTT broker.
         if (config.formatBeforePublish.length() > 0) {
             try {
-                commandString = mqttFormatter.getMQTTpublishValue(mqttCommandValue, config.formatBeforePublish);
+                Command cValue = mqttCommandValue;
+                // Only pass numeric value for QuantityType of format pattern is %s.
+                if ((mqttCommandValue instanceof QuantityType<?> qtCommandValue)
+                        && ("%s".equals(config.formatBeforePublish) || "%S".equals(config.formatBeforePublish))) {
+                    cValue = new DecimalType(qtCommandValue.toBigDecimal());
+                }
+                commandString = mqttFormatter.getMQTTpublishValue(cValue, config.formatBeforePublish);
             } catch (IllegalFormatException e) {
                 logger.debug("Format pattern incorrect for {}", channelUID, e);
                 commandString = mqttFormatter.getMQTTpublishValue(mqttCommandValue, null);

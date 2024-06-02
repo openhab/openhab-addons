@@ -5,7 +5,37 @@
 
 	<type>binding</type>
 	<name>DanfossAirUnit Binding</name>
-	<description>This is the binding for DanfossAirUnit.</description>
+	<description>This is the binding for Danfoss Air heat recovery ventilation units.</description>
 	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>ip</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>type</name>
+					<value>ipBroadcast</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>destPort</name>
+					<value>30045</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>request</name>
+					<value>0x0c 0x00 0x30 0x00 0x11 0x00 0x12 0x00 0x13</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>timeoutMs</name>
+					<value>500</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>response</name>
+					<regex>0x0d 0x00 0x07 0x00 0x02 0x02 0x00</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
 
 </addon:addon>

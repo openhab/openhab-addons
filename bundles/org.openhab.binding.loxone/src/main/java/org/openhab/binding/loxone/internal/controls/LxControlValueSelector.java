@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -96,25 +96,25 @@ class LxControlValueSelector extends LxControl {
             logger.debug("Value selector min or max value missing or min>max.");
             return;
         }
-        if (command instanceof OnOffType) {
-            if ((OnOffType) command == OnOffType.ON) {
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
                 sendAction(maxValue.toString());
             } else {
                 sendAction(minValue.toString());
             }
-        } else if (command instanceof IncreaseDecreaseType) {
+        } else if (command instanceof IncreaseDecreaseType increaseDecreaseCommand) {
             if (stepValue == null) {
                 logger.debug("Value selector step value missing.");
                 return;
             }
-            IncreaseDecreaseType type = (IncreaseDecreaseType) command;
-            if (increaseOnly != null && type == IncreaseDecreaseType.DECREASE && increaseOnly) {
+            if (increaseOnly != null && increaseDecreaseCommand == IncreaseDecreaseType.DECREASE && increaseOnly) {
                 logger.debug("Value selector configured to allow increase only.");
                 return;
             }
             Double currentValue = getStateDoubleValue(STATE_VALUE);
             if (currentValue != null) {
-                Double nextValue = currentValue + (type == IncreaseDecreaseType.INCREASE ? stepValue : -stepValue);
+                Double nextValue = currentValue
+                        + (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE ? stepValue : -stepValue);
                 if (nextValue > maxValue) {
                     nextValue = maxValue;
                 }
@@ -123,8 +123,8 @@ class LxControlValueSelector extends LxControl {
                 }
                 sendAction(nextValue.toString());
             }
-        } else if (command instanceof PercentType) {
-            Double value = ((PercentType) command).doubleValue() * (maxValue - minValue) / 100.0 + minValue;
+        } else if (command instanceof PercentType percentCommand) {
+            Double value = percentCommand.doubleValue() * (maxValue - minValue) / 100.0 + minValue;
             sendAction(value.toString());
         }
     }
@@ -134,8 +134,8 @@ class LxControlValueSelector extends LxControl {
             logger.debug("Value selector min or max value missing or min>max.");
             return;
         }
-        if (command instanceof DecimalType) {
-            Double value = ((DecimalType) command).doubleValue();
+        if (command instanceof DecimalType decimalCommand) {
+            Double value = decimalCommand.doubleValue();
             if (value < minValue || value > maxValue) {
                 logger.debug("Value {} out of {}-{} range", value, minValue, maxValue);
                 return;

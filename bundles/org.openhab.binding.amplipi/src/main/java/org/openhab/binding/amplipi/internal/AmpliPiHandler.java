@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -99,12 +99,11 @@ public class AmpliPiHandler extends BaseBridgeHandler {
         if (CHANNEL_PRESET.equals(channelUID.getId())) {
             if (command instanceof RefreshType) {
                 updateState(channelUID, UnDefType.NULL);
-            } else if (command instanceof DecimalType) {
-                DecimalType preset = (DecimalType) command;
+            } else if (command instanceof DecimalType decimalCommand) {
                 try {
                     ContentResponse response = this.httpClient
-                            .newRequest(url + "/api/presets/" + preset.intValue() + "/load").method(HttpMethod.POST)
-                            .timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
+                            .newRequest(url + "/api/presets/" + decimalCommand.intValue() + "/load")
+                            .method(HttpMethod.POST).timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
                     if (response.getStatus() != HttpStatus.OK_200) {
                         logger.error("AmpliPi API returned HTTP status {}.", response.getStatus());
                         logger.debug("Content: {}", response.getContentAsString());
@@ -115,11 +114,10 @@ public class AmpliPiHandler extends BaseBridgeHandler {
                 }
             }
         } else if (channelUID.getId().startsWith(CHANNEL_INPUT)) {
-            if (command instanceof StringType) {
-                StringType input = (StringType) command;
+            if (command instanceof StringType stringCommand) {
                 int source = Integer.valueOf(channelUID.getId().substring(CHANNEL_INPUT.length())) - 1;
                 SourceUpdate update = new SourceUpdate();
-                update.setInput(input.toString());
+                update.setInput(stringCommand.toString());
                 try {
                     StringContentProvider contentProvider = new StringContentProvider(gson.toJson(update));
                     ContentResponse response = this.httpClient.newRequest(url + "/api/sources/" + source)

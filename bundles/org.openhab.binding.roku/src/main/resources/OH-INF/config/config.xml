@@ -16,7 +16,7 @@
 			<default>8060</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="refresh" type="integer" min="10" required="false" unit="s">
+		<parameter name="refresh" type="integer" min="1" required="false" unit="s">
 			<label>Refresh Interval</label>
 			<description>Specifies the Refresh Interval in Seconds</description>
 			<default>10</default>

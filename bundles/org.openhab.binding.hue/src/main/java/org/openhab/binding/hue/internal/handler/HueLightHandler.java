@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,11 +24,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.dto.Capabilities;
-import org.openhab.binding.hue.internal.dto.ColorTemperature;
-import org.openhab.binding.hue.internal.dto.FullLight;
-import org.openhab.binding.hue.internal.dto.State;
-import org.openhab.binding.hue.internal.dto.StateUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.Capabilities;
+import org.openhab.binding.hue.internal.api.dto.clip1.ColorTemperature;
+import org.openhab.binding.hue.internal.api.dto.clip1.Control;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullLight;
+import org.openhab.binding.hue.internal.api.dto.clip1.State;
+import org.openhab.binding.hue.internal.api.dto.clip1.StateUpdate;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
@@ -191,26 +192,34 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
     }
 
     private void initializeCapabilities(@Nullable FullLight fullLight) {
-        if (!capabilitiesInitializedSuccessfully && fullLight != null) {
-            Capabilities capabilities = fullLight.capabilities;
-            if (capabilities != null) {
-                ColorTemperature ct = capabilities.control.ct;
-                if (ct != null) {
-                    colorTemperatureCapabilties = ct;
-
-                    // minimum and maximum are inverted due to mired/Kelvin conversion!
-                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
-                            .withMinimum(new BigDecimal(LightStateConverter.miredToKelvin(ct.max))) //
-                            .withMaximum(new BigDecimal(LightStateConverter.miredToKelvin(ct.min))) //
-                            .withStep(new BigDecimal(100)) //
-                            .withPattern("%.0f K") //
-                            .build();
-                    stateDescriptionProvider.setStateDescriptionFragment(
-                            new ChannelUID(thing.getUID(), CHANNEL_COLORTEMPERATURE_ABS), stateDescriptionFragment);
-                }
-            }
-            capabilitiesInitializedSuccessfully = true;
+        if (capabilitiesInitializedSuccessfully || fullLight == null) {
+            return;
         }
+        Capabilities capabilities = fullLight.capabilities;
+        if (capabilities == null) {
+            return;
+        }
+        Control control = capabilities.control;
+        if (control == null) {
+            return;
+        }
+        ColorTemperature ct = control.ct;
+        if (ct == null) {
+            return;
+        }
+        colorTemperatureCapabilties = ct;
+
+        // minimum and maximum are inverted due to mired/Kelvin conversion!
+        StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                .withMinimum(new BigDecimal(LightStateConverter.miredToKelvin(ct.max))) //
+                .withMaximum(new BigDecimal(LightStateConverter.miredToKelvin(ct.min))) //
+                .withStep(new BigDecimal(100)) //
+                .withPattern("%.0f K") //
+                .build();
+        stateDescriptionProvider.setStateDescriptionFragment(
+                new ChannelUID(thing.getUID(), CHANNEL_COLORTEMPERATURE_ABS), stateDescriptionFragment);
+
+        capabilitiesInitializedSuccessfully = true;
     }
 
     @Override

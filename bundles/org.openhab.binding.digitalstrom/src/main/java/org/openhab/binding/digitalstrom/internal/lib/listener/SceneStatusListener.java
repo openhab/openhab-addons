@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,8 +22,9 @@ import org.openhab.binding.digitalstrom.internal.lib.structure.scene.InternalSce
  * By implementation with the id {@link #SCENE_DISCOVERY} this listener can be used as a scene discovery to get
  * informed, if a new {@link InternalScene}s is added or removed from the digitalSTROM-System.<br>
  * For that the {@link SceneStatusListener} has to be registered on the
- * {@link SceneManager#registerSceneListener(SceneStatusListener)}. Then the {@link SceneStatusListener} gets
- * informed by the methods {@link #onSceneAdded(InternalScene)} and {@link #onSceneRemoved(InternalScene)}.
+ * {@link org.openhab.binding.digitalstrom.internal.lib.manager.SceneManager#registerSceneListener(SceneStatusListener)}.
+ * Then the {@link SceneStatusListener} gets informed by the methods {@link #onSceneAdded(InternalScene)} and
+ * {@link #onSceneRemoved(InternalScene)}.
  *
  * @author Michael Ochel - Initial contribution
  * @author Matthias Siegele - Initial contribution

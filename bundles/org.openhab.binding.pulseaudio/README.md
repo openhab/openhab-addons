@@ -62,12 +62,39 @@ Sink things can register themselves as audio sink in openHAB. MP3 and WAV files 
 Use the appropriate parameter in the sink thing to activate this possibility (activateSimpleProtocolSink).
 This requires the module **module-simple-protocol-tcp** to be present on the server which runs your openHAB instance. The binding will try to command (if not discovered first) the load of this module on the pulseaudio server.
 
+### Thing Configuration
+
+| Config Name                 | Item Type   | Description                                                                                       |
+|-----------------------------|-----------------------------------------------------------------------------------------------------------------|
+| name                        | text        | The name of one specific device. You can also use the description                                 |
+| activateSimpleProtocolSink  | boolean     | Activation of a corresponding sink in OpenHAB                                                     |
+| additionalFilters           | text        | Additional filters to select the proper device on the pulseaudio server, in case of ambiguity     |
+| simpleProtocolIdleModules   | integer     | Number of Simple Protocol TCP Socket modules to keep loaded in the server                         |
+| simpleProtocolMinPort       | integer     | Min port used by simple protocol module instances created by the binding on the pulseaudio host   |
+| simpleProtocolMaxPort       | integer     | Max port used by simple protocol module instances created by the binding on the pulseaudio host   |
+| simpleProtocolSOTimeout     | integer     | Socket SO timeout when connecting to pulseaudio server though module-simple-protocol-tcp          |
+
 ## Audio source
 
 Source things can register themselves as audio source in openHAB.
 WAV input format, rate and channels can be configured on the thing configuration. (defaults to pcm_signed,16000,1)
 Use the appropriate parameter in the source thing to activate this possibility (activateSimpleProtocolSource).
 This requires the module **module-simple-protocol-tcp** to be present on the target pulseaudio server. The binding will load this module on the pulseaudio server.
+
+### Thing Configuration
+
+| Config ID                    | Item Type   | Description                                                                                       |
+|------------------------------|-----------------------------------------------------------------------------------------------------------------|
+| name                         | text        | The name of one specific device. You can also use the description                                 |
+| activateSimpleProtocolSource | boolean     | Activation of a corresponding sink in OpenHAB                                                     |
+| additionalFilters            | text        | Additional filters to select the proper device on the pulseaudio server, in case of ambiguity     |
+| simpleProtocolIdleModules    | integer     | Number of Simple Protocol TCP Socket modules to keep loaded in the server                         |
+| simpleProtocolMinPort        | integer     | Min port used by simple protocol module instances created by the binding on the pulseaudio host   |
+| simpleProtocolMaxPort        | integer     | Max port used by simple protocol module instances created by the binding on the pulseaudio host   |
+| simpleProtocolSOTimeout      | integer     | Socket SO timeout when connecting to pulseaudio server though module-simple-protocol-tcp          |
+| simpleProtocolSourceFormat   | text        | The audio format to be used by module-simple-protocol-tcp on the pulseaudio server                |
+| simpleProtocolSourceRate     | integer     | The audio sample rate to be used by module-simple-protocol-tcp on the pulseaudio server           |
+| simpleProtocolSourceChannels | integer     | The audio channel number to be used by module-simple-protocol-tcp on the pulseaudio server        |
 
 ## Full Example
 
@@ -76,8 +103,8 @@ This requires the module **module-simple-protocol-tcp** to be present on the tar
 ```java
 Bridge pulseaudio:bridge:<bridgname> "<Bridge Label>" @ "<Room>" [ host="<ipAddress>", port=4712 ] {
   Things:
-    Thing sink          multiroom       "Snapcast"           @ "Room"       [name="alsa_card.pci-0000_00_1f.3", activateSimpleProtocolSink=true, simpleProtocolSinkPort=4711, additionalFilters="analog-stereo###internal"]
-    Thing source        microphone      "microphone"         @ "Room"       [name="alsa_input.pci-0000_00_14.2.analog-stereo"]
+    Thing sink          multiroom       "Snapcast"           @ "Room"       [name="alsa_card.pci-0000_00_1f.3", activateSimpleProtocolSink=true, additionalFilters="analog-stereo###internal"]
+    Thing source        microphone      "microphone"         @ "Room"       [name="alsa_input.pci-0000_00_14.2.analog-stereo", activateSimpleProtocolSource=true]
     Thing sink-input    openhabTTS      "OH-Voice"           @ "Room"       [name="alsa_output.pci-0000_00_1f.3.hdmi-stereo-extra1"]
     Thing source-output remotePulseSink "Other Room Speaker" @ "Other Room" [name="alsa_input.pci-0000_00_14.2.analog-stereo"]
     Thing combined-sink hdmiAndAnalog   "Zone 1+2"           @ "Room"       [name="combined"]

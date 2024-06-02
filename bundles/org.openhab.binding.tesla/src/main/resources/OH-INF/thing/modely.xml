@@ -14,6 +14,11 @@
 		<description>A Tesla Model Y Vehicle</description>
 
 		<channels>
+			<channel id="destinationname" typeId="destinationname"/>
+			<channel id="destinationlocation" typeId="destinationlocation"/>
+			<channel id="distancetoarrival" typeId="distancetoarrival"/>
+			<channel id="minutestoarrival" typeId="minutestoarrival"/>
+			<channel id="trafficminutesdelay" typeId="trafficminutesdelay"/>
 			<channel id="allowwakeup" typeId="allowwakeup"/>
 			<channel id="autoconditioning" typeId="autoconditioning"/>
 			<channel id="autoparkstate" typeId="autoparkstate"/>
@@ -110,6 +115,9 @@
 			<channel id="smartpreconditioning" typeId="smartpreconditioning"/>
 			<channel id="steeringwheelheater" typeId="steeringwheelheater"/>
 			<channel id="soc" typeId="soc"/>
+			<channel id="softwareupdateavailable" typeId="softwareupdateavailable"/>
+			<channel id="softwareupdatestatus" typeId="softwareupdatestatus"/>
+			<channel id="softwareupdateversion" typeId="softwareupdateversion"/>
 			<channel id="speed" typeId="speed"/>
 			<channel id="state" typeId="state"/>
 			<channel id="combinedtemp" typeId="combinedtemp"/>
@@ -121,6 +129,10 @@
 			<channel id="valetpin" typeId="valetpin"/>
 			<channel id="wakeup" typeId="wakeup"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 
 		<config-description>
 			<parameter name="vin" type="text" required="true">

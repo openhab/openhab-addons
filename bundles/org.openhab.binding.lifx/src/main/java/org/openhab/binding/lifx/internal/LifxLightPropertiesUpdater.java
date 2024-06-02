@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -148,11 +148,11 @@ public class LifxLightPropertiesUpdater {
             return;
         }
 
-        if (packet instanceof StateVersionResponse) {
-            long productId = ((StateVersionResponse) packet).getProduct();
+        if (packet instanceof StateVersionResponse response) {
+            long productId = response.getProduct();
             properties.put(LifxBindingConstants.PROPERTY_PRODUCT_ID, Long.toString(productId));
 
-            long productVersion = ((StateVersionResponse) packet).getVersion();
+            long productVersion = response.getVersion();
             properties.put(LifxBindingConstants.PROPERTY_PRODUCT_VERSION, Long.toString(productVersion));
 
             try {
@@ -165,12 +165,12 @@ public class LifxLightPropertiesUpdater {
             }
 
             receivedPacketTypes.add(packet.getPacketType());
-        } else if (packet instanceof StateHostFirmwareResponse) {
-            String hostVersion = ((StateHostFirmwareResponse) packet).getVersion().toString();
+        } else if (packet instanceof StateHostFirmwareResponse response) {
+            String hostVersion = response.getVersion().toString();
             properties.put(LifxBindingConstants.PROPERTY_HOST_VERSION, hostVersion);
             receivedPacketTypes.add(packet.getPacketType());
-        } else if (packet instanceof StateWifiFirmwareResponse) {
-            String wifiVersion = ((StateWifiFirmwareResponse) packet).getVersion().toString();
+        } else if (packet instanceof StateWifiFirmwareResponse response) {
+            String wifiVersion = response.getVersion().toString();
             properties.put(LifxBindingConstants.PROPERTY_WIFI_VERSION, wifiVersion);
             receivedPacketTypes.add(packet.getPacketType());
         }

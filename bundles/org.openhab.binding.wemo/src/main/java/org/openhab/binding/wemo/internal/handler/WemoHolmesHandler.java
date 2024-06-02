@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -63,7 +63,7 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(WemoHolmesHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_PURIFIER);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_PURIFIER);
 
     private static final int FILTER_LIFE_DAYS = 330;
     private static final int FILTER_LIFE_MINS = FILTER_LIFE_DAYS * 24 * 60;
@@ -239,10 +239,14 @@ public class WemoHolmesHandler extends WemoBaseThingHandler {
         }
         try {
             String soapHeader = "\"urn:Belkin:service:deviceevent:1#SetAttributes\"";
-            String content = "<?xml version=\"1.0\"?>"
-                    + "<s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\">"
-                    + "<s:Body>" + "<u:SetAttributes xmlns:u=\"urn:Belkin:service:deviceevent:1\">"
-                    + "<attributeList>&lt;attribute&gt;&lt;name&gt;" + attribute + "&lt;/name&gt;&lt;value&gt;" + value
+            String content = """
+                    <?xml version="1.0"?>\
+                    <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">\
+                    <s:Body>\
+                    <u:SetAttributes xmlns:u="urn:Belkin:service:deviceevent:1">\
+                    <attributeList>&lt;attribute&gt;&lt;name&gt;\
+                    """
+                    + attribute + "&lt;/name&gt;&lt;value&gt;" + value
                     + "&lt;/value&gt;&lt;/attribute&gt;</attributeList>" + "</u:SetAttributes>" + "</s:Body>"
                     + "</s:Envelope>";
             wemoHttpCaller.executeCall(wemoURL, soapHeader, content);

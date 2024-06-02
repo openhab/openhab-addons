@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -141,7 +141,7 @@ public class Car {
             JsonObject attributes = getAttributes(responseJson);
             if (attributes != null) {
                 if (attributes.get("hvacStatus") != null) {
-                    hvacstatus = attributes.get("hvacStatus").getAsString().equals("on");
+                    hvacstatus = "on".equals(attributes.get("hvacStatus").getAsString());
                 }
                 if (attributes.get("externalTemperature") != null) {
                     externalTemperature = attributes.get("externalTemperature").getAsDouble();
@@ -196,7 +196,7 @@ public class Car {
                 }
             }
         } catch (IllegalStateException | ClassCastException e) {
-            logger.warn("Error {} parsing Location: {}", e.getMessage(), responseJson);
+            logger.warn("Error {} parsing Lock Status: {}", e.getMessage(), responseJson);
         }
     }
 
@@ -207,13 +207,12 @@ public class Car {
                 String url = null;
                 for (JsonElement asset : assetsJson) {
                     if (asset.getAsJsonObject().get("assetType") != null
-                            && asset.getAsJsonObject().get("assetType").getAsString().equals("PICTURE")) {
+                            && "PICTURE".equals(asset.getAsJsonObject().get("assetType").getAsString())) {
                         if (asset.getAsJsonObject().get("renditions") != null) {
                             JsonArray renditions = asset.getAsJsonObject().get("renditions").getAsJsonArray();
                             for (JsonElement rendition : renditions) {
-                                if (rendition.getAsJsonObject().get("resolutionType") != null
-                                        && rendition.getAsJsonObject().get("resolutionType").getAsString()
-                                                .equals("ONE_MYRENAULT_SMALL")) {
+                                if (rendition.getAsJsonObject().get("resolutionType") != null && "ONE_MYRENAULT_SMALL"
+                                        .equals(rendition.getAsJsonObject().get("resolutionType").getAsString())) {
                                     url = rendition.getAsJsonObject().get("url").getAsString();
                                     break;
                                 }

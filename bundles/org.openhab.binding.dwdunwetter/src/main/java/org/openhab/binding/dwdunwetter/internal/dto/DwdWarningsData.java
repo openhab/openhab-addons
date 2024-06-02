@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,6 +119,8 @@ public class DwdWarningsData {
 
         try {
             XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+            inputFactory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+            inputFactory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
             XMLStreamReader reader = inputFactory.createXMLStreamReader(new StringReader(rawData));
             XMLEventReader eventReader = inputFactory.createXMLEventReader(reader);
             DwdWarningData gemeindeData = new DwdWarningData();
@@ -213,7 +215,7 @@ public class DwdWarningsData {
 
     public State getWarning(int number) {
         DwdWarningData data = getGemeindeData(number);
-        return data == null ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(data != null);
     }
 
     public State getSeverity(int number) {
@@ -306,6 +308,6 @@ public class DwdWarningsData {
      */
     protected void setDataAccess(DwdWarningDataAccess dataAccess) {
         dataAccessCached = new ExpiringCache<>(Duration.ofMinutes(MIN_REFRESH_WAIT_MINUTES),
-                () -> dataAccess.getDataFromEndpoint(""));
+                () -> dataAccess.getDataFromEndpoint("TestCity"));
     }
 }

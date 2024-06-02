@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.freedesktop.dbus.errors.NoReply;
+import org.freedesktop.dbus.errors.UnknownObject;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 import org.freedesktop.dbus.types.UInt16;
@@ -77,7 +78,6 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
      *
      * @param adapter the bridge handler through which this device is connected
      * @param address the Bluetooth address of the device
-     * @param name the name of the device
      */
     public BlueZBluetoothDevice(BlueZBridgeHandler adapter, BluetoothAddress address) {
         super(adapter, address);
@@ -196,7 +196,12 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
         BluetoothDevice dev = device;
         if (dev != null) {
             logger.debug("Disconnecting '{}'", address);
-            return dev.disconnect();
+            try {
+                return dev.disconnect();
+            } catch (UnknownObject exception) {
+                logger.debug("Failed to disconnect the device, UnknownObject", exception);
+                return false;
+            }
         }
         return false;
     }
@@ -469,7 +474,7 @@ public class BlueZBluetoothDevice extends BaseBluetoothDevice implements BlueZEv
     @Override
     public CompletableFuture<byte[]> readCharacteristic(BluetoothCharacteristic characteristic) {
         BluetoothDevice dev = device;
-        if (dev == null || !dev.isConnected()) {
+        if (dev == null || !Boolean.TRUE.equals(dev.isConnected())) {
             return CompletableFuture
                     .failedFuture(new IllegalStateException("DBusBlueZ device is not set or not connected"));
         }

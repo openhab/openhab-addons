@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Filter for the {@link DatahubPricelist} dataset.
+ * Filter for the DatahubPricelist dataset.
  * 
  * @author Jacob Laursen - Initial contribution
  */
@@ -27,21 +27,31 @@ public class DatahubTariffFilter {
 
     private final Set<ChargeTypeCode> chargeTypeCodes;
     private final Set<String> notes;
-    private final DateQueryParameter dateQueryParameter;
+    private final DateQueryParameter start;
+    private final DateQueryParameter end;
 
-    public DatahubTariffFilter(DatahubTariffFilter filter, DateQueryParameter dateQueryParameter) {
-        this(filter.chargeTypeCodes, filter.notes, dateQueryParameter);
+    public DatahubTariffFilter(DatahubTariffFilter filter, DateQueryParameter start) {
+        this(filter, start, DateQueryParameter.EMPTY);
+    }
+
+    public DatahubTariffFilter(DatahubTariffFilter filter, DateQueryParameter start, DateQueryParameter end) {
+        this(filter.chargeTypeCodes, filter.notes, start, end);
     }
 
     public DatahubTariffFilter(Set<ChargeTypeCode> chargeTypeCodes, Set<String> notes) {
         this(chargeTypeCodes, notes, DateQueryParameter.EMPTY);
     }
 
-    public DatahubTariffFilter(Set<ChargeTypeCode> chargeTypeCodes, Set<String> notes,
-            DateQueryParameter dateQueryParameter) {
+    public DatahubTariffFilter(Set<ChargeTypeCode> chargeTypeCodes, Set<String> notes, DateQueryParameter start) {
+        this(chargeTypeCodes, notes, start, DateQueryParameter.EMPTY);
+    }
+
+    public DatahubTariffFilter(Set<ChargeTypeCode> chargeTypeCodes, Set<String> notes, DateQueryParameter start,
+            DateQueryParameter end) {
         this.chargeTypeCodes = chargeTypeCodes;
         this.notes = notes;
-        this.dateQueryParameter = dateQueryParameter;
+        this.start = start;
+        this.end = end;
     }
 
     public Collection<String> getChargeTypeCodesAsStrings() {
@@ -52,7 +62,11 @@ public class DatahubTariffFilter {
         return notes;
     }
 
-    public DateQueryParameter getDateQueryParameter() {
-        return dateQueryParameter;
+    public DateQueryParameter getStart() {
+        return start;
+    }
+
+    public DateQueryParameter getEnd() {
+        return end;
     }
 }

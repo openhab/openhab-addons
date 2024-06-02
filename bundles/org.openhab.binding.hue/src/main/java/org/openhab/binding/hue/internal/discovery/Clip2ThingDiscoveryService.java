@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.hue.internal.discovery;
 
 import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -25,22 +25,22 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.dto.clip2.MetaData;
-import org.openhab.binding.hue.internal.dto.clip2.Resource;
-import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
-import org.openhab.binding.hue.internal.dto.clip2.enums.Archetype;
-import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.api.dto.clip2.MetaData;
+import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
+import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.AssetNotLoadedException;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +49,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Andrew Fiddian-Green - Initial Contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = Clip2ThingDiscoveryService.class)
 @NonNullByDefault
-public class Clip2ThingDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
-
+public class Clip2ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<Clip2BridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingDiscoveryService.class);
 
     private static final int DISCOVERY_TIMEOUT_SECONDS = 20;
@@ -66,31 +66,24 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
             ResourceType.ZONE, THING_TYPE_ZONE, //
             ResourceType.BRIDGE_HOME, THING_TYPE_ZONE);
 
-    private @Nullable Clip2BridgeHandler bridgeHandler;
     private @Nullable ScheduledFuture<?> discoveryTask;
 
     public Clip2ThingDiscoveryService() {
-        super(Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM, THING_TYPE_ZONE), DISCOVERY_TIMEOUT_SECONDS, true);
+        super(Clip2BridgeHandler.class, Set.of(THING_TYPE_DEVICE, THING_TYPE_ROOM, THING_TYPE_ZONE),
+                DISCOVERY_TIMEOUT_SECONDS, true);
     }
 
     @Override
-    public void activate() {
-        Clip2BridgeHandler bridgeHandler = this.bridgeHandler;
-        if (Objects.nonNull(bridgeHandler)) {
-            bridgeHandler.registerDiscoveryService(this);
-        }
-        super.activate(null);
+    public void initialize() {
+        thingHandler.registerDiscoveryService(this);
+        super.initialize();
     }
 
     @Override
-    public void deactivate() {
-        super.deactivate();
-        Clip2BridgeHandler bridgeHandler = this.bridgeHandler;
-        if (Objects.nonNull(bridgeHandler)) {
-            bridgeHandler.unregisterDiscoveryService();
-            removeOlderResults(new Date().getTime(), bridgeHandler.getThing().getBridgeUID());
-            this.bridgeHandler = null;
-        }
+    public void dispose() {
+        super.dispose();
+        thingHandler.unregisterDiscoveryService();
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getBridgeUID());
     }
 
     /**
@@ -98,12 +91,11 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
      * as OH things, and announce those respective things by calling the core 'thingDiscovered()' method.
      */
     private synchronized void discoverThings() {
-        Clip2BridgeHandler bridgeHandler = this.bridgeHandler;
-        if (Objects.nonNull(bridgeHandler) && bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+        if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
-                ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+                ThingUID bridgeUID = thingHandler.getThing().getUID();
                 for (Entry<ResourceType, ThingTypeUID> entry : DISCOVERY_TYPES.entrySet()) {
-                    for (Resource resource : bridgeHandler.getResources(new ResourceReference().setType(entry.getKey()))
+                    for (Resource resource : thingHandler.getResources(new ResourceReference().setType(entry.getKey()))
                             .getResources()) {
 
                         MetaData metaData = resource.getMetaData();
@@ -122,14 +114,13 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
 
                         // special zone 'all lights'
                         if (resource.getType() == ResourceType.BRIDGE_HOME) {
-                            thingLabel = bridgeHandler.getLocalizedText(ALL_LIGHTS_KEY);
+                            thingLabel = thingHandler.getLocalizedText(ALL_LIGHTS_KEY);
                         }
 
-                        Optional<Thing> legacyThingOptional = bridgeHandler.getLegacyThing(idv1);
+                        Optional<Thing> legacyThingOptional = thingHandler.getLegacyThing(idv1);
                         if (legacyThingOptional.isPresent()) {
                             Thing legacyThing = legacyThingOptional.get();
                             legacyThingUID = legacyThing.getUID().getAsString();
-                            thingId = legacyThing.getUID().getId();
                             String legacyLabel = legacyThing.getLabel();
                             thingLabel = Objects.nonNull(legacyLabel) ? legacyLabel : thingLabel;
                         }
@@ -155,18 +146,6 @@ public class Clip2ThingDiscoveryService extends AbstractDiscoveryService impleme
             }
         }
         stopScan();
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof Clip2BridgeHandler) {
-            bridgeHandler = (Clip2BridgeHandler) handler;
-        }
     }
 
     @Override

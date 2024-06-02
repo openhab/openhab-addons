@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -104,7 +104,7 @@ public class A5_11_04 extends _4BSMessage {
         byte db0 = getDB0();
         boolean lightOn = getBit(db0, 0);
 
-        return lightOn ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(lightOn);
     }
 
     protected State getDimmerStatus() {

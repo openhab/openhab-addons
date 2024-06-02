@@ -8,4 +8,16 @@
 	<description>This is the binding for AVM FRITZ! devices.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>deviceType</name>
+					<regex>(?i).*fritzbox.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

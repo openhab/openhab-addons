@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,9 +16,9 @@ import static org.openhab.binding.kaleidescape.internal.KaleidescapeBindingConst
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -74,7 +74,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeHandler.class);
     private final SerialPortManager serialPortManager;
-    private final Map<String, String> cache = new HashMap<String, String>();
+    private final Map<String, String> cache = new HashMap<>();
 
     protected final HttpClient httpClient;
     protected final Unit<Time> apiSecondUnit = Units.SECOND;
@@ -189,7 +189,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(KaleidescapeThingActions.class);
+        return List.of(KaleidescapeThingActions.class);
     }
 
     public void handleRawCommand(@Nullable String command) {
@@ -229,8 +229,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                         }
                         break;
                     case VOLUME:
-                        if (command instanceof PercentType) {
-                            this.volume = (int) ((PercentType) command).doubleValue();
+                        if (command instanceof PercentType percentCommand) {
+                            this.volume = (int) percentCommand.doubleValue();
                             logger.debug("Got volume command {}", this.volume);
                             connector.sendCommand(SEND_EVENT_VOLUME_LEVEL_EQ + this.volume);
                         }
@@ -254,6 +254,9 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     case CONTROL:
                     case MUSIC_CONTROL:
                         handleControlCommand(command);
+                        break;
+                    case CHANNEL_TYPE_SENDCMD:
+                        connector.sendCommand(command.toString());
                         break;
                     default:
                         logger.debug("Command {} from channel {} failed: unexpected command", command, channel);
@@ -339,6 +342,11 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     if (openConnection()) {
                         try {
                             cache.clear();
+
+                            // register the connection in the Kaleidescape System log
+                            connector.sendCommand(SEND_TO_SYSLOG + "openHAB Kaleidescape Binding version "
+                                    + org.openhab.core.OpenHAB.getVersion());
+
                             Set<String> initialCommands = new HashSet<>(Arrays.asList(GET_DEVICE_TYPE_NAME,
                                     GET_FRIENDLY_NAME, GET_DEVICE_INFO, GET_SYSTEM_VERSION, GET_DEVICE_POWER_STATE,
                                     GET_CINEMASCAPE_MASK, GET_CINEMASCAPE_MODE, GET_SCALE_MODE, GET_SCREEN_MASK,
@@ -479,7 +487,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                 updateState(channel, new PercentType(this.volume));
                 break;
             case MUTE:
-                updateState(channel, this.isMuted ? OnOffType.ON : OnOffType.OFF);
+                updateState(channel, OnOffType.from(this.isMuted));
                 break;
             case TITLE_NAME:
                 connector.sendCommand(GET_PLAYING_TITLE_NAME, cache.get("TITLE_NAME"));

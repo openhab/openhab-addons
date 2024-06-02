@@ -196,9 +196,10 @@ These actions will send a message to all chat ids configured for this bot.
 | Action                     | Description  |
 |----------------------------|--------------|
 | sendTelegram(String message) | Sends a message. |
-| sendTelegram(String format, Object... args)          | Sends a formatted message (See <https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html> for more information).
-| sendTelegramQuery(String message, String replyId, String... buttons) | Sends a question to the user that can be answered via the defined buttons. The replyId can be freely choosen and is sent back with the answer. Then, the id is required to identify what question has been answered (e.g. in case of multiple open questions). The final result looks like this: ![Telegram Inline Keyboard](doc/queryExample.png). |
+| sendTelegram(String format, Object... args)          | Sends a formatted message (See <https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html> for more information).
+| sendTelegramQuery(String message, String replyId, String... buttons) | Sends a question to the user that can be answered via the defined buttons. The replyId can be freely choosen and is sent back with the answer. Then, the id is required to identify what question has been answered (e.g. in case of multiple open questions). The final result looks like this: ![Telegram Inline Keyboard](doc/queryExample.png) |
 | sendTelegramAnswer(String replyId, String message) | Sends a message after the user has answered a question. You should _always_ call this method after you received an answer. It will remove buttons from the specific question and will also stop the progress bar displayed at the client side. If no message is necessary, just pass `null` here. |
+| deleteTelegramQuery(String replyId) | Deletes a question in the chat. The replyId must be the same as used for the corresponding sendTelegramQuery() action. |
 | sendTelegramPhoto(String photoURL, String caption) | Sends a picture. Can be one of the URL formats, see the Note below, or a base64 encoded image (simple base64 data or data URI scheme). |
 | sendTelegramPhoto(String photoURL, String caption, String username, String password) | Sends a picture which is downloaded from a username/password protected http/https address. |
 | sendTelegramAnimation(String animationURL, String caption) | Send animation files either GIF or H.264/MPEG-4 AVC video without sound. |

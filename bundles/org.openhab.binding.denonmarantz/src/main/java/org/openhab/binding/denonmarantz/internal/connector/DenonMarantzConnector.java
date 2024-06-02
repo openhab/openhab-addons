@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
 import org.openhab.binding.denonmarantz.internal.UnsupportedCommandTypeException;
 import org.openhab.binding.denonmarantz.internal.config.DenonMarantzConfiguration;
@@ -25,7 +26,9 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 
@@ -34,6 +37,7 @@ import org.openhab.core.types.RefreshType;
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  */
+@NonNullByDefault
 public abstract class DenonMarantzConnector {
 
     private static final BigDecimal POINTFIVE = new BigDecimal("0.5");
@@ -46,6 +50,13 @@ public abstract class DenonMarantzConnector {
     public abstract void dispose();
 
     protected abstract void internalSendCommand(String command);
+
+    public DenonMarantzConnector(DenonMarantzConfiguration config, ScheduledExecutorService scheduler,
+            DenonMarantzState state) {
+        this.config = config;
+        this.scheduler = scheduler;
+        this.state = state;
+    }
 
     public void sendCustomCommand(Command command) throws UnsupportedCommandTypeException {
         String cmd;
@@ -165,10 +176,10 @@ public abstract class DenonMarantzConnector {
             cmd += "UP";
         } else if (command == IncreaseDecreaseType.DECREASE) {
             cmd += "DOWN";
-        } else if (command instanceof DecimalType) {
-            cmd += toDenonValue(((DecimalType) command));
-        } else if (command instanceof PercentType) {
-            cmd += percentToDenonValue(((PercentType) command).toBigDecimal());
+        } else if (command instanceof DecimalType decimalCommand) {
+            cmd += toDenonValue(decimalCommand);
+        } else if (command instanceof PercentType percentCommand) {
+            cmd += percentToDenonValue(percentCommand.toBigDecimal());
         } else {
             throw new UnsupportedCommandTypeException();
         }
@@ -179,9 +190,16 @@ public abstract class DenonMarantzConnector {
         Command dbCommand = command;
         if (dbCommand instanceof PercentType) {
             throw new UnsupportedCommandTypeException();
-        } else if (dbCommand instanceof DecimalType) {
+        } else if (dbCommand instanceof DecimalType decimalCommand) {
             // convert dB to 'normal' volume by adding the offset of 80
-            dbCommand = new DecimalType(((DecimalType) command).toBigDecimal().add(DB_OFFSET));
+            dbCommand = new DecimalType(decimalCommand.toBigDecimal().add(DB_OFFSET));
+        } else if (dbCommand instanceof QuantityType<?> quantityCommand) {
+            QuantityType<?> decibelCommand = quantityCommand.toUnit(Units.DECIBEL);
+            if (decibelCommand != null) {
+                dbCommand = new DecimalType(new BigDecimal(decibelCommand.doubleValue()).add(DB_OFFSET));
+            } else {
+                throw new UnsupportedCommandTypeException();
+            }
         }
         sendVolumeCommand(dbCommand, zone);
     }

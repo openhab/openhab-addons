@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,9 +79,9 @@ public abstract class WirelessChannelsHandler extends SatelStateThingHandler {
     @Override
     protected int getStateBitNbr(StateType stateType) {
         int bitNbr = getThingConfig().getId() - 1;
-        if (stateType instanceof TroubleState) {
+        if (stateType instanceof TroubleState troubleState) {
             // for wireless devices we need to correct bit number
-            switch ((TroubleState) stateType) {
+            switch (troubleState) {
                 case DEVICE_LOBATT1:
                 case DEVICE_NOCOMM1:
                 case OUTPUT_NOCOMM1:

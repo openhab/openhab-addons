@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.denonmarantz.internal.DenonMarantzState;
@@ -51,7 +53,8 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -69,24 +72,27 @@ import org.xml.sax.SAXException;
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  */
+@NonNullByDefault
 public class DenonMarantzHandler extends BaseThingHandler implements DenonMarantzStateChangedListener {
 
     private final Logger logger = LoggerFactory.getLogger(DenonMarantzHandler.class);
     private static final int RETRY_TIME_SECONDS = 30;
     private HttpClient httpClient;
-    private DenonMarantzConnector connector;
-    private DenonMarantzConfiguration config;
+    private @Nullable DenonMarantzConnector connector;
+    private DenonMarantzConfiguration config = new DenonMarantzConfiguration();
     private DenonMarantzConnectorFactory connectorFactory = new DenonMarantzConnectorFactory();
     private DenonMarantzState denonMarantzState;
-    private ScheduledFuture<?> retryJob;
+    private @Nullable ScheduledFuture<?> retryJob;
 
     public DenonMarantzHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
+        denonMarantzState = new DenonMarantzState(this);
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        DenonMarantzConnector connector = this.connector;
         if (connector == null) {
             return;
         }
@@ -223,7 +229,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     httpApiUsable = true;
                 }
             } catch (TimeoutException | ExecutionException e) {
-                logger.debug("Error when trying to access AVR using HTTP on port 80, reverting to Telnet mode.", e);
+                logger.debug("Error when trying to access AVR using HTTP on port 80.", e);
             }
 
             if (telnetEnable) {
@@ -233,13 +239,15 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
                     response = httpClient.newRequest("http://" + host + ":8080/goform/Deviceinfo.xml")
                             .timeout(3, TimeUnit.SECONDS).send();
                     if (response.getStatus() == HttpURLConnection.HTTP_OK) {
-                        logger.debug(
-                                "This model responds to HTTP port 8080, we use this port to retrieve the number of zones.");
+                        logger.debug("This model responds to HTTP port 8080, disabling the Telnet mode by default.");
+                        telnetEnable = false;
                         httpPort = 8080;
                         httpApiUsable = true;
                     }
                 } catch (TimeoutException | ExecutionException e) {
-                    logger.debug("Additionally tried to connect to port 8080, this also failed", e);
+                    logger.debug(
+                            "Additionally tried to connect to port 8080, this also failed. Reverting to Telnet mode.",
+                            e);
                 }
             }
 
@@ -297,7 +305,6 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
 
     @Override
     public void initialize() {
-        cancelRetry();
         config = getConfigAs(DenonMarantzConfiguration.class);
 
         // Configure Connection type (Telnet/HTTP) and number of zones
@@ -313,7 +320,6 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
             return;
         }
 
-        denonMarantzState = new DenonMarantzState(this);
         configureZoneChannels();
         updateStatus(ThingStatus.UNKNOWN);
         // create connection (either Telnet or HTTP)
@@ -322,19 +328,21 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
     }
 
     private void createConnection() {
+        DenonMarantzConnector connector = this.connector;
         if (connector != null) {
             connector.dispose();
         }
-        connector = connectorFactory.getConnector(config, denonMarantzState, scheduler, httpClient,
+        this.connector = connector = connectorFactory.getConnector(config, denonMarantzState, scheduler, httpClient,
                 this.getThing().getUID().getAsString());
         connector.connect();
     }
 
     private void cancelRetry() {
-        ScheduledFuture<?> localRetryJob = retryJob;
-        if (localRetryJob != null && !localRetryJob.isDone()) {
-            localRetryJob.cancel(false);
+        ScheduledFuture<?> retryJob = this.retryJob;
+        if (retryJob != null) {
+            retryJob.cancel(true);
         }
+        this.retryJob = null;
     }
 
     private void configureZoneChannels() {
@@ -371,14 +379,17 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
 
             // add the channels that were not yet added
             if (!channelsToAdd.isEmpty()) {
-                for (Entry<String, ChannelTypeUID> entry : channelsToAdd) {
-                    String itemType = CHANNEL_ITEM_TYPES.get(entry.getKey());
-                    Channel channel = ChannelBuilder
-                            .create(new ChannelUID(this.getThing().getUID(), entry.getKey()), itemType)
-                            .withType(entry.getValue()).build();
-                    channels.add(channel);
+                ThingHandlerCallback callback = getCallback();
+                if (callback != null) {
+                    for (Entry<String, ChannelTypeUID> entry : channelsToAdd) {
+                        ChannelUID channelUID = new ChannelUID(this.getThing().getUID(), entry.getKey());
+                        channels.add(callback.createChannelBuilder(channelUID, entry.getValue())
+                                .withKind(ChannelKind.STATE).build());
+                    }
+                    channelsUpdated = true;
+                } else {
+                    logger.warn("Could not create zone channels");
                 }
-                channelsUpdated = true;
             } else {
                 logger.debug("No zone channels have been added");
             }
@@ -413,10 +424,11 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
 
     @Override
     public void dispose() {
+        DenonMarantzConnector connector = this.connector;
         if (connector != null) {
             connector.dispose();
-            connector = null;
         }
+        this.connector = null;
         cancelRetry();
         super.dispose();
     }
@@ -450,7 +462,13 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
             // Don't flood the log with thing 'updated: OFFLINE' when already offline
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
         }
-        connector.dispose();
+
+        DenonMarantzConnector connector = this.connector;
+        if (connector != null) {
+            connector.dispose();
+        }
+        this.connector = null;
+
         retryJob = scheduler.schedule(this::createConnection, RETRY_TIME_SECONDS, TimeUnit.SECONDS);
     }
 }

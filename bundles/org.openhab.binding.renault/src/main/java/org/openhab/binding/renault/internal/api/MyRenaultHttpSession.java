@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.renault.internal.api;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -52,6 +53,7 @@ public class MyRenaultHttpSession {
 
     private static final String CHARGING_MODE_SCHEDULE = "schedule_mode";
     private static final String CHARGING_MODE_ALWAYS = "always_charging";
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private RenaultConfiguration config;
     private HttpClient httpClient;
@@ -233,7 +235,7 @@ public class MyRenaultHttpSession {
     public void getCockpit(Car car) throws RenaultForbiddenException, RenaultUpdateException,
             RenaultNotImplementedException, RenaultAPIGatewayException {
         JsonObject responseJson = getKamereonResponse("/commerce/v1/accounts/" + kamereonaccountId
-                + "/kamereon/kca/car-adapter/v2/cars/" + config.vin + "/cockpit?country=" + getCountry(config));
+                + "/kamereon/kca/car-adapter/v1/cars/" + config.vin + "/cockpit?country=" + getCountry(config));
         if (responseJson != null) {
             car.setCockpit(responseJson);
         }
@@ -277,7 +279,6 @@ public class MyRenaultHttpSession {
 
     public void actionPause(boolean mode) throws RenaultForbiddenException, RenaultNotImplementedException,
             RenaultActionException, RenaultAPIGatewayException {
-
         final String apiMode = mode ? "pause" : "resume";
         final String path = "/commerce/v1/accounts/" + kamereonaccountId + "/kamereon/kcm/v1/vehicles/" + config.vin
                 + "/charge/pause-resume?country=" + getCountry(config);
@@ -288,7 +289,8 @@ public class MyRenaultHttpSession {
     private void postKamereonRequest(final String path, final String content) throws RenaultForbiddenException,
             RenaultNotImplementedException, RenaultActionException, RenaultAPIGatewayException {
         Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(HttpMethod.POST)
-                .header("Content-type", "application/vnd.api+json").header("apikey", this.config.kamereonApiKey)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-type", "application/vnd.api+json")
+                .header("apikey", this.config.kamereonApiKey)
                 .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt)
                 .content(new StringContentProvider(content, "utf-8"));
         try {
@@ -306,7 +308,8 @@ public class MyRenaultHttpSession {
     private @Nullable JsonObject getKamereonResponse(String path) throws RenaultForbiddenException,
             RenaultNotImplementedException, RenaultUpdateException, RenaultAPIGatewayException {
         Request request = httpClient.newRequest(this.constants.getKamereonRootUrl() + path).method(HttpMethod.GET)
-                .header("Content-type", "application/vnd.api+json").header("apikey", this.config.kamereonApiKey)
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS).header("Content-type", "application/vnd.api+json")
+                .header("apikey", this.config.kamereonApiKey)
                 .header("x-kamereon-authorization", "Bearer " + kamereonToken).header("x-gigya-id_token", jwt);
         try {
             ContentResponse response = request.send();
@@ -331,8 +334,8 @@ public class MyRenaultHttpSession {
                         response.getStatus(), response.getReason(), response.getContentAsString());
             }
         } else {
-            logger.warn("Kamereon Request: {} Response: [{}] {}\n{}", request.getURI().toString(), response.getStatus(),
-                    response.getReason(), response.getContentAsString());
+            logger.debug("Kamereon Request: {} Response: [{}] {}\n{}", request.getURI().toString(),
+                    response.getStatus(), response.getReason(), response.getContentAsString());
         }
     }
 

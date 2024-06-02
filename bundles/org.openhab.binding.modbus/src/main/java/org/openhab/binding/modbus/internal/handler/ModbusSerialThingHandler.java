@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,8 @@
 package org.openhab.binding.modbus.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.modbus.discovery.internal.ModbusEndpointDiscoveryService;
@@ -111,6 +111,6 @@ public class ModbusSerialThingHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ModbusEndpointDiscoveryService.class);
+        return Set.of(ModbusEndpointDiscoveryService.class);
     }
 }

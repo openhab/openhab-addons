@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,6 @@ public class A5_09_0D extends A5_09 {
     @Override
     protected State convertToStateImpl(String channelId, String channelTypeId,
             Function<String, State> getCurrentStateFunc, Configuration config) {
-
         if (CHANNEL_TVOC.equals(channelId)) {
             return EEPHelper.calculateState(getDB2Value(), 0, 100, 0, 200, Units.PERCENT);
         }

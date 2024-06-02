@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,14 +25,19 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.androidtv.internal.protocol.googletv.GoogleTVConfiguration;
 import org.openhab.binding.androidtv.internal.protocol.googletv.GoogleTVConnectionManager;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConfiguration;
+import org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsTVConnectionManager;
 import org.openhab.binding.androidtv.internal.protocol.shieldtv.ShieldTVConfiguration;
 import org.openhab.binding.androidtv.internal.protocol.shieldtv.ShieldTVConnectionManager;
+import org.openhab.core.config.core.Configuration;
+import org.openhab.core.config.discovery.DiscoveryServiceRegistry;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandOption;
@@ -55,6 +60,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     private @Nullable ShieldTVConnectionManager shieldtvConnectionManager;
     private @Nullable GoogleTVConnectionManager googletvConnectionManager;
+    private @Nullable PhilipsTVConnectionManager philipstvConnectionManager;
 
     private @Nullable ScheduledFuture<?> monitorThingStatusJob;
     private final Object monitorThingStatusJobLock = new Object();
@@ -68,13 +74,20 @@ public class AndroidTVHandler extends BaseThingHandler {
     private String currentThingStatus = "";
     private boolean currentThingFailed = false;
 
+    private DiscoveryServiceRegistry discoveryServiceRegistry;
+
+    private AndroidTVDynamicStateDescriptionProvider stateDescriptionProvider;
+
     public AndroidTVHandler(Thing thing, AndroidTVDynamicCommandDescriptionProvider commandDescriptionProvider,
-            AndroidTVTranslationProvider translationProvider, ThingTypeUID thingTypeUID) {
+            AndroidTVTranslationProvider translationProvider, DiscoveryServiceRegistry discoveryServiceRegistry,
+            AndroidTVDynamicStateDescriptionProvider stateDescriptionProvider, ThingTypeUID thingTypeUID) {
         super(thing);
         this.commandDescriptionProvider = commandDescriptionProvider;
         this.translationProvider = translationProvider;
         this.thingTypeUID = thingTypeUID;
         this.thingID = this.getThing().getUID().getId();
+        this.discoveryServiceRegistry = discoveryServiceRegistry;
+        this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
     public void setThingProperty(String property, String value) {
@@ -89,6 +102,22 @@ public class AndroidTVHandler extends BaseThingHandler {
         return this.thingID;
     }
 
+    public Configuration getThingConfig() {
+        return getConfig();
+    }
+
+    public DiscoveryServiceRegistry getDiscoveryServiceRegistry() {
+        return discoveryServiceRegistry;
+    }
+
+    public AndroidTVDynamicStateDescriptionProvider getStateDescriptionProvider() {
+        return stateDescriptionProvider;
+    }
+
+    public ThingUID getThingUID() {
+        return getThing().getUID();
+    }
+
     public void updateChannelState(String channel, State state) {
         updateState(channel, state);
     }
@@ -99,7 +128,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
     public void updateCDP(String channelName, Map<String, String> cdpMap) {
         logger.trace("{} - Updating CDP for {}", this.thingID, channelName);
-        List<CommandOption> commandOptions = new ArrayList<CommandOption>();
+        List<CommandOption> commandOptions = new ArrayList<>();
         cdpMap.forEach((key, value) -> commandOptions.add(new CommandOption(key, value)));
         logger.trace("{} - CDP List: {}", this.thingID, commandOptions);
         commandDescriptionProvider.setCommandOptions(new ChannelUID(getThing().getUID(), channelName), commandOptions);
@@ -122,12 +151,17 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         GoogleTVConnectionManager googletvConnectionManager = this.googletvConnectionManager;
         ShieldTVConnectionManager shieldtvConnectionManager = this.shieldtvConnectionManager;
+        PhilipsTVConnectionManager philipstvConnectionManager = this.philipstvConnectionManager;
 
         if (googletvConnectionManager != null) {
             if (!googletvConnectionManager.getLoggedIn()) {
                 failed = true;
             }
             statusMessage = "GoogleTV: " + googletvConnectionManager.getStatusMessage();
+
+            if (!THING_TYPE_GOOGLETV.equals(thingTypeUID)) {
+                statusMessage = statusMessage + " | ";
+            }
         }
 
         if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
@@ -135,7 +169,16 @@ public class AndroidTVHandler extends BaseThingHandler {
                 if (!shieldtvConnectionManager.getLoggedIn()) {
                     failed = true;
                 }
-                statusMessage = statusMessage + " | ShieldTV: " + shieldtvConnectionManager.getStatusMessage();
+                statusMessage = statusMessage + "ShieldTV: " + shieldtvConnectionManager.getStatusMessage();
+            }
+        }
+
+        if (THING_TYPE_PHILIPSTV.equals(thingTypeUID)) {
+            if (philipstvConnectionManager != null) {
+                if (!philipstvConnectionManager.getLoggedIn()) {
+                    failed = true;
+                }
+                statusMessage = statusMessage + "PhilipsTV: " + philipstvConnectionManager.getStatusMessage();
             }
         }
 
@@ -157,14 +200,17 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         GoogleTVConfiguration googletvConfig = getConfigAs(GoogleTVConfiguration.class);
         String ipAddress = googletvConfig.ipAddress;
+        boolean gtvEnabled = googletvConfig.gtvEnabled;
 
-        if (ipAddress.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.googletv-address-not-specified");
-            return;
+        if (THING_TYPE_GOOGLETV.equals(thingTypeUID) || gtvEnabled) {
+            if (ipAddress.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.googletv-address-not-specified");
+                return;
+            }
+
+            googletvConnectionManager = new GoogleTVConnectionManager(this, googletvConfig);
         }
-
-        googletvConnectionManager = new GoogleTVConnectionManager(this, googletvConfig);
 
         if (THING_TYPE_SHIELDTV.equals(thingTypeUID)) {
             ShieldTVConfiguration shieldtvConfig = getConfigAs(ShieldTVConfiguration.class);
@@ -179,8 +225,31 @@ public class AndroidTVHandler extends BaseThingHandler {
             shieldtvConnectionManager = new ShieldTVConnectionManager(this, shieldtvConfig);
         }
 
+        if (THING_TYPE_PHILIPSTV.equals(thingTypeUID)) {
+            PhilipsTVConfiguration philipstvConfig = getConfigAs(PhilipsTVConfiguration.class);
+            ipAddress = philipstvConfig.ipAddress;
+
+            if (ipAddress.isBlank()) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        "@text/offline.philipstv-address-not-specified");
+                return;
+            }
+
+            philipstvConnectionManager = new PhilipsTVConnectionManager(this, philipstvConfig);
+        }
+
         monitorThingStatusJob = scheduler.schedule(this::monitorThingStatus, THING_STATUS_FREQUENCY,
                 TimeUnit.MILLISECONDS);
+    }
+
+    public void sendCommandToProtocol(ChannelUID channelUID, Command command) {
+        ShieldTVConnectionManager shieldtvConnectionManager = this.shieldtvConnectionManager;
+        PhilipsTVConnectionManager philipstvConnectionManager = this.philipstvConnectionManager;
+        if (THING_TYPE_SHIELDTV.equals(thingTypeUID) && (shieldtvConnectionManager != null)) {
+            shieldtvConnectionManager.handleCommand(channelUID, command);
+        } else if (THING_TYPE_PHILIPSTV.equals(thingTypeUID) && (philipstvConnectionManager != null)) {
+            philipstvConnectionManager.handleCommand(channelUID, command);
+        }
     }
 
     @Override
@@ -194,6 +263,7 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         GoogleTVConnectionManager googletvConnectionManager = this.googletvConnectionManager;
         ShieldTVConnectionManager shieldtvConnectionManager = this.shieldtvConnectionManager;
+        PhilipsTVConnectionManager philipstvConnectionManager = this.philipstvConnectionManager;
 
         if (CHANNEL_DEBUG.equals(channelUID.getId())) {
             if (command instanceof StringType) {
@@ -217,10 +287,18 @@ public class AndroidTVHandler extends BaseThingHandler {
                     ShieldTVConfiguration shieldtvConfig = getConfigAs(ShieldTVConfiguration.class);
                     shieldtvConfig.shim = true;
                     shieldtvConnectionManager = new ShieldTVConnectionManager(this, shieldtvConfig);
+                } else if (command.toString().equals("PHILIPSTV_HALT") && (philipstvConnectionManager != null)) {
+                    philipstvConnectionManager.dispose();
+                    philipstvConnectionManager = null;
+                } else if (command.toString().equals("PHILIPSTV_START")) {
+                    PhilipsTVConfiguration philipstvConfig = getConfigAs(PhilipsTVConfiguration.class);
+                    philipstvConnectionManager = new PhilipsTVConnectionManager(this, philipstvConfig);
                 } else if (command.toString().startsWith("GOOGLETV") && (googletvConnectionManager != null)) {
                     googletvConnectionManager.handleCommand(channelUID, command);
                 } else if (command.toString().startsWith("SHIELDTV") && (shieldtvConnectionManager != null)) {
                     shieldtvConnectionManager.handleCommand(channelUID, command);
+                } else if (command.toString().startsWith("PHILIPSTV") && (philipstvConnectionManager != null)) {
+                    philipstvConnectionManager.handleCommand(channelUID, command);
                 }
             }
             return;
@@ -239,6 +317,36 @@ public class AndroidTVHandler extends BaseThingHandler {
                     shieldtvConnectionManager.handleCommand(channelUID, command);
                     return;
                 }
+            } else if (googletvConnectionManager == null) {
+                shieldtvConnectionManager.handleCommand(channelUID, command);
+                return;
+            }
+        }
+
+        if (THING_TYPE_PHILIPSTV.equals(thingTypeUID) && (philipstvConnectionManager != null)) {
+            if (googletvConnectionManager != null) {
+                if (CHANNEL_PINCODE.equals(channelUID.getId())) {
+                    if (command instanceof StringType) {
+                        if (!philipstvConnectionManager.getLoggedIn()) {
+                            philipstvConnectionManager.handleCommand(channelUID, command);
+                            return;
+                        }
+                    }
+                } else if (CHANNEL_POWER.equals(channelUID.getId()) && !googletvConnectionManager.getLoggedIn()) {
+                    philipstvConnectionManager.handleCommand(channelUID, command);
+                    return;
+                } else if (CHANNEL_APP.equals(channelUID.getId()) || CHANNEL_APPNAME.equals(channelUID.getId())
+                        || CHANNEL_TV_CHANNEL.equals(channelUID.getId()) || CHANNEL_VOLUME.equals(channelUID.getId())
+                        || CHANNEL_MUTE.equals(channelUID.getId()) || CHANNEL_SEARCH_CONTENT.equals(channelUID.getId())
+                        || CHANNEL_BRIGHTNESS.equals(channelUID.getId()) || CHANNEL_SHARPNESS.equals(channelUID.getId())
+                        || CHANNEL_CONTRAST.equals(channelUID.getId())
+                        || channelUID.getId().startsWith(CHANNEL_AMBILIGHT)) {
+                    philipstvConnectionManager.handleCommand(channelUID, command);
+                    return;
+                }
+            } else {
+                philipstvConnectionManager.handleCommand(channelUID, command);
+                return;
             }
         }
 
@@ -262,9 +370,14 @@ public class AndroidTVHandler extends BaseThingHandler {
 
         GoogleTVConnectionManager googletvConnectionManager = this.googletvConnectionManager;
         ShieldTVConnectionManager shieldtvConnectionManager = this.shieldtvConnectionManager;
+        PhilipsTVConnectionManager philipstvConnectionManager = this.philipstvConnectionManager;
 
         if (shieldtvConnectionManager != null) {
             shieldtvConnectionManager.dispose();
+        }
+
+        if (philipstvConnectionManager != null) {
+            philipstvConnectionManager.dispose();
         }
 
         if (googletvConnectionManager != null) {

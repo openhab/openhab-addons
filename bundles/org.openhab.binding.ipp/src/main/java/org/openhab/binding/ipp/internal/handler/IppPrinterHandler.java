@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,10 +77,10 @@ public class IppPrinterHandler extends BaseThingHandler implements DiscoveryList
         String name = (String) config.get(PRINTER_PARAMETER_NAME);
         try {
             Object obj = config.get(PRINTER_PARAMETER_URL);
-            if (obj instanceof URL) {
-                url = (URL) obj;
-            } else if (obj instanceof String) {
-                url = new URL((String) obj);
+            if (obj instanceof URL newUrl) {
+                url = newUrl;
+            } else if (obj instanceof String urlString) {
+                url = new URL(urlString);
             }
             printer = new CupsPrinter(null, url, name);
         } catch (MalformedURLException e) {

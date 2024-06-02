@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,9 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.openhab.binding.mielecloud.internal.util.ResourceUtil.getResourceAsString;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -38,13 +38,13 @@ public class ActionsCollectionTest {
         ActionsCollection collection = ActionsCollection.fromJson(json);
 
         // then:
-        assertEquals(Collections.singleton("000123456789"), collection.getDeviceIdentifiers());
+        assertEquals(Set.of("000123456789"), collection.getDeviceIdentifiers());
         Actions actions = collection.getActions("000123456789");
 
         assertEquals(List.of(ProcessAction.START, ProcessAction.STOP), actions.getProcessAction());
-        assertEquals(Collections.singletonList(Light.DISABLE), actions.getLight());
+        assertEquals(List.of(Light.DISABLE), actions.getLight());
         assertEquals(Optional.empty(), actions.getStartTime());
-        assertEquals(Collections.singletonList(123), actions.getProgramId());
+        assertEquals(List.of(123), actions.getProgramId());
         assertEquals(Optional.of(true), actions.getPowerOn());
         assertEquals(Optional.of(false), actions.getPowerOff());
     }
@@ -69,6 +69,6 @@ public class ActionsCollectionTest {
         DeviceCollection collection = DeviceCollection.fromJson(json);
 
         // then:
-        assertEquals(Collections.singleton("mac-00124B000AE539D6"), collection.getDeviceIdentifiers());
+        assertEquals(Set.of("mac-00124B000AE539D6"), collection.getDeviceIdentifiers());
     }
 }

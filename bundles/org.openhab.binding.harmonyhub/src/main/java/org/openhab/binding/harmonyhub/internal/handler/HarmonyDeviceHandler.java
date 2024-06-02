@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.harmonyhub.internal.handler;
 import static org.openhab.binding.harmonyhub.internal.HarmonyHubBindingConstants.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -65,7 +64,7 @@ public class HarmonyDeviceHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(HarmonyDeviceHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(HARMONY_DEVICE_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(HARMONY_DEVICE_THING_TYPE);
 
     private final HarmonyHubDynamicTypeProvider typeProvider;
 

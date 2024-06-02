@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,8 @@ import org.openhab.binding.robonect.internal.model.MowerStatus;
 /**
  * Queries the mowers status. The status holds a lot of status information.
  * See {@link MowerStatus}
- * or the documentation at: http://www.robonect.de/viewtopic.php?f=11&t=38
+ * or the documentation at <a href="http://www.robonect.de/viewtopic.php?f=11&t=38">
+ * http://www.robonect.de/viewtopic.php?f=11&amp;t=38</a>
  * 
  * @author Marco Meyer - Initial contribution
  */

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -324,7 +324,7 @@ public class Msg {
      * Will fetch a byte array starting at a certain field
      *
      * @param key the name of the first field
-     * @param number of bytes to get
+     * @param numBytes of bytes to get
      * @return the byte array
      */
     public byte[] getBytes(String key, int numBytes) throws FieldException {
@@ -369,7 +369,7 @@ public class Msg {
     /**
      * Sets the userData fields from a byte array
      *
-     * @param data
+     * @param arg
      */
     public void setUserData(byte[] arg) {
         byte[] data = Arrays.copyOf(arg, 14); // appends zeros if short
@@ -457,7 +457,7 @@ public class Msg {
     public String toString() {
         String s = (direction == Direction.TO_MODEM) ? "OUT:" : "IN:";
         // need to first sort the fields by offset
-        Comparator<Field> cmp = new Comparator<Field>() {
+        Comparator<Field> cmp = new Comparator<>() {
             @Override
             public int compare(Field f1, Field f2) {
                 return f1.getOffset() - f2.getOffset();
@@ -569,7 +569,7 @@ public class Msg {
      *
      * @param type the type of message to create, as defined in the xml file
      * @return reference to message created
-     * @throws IOException if there is no such message type known
+     * @throws InvalidMessageTypeException if there is no such message type known
      */
     public static Msg makeMessage(String type) throws InvalidMessageTypeException {
         Msg m = MSG_MAP.get(type);

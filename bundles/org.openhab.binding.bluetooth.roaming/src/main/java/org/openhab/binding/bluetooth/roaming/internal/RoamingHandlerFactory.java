@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.bluetooth.BluetoothAdapter;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -69,8 +68,8 @@ public class RoamingHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof RoamingBluetoothAdapter) {
-            UID uid = ((BluetoothAdapter) thingHandler).getUID();
+        if (thingHandler instanceof RoamingBluetoothAdapter bluetoothAdapter) {
+            UID uid = bluetoothAdapter.getUID();
             ServiceRegistration<?> serviceReg = this.serviceRegs.remove(uid);
             if (serviceReg != null) {
                 serviceReg.unregister();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -221,8 +221,8 @@ public class MqttTopicClassMapperTests {
                 "homie/device123", fieldChangedObserverMock, 10);
         assertThat(future.isDone(), is(true));
 
-        SubscribeFieldToMQTTtopic field = attributes.subscriptions.stream().filter(f -> f.field.getName() == "state")
-                .findFirst().get();
+        SubscribeFieldToMQTTtopic field = attributes.subscriptions.stream()
+                .filter(f -> "state".equals(f.field.getName())).findFirst().get();
         field.processMessage(field.topic, "garbage".getBytes());
         verify(fieldChangedObserverMock, times(0)).attributeChanged(any(), any(), any(), any(), anyBoolean());
         assertThat(attributes.state.toString(), is("unknown"));

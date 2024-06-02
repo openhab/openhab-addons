@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.automation.pwm.internal.PWMConstants.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -97,7 +96,7 @@ public class PWMTriggerType extends TriggerType {
                         "If the duty cycle Item is not updated within this time (in ms), the output is switched off")
                 .build());
 
-        List<Output> outputs = Collections.singletonList(new Output(OUTPUT, OnOffType.class.getName(), "Output",
+        List<Output> outputs = List.of(new Output(OUTPUT, OnOffType.class.getName(), "Output",
                 "Output value of the PWM module", Set.of("command"), null, null));
 
         return new PWMTriggerType(configDescriptions, outputs);

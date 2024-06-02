@@ -4,7 +4,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>persistence</type>
-	<name>RRD4J persistence</name>
+	<name>RRD4J Persistence</name>
 	<description>This is the persistence add-on for RRD4J.</description>
 	<connection>none</connection>
 

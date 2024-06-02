@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.solarlog.internal;
 
 import static org.openhab.binding.solarlog.internal.SolarLogBindingConstants.THING_SOLARLOG;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.openhab.binding.solarlog.internal.handler.SolarLogHandler;
@@ -36,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @Component(configurationPid = "binding.solarlog", service = ThingHandlerFactory.class)
 public class SolarLogHandlerFactory extends BaseThingHandlerFactory {
     private final Logger logger = LoggerFactory.getLogger(SolarLogHandlerFactory.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_SOLARLOG);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_SOLARLOG);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

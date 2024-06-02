@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -310,7 +310,33 @@ public enum RotelSource {
     CAT21_INPUTC(21, "INPUTC", "Input C", RotelCommand.SOURCE_INPUT_C, null, RotelCommand.ZONE1_SOURCE_INPUT_C,
             RotelCommand.ZONE2_SOURCE_INPUT_C, RotelCommand.ZONE3_SOURCE_INPUT_C, RotelCommand.ZONE4_SOURCE_INPUT_C),
     CAT21_INPUTD(21, "INPUTD", "Input D", RotelCommand.SOURCE_INPUT_D, null, RotelCommand.ZONE1_SOURCE_INPUT_D,
-            RotelCommand.ZONE2_SOURCE_INPUT_D, RotelCommand.ZONE3_SOURCE_INPUT_D, RotelCommand.ZONE4_SOURCE_INPUT_D);
+            RotelCommand.ZONE2_SOURCE_INPUT_D, RotelCommand.ZONE3_SOURCE_INPUT_D, RotelCommand.ZONE4_SOURCE_INPUT_D),
+
+    CAT22_CD(22, "CD", "CD", RotelCommand.SOURCE_CD, RotelCommand.RECORD_SOURCE_CD, RotelCommand.MAIN_ZONE_SOURCE_CD,
+            RotelCommand.ZONE2_SOURCE_CD, RotelCommand.ZONE3_SOURCE_CD, RotelCommand.ZONE4_SOURCE_CD),
+    CAT22_TUNER(22, "TUNER", "TUNER", RotelCommand.SOURCE_TUNER, RotelCommand.RECORD_SOURCE_TUNER,
+            RotelCommand.MAIN_ZONE_SOURCE_TUNER, RotelCommand.ZONE2_SOURCE_TUNER, RotelCommand.ZONE3_SOURCE_TUNER,
+            RotelCommand.ZONE4_SOURCE_TUNER),
+    CAT22_TAPE(22, "TAPE", "TAPE", RotelCommand.SOURCE_TAPE, RotelCommand.RECORD_SOURCE_TAPE,
+            RotelCommand.MAIN_ZONE_SOURCE_TAPE, RotelCommand.ZONE2_SOURCE_TAPE, RotelCommand.ZONE3_SOURCE_TAPE,
+            RotelCommand.ZONE4_SOURCE_TAPE),
+    CAT22_PHONO(22, "PHONO", "PHONO", RotelCommand.SOURCE_PHONO, RotelCommand.RECORD_SOURCE_PHONO,
+            RotelCommand.MAIN_ZONE_SOURCE_PHONO, RotelCommand.ZONE2_SOURCE_PHONO, RotelCommand.ZONE3_SOURCE_PHONO,
+            RotelCommand.ZONE4_SOURCE_PHONO),
+    CAT22_VIDEO1(22, "VIDEO1", "VIDEO 1", RotelCommand.SOURCE_VIDEO1, RotelCommand.RECORD_SOURCE_VIDEO1,
+            RotelCommand.MAIN_ZONE_SOURCE_VIDEO1, RotelCommand.ZONE2_SOURCE_VIDEO1, RotelCommand.ZONE3_SOURCE_VIDEO1,
+            RotelCommand.ZONE4_SOURCE_VIDEO1),
+    CAT22_VIDEO2(22, "VIDEO2", "VIDEO 2", RotelCommand.SOURCE_VIDEO2, RotelCommand.RECORD_SOURCE_VIDEO2,
+            RotelCommand.MAIN_ZONE_SOURCE_VIDEO2, RotelCommand.ZONE2_SOURCE_VIDEO2, RotelCommand.ZONE3_SOURCE_VIDEO2,
+            RotelCommand.ZONE4_SOURCE_VIDEO2),
+    CAT22_VIDEO3(22, "VIDEO3", "VIDEO 3", RotelCommand.SOURCE_VIDEO3, RotelCommand.RECORD_SOURCE_VIDEO3,
+            RotelCommand.MAIN_ZONE_SOURCE_VIDEO3, RotelCommand.ZONE2_SOURCE_VIDEO3, RotelCommand.ZONE3_SOURCE_VIDEO3,
+            RotelCommand.ZONE4_SOURCE_VIDEO3),
+    CAT22_VIDEO4(22, "VIDEO4", "VIDEO 4", RotelCommand.SOURCE_VIDEO4, RotelCommand.RECORD_SOURCE_VIDEO4,
+            RotelCommand.MAIN_ZONE_SOURCE_VIDEO4, RotelCommand.ZONE2_SOURCE_VIDEO4, RotelCommand.ZONE3_SOURCE_VIDEO4,
+            RotelCommand.ZONE4_SOURCE_VIDEO4),
+    CAT22_FOLLOW_MAIN(22, "MAIN", "Follow Main Zone Source", null, RotelCommand.RECORD_SOURCE_MAIN, null,
+            RotelCommand.ZONE2_SOURCE_MAIN, RotelCommand.ZONE3_SOURCE_MAIN, RotelCommand.ZONE4_SOURCE_MAIN);
 
     private int category;
     private String name;

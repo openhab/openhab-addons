@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,7 +61,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
 
     private boolean automaticRefreshing = false;
 
-    private Map<String, Boolean> linkedChannels = new HashMap<String, Boolean>();
+    private Map<String, Boolean> linkedChannels = new HashMap<>();
 
     public HaasSohnpelletstoveHandler(Thing thing) {
         super(thing);
@@ -82,11 +82,9 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
                 updateOvenData(postData);
             }
         } else if (channelUID.getId().equals(CHANNELSPTEMP)) {
-            if (command instanceof QuantityType<?>) {
-                QuantityType<?> value = (QuantityType<?>) command;
-
+            if (command instanceof QuantityType<?> quantityCommand) {
                 Unit<Temperature> unit = SIUnits.CELSIUS;
-                value = value.toUnit(unit);
+                QuantityType<?> value = quantityCommand.toUnit(unit);
                 if (value != null) {
                     double a = value.doubleValue();
                     String postdata = "{\"sp_temp\":" + a + "}";
@@ -253,7 +251,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
             if (data != null) {
                 switch (channelId) {
                     case CHANNELISTEMP:
-                        state = new QuantityType<Temperature>(Double.valueOf(data.getisTemp()), SIUnits.CELSIUS);
+                        state = new QuantityType<>(Double.valueOf(data.getisTemp()), SIUnits.CELSIUS);
                         update(state, channelId);
                         break;
                     case CHANNELMODE:
@@ -267,7 +265,7 @@ public class HaasSohnpelletstoveHandler extends BaseThingHandler {
                         update(OnOffType.from(data.getEcoMode()), channelId);
                         break;
                     case CHANNELSPTEMP:
-                        state = new QuantityType<Temperature>(Double.valueOf(data.getspTemp()), SIUnits.CELSIUS);
+                        state = new QuantityType<>(Double.valueOf(data.getspTemp()), SIUnits.CELSIUS);
                         update(state, channelId);
                         break;
                     case CHANNELCLEANINGIN:

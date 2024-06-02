@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -127,7 +127,7 @@ public class StrDn1080Handler extends SonyAudioHandler {
                 if (result != null) {
                     logger.debug("StrDn1080Handler Updateing sound field to {} {}", result.get("pureDirect"),
                             result.get("soundField"));
-                    if (result.get("pureDirect").equalsIgnoreCase("on")) {
+                    if ("on".equalsIgnoreCase(result.get("pureDirect"))) {
                         updateState(channelUID, new StringType("pureDirect"));
                     } else {
                         updateState(channelUID, new StringType(result.get("soundField")));
@@ -137,11 +137,11 @@ public class StrDn1080Handler extends SonyAudioHandler {
                 throw new IOException(ex.getCause());
             }
         }
-        if (command instanceof StringType) {
-            if (((StringType) command).toString().equalsIgnoreCase("pureDirect")) {
+        if (command instanceof StringType stringCommand) {
+            if ("pureDirect".equalsIgnoreCase(stringCommand.toString())) {
                 connection.setSoundSettings("pureDirect", "on");
             } else {
-                connection.setSoundSettings("soundField", ((StringType) command).toString());
+                connection.setSoundSettings("soundField", stringCommand.toString());
             }
         }
     }

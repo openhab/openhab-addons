@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  * <P>
  * Methods in addition to the mentioned interface:
  * <UL>
- * <LI>{@link #setNodeAndMainParameter} to define the node and intended parameter value.</LI>
+ * <LI>{@link #setNodeIdAndParameters} to define the node and intended parameter value.</LI>
  * </UL>
  *
  * @see RunProductCommand

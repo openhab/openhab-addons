@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,13 +22,19 @@ import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager.LanAccessPoint;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager.Station;
+import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager;
+import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.HostName;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.LanHost;
 import org.openhab.binding.freeboxos.internal.api.rest.RepeaterManager;
+import org.openhab.binding.freeboxos.internal.config.WifiHostConfiguration;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.UnDefType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link WifiStationHandler} is responsible for handling everything associated to
@@ -39,6 +45,8 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class WifiStationHandler extends HostHandler {
     private static final String SERVER_HOST = "Server";
+
+    private final Logger logger = LoggerFactory.getLogger(WifiStationHandler.class);
 
     public WifiStationHandler(Thing thing) {
         super(thing);
@@ -65,7 +73,7 @@ public class WifiStationHandler extends HostHandler {
             LanAccessPoint lanAp = wifiHost.get().accessPoint();
             if (lanAp != null) {
                 updateChannelString(GROUP_WIFI, WIFI_HOST, "%s-%s".formatted(lanAp.type(), lanAp.uid()));
-                updateWifiStationChannels(lanAp.getSignal(), lanAp.getSsid(), lanAp.rxRate(), lanAp.txRate());
+                updateWifiStationChannels(lanAp.getRSSI(), lanAp.getSsid(), lanAp.rxRate(), lanAp.txRate());
                 return;
             }
         }
@@ -89,5 +97,27 @@ public class WifiStationHandler extends HostHandler {
 
     private int toQoS(int rssi) {
         return rssi > -50 ? 4 : rssi > -60 ? 3 : rssi > -70 ? 2 : rssi > -85 ? 1 : 0;
+    }
+
+    @Override
+    protected LanHost getLanHost() throws FreeboxException {
+        try {
+            return super.getLanHost();
+        } catch (FreeboxException e) {
+            HostName identifier = getConfigAs(WifiHostConfiguration.class).getIdentifier();
+            if (identifier != null) {
+                cancelPushSubscription();
+                Optional<LanHost> lanHost = getManager(LanBrowserManager.class).getHost(identifier);
+                return lanHost.map(host -> {
+                    Configuration thingConfig = editConfiguration();
+                    thingConfig.put(Thing.PROPERTY_MAC_ADDRESS, host.getMac().toColonDelimitedString());
+                    updateConfiguration(thingConfig);
+                    logger.info("MAC address of the wifihost {} changed, configuration updated to {}", thing.getUID(),
+                            host.getMac());
+                    return host;
+                }).orElseThrow(() -> new FreeboxException("Host data not found - mDNS failed also"));
+            }
+            throw new FreeboxException("Host not found - no mDNS alternative");
+        }
     }
 }

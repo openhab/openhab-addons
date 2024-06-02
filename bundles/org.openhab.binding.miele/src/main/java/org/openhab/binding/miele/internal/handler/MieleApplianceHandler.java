@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -193,7 +193,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             if (bridgeHandler != null) {
                 bridgeHandler.unregisterApplianceStatusListener(applianceId, this);
             }
-            applianceId = null;
+            this.applianceId = null;
         }
         startTimeStabilizer.clear();
         finishTimeStabilizer.clear();
@@ -265,8 +265,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     byte[] extendedStateBytes = DeviceUtil.stringToBytes(dp.Value);
                     logger.trace("Extended device state for {}: {}", getThing().getUID(),
                             DeviceUtil.bytesToHex(extendedStateBytes));
-                    if (this instanceof ExtendedDeviceStateListener) {
-                        ((ExtendedDeviceStateListener) this).onApplianceExtendedStateChanged(extendedStateBytes);
+                    if (this instanceof ExtendedDeviceStateListener listener) {
+                        listener.onApplianceExtendedStateChanged(extendedStateBytes);
                     }
                 }
                 return;
@@ -364,7 +364,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
         // Switch is trigger channel, but current state can be deduced from state.
         ChannelUID channelUid = new ChannelUID(getThing().getUID(), SWITCH_CHANNEL_ID);
-        State state = OnOffType.from(dp.Value.equals(String.valueOf(STATE_RUNNING)));
+        State state = OnOffType.from(dp.Value.equals(String.valueOf(STATE_RUNNING))
+                || dp.Value.equals(String.valueOf(STATE_END)) || dp.Value.equals(String.valueOf(STATE_RINSE_HOLD)));
         logger.trace("Update state of {} to {} through '{}'", channelUid, state, dp.Name);
         updateState(channelUid, state);
     }
@@ -441,8 +442,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 return null;
             }
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof MieleBridgeHandler) {
-                this.bridgeHandler = (MieleBridgeHandler) handler;
+            if (handler instanceof MieleBridgeHandler mieleBridgeHandler) {
+                this.bridgeHandler = mieleBridgeHandler;
             }
         }
         return this.bridgeHandler;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,7 @@ import org.openhab.binding.nibeuplink.internal.model.DataResponseTransformer;
 import org.openhab.core.thing.Channel;
 
 /**
- * generic command that retrieves status values for all channels defined in {@link VVM320Channels}
+ * generic command that retrieves status values for all channels defined in VVM320Channels
  *
  * @author Alexander Friese - initial contribution
  */

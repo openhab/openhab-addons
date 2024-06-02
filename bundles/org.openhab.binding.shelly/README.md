@@ -28,51 +28,53 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 The binding supports both hardware generations
 
 - Generation 1: The original Shelly devices like the Shelly 1, Shelly 2.5, Shelly Flood etc.
-- Generation 2: The new Plus / Pro series of devices
+- Generation 2: Plus / Pro series of devices
+- Shelly Plus Mini: Shelly Plus devices in compact format (Gen 2+3)
+- Shelly BLU: Bluetooth based series of devices
 
 The binding provides the same feature set across all devices as good as possible and depending on device specific features.
 
 ### Generation 1
 
-| thing-type        | Model                                                  | Vendor ID |
-| ----------------- | ------------------------------------------------------ | --------- |
-| shelly1           | Shelly 1 Single Relay Switch                           | SHSW-1    |
-| shelly1l          | Shelly 1L Single Relay Switch                          | SHSW-L    |
-| shelly1pm         | Shelly Single Relay Switch with integrated Power Meter | SHSW-PM   |
-| shelly2-relay     | Shelly Double Relay Switch in relay mode               | SHSW-21   |
-| shelly2-roller    | Shelly2 in Roller Mode                                 | SHSW-21   |
-| shelly25-relay    | Shelly 2.5 in Relay Switch                             | SHSW-25   |
-| shelly25-roller   | Shelly 2.5 in Roller Mode                              | SHSW-25   |
-| shelly4pro        | Shelly 4x Relay Switch                                 | SHSW-44   |
-| shellydimmer      | Shelly Dimmer                                          | SHDM-1    |
-| shellydimmer2     | Shelly Dimmer2                                         | SHDM-2    |
-| shellyix3         | Shelly ix3                                             | SHIX3-1   |
-| shellyuni         | Shelly UNI                                             | SHUNI-1   |
-| shellyplug        | Shelly Plug                                            | SHPLG2-1  |
-| shellyplugs       | Shelly Plug-S                                          | SHPLG-S   |
-| shellyem          | Shelly EM with integrated Power Meters                 | SHEM      |
-| shellyem3         | Shelly 3EM with 3 integrated Power Meter               | SHEM-3    |
-| shellyrgbw2-color | Shelly RGBW2 Controller in Color Mode                  | SHRGBW2   |
-| shellyrgbw2-white | Shelly RGBW2 Controller in White Mode                  | SHRGBW2   |
-| shellybulb-color  | Shelly Bulb in Color Mode                              | SHBLB-1   |
-| shellybulb-white  | Shelly Bulb in White Mode                              | SHBLB-1   |
-| shellybulbduo     | Shelly Duo White                                       | SHBDUO-1  |
-| shellybulbduo     | Shelly Duo White G10                                   | SHBDUO-1  |
-| shellycolorbulb   | Shelly Duo Color G10                                   | SHCB-1    |
-| shellyvintage     | Shelly Vintage (White Mode)                            | SHVIN-1   |
-| shellyht          | Shelly Sensor (temperature+humidity)                   | SHHT-1    |
-| shellyflood       | Shelly Flood Sensor                                    | SHWT-1    |
-| shellysmoke       | Shelly Smoke Sensor                                    | SHSM-1    |
-| shellymotion      | Shelly Motion Sensor                                   | SHMOS-01  |
-| shellymotion2     | Shelly Motion Sensor 2                                 | SHMOS-02  |
-| shellygas         | Shelly Gas Sensor                                      | SHGS-1    |
-| shellydw          | Shelly Door/Window                                     | SHDW-1    |
-| shellydw2         | Shelly Door/Window 2                                   | SHDW-2    |
-| shellybutton1     | Shelly Button 1                                        | SHBTN-1   |
-| shellybutton2     | Shelly Button 2                                        | SHBTN-2   |
-| shellysense       | Shelly Motion and IR Controller                        | SHSEN-1   |
-| shellytrv         | Shelly TRV                                             | SHTRV-01  |
-| shellydevice      | A password protected Shelly device or an unknown type  |           |
+| thing-type        | Model                                                  | Vendor ID           |
+| ----------------- | ------------------------------------------------------ | ------------------- |
+| shelly1           | Shelly 1 Single Relay Switch                           | SHSW-1              |
+| shelly1l          | Shelly 1L Single Relay Switch                          | SHSW-L              |
+| shelly1pm         | Shelly Single Relay Switch with integrated Power Meter | SHSW-PM             |
+| shelly2-relay     | Shelly Double Relay Switch in relay mode               | SHSW-21             |
+| shelly2-roller    | Shelly2 in Roller Mode                                 | SHSW-21             |
+| shelly25-relay    | Shelly 2.5 in Relay Switch                             | SHSW-25             |
+| shelly25-roller   | Shelly 2.5 in Roller Mode                              | SHSW-25             |
+| shelly4pro        | Shelly 4x Relay Switch                                 | SHSW-44             |
+| shellydimmer      | Shelly Dimmer                                          | SHDM-1              |
+| shellydimmer2     | Shelly Dimmer2                                         | SHDM-2              |
+| shellyix3         | Shelly ix3                                             | SHIX3-1             |
+| shellyuni         | Shelly UNI, Shelly Plus UNI                            | SHUNI-1, SNSN-0043X |
+| shellyplug        | Shelly Plug                                            | SHPLG2-1            |
+| shellyplugs       | Shelly Plug-S                                          | SHPLG-S             |
+| shellyem          | Shelly EM with integrated Power Meters                 | SHEM                |
+| shellyem3         | Shelly 3EM with 3 integrated Power Meter               | SHEM-3              |
+| shellyrgbw2-color | Shelly RGBW2 Controller in Color Mode                  | SHRGBW2             |
+| shellyrgbw2-white | Shelly RGBW2 Controller in White Mode                  | SHRGBW2             |
+| shellybulb-color  | Shelly Bulb in Color Mode                              | SHBLB-1             |
+| shellybulb-white  | Shelly Bulb in White Mode                              | SHBLB-1             |
+| shellybulbduo     | Shelly Duo White                                       | SHBDUO-1            |
+| shellybulbduo     | Shelly Duo White G10                                   | SHBDUO-1            |
+| shellycolorbulb   | Shelly Duo Color G10                                   | SHCB-1              |
+| shellyvintage     | Shelly Vintage (White Mode)                            | SHVIN-1             |
+| shellyht          | Shelly Sensor (temperature+humidity)                   | SHHT-1              |
+| shellyflood       | Shelly Flood Sensor                                    | SHWT-1              |
+| shellysmoke       | Shelly Smoke Sensor                                    | SHSM-1              |
+| shellymotion      | Shelly Motion Sensor                                   | SHMOS-01            |
+| shellymotion2     | Shelly Motion Sensor 2                                 | SHMOS-02            |
+| shellygas         | Shelly Gas Sensor                                      | SHGS-1              |
+| shellydw          | Shelly Door/Window                                     | SHDW-1              |
+| shellydw2         | Shelly Door/Window 2                                   | SHDW-2              |
+| shellybutton1     | Shelly Button 1                                        | SHBTN-1             |
+| shellybutton2     | Shelly Button 2                                        | SHBTN-2             |
+| shellysense       | Shelly Motion and IR Controller                        | SHSEN-1             |
+| shellytrv         | Shelly TRV                                             | SHTRV-01            |
+| shellydevice      | A password protected Shelly device or an unknown type  |                     |
 
 ### Generation 2 Plus series
 
@@ -89,17 +91,18 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X                   |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                   |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
+| shellyhtg3           | Shelly Plus HT Gen 3 with temperature + humidity sensor  | S3SN-0U12A                   |
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
 
-### Generation 2 Plus Mini series
-| thing-type           | Model                                                    | Vendor ID                    |
-| -------------------- | -------------------------------------------------------- | ---------------------------- |
-| shellymini1          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X16EU                |
-| shellymini1pm        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNPM-001PCEU16               |
-| shellyminipm         | Shelly Plus PM Mini with 1x power meter                  | SNSW-001P8EU                 |
+### Generation 2 Plus Mini series (incl. Gen 3)
 
+ | thing-type           | Model                                                    | Vendor ID                      |
+ | -------------------- | -------------------------------------------------------- | ------------------------------ |
+ | shellymini1          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU     |
+ | shellymini1pm        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
+ | shellyminipm         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
 
 ### Generation 2 Pro series
 
@@ -120,7 +123,8 @@ The binding provides the same feature set across all devices as good as possible
 | ----------------- | ------------------------------------------------------ | --------- |
 | shellyblubutton   | Shelly BLU Button 1                                    | SBBT      |
 | shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
-
+| shellyblumotion   | Shelly BLU Motion                                      | SBMO      |
+| shellybluht       | Shelly BLU H&T                                         | SBMO      |
 
 ## Binding Configuration
 
@@ -211,6 +215,27 @@ If you have multiple devices protected by the same credentials it's recommended 
 In this case the binding could directly access the device to retrieve the required information using those credentials.
 Otherwise a Thing of type shellyprotected is created in the Inbox and you could set the credentials while adding the Thing.
 In this case the credentials are persisted as part of the Thing configuration.
+
+### Range Extender Mode
+
+The Plus/Pro devices support the so-called Range Extender Mode (not available for Gen1). 
+This allows connect Shellys, which are normally no reachable, because of a lack of WiFi signal.
+Once enabled the Shelly acts as a hub to the linked devices, like a WiFi repeater.
+The hub device enables the access point, which can be seen by the linked device.
+The binding could then get access to the secondary device using &lt;ub shelly ip&gt;:&lt;special port&gt;.
+A special port on the hub device will be created for every linked device so one hub device could supported multiple linked devices.
+
+
+The binding communicates with the Shelly hub device, which then forwards the request to the secondary device.
+Once the thing for the primary Shelly goes online the binding detects the enabled range extender mode and adds all connected secondary devices to the Inbox.
+This means: The primary Shelly has to complete initialization before linked secondary devices are discovered.
+
+- Discover primary/hub Shelly
+- Add thing and wait until it goes ONLINE
+- Check Inbox to find the secondary/linked devices
+- Add secondary device as usual
+
+If you are adding another secondary device to the same hub device you need to suspend and resume the primary thing, this will run a new initialization and adds the new secondary device to the Inbox.
 
 ### Dynamic creation of channels
 
@@ -400,14 +425,18 @@ A new alarm will be triggered on a new condition or every 5 minutes if the condi
 
 ### Non-battery powered devices
 
-| Event Type  | Description                                                                       |
-| ----------- | --------------------------------------------------------------------------------- |
-| RESTARTED   | The device has been restarted. This could be an indicator for a firmware problem. |
-| WEAK_SIGNAL | An alarm is triggered when RSSI is < -80, which indicates an unstable connection. |
-| OVER_TEMP   | The device is overheating, check installation and housing.                        |
-| OVER_LOAD   | An over load condition has been detected, e.g. from the roller motor.             |
-| OVER_POWER  | Maximum allowed power was exceeded. The relay was turned off.                     |
-| LOAD_ERROR  | Device reported a load problem, so far Dimmer only.                               |
+| Event Type   | Description                                                                       |
+| ------------ | --------------------------------------------------------------------------------- |
+| RESTARTED    | The device has been restarted. This could be an indicator for a firmware problem. |
+| WEAK_SIGNAL  | An alarm is triggered when RSSI is < -80, which indicates an unstable connection. |
+| OVERTEMP     | The device is overheating, check installation and housing.                        |
+| OVERLOAD     | An over load condition has been detected, e.g. from the roller motor.             |
+| OVERPOWER    | Maximum allowed power was exceeded. The relay was turned off.                     |
+| LOAD_ERROR   | Device reported a load problem.                                                   |
+| SENSOR_ERROR | Device reported a sensor problem.                                                 |
+| VALVE_ERROR  | Device reported a problem with the valve.                                         |
+| VIBRATION    | Device reported vibration.                                                        |
+| LOW_BATTERY  | Device reported low battery.                                                      |
 
 ### Sensors
 
@@ -486,7 +515,7 @@ In this case the is no real measurement based on power consumption, but the Shel
 |         | input        | Switch   | yes       | ON: Input/Button is powered, see General Notes on Channels                      |
 |         | button       | Trigger  | yes       | Event trigger, see section Button Events                                        |
 | meter   | currentWatts | Number   | yes       | Current power consumption in Watts                                              |
-|         | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                            |
+|         | lastPower1   | Number   | yes       | The average power for the previous minute                                       |
 |         | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart) |
 |         |              |          |           |                                                                                 |
 |         | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                               |
@@ -567,6 +596,15 @@ The Thing id is derived from the service name, so that's the reason why the Thin
 |        | powerFactor   | Number   | yes       | Power Factor in percent                                                           |
 |        | resetTotals   | Switch   | yes       | ON: Resets total values for the power meter                                       |
 |        | lastUpdate    | DateTime | yes       | Timestamp of the last measurement                                                 |
+| nmeter | ncurrent      | Number   | yes       | Current current based on N clamp (requires calibration)                           |
+|        | ixsum         | Number   | yes       | Measured current over all phases                                                  |
+|        | nmismatch     | Switch   | yes       | ON: abs(ncurrent-ixsum) is greater than nmTreshhold                               |
+|        | nmTreshhold   | Number   | yes       | Treshhod (delta) before  nMismatch goes ON                                        |
+
+_Note:
+You should calibrate the device if you want to use "neutral current" measurements.
+Check the Shelly documentation for details._
+
 
 ### Shelly 2 - relay mode (thing-type: shelly2-relay)
 
@@ -709,7 +747,7 @@ Using the Thing configuration option `brightnessAutoOn` you could decide if the 
 
 Channels lastEvent and eventCount are only available if input type is set to momentary button
 
-### Shelly UNI (thing-type: shellyuni)
+### Shelly UNI, Shelly Plus UNI (thing-type: shellyuni)
 
 | Group   | Channel      | Type    | read-only | Description                                                              |
 | ------- | ------------ | ------- | --------- | ------------------------------------------------------------------------ |
@@ -1176,6 +1214,33 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 |       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
+### Shelly Plus Dimmer 10v (thing-type: shellyplus10v)
+
+| Group | Channel      | Type     | read-only | Description                                                                       |
+| ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
+| relay | brightness   | Dimmer   | r/w       | Currently selected brightness.                                                    |
+|       | outputName   | String   | yes       | Logical name of this relay output as configured in the Shelly App                 |
+|       | input1       | Switch   | yes       | ON: Input/Button for input 1 is powered, see general notes on channels            |
+|       | button1      | Trigger  | yes       | Event trigger, see section Button Events                                          |
+|       | lastEvent1   | String   | yes       | Last event type (S/SS/SSS/L) for input 1                                          |
+|       | eventCount1  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|       | input2       | Switch   | yes       | ON: Input/Button for channel 2 is powered, see general notes on channels          |
+|       | button2      | Trigger  | yes       | Event trigger, see section Button Events                                          |
+|       | lastEvent2   | String   | yes       | Last event type (S/SS/SSS/L) for input 2                                          |
+|       | eventCount2  | Number   | yes       | Counter gets incremented every time the device issues a button event.             |
+|       | autoOn       | Number   | r/w       | Relay #1: Sets a  timer to turn the device ON after every OFF command; in seconds |
+|       | autoOff      | Number   | r/w       | Relay #1: Sets a  timer to turn the device OFF after every ON command; in seconds |
+|       | timerActive  | Switch   | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
+| meter | currentWatts | Number   | yes       | Current power consumption in Watts                                                |
+|       | lastPower1   | Number   | yes       | Energy consumption for a round minute, 1 minute  ago                              |
+|       | totalKWH     | Number   | yes       | Total energy consumption in kwh since the device powered up (resets on restart)   |
+|       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
+
+`Note: The Dimmer should be calibrated using the device Web UI or Shelly App.`
+
+Using the Thing configuration option `brightnessAutoOn` you could decide if the light is turned on when a brightness > 0 is set.
+`true`:  Brightness will be set and device output is powered = light turns on with the new brightness
+`false`: Brightness will be set, but output stays unchanged so light will not be switched on when it's currently off.
 
 ### Shelly Plus i4, i4DC (thing-types: shellyplusi4, shellyplusi4dc)
 
@@ -1191,7 +1256,7 @@ Refer to [Smartify Roller Shutters with openHAB and Shelly](doc/UseCaseSmartRoll
 
 Channels lastEvent and eventCount are only available if input type is set to momentary button
 
-### Shelly Plus HT (thing-type: shellyplusht)
+### Shelly Plus HT (thing-type: shellyplusht), Plus HT Gen 3 (thing-type: shellyhtg3)
 
 | Group   | Channel      | Type     | read-only | Description                                             |
 | ------- | ------------ | -------- | --------- | ------------------------------------------------------- |
@@ -1449,8 +1514,6 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
 
-
-
 ### Shelly BLU Door/Window Sensor (thing-type: shellybludw)
 
 See notes on discovery of Shelly BLU devices above.
@@ -1464,6 +1527,29 @@ See notes on discovery of Shelly BLU devices above.
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
 | device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+### Shelly BLU Motion Sensor (thing-type: shellyblumotion)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                                                         |
+| ------- | ------------- | -------- | --------- | ----------------------------------------------------------------------------------- |
+| sensors | motion        | Switch   | yes       | ON: Motion detected                                                                 |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                                                  |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                                                           |
+| device  | gatewayDevice | String   | yes       | Shelly forwarded last status update (BLU gateway), could vary from packet to packet |
+
+### Shelly BLU H&T(thing-type: shellybluht)
+
+See notes on discovery of Shelly BLU devices above.
+
+| Group   | Channel       | Type     | read-only | Description                                             |
+| ------- | ------------- | -------- | --------- | ------------------------------------------------------- |
+| sensors | temperature   | Number   | yes       | Temperature, unit is reported by tempUnit               |
+|         | humidity      | Number   | yes       | Relative humidity in %                                  |
+|         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
+| battery | batteryLevel  | Number   | yes       | Battery Level in %                                      |
+|         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
 
 ## Shelly Wall Displays
 

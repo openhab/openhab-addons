@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,8 @@
 package org.openhab.binding.mielecloud.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -230,7 +230,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
 
     private void tryInitializeWebservice() {
         Optional<String> accessToken = tokenRefresher.getAccessTokenFromStorage(getOAuthServiceHandle());
-        if (!accessToken.isPresent()) {
+        if (accessToken.isEmpty()) {
             logger.debug("No OAuth2 access token available. Retrying later.");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                     I18NKeys.BRIDGE_STATUS_DESCRIPTION_ACCESS_TOKEN_NOT_CONFIGURED);
@@ -301,8 +301,7 @@ public class MieleBridgeHandler extends BaseBridgeHandler
     @Override
     public Optional<String> getLanguage() {
         Object languageObject = thing.getConfiguration().get(MieleCloudBindingConstants.CONFIG_PARAM_LOCALE);
-        if (languageObject instanceof String) {
-            String language = (String) languageObject;
+        if (languageObject instanceof String language) {
             if (language.isEmpty() || !LocaleValidator.isValidLanguage(language)) {
                 return Optional.empty();
             } else {
@@ -348,6 +347,6 @@ public class MieleBridgeHandler extends BaseBridgeHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ThingDiscoveryService.class);
+        return Set.of(ThingDiscoveryService.class);
     }
 }

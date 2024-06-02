@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,7 +48,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
     @Override
     public void onDeviceReady(String channelId, LGWebOSHandler handler) {
         super.onDeviceReady(channelId, handler);
-        handler.getSocket().getChannelList(new ResponseListener<List<ChannelInfo>>() {
+        handler.getSocket().getChannelList(new ResponseListener<>() {
             @Override
             public void onError(@Nullable String error) {
                 logger.warn("error requesting channel list: {}.", error);
@@ -107,7 +107,7 @@ public class TVControlChannel extends BaseChannelHandler<ChannelInfo> {
     }
 
     private ResponseListener<ChannelInfo> createResponseListener(String channelId, LGWebOSHandler handler) {
-        return new ResponseListener<ChannelInfo>() {
+        return new ResponseListener<>() {
 
             @Override
             public void onError(@Nullable String error) {

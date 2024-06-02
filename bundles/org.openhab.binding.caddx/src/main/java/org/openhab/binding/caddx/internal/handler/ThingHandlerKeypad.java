@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,7 @@
 package org.openhab.binding.caddx.internal.handler;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.caddx.internal.CaddxBindingConstants;
@@ -99,7 +99,7 @@ public class ThingHandlerKeypad extends CaddxBaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(CaddxKeypadActions.class);
+        return Set.of(CaddxKeypadActions.class);
     }
 
     public void enterTerminalMode() {

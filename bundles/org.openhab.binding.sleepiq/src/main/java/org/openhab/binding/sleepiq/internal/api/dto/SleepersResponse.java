@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.binding.sleepiq.internal.api.dto;
 import java.util.List;
 
 /**
- * The {@link SleeperResponse} holds the information about the sleepers assigned to the bed sides.
+ * The {@link SleepersResponse} holds the information about the sleepers assigned to the bed sides.
  *
  * @author Gregory Moyer - Initial contribution
  */

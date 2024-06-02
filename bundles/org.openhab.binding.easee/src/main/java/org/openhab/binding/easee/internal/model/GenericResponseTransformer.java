@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,6 +73,7 @@ public class GenericResponseTransformer {
                     result.put(channel, UnDefType.NULL);
                 } else {
                     try {
+                        String channelTypeId = Utils.getChannelTypeId(channel);
                         switch (channelType) {
                             case CHANNEL_TYPE_SWITCH:
                                 result.put(channel, OnOffType.from(Boolean.parseBoolean(value)));
@@ -87,9 +88,16 @@ public class GenericResponseTransformer {
                                 result.put(channel, new QuantityType<>(Double.parseDouble(value),
                                         MetricPrefix.KILO(Units.WATT_HOUR)));
                                 break;
-                            case CHANNEL_TYPE_KW:
-                                result.put(channel,
-                                        new QuantityType<>(Double.parseDouble(value), MetricPrefix.KILO(Units.WATT)));
+                            case CHANNEL_TYPE_POWER:
+                                if (channelTypeId.equals(CHANNEL_TYPENAME_RSSI)) {
+                                    // explicit type long is needed in case of integer/long values otherwise automatic
+                                    // transformation to a decimal type is applied.
+                                    result.put(channel,
+                                            new QuantityType<>(Long.parseLong(value), Units.DECIBEL_MILLIWATTS));
+                                } else {
+                                    result.put(channel, new QuantityType<>(Double.parseDouble(value),
+                                            MetricPrefix.KILO(Units.WATT)));
+                                }
                                 break;
                             case CHANNEL_TYPE_DATE:
                                 result.put(channel, new DateTimeType(Utils.parseDate(value)));
@@ -98,7 +106,7 @@ public class GenericResponseTransformer {
                                 result.put(channel, new StringType(value));
                                 break;
                             case CHANNEL_TYPE_NUMBER:
-                                if (Utils.getChannelTypeId(channel).contains(CHANNEL_TYPENAME_INTEGER)) {
+                                if (channelTypeId.contains(CHANNEL_TYPENAME_INTEGER)) {
                                     // explicit type long is needed in case of integer/long values otherwise automatic
                                     // transformation to a decimal type is applied.
                                     result.put(channel, new DecimalType(Long.parseLong(value)));

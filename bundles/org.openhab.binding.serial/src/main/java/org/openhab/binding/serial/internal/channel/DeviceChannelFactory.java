@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,7 +33,7 @@ public class DeviceChannelFactory {
     /**
      * Create a {@link DeviceChannel} for the channel type
      * 
-     * @param bundleContext the bundle context
+     * @param valueTransformationProvider the transformation provider
      * @param channelConfig the channel configuration
      * @param channelTypeID the channel type id
      * @return the DeviceChannel or null if the channel type is not supported.

@@ -8,4 +8,16 @@
 	<description>This binding lets you connect to your IT4Wifi Nice device.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_nap._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>
