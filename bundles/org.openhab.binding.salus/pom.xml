@@ -34,6 +34,14 @@
       <scope>compile</scope>
     </dependency>
     <!-- END caffeine -->
+    <!-- START AWS -->
+    <dependency>
+      <groupId>software.amazon.awssdk.crt</groupId>
+      <artifactId>aws-crt</artifactId>
+      <version>0.29.19</version>
+      <scope>compile</scope>
+    </dependency>
+    <!-- END AWS -->
 
     <dependency>
       <groupId>ch.qos.logback</groupId>

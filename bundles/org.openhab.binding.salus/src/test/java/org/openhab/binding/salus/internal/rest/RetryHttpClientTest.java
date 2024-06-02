@@ -29,6 +29,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.openhab.binding.salus.internal.rest.RestClient.Content;
 import org.openhab.binding.salus.internal.rest.RestClient.Header;
+import org.openhab.binding.salus.internal.rest.exceptions.HttpSalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 
 /**
  * @author Martin Grześlowski - Initial contribution

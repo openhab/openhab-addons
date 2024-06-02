@@ -12,21 +12,17 @@
  */
 package org.openhab.binding.salus.internal.discovery;
 
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SALUS_DEVICE_TYPE;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SALUS_IT600_DEVICE_TYPE;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SUPPORTED_THING_TYPES_UIDS;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.DSN;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.IT_600;
-import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.OEM_MODEL;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.*;
+import static org.openhab.binding.salus.internal.SalusBindingConstants.SalusDevice.*;
 
 import java.util.Locale;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.handler.CloudApi;
-import org.openhab.binding.salus.internal.handler.CloudBridgeHandler;
 import org.openhab.binding.salus.internal.rest.Device;
-import org.openhab.binding.salus.internal.rest.SalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -39,13 +35,12 @@ import org.slf4j.LoggerFactory;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class CloudDiscovery extends AbstractDiscoveryService {
-    private final Logger logger = LoggerFactory.getLogger(CloudDiscovery.class);
+public class SalusDiscovery extends AbstractDiscoveryService {
+    private final Logger logger = LoggerFactory.getLogger(SalusDiscovery.class);
     private final CloudApi cloudApi;
     private final ThingUID bridgeUid;
 
-    public CloudDiscovery(CloudBridgeHandler bridgeHandler, CloudApi cloudApi, ThingUID bridgeUid)
-            throws IllegalArgumentException {
+    public SalusDiscovery(CloudApi cloudApi, ThingUID bridgeUid) throws IllegalArgumentException {
         super(SUPPORTED_THING_TYPES_UIDS, 10, true);
         this.cloudApi = cloudApi;
         this.bridgeUid = bridgeUid;
@@ -56,8 +51,8 @@ public class CloudDiscovery extends AbstractDiscoveryService {
         try {
             var devices = cloudApi.findDevices();
             logger.debug("Found {} devices while scanning", devices.size());
-            devices.stream().filter(Device::isConnected).forEach(this::addThing);
-        } catch (SalusApiException e) {
+            devices.stream().filter(Device::connected).forEach(this::addThing);
+        } catch (SalusApiException | AuthSalusApiException e) {
             logger.warn("Error while scanning", e);
             stopScan();
         }
@@ -71,6 +66,7 @@ public class CloudDiscovery extends AbstractDiscoveryService {
     }
 
     private static ThingTypeUID findDeviceType(Device device) {
+        // cloud device
         var props = device.properties();
         if (props.containsKey(OEM_MODEL)) {
             var model = props.get(OEM_MODEL);
@@ -79,6 +75,10 @@ public class CloudDiscovery extends AbstractDiscoveryService {
                     return SALUS_IT600_DEVICE_TYPE;
                 }
             }
+        }
+        // aws device
+        if (device.dsn().contains(IT_600)) {
+            return SALUS_IT600_DEVICE_TYPE;
         }
         return SALUS_DEVICE_TYPE;
     }

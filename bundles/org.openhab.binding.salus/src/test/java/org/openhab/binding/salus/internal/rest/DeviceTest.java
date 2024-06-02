@@ -36,10 +36,10 @@ class DeviceTest {
         // Given
         var properties = new HashMap<String, @Nullable Object>();
         properties.put("connection_status", "online");
-        var device = new Device("dsn", "name", properties);
+        var device = new Device("dsn", "name", true, properties);
 
         // When
-        var result = device.isConnected();
+        var result = device.connected();
 
         // Then
         assertThat(result).isTrue();
@@ -52,10 +52,10 @@ class DeviceTest {
         // Given
         var properties = new HashMap<String, @Nullable Object>();
         properties.put("connection_status", "offline");
-        var device = new Device("dsn", "name", properties);
+        var device = new Device("dsn", "name", false, properties);
 
         // When
-        var result = device.isConnected();
+        var result = device.connected();
 
         // Then
         assertThat(result).isFalse();
@@ -67,10 +67,10 @@ class DeviceTest {
     public void testReturnsFalseIfConnectionStatusPropertyDoesNotExist() {
         // Given
         var properties = new HashMap<String, @Nullable Object>();
-        var device = new Device("dsn", "name", properties);
+        var device = new Device("dsn", "name", false, properties);
 
         // When
-        var result = device.isConnected();
+        var result = device.connected();
 
         // Then
         assertThat(result).isFalse();
@@ -82,10 +82,10 @@ class DeviceTest {
     public void testReturnsFalseIfPropertiesParameterDoesNotContainConnectionStatusKey() {
         // Given
         var properties = new HashMap<String, @Nullable Object>();
-        var device = new Device("dsn", "name", properties);
+        var device = new Device("dsn", "name", false, properties);
 
         // When
-        var result = device.isConnected();
+        var result = device.connected();
 
         // Then
         assertThat(result).isFalse();
@@ -98,10 +98,10 @@ class DeviceTest {
         // Given
         var properties = new HashMap<String, @Nullable Object>();
         properties.put("connection_status", null);
-        var device = new Device("dsn", "name", properties);
+        var device = new Device("dsn", "name", false, properties);
 
         // When
-        var result = device.isConnected();
+        var result = device.connected();
 
         // Then
         assertThat(result).isFalse();
@@ -114,10 +114,10 @@ class DeviceTest {
         // Given
         var properties = new HashMap<String, @Nullable Object>();
         properties.put("connection_status", 123);
-        var device = new Device("dsn", "name", properties);
+        var device = new Device("dsn", "name", false, properties);
 
         // When
-        var result = device.isConnected();
+        var result = device.connected();
 
         // Then
         assertThat(result).isFalse();
@@ -133,7 +133,7 @@ class DeviceTest {
         Map<String, @Nullable Object> properties = Map.of("connection_status", "online");
 
         // When
-        Device device = new Device(dsn, name, properties);
+        Device device = new Device(dsn, name, true, properties);
 
         // Then
         assertThat(device).isNotNull();
@@ -152,8 +152,8 @@ class DeviceTest {
         String name2 = "Device 2";
         Map<String, @Nullable Object> properties = Map.of("connection_status", "online");
 
-        Device device1 = new Device(dsn, name1, properties);
-        Device device2 = new Device(dsn, name2, properties);
+        Device device1 = new Device(dsn, name1, true, properties);
+        Device device2 = new Device(dsn, name2, true, properties);
 
         // When
         boolean isEqual = device1.equals(device2);
@@ -172,8 +172,8 @@ class DeviceTest {
         String name = "Device";
         Map<String, @Nullable Object> properties = Map.of("connection_status", "online");
 
-        Device device1 = new Device(dsn1, name, properties);
-        Device device2 = new Device(dsn2, name, properties);
+        Device device1 = new Device(dsn1, name, true, properties);
+        Device device2 = new Device(dsn2, name, true, properties);
 
         // When
         int result1 = device1.compareTo(device2);
@@ -186,26 +186,26 @@ class DeviceTest {
         assertThat(result3).isZero();
     }
 
-    // The isConnected method should return true if the connection_status property is "online".
+    // The connected method should return true if the connection_status property is "online".
     @Test
-    @DisplayName("The isConnected method should return true if the connection_status property is \"online\"")
-    public void testIsConnectedMethodShouldReturnTrueIfConnectionStatusIsOnline() {
+    @DisplayName("The connected method should return true if the connection_status property is \"online\"")
+    public void testconnectedMethodShouldReturnTrueIfConnectionStatusIsOnline() {
         // Given
         String dsn = "123456";
         String name = "Device";
         Map<String, @Nullable Object> properties1 = Map.of("connection_status", "online");
         Map<String, @Nullable Object> properties2 = Map.of("connection_status", "offline");
 
-        Device device1 = new Device(dsn, name, properties1);
-        Device device2 = new Device(dsn, name, properties2);
+        Device device1 = new Device(dsn, name, true, properties1);
+        Device device2 = new Device(dsn, name, false, properties2);
 
         // When
-        boolean isConnected1 = device1.isConnected();
-        boolean isConnected2 = device2.isConnected();
+        boolean connected1 = device1.connected();
+        boolean connected2 = device2.connected();
 
         // Then
-        assertThat(isConnected1).isTrue();
-        assertThat(isConnected2).isFalse();
+        assertThat(connected1).isTrue();
+        assertThat(connected2).isFalse();
     }
 
     // The toString method should return a string representation of the Device object with its DSN and name.
@@ -217,7 +217,7 @@ class DeviceTest {
         String name = "Device";
         Map<String, @Nullable Object> properties = Map.of("connection_status", "online");
 
-        Device device = new Device(dsn, name, properties);
+        Device device = new Device(dsn, name, true, properties);
 
         // When
         String result = device.toString();

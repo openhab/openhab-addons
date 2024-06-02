@@ -18,7 +18,8 @@ import java.util.SortedSet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.salus.internal.rest.Device;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
-import org.openhab.binding.salus.internal.rest.SalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 
 /**
  * @author Martin Grześlowski - Initial contribution
@@ -30,7 +31,7 @@ public interface CloudApi {
      * 
      * @return all devices from cloud
      */
-    SortedSet<Device> findDevices() throws SalusApiException;
+    SortedSet<Device> findDevices() throws SalusApiException, AuthSalusApiException;
 
     /**
      * Find a device by DSN
@@ -38,7 +39,7 @@ public interface CloudApi {
      * @param dsn of the device to find
      * @return a device with given DSN (or empty if no found)
      */
-    Optional<Device> findDevice(String dsn) throws SalusApiException;
+    Optional<Device> findDevice(String dsn) throws SalusApiException, AuthSalusApiException;
 
     /**
      * Sets value for a property
@@ -48,7 +49,8 @@ public interface CloudApi {
      * @param value value to set
      * @return if value was properly set
      */
-    boolean setValueForProperty(String dsn, String propertyName, Object value) throws SalusApiException;
+    boolean setValueForProperty(String dsn, String propertyName, Object value)
+            throws SalusApiException, AuthSalusApiException;
 
     /**
      * Finds all properties for a device
@@ -56,5 +58,7 @@ public interface CloudApi {
      * @param dsn of the device
      * @return all properties of the device
      */
-    SortedSet<DeviceProperty<?>> findPropertiesForDevice(String dsn) throws SalusApiException;
+    SortedSet<DeviceProperty<?>> findPropertiesForDevice(String dsn) throws SalusApiException, AuthSalusApiException;
+
+    boolean isReadOnly();
 }

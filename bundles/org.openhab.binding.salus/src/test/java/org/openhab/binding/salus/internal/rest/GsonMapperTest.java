@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.salus.internal.rest;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.salus.internal.cloud.rest.AuthToken;
 
 /**
  * @author Martin Grześlowski - Initial contribution
@@ -33,7 +35,7 @@ public class GsonMapperTest {
         // Given
         GsonMapper gsonMapper = GsonMapper.INSTANCE;
         String username = "test@example.com";
-        char[] password = "password".toCharArray();
+        byte[] password = "password".getBytes(UTF_8);
         String expectedJson1 = "{\"user\":{\"email\":\"test@example.com\",\"password\":\"password\"}}";
         String expectedJson2 = "{\"user\":{\"password\":\"password\",\"email\":\"test@example.com\"}}";
 
@@ -65,8 +67,8 @@ public class GsonMapperTest {
         // Given
         GsonMapper gsonMapper = GsonMapper.INSTANCE;
         String json = "[{\"device\":{\"dsn\":\"123\",\"product_name\":\"Product 1\"}},{\"device\":{\"dsn\":\"456\",\"product_name\":\"Product 2\"}}]";
-        List<Device> expectedDevices = List.of(new Device("123", "Product 1", Collections.emptyMap()),
-                new Device("456", "Product 2", Collections.emptyMap()));
+        List<Device> expectedDevices = List.of(new Device("123", "Product 1", true, Collections.emptyMap()),
+                new Device("456", "Product 2", true, Collections.emptyMap()));
 
         // When
         List<Device> devices = gsonMapper.parseDevices(json);

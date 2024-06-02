@@ -18,8 +18,10 @@ import static java.lang.String.format;
 import static java.util.Collections.unmodifiableSortedMap;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.empty;
+import static java.util.stream.Collectors.toMap;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,9 +33,9 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotNull;
 
-import org.checkerframework.checker.units.qual.K;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.salus.internal.cloud.rest.AuthToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +47,7 @@ import com.google.gson.reflect.TypeToken;
  * The GsonMapper class is responsible for mapping JSON data to Java objects using the Gson library. It provides methods
  * for converting JSON strings to various types of objects, such as authentication tokens, devices, device properties,
  * and error messages.
- * 
+ *
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
@@ -58,7 +60,7 @@ public class GsonMapper {
     };
     private final Gson gson = new Gson();
 
-    public String loginParam(String username, char[] password) {
+    public String loginParam(String username, byte[] password) {
         return gson.toJson(Map.of("user", Map.of("email", username, "password", new String(password))));
     }
 
@@ -69,6 +71,38 @@ public class GsonMapper {
     public List<Device> parseDevices(String json) {
         return tryParseBody(json, LIST_TYPE_REFERENCE, List.of()).stream().map(this::parseDevice)
                 .filter(Optional::isPresent).map(Optional::get).toList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Device> parseAwsDevices(String json) {
+        var map = tryParseBody(json, MAP_TYPE_REFERENCE, Map.of());
+        if (!map.containsKey("data")) {
+            return List.of();
+        }
+
+        var rawData = map.get("data");
+        Map<String, Object> data;
+        if (rawData instanceof Map<?, ?> dataMap) {
+            data = (Map<String, Object>) dataMap;
+        } else {
+            data = tryParseBody(rawData.toString(), MAP_TYPE_REFERENCE, Map.of());
+        }
+        if (!data.containsKey("items")) {
+            return List.of();
+        }
+
+        var rawItems = data.get("items");
+        List<Object> items;
+        if (rawItems instanceof List<?>) {
+            items = (List<Object>) rawItems;
+        } else {
+            items = tryParseBody(rawItems.toString(), LIST_TYPE_REFERENCE, List.of());
+        }
+        return items.stream()//
+                .map(this::parseAwsDevice)//
+                .filter(Optional::isPresent)//
+                .map(Optional::get)//
+                .toList();
     }
 
     private Optional<Device> parseDevice(Object obj) {
@@ -132,7 +166,38 @@ public class GsonMapper {
         }
         properties = Collections.unmodifiableMap(properties);
 
-        return Optional.of(new Device(dsn.trim(), name.trim(), properties));
+        return Optional.of(new Device(dsn.trim(), name.trim(), isConnected(properties), properties));
+    }
+
+    public boolean isConnected(Map<@NotNull String, @Nullable Object> properties) {
+        if (properties.containsKey("connection_status")) {
+            var connectionStatus = properties.get("connection_status");
+            return connectionStatus != null && "online".equalsIgnoreCase(connectionStatus.toString());
+        }
+        return false;
+    }
+
+    private Optional<Device> parseAwsDevice(Object obj) {
+        if (!(obj instanceof Map<?, ?> firstLevelMap)) {
+            logger.debug("Cannot parse device, because object is not type of map!\n{}", obj);
+            return empty();
+        }
+
+        var dsn = firstLevelMap.get("device_code");
+        var name = firstLevelMap.get("name");
+        if (dsn == null || name == null) {
+            return empty();
+        }
+        Map<@Nullable String, @Nullable Object> properties = firstLevelMap.entrySet()//
+                .stream()//
+                .filter(entry -> !"device_code".equals(entry.getKey()))//
+                .filter(entry -> !"name".equals(entry.getKey()))//
+                .filter(entry -> entry.getKey() != null)//
+                .filter(entry -> entry.getValue() != null)//
+                .map(entry -> Map.entry(entry.getKey().toString(), entry.getValue()))//
+                .collect(toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1, LinkedHashMap::new));
+
+        return Optional.of(new Device(dsn.toString(), name.toString(), true, properties));
     }
 
     @SuppressWarnings("SameParameterValue")
@@ -157,6 +222,61 @@ public class GsonMapper {
         var objects = tryParseBody(json, LIST_TYPE_REFERENCE, List.of());
         for (var obj : objects) {
             parseDeviceProperty(obj).ifPresent(deviceProperties::add);
+        }
+        return Collections.unmodifiableList(deviceProperties);
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<DeviceProperty<?>> parseAwsDeviceProperties(String json) {
+        var obj = tryParseBody(json, MAP_TYPE_REFERENCE, Map.of());
+        if (!obj.containsKey("state")) {
+            return List.of();
+        }
+
+        var rawState = obj.get("state");
+        Map<String, Object> state;
+        if (rawState instanceof Map<?, ?> stateMap) {
+            state = (Map<String, Object>) stateMap;
+        } else {
+            state = tryParseBody(rawState.toString(), MAP_TYPE_REFERENCE, Map.of());
+        }
+        if (!state.containsKey("reported")) {
+            return List.of();
+        }
+
+        var rawReported = state.get("reported");
+        Map<String, Object> reported;
+        if (rawReported instanceof Map<?, ?> reportedMap) {
+            reported = (Map<String, Object>) reportedMap;
+        } else {
+            reported = tryParseBody(rawReported.toString(), MAP_TYPE_REFERENCE, Map.of());
+        }
+        if (!reported.containsKey("11")) {
+            return List.of();
+        }
+
+        var rawEleven = reported.get("11");
+        Map<String, Object> eleven;
+        if (rawEleven instanceof Map<?, ?> elevenMap) {
+            eleven = (Map<String, Object>) elevenMap;
+        } else {
+            eleven = tryParseBody(rawEleven.toString(), MAP_TYPE_REFERENCE, Map.of());
+        }
+        if (!eleven.containsKey("properties")) {
+            return List.of();
+        }
+
+        var deviceProperties = new ArrayList<DeviceProperty<?>>();
+        var rawProperties = eleven.get("properties");
+        Map<String, Object> properties;
+        if (rawProperties instanceof Map<?, ?> propertiesMap) {
+            properties = (Map<String, Object>) propertiesMap;
+        } else {
+            properties = tryParseBody(rawProperties.toString(), MAP_TYPE_REFERENCE, Map.of());
+        }
+        for (var entry : properties.entrySet()) {
+            var deviceProperty = parseAwsDeviceProperty(entry.getKey(), entry.getValue());
+            deviceProperties.add(deviceProperty);
         }
         return Collections.unmodifiableList(deviceProperties);
     }
@@ -226,6 +346,17 @@ public class GsonMapper {
 
         return Optional.of(buildDeviceProperty(name, baseType, value, readOnly, direction, dataUpdatedAt, productName,
                 displayName, properties));
+    }
+
+    private DeviceProperty<?> parseAwsDeviceProperty(String key, Object value) {
+        if (value instanceof Boolean booleanValue) {
+            return new DeviceProperty.BooleanDeviceProperty(key, true, null, null, null, null, booleanValue, null);
+        }
+        if (value instanceof Number numberValue) {
+            return new DeviceProperty.LongDeviceProperty(key, true, null, null, null, null, numberValue.longValue(),
+                    null);
+        }
+        return new DeviceProperty.StringDeviceProperty(key, true, null, null, null, null, value.toString(), null);
     }
 
     private DeviceProperty<?> buildDeviceProperty(String name, @Nullable String baseType, @Nullable Object value,
@@ -327,6 +458,41 @@ public class GsonMapper {
             return empty();
         }
         return Optional.ofNullable(datapoint.get("value"));
+    }
+
+    public List<String> parseAwsGatewayIds(String json) {
+        var map = tryParseBody(json, MAP_TYPE_REFERENCE, Map.of());
+        if (!map.containsKey("data")) {
+            return List.of();
+        }
+
+        var data = map.get("data");
+        List<Object> list;
+        if (data instanceof Collection<?> collection) {
+            list = new ArrayList<>(collection);
+        } else {
+            list = tryParseBody(data.toString(), LIST_TYPE_REFERENCE, List.of());
+        }
+
+        return list.stream()//
+                .map(this::parseAwsGatewayId)//
+                .filter(Optional::isPresent)//
+                .map(Optional::get)//
+                .toList();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Optional<String> parseAwsGatewayId(Object json) {
+        Map<String, Object> map;
+        if (json instanceof Map<?, ?>) {
+            map = (Map<String, Object>) json;
+        } else {
+            map = tryParseBody(json.toString(), MAP_TYPE_REFERENCE, Map.of());
+        }
+        if (!map.containsKey("id")) {
+            return empty();
+        }
+        return Optional.ofNullable(map.get("id")).map(Object::toString);
     }
 
     private static record Pair<K, @Nullable V> (K key, @Nullable V value) {

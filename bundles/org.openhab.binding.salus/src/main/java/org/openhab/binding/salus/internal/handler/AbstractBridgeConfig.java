@@ -20,74 +20,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class CloudBridgeConfig {
-    private String username = "";
-    private String password = "";
-    private String url = "";
-    private long refreshInterval = 30;
-    private long propertiesRefreshInterval = 5;
-    private int maxHttpRetries = 3;
+public abstract class AbstractBridgeConfig {
+    protected String username = "";
+    protected String password = "";
+    protected String url = "";
+    protected long refreshInterval = 30;
+    protected long propertiesRefreshInterval = 5;
+    protected int maxHttpRetries = 3;
 
-    public CloudBridgeConfig() {
+    public AbstractBridgeConfig() {
     }
 
-    public CloudBridgeConfig(String username, String password, String url, long refreshInterval,
-            long propertiesRefreshInterval) {
+    public AbstractBridgeConfig(String username, String password, String url, long refreshInterval,
+            long propertiesRefreshInterval, int maxHttpRetries) {
         this.username = username;
         this.password = password;
         this.url = url;
         this.refreshInterval = refreshInterval;
         this.propertiesRefreshInterval = propertiesRefreshInterval;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getUrl() {
-        if (url.isBlank()) {
-            return DEFAULT_URL;
-        }
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public long getRefreshInterval() {
-        return refreshInterval;
-    }
-
-    public void setRefreshInterval(long refreshInterval) {
-        this.refreshInterval = refreshInterval;
-    }
-
-    public long getPropertiesRefreshInterval() {
-        return propertiesRefreshInterval;
-    }
-
-    public void setPropertiesRefreshInterval(long propertiesRefreshInterval) {
-        this.propertiesRefreshInterval = propertiesRefreshInterval;
-    }
-
-    public int getMaxHttpRetries() {
-        return maxHttpRetries;
-    }
-
-    public void setMaxHttpRetries(int maxHttpRetries) {
         this.maxHttpRetries = maxHttpRetries;
     }
 
@@ -95,10 +45,54 @@ public class CloudBridgeConfig {
         return !username.isBlank() && !password.isBlank();
     }
 
-    @Override
-    public String toString() {
-        return "CloudBridgeConfig{" + "username='" + username + '\'' + ", password='<SECRET>'" + ", url='" + url + '\''
-                + ", refreshInterval=" + refreshInterval + ", propertiesRefreshInterval=" + propertiesRefreshInterval
-                + '}';
+    public final String getUsername() {
+        return username;
+    }
+
+    public final void setUsername(String username) {
+        this.username = username;
+    }
+
+    public final String getPassword() {
+        return password;
+    }
+
+    public final void setPassword(String password) {
+        this.password = password;
+    }
+
+    public final String getUrl() {
+        if (url.isBlank()) {
+            return DEFAULT_URL;
+        }
+        return url;
+    }
+
+    public final void setUrl(String url) {
+        this.url = url;
+    }
+
+    public final long getRefreshInterval() {
+        return refreshInterval;
+    }
+
+    public final void setRefreshInterval(long refreshInterval) {
+        this.refreshInterval = refreshInterval;
+    }
+
+    public final long getPropertiesRefreshInterval() {
+        return propertiesRefreshInterval;
+    }
+
+    public final void setPropertiesRefreshInterval(long propertiesRefreshInterval) {
+        this.propertiesRefreshInterval = propertiesRefreshInterval;
+    }
+
+    public final int getMaxHttpRetries() {
+        return maxHttpRetries;
+    }
+
+    public final void setMaxHttpRetries(int maxHttpRetries) {
+        this.maxHttpRetries = maxHttpRetries;
     }
 }

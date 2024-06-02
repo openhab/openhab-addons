@@ -23,6 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.StringContentProvider;
+import org.openhab.binding.salus.internal.rest.exceptions.HttpSalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 
 /**
  * @author Martin Grześlowski - Initial contribution
