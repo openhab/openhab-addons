@@ -17,10 +17,10 @@
 					<name>modelName</name>
 					<regex>Web Server OZW672</regex>
 				</match-property>
-                <match-property>
-                    <name>modelName</name>
-                    <regex>Web Server OZW772</regex>
-                </match-property>
+				<match-property>
+					<name>modelName</name>
+					<regex>Web Server OZW772</regex>
+				</match-property>
 			</match-properties>
 		</discovery-method>
 	</discovery-methods>
