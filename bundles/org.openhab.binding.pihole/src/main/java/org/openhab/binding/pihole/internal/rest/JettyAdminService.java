@@ -23,14 +23,17 @@ import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
 public class JettyAdminService implements AdminService {
-    private static final Gson GSON = new Gson();
+    private static final Gson GSON = new GsonBuilder()
+            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
     private final Logger logger = LoggerFactory.getLogger(JettyAdminService.class);
     private final String token;
     private final URI baseUrl;

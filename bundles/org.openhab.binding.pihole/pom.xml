@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.pihole</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: PiHole Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Pi-hole Binding</name>
 
   <dependencies>
     <dependency>

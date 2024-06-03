@@ -15,12 +15,9 @@ package org.openhab.binding.pihole.internal.rest.model;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public record GravityLastUpdated(@SerializedName("file_exists") @Nullable Boolean fileExists, @Nullable Long absolute,
-        @Nullable Relative relative) {
+public record GravityLastUpdated(@Nullable Boolean fileExists, @Nullable Long absolute, @Nullable Relative relative) {
 }

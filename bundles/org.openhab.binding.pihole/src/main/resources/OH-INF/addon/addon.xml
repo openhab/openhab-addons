@@ -4,7 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>PiHole Binding</name>
-	<description>This is the binding for PiHole.</description>
+	<name>Pi-hole Binding</name>
+	<description>This is the binding for Pi-hole.</description>
+	<connection>cloud</connection>
 
 </addon:addon>

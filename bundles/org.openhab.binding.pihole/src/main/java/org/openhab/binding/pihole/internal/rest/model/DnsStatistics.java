@@ -21,16 +21,10 @@ import com.google.gson.annotations.SerializedName;
  * @author Martin Grzeslowski - Initial contribution
  */
 @NonNullByDefault
-public record DnsStatistics(@SerializedName("domains_being_blocked") @Nullable Integer domainsBeingBlocked,
-        @SerializedName("dns_queries_today") @Nullable Integer dnsQueriesToday,
-        @SerializedName("ads_blocked_today") @Nullable Integer adsBlockedToday,
-        @SerializedName("ads_percentage_today") @Nullable Double adsPercentageToday,
-        @SerializedName("unique_domains") @Nullable Integer uniqueDomains,
-        @SerializedName("queries_forwarded") @Nullable Integer queriesForwarded,
-        @SerializedName("queries_cached") @Nullable Integer queriesCached,
-        @SerializedName("clients_ever_seen") @Nullable Integer clientsEverSeen,
-        @SerializedName("unique_clients") @Nullable Integer uniqueClients,
-        @SerializedName("dns_queries_all_types") @Nullable Integer dnsQueriesAllTypes,
+public record DnsStatistics(@Nullable Integer domainsBeingBlocked, @Nullable Integer dnsQueriesToday,
+        @Nullable Integer adsBlockedToday, @Nullable Double adsPercentageToday, @Nullable Integer uniqueDomains,
+        @Nullable Integer queriesForwarded, @Nullable Integer queriesCached, @Nullable Integer clientsEverSeen,
+        @Nullable Integer uniqueClients, @Nullable Integer dnsQueriesAllTypes,
         @SerializedName("reply_UNKNOWN") @Nullable Integer replyUnknown,
         @SerializedName("reply_NODATA") @Nullable Integer replyNoData,
         @SerializedName("reply_NXDOMAIN") @Nullable Integer replyNXDomain,
@@ -44,10 +38,8 @@ public record DnsStatistics(@SerializedName("domains_being_blocked") @Nullable I
         @SerializedName("reply_OTHER") @Nullable Integer replyOther,
         @SerializedName("reply_DNSSEC") @Nullable Integer replyDNSSEC,
         @SerializedName("reply_NONE") @Nullable Integer replyNone,
-        @SerializedName("reply_BLOB") @Nullable Integer replyBlob,
-        @SerializedName("dns_queries_all_replies") @Nullable Integer dnsQueriesAllReplies,
-        @SerializedName("privacy_level") @Nullable Integer privacyLevel, @Nullable String status,
-        @SerializedName("gravity_last_updated") @Nullable GravityLastUpdated gravityLastUpdated) {
+        @SerializedName("reply_BLOB") @Nullable Integer replyBlob, @Nullable Integer dnsQueriesAllReplies,
+        @Nullable Integer privacyLevel, @Nullable String status, @Nullable GravityLastUpdated gravityLastUpdated) {
     public boolean enabled() {
         return "enabled".equalsIgnoreCase(status);
     }

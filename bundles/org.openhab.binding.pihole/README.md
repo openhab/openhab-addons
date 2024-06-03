@@ -1,18 +1,18 @@
-# PiHole Binding
+# Pi-hole Binding
 
-The PiHole Binding is a bridge between OpenHAB and PiHole, enabling users to integrate PiHole statistics and controls into their home automation setup. PiHole is a DNS-based ad blocker that can run on a variety of platforms, including Raspberry Pi.
+The Pi-hole Binding is a bridge between OpenHAB and Pi-hole, enabling users to integrate Pi-hole statistics and controls into their home automation setup. Pi-hole is a DNS-based ad blocker that can run on a variety of platforms, including Raspberry Pi.
 
-PiHole is a powerful network-level advertisement and internet tracker blocking application. By intercepting DNS requests, it can prevent unwanted content from being displayed on devices connected to your network. The PiHole Binding allows you to monitor PiHole statistics and control its functionality directly from your OpenHAB setup.
+Pi-hole is a powerful network-level advertisement and internet tracker blocking application. By intercepting DNS requests, it can prevent unwanted content from being displayed on devices connected to your network. The Pi-hole Binding allows you to monitor Pi-hole statistics and control its functionality directly from your OpenHAB setup.
 
 ### Features
 
 - Real-time Statistics: Monitor key metrics such as the number of domains being blocked, DNS queries made today, ads blocked today, and more.
-- Control: Enable or disable PiHole's blocking functionality, configure blocking options, and adjust privacy settings directly from OpenHAB.
-- Integration: Seamlessly integrate PiHole data and controls with other OpenHAB items and rules to create advanced automation scenarios.
+- Control: Enable or disable Pi-hole's blocking functionality, configure blocking options, and adjust privacy settings directly from OpenHAB.
+- Integration: Seamlessly integrate Pi-hole data and controls with other OpenHAB items and rules to create advanced automation scenarios.
 
 ## Supported Things
 
-- `server`: PiHole server
+- `server`: Pi-hole server
 
 ## Thing Configuration
 
@@ -62,7 +62,7 @@ PiHole is a powerful network-level advertisement and internet tracker blocking a
 ### Thing Configuration
 
 ```java
-Thing pihole:server:a4a077edb8 "PiHole" @ "Location"
+Thing pihole:server:a4a077edb8 "Pi-hole" @ "Location"
 [
     refreshIntervalSeconds=600,
     hostname="http://123.456.7.89",
@@ -135,7 +135,7 @@ String disable_enable "Disable Blocking" { channel="pihole:server:a4a077edb8:dis
 
 ### Actions
 
-PiHole binding provides actions to use in rules:
+Pi-hole binding provides actions to use in rules:
 
 ```java
 import java.util.concurrent.TimeUnit

@@ -117,12 +117,12 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
         // check disableBlocking method
         synchronized (lock) {
             try {
-                logger.debug("Refreshing DnsStatistics from PiHole");
+                logger.debug("Refreshing DnsStatistics from Pi-hole");
                 local.summary().ifPresent(statistics -> dnsStatistics = statistics);
                 refresh();
                 updateStatus(ONLINE);
             } catch (Exception e) {
-                logger.debug("Error occurred when refreshing DnsStatistics from PiHole", e);
+                logger.debug("Error occurred when refreshing DnsStatistics from Pi-hole", e);
                 updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
             }
         }
