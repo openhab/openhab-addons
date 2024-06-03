@@ -14,8 +14,6 @@ package org.openhab.binding.myuplink.internal.handler;
 
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -81,7 +79,6 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
         logger.debug("myUplink Generic Device initialized with id: {}", getDeviceId());
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_BRIDGE);
-        removeDynamicChannels();
         startPolling();
     }
 
@@ -142,6 +139,7 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
     private void startPolling() {
         updateJobReference(dataPollingJobReference, scheduler.scheduleWithFixedDelay(this::pollingRun,
                 POLLING_INITIAL_DELAY, getBridgeConfiguration().getDataPollingInterval(), TimeUnit.SECONDS));
+
     }
 
     /**
@@ -156,27 +154,6 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
             enqueueCommand(new GetPoints(this, deviceId, this::updateOnlineStatus));
         }
         enqueueCommand(new GetSystems(this, this::updatePropertiesAndOnlineStatus));
-    }
-
-    /**
-     * Removes danymic enum channels which have dynamic types that are not persisted. These channels will be recreated
-     * once data is retrieved from the API.
-     */
-    private void removeDynamicChannels() {
-        final List<Channel> updatedChannels = new ArrayList<>();
-
-        for (final Channel channel : thing.getChannels()) {
-            var channelTypeId = Utils.getChannelTypeId(channel);
-            if (channelTypeId.startsWith(CHANNEL_TYPE_ENUM_PRFIX)) {
-                logger.debug("remove dynamic enum channel: {}, will be recreated", channel.getUID().getAsString());
-            } else {
-                updatedChannels.add(channel);
-            }
-        }
-
-        final ThingBuilder thingBuilder = editThing();
-        thingBuilder.withChannels(updatedChannels);
-        updateThing(thingBuilder.build());
     }
 
     /**

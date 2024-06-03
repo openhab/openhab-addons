@@ -146,7 +146,7 @@ public class ChannelFactory {
                     .withStateDescriptionFragment(stateBuilder.build());
 
             type = typeBuilder.build();
-            channelTypeProvider.add(type);
+            channelTypeProvider.putChannelType(type);
         }
 
         return channelTypeUID;
