@@ -57,9 +57,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private static final DateTimeFormatter LINKY_LOCALDATETIME_FORMATTER = DateTimeFormatter
             .ofPattern("uuuu-MM-dd HH:mm:ss");
 
-    // private final String clientId = "e551937c-5250-48bc-b4a6-2323af68db92";
-    // private final String clientSecret = "";
-
     private final HttpClientFactory httpClientFactory;
     private final OAuthFactory oAuthFactory;
     private final HttpService httpService;

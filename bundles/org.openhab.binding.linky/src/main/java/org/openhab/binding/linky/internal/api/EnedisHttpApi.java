@@ -153,7 +153,6 @@ public class EnedisHttpApi {
     }
 
     public String formatUrl(String apiUrl, String prmId) {
-        // return "%s/%s/cache".formatted(apiUrl, config.prmId);
         return "%s?usage_point_id=%s".formatted(apiUrl, prmId);
     }
 
@@ -238,8 +237,7 @@ public class EnedisHttpApi {
         }
     }
 
-    private MeterReading getMeasures(String apiUrl, String userId, String prmId, LocalDate from, LocalDate to)
-            throws LinkyException {
+    private MeterReading getMeasures(String apiUrl, String prmId, LocalDate from, LocalDate to) throws LinkyException {
         String dtStart = from.format(API_DATE_FORMAT);
         String dtEnd = to.format(API_DATE_FORMAT);
 
@@ -264,12 +262,12 @@ public class EnedisHttpApi {
         }
     }
 
-    public MeterReading getEnergyData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(MEASURE_DAILY_CONSUMPTION_URL, userId, prmId, from, to);
+    public MeterReading getEnergyData(String prmId, LocalDate from, LocalDate to) throws LinkyException {
+        return getMeasures(MEASURE_DAILY_CONSUMPTION_URL, prmId, from, to);
     }
 
-    public MeterReading getPowerData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(MEASURE_MAX_POWER_URL, userId, prmId, from, to);
+    public MeterReading getPowerData(String prmId, LocalDate from, LocalDate to) throws LinkyException {
+        return getMeasures(MEASURE_MAX_POWER_URL, prmId, from, to);
     }
 
     public String getTempoData() throws LinkyException {

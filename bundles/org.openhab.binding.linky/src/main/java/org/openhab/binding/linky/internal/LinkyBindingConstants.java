@@ -31,12 +31,6 @@ public class LinkyBindingConstants {
 
     public static final String BINDING_ID = "linky";
 
-    // public final String clientId = "e551937c-5250-48bc-b4a6-2323af68db92";
-    // public final String clientSecret = "";
-
-    public static final String clientId = "_88uJnEjEs_IMf4bjGZJV6gGxYga";
-    public static final String clientSecret = "6lsPfCmu0fEXuKYy3e0e6w8ydIca";
-
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_API_ENEDIS_BRIDGE = new ThingTypeUID(BINDING_ID, "EnedisBridge");
     public static final ThingTypeUID THING_TYPE_API_MYELECTRICALDATA_BRIDGE = new ThingTypeUID(BINDING_ID,

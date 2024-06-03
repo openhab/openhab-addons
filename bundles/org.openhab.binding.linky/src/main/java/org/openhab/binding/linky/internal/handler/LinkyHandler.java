@@ -71,9 +71,6 @@ public class LinkyHandler extends BaseThingHandler {
     private final ExpiringDayCache<MeterReading> dailyConsumptionMaxPower;
 
     private @Nullable ScheduledFuture<?> refreshJob;
-
-    private @NonNullByDefault({}) String prmId;
-    private @NonNullByDefault({}) String userId;
     private @Nullable LinkyConfiguration config;
     private @Nullable EnedisHttpApi enedisApi;
 
@@ -145,9 +142,6 @@ public class LinkyHandler extends BaseThingHandler {
                         updateProperties(Map.of(USER_ID, prmInfo.customerId, PUISSANCE,
                                 prmInfo.contractInfo.subscribedPower, PRM_ID, prmInfo.prmId));
 
-                        // prmId = thing.getProperties().get(PRM_ID);
-                        // userId = thing.getProperties().get(USER_ID);
-
                         updateMetaData();
                         updateData();
 
@@ -169,6 +163,10 @@ public class LinkyHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-mandatory-settings");
         }
+    }
+
+    public @Nullable LinkyConfiguration getLinkyConfig() {
+        return config;
     }
 
     private synchronized void updateMetaData() {
@@ -397,7 +395,7 @@ public class LinkyHandler extends BaseThingHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                MeterReading meterReading = api.getEnergyData(userId, prmId, from, to);
+                MeterReading meterReading = api.getEnergyData(config.prmId, from, to);
                 updateStatus(ThingStatus.ONLINE);
                 return meterReading;
             } catch (LinkyException e) {
@@ -415,7 +413,7 @@ public class LinkyHandler extends BaseThingHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                MeterReading meterReading = api.getPowerData(userId, prmId, from, to);
+                MeterReading meterReading = api.getPowerData(config.prmId, from, to);
                 updateStatus(ThingStatus.ONLINE);
                 return meterReading;
             } catch (LinkyException e) {
@@ -427,24 +425,24 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     /*
-    private @Nullable String getTempoData() {
-        logger.debug("getTempoData from");
+     * private @Nullable String getTempoData() {
+     * logger.debug("getTempoData from");
+     *
+     * EnedisHttpApi api = this.enedisApi;
+     * if (api != null) {
+     * try {
+     * String result = api.getTempoData();
+     * updateStatus(ThingStatus.ONLINE);
+     * return result;
+     * } catch (LinkyException e) {
+     * logger.debug("Exception when getting power data: {}", e.getMessage(), e);
+     * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+     * }
+     * }
+     * return null;
+     * }
+     */
 
-        EnedisHttpApi api = this.enedisApi;
-        if (api != null) {
-            try {
-                String result = api.getTempoData();
-                updateStatus(ThingStatus.ONLINE);
-                return result;
-            } catch (LinkyException e) {
-                logger.debug("Exception when getting power data: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-            }
-        }
-        return null;
-    }
-    */
-    
     private boolean isConnected() {
         EnedisHttpApi api = this.enedisApi;
         return api == null ? false : api.isConnected();
