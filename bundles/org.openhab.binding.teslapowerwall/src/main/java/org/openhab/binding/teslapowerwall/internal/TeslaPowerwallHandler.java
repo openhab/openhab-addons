@@ -179,9 +179,6 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
                         new QuantityType<>(meterAggregates.solar_energyimported, Units.KILOWATT_HOUR));
             }
 
-        } else {// include log message for pre-existing installations
-            logger.info(
-                    "Local powerwall login e-mail and password are now required for proper operations. Please update configuration.");
         }
     }
 }
