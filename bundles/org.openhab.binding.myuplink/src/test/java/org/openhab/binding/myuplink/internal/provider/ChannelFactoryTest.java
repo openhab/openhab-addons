@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.myuplink.internal.MyUplinkBindingConstants;
 import org.openhab.binding.myuplink.internal.Utils;
 import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ChannelTypeUID;
@@ -37,7 +38,8 @@ import com.google.gson.JsonObject;
 @NonNullByDefault
 public class ChannelFactoryTest {
 
-    private final MyUplinkChannelTypeProvider channelTypeProvider = new MyUplinkChannelTypeProvider();
+    private final MyUplinkChannelTypeProvider channelTypeProvider = new MyUplinkChannelTypeProvider(
+            new VolatileStorageService());
     private final ChannelFactory channelFactory = new ChannelFactory(channelTypeProvider, new ChannelTypeRegistry());
 
     private final ThingUID TEST_THING_UID = new ThingUID(MyUplinkBindingConstants.BINDING_ID, "genericThing", "myUnit");
