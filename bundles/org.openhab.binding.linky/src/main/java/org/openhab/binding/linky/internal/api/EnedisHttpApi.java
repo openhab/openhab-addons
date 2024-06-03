@@ -25,6 +25,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.AddressInfo;
 import org.openhab.binding.linky.internal.dto.ContactInfo;
+import org.openhab.binding.linky.internal.dto.Contracts;
 import org.openhab.binding.linky.internal.dto.Customer;
 import org.openhab.binding.linky.internal.dto.CustomerIdResponse;
 import org.openhab.binding.linky.internal.dto.CustomerReponse;
@@ -34,7 +35,9 @@ import org.openhab.binding.linky.internal.dto.MeterResponse;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.TempoResponse;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
+import org.openhab.binding.linky.internal.dto.UsagePointDetails;
 import org.openhab.binding.linky.internal.handler.ApiBridgeHandler;
+import org.openhab.binding.linky.internal.handler.MyElectricalDataBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,22 +54,6 @@ import com.google.gson.JsonSyntaxException;
 public class EnedisHttpApi {
 
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
-    private static final String BASE_URL = "https://ext.prod-sandbox.api.enedis.fr/";
-
-    private static final String CONTRACT_URL = BASE_URL + "customers_upc/v5/usage_points/contracts";
-    private static final String IDENTITY_URL = BASE_URL + "customers_i/v5/identity";
-    private static final String CONTACT_URL = BASE_URL + "customers_cd/v5/contact_data";
-    private static final String ADDRESS_URL = BASE_URL + "customers_upa/v5/usage_points/addresses";
-    private static final String MEASURE_DAILY_CONSUMPTION_URL = BASE_URL
-            + "metering_data_dc/v5/daily_consumption?usage_point_id=%s&start=%s&end=%s";
-    private static final String MEASURE_MAX_POWER_URL = BASE_URL
-            + "metering_data_dcmp/v5/daily_consumption_max_power?usage_point_id=%s&start=%s&end=%s";
-
-    private static final String TEMPO_URL = BASE_URL + "rte/tempo/%s/%s";
-
-    private static final String TOKEN_URL = BASE_URL
-            + "v1/oauth2/authorize?client_id=%s&response_type=code&redirect_uri=na&user_type=na&state=na&person_id=-1&usage_points_id=%s";
 
     private final Logger logger = LoggerFactory.getLogger(EnedisHttpApi.class);
     private final Gson gson;
@@ -100,22 +87,23 @@ public class EnedisHttpApi {
     }
 
     private String getData(String url) throws LinkyException {
-        return getData(url, httpClient, apiBridgeHandler.getToken());
+        return getData(apiBridgeHandler, url, httpClient, apiBridgeHandler.getToken());
     }
 
-    private static String getData(String url, HttpClient httpClient, String token) throws LinkyException {
+    private static String getData(ApiBridgeHandler apiBridgeHandler, String url, HttpClient httpClient, String token)
+            throws LinkyException {
         try {
             Request request = httpClient.newRequest(url);
             request = request.method(HttpMethod.GET);
             if (!("".equals(token))) {
-                request = request.header("Authorization", "Bearer " + token);
+                request = request.header("Authorization", "" + token);
                 request = request.header("Accept", "application/json");
             }
 
             ContentResponse result = request.send();
             if (result.getStatus() == 307) {
                 String loc = result.getHeaders().get("Location");
-                String newUrl = BASE_URL + loc.substring(1);
+                String newUrl = apiBridgeHandler.getBaseUrl() + loc.substring(1);
                 request = httpClient.newRequest(newUrl);
                 request = request.method(HttpMethod.GET);
                 result = request.send();
@@ -137,32 +125,71 @@ public class EnedisHttpApi {
 
     public PrmInfo getPrmInfo(String prmId) throws LinkyException {
         PrmInfo result = new PrmInfo();
-        Customer customer = getCustomer(prmId);
-        UsagePoint usagePoint = customer.usagePoints[0];
 
-        result.contractInfo = usagePoint.contracts;
-        result.usagePointInfo = usagePoint.usagePoint;
-        result.identityInfo = getIdentity(prmId);
-        result.addressInfo = getAddress(prmId);
-        result.contactInfo = getContact(prmId);
+        if (apiBridgeHandler instanceof MyElectricalDataBridgeHandler) {
+            result.contractInfo = new Contracts();
+            result.addressInfo = new AddressInfo();
+            result.contactInfo = new ContactInfo();
+            result.identityInfo = new IdentityInfo();
+            result.usagePointInfo = new UsagePointDetails();
 
-        result.prmId = result.usagePointInfo.usagePointId;
-        result.customerId = customer.customerId;
+            result.contractInfo.subscribedPower = "12Kva";
+            result.contactInfo.email = "lxxyyy@domain.net";
+            result.contactInfo.phone = "--.--.--.--.--";
+            result.contractInfo.contractStatus = "unknow";
+            result.contractInfo.contractType = "unknow";
+            result.contractInfo.distributionTariff = "unknow";
+            result.contractInfo.lastActivationDate = "unknow";
+            result.contractInfo.lastDistributionTariffChangeDate = "unknow";
+            result.contractInfo.segment = "unknow";
+            result.contractInfo.offpeakHours = "unknow";
+
+            result.addressInfo.city = "Ville";
+            result.addressInfo.country = "France";
+            result.addressInfo.postalCode = "xxxxx";
+            result.addressInfo.inseeCode = "0";
+            result.addressInfo.street = "xx Rue de yyyyyy";
+
+            result.identityInfo.firstname = "Laurent";
+            result.identityInfo.lastname = "ARNAL";
+            result.identityInfo.title = "M.";
+
+            result.usagePointInfo.meterType = "unknow";
+            result.usagePointInfo.usagePointId = "unknow";
+            result.usagePointInfo.usagePointStatus = "unknow";
+
+            result.prmId = prmId;
+            result.customerId = "xxxxxxxxxx";
+
+        } else {
+            Customer customer = getCustomer(prmId);
+            UsagePoint usagePoint = customer.usagePoints[0];
+
+            result.contractInfo = usagePoint.contracts;
+            result.usagePointInfo = usagePoint.usagePoint;
+            result.identityInfo = getIdentity(prmId);
+            result.addressInfo = getAddress(prmId);
+            result.contactInfo = getContact(prmId);
+
+            result.prmId = result.usagePointInfo.usagePointId;
+            result.customerId = customer.customerId;
+        }
 
         return result;
     }
 
     public String formatUrl(String apiUrl, String prmId) {
-        return "%s?usage_point_id=%s".formatted(apiUrl, prmId);
+        return apiUrl.formatted(prmId);
     }
 
     public Customer getCustomer(String prmId) throws LinkyException {
         if (!connected) {
             initialize();
         }
-        String data = getData(formatUrl(CONTRACT_URL, prmId));
+        String contractUrl = apiBridgeHandler.getContractUrl();
+        String data = getData(formatUrl(contractUrl, prmId));
         if (data.isEmpty()) {
-            throw new LinkyException("Requesting '%s' returned an empty response", CONTRACT_URL);
+            throw new LinkyException("Requesting '%s' returned an empty response", contractUrl);
         }
         try {
             CustomerReponse cResponse = gson.fromJson(data, CustomerReponse.class);
@@ -172,7 +199,7 @@ public class EnedisHttpApi {
             return cResponse.customer;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", CONTRACT_URL);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", contractUrl);
         }
     }
 
@@ -180,9 +207,10 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData(formatUrl(ADDRESS_URL, prmId));
+        String addressUrl = apiBridgeHandler.getAddressUrl();
+        String data = getData(formatUrl(addressUrl, prmId));
         if (data.isEmpty()) {
-            throw new LinkyException("Requesting '%s' returned an empty response", ADDRESS_URL);
+            throw new LinkyException("Requesting '%s' returned an empty response", addressUrl);
         }
         try {
             CustomerReponse cResponse = gson.fromJson(data, CustomerReponse.class);
@@ -192,7 +220,7 @@ public class EnedisHttpApi {
             return cResponse.customer.usagePoints[0].usagePoint.usagePointAddresses;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", ADDRESS_URL);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", addressUrl);
         }
     }
 
@@ -200,9 +228,10 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData(formatUrl(IDENTITY_URL, prmId));
+        String identityUrl = apiBridgeHandler.getIdentityUrl();
+        String data = getData(formatUrl(identityUrl, prmId));
         if (data.isEmpty()) {
-            throw new LinkyException("Requesting '%s' returned an empty response", IDENTITY_URL);
+            throw new LinkyException("Requesting '%s' returned an empty response", identityUrl);
         }
         try {
             CustomerIdResponse iResponse = gson.fromJson(data, CustomerIdResponse.class);
@@ -212,7 +241,7 @@ public class EnedisHttpApi {
             return iResponse.identity.naturalPerson;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", IDENTITY_URL);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", identityUrl);
         }
     }
 
@@ -220,10 +249,11 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData(formatUrl(CONTACT_URL, prmId));
+        String contactUrl = apiBridgeHandler.getContactUrl();
+        String data = getData(formatUrl(contactUrl, prmId));
 
         if (data.isEmpty()) {
-            throw new LinkyException("Requesting '%s' returned an empty response", CONTACT_URL);
+            throw new LinkyException("Requesting '%s' returned an empty response", contactUrl);
         }
         try {
             CustomerIdResponse cResponse = gson.fromJson(data, CustomerIdResponse.class);
@@ -233,7 +263,7 @@ public class EnedisHttpApi {
             return cResponse.contactData;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", CONTACT_URL);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", contactUrl);
         }
     }
 
@@ -263,15 +293,15 @@ public class EnedisHttpApi {
     }
 
     public MeterReading getEnergyData(String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(MEASURE_DAILY_CONSUMPTION_URL, prmId, from, to);
+        return getMeasures(apiBridgeHandler.getDailyConsumptionUrl(), prmId, from, to);
     }
 
     public MeterReading getPowerData(String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(MEASURE_MAX_POWER_URL, prmId, from, to);
+        return getMeasures(apiBridgeHandler.getMaxPowerUrl(), prmId, from, to);
     }
 
     public String getTempoData() throws LinkyException {
-        String url = String.format(TEMPO_URL, "2024-01-01", "2024-01-31");
+        String url = String.format(apiBridgeHandler.getTempoUrl(), "2024-01-01", "2024-01-31");
         if (!connected) {
             initialize();
         }
@@ -297,13 +327,4 @@ public class EnedisHttpApi {
         // return data;
     }
 
-    public static String getToken(HttpClient httpClient, String clientId, String prmId) {
-        try {
-            String url = String.format(TOKEN_URL, clientId, prmId);
-            String token = getData(url, httpClient, "");
-            return token;
-        } catch (LinkyException e) {
-            return "";
-        }
-    }
 }

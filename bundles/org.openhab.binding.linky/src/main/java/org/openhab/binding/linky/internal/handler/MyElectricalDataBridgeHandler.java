@@ -13,6 +13,7 @@
 package org.openhab.binding.linky.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -34,6 +35,17 @@ import com.google.gson.Gson;
 public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(MyElectricalDataBridgeHandler.class);
 
+    private static final String BASE_URL = "https://www.myelectricaldata.fr/";
+
+    private static final String CONTRACT_URL = BASE_URL + "contracts/%s/";
+    private static final String IDENTITY_URL = BASE_URL + "identity/%s/";
+    private static final String CONTACT_URL = BASE_URL + "contact/%s/";
+    private static final String ADDRESS_URL = BASE_URL + "addresses/%s/";
+    private static final String MEASURE_DAILY_CONSUMPTION_URL = BASE_URL + "daily_consumption/%s/start/%s/end/%s";
+    private static final String MEASURE_MAX_POWER_URL = BASE_URL + "daily_consumption_max_power/%s/start/%s/end/%s";
+
+    private static final String TEMPO_URL = BASE_URL + "rte/tempo/%s/%s";
+
     public MyElectricalDataBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
@@ -50,5 +62,50 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
         logger.debug("Shutting down Netatmo API bridge handler.");
 
         super.dispose();
+    }
+
+    @Override
+    public String getToken() throws LinkyException {
+        return config.token;
+    }
+
+    @Override
+    public String getBaseUrl() {
+        return BASE_URL;
+    }
+
+    @Override
+    public String getContactUrl() {
+        return CONTACT_URL;
+    }
+
+    @Override
+    public String getContractUrl() {
+        return CONTRACT_URL;
+    }
+
+    @Override
+    public String getIdentityUrl() {
+        return IDENTITY_URL;
+    }
+
+    @Override
+    public String getAddressUrl() {
+        return ADDRESS_URL;
+    }
+
+    @Override
+    public String getDailyConsumptionUrl() {
+        return MEASURE_DAILY_CONSUMPTION_URL;
+    }
+
+    @Override
+    public String getMaxPowerUrl() {
+        return MEASURE_MAX_POWER_URL;
+    }
+
+    @Override
+    public String getTempoUrl() {
+        return TEMPO_URL;
     }
 }
