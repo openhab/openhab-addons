@@ -29,8 +29,8 @@ Support many different things as the thing type is handle by autodiscovery.
 
 Mainly, it will first discover the gateway.
 Currently test was done with the OZW672.x series.
-No test was conduct using the OZW772.x series, the code will currently not handing initialization of OZW772 gateway.
-You can request support to the community forum is you have the gateway model and want it to be supported.
+No test was conducted using the OZW772.x series, the code will currently not handle initialization of OZW772 gateway.
+You can request support in the community forum, if you have the gateway model and want it to be supported.
 
 After, it will discover thing inside your PAC, mainly main controller of type RVS...
 Only test in real condition with RVS41.813/327 but should work with all other type as the access interface is standard.
