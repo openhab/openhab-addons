@@ -26,7 +26,7 @@ public class AddressInfo {
     public String street;
     public String locality;
 
-    @SerializedName("postalCode")
+    @SerializedName("postal_code")
     public String postalCode;
 
     @SerializedName("insee_code")

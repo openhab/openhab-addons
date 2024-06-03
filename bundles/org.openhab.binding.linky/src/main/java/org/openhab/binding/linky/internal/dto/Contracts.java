@@ -40,6 +40,9 @@ public class Contracts {
     @SerializedName("contract_status")
     public String contractStatus;
 
+    @SerializedName("contract_type")
+    public String contractType;
+
     @SerializedName("last_distribution_tariff_change_date")
     public String lastDistributionTariffChangeDate;
 }
