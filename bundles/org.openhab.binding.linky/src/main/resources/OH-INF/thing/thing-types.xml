@@ -161,6 +161,76 @@
 			<channel id="linkyTestSelect" typeId="typeTest">
 				<label>linkyTestSelect</label>
 			</channel>
+			<channel id="identity" typeId="typeTest">
+				<label>Identity</label>
+			</channel>
+
+			<channel id="contractSubscribedPower" typeId="typeTest">
+				<label>Subscribed Power</label>
+			</channel>
+			<channel id="contractLastActivationDate" typeId="typeTest">
+				<label>Last Activation Date</label>
+			</channel>
+			<channel id="contractDistributionTariff" typeId="typeTest">
+				<label>Distribution Tariff</label>
+			</channel>
+			<channel id="contractOffpeakHours" typeId="typeTest">
+				<label>Offpeak Hours</label>
+			</channel>
+			<channel id="contractStatus" typeId="typeTest">
+				<label>Contract Status</label>
+			</channel>
+			<channel id="contractType" typeId="typeTest">
+				<label>Contract Type</label>
+			</channel>
+			<channel id="contractLastDistributionTariffChangeDate" typeId="typeTest">
+				<label>Last Distribution Tariff ChangeDate</label>
+			</channel>
+			<channel id="contractSegment" typeId="typeTest">
+				<label>Contract Segment</label>
+			</channel>
+
+
+			<channel id="usagePointId" typeId="typeTest">
+				<label>UsagePoint Id</label>
+			</channel>
+			<channel id="usagePointStatus" typeId="typeTest">
+				<label>UsagePoin Status</label>
+			</channel>
+			<channel id="usagePointMeterType" typeId="typeTest">
+				<label>UsagePoint Meter Type</label>
+			</channel>
+
+			<channel id="usagePointAddressCity" typeId="typeTest">
+				<label>City</label>
+			</channel>
+			<channel id="usagePointAddressCountry" typeId="typeTest">
+				<label>Country</label>
+			</channel>
+			<channel id="usagePointAddressInseeCode" typeId="typeTest">
+				<label>Insee Code</label>
+			</channel>
+			<channel id="usagePointAddressPostalCode" typeId="typeTest">
+				<label>Postal Code</label>
+			</channel>
+			<channel id="usagePointAddressStreet" typeId="typeTest">
+				<label>Street</label>
+			</channel>
+
+
+
+
+			<channel id="contactMail" typeId="typeTest">
+				<label>Mail</label>
+			</channel>
+			<channel id="contactPhone" typeId="typeTest">
+				<label>Phone</label>
+			</channel>
+
+
+
+
+
 		</channels>
 	</channel-group-type>
 
