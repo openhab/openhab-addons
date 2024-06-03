@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -39,6 +40,7 @@ import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -72,7 +74,7 @@ public class LinkyHandler extends BaseThingHandler {
 
     private @NonNullByDefault({}) String prmId;
     private @NonNullByDefault({}) String userId;
-
+    private @Nullable LinkyConfiguration config;
     private @Nullable EnedisHttpApi enedisApi;
 
     private enum Target {
@@ -117,40 +119,99 @@ public class LinkyHandler extends BaseThingHandler {
     public void initialize() {
         logger.debug("Initializing Linky handler.");
 
-        ApiBridgeHandler bridgeHandler = (ApiBridgeHandler) getBridge().getHandler();
+        Bridge bridge = getBridge();
+        if (bridge == null) {
+            return;
+        }
+
+        ApiBridgeHandler bridgeHandler = (ApiBridgeHandler) bridge.getHandler();
+        if (bridgeHandler == null) {
+            return;
+        }
         enedisApi = bridgeHandler.getEnedisApi();
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        LinkyConfiguration config = getConfigAs(LinkyConfiguration.class);
+        config = getConfigAs(LinkyConfiguration.class);
         if (config.seemsValid()) {
             scheduler.submit(() -> {
                 try {
 
-                    PrmInfo prmInfo = enedisApi.getPrmInfo(config.prmId);
-                    updateProperties(Map.of(USER_ID, prmInfo.customerId, PUISSANCE,
-                            prmInfo.contractInfo.subscribedPower, PRM_ID, prmInfo.prmId));
+                    EnedisHttpApi api = this.enedisApi;
+                    LinkyConfiguration config = this.config;
 
-                    // prmId = thing.getProperties().get(PRM_ID);
-                    // userId = thing.getProperties().get(USER_ID);
+                    if (api != null && config != null) {
+                        PrmInfo prmInfo = api.getPrmInfo(config.prmId);
+                        updateProperties(Map.of(USER_ID, prmInfo.customerId, PUISSANCE,
+                                prmInfo.contractInfo.subscribedPower, PRM_ID, prmInfo.prmId));
 
-                    // updateData();
+                        // prmId = thing.getProperties().get(PRM_ID);
+                        // userId = thing.getProperties().get(USER_ID);
 
-                    // disconnect();
+                        updateMetaData();
+                        updateData();
 
-                    final LocalDateTime now = LocalDateTime.now();
-                    final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
-                            .truncatedTo(ChronoUnit.HOURS);
+                        disconnect();
 
-                    // refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
-                    // ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
-                    // REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
+                        final LocalDateTime now = LocalDateTime.now();
+                        final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
+                                .truncatedTo(ChronoUnit.HOURS);
 
-                    updateStatus(ThingStatus.ONLINE);
-                } catch (Exception e) {
+                        refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
+                                ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
+                                REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
+                    }
+                } catch (LinkyException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                 }
             });
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.config-error-mandatory-settings");
+        }
+    }
+
+    private synchronized void updateMetaData() {
+        EnedisHttpApi api = this.enedisApi;
+        LinkyConfiguration config = this.config;
+
+        if (api != null && config != null) {
+            try {
+                PrmInfo info = api.getPrmInfo(config.prmId);
+                String title = info.identityInfo.title;
+                String firstName = info.identityInfo.firstname;
+                String lastName = info.identityInfo.lastname;
+
+                updateState(MAIN_IDENTITY, new StringType(title + " " + firstName + " " + lastName));
+
+                updateState(MAIN_CONTRACT_SEGMENT, new StringType(info.contractInfo.segment));
+                updateState(MAIN_CONTRACT_CONTRACT_STATUS, new StringType(info.contractInfo.contractStatus));
+                updateState(MAIN_CONTRACT_CONTRACT_TYPE, new StringType(info.contractInfo.contractType));
+                updateState(MAIN_CONTRACT_DISTRIBUTION_TARIFF, new StringType(info.contractInfo.distributionTariff));
+                updateState(MAIN_CONTRACT_LAST_ACTIVATION_DATE, new StringType(info.contractInfo.lastActivationDate));
+                updateState(MAIN_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
+                        new StringType(info.contractInfo.lastDistributionTariffChangeDate));
+                updateState(MAIN_CONTRACT_OFF_PEAK_HOURS, new StringType(info.contractInfo.offpeakHours));
+                updateState(MAIN_CONTRACT_SEGMENT, new StringType(info.contractInfo.segment));
+                updateState(MAIN_CONTRACT_SUBSCRIBED_POWER, new StringType(info.contractInfo.subscribedPower));
+
+                updateState(MAIN_USAGEPOINT_ID, new StringType(info.usagePointInfo.usagePointId));
+                updateState(MAIN_USAGEPOINT_STATUS, new StringType(info.usagePointInfo.usagePointStatus));
+                updateState(MAIN_USAGEPOINT_METER_TYPE, new StringType(info.usagePointInfo.meterType));
+
+                updateState(MAIN_USAGEPOINT_METER_ADDRESS_CITY, new StringType(info.addressInfo.city));
+                updateState(MAIN_USAGEPOINT_METER_ADDRESS_COUNTRY, new StringType(info.addressInfo.country));
+                updateState(MAIN_USAGEPOINT_METER_ADDRESS_POSTAL_CODE, new StringType(info.addressInfo.postalCode));
+                updateState(MAIN_USAGEPOINT_METER_ADDRESS_INSEE_CODE, new StringType(info.addressInfo.inseeCode));
+                updateState(MAIN_USAGEPOINT_METER_ADDRESS_STREET, new StringType(info.addressInfo.street));
+
+                updateState(MAIN_CONTACT_MAIL, new StringType(info.contactInfo.email));
+                updateState(MAIN_CONTACT_PHONE, new StringType(info.contactInfo.phone));
+
+            } catch (LinkyException e) {
+                logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            }
         }
     }
 
@@ -163,7 +224,7 @@ public class LinkyHandler extends BaseThingHandler {
         updateEnergyData();
         updatePowerData();
 
-        String tempoData = getTempoData();
+        // String tempoData = getTempoData();
 
         // LinkedTreeMap<String, String> obj = gson.fromJson(tempoData, LinkedTreeMap.class);
 
@@ -178,8 +239,6 @@ public class LinkyHandler extends BaseThingHandler {
          * list.add(keyValue);
          * }
          */
-
-        updateState(TEST_SELECT, new StringType(tempoData));
 
         if (!connectedBefore && isConnected()) {
             disconnect();
@@ -336,7 +395,6 @@ public class LinkyHandler extends BaseThingHandler {
                 to.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
         EnedisHttpApi api = this.enedisApi;
-
         if (api != null) {
             try {
                 MeterReading meterReading = api.getEnergyData(userId, prmId, from, to);
@@ -347,15 +405,14 @@ public class LinkyHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
-
         return null;
     }
 
     private @Nullable MeterReading getPowerData(LocalDate from, LocalDate to) {
         logger.debug("getPowerData from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
                 to.format(DateTimeFormatter.ISO_LOCAL_DATE));
-        EnedisHttpApi api = this.enedisApi;
 
+        EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
                 MeterReading meterReading = api.getPowerData(userId, prmId, from, to);
@@ -366,10 +423,10 @@ public class LinkyHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
-
         return null;
     }
 
+    /*
     private @Nullable String getTempoData() {
         logger.debug("getTempoData from");
 
@@ -384,18 +441,16 @@ public class LinkyHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
-
         return null;
     }
-
+    */
+    
     private boolean isConnected() {
         EnedisHttpApi api = this.enedisApi;
-        // return api == null ? false : api.isConnected();
-        return true;
+        return api == null ? false : api.isConnected();
     }
 
     private void disconnect() {
-
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
