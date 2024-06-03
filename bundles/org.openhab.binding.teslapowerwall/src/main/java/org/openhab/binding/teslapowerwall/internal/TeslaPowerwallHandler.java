@@ -84,6 +84,7 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
     }
 
     private void schedulePoll() {
+        ScheduledFuture<?> pollFuture = this.pollFuture;
         if (pollFuture != null) {
             pollFuture.cancel(false);
         }
