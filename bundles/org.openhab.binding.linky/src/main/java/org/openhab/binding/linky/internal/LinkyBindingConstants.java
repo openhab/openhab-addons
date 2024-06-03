@@ -31,6 +31,9 @@ public class LinkyBindingConstants {
 
     public static final String BINDING_ID = "linky";
 
+    // public final String clientId = "e551937c-5250-48bc-b4a6-2323af68db92";
+    // public final String clientSecret = "";
+
     public static final String clientId = "_88uJnEjEs_IMf4bjGZJV6gGxYga";
     public static final String clientSecret = "6lsPfCmu0fEXuKYy3e0e6w8ydIca";
 
@@ -72,6 +75,30 @@ public class LinkyBindingConstants {
 
     public static final String TEST_SELECT = "main#linkyTestSelect";
 
+    public static final String MAIN_IDENTITY = "main#Identity";
+
+    public static final String MAIN_CONTRACT_SUBSCRIBED_POWER = "main#contractSubscribedPower";
+    public static final String MAIN_CONTRACT_LAST_ACTIVATION_DATE = "main#contractLastActivationDate";
+    public static final String MAIN_CONTRACT_DISTRIBUTION_TARIFF = "main#contractDistributionTariff";
+    public static final String MAIN_CONTRACT_OFF_PEAK_HOURS = "main#contractOffpeakHours";
+    public static final String MAIN_CONTRACT_CONTRACT_STATUS = "main#contractStatus";
+    public static final String MAIN_CONTRACT_CONTRACT_TYPE = "main#contractType";
+    public static final String MAIN_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE = "main#contractLastDistributionTariffChangeDate";
+    public static final String MAIN_CONTRACT_SEGMENT = "main#contractSegment";
+
+    public static final String MAIN_USAGEPOINT_ID = "main#usagePointId";
+    public static final String MAIN_USAGEPOINT_STATUS = "main#usagePointStatus";
+    public static final String MAIN_USAGEPOINT_METER_TYPE = "main#usagePointMeterType";
+
+    public static final String MAIN_USAGEPOINT_METER_ADDRESS_CITY = "main#usagePointAddressCity";
+    public static final String MAIN_USAGEPOINT_METER_ADDRESS_COUNTRY = "main#usagePointAddressCountry";
+    public static final String MAIN_USAGEPOINT_METER_ADDRESS_INSEE_CODE = "main#usagePointAddressInseeCode";
+    public static final String MAIN_USAGEPOINT_METER_ADDRESS_POSTAL_CODE = "main#usagePointAddressPostalCode";
+    public static final String MAIN_USAGEPOINT_METER_ADDRESS_STREET = "main#usagePointAddressStreet";
+
+    public static final String MAIN_CONTACT_MAIL = "main#contactMail";
+    public static final String MAIN_CONTACT_PHONE = "main#contactPhone";
+
     // Authorization related Servlet and resources aliases.
     public static final String LINKY_ALIAS = "/connectlinky";
     public static final String LINKY_IMG_ALIAS = "/img";
@@ -86,13 +113,17 @@ public class LinkyBindingConstants {
     // "r:installedapps", "w:installedapps"
 
     // List of Linky services related urls, information
-    public static final String LINKY_ACCOUNT_URL = "https://www.myelectricaldata.fr/";
-    public static final String LINKY_AUTHORIZE_URL = LINKY_ACCOUNT_URL + "v1/oauth2/authorize";
-    public static final String LINKY_API_TOKEN_URL = LINKY_ACCOUNT_URL + "token";
+    public static final String LINKY_MYELECTRICALDATA_ACCOUNT_URL = "https://www.myelectricaldata.fr/";
+    public static final String LINKY_MYELECTRICALDATA_AUTHORIZE_URL = LINKY_MYELECTRICALDATA_ACCOUNT_URL
+            + "v1/oauth2/authorize";
+    public static final String LINKY_MYELECTRICALDATA_API_TOKEN_URL = LINKY_MYELECTRICALDATA_ACCOUNT_URL + "token";
 
-    public static final String ENEDIS_API_ACCOUNT_URL = "https://ext.prod-sandbox.api.enedis.fr/";
-    public static final String ENEDIS_API_TOKEN_URL = ENEDIS_API_ACCOUNT_URL + "oauth2/v3/token";
+    public static final String ENEDIS_ACCOUNT_URL_PROD = "https://mon-compte-particulier.enedis.fr/";
+    public static final String ENEDIS_AUTHORIZE_URL_PROD = ENEDIS_ACCOUNT_URL_PROD + "dataconnect/v1/oauth2/authorize";
+    public static final String ENEDIS_API_TOKEN_URL_PROD = ENEDIS_ACCOUNT_URL_PROD + "oauth2/v3/token";
 
-    public static final String ENEDIS_AUTH_ACCOUNT_URL = "https://mon-compte-particulier.enedis.fr/";
-    public static final String ENEDIS_AUTH_AUTHORIZE_URL = ENEDIS_AUTH_ACCOUNT_URL + "dataconnect/v1/oauth2/authorize";
+    public static final String ENEDIS_ACCOUNT_URL_PREPROD = "https://ext.prod-sandbox.api.enedis.fr/";
+    public static final String ENEDIS_AUTHORIZE_URL_PREPROD = ENEDIS_ACCOUNT_URL_PREPROD
+            + "dataconnect/v1/oauth2/authorize";
+    public static final String ENEDIS_API_TOKEN_URL_PREPROD = ENEDIS_ACCOUNT_URL_PREPROD + "oauth2/v3/token";
 }
