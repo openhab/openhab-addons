@@ -37,7 +37,7 @@ public class SystemStatus {
     public static SystemStatus parse(String response) {
         LOGGER.debug("Parsing string: \"{}\"", response);
         /* parse json string */
-        JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
+        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         SystemStatus info = new SystemStatus();
         info.full_pack_energy = jsonObject.get("nominal_full_pack_energy").getAsDouble();
         return info;

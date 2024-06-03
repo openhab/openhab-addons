@@ -37,7 +37,7 @@ public class BatterySOE {
     public static BatterySOE parse(String response) {
         LOGGER.debug("Parsing string: \"{}\"", response);
         /* parse json string */
-        JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
+        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         BatterySOE info = new BatterySOE();
         info.soe = jsonObject.get("percentage").getAsDouble();
         return info;

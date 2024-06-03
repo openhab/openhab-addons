@@ -46,7 +46,6 @@ public class TeslaPowerwallWebTargets {
     private String getMeterAggregatesUri;
     private String getTokenUri;
     private String getOperationUri;
-    private String setOperationUri;
     private final Logger logger = LoggerFactory.getLogger(TeslaPowerwallWebTargets.class);
 
     public TeslaPowerwallWebTargets(String ipAddress) {
@@ -57,7 +56,6 @@ public class TeslaPowerwallWebTargets {
         getMeterAggregatesUri = baseUri + "api/meters/aggregates";
         getTokenUri = baseUri + "api/login/Basic";
         getOperationUri = baseUri + "api/operation";
-        setOperationUri = baseUri + "api/operation";
     }
 
     public BatterySOE getBatterySOE(String token) throws TeslaPowerwallCommunicationException {
@@ -164,7 +162,7 @@ public class TeslaPowerwallWebTargets {
         jsonObject.addProperty("force_sm_off", false);
         logger.debug("logonjson = {}", jsonObject.toString());
         String response = invoke2(getTokenUri, jsonObject.toString());
-        JsonObject jsonResponse = new JsonParser().parse(response).getAsJsonObject();
+        JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
         String token = jsonResponse.get("token").getAsString();
         logger.debug("Token: {}", token);
         return token;
@@ -192,32 +190,6 @@ public class TeslaPowerwallWebTargets {
         }
         logger.debug("getOperations response = {}", response);
         return Operations.parse(response);
-    }
-
-    private String invoke(String uri) throws TeslaPowerwallCommunicationException {
-        return invoke(uri, "");
-    }
-
-    private String invoke(String uri, String params) throws TeslaPowerwallCommunicationException {
-        String uriWithParams = uri + params;
-        logger.debug("Calling url: {}", uriWithParams);
-        String response;
-        synchronized (this) {
-            try {
-                response = HttpUtil.executeUrl("GET", uriWithParams, TIMEOUT_MS);
-            } catch (IOException ex) {
-                logger.debug("{}", ex.getLocalizedMessage(), ex);
-                // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
-                // error check below consistent.
-                response = null;
-            }
-        }
-
-        if (response == null) {
-            throw new TeslaPowerwallCommunicationException(
-                    String.format("Tesla Powerwall returned error while invoking %s", uriWithParams));
-        }
-        return response;
     }
 
     private String invoke2(String uri, String jsonparams) throws TeslaPowerwallCommunicationException {

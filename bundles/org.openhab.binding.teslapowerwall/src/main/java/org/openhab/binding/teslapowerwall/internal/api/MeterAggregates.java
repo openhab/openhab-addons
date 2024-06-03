@@ -48,7 +48,7 @@ public class MeterAggregates {
     public static MeterAggregates parse(String response) {
         LOGGER.debug("Parsing string: \"{}\"", response);
         /* parse json string */
-        JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
+        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         MeterAggregates info = new MeterAggregates();
 
         JsonObject sitejson = jsonObject.get("site").getAsJsonObject();

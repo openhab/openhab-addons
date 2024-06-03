@@ -38,7 +38,7 @@ public class Operations {
     public static Operations parse(String response) {
         LOGGER.debug("Parsing string: \"{}\"", response);
         /* parse json string */
-        JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
+        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         Operations info = new Operations();
         info.mode = jsonObject.get("real_mode").getAsString();
         info.reserve = jsonObject.get("backup_reserve_percent").getAsDouble();

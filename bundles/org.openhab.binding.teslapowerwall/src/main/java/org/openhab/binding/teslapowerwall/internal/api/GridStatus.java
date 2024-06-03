@@ -38,7 +38,7 @@ public class GridStatus {
     public static GridStatus parse(String response) {
         LOGGER.debug("Parsing string: \"{}\"", response);
         /* parse json string */
-        JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
+        JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         GridStatus info = new GridStatus();
         info.grid_status = jsonObject.get("grid_status").getAsString();
         info.grid_services = jsonObject.get("grid_services_active").getAsString().equalsIgnoreCase("true");
