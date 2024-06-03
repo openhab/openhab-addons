@@ -8,7 +8,7 @@ Tesla Powerwall 2
 
 ## Discovery
 
-No auto discovery. The IP of the Powerwall should be added to /etc/hosts and a hostname powerwall used in the binding.
+The binding does not support auto discovery.
 
 ## Thing Configuration
 
