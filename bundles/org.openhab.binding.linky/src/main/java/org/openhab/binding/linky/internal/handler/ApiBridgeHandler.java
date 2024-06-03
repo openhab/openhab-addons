@@ -35,6 +35,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.linky.internal.LinkyAuthServlet;
 import org.openhab.binding.linky.internal.LinkyBindingConstants;
+import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -84,6 +85,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private final ThingRegistry thingRegistry;
 
     private static @Nullable HttpServlet servlet;
+    private @Nullable LinkyConfiguration config;
 
     private static final String TEMPLATE_PATH = "templates/";
     private static final String TEMPLATE_INDEX = TEMPLATE_PATH + "index.html";
@@ -121,10 +123,11 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
         }
 
+        config = getConfigAs(LinkyConfiguration.class);
+
         this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID,
                 LinkyBindingConstants.ENEDIS_API_TOKEN_URL_PREPROD, LinkyBindingConstants.ENEDIS_AUTHORIZE_URL_PREPROD,
-                LinkyBindingConstants.clientId, LinkyBindingConstants.clientSecret, LinkyBindingConstants.LINKY_SCOPES,
-                true);
+                config.clientId, config.clientSecret, LinkyBindingConstants.LINKY_SCOPES, true);
 
         registerServlet();
 
@@ -248,32 +251,6 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         } catch (final OAuthResponseException e) {
             throw new LinkyException("\"Error during oAuth authorize :" + e.getMessage(), e);
         }
-
-        /*
-         * String token = EnedisHttpApi.getToken(httpClient, LinkyBindingConstants.clientId, reqCode);
-         *
-         * logger.debug("token: {}", token);
-         *
-         * Collection<Thing> col = this.thingRegistry.getAll();
-         * for (Thing thing : col) {
-         * if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
-         * Configuration config = thing.getConfiguration();
-         * String prmId = (String) config.get("prmId");
-         *
-         * if (!prmId.equals(reqCode)) {
-         * continue;
-         * }
-         *
-         * config.put("token", token);
-         * LinkyHandler handler = (LinkyHandler) thing.getHandler();
-         * if (handler != null) {
-         * handler.saveConfiguration(config);
-         * }
-         * }
-         * }
-         *
-         * return token;
-         */
     }
 
     public boolean isAuthorized() {
