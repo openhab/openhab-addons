@@ -72,8 +72,6 @@ import com.google.gson.Gson;
 public class ApiBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
 
-    private static final int REFRESH_FIRST_HOUR_OF_DAY = 1;
-
     private static final int REQUEST_BUFFER_SIZE = 8000;
 
     private @NonNullByDefault({}) HttpService httpService;
@@ -124,7 +122,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         }
 
         this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID,
-                LinkyBindingConstants.ENEDIS_API_TOKEN_URL, LinkyBindingConstants.ENEDIS_AUTH_AUTHORIZE_URL,
+                LinkyBindingConstants.ENEDIS_API_TOKEN_URL_PREPROD, LinkyBindingConstants.ENEDIS_AUTHORIZE_URL_PREPROD,
                 LinkyBindingConstants.clientId, LinkyBindingConstants.clientSecret, LinkyBindingConstants.LINKY_SCOPES,
                 true);
 
@@ -285,9 +283,27 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 && accessTokenResponse.getRefreshToken() != null;
     }
 
-    public String getToken() {
+    public String getToken() throws LinkyException {
+
         AccessTokenResponse accesToken = getAccessTokenResponse();
+        if (accesToken == null) {
+            accesToken = getAccessTokenByClientCredentials();
+        }
+
+        if (accesToken == null) {
+            throw new LinkyException("no token");
+        }
+
         return accesToken.getAccessToken();
+    }
+
+    private @Nullable AccessTokenResponse getAccessTokenByClientCredentials() {
+        try {
+            return oAuthService.getAccessTokenByClientCredentials(LinkyBindingConstants.LINKY_SCOPES);
+        } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
+            logger.debug("Exception checking authorization: ", e);
+            return null;
+        }
     }
 
     private @Nullable AccessTokenResponse getAccessTokenResponse() {

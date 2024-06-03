@@ -37,8 +37,6 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -59,7 +57,8 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     private static final DateTimeFormatter LINKY_LOCALDATETIME_FORMATTER = DateTimeFormatter
             .ofPattern("uuuu-MM-dd HH:mm:ss");
 
-    private final Logger logger = LoggerFactory.getLogger(LinkyHandlerFactory.class);
+    // private final String clientId = "e551937c-5250-48bc-b4a6-2323af68db92";
+    // private final String clientSecret = "";
 
     private final HttpClientFactory httpClientFactory;
     private final OAuthFactory oAuthFactory;
