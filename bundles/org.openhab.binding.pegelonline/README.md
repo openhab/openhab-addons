@@ -30,7 +30,12 @@ Thing configuration contains 3 sections
 
 Stations can be selected with an Universally Unique Identifier (uuid). 
 It's automatically added by the Discovery. 
-Configure a station manually with the [list of all available stations](https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations.json) and choose the uuid of your desired measurement station.
+Configure a station manually using 
+
+- Website with [list of all available stations](https://pegelonline.wsv.de/gast/pegeltabelle) or
+- [stations.json](https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations.json) 
+
+and choose the uuid of your desired measurement station.
 
 ### Warning Levels
 
@@ -38,8 +43,8 @@ Configure a station manually with the [list of all available stations](https://w
 
 Each station has specific warning levels
 
-* Warning Levels 1 to 3
-* Flooding Levels 
+* Warning Levels 1 (*lowest*) to 3 (*highest*) 
+* Flooding Levels
 
 Unfortunately these levels cannot be queried automatically. 
 Please select your [federal state](https://www.hochwasserzentralen.de/) and check if which levels they provide.
@@ -57,7 +62,7 @@ If you cannot evaluate warning or flooding levels leave the parameter empty.
 | warningLevel3    | integer   |  cm  | Warning Level 3           |          | N/A     |
 | hq10             | integer   |  cm  | Decade Flooding           |          | N/A     |
 | hq100            | integer   |  cm  | Century Flooding          |          | N/A     |
-| hqEx             | integer   |  cm  | Extreme Flooding          |          | N/A     |
+| hqExtreme        | integer   |  cm  | Extreme Flooding          |          | N/A     |
 | refreshInterval  | integer   |  min | Refresh Interval          |     X    | 15      |
 
 ## Channels

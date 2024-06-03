@@ -27,7 +27,6 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.openhab.binding.pegelonline.internal.config.PegelOnlineConfiguration;
 import org.openhab.binding.pegelonline.internal.dto.Measure;
-import org.openhab.binding.pegelonline.internal.dto.Station;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -90,7 +89,19 @@ public class PegelOnlineHandler extends BaseThingHandler {
     public void initialize() {
         PegelOnlineConfiguration config = getConfigAs(PegelOnlineConfiguration.class);
         stationUUID = config.uuid;
-        if (!checkStationUuid()) {
+        if (!config.uuidCheck()) {
+            String description = "@text/pegelonline.handler.status.uuid [\"" + stationUUID + "\"]";
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
+            return;
+        }
+        if (!config.warningCheck()) {
+            String description = "@text/pegelonline.handler.status.warning";
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
+            return;
+        }
+        if (!config.floodingCheck()) {
+            String description = "@text/pegelonline.handler.status.flooding";
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
             return;
         }
         configuration = Optional.of(config);
@@ -101,6 +112,8 @@ public class PegelOnlineHandler extends BaseThingHandler {
         warnMap.put(config.hq10, HQ10);
         warnMap.put(config.hq100, HQ100);
         warnMap.put(config.hqExtreme, HQ_EXTREME);
+        String description = "@text/pegelonline.handler.status.wait-feedback";
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, description);
         schedule = Optional.of(scheduler.scheduleWithFixedDelay(this::performMeasurement, 0,
                 configuration.get().refreshInterval, TimeUnit.MINUTES));
     }
@@ -133,6 +146,10 @@ public class PegelOnlineHandler extends BaseThingHandler {
                     String description = "@text/pegelonline.handler.status.json-error [\"" + content + "\"]";
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
                 }
+            } else if (responseStatus == 404) {
+                // 404 respoonse shows station isn't found
+                String description = "@text/pegelonline.handler.status.uuid-not-found [\"" + stationUUID + "\"]";
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
             } else {
                 String description = "@text/pegelonline.handler.status.http-status [\"" + responseStatus + "\"]";
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, description);
@@ -168,35 +185,5 @@ public class PegelOnlineHandler extends BaseThingHandler {
 
     private void updateChannelState(String channel, State st) {
         updateState(new ChannelUID(thing.getUID(), channel), st);
-    }
-
-    private boolean checkStationUuid() {
-        try {
-            ContentResponse stationResponse = httpClient.GET(STATIONS_URI);
-            if (stationResponse.getStatus() == 200) {
-                Station[] stationArray = GSON.fromJson(stationResponse.getContentAsString(), Station[].class);
-                if (stationArray != null) {
-                    for (Station station : stationArray) {
-                        if (stationUUID.equals(station.uuid)) {
-                            return true;
-                        }
-                    }
-                } else {
-                    logger.trace("No stations found for evaluation");
-                }
-                String description = "@text/pegelonline.handler.status.uuid-not-found [\"" + stationUUID + "\"]";
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
-            } else {
-                String description = "@text/pegelonline.handler.status.uuid-verification [\"" + stationUUID + "\"]";
-                updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.CONFIGURATION_PENDING, description);
-                scheduler.schedule(this::checkStationUuid, 1, TimeUnit.MINUTES);
-            }
-        } catch (ExecutionException | TimeoutException | InterruptedException e) {
-            logger.trace("Exception during station evaluation: {}", e.getMessage());
-            String description = "@text/pegelonline.handler.status.uuid-verification [\"" + stationUUID + "\"]";
-            updateStatus(ThingStatus.INITIALIZING, ThingStatusDetail.CONFIGURATION_PENDING, description);
-            scheduler.schedule(this::checkStationUuid, 1, TimeUnit.MINUTES);
-        }
-        return false;
     }
 }

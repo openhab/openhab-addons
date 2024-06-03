@@ -23,7 +23,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class PegelOnlineConfiguration {
-
     public String uuid = UNKNOWN;
     public int warningLevel1 = Integer.MAX_VALUE;
     public int warningLevel2 = Integer.MAX_VALUE;
@@ -32,4 +31,16 @@ public class PegelOnlineConfiguration {
     public int hq100 = Integer.MAX_VALUE;
     public int hqExtreme = Integer.MAX_VALUE;
     public int refreshInterval = 15;
+
+    public boolean uuidCheck() {
+        return uuid.matches("^[-a-z0-9]+$") && !UNKNOWN.equals(uuid);
+    }
+
+    public boolean warningCheck() {
+        return warningLevel1 <= warningLevel2 && warningLevel2 <= warningLevel3;
+    }
+
+    public boolean floodingCheck() {
+        return hq10 <= hq100 && hq100 <= hqExtreme;
+    }
 }

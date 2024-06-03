@@ -16,8 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.pegelonline.internal.PegelOnlineBindingConstants.*;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -25,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.pegelonline.internal.config.PegelOnlineConfiguration;
 import org.openhab.binding.pegelonline.internal.dto.Measure;
 import org.openhab.binding.pegelonline.internal.dto.Station;
 import org.openhab.binding.pegelonline.internal.util.FileReader;
@@ -46,6 +45,28 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 class PegelTest {
     public static final String TEST_STATION_UUID = "1ebd0f94-cc06-445c-8e73-43fe2b8c72dc";
+
+    @Test
+    void testConfigurationValidations() {
+        PegelOnlineConfiguration config = new PegelOnlineConfiguration();
+        assertFalse(config.uuidCheck(), config.uuid);
+        config.uuid = "abc@";
+        assertFalse(config.uuidCheck(), config.uuid);
+        config.uuid = "abc d";
+        assertFalse(config.uuidCheck(), config.uuid);
+        config.uuid = "abc123-987xyz";
+        assertTrue(config.uuidCheck(), config.uuid);
+        assertTrue(config.warningCheck(), "Warnings");
+        assertTrue(config.floodingCheck(), "flooding");
+
+        String content = FileReader.readFileInString("src/test/resources/stations.json");
+        Station[] stationArray = GSON.fromJson(content, Station[].class);
+        assertNotNull(stationArray);
+        for (Station station : stationArray) {
+            config.uuid = station.uuid;
+            assertTrue(config.uuidCheck(), config.uuid);
+        }
+    }
 
     @Test
     void testNameConversion() {
@@ -120,18 +141,20 @@ class PegelTest {
         CallbackMock callback = new CallbackMock();
         ThingImpl ti = new ThingImpl(new ThingTypeUID("pegelonline:station"), "test");
         PegelOnlineHandler handler = new PegelOnlineHandler(ti, httpClientMock);
-        Map<String, Object> config = new HashMap<>();
+        Configuration config = new Configuration();
         config.put("uuid", TEST_STATION_UUID);
         handler.setCallback(callback);
-        handler.updateConfiguration(new Configuration(config));
+        handler.updateConfiguration(config);
         handler.initialize();
+        handler.performMeasurement();
         ThingStatusInfo tsi = callback.getThingStatus();
         assertNotNull(tsi);
         assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Status");
-        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tsi.getStatusDetail(), "Detail");
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail(), "Detail");
         String description = tsi.getDescription();
         assertNotNull(description);
-        assertTrue(description.contains("404"), "Description");
+        assertEquals("@text/pegelonline.handler.status.uuid-not-found [\"" + TEST_STATION_UUID + "\"]", description,
+                "Description");
     }
 
     @Test
@@ -158,18 +181,19 @@ class PegelTest {
         CallbackMock callback = new CallbackMock();
         ThingImpl ti = new ThingImpl(new ThingTypeUID("pegelonline:station"), "test");
         PegelOnlineHandler handler = new PegelOnlineHandler(ti, httpClientMock);
-        Map<String, Object> config = new HashMap<>();
+        Configuration config = new Configuration();
         config.put("uuid", TEST_STATION_UUID);
         handler.setCallback(callback);
-        handler.updateConfiguration(new Configuration(config));
+        handler.updateConfiguration(config);
         handler.initialize();
+        handler.performMeasurement();
         ThingStatusInfo tsi = callback.getThingStatus();
         assertNotNull(tsi);
         assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Status");
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tsi.getStatusDetail(), "Detail");
         String description = tsi.getDescription();
         assertNotNull(description);
-        assertTrue(description.contains("json-error"), "Description");
+        assertEquals("@text/pegelonline.handler.status.json-error [\"{}\"]", description, "Description");
     }
 
     @Test
@@ -177,8 +201,8 @@ class PegelTest {
         CallbackMock callback = new CallbackMock();
         PegelOnlineHandler handler = getConfiguredHandler(callback, 99);
 
-        Map<String, Object> config = new HashMap<>();
-        config.put("uuid", "invalid");
+        Configuration config = new Configuration();
+        config.put("uuid", " ");
         handler.updateConfiguration(new Configuration(config));
         handler.initialize();
 
@@ -188,17 +212,61 @@ class PegelTest {
         assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail(), "Detail");
         String description = tsi.getDescription();
         assertNotNull(description);
-        assertTrue(description.contains("uuid-not-found"), "Description");
+        assertEquals("@text/pegelonline.handler.status.uuid [\" \"]", description, "Description");
     }
 
     @Test
-    public void testPendingConfiguration() {
-        ContentResponse stationResponse = mock(ContentResponse.class);
-        when(stationResponse.getStatus()).thenReturn(500);
+    public void testInconsistentLevels() {
+        CallbackMock callback = new CallbackMock();
+        PegelOnlineHandler handler = getConfiguredHandler(callback, 99);
 
+        Configuration config = new Configuration();
+        config.put("uuid", TEST_STATION_UUID);
+        config.put("warningLevel1", 100);
+        config.put("warningLevel2", 200);
+        config.put("warningLevel3", 150);
+        handler.updateConfiguration(config);
+        handler.initialize();
+
+        ThingStatusInfo tsi = callback.getThingStatus();
+        assertNotNull(tsi);
+        assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Status");
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail(), "Detail");
+        String description = tsi.getDescription();
+        assertNotNull(description);
+        assertEquals("@text/pegelonline.handler.status.warning", description, "Description");
+
+        handler.dispose();
+        config = new Configuration();
+        config.put("uuid", TEST_STATION_UUID);
+        config.put("warningLevel1", 100);
+        config.put("warningLevel2", 200);
+        config.put("warningLevel3", 300);
+        config.put("hq10", 100);
+        config.put("hq100", 200);
+        config.put("hqExtreme", 150);
+        handler.updateConfiguration(new Configuration(config));
+        handler.initialize();
+
+        tsi = callback.getThingStatus();
+        assertNotNull(tsi);
+        assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Status");
+        assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail(), "Detail");
+        description = tsi.getDescription();
+        assertNotNull(description);
+        assertEquals("@text/pegelonline.handler.status.flooding", description, "Description");
+    }
+
+    @Test
+    public void testWrongResponse() {
+        String measureContent = "{}";
+        ContentResponse measureResponse = mock(ContentResponse.class);
+        when(measureResponse.getStatus()).thenReturn(500);
+        when(measureResponse.getContentAsString()).thenReturn(measureContent);
         HttpClient httpClientMock = mock(HttpClient.class);
         try {
-            when(httpClientMock.GET(STATIONS_URI)).thenReturn(stationResponse);
+            when(httpClientMock.GET(STATIONS_URI + "/" + TEST_STATION_UUID + "/W/currentmeasurement.json"))
+                    .thenReturn(measureResponse);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             fail();
         }
@@ -206,18 +274,19 @@ class PegelTest {
         CallbackMock callback = new CallbackMock();
         ThingImpl ti = new ThingImpl(new ThingTypeUID("pegelonline:station"), "test");
         PegelOnlineHandler handler = new PegelOnlineHandler(ti, httpClientMock);
-        Map<String, Object> config = new HashMap<>();
+        Configuration config = new Configuration();
         config.put("uuid", TEST_STATION_UUID);
         handler.setCallback(callback);
-        handler.updateConfiguration(new Configuration(config));
+        handler.updateConfiguration(config);
         handler.initialize();
+        handler.performMeasurement();
         ThingStatusInfo tsi = callback.getThingStatus();
         assertNotNull(tsi);
-        assertEquals(ThingStatus.INITIALIZING, tsi.getStatus(), "Status");
-        assertEquals(ThingStatusDetail.CONFIGURATION_PENDING, tsi.getStatusDetail(), "Detail");
+        assertEquals(ThingStatus.OFFLINE, tsi.getStatus(), "Status");
+        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, tsi.getStatusDetail(), "Detail");
         String description = tsi.getDescription();
         assertNotNull(description);
-        assertTrue(description.contains("uuid-verification"), "Description");
+        assertEquals("@text/pegelonline.handler.status.http-status [\"500\"]", description, "Description");
     }
 
     @Test
@@ -274,7 +343,7 @@ class PegelTest {
 
         ThingImpl ti = new ThingImpl(new ThingTypeUID("pegelonline:station"), "test");
         PegelOnlineHandler handler = new PegelOnlineHandler(ti, httpClientMock);
-        Map<String, Object> config = new HashMap<>();
+        Configuration config = new Configuration();
         config.put("uuid", TEST_STATION_UUID);
         config.put("warningLevel1", 100);
         config.put("warningLevel2", 200);
@@ -283,7 +352,7 @@ class PegelTest {
         config.put("hq100", 500);
         config.put("hqExtreme", 600);
         handler.setCallback(callback);
-        handler.updateConfiguration(new Configuration(config));
+        handler.updateConfiguration(config);
         return handler;
     }
 }
