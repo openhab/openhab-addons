@@ -21,7 +21,7 @@ As a minimum, the IP address is needed:
 
 ## Channels
 
-| channel                | type           | description                                                                           |
+| channel id             | type           | description                                                                           |
 |------------------------|----------------|---------------------------------------------------------------------------------------|
 | gridstatus             | String         | Current status of the Power Grid
 | batterysoe             | Number:Percent | Current battery state of charge
