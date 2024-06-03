@@ -52,16 +52,17 @@ public class EnedisHttpApi {
 
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-    // private static final String BASE_URL = "https://www.myelectricaldata.fr/";
     private static final String BASE_URL = "https://ext.prod-sandbox.api.enedis.fr/";
 
-    // private static final String CONTRACT_URL = BASE_URL
-    // + "metering_data_dc/v5/daily_consumption?start=2024-04-01&end=2024-04-17";
     private static final String CONTRACT_URL = BASE_URL + "customers_upc/v5/usage_points/contracts";
-    private static final String IDENTITY_URL = BASE_URL + "identity";
-    private static final String CONTACT_URL = BASE_URL + "contact";
-    private static final String ADDRESS_URL = BASE_URL + "addresses";
-    private static final String MEASURE_URL = BASE_URL + "%s/%s/start/%s/end/%s/cache";
+    private static final String IDENTITY_URL = BASE_URL + "customers_i/v5/identity";
+    private static final String CONTACT_URL = BASE_URL + "customers_cd/v5/contact_data";
+    private static final String ADDRESS_URL = BASE_URL + "customers_upa/v5/usage_points/addresses";
+    private static final String MEASURE_DAILY_CONSUMPTION_URL = BASE_URL
+            + "metering_data_dc/v5/daily_consumption?usage_point_id=%s&start=%s&end=%s";
+    private static final String MEASURE_MAX_POWER_URL = BASE_URL
+            + "metering_data_dcmp/v5/daily_consumption_max_power?usage_point_id=%s&start=%s&end=%s";
+
     private static final String TEMPO_URL = BASE_URL + "rte/tempo/%s/%s";
 
     private static final String TOKEN_URL = BASE_URL
@@ -108,7 +109,7 @@ public class EnedisHttpApi {
             request = request.method(HttpMethod.GET);
             if (!("".equals(token))) {
                 request = request.header("Authorization", "Bearer " + token);
-                request = request.header("accept", "application/json");
+                request = request.header("Accept", "application/json");
             }
 
             ContentResponse result = request.send();
@@ -151,12 +152,16 @@ public class EnedisHttpApi {
         return result;
     }
 
+    public String formatUrl(String apiUrl, String prmId) {
+        // return "%s/%s/cache".formatted(apiUrl, config.prmId);
+        return "%s?usage_point_id=%s".formatted(apiUrl, prmId);
+    }
+
     public Customer getCustomer(String prmId) throws LinkyException {
         if (!connected) {
             initialize();
         }
-        String data = getData("%s?usage_point_id=%s".formatted(CONTRACT_URL, prmId));
-        // String data = getData("%s&usage_point_id=%s".formatted(CONTRACT_URL, config.prmId));
+        String data = getData(formatUrl(CONTRACT_URL, prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", CONTRACT_URL);
         }
@@ -176,7 +181,7 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData("%s/%s/cache".formatted(ADDRESS_URL, prmId));
+        String data = getData(formatUrl(ADDRESS_URL, prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", ADDRESS_URL);
         }
@@ -196,7 +201,7 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData("%s/%s/cache".formatted(IDENTITY_URL, prmId));
+        String data = getData(formatUrl(IDENTITY_URL, prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", IDENTITY_URL);
         }
@@ -216,7 +221,7 @@ public class EnedisHttpApi {
         if (!connected) {
             initialize();
         }
-        String data = getData("%s/%s/cache".formatted(CONTACT_URL, prmId));
+        String data = getData(formatUrl(CONTACT_URL, prmId));
 
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", CONTACT_URL);
@@ -233,12 +238,12 @@ public class EnedisHttpApi {
         }
     }
 
-    private MeterReading getMeasures(String userId, String prmId, LocalDate from, LocalDate to, String request)
+    private MeterReading getMeasures(String apiUrl, String userId, String prmId, LocalDate from, LocalDate to)
             throws LinkyException {
         String dtStart = from.format(API_DATE_FORMAT);
         String dtEnd = to.format(API_DATE_FORMAT);
 
-        String url = String.format(MEASURE_URL, request, prmId, dtStart, dtEnd);
+        String url = String.format(apiUrl, prmId, dtStart, dtEnd);
         if (!connected) {
             initialize();
         }
@@ -260,11 +265,11 @@ public class EnedisHttpApi {
     }
 
     public MeterReading getEnergyData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(userId, prmId, from, to, "daily_consumption");
+        return getMeasures(MEASURE_DAILY_CONSUMPTION_URL, userId, prmId, from, to);
     }
 
     public MeterReading getPowerData(String userId, String prmId, LocalDate from, LocalDate to) throws LinkyException {
-        return getMeasures(userId, prmId, from, to, "daily_consumption_max_power");
+        return getMeasures(MEASURE_MAX_POWER_URL, userId, prmId, from, to);
     }
 
     public String getTempoData() throws LinkyException {
