@@ -70,7 +70,7 @@ import com.google.gson.Gson;
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public class ApiBridgeHandler extends BaseBridgeHandler {
+public abstract class ApiBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
 
     private static final int REQUEST_BUFFER_SIZE = 8000;
@@ -85,7 +85,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
     private final ThingRegistry thingRegistry;
 
     private static @Nullable HttpServlet servlet;
-    private @Nullable LinkyConfiguration config;
+    protected @Nullable LinkyConfiguration config;
 
     private static final String TEMPLATE_PATH = "templates/";
     private static final String TEMPLATE_INDEX = TEMPLATE_PATH + "index.html";
@@ -271,7 +271,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             throw new LinkyException("no token");
         }
 
-        return accesToken.getAccessToken();
+        return "Bearer " + accesToken.getAccessToken();
     }
 
     private @Nullable AccessTokenResponse getAccessTokenByClientCredentials() {
@@ -321,4 +321,21 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
         return result;
     }
+
+    public abstract String getBaseUrl();
+
+    public abstract String getContactUrl();
+
+    public abstract String getContractUrl();
+
+    public abstract String getIdentityUrl();
+
+    public abstract String getAddressUrl();
+
+    public abstract String getDailyConsumptionUrl();
+
+    public abstract String getMaxPowerUrl();
+
+    public abstract String getTempoUrl();
+
 }
