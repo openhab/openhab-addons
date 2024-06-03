@@ -32,6 +32,34 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
+	
+	<bridge-type id="ozw772">
+        <label>OZW772 IP Gateway</label>
+        <description>This is a OZW772 IP interface</description>
+
+        <config-description>
+            <parameter name="baseUrl" type="text" pattern="(http|https):\/\/(.+)\/">
+                <label>Base URL</label>
+                <context>url</context>
+                <description>The URL of the Siemens Hvac IP gateway. Must be in format http://hostname/ or https://hostname/. Don't
+                    forget the trailing '/'</description>
+                <required>true</required>
+            </parameter>
+            <parameter name="userName" type="text">
+                <description>User name of the Siemens Hvac gateway</description>
+                <required>false</required>
+                <label>User Name</label>
+                <default>Administrator</default>
+            </parameter>
+            <parameter name="userPassword" type="text">
+                <context>password</context>
+                <description>User password of the Siemens Hvac gateway</description>
+                <required>false</required>
+                <label>User Password</label>
+                <default>password</default>
+            </parameter>
+        </config-description>
+    </bridge-type>
 
 	<channel-type id="outside-temp">
 		<item-type>Number:Temperature</item-type>

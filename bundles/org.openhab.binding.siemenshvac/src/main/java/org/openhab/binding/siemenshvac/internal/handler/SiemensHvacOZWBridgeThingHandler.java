@@ -28,18 +28,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SiemensHvacOZW672BridgeThingHandler} is responsible for handling communication to Siemens Gateway using
+ * The {@link SiemensHvacOZWBridgeThingHandler} is responsible for handling communication to Siemens Gateway using
  * HTTP API interface.
  *
  * @author Laurent ARNAL - Initial contribution
  */
 @NonNullByDefault
-public class SiemensHvacOZW672BridgeThingHandler extends SiemensHvacBridgeBaseThingHandler {
+public class SiemensHvacOZWBridgeThingHandler extends SiemensHvacBridgeBaseThingHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SiemensHvacOZW672BridgeThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SiemensHvacOZWBridgeThingHandler.class);
 
     @Activate
-    public SiemensHvacOZW672BridgeThingHandler(Bridge bridge, @Nullable NetworkAddressService networkAddressService,
+    public SiemensHvacOZWBridgeThingHandler(Bridge bridge, @Nullable NetworkAddressService networkAddressService,
             @Nullable HttpClientFactory httpClientFactory, SiemensHvacMetadataRegistry metaDataRegistry) {
         super(bridge, networkAddressService, httpClientFactory, metaDataRegistry);
     }

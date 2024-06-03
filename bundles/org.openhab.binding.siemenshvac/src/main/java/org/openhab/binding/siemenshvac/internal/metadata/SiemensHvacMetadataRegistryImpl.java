@@ -621,6 +621,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
 
         List<String> supportedBridgeTypeUids = new ArrayList<>();
         supportedBridgeTypeUids.add(SiemensHvacBindingConstants.THING_TYPE_OZW672.toString());
+        supportedBridgeTypeUids.add(SiemensHvacBindingConstants.THING_TYPE_OZW772.toString());
         ThingTypeUID thingTypeUID = UidUtils.generateThingTypeUID(device);
 
         Map<String, String> properties = new HashMap<>();

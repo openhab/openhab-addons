@@ -54,7 +54,7 @@ public class SiemenesHvacDiscoveryParticipant implements UpnpDiscoveryParticipan
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(SiemensHvacBindingConstants.THING_TYPE_OZW672);
+        return SiemensHvacBindingConstants.SUPPORTED_THING_TYPES;
     }
 
     @Override
@@ -66,17 +66,23 @@ public class SiemenesHvacDiscoveryParticipant implements UpnpDiscoveryParticipan
             properties.put(SiemensHvacBindingConstants.IP_ADDRESS, ipAddress);
             properties.put(SiemensHvacBindingConstants.BASE_URL, "https://" + ipAddress + "/");
 
+            String label = "";
+
+            if (uid.getAsString().contains("ozw672")) {
+                label = "OZW672 IP Gateway";
+            } else if (uid.getAsString().contains("ozw672")) {
+                label = "OZW772 IP Gateway";
+            }
+
             String serialNumber = device.getDetails().getSerialNumber();
             DiscoveryResult result;
             if (serialNumber != null && !serialNumber.isBlank()) {
                 properties.put(PROPERTY_SERIAL_NUMBER, serialNumber.toLowerCase());
 
-                result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withLabel(device.getDetails().getFriendlyName())
+                result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label)
                         .withRepresentationProperty(PROPERTY_SERIAL_NUMBER).build();
             } else {
-                result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                        .withLabel(device.getDetails().getFriendlyName()).build();
+                result = DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(label).build();
             }
             return result;
         } else {
@@ -95,6 +101,8 @@ public class SiemenesHvacDiscoveryParticipant implements UpnpDiscoveryParticipan
                 if (modelName != null) {
                     if (modelName.startsWith("Web Server OZW672")) {
                         return new ThingUID(SiemensHvacBindingConstants.THING_TYPE_OZW672, serialNumber.toLowerCase());
+                    } else if (modelName.startsWith("Web Server OZW772")) {
+                        return new ThingUID(SiemensHvacBindingConstants.THING_TYPE_OZW772, serialNumber.toLowerCase());
                     }
                 }
             }

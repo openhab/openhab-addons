@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterFactory;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacHandlerImpl;
-import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacOZW672BridgeThingHandler;
+import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacOZWBridgeThingHandler;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -72,7 +72,8 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
             @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
-        if (SiemensHvacBindingConstants.THING_TYPE_OZW672.equals(thingTypeUID)) {
+        if (SiemensHvacBindingConstants.THING_TYPE_OZW672.equals(thingTypeUID)
+                || SiemensHvacBindingConstants.THING_TYPE_OZW772.equals(thingTypeUID)) {
             ThingUID iPBridgeUID = getIPBridgeThingUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, iPBridgeUID, null);
         } else if (SiemensHvacBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId())) {
@@ -84,8 +85,9 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (thing.getThingTypeUID().equals(SiemensHvacBindingConstants.THING_TYPE_OZW672)) {
-            return new SiemensHvacOZW672BridgeThingHandler((Bridge) thing, networkAddressService, httpClientFactory,
+        if (thing.getThingTypeUID().equals(SiemensHvacBindingConstants.THING_TYPE_OZW672)
+                || thing.getThingTypeUID().equals(SiemensHvacBindingConstants.THING_TYPE_OZW772)) {
+            return new SiemensHvacOZWBridgeThingHandler((Bridge) thing, networkAddressService, httpClientFactory,
                     metaDataRegistry);
         } else if (SiemensHvacBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {
             SiemensHvacHandlerImpl handler = new SiemensHvacHandlerImpl(thing,

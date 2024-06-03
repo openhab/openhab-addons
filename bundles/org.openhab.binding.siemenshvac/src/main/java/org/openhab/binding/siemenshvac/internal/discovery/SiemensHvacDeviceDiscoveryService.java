@@ -15,7 +15,6 @@ package org.openhab.binding.siemenshvac.internal.discovery;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -51,12 +50,11 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
 
     private @Nullable SiemensHvacMetadataRegistry metadataRegistry;
     private @Nullable SiemensHvacBridgeBaseThingHandler siemensHvacBridgeHandler;
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(SiemensHvacBindingConstants.THING_TYPE_OZW672);
 
     private static final int SEARCH_TIME = 10;
 
     public SiemensHvacDeviceDiscoveryService() {
-        super(SUPPORTED_THING_TYPES, SEARCH_TIME);
+        super(SiemensHvacBindingConstants.SUPPORTED_THING_TYPES, SEARCH_TIME);
     }
 
     @Reference

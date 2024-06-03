@@ -13,11 +13,14 @@
 		<discovery-method>
 			<service-type>upnp</service-type>
 			<match-properties>
-
 				<match-property>
 					<name>modelName</name>
-					<regex>Web Server OZW672.01</regex>
+					<regex>Web Server OZW672</regex>
 				</match-property>
+                <match-property>
+                    <name>modelName</name>
+                    <regex>Web Server OZW772</regex>
+                </match-property>
 			</match-properties>
 		</discovery-method>
 	</discovery-methods>

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.siemenshvac.internal.constants;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
@@ -30,6 +32,9 @@ public class SiemensHvacBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_OZW672 = new ThingTypeUID(BINDING_ID, "ozw672");
+    public static final ThingTypeUID THING_TYPE_OZW772 = new ThingTypeUID(BINDING_ID, "ozw772");
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(SiemensHvacBindingConstants.THING_TYPE_OZW672);
 
     public static final String IP_ADDRESS = "ipAddress";
     public static final String BASE_URL = "baseUrl";
