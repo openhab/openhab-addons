@@ -161,7 +161,7 @@ public class TeslaPowerwallWebTargets {
         jsonObject.addProperty("email", email);
         jsonObject.addProperty("force_sm_off", false);
         logger.debug("logonjson = {}", jsonObject.toString());
-        String response = invoke2(getTokenUri, jsonObject.toString());
+        String response = invoke(getTokenUri, jsonObject.toString());
         JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
         String token = jsonResponse.get("token").getAsString();
         logger.debug("Token: {}", token);
@@ -192,7 +192,7 @@ public class TeslaPowerwallWebTargets {
         return Operations.parse(response);
     }
 
-    private String invoke2(String uri, String jsonparams) throws TeslaPowerwallCommunicationException {
+    private String invoke(String uri, String jsonparams) throws TeslaPowerwallCommunicationException {
         logger.debug("Calling url: {}", uri);
         Properties headers = new Properties();
         headers.setProperty("Content-Type", "application/json");
