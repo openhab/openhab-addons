@@ -1,0 +1,334 @@
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.linktap.internal;
+
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_OH_DURATION_LIMIT;
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_OH_VOLUME_LIMIT;
+import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.EMPTY_STRING;
+
+import java.time.Duration;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import javax.validation.constraints.NotNull;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.linktap.protocol.frames.DeviceCmdReq;
+import org.openhab.binding.linktap.protocol.frames.TLGatewayFrame;
+import org.openhab.binding.linktap.protocol.http.DeviceIdException;
+import org.openhab.binding.linktap.protocol.http.InvalidParameterException;
+import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.BridgeHandler;
+import org.openhab.core.types.RefreshType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * The {@link PollingDeviceHandler} is responsible for handling commands, which are
+ * sent to one of the channels.
+ *
+ * @author David Goodyear - Initial contribution
+ */
+@NonNullByDefault
+public abstract class PollingDeviceHandler extends BaseThingHandler implements IBridgeData {
+
+    private final Logger logger = LoggerFactory.getLogger(PollingDeviceHandler.class);
+
+    protected Logger getLogger() {
+        return logger;
+    }
+
+    protected static final String MARKER_INVALID_DEVICE_KEY = "---INVALID---";
+    protected String registeredDeviceId = EMPTY_STRING;
+
+    private final Object pollLock = new Object();
+
+    protected ExpiringCache<String> lastPollResultCache = new ExpiringCache<>(Duration.ofSeconds(5),
+            PollingDeviceHandler::expireCacheContents);
+
+    private final Object schedulerLock = new Object();
+    private @Nullable ScheduledFuture<?> backgroundGwPollingScheduler;
+
+    private final Object readBackPollLock = new Object();
+    private @Nullable ScheduledFuture<?> readBackPollSf = null;
+
+    protected void requestReadbackPoll() {
+        synchronized (readBackPollLock) {
+            cancelReadbackPoll();
+            scheduler.schedule(() -> {
+                pollForUpdate(true);
+            }, 750, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    protected void cancelReadbackPoll() {
+        synchronized (readBackPollLock) {
+            ScheduledFuture<?> readBackPollSfRef = readBackPollSf;
+            if (readBackPollSfRef != null) {
+                readBackPollSfRef.cancel(false);
+                readBackPollSf = null;
+            }
+        }
+    }
+
+    private volatile long lastStatusCommandRecvTs = 0L;
+
+    public PollingDeviceHandler(final Thing thing) {
+        super(thing);
+    }
+
+    private void startStatusPolling() {
+        synchronized (schedulerLock) {
+            cancelStatusPolling();
+            backgroundGwPollingScheduler = scheduler.scheduleWithFixedDelay(() -> {
+                if (lastStatusCommandRecvTs + 135000 > System.currentTimeMillis()) {
+                    return;
+                }
+                pollForUpdate(false);
+            }, 1, 10, TimeUnit.SECONDS);
+        }
+    }
+
+    private void cancelStatusPolling() {
+        synchronized (schedulerLock) {
+            final ScheduledFuture<?> ref = backgroundGwPollingScheduler;
+            if (ref != null) {
+                ref.cancel(true);
+                backgroundGwPollingScheduler = null;
+            }
+        }
+    }
+
+    private static @Nullable String expireCacheContents() {
+        return null;
+    }
+
+    @Override
+    public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
+
+        final LinkTapBridgeHandler bridge = (LinkTapBridgeHandler) getBridgeHandler();
+        if (bridge == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is not selected / set");
+            return;
+        }
+
+        scheduler.execute(() -> {
+            if (bridge.getThing().getStatus() == ThingStatus.ONLINE) {
+                initAfterBridge(bridge);
+            }
+        });
+    }
+
+    protected void initAfterBridge(final LinkTapBridgeHandler bridge) {
+        String deviceId = getValidatedIdString();
+        if (deviceId.equals(MARKER_INVALID_DEVICE_KEY)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Device not found in bridges known devices");
+            if (!registeredDeviceId.isBlank()) {
+                deregisterDevice();
+            }
+            registeredDeviceId = EMPTY_STRING;
+            return;
+        } else {
+            registeredDeviceId = deviceId;
+        }
+
+        boolean knownToBridge = bridge.getDiscoveredDevices().anyMatch(x -> deviceId.equals(x.deviceId));
+        if (knownToBridge) {
+            updateStatus(ThingStatus.ONLINE);
+            registerDevice();
+            scheduleInitialPoll();
+            scheduler.execute(this::runStartInit);
+            startStatusPolling();
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Bridge does not recognise device id");
+        }
+    }
+
+    protected abstract void runStartInit();
+
+    protected abstract void registerDevice();
+
+    @Override
+    public void dispose() {
+        cancelInitialPoll(true);
+        deregisterDevice();
+        cancelStatusPolling();
+    }
+
+    protected abstract void deregisterDevice();
+
+    @Nullable
+    BridgeHandler getBridgeHandler() {
+        Bridge bridgeRef = getBridge();
+        if (bridgeRef == null) {
+            return null;
+        } else {
+            return bridgeRef.getHandler();
+        }
+    }
+
+    public String sendRequest(TLGatewayFrame frame) throws InvalidParameterException {
+        if (frame instanceof DeviceCmdReq) {
+            final String deviceAddr = getValidatedIdString();
+            if (deviceAddr.equals(MARKER_INVALID_DEVICE_KEY)) {
+                logger.warn("Device is unknown - will not send");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Check device setup - device is unknown");
+                return EMPTY_STRING;
+            }
+            ((DeviceCmdReq) frame).deviceId = deviceAddr;
+        }
+
+        // Validate the payload is within the expected limits for the device its being sent to
+        final String validationResult = frame.isValid();
+        if (!validationResult.isEmpty()) {
+            logger.warn("Not sending request due to validation error -> {}", validationResult);
+            return EMPTY_STRING;
+        }
+        final Bridge parentBridge = getBridge();
+        if (parentBridge == null) {
+            logger.warn("Cannot send device does not have a valid bridge");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge not selected");
+            return EMPTY_STRING;
+        }
+        final LinkTapBridgeHandler parentBridgeHandler = (LinkTapBridgeHandler) parentBridge.getHandler();
+        if (parentBridgeHandler == null) {
+            logger.warn("Cannot send device does not have a valid bridge handler");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge not selected");
+            return EMPTY_STRING;
+        }
+        try {
+            return parentBridgeHandler.sendRequest(frame);
+        } catch (final DeviceIdException die) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, die.getMessage());
+        }
+        return EMPTY_STRING;
+    }
+
+    @NotNull
+    public String getValidatedIdString() {
+        final LinkTapDeviceConfiguration config = getConfigAs(LinkTapDeviceConfiguration.class);
+
+        BridgeHandler bridgeHandler = getBridgeHandler();
+        if (bridgeHandler instanceof LinkTapBridgeHandler vesyncBridgeHandler) {
+            final String devId = config.id;
+
+            // Try to use the device address id directly
+            if (devId != null) {
+                logger.trace("Searching for device address id : {}", devId);
+                @Nullable
+                final LinkTapDeviceMetadata metadata = vesyncBridgeHandler.getDeviceLookup().get(devId);
+
+                if (metadata != null) {
+                    return metadata.deviceId;
+                }
+            }
+
+            final String deviceName = config.name;
+
+            // Check if the device name can be matched to a single device
+            if (deviceName != null) {
+                final String[] matchedAddressIds = vesyncBridgeHandler.getDiscoveredDevices()
+                        .filter(x -> deviceName.equals(x.deviceName)).map(x -> x.deviceId).toArray(String[]::new);
+
+                for (String val : matchedAddressIds) {
+                    logger.trace("Found Address ID match on name with : {}", val);
+                }
+
+                if (matchedAddressIds.length != 1) {
+                    return MARKER_INVALID_DEVICE_KEY;
+                }
+
+                return matchedAddressIds[0];
+            }
+        }
+
+        return MARKER_INVALID_DEVICE_KEY;
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        super.channelLinked(channelUID);
+
+        if (getThing().getStatusInfo().getStatus() == ThingStatus.ONLINE) {
+            scheduler.execute(() -> {
+                pollForUpdate(false);
+            });
+        }
+    }
+
+    private void scheduleInitialPoll() {
+        cancelInitialPoll(false);
+        initialPollingTask = scheduler.schedule(() -> {
+            // 15 second's is to ensure even slow systems have time to pull the gateway data
+            // ready.
+            sendChannelRefresh(DEVICE_CHANNEL_OH_DURATION_LIMIT);
+            sendChannelRefresh(DEVICE_CHANNEL_OH_VOLUME_LIMIT);
+
+            pollForUpdate(false);
+        }, 15, TimeUnit.SECONDS);
+    }
+
+    private void sendChannelRefresh(final String channelName) {
+        final Channel ch = getThing().getChannel(DEVICE_CHANNEL_OH_VOLUME_LIMIT);
+        if (ch != null) {
+            handleCommand(ch.getUID(), RefreshType.REFRESH);
+        }
+    }
+
+    private void cancelInitialPoll(final boolean interruptAllowed) {
+        final ScheduledFuture<?> pollJob = initialPollingTask;
+        if (pollJob != null && !pollJob.isCancelled()) {
+            pollJob.cancel(interruptAllowed);
+            initialPollingTask = null;
+        }
+    }
+
+    @Nullable
+    // This is used to coalesce poll's for CMD 3 - WATER METER STATUS
+    // otherwise bulk new channel links force many poll's, and an unsolicited update
+    // may recently have already provided the data needed.
+    ScheduledFuture<?> initialPollingTask = null;
+
+    public void pollForUpdate(boolean skipCache) {
+        String response = EMPTY_STRING;
+        synchronized (pollLock) {
+            response = lastPollResultCache.getValue();
+            if (response == null || skipCache) {
+                response = getPollResponseData();
+                // Todo: Check response status
+                lastPollResultCache.putValue(response);
+            }
+        }
+        processPollResponseData(response);
+    }
+
+    protected abstract String getPollResponseData();
+
+    protected abstract void processPollResponseData(final String data);
+
+    protected void receivedDataPush() {
+        lastStatusCommandRecvTs = System.currentTimeMillis();
+    }
+}

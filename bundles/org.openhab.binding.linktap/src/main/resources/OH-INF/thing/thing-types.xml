@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="linktap"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="bridge">
+		<label>LinkTap Bridge</label>
+		<description>The LinkTap bridge represents a LinkTap gateway device</description>
+
+		<properties>
+			<property name="Gateway Id"/>
+			<property name="Hardware Model"/>
+			<property name="Version"/>
+			<property name="MAC Address"/>
+			<property name="HTTP API Enabled"/>
+			<property name="HTTP API Callback URI"/>
+			<property name="Volume Unit"/>
+		</properties>
+
+		<config-description>
+			<parameter name="host" type="text">
+				<context>email</context>
+				<required>true</required>
+				<label>Hostname / IP</label>
+				<description>The hostname / IP address of the gateway device</description>
+			</parameter>
+			<parameter name="username" type="text">
+				<required>false</required>
+				<label>Device Username</label>
+				<description>The username if set for the gateway device</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<required>false</required>
+				<label>Device Password</label>
+				<description>The password if set for the gateway device</description>
+			</parameter>
+			<parameter name="enableMDNS" type="boolean">
+				<label>Enable mDNS responder</label>
+				<description>On connection whether the mDNS responder should be enabled on the gateway device</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="device">
+
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>LinkTap Binding Thing</label>
+		<description>LinkTap Binding Device</description>
+
+		<channels>
+			<channel id="mode" typeId="deviceMode"/>
+			<channel id="manual-watering" typeId="deviceManMode"/>
+			<channel id="active-watering" typeId="deviceWatering"/>
+			<channel id="rf-linked" typeId="deviceRfLinked"/>
+			<channel id="flm-linked" typeId="deviceFlmLinked"/>
+			<channel id="water-cut" typeId="deviceWaterCutoff"/>
+			<channel id="fall-status" typeId="deviceFallStatus"/>
+			<channel id="shutdown-failure" typeId="deviceFailStatus"/>
+			<channel id="high-flow" typeId="deviceIsLeak"/>
+			<channel id="low-flow" typeId="deviceIsClog"/>
+			<channel id="eco-final" typeId="deviceFinalSegment"/>
+			<channel id="signal" typeId="deviceSignalLevel"/>
+			<channel id="battery" typeId="deviceBatteryLevel"/>
+			<channel id="child-lock" typeId="deviceChildLockMode"/>
+			<channel id="flow-rate" typeId="deviceFlowRate"/>
+			<channel id="volume" typeId="deviceVolume"/>
+			<channel id="duration" typeId="deviceTotalDuration"/>
+			<channel id="remaining" typeId="deviceRemainingDuration"/>
+			<channel id="dur-limit" typeId="deviceFailsafeDuration"/>
+			<channel id="vol-limit" typeId="deviceVolumeLimit"/>
+			<channel id="oh-dur-limit" typeId="ohInstantDuration"/>
+			<channel id="oh-vol-limit" typeId="ohInstantVolumeLimit"/>
+			<channel id="water-skip-prev" typeId="waterSkipPrevRain"/>
+			<channel id="water-skip-next" typeId="waterSkipFutureRain"/>
+			<channel id="water-skip-ts" typeId="waterSkipDateTime"/>
+		</channels>
+
+		<representation-property>deviceId</representation-property>
+
+		<config-description>
+			<parameter name="id" type="text">
+				<required>false</required>
+				<label>Device Id</label>
+				<description>The Device Id for the device under the gateway</description>
+			</parameter>
+			<parameter name="name" type="text">
+				<required>false</required>
+				<label>Device Name</label>
+				<description>The name allocated to the device by the app. (Must be unique if used)</description>
+			</parameter>
+			<parameter name="enableAlerts" type="boolean">
+				<required>false</required>
+				<label>Auto Enable Alerts</label>
+				<description>If enabled, during device initialisation all alerts are enabled</description>
+				<default>true</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>
