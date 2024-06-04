@@ -44,12 +44,14 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
 
     private static final String BASE_URL = "https://www.myelectricaldata.fr/";
 
-    private static final String CONTRACT_URL = BASE_URL + "contracts/%s/";
-    private static final String IDENTITY_URL = BASE_URL + "identity/%s/";
-    private static final String CONTACT_URL = BASE_URL + "contact/%s/";
-    private static final String ADDRESS_URL = BASE_URL + "addresses/%s/";
-    private static final String MEASURE_DAILY_CONSUMPTION_URL = BASE_URL + "daily_consumption/%s/start/%s/end/%s";
-    private static final String MEASURE_MAX_POWER_URL = BASE_URL + "daily_consumption_max_power/%s/start/%s/end/%s";
+    private static final String CONTRACT_URL = BASE_URL + "contracts/%s/cache/";
+    private static final String IDENTITY_URL = BASE_URL + "identity/%s/cache/";
+    private static final String CONTACT_URL = BASE_URL + "contact/%s/cache/";
+    private static final String ADDRESS_URL = BASE_URL + "addresses/%s/cache/";
+    private static final String MEASURE_DAILY_CONSUMPTION_URL = BASE_URL
+            + "daily_consumption/%s/start/%s/end/%s/cache/";
+    private static final String MEASURE_MAX_POWER_URL = BASE_URL
+            + "daily_consumption_max_power/%s/start/%s/end/%s/cache/";
 
     private static final String TEMPO_URL = BASE_URL + "rte/tempo/%s/%s";
 
@@ -68,7 +70,7 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public String getClientId() {
-        return "e551937c-5250-48bc-b4a6-2323af68db92";
+        return LinkyBindingConstants.LINKY_MYELECTRICALDATA_CLIENT_ID;
     }
 
     @Override
