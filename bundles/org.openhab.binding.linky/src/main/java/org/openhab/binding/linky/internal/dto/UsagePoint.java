@@ -14,8 +14,6 @@ package org.openhab.binding.linky.internal.dto;
 
 import org.eclipse.jetty.jaas.spi.UserInfo;
 
-import com.google.gson.annotations.SerializedName;
-
 /**
  * The {@link UserInfo} holds informations about energy delivery point
  *
@@ -24,8 +22,6 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class UsagePoint {
-    @SerializedName("usage_point")
     public UsagePointDetails usagePoint;
-
     public Contracts contracts;
 }

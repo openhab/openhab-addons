@@ -75,12 +75,11 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
 
     private static final int REQUEST_BUFFER_SIZE = 8000;
 
-    private @NonNullByDefault({}) HttpService httpService;
-    private @NonNullByDefault({}) BundleContext bundleContext;
+    private HttpService httpService;
+    private BundleContext bundleContext;
 
     private final HttpClient httpClient;
-    private @Nullable EnedisHttpApi enedisApi;
-    private final Gson gson;
+    private EnedisHttpApi enedisApi;
     private OAuthClientService oAuthService;
     protected final ThingRegistry thingRegistry;
 
@@ -108,7 +107,6 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
             logger.warn("An exception occurred while initialising the SSL context : '{}'", e.getMessage(), e);
         }
 
-        this.gson = gson;
         this.httpService = httpService;
         this.thingRegistry = thingRegistry;
         this.bundleContext = componentContext.getBundleContext();
@@ -116,6 +114,8 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
         this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID, sslContextFactory);
         httpClient.setFollowRedirects(false);
         httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
+
+        this.enedisApi = new EnedisHttpApi(this, gson, this.httpClient);
 
         try {
             httpClient.start();
@@ -154,17 +154,13 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        logger.debug("Initializing Netatmo API bridge handler.");
+        logger.debug("Initializing Linky API bridge handler.");
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        EnedisHttpApi api = new EnedisHttpApi(this, gson, this.httpClient);
-
-        this.enedisApi = api;
-
         scheduler.submit(() -> {
             try {
-                api.initialize();
+                enedisApi.initialize();
                 updateStatus(ThingStatus.ONLINE);
             } catch (LinkyException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
