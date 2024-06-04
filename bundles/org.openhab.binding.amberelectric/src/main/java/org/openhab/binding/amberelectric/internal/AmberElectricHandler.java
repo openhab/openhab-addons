@@ -45,9 +45,9 @@ public class AmberElectricHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AmberElectricHandler.class);
 
     private long refreshInterval;
-    private @Nullable String apikey;
-    private @Nullable String nmi;
-    private @Nullable String siteID;
+    private String apikey = "";
+    private String nmi = "";
+    private String siteID = "";
 
     private @NonNullByDefault({}) AmberElectricWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;

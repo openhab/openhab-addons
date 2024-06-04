@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amberelectric.internal.api.CurrentPrices;
 import org.openhab.binding.amberelectric.internal.api.Sites;
 import org.openhab.core.io.net.http.HttpUtil;
@@ -28,6 +30,7 @@ import org.slf4j.LoggerFactory;
  * @author Paul Smedley - Initial Contribution
  *
  */
+@NonNullByDefault
 public class AmberElectricWebTargets {
     private static final int TIMEOUT_MS = 30000;
 
@@ -60,9 +63,10 @@ public class AmberElectricWebTargets {
         return invoke(httpMethod, uri, accessToken, null, null);
     }
 
-    private String invoke(String httpMethod, String uri, String apikey, InputStream content, String contentType)
-            throws AmberElectricCommunicationException {
+    private String invoke(String httpMethod, String uri, String apikey, @Nullable InputStream content,
+            @Nullable String contentType) throws AmberElectricCommunicationException {
         logger.debug("Calling url: {}", uri);
+        @Nullable
         String response;
         synchronized (this) {
             try {
@@ -76,7 +80,7 @@ public class AmberElectricWebTargets {
             }
         }
 
-        if (response.isEmpty()) {
+        if (response == null) {
             throw new AmberElectricCommunicationException(
                     String.format("AmberElectric returned no response while invoking %s", uri));
         }
