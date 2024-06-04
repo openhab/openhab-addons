@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.amberelectric.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,18 +26,19 @@ import com.google.gson.JsonParser;
  * @author Paul Smedley <paul@smedley.id.au> - Initial contribution
  *
  */
+@NonNullByDefault
 public class CurrentPrices {
     private static Logger LOGGER = LoggerFactory.getLogger(CurrentPrices.class);
 
-    public Double elecPerKwh;
-    public Double clPerKwh;
-    public Double feedInPerKwh;
-    public String elecStatus;
-    public String clStatus;
-    public String feedInStatus;
-    public Double renewables;
-    public String spikeStatus;
-    public String nemTime;
+    public double elecPerKwh;
+    public double clPerKwh;
+    public double feedInPerKwh;
+    public String elecStatus = "";
+    public String clStatus = "";
+    public String feedInStatus = "";
+    public double renewables;
+    public String spikeStatus = "";
+    public String nemTime = "";
 
     private CurrentPrices() {
     }

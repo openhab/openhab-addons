@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ public class AmberElectricHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         AmberElectricConfiguration config = getConfigAs(AmberElectricConfiguration.class);
-        if (config.apikey == null) {
+        if (config.apikey.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key must be set");
         } else {
             webTargets = new AmberElectricWebTargets();
@@ -83,6 +83,7 @@ public class AmberElectricHandler extends BaseThingHandler {
     }
 
     private void schedulePoll() {
+        ScheduledFuture<?> pollFuture = this.pollFuture;
         if (pollFuture != null) {
             pollFuture.cancel(false);
         }
@@ -113,7 +114,7 @@ public class AmberElectricHandler extends BaseThingHandler {
 
     private void pollStatus() throws IOException {
 
-        if (siteID == null) {
+        if (siteID.isEmpty()) {
             Sites sites = webTargets.getSites(apikey, nmi);
             // add error handling
             siteID = sites.siteid;
@@ -122,33 +123,28 @@ public class AmberElectricHandler extends BaseThingHandler {
 
         CurrentPrices currentPrices = webTargets.getCurrentPrices(siteID, apikey);
         updateStatus(ThingStatus.ONLINE);
-        if (currentPrices != null) {
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECPRICE,
-                    new DecimalType(currentPrices.elecPerKwh));
-            if (currentPrices.clPerKwh != null) {
-                updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLPRICE,
-                        new DecimalType(currentPrices.clPerKwh));
-                updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLSTATUS,
-                        new StringType(currentPrices.clStatus));
-            }
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINPRICE,
-                    new DecimalType(currentPrices.feedInPerKwh));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECSTATUS,
-                    new StringType(currentPrices.elecStatus));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINSTATUS,
-                    new StringType(currentPrices.feedInStatus));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_NEMTIME,
-                    new StringType(currentPrices.nemTime));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_RENEWABLES,
-                    new DecimalType(currentPrices.renewables));
-            switch (currentPrices.spikeStatus) {
-                case "none":
-                    updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_SPIKE, OnOffType.OFF);
-                    break;
-                default:
-                    updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_SPIKE, OnOffType.ON);
-                    break;
-            }
+        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECPRICE,
+                new DecimalType(currentPrices.elecPerKwh));
+        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLPRICE,
+                new DecimalType(currentPrices.clPerKwh));
+        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLSTATUS,
+                new StringType(currentPrices.clStatus));
+        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINPRICE,
+                new DecimalType(currentPrices.feedInPerKwh));
+        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECSTATUS,
+                new StringType(currentPrices.elecStatus));
+        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINSTATUS,
+                new StringType(currentPrices.feedInStatus));
+        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_NEMTIME, new StringType(currentPrices.nemTime));
+        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_RENEWABLES,
+                new DecimalType(currentPrices.renewables));
+        switch (currentPrices.spikeStatus) {
+            case "none":
+                updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_SPIKE, OnOffType.OFF);
+                break;
+            default:
+                updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_SPIKE, OnOffType.ON);
+                break;
         }
     }
 }

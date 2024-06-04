@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,12 +14,15 @@ package org.openhab.binding.amberelectric.internal;
 
 import java.io.IOException;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception for when an unexpected response is received from the AmberAPI.
  *
  * @author Paul Smedley - Initial contribution
  *
  */
+@NonNullByDefault
 public class AmberElectricCommunicationException extends IOException {
     private static final long serialVersionUID = 529232811860854017L;
 

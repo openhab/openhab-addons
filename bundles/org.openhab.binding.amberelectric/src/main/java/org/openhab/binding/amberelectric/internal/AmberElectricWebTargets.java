@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,12 +31,9 @@ import org.slf4j.LoggerFactory;
 public class AmberElectricWebTargets {
     private static final int TIMEOUT_MS = 30000;
 
-    private String getSitesUri;
-    private String getCurrentPricesUri;
     private final Logger logger = LoggerFactory.getLogger(AmberElectricWebTargets.class);
 
     public AmberElectricWebTargets() {
-        String getSitesUri = "https://api.amber.com.au/v1/sites";
     }
 
     public Sites getSites(String apikey, String nmi) throws AmberElectricCommunicationException {

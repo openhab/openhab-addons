@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.amberelectric.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,11 +26,12 @@ import com.google.gson.JsonParser;
  * @author Paul Smedley - Initial Contribution
  *
  */
+@NonNullByDefault
 public class Sites {
     private static Logger LOGGER = LoggerFactory.getLogger(Sites.class);
 
-    public String siteid;
-    public String nmi;
+    public String siteid = "";
+    public String nmi = "";
 
     private Sites() {
     }
@@ -46,8 +48,9 @@ public class Sites {
                 sites.nmi = jsonObject.get("nmi").getAsString();
             }
         }
-        if ((nem == null) || (sites.siteid == null)) { // nem not specified, or not found so we take the first siteid
-                                                       // found
+        if ((nem.isEmpty()) || (sites.siteid.isEmpty())) { // nem not specified, or not found so we take the first
+                                                           // siteid
+                                                           // found
             JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();
             sites.siteid = jsonObject.get("id").getAsString();
             sites.nmi = jsonObject.get("nmi").getAsString();

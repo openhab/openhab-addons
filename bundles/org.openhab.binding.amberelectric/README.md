@@ -1,7 +1,9 @@
 # Amber Electric Binding
+
 A binding that supports the Australian energy retailer Amber Electric's API (https://www.amber.com.au/) and provides data on the current pricing for buying and selling power, as well as the current level of renewables in the NEM.
 
 ## Supported Things
+
 Amber Electric API 
 
 ## Discovery
@@ -10,6 +12,7 @@ Auto-discover is not currently supported.
 You need to manually add a new thing using your API key
 
 ## Thing Configuration
+
 As a minimum, the IP address is needed:
 
 - `apikey` - The API key from the 'Developer' section of https://apps.amber.com.au
@@ -17,9 +20,18 @@ As a minimum, the IP address is needed:
 - 'refresh' the refresh rate for querying the API.
 
 ## Channels
+
 | channel id           | type          | description                                                                           |
 |----------------------|---------------|---------------------------------------------------------------------------------------|
-|
+| elecprice            | Number        | Current price to import power from the grid
+| clprice              | Number        | Current price to import power for Controlled Load
+| feedinprice          | Number        | Current price to export power to the grid
+| elecstatus           | String        | Current price status of grid import 
+| clstatus             | String        | Current price status of controlled load import
+| feedinstatus         | String        | Current price status of Feed-In
+| nemtime              | String        | NEM time of last pricing update
+| renewables           | Number        | Current level of renewables in the grid
+| spike                | Switch        | Report if the grid has a current price spike
 
 ## Full Example
 
