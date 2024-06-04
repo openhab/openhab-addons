@@ -1,0 +1,248 @@
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
+package org.openhab.binding.linktap.internal;
+
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.*;
+import static org.openhab.binding.linktap.internal.LinkTapBridgeHandler.MDNS_LOOKUP;
+import static org.openhab.binding.linktap.internal.Utils.cleanPrintableChars;
+
+import java.net.Inet4Address;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.jmdns.ServiceInfo;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.linktap.protocol.frames.TLGatewayFrame;
+import org.openhab.core.config.discovery.DiscoveryResult;
+import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.event.Level;
+
+/**
+ * The {@link LinkTapBridgeDiscoveryService} is an implementation of a discovery service for VeSync devices. The
+ * meta-data is
+ * read by the bridge, and the discovery data updated via a callback implemented by the DeviceMetaDataUpdatedHandler.
+ *
+ * @author David Godyear - Initial contribution
+ */
+@NonNullByDefault
+@Component(service = MDNSDiscoveryParticipant.class)
+public class LinkTapBridgeDiscoveryService implements MDNSDiscoveryParticipant {
+
+    private final Logger logger = LoggerFactory.getLogger(LinkTapBridgeDiscoveryService.class);
+
+    private static final String SERVICE_TYPE = "_http._tcp.local.";
+
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
+
+    private static final String RAW_MODEL = "model";
+    private static final String RAW_ID = "ID";
+    private static final String RAW_MAC = "MAC";
+    private static final String RAW_IP = "IP";
+    private static final String RAW_ADMIN_URL = "admin_url";
+    private static final String RAW_VENDOR = "vendor";
+    private static final String RAW_VERSION = "version";
+    private static final String[] KEYS = new String[] { RAW_MODEL, RAW_ID, RAW_MAC, RAW_IP, RAW_ADMIN_URL, RAW_VENDOR,
+            RAW_VERSION };
+
+    @Override
+    public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
+        return SUPPORTED_THING_TYPES;
+    }
+
+    @Override
+    public String getServiceType() {
+        return SERVICE_TYPE;
+    }
+
+    @Override
+    public @Nullable DiscoveryResult createResult(ServiceInfo service) {
+        final UUID itemId = UUID.randomUUID();
+        String qualifiedName = service.getQualifiedName();
+        String name = service.getName();
+
+        if (logger.isEnabledForLevel(Level.TRACE)) {
+            logger.trace("[{}] Device found: {}", itemId, cleanPrintableChars(qualifiedName));
+            logger.trace("[{}] Port {}", itemId, service.getPort());
+            logger.trace("[{}] Persistent {}", itemId, service.isPersistent());
+            logger.trace("[{}] Domain {}", itemId, cleanPrintableChars(service.getDomain()));
+            logger.trace("[{}] Application {}", itemId, cleanPrintableChars(service.getApplication()));
+            logger.trace("[{}] Protocol {}", itemId, cleanPrintableChars(service.getProtocol()));
+            logger.trace("[{}] Name {}", itemId, cleanPrintableChars(service.getName()));
+            logger.trace("[{}] Type {}", itemId, cleanPrintableChars(service.getType()));
+        }
+
+        if (!name.startsWith("LinkTapGw_")) {
+            logger.trace("[{}] Not a LinkTap Gateway - wrong name", itemId);
+            return null;
+        }
+        if (service.getPort() != 80) {
+            logger.trace("[{}] Not a LinkTap Gateway - incorrect port", itemId);
+            return null;
+        }
+
+        if (!service.getProtocol().equals("tcp")) {
+            logger.trace("[{}] Not a LinkTap Gateway - incorrect protocol", itemId);
+            return null;
+        }
+
+        if (!service.getApplication().equals("http")) {
+            logger.trace("[{}] Not a LinkTap Gateway - incorrect application", itemId);
+            return null;
+        }
+        if (logger.isEnabledForLevel(Level.TRACE)) {
+            {
+                final String[] nameSplit = name.split("_");
+                if (nameSplit.length > 2) {
+                    logger.trace("[{}] GW ID: {}", itemId, cleanPrintableChars(nameSplit[1]));
+                }
+            }
+            logger.trace("[{}] GW Text {}", itemId, cleanPrintableChars(new String(service.getTextBytes())));
+
+            for (int i = 0; i < service.getInet4Addresses().length; ++i) {
+                logger.trace("[{}] GW IPv4 Address: {}", itemId,
+                        cleanPrintableChars(service.getInet4Addresses()[i].toString()));
+            }
+            for (int i = 0; i < service.getInet6Addresses().length; ++i) {
+                logger.trace("[{}] GW IPv6 Address: {}", itemId,
+                        cleanPrintableChars(service.getInet6Addresses()[i].toString()));
+            }
+            for (int i = 0; i < service.getHostAddresses().length; ++i) {
+                logger.trace("[{}] GW Host Address: {}", itemId, cleanPrintableChars(service.getHostAddresses()[i]));
+            }
+        }
+
+        ThingUID uid = getThingUID(service);
+        if (uid == null) {
+            return null;
+        }
+
+        Properties rawDataProps = extractProps(service);
+        if (rawDataProps.isEmpty()) {
+            return null;
+        }
+
+        final Map<String, Object> x = new HashMap<>(4);
+        final String gatewayId = getGwId(service.getName());
+        x.put(BRIDGE_PROP_GW_ID, gatewayId);
+        final String macId = (String) rawDataProps.get(RAW_MAC);
+        if (macId != null) {
+            x.put(BRIDGE_PROP_MAC_ADDR, macId);
+        }
+        final String version = (String) rawDataProps.get(RAW_VERSION);
+        if (version != null) {
+            x.put(BRIDGE_PROP_GW_VER, version);
+        }
+        final String hostname = getHostName(service);
+        if (hostname.isEmpty()) {
+            return null;
+        }
+        x.put(BRIDGE_CONFIG_HOSTNAME, hostname);
+
+        if (gatewayId.isEmpty()) {
+            return null;
+        }
+        logger.debug("[{}] Discovered Gateway Id {}", itemId, gatewayId);
+
+        String ipV4Addr;
+        if (service.getInet4Addresses().length > 0) {
+            ipV4Addr = service.getInet4Addresses()[0].getHostAddress();
+        } else {
+            ipV4Addr = null;
+        }
+        MDNS_LOOKUP.registerItem(hostname, ipV4Addr, () -> {
+            logger.debug("[{}] Registered discovered hostname to IPv4 {} -> {}", itemId, hostname, ipV4Addr);
+        });
+        return DiscoveryResultBuilder.create((new ThingUID(THING_TYPE_BRIDGE, gatewayId))).withProperties(x)
+                .withLabel("LinkTap Gateway (" + gatewayId + ")").withRepresentationProperty(BRIDGE_PROP_GW_ID).build();
+    }
+
+    @Override
+    public @Nullable ThingUID getThingUID(ServiceInfo service) {
+        final Map<String, Object> x = new HashMap<>(4);
+        final String gatewayId = getGwId(service.getName());
+        x.put(BRIDGE_PROP_GW_ID, gatewayId);
+        if (x.get(BRIDGE_PROP_GW_ID) == null) {
+            return null;
+        }
+        return (new ThingUID(THING_TYPE_BRIDGE, gatewayId));
+    }
+
+    public Properties extractProps(ServiceInfo serviceInfo) {
+        final Properties result = new Properties();
+        final String data = new String(serviceInfo.getTextBytes());
+        final int[] keyIndexes = new int[7];
+
+        for (int i = 0; i < KEYS.length; ++i) {
+            keyIndexes[i] = data.indexOf(KEYS[i] + "=");
+        }
+        Arrays.sort(keyIndexes);
+        if (keyIndexes[0] == -1) {
+            return result;
+        }
+
+        String wCopy = data;
+        for (int si = keyIndexes.length - 1; si > -1; --si) {
+            final String foundField = wCopy.substring(keyIndexes[si]).trim();
+            wCopy = wCopy.substring(0, keyIndexes[si]);
+            final Optional<String> potentialKey = Arrays.stream(KEYS).filter(foundField::startsWith).findFirst();
+            if (potentialKey.isPresent()) {
+                final String key = potentialKey.get();
+                result.put(key, foundField.substring(key.length() + 1));
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public long getRemovalGracePeriodSeconds(ServiceInfo serviceInfo) {
+        return MDNSDiscoveryParticipant.super.getRemovalGracePeriodSeconds(serviceInfo);
+    }
+
+    private String getGwId(final String serviceName) {
+        String[] segments = serviceName.split("_");
+        if (segments.length > 1) {
+            return segments[1];
+        }
+        return TLGatewayFrame.EMPTY_STRING;
+    }
+
+    private String getHostName(final ServiceInfo serviceInfo) {
+        final Inet4Address[] addrs = serviceInfo.getInet4Addresses();
+        if (addrs.length == 0) {
+            logger.trace("No IPv4 given in mdns data");
+            return TLGatewayFrame.EMPTY_STRING;
+        }
+        String candidateDnsName = addrs[0].getHostName();
+        if (candidateDnsName.isEmpty()) {
+            logger.trace("No DNS given by IPv4 address from mdns data");
+            candidateDnsName = addrs[0].toString();
+        }
+        if (candidateDnsName.startsWith("/")) {
+            candidateDnsName = candidateDnsName.substring(1);
+        }
+        return candidateDnsName;
+    }
+}
