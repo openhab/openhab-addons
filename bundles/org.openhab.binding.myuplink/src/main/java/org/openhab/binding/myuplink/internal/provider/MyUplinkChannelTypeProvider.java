@@ -25,7 +25,7 @@ import org.osgi.service.component.annotations.Reference;
  *
  * @author Alexander Friese - Initial contribution
  */
-@Component(service = { ChannelTypeProvider.class, MyUplinkChannelTypeProvider.class }, immediate = true)
+@Component(service = { ChannelTypeProvider.class, MyUplinkChannelTypeProvider.class })
 @NonNullByDefault
 public class MyUplinkChannelTypeProvider extends AbstractStorageBasedTypeProvider {
 

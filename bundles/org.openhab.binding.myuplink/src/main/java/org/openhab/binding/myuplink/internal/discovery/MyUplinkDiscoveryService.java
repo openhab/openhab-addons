@@ -14,6 +14,8 @@ package org.openhab.binding.myuplink.internal.discovery;
 
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.myuplink.internal.MyUplinkBindingConstants;
@@ -47,7 +49,7 @@ public class MyUplinkDiscoveryService extends AbstractDiscoveryService implement
     private @NonNullByDefault({}) MyUplinkAccountHandler bridgeHandler;
 
     public MyUplinkDiscoveryService() throws IllegalArgumentException {
-        super(MyUplinkBindingConstants.SUPPORTED_THING_TYPES_UIDS, 300, false);
+        super(Set.of(MyUplinkBindingConstants.THING_TYPE_ACCOUNT), 300, false);
     }
 
     @Override
