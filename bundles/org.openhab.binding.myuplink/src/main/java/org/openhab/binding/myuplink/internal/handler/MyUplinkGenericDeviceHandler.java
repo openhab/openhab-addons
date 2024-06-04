@@ -139,7 +139,6 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
     private void startPolling() {
         updateJobReference(dataPollingJobReference, scheduler.scheduleWithFixedDelay(this::pollingRun,
                 POLLING_INITIAL_DELAY, getBridgeConfiguration().getDataPollingInterval(), TimeUnit.SECONDS));
-
     }
 
     /**

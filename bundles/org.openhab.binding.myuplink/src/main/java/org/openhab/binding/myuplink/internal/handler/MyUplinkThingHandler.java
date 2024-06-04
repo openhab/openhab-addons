@@ -96,8 +96,8 @@ public interface MyUplinkThingHandler extends ThingHandler, ChannelProvider {
 
         String channelType = Utils.getChannelTypeId(channel);
         if (!channelType.startsWith(CHANNEL_TYPE_PREFIX_RW)) {
-            getLogger().info("channel '{}' does not support write access - value to set '{}'",
-                    channelUID.getIdWithoutGroup(), command);
+            getLogger().info("channel '{}', type '{}' does not support write access - value to set '{}'",
+                    channelUID.getIdWithoutGroup(), channelType, command);
             throw new UnsupportedOperationException(
                     "channel (" + channelUID.getIdWithoutGroup() + ") does not support write access");
         }
