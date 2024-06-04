@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,8 @@ package org.openhab.binding.mqtt.ruuvigateway;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstants.*;
 import static org.openhab.core.library.unit.MetricPrefix.HECTO;
 
@@ -65,7 +66,6 @@ import org.openhab.binding.mqtt.ruuvigateway.internal.RuuviGatewayBindingConstan
 import org.openhab.binding.mqtt.ruuvigateway.internal.discovery.RuuviGatewayDiscoveryService;
 import org.openhab.binding.mqtt.ruuvigateway.internal.handler.RuuviTagHandler;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttConnectionObserver;
@@ -329,32 +329,29 @@ public class RuuviGatewayTest extends MqttOSGiTest {
             String accelerationZStandardGravity, String batteryVolt, int dataFormat, String humidityPercent,
             int measurementSequenceNumber, int movementCounter, String pressurePascal, String txPowerDecibelMilliwatts,
             String rssiDecibelMilliwatts, Instant ts, Instant gwts, String gwMac) {
-        assertEquals(new QuantityType<Temperature>(new BigDecimal(temperatureCelsius), SIUnits.CELSIUS),
+        assertEquals(new QuantityType<>(new BigDecimal(temperatureCelsius), SIUnits.CELSIUS),
                 channelStateGetter.apply(CHANNEL_ID_TEMPERATURE));
-        assertEquals(
-                new QuantityType<Acceleration>(new BigDecimal(accelerationXStandardGravity), Units.STANDARD_GRAVITY),
+        assertEquals(new QuantityType<>(new BigDecimal(accelerationXStandardGravity), Units.STANDARD_GRAVITY),
                 channelStateGetter.apply(CHANNEL_ID_ACCELERATIONX));
-        assertEquals(
-                new QuantityType<Acceleration>(new BigDecimal(accelerationYStandardGravity), Units.STANDARD_GRAVITY),
+        assertEquals(new QuantityType<>(new BigDecimal(accelerationYStandardGravity), Units.STANDARD_GRAVITY),
                 channelStateGetter.apply(CHANNEL_ID_ACCELERATIONY));
-        assertEquals(
-                new QuantityType<Acceleration>(new BigDecimal(accelerationZStandardGravity), Units.STANDARD_GRAVITY),
+        assertEquals(new QuantityType<>(new BigDecimal(accelerationZStandardGravity), Units.STANDARD_GRAVITY),
                 channelStateGetter.apply(CHANNEL_ID_ACCELERATIONZ));
-        assertEquals(new QuantityType<ElectricPotential>(new BigDecimal(batteryVolt), Units.VOLT),
+        assertEquals(new QuantityType<>(new BigDecimal(batteryVolt), Units.VOLT),
                 channelStateGetter.apply(CHANNEL_ID_BATTERY));
         assertEquals(new DecimalType(dataFormat), channelStateGetter.apply(CHANNEL_ID_DATA_FORMAT));
-        assertEquals(new QuantityType<Dimensionless>(new BigDecimal(humidityPercent), Units.PERCENT),
+        assertEquals(new QuantityType<>(new BigDecimal(humidityPercent), Units.PERCENT),
                 channelStateGetter.apply(CHANNEL_ID_HUMIDITY));
         assertEquals(new DecimalType(new BigDecimal(measurementSequenceNumber)),
                 channelStateGetter.apply(CHANNEL_ID_MEASUREMENT_SEQUENCE_NUMBER));
         assertEquals(new DecimalType(new BigDecimal(movementCounter)),
                 channelStateGetter.apply(CHANNEL_ID_MOVEMENT_COUNTER));
-        assertEquals(new QuantityType<Pressure>(new BigDecimal(pressurePascal), SIUnits.PASCAL),
+        assertEquals(new QuantityType<>(new BigDecimal(pressurePascal), SIUnits.PASCAL),
                 channelStateGetter.apply(CHANNEL_ID_PRESSURE));
-        assertEquals(new QuantityType<Power>(new BigDecimal(txPowerDecibelMilliwatts), Units.DECIBEL_MILLIWATTS),
+        assertEquals(new QuantityType<>(new BigDecimal(txPowerDecibelMilliwatts), Units.DECIBEL_MILLIWATTS),
                 channelStateGetter.apply(CHANNEL_ID_TX_POWER));
 
-        assertEquals(new QuantityType<Power>(new BigDecimal(rssiDecibelMilliwatts), Units.DECIBEL_MILLIWATTS),
+        assertEquals(new QuantityType<>(new BigDecimal(rssiDecibelMilliwatts), Units.DECIBEL_MILLIWATTS),
                 channelStateGetter.apply(CHANNEL_ID_RSSI));
         assertEquals(new DateTimeType(ts.atZone(ZoneId.of("UTC"))), channelStateGetter.apply(CHANNEL_ID_TS));
         assertEquals(new DateTimeType(gwts.atZone(ZoneId.of("UTC"))), channelStateGetter.apply(CHANNEL_ID_GWTS));
@@ -388,9 +385,15 @@ public class RuuviGatewayTest extends MqttOSGiTest {
         } else {
             // test argument is only specifiying the data field in the json payload
             // Fill rest of the fields with some valid values
-            jsonPayload = "{" + "  \"gw_mac\": \"DE:AD:BE:EF:00\"," + "  \"rssi\": -82," + "  \"aoa\": [],"
-                    + "  \"gwts\": \"1659365432\"," + "  \"ts\": \"1659365222\"," + "  \"data\": \"" + val + "\","
-                    + "  \"coords\": \"\" }";
+            jsonPayload = """
+                    {\
+                      "gw_mac": "DE:AD:BE:EF:00",\
+                      "rssi": -82,\
+                      "aoa": [],\
+                      "gwts": "1659365432",\
+                      "ts": "1659365222",\
+                      "data": "\
+                    """ + val + "\"," + "  \"coords\": \"\" }";
         }
 
         Thing ruuviThing = createRuuviThing("mygwid", topic, 100);
@@ -414,16 +417,18 @@ public class RuuviGatewayTest extends MqttOSGiTest {
     @SuppressWarnings("null")
     @Test
     public void testDiscovery() {
-        scheduler.execute(() -> publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02",
-                "{" + " \"gw_mac\": \"DE:AD:BE:EF:00\"," + " \"rssi\": -82," + " \"aoa\": [],"
-                        + " \"gwts\": \"1659365432\"," + " \"ts\": \"1659365222\","
-                        + " \"data\": \"0201061BFF99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F\","
-                        + " \"coords\": \"\" }"));
+        scheduler.execute(() -> publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02", """
+                {\
+                 "gw_mac": "DE:AD:BE:EF:00",\
+                 "rssi": -82,\
+                 "aoa": [],\
+                 "gwts": "1659365432",\
+                 "ts": "1659365222",\
+                 "data": "0201061BFF99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F",\
+                 "coords": "" }"""));
         waitForAssert(() -> {
             assertEquals(2, inbox.getAll().size(), inbox.getAll().toString());
-            var discovered = new HashSet<DiscoveryResult>();
-            discovered.addAll(inbox.getAll());
-
+            var discovered = new HashSet<>(inbox.getAll());
             for (var result : discovered) {
                 assertEquals(THING_TYPE_BEACON, result.getThingTypeUID());
                 assertEquals("topic", result.getRepresentationProperty());
@@ -431,10 +436,10 @@ public class RuuviGatewayTest extends MqttOSGiTest {
                 assertNotNull(topic);
                 assertTrue(
                         // published in this test
-                        topic.equals((BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02"))
+                        (BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02").equals(topic)
                                 // published in beforeEach
-                                || result.getProperties().get("topic")
-                                        .equals((BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:AA:00")));
+                                || (BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:AA:00")
+                                        .equals(result.getProperties().get("topic")));
             }
         });
     }
@@ -445,8 +450,7 @@ public class RuuviGatewayTest extends MqttOSGiTest {
         // with quickTimeout=false, heartbeat is effectively disabled. Thing will not "timeout" and go OFFLINE
         // with quickTimeout=true, timeout happens very fast. In CI we use infinite timeout and trigger timeout manually
 
-        Thing ruuviThing = createRuuviThing("mygwid", BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02",
-                quickTimeout ? (isRunningInCI() ? 9_000_000 : 100) : 9_000_000);
+        Thing ruuviThing = createRuuviThing("mygwid", BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02", 9_000_000);
         // Link all channels to freshly created items
         ruuviThing.getChannels().stream().map(Channel::getUID).forEach(this::linkChannelToAutogeneratedItem);
 
@@ -470,9 +474,7 @@ public class RuuviGatewayTest extends MqttOSGiTest {
         List<ThingStatusInfo> statusUpdates = statusSubscriber.statusUpdates.get(ruuviThing.getUID());
         assertNotNull(statusUpdates);
         if (quickTimeout) {
-            if (isRunningInCI()) {
-                triggerTimeoutHandling(ruuviThing);
-            }
+            triggerTimeoutHandling(ruuviThing);
             waitForAssert(() -> {
                 assertThingStatus(statusUpdates, statusUpdateIndex.get(), ThingStatus.OFFLINE,
                         ThingStatusDetail.COMMUNICATION_ERROR, "No valid data received for some time");
@@ -485,11 +487,15 @@ public class RuuviGatewayTest extends MqttOSGiTest {
 
         // publish some valid data ("valid case" test vector from
         // https://docs.ruuvi.com/communication/bluetooth-advertisements/data-format-5-rawv2)
-        scheduler.execute(() -> publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02",
-                "{" + " \"gw_mac\": \"DE:AD:BE:EF:00\"," + " \"rssi\": -82," + " \"aoa\": [],"
-                        + " \"gwts\": \"1659365432\"," + " \"ts\": \"1659365222\","
-                        + " \"data\": \"0201061BFF99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F\","
-                        + " \"coords\": \"\" }"));
+        scheduler.execute(() -> publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02", """
+                {\
+                 "gw_mac": "DE:AD:BE:EF:00",\
+                 "rssi": -82,\
+                 "aoa": [],\
+                 "gwts": "1659365432",\
+                 "ts": "1659365222",\
+                 "data": "0201061BFF99040512FC5394C37C0004FFFC040CAC364200CDCBB8334C884F",\
+                 "coords": "" }"""));
 
         waitForAssert(() -> {
             assertThingStatus(statusUpdates, statusUpdateIndex.get(), ThingStatus.ONLINE);
@@ -517,9 +523,7 @@ public class RuuviGatewayTest extends MqttOSGiTest {
         });
 
         if (quickTimeout) {
-            if (isRunningInCI()) {
-                triggerTimeoutHandling(ruuviThing);
-            }
+            triggerTimeoutHandling(ruuviThing);
             waitForAssert(() -> {
                 assertThingStatus(statusUpdates, statusUpdateIndex.get(), ThingStatus.OFFLINE,
                         ThingStatusDetail.COMMUNICATION_ERROR, "No valid data received for some time");
@@ -527,16 +531,19 @@ public class RuuviGatewayTest extends MqttOSGiTest {
                         .forEach(channelId -> assertEquals(UnDefType.UNDEF, getItemState.apply(channelId)));
                 statusUpdateIndex.incrementAndGet();
             });
-
         }
 
         // Another mqtt update (("minimum values" test vector from
         // https://docs.ruuvi.com/communication/bluetooth-advertisements/data-format-5-rawv2)
-        scheduler.execute(() -> publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02",
-                "{" + " \"gw_mac\": \"DE:AD:BE:EF:00\"," + " \"rssi\": -66," + " \"aoa\": [],"
-                        + " \"gwts\": \"1659365431\"," + " \"ts\": \"1659365221\","
-                        + " \"data\": \"0201061BFF9904058001000000008001800180010000000000CBB8334C884F\","
-                        + " \"coords\": \"\" }"));
+        scheduler.execute(() -> publish(BASE_TOPIC_RUUVI + "/mygwid/DE:AD:BE:EF:BB:02", """
+                {\
+                 "gw_mac": "DE:AD:BE:EF:00",\
+                 "rssi": -66,\
+                 "aoa": [],\
+                 "gwts": "1659365431",\
+                 "ts": "1659365221",\
+                 "data": "0201061BFF9904058001000000008001800180010000000000CBB8334C884F",\
+                 "coords": "" }"""));
         if (quickTimeout) {
             // With quick timeout we were previously offline, so now we should be back online
             // with valid channels.
@@ -566,10 +573,7 @@ public class RuuviGatewayTest extends MqttOSGiTest {
                 );
             });
 
-            // ...after which timeout will happen again
-            if (isRunningInCI()) {
-                triggerTimeoutHandling(ruuviThing);
-            }
+            triggerTimeoutHandling(ruuviThing);
             waitForAssert(() -> {
                 assertThingStatus(statusUpdates, statusUpdateIndex.get(), ThingStatus.OFFLINE,
                         ThingStatusDetail.COMMUNICATION_ERROR, "No valid data received for some time");

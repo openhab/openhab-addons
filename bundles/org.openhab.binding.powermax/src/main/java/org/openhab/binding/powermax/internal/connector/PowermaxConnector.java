@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -228,7 +228,7 @@ public abstract class PowermaxConnector implements PowermaxConnectorInterface {
     /**
      * Set the start time of the time frame to receive a response
      *
-     * @param timeLastReceive the time in milliseconds
+     * @param waitingForResponse the time in milliseconds
      */
     public synchronized void setWaitingForResponse(long waitingForResponse) {
         this.waitingForResponse = waitingForResponse;

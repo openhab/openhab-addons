@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,7 @@ import org.openhab.core.types.RefreshType;
 
 /**
  * The {@link SomfyTahomaRollerShutterHandler} is responsible for handling commands,
- * which are sent to one of the channels of the roller shutter, screen & garage door
+ * which are sent to one of the channels of the roller shutter, screen and garage door
  * things.
  *
  * @author Ondrej Pecta - Initial contribution

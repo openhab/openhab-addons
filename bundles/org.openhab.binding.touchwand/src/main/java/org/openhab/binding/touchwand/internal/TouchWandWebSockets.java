@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public class TouchWandWebSockets {
 
     public void connect() {
         try {
-            uri = new URI("ws://" + controllerAddress + ":" + String.valueOf(port) + WS_ENDPOINT_TOUCHWAND);
+            uri = new URI("ws://" + controllerAddress + ":" + port + WS_ENDPOINT_TOUCHWAND);
         } catch (URISyntaxException e) {
             logger.warn("URI not valid {} message {}", uri, e.getMessage());
             return;
@@ -152,12 +152,12 @@ public class TouchWandWebSockets {
             TouchWandUnitData touchWandUnit;
             try {
                 JsonObject unitObj = JsonParser.parseString(msg).getAsJsonObject();
-                boolean eventUnitChanged = unitObj.get("type").getAsString().equals("UNIT_CHANGED");
+                boolean eventUnitChanged = "UNIT_CHANGED".equals(unitObj.get("type").getAsString());
                 if (!eventUnitChanged) {
                     return;
                 }
                 touchWandUnit = TouchWandUnitFromJson.parseResponse(unitObj.get("unit").getAsJsonObject());
-                if (!touchWandUnit.getStatus().equals("ALIVE")) {
+                if (!"ALIVE".equals(touchWandUnit.getStatus())) {
                     logger.debug("UNIT_CHANGED unit status not ALIVE : {}", touchWandUnit.getStatus());
                 }
                 boolean supportedUnitType = Arrays.asList(SUPPORTED_TOUCHWAND_TYPES).contains(touchWandUnit.getType());

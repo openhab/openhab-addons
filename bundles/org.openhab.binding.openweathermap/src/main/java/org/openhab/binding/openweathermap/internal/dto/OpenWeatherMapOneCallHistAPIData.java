@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,12 +20,9 @@ import org.openhab.binding.openweathermap.internal.dto.onecallhist.Hourly;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Holds the data from the deserialised JSON response. Created using http://www.jsonschema2pojo.org/.
- * Settings:
- * Annotation Style: GSON
- * Use primitive types
- * Use double numbers
- * allow additional properties
+ * Holds the historical data from the deserialised JSON response of the One Call APIs.
+ * See <a href="https://openweathermap.org/api/one-call-3">One Call API 3.0.</a> and
+ * <a href="https://openweathermap.org/api/one-call-api">One Call API 2.5</a>.
  *
  * @author Wolfgang Klimt - Initial contribution
  */

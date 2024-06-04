@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,12 +13,8 @@
 package org.openhab.binding.smaenergymeter.internal.handler;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetAddress;
-import java.net.MulticastSocket;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Date;
 
 import org.openhab.core.library.types.DecimalType;
 
@@ -27,15 +23,14 @@ import org.openhab.core.library.types.DecimalType;
  * and extracting the data fields out of the received telegrams.
  *
  * @author Osman Basha - Initial contribution
+ * @author Łukasz Dywicki - Extracted multicast group handling to
+ *         {@link org.openhab.binding.smaenergymeter.internal.packet.PacketListener}.
  */
 public class EnergyMeter {
 
-    private String multicastGroup;
-    private int port;
+    private static final byte[] E_METER_PROTOCOL_ID = new byte[] { 0x60, 0x69 };
 
     private String serialNumber;
-    private Date lastUpdate;
-
     private final FieldDTO powerIn;
     private final FieldDTO energyIn;
     private final FieldDTO powerOut;
@@ -53,13 +48,7 @@ public class EnergyMeter {
     private final FieldDTO powerOutL3;
     private final FieldDTO energyOutL3;
 
-    public static final String DEFAULT_MCAST_GRP = "239.12.255.254";
-    public static final int DEFAULT_MCAST_PORT = 9522;
-
-    public EnergyMeter(String multicastGroup, int port) {
-        this.multicastGroup = multicastGroup;
-        this.port = port;
-
+    public EnergyMeter() {
         powerIn = new FieldDTO(0x20, 4, 10);
         energyIn = new FieldDTO(0x28, 8, 3600000);
         powerOut = new FieldDTO(0x34, 4, 10);
@@ -81,23 +70,20 @@ public class EnergyMeter {
         energyOutL3 = new FieldDTO(0x1E4, 8, 3600000); // +8
     }
 
-    public void update() throws IOException {
-        byte[] bytes = new byte[608];
-        try (MulticastSocket socket = new MulticastSocket(port)) {
-            socket.setSoTimeout(5000);
-            InetAddress address = InetAddress.getByName(multicastGroup);
-            socket.joinGroup(address);
-
-            DatagramPacket msgPacket = new DatagramPacket(bytes, bytes.length);
-            socket.receive(msgPacket);
-
-            String sma = new String(Arrays.copyOfRange(bytes, 0x00, 0x03));
-            if (!sma.equals("SMA")) {
+    public void parse(byte[] bytes) throws IOException {
+        try {
+            String sma = new String(Arrays.copyOfRange(bytes, 0, 3));
+            if (!"SMA".equals(sma)) {
                 throw new IOException("Not a SMA telegram." + sma);
+            }
+            byte[] protocolId = Arrays.copyOfRange(bytes, 16, 18);
+            if (!Arrays.equals(protocolId, E_METER_PROTOCOL_ID)) {
+                throw new IllegalArgumentException(
+                        "Received frame with wrong protocol ID " + Arrays.toString(protocolId));
             }
 
             ByteBuffer buffer = ByteBuffer.wrap(Arrays.copyOfRange(bytes, 0x14, 0x18));
-            serialNumber = String.valueOf(buffer.getInt());
+            serialNumber = Integer.toHexString(buffer.getInt());
 
             powerIn.updateValue(bytes);
             energyIn.updateValue(bytes);
@@ -118,8 +104,6 @@ public class EnergyMeter {
             energyInL3.updateValue(bytes);
             powerOutL3.updateValue(bytes);
             energyOutL3.updateValue(bytes);
-
-            lastUpdate = new Date(System.currentTimeMillis());
         } catch (Exception e) {
             throw new IOException(e);
         }
@@ -127,10 +111,6 @@ public class EnergyMeter {
 
     public String getSerialNumber() {
         return serialNumber;
-    }
-
-    public Date getLastUpdate() {
-        return lastUpdate;
     }
 
     public DecimalType getPowerIn() {

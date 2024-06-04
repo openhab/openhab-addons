@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,13 +44,13 @@ public class ClockSetRequestMessage extends Message {
         String minutes = String.format("%04X",
                 (utcDateTime.getDayOfMonth() - 1) * 24 * 60 + (utcDateTime.getHour() * 60) + utcDateTime.getMinute());
         // If we set logaddress to FFFFFFFFF then previous buffered data will be kept by the Circle+
-        String logaddress = "FFFFFFFF";
+        String logAddress = "FFFFFFFF";
         String hour = String.format("%02X", utcDateTime.getHour());
         String minute = String.format("%02X", utcDateTime.getMinute());
         String second = String.format("%02X", utcDateTime.getSecond());
         // Monday = 0, ... , Sunday = 6
         String dayOfWeek = String.format("%02X", utcDateTime.getDayOfWeek().getValue() - 1);
 
-        return year + month + minutes + logaddress + hour + minute + second + dayOfWeek;
+        return year + month + minutes + logAddress + hour + minute + second + dayOfWeek;
     }
 }

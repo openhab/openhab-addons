@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,7 +70,7 @@ public class HueRuleConditionHandler extends BaseModuleHandler<Condition> implem
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(TIME_FORMAT);
     private final Pattern timePattern = Pattern.compile("W(.*)/T(.*)/T(.*)");
     // weekdays range from Monday to Sunday (1-7). The first entry is not used
-    private final boolean weekDaysAllowed[] = { false, false, false, false, false, false, false, false };
+    private final boolean[] weekDaysAllowed = { false, false, false, false, false, false, false, false };
 
     @SuppressWarnings({ "null", "unused" })
     public HueRuleConditionHandler(Condition module, HueDataStore ds) {
@@ -78,7 +78,7 @@ public class HueRuleConditionHandler extends BaseModuleHandler<Condition> implem
         config = module.getConfiguration().as(HueRuleEntry.Condition.class);
 
         // pattern: "/sensors/2/state/buttonevent" or "/config/localtime"
-        String validation[] = config.address.split("/");
+        String[] validation = config.address.split("/");
         String uid = validation[2];
 
         if ("groups".equals(validation[1]) && "action".equals(validation[3])) {

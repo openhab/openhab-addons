@@ -32,6 +32,12 @@
 				<default>500</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="backgroundDiscovery" type="boolean">
+				<label>Background Discovery</label>
+				<description>Whether Pilight devices for this bridge should automatically be discovered.</description>
+				<advanced>true</advanced>
+				<default>true</default>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

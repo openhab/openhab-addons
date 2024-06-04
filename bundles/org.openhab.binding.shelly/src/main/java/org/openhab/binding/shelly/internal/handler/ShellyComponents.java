@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ import com.google.gson.Gson;
 
 /***
  * The{@link ShellyComponents} implements updates for supplemental components
- * Meter will be used by Relay + Light; Sensor is part of H&T, Flood, Door Window, Sense
+ * Meter will be used by Relay + Light; Sensor is part of H&amp;T, Flood, Door Window, Sense
  *
  * @author Markus Michels - Initial contribution
  */
@@ -54,8 +54,8 @@ public class ShellyComponents {
     /**
      * Update device status
      *
-     * @param th Thing Handler instance
-     * @param profile ShellyDeviceProfile
+     * @param thingHandler Thing Handler instance
+     * @param status Status message
      */
     public static boolean updateDeviceStatus(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
         ShellyDeviceProfile profile = thingHandler.getProfile();
@@ -78,7 +78,7 @@ public class ShellyComponents {
         if (status.tmp != null && getBool(status.tmp.isValid) && !thingHandler.getProfile().isSensor
                 && status.tmp.tC != SHELLY_API_INVTEMP) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
-                    toQuantityType(getDouble(status.tmp.tC), DIGITS_NONE, SIUnits.CELSIUS));
+                    toQuantityType(getDouble(status.tmp.tC), DIGITS_TEMP, SIUnits.CELSIUS));
         } else if (status.temperature != null && status.temperature != SHELLY_API_INVTEMP) {
             thingHandler.updateChannel(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_ITEMP,
                     toQuantityType(getDouble(status.temperature), DIGITS_NONE, SIUnits.CELSIUS));
@@ -122,31 +122,6 @@ public class ShellyComponents {
                     updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_INPUT1,
                             getOpenClosed(getInteger(status.extSwitch.input0.input) == 1));
                 }
-            }
-            if (status.extTemperature != null) {
-                // Shelly 1/1PM support up to 3 external sensors
-                // for whatever reason those are not represented as an array, but 3 elements
-                updated |= updateTempChannel(status.extTemperature.sensor1, thingHandler, CHANNEL_ESENSOR_TEMP1);
-                updated |= updateTempChannel(status.extTemperature.sensor2, thingHandler, CHANNEL_ESENSOR_TEMP2);
-                updated |= updateTempChannel(status.extTemperature.sensor3, thingHandler, CHANNEL_ESENSOR_TEMP3);
-                updated |= updateTempChannel(status.extTemperature.sensor4, thingHandler, CHANNEL_ESENSOR_TEMP4);
-                updated |= updateTempChannel(status.extTemperature.sensor5, thingHandler, CHANNEL_ESENSOR_TEMP5);
-            }
-            if ((status.extHumidity != null) && (status.extHumidity.sensor1 != null)) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_HUMIDITY,
-                        toQuantityType(getDouble(status.extHumidity.sensor1.hum), DIGITS_PERCENT, Units.PERCENT));
-            }
-            if ((status.extVoltage != null) && (status.extVoltage.sensor1 != null)) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_VOLTAGE,
-                        toQuantityType(getDouble(status.extVoltage.sensor1.voltage), 4, Units.VOLT));
-            }
-            if ((status.extDigitalInput != null) && (status.extDigitalInput.sensor1 != null)) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT,
-                        getOnOff(status.extDigitalInput.sensor1.state));
-            }
-            if ((status.extAnalogInput != null) && (status.extAnalogInput.sensor1 != null)) {
-                updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT, toQuantityType(
-                        getDouble(status.extAnalogInput.sensor1.percent), DIGITS_PERCENT, Units.PERCENT));
             }
 
             // Update Auto-ON/OFF timer
@@ -205,8 +180,7 @@ public class ShellyComponents {
     /**
      * Update Meter channel
      *
-     * @param th Thing Handler instance
-     * @param profile ShellyDeviceProfile
+     * @param thingHandler Thing Handler instance
      * @param status Last ShellySettingsStatus
      */
     public static boolean updateMeters(ShellyThingInterface thingHandler, ShellySettingsStatus status) {
@@ -265,6 +239,25 @@ public class ShellyComponents {
                         m++;
                     }
                 } else {
+                    if (status.neutralCurrent != null) {
+                        if (!thingHandler.areChannelsCreated()) {
+                            thingHandler.updateChannelDefinitions(ShellyChannelDefinitions.createEMNCurrentChannels(
+                                    thingHandler.getThing(), profile.settings.neutralCurrent, status.neutralCurrent));
+                        }
+                        if (getBool(status.neutralCurrent.isValid)) {
+                            String ngroup = CHANNEL_GROUP_NMETER;
+                            updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_CURRENT, toQuantityType(
+                                    getDouble(status.neutralCurrent.current), DIGITS_AMPERE, Units.AMPERE));
+                            updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_IXSUM, toQuantityType(
+                                    getDouble(status.neutralCurrent.ixsum), DIGITS_AMPERE, Units.AMPERE));
+                            updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_MTRESHHOLD,
+                                    toQuantityType(getDouble(profile.settings.neutralCurrent.mismatchThreshold),
+                                            DIGITS_AMPERE, Units.AMPERE));
+                            updated |= thingHandler.updateChannel(ngroup, CHANNEL_NMETER_MISMATCH,
+                                    getOnOff(status.neutralCurrent.mismatch));
+                        }
+                    }
+
                     for (ShellySettingsEMeter emeter : status.emeters) {
                         if (getBool(emeter.isValid)) {
                             String groupName = profile.getMeterGroup(m);
@@ -369,8 +362,7 @@ public class ShellyComponents {
 
         // EM: compute from provided values
         if (emeter.reactive != null && Math.abs(emeter.power) + Math.abs(emeter.reactive) > 1.5) {
-            double pf = emeter.power / Math.sqrt(emeter.power * emeter.power + emeter.reactive * emeter.reactive);
-            return pf;
+            return emeter.power / Math.sqrt(emeter.power * emeter.power + emeter.reactive * emeter.reactive);
         }
         return 0.0;
     }
@@ -378,8 +370,7 @@ public class ShellyComponents {
     /**
      * Update Sensor channel
      *
-     * @param th Thing Handler instance
-     * @param profile ShellyDeviceProfile
+     * @param thingHandler Thing Handler instance
      * @param status Last ShellySettingsStatus
      *
      * @throws ShellyApiException
@@ -438,7 +429,10 @@ public class ShellyComponents {
                     if (t.tmp != null) {
                         updated |= updateTempChannel(thingHandler, CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_TEMP,
                                 t.tmp.value, t.tmp.units);
-                        updated |= updateTempChannel(thingHandler, CHANNEL_GROUP_SENSOR, CHANNEL_CONTROL_SETTEMP,
+                        if (t.targetTemp.unit == null) {
+                            t.targetTemp.unit = t.tmp.units;
+                        }
+                        updated |= updateTempChannel(thingHandler, CHANNEL_GROUP_CONTROL, CHANNEL_CONTROL_SETTEMP,
                                 t.targetTemp.value, t.targetTemp.unit);
                     }
                     if (t.pos != null) {
@@ -491,7 +485,7 @@ public class ShellyComponents {
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_PPM, toQuantityType(
                         getInteger(sdata.concentration.ppm).doubleValue(), DIGITS_NONE, Units.PARTS_PER_MILLION));
             }
-            if ((sdata.adcs != null) && (sdata.adcs.size() > 0)) {
+            if ((sdata.adcs != null) && (!sdata.adcs.isEmpty())) {
                 ShellyADC adc = sdata.adcs.get(0);
                 updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_SENSOR_VOLTAGE,
                         toQuantityType(getDouble(adc.voltage), 2, Units.VOLT));
@@ -534,9 +528,37 @@ public class ShellyComponents {
             updated |= thingHandler.updateInputs(status);
 
             if (updated) {
-                thingHandler.updateChannel(profile.getControlGroup(0), CHANNEL_LAST_UPDATE, getTimestamp());
+                thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_LAST_UPDATE, getTimestamp());
             }
         }
+
+        // Update Add-On channeös
+        if (status.extTemperature != null) {
+            // Shelly 1/1PM support up to 3 external sensors
+            // for whatever reason those are not represented as an array, but 3 elements
+            updated |= updateTempChannel(status.extTemperature.sensor1, thingHandler, CHANNEL_ESENSOR_TEMP1);
+            updated |= updateTempChannel(status.extTemperature.sensor2, thingHandler, CHANNEL_ESENSOR_TEMP2);
+            updated |= updateTempChannel(status.extTemperature.sensor3, thingHandler, CHANNEL_ESENSOR_TEMP3);
+            updated |= updateTempChannel(status.extTemperature.sensor4, thingHandler, CHANNEL_ESENSOR_TEMP4);
+            updated |= updateTempChannel(status.extTemperature.sensor5, thingHandler, CHANNEL_ESENSOR_TEMP5);
+        }
+        if ((status.extHumidity != null) && (status.extHumidity.sensor1 != null)) {
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_HUMIDITY,
+                    toQuantityType(getDouble(status.extHumidity.sensor1.hum), DIGITS_PERCENT, Units.PERCENT));
+        }
+        if ((status.extVoltage != null) && (status.extVoltage.sensor1 != null)) {
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_VOLTAGE,
+                    toQuantityType(getDouble(status.extVoltage.sensor1.voltage), 4, Units.VOLT));
+        }
+        if ((status.extDigitalInput != null) && (status.extDigitalInput.sensor1 != null)) {
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_DIGITALINPUT,
+                    getOnOff(status.extDigitalInput.sensor1.state));
+        }
+        if ((status.extAnalogInput != null) && (status.extAnalogInput.sensor1 != null)) {
+            updated |= thingHandler.updateChannel(CHANNEL_GROUP_SENSOR, CHANNEL_ESENSOR_ANALOGINPUT,
+                    toQuantityType(getDouble(status.extAnalogInput.sensor1.percent), DIGITS_PERCENT, Units.PERCENT));
+        }
+
         return updated;
     }
 

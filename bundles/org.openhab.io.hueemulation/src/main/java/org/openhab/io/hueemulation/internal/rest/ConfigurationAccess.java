@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,8 @@
  */
 package org.openhab.io.hueemulation.internal.rest;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -132,7 +132,7 @@ public class ConfigurationAccess {
     public Response catchAll(@Context UriInfo uri) {
         HueResponse e = new HueResponse(
                 new HueErrorMessage(HueResponse.INVALID_JSON, uri.getPath().replace("/api", ""), "Invalid request: "));
-        String str = cs.gson.toJson(Collections.singleton(e), new TypeToken<List<?>>() {
+        String str = cs.gson.toJson(Set.of(e), new TypeToken<List<?>>() {
         }.getType());
         return Response.status(404).entity(str).build();
     }

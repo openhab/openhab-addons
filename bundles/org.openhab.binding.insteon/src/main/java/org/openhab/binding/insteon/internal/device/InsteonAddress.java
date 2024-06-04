@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,7 +77,7 @@ public class InsteonAddress {
      * Constructor for an InsteonAddress that wraps an X10 address.
      * Simply stuff the X10 address into the lowest byte.
      *
-     * @param aX10HouseUnit the house & unit number as encoded by the X10 protocol
+     * @param aX10HouseUnit the house and unit number as encoded by the X10 protocol
      */
     public InsteonAddress(byte aX10HouseUnit) {
         highByte = 0;

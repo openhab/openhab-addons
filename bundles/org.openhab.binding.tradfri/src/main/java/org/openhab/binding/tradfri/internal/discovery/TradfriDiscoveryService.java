@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,9 +15,9 @@ package org.openhab.binding.tradfri.internal.discovery;
 import static org.openhab.binding.tradfri.internal.TradfriBindingConstants.*;
 import static org.openhab.core.thing.Thing.*;
 
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -28,14 +28,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tradfri.internal.DeviceUpdateListener;
 import org.openhab.binding.tradfri.internal.handler.TradfriGatewayHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,12 +50,11 @@ import com.google.gson.JsonSyntaxException;
  * @author Manuel Raffel - Added support for blinds
  * @author Vivien Boistuaud - Added support for Air Purifiers
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = TradfriDiscoveryService.class)
 @NonNullByDefault
-public class TradfriDiscoveryService extends AbstractDiscoveryService
-        implements DeviceUpdateListener, DiscoveryService, ThingHandlerService {
+public class TradfriDiscoveryService extends AbstractThingHandlerDiscoveryService<TradfriGatewayHandler>
+        implements DeviceUpdateListener {
     private final Logger logger = LoggerFactory.getLogger(TradfriDiscoveryService.class);
-
-    private @Nullable TradfriGatewayHandler handler;
 
     private static final String REMOTE_CONTROLLER_MODEL = "TRADFRI remote control";
 
@@ -70,12 +68,12 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService
     private static final String[] COLOR_MODEL_IDENTIFIER_HINTS = new String[] { "CWS", " C/WS " };
 
     public TradfriDiscoveryService() {
-        super(SUPPORTED_DEVICE_TYPES_UIDS, 10, true);
+        super(TradfriGatewayHandler.class, SUPPORTED_DEVICE_TYPES_UIDS, 10, true);
     }
 
     @Override
     protected void startScan() {
-        handler.startScan();
+        thingHandler.startScan();
     }
 
     @Override
@@ -85,31 +83,21 @@ public class TradfriDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof TradfriGatewayHandler) {
-            this.handler = (TradfriGatewayHandler) handler;
-        }
+    public void initialize() {
+        thingHandler.registerDeviceUpdateListener(this);
+        super.initialize();
     }
 
     @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
-    }
-
-    @Override
-    public void activate() {
-        handler.registerDeviceUpdateListener(this);
-    }
-
-    @Override
-    public void deactivate() {
-        removeOlderResults(new Date().getTime());
-        handler.unregisterDeviceUpdateListener(this);
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now().toEpochMilli());
+        thingHandler.unregisterDeviceUpdateListener(this);
     }
 
     @Override
     public void onUpdate(@Nullable String instanceId, @Nullable JsonObject data) {
-        ThingUID bridge = handler.getThing().getUID();
+        ThingUID bridge = thingHandler.getThing().getUID();
         try {
             if (data != null && data.has(INSTANCE_ID)) {
                 int id = data.get(INSTANCE_ID).getAsInt();

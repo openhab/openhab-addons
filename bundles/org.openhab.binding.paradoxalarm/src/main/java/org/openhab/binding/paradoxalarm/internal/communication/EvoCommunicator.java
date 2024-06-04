@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -193,7 +193,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
     private void createZoneOpenedFlags(ZoneStateFlags result, byte[] firstPage, byte[] secondPage) {
         int pageOffset = panelType == PanelType.EVO48 ? 34 : 40;
         byte[] firstBlock = Arrays.copyOfRange(firstPage, 28, pageOffset);
-        if (panelType != PanelType.EVO192) {
+        if (!PanelType.isBigRamEvo(panelType)) {
             result.setZonesOpened(firstBlock);
         } else {
             byte[] secondBlock = Arrays.copyOfRange(secondPage, 0, 12);
@@ -205,7 +205,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
     private void createZoneTamperedFlags(ZoneStateFlags result, byte[] firstPage, byte[] secondPage) {
         int pageOffset = panelType == PanelType.EVO48 ? 46 : 52;
         byte[] firstBlock = Arrays.copyOfRange(firstPage, 40, pageOffset);
-        if (panelType != PanelType.EVO192) {
+        if (!PanelType.isBigRamEvo(panelType)) {
             result.setZonesTampered(firstBlock);
         } else {
             byte[] secondBlock = Arrays.copyOfRange(secondPage, 12, 24);
@@ -217,7 +217,7 @@ public class EvoCommunicator extends GenericCommunicator implements IParadoxComm
     private void createZoneLowbatteryFlags(ZoneStateFlags result, byte[] firstPage, byte[] secondPage) {
         int pageOffset = panelType == PanelType.EVO48 ? 58 : 64;
         byte[] firstBlock = Arrays.copyOfRange(firstPage, 52, pageOffset);
-        if (panelType != PanelType.EVO192) {
+        if (!PanelType.isBigRamEvo(panelType)) {
             result.setZonesLowBattery(firstBlock);
         } else {
             byte[] secondBlock = Arrays.copyOfRange(secondPage, 24, 36);

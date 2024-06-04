@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,6 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.upnp.UpnpDiscoveryParticipant;
-import org.openhab.core.config.discovery.upnp.internal.UpnpDiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -45,7 +44,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link HueBridgeUPNPDiscoveryParticipant} is responsible for discovering new and removed Hue Bridges. It uses the
- * central {@link UpnpDiscoveryService}.
+ * central {@link org.openhab.core.config.discovery.upnp.internal.UpnpDiscoveryService}.
  *
  * The discovery through UPnP was replaced by mDNS discovery for recent bridges (V2).
  * For old bridges (V1), the UPnP discovery is still required (as mDNS is not implemented).

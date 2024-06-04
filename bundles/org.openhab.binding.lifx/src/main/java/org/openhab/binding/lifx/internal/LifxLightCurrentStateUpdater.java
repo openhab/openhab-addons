@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -157,22 +157,22 @@ public class LifxLightCurrentStateUpdater {
         try {
             lock.lock();
 
-            if (packet instanceof StateResponse) {
-                handleLightStatus((StateResponse) packet);
-            } else if (packet instanceof StatePowerResponse) {
-                handlePowerStatus((StatePowerResponse) packet);
-            } else if (packet instanceof StateLightPowerResponse) {
-                handleLightPowerStatus((StateLightPowerResponse) packet);
-            } else if (packet instanceof StateHevCycleResponse) {
-                handleHevCycleStatus((StateHevCycleResponse) packet);
-            } else if (packet instanceof StateLightInfraredResponse) {
-                handleInfraredStatus((StateLightInfraredResponse) packet);
-            } else if (packet instanceof StateMultiZoneResponse) {
-                handleMultiZoneStatus((StateMultiZoneResponse) packet);
-            } else if (packet instanceof StateTileEffectResponse) {
-                handleTileEffectStatus((StateTileEffectResponse) packet);
-            } else if (packet instanceof StateWifiInfoResponse) {
-                handleWifiInfoStatus((StateWifiInfoResponse) packet);
+            if (packet instanceof StateResponse response) {
+                handleLightStatus(response);
+            } else if (packet instanceof StatePowerResponse response) {
+                handlePowerStatus(response);
+            } else if (packet instanceof StateLightPowerResponse response) {
+                handleLightPowerStatus(response);
+            } else if (packet instanceof StateHevCycleResponse response) {
+                handleHevCycleStatus(response);
+            } else if (packet instanceof StateLightInfraredResponse response) {
+                handleInfraredStatus(response);
+            } else if (packet instanceof StateMultiZoneResponse response) {
+                handleMultiZoneStatus(response);
+            } else if (packet instanceof StateTileEffectResponse response) {
+                handleTileEffectStatus(response);
+            } else if (packet instanceof StateWifiInfoResponse response) {
+                handleWifiInfoStatus(response);
             }
 
             currentLightState.setOnline();

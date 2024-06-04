@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="radiobrowser"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="radio">
+		<label>Radio Thing</label>
+		<description>Provides a way to interact with the Radio Browser database of stations</description>
+
+		<channels>
+			<channel id="country" typeId="country"/>
+			<channel id="state" typeId="state"/>
+			<channel id="language" typeId="language"/>
+			<channel id="genre" typeId="genre"/>
+			<channel id="station" typeId="station"/>
+			<channel id="stream" typeId="stream"/>
+			<channel id="name" typeId="name"/>
+			<channel id="icon" typeId="icon"/>
+			<channel id="recent" typeId="recent"/>
+		</channels>
+
+		<config-description>
+			<parameter name="filters" type="text" required="true">
+				<label>Filters</label>
+				<description>Enter your own custom filter starting with ?, to ensure a stream that works with your device</description>
+				<default>hidebroken=true,limit=1700,reverse=true,order=votes</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="clicks" type="boolean" required="true">
+				<label>Clicks</label>
+				<description>Send a click for every station you select. This helps to mark stations as popular and makes the
+					database more useful to other people.</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="languageCount" type="integer" min="1" required="true">
+				<label>Language Count</label>
+				<description>The minimum number of stations a language needs to have, before the binding lists it as an
+					option.</description>
+				<default>14</default>
+			</parameter>
+			<parameter name="recentLimit" type="integer" min="0" required="true">
+				<label>Recent Limit</label>
+				<description>Limit the number of stations in the recent channel list to this amount. `0` Disables the feature.</description>
+				<default>5</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="country">
+		<item-type>String</item-type>
+		<label>Country</label>
+		<description>Show only stations located in the selected country</description>
+	</channel-type>
+
+	<channel-type id="language">
+		<item-type>String</item-type>
+		<label>Language</label>
+		<description>Show only stations spoken in the selected language</description>
+	</channel-type>
+
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>State</label>
+		<description>Show only stations located in the selected state, requires country to be selected first</description>
+	</channel-type>
+
+	<channel-type id="station">
+		<item-type>String</item-type>
+		<label>Station</label>
+		<description>A list of stations that you can select from</description>
+	</channel-type>
+
+	<channel-type id="genre">
+		<item-type>String</item-type>
+		<label>Genre</label>
+		<description>A list of genres or tags that you can select from</description>
+		<state readOnly="false">
+			<options>
+				<option value="ALL">Show All Genres</option>
+				<option value="christian">christian</option>
+				<option value="christmas">christmas</option>
+				<option value="classical">classical</option>
+				<option value="country">country</option>
+				<option value="dance">dance</option>
+				<option value="disco">disco</option>
+				<option value="drum">drum</option>
+				<option value="dubstep">dubstep</option>
+				<option value="edm">edm</option>
+				<option value="electronic">electronic</option>
+				<option value="folk">folk</option>
+				<option value="gospel">gospel</option>
+				<option value="hiphop">hiphop</option>
+				<option value="hits">hits</option>
+				<option value="house">house</option>
+				<option value="indie">indie</option>
+				<option value="jazz">jazz</option>
+				<option value="latin">latin</option>
+				<option value="lounge">lounge</option>
+				<option value="metal">metal</option>
+				<option value="music">music</option>
+				<option value="news">news</option>
+				<option value="oldies">oldies</option>
+				<option value="pop">pop</option>
+				<option value="punk">punk</option>
+				<option value="rap">rap</option>
+				<option value="reggae">reggae</option>
+				<option value="retro">retro</option>
+				<option value="rhythm">rhythm</option>
+				<option value="rnb">RnB</option>
+				<option value="rock">rock</option>
+				<option value="soul">soul</option>
+				<option value="sports">sports</option>
+				<option value="talk">talk</option>
+				<option value="techno">techno</option>
+				<option value="top40">top40</option>
+				<option value="trance">trance</option>
+				<option value="world">world</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="stream">
+		<item-type>String</item-type>
+		<label>Stream</label>
+		<description>The stations URI that can be sent to a openHAB audio sink</description>
+	</channel-type>
+
+	<channel-type id="name">
+		<item-type>String</item-type>
+		<label>Name</label>
+		<description>The currently selected stations name</description>
+	</channel-type>
+
+	<channel-type id="icon">
+		<item-type>String</item-type>
+		<label>Icon</label>
+		<description>The currently selected stations icon</description>
+	</channel-type>
+
+	<channel-type id="recent">
+		<item-type>String</item-type>
+		<label>Recent</label>
+		<description>A list of recently played stations</description>
+	</channel-type>
+
+</thing:thing-descriptions>

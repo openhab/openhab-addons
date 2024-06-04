@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -328,14 +328,16 @@ class GoogleCloudAPI {
         String format = getFormatForCodec(codec);
         try {
             return synthesizeSpeechByGoogle(text, voice, format);
-        } catch (AuthenticationException | CommunicationException e) {
-            logger.warn("Error initializing Google Cloud TTS service: {}", e.getMessage());
+        } catch (AuthenticationException e) {
+            logger.warn("Error authenticating Google Cloud TTS service: {}", e.getMessage());
             if (oAuthService != null) {
                 oAuthFactory.ungetOAuthService(GoogleTTSService.SERVICE_PID);
                 oAuthService = null;
             }
-            voices.clear();
+        } catch (CommunicationException e) {
+            logger.warn("Error initializing Google Cloud TTS service: {}", e.getMessage());
         }
+        voices.clear();
         return null;
     }
 

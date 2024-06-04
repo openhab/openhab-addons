@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -260,8 +260,10 @@ public class BlueGigaSerialHandler {
 
     private void checkIfAlive() {
         if (!isAlive()) {
-            throw new IllegalStateException("Bluegiga handler is dead. Most likely because of IO errors. "
-                    + "Re-initialization of the BlueGigaSerialHandler is required.");
+            throw new IllegalStateException("""
+                    Bluegiga handler is dead. Most likely because of IO errors. \
+                    Re-initialization of the BlueGigaSerialHandler is required.\
+                    """);
         }
     }
 

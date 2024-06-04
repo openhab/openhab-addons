@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,7 +20,7 @@ package org.openhab.binding.gardena.internal.model.dto.command;
 public class ValveCommand extends GardenaCommand {
     private static final String COMMAND_TYPE = "VALVE_CONTROL";
 
-    public static enum ValveControl {
+    public enum ValveControl {
         START_SECONDS_TO_OVERRIDE,
         STOP_UNTIL_NEXT_TASK,
         PAUSE,

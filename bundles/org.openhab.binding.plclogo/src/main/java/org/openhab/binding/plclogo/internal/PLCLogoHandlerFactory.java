@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,8 +69,8 @@ public class PLCLogoHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (THING_TYPE_DEVICE.equals(thing.getThingTypeUID()) && (thing instanceof Bridge)) {
-            return new PLCBridgeHandler((Bridge) thing);
+        if (THING_TYPE_DEVICE.equals(thing.getThingTypeUID()) && (thing instanceof Bridge bridge)) {
+            return new PLCBridgeHandler(bridge);
         } else if (THING_TYPE_ANALOG.equals(thing.getThingTypeUID())) {
             return new PLCAnalogHandler(thing);
         } else if (THING_TYPE_DIGITAL.equals(thing.getThingTypeUID())) {

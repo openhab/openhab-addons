@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -931,8 +931,9 @@ public class DsAPIImpl implements DsAPI {
                             .addRequestClass(ClassKeys.ZONE).addFunction(FunctionKeys.SET_TEMEPERATURE_CONTROL_VALUE)
                             .addDefaultZoneParameter(sessionToken, zoneID, zoneName);
                     for (Object[] objAry : controlValues) {
-                        if (objAry.length == 2 && objAry[0] instanceof String && objAry[1] instanceof Integer) {
-                            builder.addParameter((String) objAry[0], SimpleRequestBuilder.objectToString(objAry[1]));
+                        if (objAry.length == 2 && objAry[0] instanceof String stringValue
+                                && objAry[1] instanceof Integer) {
+                            builder.addParameter(stringValue, SimpleRequestBuilder.objectToString(objAry[1]));
                         } else {
                             builder.buildRequestString();
                             throw new IllegalArgumentException(

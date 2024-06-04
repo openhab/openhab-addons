@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,6 +45,12 @@ public class EnergiDataServiceConfiguration {
      * Global Location Number of Energinet.
      */
     public String energinetGLN = "5790000432752";
+
+    /**
+     * Reduced electricity tax applies.
+     * For electric heating customers only.
+     */
+    public boolean reducedElectricityTax;
 
     /**
      * Get {@link Currency} representing the configured currency code.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,14 +24,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.zoneminder.internal.handler.Monitor;
 import org.openhab.binding.zoneminder.internal.handler.ZmBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +40,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Hilbush - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = MonitorDiscoveryService.class)
 @NonNullByDefault
-public class MonitorDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
+public class MonitorDiscoveryService extends AbstractThingHandlerDiscoveryService<ZmBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(MonitorDiscoveryService.class);
 
@@ -50,34 +50,10 @@ public class MonitorDiscoveryService extends AbstractDiscoveryService implements
     private static final int DISCOVERY_INITIAL_DELAY_SECONDS = 10;
     private static final int DISCOVERY_TIMEOUT_SECONDS = 6;
 
-    private @NonNullByDefault({}) ZmBridgeHandler bridgeHandler;
-
     private @Nullable Future<?> discoveryJob;
 
     public MonitorDiscoveryService() {
-        super(SUPPORTED_MONITOR_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS, true);
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ZmBridgeHandler) {
-            bridgeHandler = (ZmBridgeHandler) handler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
+        super(ZmBridgeHandler.class, SUPPORTED_MONITOR_THING_TYPES_UIDS, DISCOVERY_TIMEOUT_SECONDS, true);
     }
 
     @Override
@@ -112,7 +88,7 @@ public class MonitorDiscoveryService extends AbstractDiscoveryService implements
     }
 
     private void backgroundDiscoverMonitors() {
-        if (!bridgeHandler.isBackgroundDiscoveryEnabled()) {
+        if (!thingHandler.isBackgroundDiscoveryEnabled()) {
             return;
         }
         logger.debug("ZoneminderDiscovery: Running background discovery scan");
@@ -120,10 +96,10 @@ public class MonitorDiscoveryService extends AbstractDiscoveryService implements
     }
 
     private synchronized void discoverMonitors() {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
-        Integer alarmDuration = bridgeHandler.getDefaultAlarmDuration();
-        Integer imageRefreshInterval = bridgeHandler.getDefaultImageRefreshInterval();
-        for (Monitor monitor : bridgeHandler.getSavedMonitors()) {
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+        Integer alarmDuration = thingHandler.getDefaultAlarmDuration();
+        Integer imageRefreshInterval = thingHandler.getDefaultImageRefreshInterval();
+        for (Monitor monitor : thingHandler.getSavedMonitors()) {
             String id = monitor.getId();
             String name = monitor.getName();
             ThingUID thingUID = new ThingUID(UID_MONITOR, bridgeUID, monitor.getId());

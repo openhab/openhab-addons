@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,9 +34,9 @@ import org.openhab.binding.pulseaudio.internal.PulseAudioAudioSink;
 import org.openhab.binding.pulseaudio.internal.PulseAudioAudioSource;
 import org.openhab.binding.pulseaudio.internal.PulseaudioBindingConstants;
 import org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig;
+import org.openhab.binding.pulseaudio.internal.items.SimpleProtocolTCPModule;
 import org.openhab.binding.pulseaudio.internal.items.Sink;
 import org.openhab.binding.pulseaudio.internal.items.SinkInput;
-import org.openhab.binding.pulseaudio.internal.items.Source;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioSink;
 import org.openhab.core.audio.AudioSource;
@@ -83,6 +83,8 @@ public class PulseaudioHandler extends BaseThingHandler {
     private @Nullable DeviceIdentifier deviceIdentifier;
     private @Nullable PulseAudioAudioSink audioSink;
     private @Nullable PulseAudioAudioSource audioSource;
+    private int simpleProtocolMinPort;
+    private int simpleProtocolMaxPort;
     private @Nullable Integer savedVolume;
 
     private final Map<String, ServiceRegistration<AudioSink>> audioSinkRegistrations = new ConcurrentHashMap<>();
@@ -104,6 +106,12 @@ public class PulseaudioHandler extends BaseThingHandler {
         try {
             deviceIdentifier = new DeviceIdentifier((String) config.get(DEVICE_PARAMETER_NAME_OR_DESCRIPTION),
                     (String) config.get(DEVICE_PARAMETER_ADDITIONAL_FILTERS));
+            simpleProtocolMinPort = (int) (config.containsKey(DEVICE_PARAMETER_MIN_PORT)
+                    ? config.get(DEVICE_PARAMETER_MIN_PORT)
+                    : 1024);
+            simpleProtocolMaxPort = (int) (config.containsKey(DEVICE_PARAMETER_MAX_PORT)
+                    ? config.get(DEVICE_PARAMETER_MAX_PORT)
+                    : 64512);
         } catch (PatternSyntaxException p) {
             deviceIdentifier = null;
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -117,7 +125,11 @@ public class PulseaudioHandler extends BaseThingHandler {
         return deviceIdentifier;
     }
 
-    private void audioSinkSetup() {
+    public int getMaxIdleModules() {
+        return ((BigDecimal) thing.getConfiguration().get(DEVICE_PARAMETER_IDLE_MODULES)).intValue();
+    }
+
+    private synchronized void audioSinkSetup() {
         if (audioSink != null) {
             // Audio sink is already setup
             return;
@@ -130,23 +142,7 @@ public class PulseaudioHandler extends BaseThingHandler {
         if (sinkActivated == null || !sinkActivated.booleanValue()) {
             return;
         }
-        final PulseaudioHandler thisHandler = this;
-        PulseAudioAudioSink audioSink = new PulseAudioAudioSink(thisHandler, scheduler, audioSinkUtils);
-        scheduler.submit(new Runnable() {
-            @Override
-            public void run() {
-                PulseaudioHandler.this.audioSink = audioSink;
-                try {
-                    audioSink.connectIfNeeded();
-                } catch (IOException e) {
-                    logger.warn("pulseaudio binding cannot connect to the module-simple-protocol-tcp on {} ({})",
-                            getHost(), e.getMessage());
-                } catch (InterruptedException i) {
-                    logger.info("Interrupted during sink audio connection: {}", i.getMessage());
-                    return;
-                }
-            }
-        });
+        this.audioSink = new PulseAudioAudioSink(this, scheduler, audioSinkUtils);
         // Register the sink as an audio sink in openhab
         logger.trace("Registering an audio sink for pulse audio sink thing {}", thing.getUID());
         @SuppressWarnings("unchecked")
@@ -155,10 +151,10 @@ public class PulseaudioHandler extends BaseThingHandler {
         audioSinkRegistrations.put(thing.getUID().toString(), reg);
     }
 
-    private void audioSinkUnsetup() {
+    private synchronized void audioSinkUnsetup() {
         PulseAudioAudioSink sink = audioSink;
         if (sink != null) {
-            sink.disconnect();
+            sink.close();
             audioSink = null;
         }
         // Unregister the potential pulse audio sink's audio sink
@@ -169,7 +165,7 @@ public class PulseaudioHandler extends BaseThingHandler {
         }
     }
 
-    private void audioSourceSetup() {
+    private synchronized void audioSourceSetup() {
         if (audioSource != null) {
             // Audio source is already setup
             return;
@@ -182,23 +178,7 @@ public class PulseaudioHandler extends BaseThingHandler {
         if (sourceActivated == null || !sourceActivated.booleanValue()) {
             return;
         }
-        final PulseaudioHandler thisHandler = this;
-        PulseAudioAudioSource audioSource = new PulseAudioAudioSource(thisHandler, scheduler);
-        scheduler.submit(new Runnable() {
-            @Override
-            public void run() {
-                PulseaudioHandler.this.audioSource = audioSource;
-                try {
-                    audioSource.connectIfNeeded();
-                } catch (IOException e) {
-                    logger.warn("pulseaudio binding cannot connect to the module-simple-protocol-tcp on {} ({})",
-                            getHost(), e.getMessage());
-                } catch (InterruptedException i) {
-                    logger.info("Interrupted during source audio connection: {}", i.getMessage());
-                    return;
-                }
-            }
-        });
+        audioSource = new PulseAudioAudioSource(this, scheduler);
         // Register the source as an audio source in openhab
         logger.trace("Registering an audio source for pulse audio source thing {}", thing.getUID());
         @SuppressWarnings("unchecked")
@@ -207,10 +187,10 @@ public class PulseaudioHandler extends BaseThingHandler {
         audioSourceRegistrations.put(thing.getUID().toString(), reg);
     }
 
-    private void audioSourceUnsetup() {
+    public synchronized void audioSourceUnsetup() {
         PulseAudioAudioSource source = audioSource;
         if (source != null) {
-            source.disconnect();
+            source.close();
             audioSource = null;
         }
         // Unregister the potential pulse audio source's audio sources
@@ -252,8 +232,8 @@ public class PulseaudioHandler extends BaseThingHandler {
             return null;
         }
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof PulseaudioBridgeHandler) {
-            return (PulseaudioBridgeHandler) handler;
+        if (handler instanceof PulseaudioBridgeHandler pulseaudioBridgeHandler) {
+            return pulseaudioBridgeHandler;
         } else {
             logger.debug("No available bridge handler found for device {} bridge {} .",
                     safeGetDeviceNameOrDescription(), bridge.getUID());
@@ -300,25 +280,22 @@ public class PulseaudioHandler extends BaseThingHandler {
                     briHandler.getClient().setVolumePercent(device, newVolume);
                     updateState = new PercentType(newVolume);
                     savedVolume = newVolume;
-                } else if (command instanceof PercentType) {
-                    DecimalType volume = (DecimalType) command;
+                } else if (command instanceof PercentType volume) {
                     briHandler.getClient().setVolumePercent(device, volume.intValue());
-                    updateState = (PercentType) command;
+                    updateState = volume;
                     savedVolume = volume.intValue();
-                } else if (command instanceof DecimalType) {
-                    // set volume
-                    DecimalType volume = (DecimalType) command;
+                } else if (command instanceof DecimalType volume) {
                     briHandler.getClient().setVolume(device, volume.intValue());
-                    updateState = (DecimalType) command;
+                    updateState = volume;
                     savedVolume = volume.intValue();
                 }
             } else if (channelUID.getId().equals(MUTE_CHANNEL)) {
-                if (command instanceof OnOffType) {
+                if (command instanceof OnOffType onOffCommand) {
                     briHandler.getClient().setMute(device, OnOffType.ON.equals(command));
-                    updateState = (OnOffType) command;
+                    updateState = onOffCommand;
                 }
             } else if (channelUID.getId().equals(SLAVES_CHANNEL)) {
-                if (device instanceof Sink && ((Sink) device).isCombinedSink()) {
+                if (device instanceof Sink sink && sink.isCombinedSink()) {
                     if (command instanceof StringType) {
                         List<Sink> slaves = new ArrayList<>();
                         for (String slaveName : command.toString().split(",")) {
@@ -335,16 +312,16 @@ public class PulseaudioHandler extends BaseThingHandler {
                     logger.warn("{} is no combined sink", device);
                 }
             } else if (channelUID.getId().equals(ROUTE_TO_SINK_CHANNEL)) {
-                if (device instanceof SinkInput) {
+                if (device instanceof SinkInput input) {
                     Sink newSink = null;
-                    if (command instanceof DecimalType) {
-                        newSink = briHandler.getClient().getSink(((DecimalType) command).intValue());
+                    if (command instanceof DecimalType decimalCommand) {
+                        newSink = briHandler.getClient().getSink(decimalCommand.intValue());
                     } else {
                         newSink = briHandler.getClient().getSink(command.toString());
                     }
                     if (newSink != null) {
                         logger.debug("rerouting {} to {}", device, newSink);
-                        briHandler.getClient().moveSinkInput(((SinkInput) device), newSink);
+                        briHandler.getClient().moveSinkInput(input, newSink);
                         updateState = new StringType(newSink.getPaName());
                     } else {
                         logger.warn("no sink {} found", command.toString());
@@ -405,12 +382,12 @@ public class PulseaudioHandler extends BaseThingHandler {
             updateState(MUTE_CHANNEL, OnOffType.from(device.isMuted()));
             org.openhab.binding.pulseaudio.internal.items.AbstractAudioDeviceConfig.State state = device.getState();
             updateState(STATE_CHANNEL, state != null ? new StringType(state.toString()) : new StringType("-"));
-            if (device instanceof SinkInput) {
-                updateState(ROUTE_TO_SINK_CHANNEL, new StringType(
-                        Optional.ofNullable(((SinkInput) device).getSink()).map(Sink::getPaName).orElse("-")));
+            if (device instanceof SinkInput input) {
+                updateState(ROUTE_TO_SINK_CHANNEL,
+                        new StringType(Optional.ofNullable(input.getSink()).map(Sink::getPaName).orElse("-")));
             }
-            if (device instanceof Sink && ((Sink) device).isCombinedSink()) {
-                updateState(SLAVES_CHANNEL, new StringType(String.join(",", ((Sink) device).getCombinedSinkNames())));
+            if (device instanceof Sink sink && sink.isCombinedSink()) {
+                updateState(SLAVES_CHANNEL, new StringType(String.join(",", sink.getCombinedSinkNames())));
             }
             audioSinkSetup();
             audioSourceSetup();
@@ -441,14 +418,11 @@ public class PulseaudioHandler extends BaseThingHandler {
     }
 
     /**
-     * This method will scan the pulseaudio server to find the port on which the module/sink/source is listening
-     * If no module is listening, then it will command the module to load on the pulse audio server,
+     * Unload existing Simple Protocol TCP modules for this device on the remote pulseaudio.
      *
-     * @return the port on which the pulseaudio server is listening for this sink/source
-     * @throws IOException when device info is not available
-     * @throws InterruptedException when interrupted during the loading module wait
+     * @throws IOException if unable to load device config
      */
-    public int getSimpleTcpPortAndLoadModuleIfNecessary() throws IOException, InterruptedException {
+    public void clearSimpleProtocolTCPModules() throws IOException {
         var briHandler = getPulseaudioBridgeHandler();
         if (briHandler == null) {
             throw new IOException("bridge is not ready");
@@ -458,69 +432,91 @@ public class PulseaudioHandler extends BaseThingHandler {
             throw new IOException(
                     "missing device info, device " + safeGetDeviceNameOrDescription() + " appears to be offline");
         }
-        String simpleTcpPortPrefName = (device instanceof Source) ? DEVICE_PARAMETER_AUDIO_SOURCE_PORT
-                : DEVICE_PARAMETER_AUDIO_SINK_PORT;
-        BigDecimal simpleTcpPortPref = ((BigDecimal) getThing().getConfiguration().get(simpleTcpPortPrefName));
-        int simpleTcpPort = simpleTcpPortPref != null ? simpleTcpPortPref.intValue()
-                : MODULE_SIMPLE_PROTOCOL_TCP_DEFAULT_PORT;
-        String simpleFormat = ((String) getThing().getConfiguration().get(DEVICE_PARAMETER_AUDIO_SOURCE_FORMAT));
-        BigDecimal simpleRate = (BigDecimal) getThing().getConfiguration().get(DEVICE_PARAMETER_AUDIO_SOURCE_RATE);
-        BigDecimal simpleChannels = (BigDecimal) getThing().getConfiguration()
-                .get(DEVICE_PARAMETER_AUDIO_SOURCE_CHANNELS);
-        return briHandler.getClient()
-                .loadModuleSimpleProtocolTcpIfNeeded(device, simpleTcpPort, simpleFormat, simpleRate, simpleChannels)
-                .orElse(simpleTcpPort);
+        briHandler.getClient().getSimpleProtocolTCPModulesByDevice(device, simpleProtocolMinPort, simpleProtocolMaxPort)
+                .forEach(spModule -> {
+                    try {
+                        unloadModule(spModule);
+                    } catch (IOException e) {
+                        logger.warn("IOException unloading module {}: ", spModule.getId(), e);
+                    }
+                });
     }
 
-    public @Nullable AudioFormat getSourceAudioFormat() {
+    /**
+     * Creates a new Simple Protocol TCP module instance on the server or reuse an idle one if still available.
+     *
+     * @return the Simple Protocol module instance
+     * @throws IOException when device info is not available
+     * @throws InterruptedException when interrupted during the loading module wait
+     */
+    public Optional<SimpleProtocolTCPModule> loadSimpleProtocolModule(AudioFormat audioFormat,
+            @Nullable SimpleProtocolTCPModule module) throws IOException, InterruptedException {
+        var briHandler = getPulseaudioBridgeHandler();
+        if (briHandler == null) {
+            throw new IOException("bridge is not ready");
+        }
+        AbstractAudioDeviceConfig device = briHandler.getDevice(deviceIdentifier);
+        if (device == null) {
+            throw new IOException(
+                    "missing device info, device " + safeGetDeviceNameOrDescription() + " appears to be offline");
+        }
+        return briHandler.getClient().loadModuleSimpleProtocolTcpIfNeeded(device, audioFormat, simpleProtocolMinPort,
+                simpleProtocolMaxPort, module);
+    }
+
+    public AudioFormat getSourceAudioFormat() {
         String simpleFormat = ((String) getThing().getConfiguration().get(DEVICE_PARAMETER_AUDIO_SOURCE_FORMAT));
         BigDecimal simpleRate = ((BigDecimal) getThing().getConfiguration().get(DEVICE_PARAMETER_AUDIO_SOURCE_RATE));
         BigDecimal simpleChannels = ((BigDecimal) getThing().getConfiguration()
                 .get(DEVICE_PARAMETER_AUDIO_SOURCE_CHANNELS));
+        AudioFormat fallback = new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, 16,
+                16 * 16000, 16000L, 1);
         if (simpleFormat == null || simpleRate == null || simpleChannels == null) {
-            return null;
+            return fallback;
         }
+        int sampleRateAllChannels = simpleRate.intValue() * simpleChannels.intValue();
         switch (simpleFormat) {
-            case "u8":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_UNSIGNED, null, 8, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            case "s16le":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            case "s16be":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, true, 16, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            case "s24le":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 24, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            case "s24be":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, true, 24, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            case "s32le":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 32, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            case "s32be":
-                return new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, true, 32, 1,
-                        simpleRate.longValue(), simpleChannels.intValue());
-            default:
+            case "u8" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_UNSIGNED, null, 8,
+                        8 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            case "s16le" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, 16,
+                        16 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            case "s16be" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, true, 16,
+                        16 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            case "s24le" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, 24,
+                        24 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            case "s24be" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, true, 24,
+                        24 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            case "s32le" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, 32,
+                        32 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            case "s32be" -> {
+                return new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, true, 32,
+                        32 * sampleRateAllChannels, simpleRate.longValue(), simpleChannels.intValue());
+            }
+            default -> {
                 logger.warn("unsupported format {}", simpleFormat);
-                return null;
+                return fallback;
+            }
         }
     }
 
-    public int getIdleTimeout() {
-        var idleTimeout = 3000;
-        var handler = getPulseaudioBridgeHandler();
-        if (handler != null) {
-            AbstractAudioDeviceConfig device = handler.getDevice(deviceIdentifier);
-            String idleTimeoutPropName = (device instanceof Source) ? DEVICE_PARAMETER_AUDIO_SOURCE_IDLE_TIMEOUT
-                    : DEVICE_PARAMETER_AUDIO_SINK_IDLE_TIMEOUT;
-            var idleTimeoutB = (BigDecimal) getThing().getConfiguration().get(idleTimeoutPropName);
-            if (idleTimeoutB != null) {
-                idleTimeout = idleTimeoutB.intValue();
-            }
+    public void unloadModule(SimpleProtocolTCPModule module) throws IOException {
+        var briHandler = getPulseaudioBridgeHandler();
+        if (briHandler == null) {
+            throw new IOException("bridge is not ready");
         }
-        return idleTimeout;
+        briHandler.getClient().unloadModule(module);
     }
 
     private String safeGetDeviceNameOrDescription() {

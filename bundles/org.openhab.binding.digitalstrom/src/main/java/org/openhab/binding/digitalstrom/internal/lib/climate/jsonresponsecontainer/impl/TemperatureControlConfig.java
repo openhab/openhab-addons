@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,7 +119,9 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the refenceZone, if control-mode is {@link ControlModes#ZONE_FOLLOWER}, otherwise null.
+     * Returns the refenceZone, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#ZONE_FOLLOWER}, otherwise
+     * null.
      *
      * @return the referenceZone
      */
@@ -128,7 +130,8 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the ctrlOffset, if control-mode is {@link ControlModes#PID_CONTROL}, otherwise null.
+     * Returns the ctrlOffset, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL}, otherwise null.
      *
      * @return the ctrlOffset
      */
@@ -137,7 +140,8 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the manualValue, if control-mode is {@link ControlModes#MANUAL}, otherwise null.
+     * Returns the manualValue, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#MANUAL}, otherwise null.
      *
      * @return the manualValue
      */
@@ -146,7 +150,8 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the emergencyValue, if control-mode is {@link ControlModes#PID_CONTROL}, otherwise null.
+     * Returns the emergencyValue, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL}, otherwise null.
      *
      * @return the emergencyValue
      */
@@ -155,7 +160,8 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the ctrlKp, if control-mode is {@link ControlModes#PID_CONTROL}, otherwise null.
+     * Returns the ctrlKp, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL}, otherwise null.
      *
      * @return the ctrlKp
      */
@@ -164,7 +170,8 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the ctrlTs, if control-mode is {@link ControlModes#PID_CONTROL}, otherwise null.
+     * Returns the ctrlTs, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL}, otherwise null.
      *
      * @return the ctrlTs
      */
@@ -173,7 +180,8 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the ctrlTi, if control-mode is {@link ControlModes#PID_CONTROL}, otherwise null.
+     * Returns the ctrlTi, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL}, otherwise null.
      *
      * @return the ctrlTi
      */
@@ -182,7 +190,8 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the ctrlKd, if control-mode is {@link ControlModes#PID_CONTROL}, otherwise null.
+     * Returns the ctrlKd, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL}, otherwise null.
      *
      * @return the ctrlKd
      */
@@ -191,7 +200,8 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the ctrlImin, if control-mode is {@link ControlModes#PID_CONTROL}, otherwise null.
+     * Returns the ctrlImin, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL}, otherwise null.
      *
      * @return the ctrlImin
      */
@@ -200,7 +210,8 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the ctrlImax, if control-mode is {@link ControlModes#PID_CONTROL}, otherwise null.
+     * Returns the ctrlImax, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL}, otherwise null.
      *
      * @return the ctrlImax
      */
@@ -209,7 +220,8 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the ctrlYmin, if control-mode is {@link ControlModes#PID_CONTROL}, otherwise null.
+     * Returns the ctrlYmin, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL}, otherwise null.
      *
      * @return the ctrlYmin
      */
@@ -218,7 +230,8 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the ctrlYmax, if control-mode is {@link ControlModes#PID_CONTROL}, otherwise null.
+     * Returns the ctrlYmax, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL}, otherwise null.
      *
      * @return the ctrlYmax
      */
@@ -227,7 +240,8 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the ctrlAntiWindUp, if control-mode is {@link ControlModes#PID_CONTROL}, otherwise null.
+     * Returns the ctrlAntiWindUp, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL}, otherwise null.
      *
      * @return the ctrlAntiWindUp
      */
@@ -236,7 +250,8 @@ public class TemperatureControlConfig extends BaseTemperatureControl {
     }
 
     /**
-     * Returns the ctrlKeepFloorWarm, if control-mode is {@link ControlModes#PID_CONTROL}, otherwise null.
+     * Returns the ctrlKeepFloorWarm, if control-mode is
+     * {@link org.openhab.binding.digitalstrom.internal.lib.climate.constants.ControlModes#PID_CONTROL}, otherwise null.
      *
      * @return the ctrlKeepFloorWarm
      */

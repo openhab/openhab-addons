@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,8 +35,10 @@ import org.openhab.core.types.UnDefType;
 /**
  * This class tries to combine the classic EEP A5-38-08 CMD 0x02 dimming with the Eltako interpretation of this EEP.
  * It is doing it by channel config parameter "eltakoDimmer". The differences are:
+ * <ul>
  * <li>Dimming value 0-100%: standard 0-255, Eltako 0-100</li>
  * <li>Store value: standard DB0.1, Eltako DB0.2</li>
+ * </ul>
  *
  * @author Daniel Weber - Initial contribution
  */
@@ -63,16 +65,14 @@ public class A5_38_08_Dimming extends _4BSMessage {
             case CHANNEL_DIMMER:
                 byte dimmValue;
 
-                if (outputCommand instanceof DecimalType) {
-                    dimmValue = ((DecimalType) outputCommand).byteValue();
-                } else if (outputCommand instanceof OnOffType) {
-                    dimmValue = ((OnOffType) outputCommand == OnOffType.ON) ? SWITCH_100_PERCENT : ZERO;
-                } else if (outputCommand instanceof IncreaseDecreaseType) {
-                    dimmValue = ((IncreaseDecreaseType) outputCommand == IncreaseDecreaseType.INCREASE)
-                            ? SWITCH_100_PERCENT
-                            : ZERO;
-                } else if (outputCommand instanceof UpDownType) {
-                    dimmValue = ((UpDownType) outputCommand == UpDownType.UP) ? SWITCH_100_PERCENT : ZERO;
+                if (outputCommand instanceof DecimalType decimalCommand) {
+                    dimmValue = decimalCommand.byteValue();
+                } else if (outputCommand instanceof OnOffType onOffCommand) {
+                    dimmValue = (onOffCommand == OnOffType.ON) ? SWITCH_100_PERCENT : ZERO;
+                } else if (outputCommand instanceof IncreaseDecreaseType increaseDecreaseCommand) {
+                    dimmValue = (increaseDecreaseCommand == IncreaseDecreaseType.INCREASE) ? SWITCH_100_PERCENT : ZERO;
+                } else if (outputCommand instanceof UpDownType upDownCommand) {
+                    dimmValue = (upDownCommand == UpDownType.UP) ? SWITCH_100_PERCENT : ZERO;
                 } else {
                     throw new IllegalArgumentException(outputCommand.toFullString() + " is no valid dimming command.");
                 }

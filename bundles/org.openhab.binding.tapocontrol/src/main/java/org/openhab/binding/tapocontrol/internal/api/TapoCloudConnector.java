@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,27 +13,23 @@
 package org.openhab.binding.tapocontrol.internal.api;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoBindingSettings.*;
+import static org.openhab.binding.tapocontrol.internal.constants.TapoComConstants.*;
 import static org.openhab.binding.tapocontrol.internal.constants.TapoErrorCode.*;
-
-import java.util.UUID;
-import java.util.concurrent.TimeoutException;
+import static org.openhab.binding.tapocontrol.internal.helpers.utils.JsonUtils.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.api.ContentResponse;
-import org.eclipse.jetty.client.api.Request;
-import org.eclipse.jetty.client.util.StringContentProvider;
-import org.eclipse.jetty.http.HttpMethod;
-import org.openhab.binding.tapocontrol.internal.device.TapoBridgeHandler;
-import org.openhab.binding.tapocontrol.internal.helpers.PayloadBuilder;
+import org.openhab.binding.tapocontrol.internal.api.protocol.passthrough.PassthroughProtocol;
+import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
+import org.openhab.binding.tapocontrol.internal.devices.bridge.dto.TapoCloudLoginData;
+import org.openhab.binding.tapocontrol.internal.devices.bridge.dto.TapoCloudLoginResult;
+import org.openhab.binding.tapocontrol.internal.discovery.dto.TapoDiscoveryResultList;
+import org.openhab.binding.tapocontrol.internal.dto.TapoRequest;
+import org.openhab.binding.tapocontrol.internal.dto.TapoResponse;
+import org.openhab.binding.tapocontrol.internal.helpers.TapoCredentials;
 import org.openhab.binding.tapocontrol.internal.helpers.TapoErrorHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 /**
  * Handler class for TAPO-Cloud connections.
@@ -41,199 +37,151 @@ import com.google.gson.JsonObject;
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
-public class TapoCloudConnector {
+public class TapoCloudConnector implements TapoConnectorInterface {
     private final Logger logger = LoggerFactory.getLogger(TapoCloudConnector.class);
     private final TapoBridgeHandler bridge;
-    private final Gson gson = new Gson();
-    private final HttpClient httpClient;
 
+    private @NonNullByDefault({}) TapoCloudLoginResult loginResult;
     private String token = "";
-    private String url = TAPO_CLOUD_URL;
     private String uid;
+    private PassthroughProtocol passthrough;
 
-    /**
-     * INIT CLASS
-     * 
-     */
-    public TapoCloudConnector(TapoBridgeHandler bridge, HttpClient httpClient) {
+    /***********************
+     * Init Class
+     **********************/
+
+    public TapoCloudConnector(TapoBridgeHandler bridge) {
         this.bridge = bridge;
-        this.httpClient = httpClient;
         this.uid = bridge.getUID().getAsString();
+        passthrough = new PassthroughProtocol(this);
+    }
+
+    /***********************
+     * Response-Handling
+     **********************/
+
+    /**
+     * handle received reponse-string
+     */
+    @Override
+    public void responsePasstrough(String response, String command) {
     }
 
     /**
-     * handle error
-     * 
-     * @param tapoError TapoErrorHandler
+     * handle received response
      */
-    protected void handleError(TapoErrorHandler tapoError) {
-        this.bridge.setError(tapoError);
-    }
-
-    /***********************************
-     *
-     * HTTP (Cloud)-Actions
-     *
-     ************************************/
-
-    /**
-     * LOGIN TO CLOUD (get Token)
-     * 
-     * @param username unencrypted username
-     * @param password unencrypted password
-     * @return true if login was successfull
-     */
-    public Boolean login(String username, String password) {
-        this.token = getToken(username, password, UUID.randomUUID().toString());
-        this.url = TAPO_CLOUD_URL + "?token=" + token;
-        return !this.token.isBlank();
+    @Override
+    public void handleResponse(TapoResponse tapoResponse, String command) throws TapoErrorHandler {
+        switch (command) {
+            case CLOUD_CMD_LOGIN:
+                handleLoginResult(tapoResponse);
+                break;
+            case CLOUD_CMD_GETDEVICES:
+                bridge.getDiscoveryService().addScanResults(getDeviceListFromResponse(tapoResponse));
+                break;
+            default:
+                logger.debug("({}) handleResponse - unknown command: {}", uid, command);
+                throw new TapoErrorHandler(ERR_BINDING_NOT_IMPLEMENTED);
+        }
     }
 
     /**
-     * logout
+     * set bridge error
      */
+    @Override
+    public void handleError(TapoErrorHandler tapoError) {
+        bridge.setError(tapoError);
+    }
+
+    /***********************
+     * Login Handling
+     **********************/
+    /**
+     * login to cloud
+     */
+    public boolean login(TapoCredentials credentials) throws TapoErrorHandler {
+        logout();
+
+        TapoCloudLoginData loginData = new TapoCloudLoginData(credentials.username(), credentials.password());
+        TapoRequest request = new TapoRequest(CLOUD_CMD_LOGIN, loginData);
+
+        passthrough.sendRequest(request);
+        return isLoggedIn();
+    }
+
+    /*
+     * get response from login and set token
+     */
+    private void handleLoginResult(TapoResponse tapoResponse) throws TapoErrorHandler {
+        logger.trace("({}) received login result: {}", uid, tapoResponse);
+        loginResult = getObjectFromJson(tapoResponse.result(), TapoCloudLoginResult.class);
+        token = loginResult.token();
+        if (!isLoggedIn()) {
+            throw new TapoErrorHandler(ERR_API_LOGIN);
+        }
+    }
+
     public void logout() {
-        this.token = "";
+        loginResult = new TapoCloudLoginResult();
+        token = "";
     }
 
+    public boolean isLoggedIn() {
+        return !token.isBlank();
+    }
+
+    /***********************
+     * Cloud Action Handlers
+     **********************/
     /**
-     * GET TOKEN FROM TAPO-CLOUD
-     * 
-     * @param email
-     * @param password
-     * @param terminalUUID
-     * @return
+     * Query DeviceList from cloud
      */
-    private String getToken(String email, String password, String terminalUUID) {
-        String token = "";
-
-        /* create login payload */
-        PayloadBuilder plBuilder = new PayloadBuilder();
-        plBuilder.method = "login";
-        plBuilder.addParameter("appType", TAPO_APP_TYPE);
-        plBuilder.addParameter("cloudUserName", email);
-        plBuilder.addParameter("cloudPassword", password);
-        plBuilder.addParameter("terminalUUID", terminalUUID);
-        String payload = plBuilder.getPayload();
-
-        ContentResponse response = sendCloudRequest(TAPO_CLOUD_URL, payload);
-        if (response != null) {
-            token = getTokenFromResponse(response);
-        }
-        return token;
-    }
-
-    private String getTokenFromResponse(ContentResponse response) {
-        /* work with response */
-        if (response.getStatus() == 200) {
-            String rBody = response.getContentAsString();
-            JsonObject jsonObject = gson.fromJson(rBody, JsonObject.class);
-            if (jsonObject != null) {
-                Integer errorCode = jsonObject.get("error_code").getAsInt();
-                if (errorCode == 0) {
-                    token = jsonObject.getAsJsonObject("result").get("token").getAsString();
-                } else {
-                    /* return errorcode from device */
-                    String msg = jsonObject.get("msg").getAsString();
-                    handleError(new TapoErrorHandler(errorCode, msg));
-                    logger.trace("cloud returns error: '{}'", rBody);
-                }
-            } else {
-                handleError(new TapoErrorHandler(ERR_API_JSON_DECODE_FAIL));
-                logger.trace("unexpected json-response '{}'", rBody);
-            }
-        } else {
-            handleError(new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE));
-            logger.warn("invalid response while login");
-            token = "";
-        }
-        return token;
-    }
-
-    /**
-     * 
-     * @return JsonArray with deviceList
-     */
-    public JsonArray getDeviceList() {
-        /* create payload */
-        PayloadBuilder plBuilder = new PayloadBuilder();
-        plBuilder.method = "getDeviceList";
-        String payload = plBuilder.getPayload();
-
-        ContentResponse response = sendCloudRequest(this.url, payload);
-        if (response != null) {
-            return getDeviceListFromResponse(response);
-        }
-        return new JsonArray();
-    }
-
-    /**
-     * get DeviceList from Contenresponse
-     * 
-     * @param response
-     * @return
-     */
-    private JsonArray getDeviceListFromResponse(ContentResponse response) {
-        /* work with response */
-        if (response.getStatus() == 200) {
-            String rBody = response.getContentAsString();
-            JsonObject jsonObject = gson.fromJson(rBody, JsonObject.class);
-            if (jsonObject != null) {
-                /* get errocode (0=success) */
-                Integer errorCode = jsonObject.get("error_code").getAsInt();
-                if (errorCode == 0) {
-                    JsonObject result = jsonObject.getAsJsonObject("result");
-                    return result.getAsJsonArray("deviceList");
-                } else {
-                    /* return errorcode from device */
-                    handleError(new TapoErrorHandler(errorCode, "device answers with errorcode"));
-                    logger.trace("cloud returns error: '{}'", rBody);
-                }
-            } else {
-                logger.trace("enexpected json-response '{}'", rBody);
-            }
-        } else {
-            logger.trace("response error '{}'", response.getContentAsString());
-        }
-        return new JsonArray();
-    }
-
-    /***********************************
-     *
-     * HTTP-ACTIONS
-     *
-     ************************************/
-    /**
-     * SEND SYNCHRON HTTP-REQUEST
-     * 
-     * @param url url request is sent to
-     * @param payload payload (String) to send
-     * @return ContentResponse of request
-     */
-    @Nullable
-    protected ContentResponse sendCloudRequest(String url, String payload) {
-        Request httpRequest = httpClient.newRequest(url).method(HttpMethod.POST.toString());
-
-        /* set header */
-        httpRequest.header("content-type", CONTENT_TYPE_JSON);
-        httpRequest.header("Accept", CONTENT_TYPE_JSON);
-
-        /* add request body */
-        httpRequest.content(new StringContentProvider(payload, CONTENT_CHARSET), CONTENT_TYPE_JSON);
-
+    public void getDeviceList() {
+        TapoRequest request = new TapoRequest(CLOUD_CMD_GETDEVICES);
+        logger.trace("({}) sending cloud command: {}", uid, request);
         try {
-            ContentResponse httpResponse = httpRequest.send();
-            return httpResponse;
-        } catch (InterruptedException e) {
-            logger.debug("({}) sending request interrupted: {}", uid, e.toString());
-            handleError(new TapoErrorHandler(e));
-        } catch (TimeoutException e) {
-            logger.debug("({}) sending request timeout: {}", uid, e.toString());
-            handleError(new TapoErrorHandler(ERR_BINDING_CONNECT_TIMEOUT, e.toString()));
-        } catch (Exception e) {
-            logger.debug("({}) sending request failed: {}", uid, e.toString());
-            handleError(new TapoErrorHandler(e));
+            passthrough.sendRequest(request);
+        } catch (TapoErrorHandler tapoError) {
+            logger.debug("({}) get devicelist failed: {}", uid, tapoError.getCode());
+            handleError(tapoError);
         }
-        return null;
+    }
+
+    /**
+     * get DeviceList from response
+     */
+    private TapoDiscoveryResultList getDeviceListFromResponse(TapoResponse tapoResponse) throws TapoErrorHandler {
+        logger.trace("({}) received devicelist: {}", uid, tapoResponse);
+        return getObjectFromJson(tapoResponse.result(), TapoDiscoveryResultList.class);
+    }
+
+    /***********************
+     * Get Values
+     **********************/
+
+    @Override
+    public HttpClient getHttpClient() {
+        return bridge.getHttpClient();
+    }
+
+    @Override
+    public String getThingUID() {
+        return bridge.getUID().toString();
+    }
+
+    /************************
+     * Private Helpers
+     ************************/
+
+    /**
+     * Get Cloud-URL
+     */
+    @Override
+    public String getBaseUrl() {
+        String url = TAPO_CLOUD_URL;
+        if (!token.isBlank()) {
+            url = url + "?token=" + token;
+        }
+        return url;
     }
 }

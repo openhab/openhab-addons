@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,8 +40,7 @@ public class DisplayOptionsVirtualDatapointHandler extends AbstractVirtualDatapo
 
     @Override
     public void initialize(HmDevice device) {
-        if (device.getType().startsWith(DEVICE_TYPE_19_REMOTE_CONTROL)
-                && !(device.getHmInterface() == HmInterface.CUXD)) {
+        if (device.getType().startsWith(DEVICE_TYPE_19_REMOTE_CONTROL) && device.getHmInterface() != HmInterface.CUXD) {
             addDatapoint(device, 18, getName(), HmValueType.STRING, null, false);
         }
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,8 +85,7 @@ public class DeviceOutputValueSensorJob implements SensorJob {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof DeviceOutputValueSensorJob) {
-            DeviceOutputValueSensorJob other = (DeviceOutputValueSensorJob) obj;
+        if (obj instanceof DeviceOutputValueSensorJob other) {
             String key = this.device.getDSID().getValue() + this.index;
             return key.equals((other.device.getDSID().getValue() + other.index));
         }

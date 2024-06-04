@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ import org.w3c.dom.Node;
  *
  * Note that yamaha maintains separate presets for each band.
  *
- * The XML nodes <DAB><Play_Control><Band>FM</Band></Play_Control></DAB> are used.
+ * The XML nodes {@code <DAB><Play_Control><Band>FM</Band></Play_Control></DAB>} are used.
  *
  * No state will be saved in here, but in {@link DabBandState}, {@link PresetInfoState} and {@link PlayInfoState}
  * instead.

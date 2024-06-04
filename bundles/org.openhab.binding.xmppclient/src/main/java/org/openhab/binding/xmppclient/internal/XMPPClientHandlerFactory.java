@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.xmppclient.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.openhab.binding.xmppclient.internal.handler.XMPPClientHandler;
@@ -32,8 +31,8 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(configurationPid = "binding.xmppclient", service = ThingHandlerFactory.class)
 public class XMPPClientHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .singleton(XMPPClientBindingConstants.BRIDGE_TYPE_XMPP);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set
+            .of(XMPPClientBindingConstants.BRIDGE_TYPE_XMPP);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

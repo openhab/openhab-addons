@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -176,8 +176,7 @@ public final class Field {
         byte b2 = array[offset + 1];
         byte b3 = array[offset + 2];
         byte b4 = array[offset + 3];
-        int value = ((b1 << 24) + (b2 << 16) + (b3 << 8) + (b4 << 0));
-        return value;
+        return ((b1 << 24) + (b2 << 16) + (b3 << 8) + (b4 << 0));
     }
 
     /**
@@ -199,8 +198,7 @@ public final class Field {
      */
     @Override
     public boolean equals(@Nullable Object o) {
-        if (o instanceof Field) {
-            Field f = (Field) o;
+        if (o instanceof Field f) {
             return (f.getName().equals(getName())) && (f.getOffset() == getOffset());
         } else {
             return false;

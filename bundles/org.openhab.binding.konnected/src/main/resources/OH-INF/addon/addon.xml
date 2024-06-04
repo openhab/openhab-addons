@@ -6,4 +6,17 @@
 	<name>Konnected Binding</name>
 	<description>This is the binding for Konnected.</description>
 	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>modelName</name>
+					<regex>Konnected.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

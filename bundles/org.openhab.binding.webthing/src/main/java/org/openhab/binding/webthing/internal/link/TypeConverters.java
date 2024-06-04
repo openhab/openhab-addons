@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -53,7 +53,7 @@ class TypeConverters {
             case "color":
                 return new ColorTypeConverter();
             case "number":
-                if (propertyType.toLowerCase(Locale.ENGLISH).equals("integer")) {
+                if ("integer".equals(propertyType.toLowerCase(Locale.ENGLISH))) {
                     return new IntegerTypeConverter();
                 } else {
                     return new NumberTypeConverter();
@@ -102,7 +102,7 @@ class TypeConverters {
 
         @Override
         public Command toStateCommand(Object propertyValue) {
-            return toBoolean(propertyValue) ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(toBoolean(propertyValue));
         }
 
         @Override
@@ -169,8 +169,8 @@ class TypeConverters {
         @Override
         public Command toStateCommand(Object propertyValue) {
             String textValue = propertyValue.toString();
-            if (propertyValue instanceof Collection) {
-                textValue = ((Collection<Object>) propertyValue).stream()
+            if (propertyValue instanceof Collection collection) {
+                textValue = collection.stream()
                         .reduce("", (entry1, entry2) -> entry1.toString() + "\n" + entry2.toString()).toString();
             }
             return StringType.valueOf(textValue);

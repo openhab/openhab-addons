@@ -127,6 +127,23 @@
 				<default>2048</default>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="useAuthentication" type="boolean">
+				<label>Use authentication</label>
+				<description>Use authentication to access the gateway. If set to true, username and password is required.</description>
+				<advanced>true</advanced>
+				<default>false</default>
+			</parameter>
+			<parameter name="userName" type="text">
+				<label>User name</label>
+				<description>User name for accessing the gateway if authenticaton is required.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Password</label>
+				<description>Password for accessing the gateway if authenticaton is required.</description>
+				<advanced>true</advanced>
+				<context>password</context>
+			</parameter>
 		</config-description>
 	</bridge-type>
 

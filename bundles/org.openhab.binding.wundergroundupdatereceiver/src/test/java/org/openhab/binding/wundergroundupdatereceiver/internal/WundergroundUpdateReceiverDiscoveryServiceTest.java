@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,9 +74,18 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
     @Test
     void programmaticChannelsAreAddedCorrectlyOnce() {
         // Given
-        final String queryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "humidity=74&" + "AqPM2.5=30&"
-                + "windspdmph_avg2m=10&" + "dateutc=2021-02-07%2014:04:03&" + "softwaretype=WH2600%20V2.2.8&"
-                + "action=updateraw&" + "realtime=1&" + "rtfreq=5";
+        final String queryString = """
+                ID=dfggger&\
+                PASSWORD=XXXXXX&\
+                humidity=74&\
+                AqPM2.5=30&\
+                windspdmph_avg2m=10&\
+                dateutc=2021-02-07%2014:04:03&\
+                softwaretype=WH2600%20V2.2.8&\
+                action=updateraw&\
+                realtime=1&\
+                rtfreq=5\
+                """;
         MetaData.Request request = new MetaData.Request("GET",
                 new HttpURI("http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + queryString),
                 HttpVersion.HTTP_1_1, new HttpFields());
@@ -128,12 +137,33 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
     void aRequestWithAnUnregisteredStationidIsAddedToTheQueueOnce()
             throws ServletException, NamespaceException, IOException {
         // Given
-        final String queryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "tempf=26.1&" + "humidity=74&" + "dewptf=18.9&"
-                + "windchillf=26.1&" + "winddir=14&" + "windspeedmph=1.34&" + "windgustmph=2.46&" + "rainin=0.00&"
-                + "dailyrainin=0.00&" + "weeklyrainin=0.00&" + "monthlyrainin=0.08&" + "yearlyrainin=3.06&"
-                + "solarradiation=42.24&" + "UV=1&indoortempf=69.3&" + "indoorhumidity=32&" + "baromin=30.39&"
-                + "AqNOX=21&" + "lowbatt=1&" + "dateutc=2021-02-07%2014:04:03&" + "softwaretype=WH2600%20V2.2.8&"
-                + "action=updateraw&" + "realtime=1&" + "rtfreq=5";
+        final String queryString = """
+                ID=dfggger&\
+                PASSWORD=XXXXXX&\
+                tempf=26.1&\
+                humidity=74&\
+                dewptf=18.9&\
+                windchillf=26.1&\
+                winddir=14&\
+                windspeedmph=1.34&\
+                windgustmph=2.46&\
+                rainin=0.00&\
+                dailyrainin=0.00&\
+                weeklyrainin=0.00&\
+                monthlyrainin=0.08&\
+                yearlyrainin=3.06&\
+                solarradiation=42.24&\
+                UV=1&indoortempf=69.3&\
+                indoorhumidity=32&\
+                baromin=30.39&\
+                AqNOX=21&\
+                lowbatt=1&\
+                dateutc=2021-02-07%2014:04:03&\
+                softwaretype=WH2600%20V2.2.8&\
+                action=updateraw&\
+                realtime=1&\
+                rtfreq=5\
+                """;
         WundergroundUpdateReceiverDiscoveryService discoveryService = mock(
                 WundergroundUpdateReceiverDiscoveryService.class);
         WundergroundUpdateReceiverServlet sut = new WundergroundUpdateReceiverServlet(discoveryService);
@@ -164,9 +194,21 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
     @Test
     void multipleIndexedParametersOfTheSameChanneltypeAreCorrectlyDiscovered() throws IOException {
         // Given
-        final String queryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "temp1f=26.1&" + "humidity=74&" + "temp2f=25.1&"
-                + "lowbatt=1&" + "soilmoisture1=78&" + "soilmoisture2=73&" + "dateutc=2021-02-07%2014:04:03&"
-                + "softwaretype=WH2600%20V2.2.8&" + "action=updateraw&" + "realtime=1&" + "rtfreq=5";
+        final String queryString = """
+                ID=dfggger&\
+                PASSWORD=XXXXXX&\
+                temp1f=26.1&\
+                humidity=74&\
+                temp2f=25.1&\
+                lowbatt=1&\
+                soilmoisture1=78&\
+                soilmoisture2=73&\
+                dateutc=2021-02-07%2014:04:03&\
+                softwaretype=WH2600%20V2.2.8&\
+                action=updateraw&\
+                realtime=1&\
+                rtfreq=5\
+                """;
         MetaData.Request request = new MetaData.Request("GET",
                 new HttpURI("http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + queryString),
                 HttpVersion.HTTP_1_1, new HttpFields());
@@ -209,9 +251,17 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
     @Test
     void unregisteredChannelsAreAddedOnTheFlyWhenDiscovered() throws IOException {
         // Given
-        final String firstDeviceQueryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "tempf=26.1&" + "humidity=74&"
-                + "dateutc=2021-02-07%2014:04:03&" + "softwaretype=WH2600%20V2.2.8&" + "action=updateraw&"
-                + "realtime=1&" + "rtfreq=5";
+        final String firstDeviceQueryString = """
+                ID=dfggger&\
+                PASSWORD=XXXXXX&\
+                tempf=26.1&\
+                humidity=74&\
+                dateutc=2021-02-07%2014:04:03&\
+                softwaretype=WH2600%20V2.2.8&\
+                action=updateraw&\
+                realtime=1&\
+                rtfreq=5\
+                """;
         MetaData.Request request1 = new MetaData.Request("GET", new HttpURI(
                 "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + firstDeviceQueryString),
                 HttpVersion.HTTP_1_1, new HttpFields());
@@ -247,9 +297,19 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         assertThat(before, hasItems(expectedBefore));
 
         // When
-        final String secondDeviceQueryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "lowbatt=1&" + "soilmoisture1=78&"
-                + "soilmoisture2=73&" + "solarradiation=42.24&" + "dateutc=2021-02-07%2014:04:03&"
-                + "softwaretype=WH2600%20V2.2.8&" + "action=updateraw&" + "realtime=1&" + "rtfreq=5";
+        final String secondDeviceQueryString = """
+                ID=dfggger&\
+                PASSWORD=XXXXXX&\
+                lowbatt=1&\
+                soilmoisture1=78&\
+                soilmoisture2=73&\
+                solarradiation=42.24&\
+                dateutc=2021-02-07%2014:04:03&\
+                softwaretype=WH2600%20V2.2.8&\
+                action=updateraw&\
+                realtime=1&\
+                rtfreq=5\
+                """;
         MetaData.Request request = new MetaData.Request("GET", new HttpURI(
                 "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + secondDeviceQueryString),
                 HttpVersion.HTTP_1_1, new HttpFields());
@@ -275,9 +335,17 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
     @Test
     void unregisteredChannelsAreNotAddedOnUnmanagedThings() throws IOException {
         // Given
-        final String firstDeviceQueryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "tempf=26.1&" + "humidity=74&"
-                + "dateutc=2021-02-07%2014:04:03&" + "softwaretype=WH2600%20V2.2.8&" + "action=updateraw&"
-                + "realtime=1&" + "rtfreq=5";
+        final String firstDeviceQueryString = """
+                ID=dfggger&\
+                PASSWORD=XXXXXX&\
+                tempf=26.1&\
+                humidity=74&\
+                dateutc=2021-02-07%2014:04:03&\
+                softwaretype=WH2600%20V2.2.8&\
+                action=updateraw&\
+                realtime=1&\
+                rtfreq=5\
+                """;
         MetaData.Request request1 = new MetaData.Request("GET", new HttpURI(
                 "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + firstDeviceQueryString),
                 HttpVersion.HTTP_1_1, new HttpFields());
@@ -313,9 +381,19 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         assertThat(before, hasItems(expectedBefore));
 
         // When
-        final String secondDeviceQueryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "lowbatt=1&" + "soilmoisture1=78&"
-                + "soilmoisture2=73&" + "solarradiation=42.24&" + "dateutc=2021-02-07%2014:04:03&"
-                + "softwaretype=WH2600%20V2.2.8&" + "action=updateraw&" + "realtime=1&" + "rtfreq=5";
+        final String secondDeviceQueryString = """
+                ID=dfggger&\
+                PASSWORD=XXXXXX&\
+                lowbatt=1&\
+                soilmoisture1=78&\
+                soilmoisture2=73&\
+                solarradiation=42.24&\
+                dateutc=2021-02-07%2014:04:03&\
+                softwaretype=WH2600%20V2.2.8&\
+                action=updateraw&\
+                realtime=1&\
+                rtfreq=5\
+                """;
         MetaData.Request request = new MetaData.Request("GET", new HttpURI(
                 "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + secondDeviceQueryString),
                 HttpVersion.HTTP_1_1, new HttpFields());
@@ -338,9 +416,17 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
     @Test
     void lastQueryTriggerIsMigratedSuccessfully() throws IOException {
         // Given
-        final String firstDeviceQueryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "tempf=26.1&" + "humidity=74&"
-                + "dateutc=2021-02-07%2014:04:03&" + "softwaretype=WH2600%20V2.2.8&" + "action=updateraw&"
-                + "realtime=1&" + "rtfreq=5";
+        final String firstDeviceQueryString = """
+                ID=dfggger&\
+                PASSWORD=XXXXXX&\
+                tempf=26.1&\
+                humidity=74&\
+                dateutc=2021-02-07%2014:04:03&\
+                softwaretype=WH2600%20V2.2.8&\
+                action=updateraw&\
+                realtime=1&\
+                rtfreq=5\
+                """;
         MetaData.Request request1 = new MetaData.Request("GET", new HttpURI(
                 "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + firstDeviceQueryString),
                 HttpVersion.HTTP_1_1, new HttpFields());
@@ -387,9 +473,19 @@ class WundergroundUpdateReceiverDiscoveryServiceTest {
         handler.dispose();
         handler.initialize();
 
-        final String secondDeviceQueryString = "ID=dfggger&" + "PASSWORD=XXXXXX&" + "lowbatt=1&" + "soilmoisture1=78&"
-                + "soilmoisture2=73&" + "solarradiation=42.24&" + "dateutc=2021-02-07%2014:04:03&"
-                + "softwaretype=WH2600%20V2.2.8&" + "action=updateraw&" + "realtime=1&" + "rtfreq=5";
+        final String secondDeviceQueryString = """
+                ID=dfggger&\
+                PASSWORD=XXXXXX&\
+                lowbatt=1&\
+                soilmoisture1=78&\
+                soilmoisture2=73&\
+                solarradiation=42.24&\
+                dateutc=2021-02-07%2014:04:03&\
+                softwaretype=WH2600%20V2.2.8&\
+                action=updateraw&\
+                realtime=1&\
+                rtfreq=5\
+                """;
         MetaData.Request request = new MetaData.Request("GET", new HttpURI(
                 "http://localhost" + WundergroundUpdateReceiverServlet.SERVLET_URL + "?" + secondDeviceQueryString),
                 HttpVersion.HTTP_1_1, new HttpFields());

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,9 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -52,6 +55,7 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.TimeSeries;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -203,7 +207,10 @@ public class TibberHandler extends BaseThingHandler {
                             .getAsJsonObject("home").getAsJsonObject("currentSubscription").getAsJsonObject("priceInfo")
                             .getAsJsonArray("today");
                     updateState(TODAY_PRICES, new StringType(today.toString()));
-                } catch (JsonSyntaxException e) {
+
+                    TimeSeries timeSeries = buildTimeSeries(today, tomorrow);
+                    sendTimeSeries(CURRENT_TOTAL, timeSeries);
+                } catch (JsonSyntaxException | DateTimeParseException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Error communicating with Tibber API: " + e.getMessage());
                 }
@@ -264,6 +271,29 @@ public class TibberHandler extends BaseThingHandler {
             } catch (InterruptedException e) {
                 logger.debug("Tibber OFFLINE, attempting thread sleep: {}", e.getMessage());
             }
+        }
+    }
+
+    /**
+     * Builds the {@link TimeSeries} that represents the future tibber prices.
+     *
+     * @param today The prices for today
+     * @param tomorrow The prices for tomorrow.
+     * @return The {@link TimeSeries} with future values.
+     */
+    private TimeSeries buildTimeSeries(JsonArray today, JsonArray tomorrow) {
+        final TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
+        mapTimeSeriesEntries(today, timeSeries);
+        mapTimeSeriesEntries(tomorrow, timeSeries);
+        return timeSeries;
+    }
+
+    private void mapTimeSeriesEntries(JsonArray prices, TimeSeries timeSeries) {
+        for (JsonElement entry : prices) {
+            JsonObject entryObject = entry.getAsJsonObject();
+            final Instant startsAt = ZonedDateTime.parse(entryObject.get("startsAt").getAsString()).toInstant();
+            final DecimalType value = new DecimalType(entryObject.get("total").getAsString());
+            timeSeries.add(startsAt, value);
         }
     }
 
@@ -536,6 +566,10 @@ public class TibberHandler extends BaseThingHandler {
                 if (myObject.has("accumulatedConsumption")) {
                     updateChannel(LIVE_ACCUMULATEDCONSUMPTION, myObject.get("accumulatedConsumption").toString());
                 }
+                if (myObject.has("accumulatedConsumptionLastHour")) {
+                    updateChannel(LIVE_ACCUMULATEDCONSUMPTION_THIS_HOUR,
+                            myObject.get("accumulatedConsumptionLastHour").toString());
+                }
                 if (myObject.has("accumulatedCost")) {
                     updateChannel(LIVE_ACCUMULATEDCOST, myObject.get("accumulatedCost").toString());
                 }
@@ -578,6 +612,10 @@ public class TibberHandler extends BaseThingHandler {
                 if (myObject.has("accumulatedProduction")) {
                     updateChannel(LIVE_ACCUMULATEDPRODUCTION, myObject.get("accumulatedProduction").toString());
                 }
+                if (myObject.has("accumulatedProductionLastHour")) {
+                    updateChannel(LIVE_ACCUMULATEDPRODUCTION_THIS_HOUR,
+                            myObject.get("accumulatedProductionLastHour").toString());
+                }
                 if (myObject.has("minPowerProduction")) {
                     updateChannel(LIVE_MINPOWERPRODUCTION, myObject.get("minPowerProduction").toString());
                 }
@@ -600,8 +638,8 @@ public class TibberHandler extends BaseThingHandler {
         public void startSubscription() {
             String query = "{\"id\":\"1\",\"type\":\"subscribe\",\"payload\":{\"variables\":{},\"extensions\":{},\"operationName\":null,\"query\":\"subscription {\\n liveMeasurement(homeId:\\\""
                     + tibberConfig.getHomeid()
-                    + "\\\") {\\n timestamp\\n power\\n lastMeterConsumption\\n lastMeterProduction\\n accumulatedConsumption\\n accumulatedCost\\n accumulatedReward\\n currency\\n minPower\\n averagePower\\n maxPower\\n"
-                    + "voltagePhase1\\n voltagePhase2\\n voltagePhase3\\n currentL1\\n currentL2\\n currentL3\\n powerProduction\\n accumulatedProduction\\n minPowerProduction\\n maxPowerProduction\\n }\\n }\\n\"}}";
+                    + "\\\") {\\n timestamp\\n power\\n lastMeterConsumption\\n lastMeterProduction\\n accumulatedConsumption\\n accumulatedConsumptionLastHour\\n accumulatedCost\\n accumulatedReward\\n currency\\n minPower\\n averagePower\\n maxPower\\n"
+                    + "voltagePhase1\\n voltagePhase2\\n voltagePhase3\\n currentL1\\n currentL2\\n currentL3\\n powerProduction\\n accumulatedProduction\\n accumulatedProductionLastHour\\n minPowerProduction\\n maxPowerProduction\\n }\\n }\\n\"}}";
             try {
                 TibberWebSocketListener socket = TibberHandler.this.socket;
                 if (socket != null) {

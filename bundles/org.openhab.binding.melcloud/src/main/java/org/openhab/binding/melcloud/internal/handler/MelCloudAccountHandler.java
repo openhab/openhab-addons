@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -61,7 +62,7 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MelCloudDiscoveryService.class);
+        return Set.of(MelCloudDiscoveryService.class);
     }
 
     @Override
@@ -206,7 +207,7 @@ public class MelCloudAccountHandler extends BaseBridgeHandler {
                     }
                 }
             };
-            connectionCheckTask = scheduler.scheduleWithFixedDelay(runnable, 0, 60, TimeUnit.SECONDS);
+            connectionCheckTask = scheduler.scheduleWithFixedDelay(runnable, 0, 300, TimeUnit.SECONDS);
         } else {
             logger.debug("Connection check task already running");
         }

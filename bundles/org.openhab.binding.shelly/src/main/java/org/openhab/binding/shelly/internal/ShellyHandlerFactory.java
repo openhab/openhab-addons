@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -119,7 +119,7 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
         ShellyBaseHandler handler = null;
 
         if (thingType.equals(THING_TYPE_SHELLYPROTECTED_STR)) {
-            logger.debug("{}: Create new thing of type {} using ShellyProtectedHandler", thing.getLabel(),
+            logger.debug("{}: Create new thing of type {} using ShellyProtectedHandler", thing.getLabel(),
                     thingTypeUID.toString());
             handler = new ShellyProtectedHandler(thing, messages, bindingConfig, thingTable, coapServer, httpClient);
         } else if (thingType.equals(THING_TYPE_SHELLYBULB_STR) || thingType.equals(THING_TYPE_SHELLYDUO_STR)
@@ -156,8 +156,8 @@ public class ShellyHandlerFactory extends BaseThingHandlerFactory {
      */
     @Override
     protected synchronized void removeHandler(@NonNull ThingHandler thingHandler) {
-        if (thingHandler instanceof ShellyBaseHandler) {
-            ((ShellyBaseHandler) thingHandler).stop();
+        if (thingHandler instanceof ShellyBaseHandler shellyBaseHandler) {
+            shellyBaseHandler.stop();
             String uid = thingHandler.getThing().getUID().getAsString();
             thingTable.removeThing(uid);
         }

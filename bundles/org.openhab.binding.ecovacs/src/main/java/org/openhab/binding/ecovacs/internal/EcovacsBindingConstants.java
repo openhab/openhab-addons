@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ public class EcovacsBindingConstants {
     public static final String CLIENT_SECRET = "6c319b2a5cd3e66e39159c2e28f2fce9";
     public static final String AUTH_CLIENT_KEY = "1520391491841";
     public static final String AUTH_CLIENT_SECRET = "77ef58ce3afbe337da74aa8c5ab963a9";
+    public static final String APP_KEY = "2ea31cf06e6711eaa0aff7b9558a534e";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_API = new ThingTypeUID(BINDING_ID, "ecovacsapi");
@@ -85,36 +86,31 @@ public class EcovacsBindingConstants {
     public static final String CMD_SPOT_AREA = "spotArea";
     public static final String CMD_CUSTOM_AREA = "customArea";
 
-    public static final StateOptionMapping<CleanMode> CLEAN_MODE_MAPPING = StateOptionMapping.<CleanMode> of(
-            new StateOptionEntry<CleanMode>(CleanMode.AUTO, "auto"),
-            new StateOptionEntry<CleanMode>(CleanMode.EDGE, "edge", DeviceCapability.EDGE_CLEANING),
-            new StateOptionEntry<CleanMode>(CleanMode.SPOT, "spot", DeviceCapability.SPOT_CLEANING),
-            new StateOptionEntry<CleanMode>(CleanMode.SPOT_AREA, "spotArea", DeviceCapability.SPOT_AREA_CLEANING),
-            new StateOptionEntry<CleanMode>(CleanMode.CUSTOM_AREA, "customArea", DeviceCapability.CUSTOM_AREA_CLEANING),
-            new StateOptionEntry<CleanMode>(CleanMode.SINGLE_ROOM, "singleRoom", DeviceCapability.SINGLE_ROOM_CLEANING),
-            new StateOptionEntry<CleanMode>(CleanMode.PAUSE, "pause"),
-            new StateOptionEntry<CleanMode>(CleanMode.STOP, "stop"),
-            new StateOptionEntry<CleanMode>(CleanMode.WASHING, "washing"),
-            new StateOptionEntry<CleanMode>(CleanMode.DRYING, "drying"),
-            new StateOptionEntry<CleanMode>(CleanMode.RETURNING, "returning"));
+    public static final StateOptionMapping<CleanMode> CLEAN_MODE_MAPPING = StateOptionMapping.of(
+            new StateOptionEntry<>(CleanMode.AUTO, "auto"),
+            new StateOptionEntry<>(CleanMode.EDGE, "edge", DeviceCapability.EDGE_CLEANING),
+            new StateOptionEntry<>(CleanMode.SPOT, "spot", DeviceCapability.SPOT_CLEANING),
+            new StateOptionEntry<>(CleanMode.SPOT_AREA, "spotArea", DeviceCapability.SPOT_AREA_CLEANING),
+            new StateOptionEntry<>(CleanMode.CUSTOM_AREA, "customArea", DeviceCapability.CUSTOM_AREA_CLEANING),
+            new StateOptionEntry<>(CleanMode.SINGLE_ROOM, "singleRoom", DeviceCapability.SINGLE_ROOM_CLEANING),
+            new StateOptionEntry<>(CleanMode.PAUSE, "pause"), new StateOptionEntry<>(CleanMode.STOP, "stop"),
+            new StateOptionEntry<>(CleanMode.WASHING, "washing"), new StateOptionEntry<>(CleanMode.DRYING, "drying"),
+            new StateOptionEntry<>(CleanMode.RETURNING, "returning"));
 
-    public static final StateOptionMapping<MoppingWaterAmount> WATER_AMOUNT_MAPPING = StateOptionMapping
-            .<MoppingWaterAmount> of(new StateOptionEntry<MoppingWaterAmount>(MoppingWaterAmount.LOW, "low"),
-                    new StateOptionEntry<MoppingWaterAmount>(MoppingWaterAmount.MEDIUM, "medium"),
-                    new StateOptionEntry<MoppingWaterAmount>(MoppingWaterAmount.HIGH, "high"),
-                    new StateOptionEntry<MoppingWaterAmount>(MoppingWaterAmount.VERY_HIGH, "veryhigh"));
+    public static final StateOptionMapping<MoppingWaterAmount> WATER_AMOUNT_MAPPING = StateOptionMapping.of(
+            new StateOptionEntry<>(MoppingWaterAmount.LOW, "low"),
+            new StateOptionEntry<>(MoppingWaterAmount.MEDIUM, "medium"),
+            new StateOptionEntry<>(MoppingWaterAmount.HIGH, "high"),
+            new StateOptionEntry<>(MoppingWaterAmount.VERY_HIGH, "veryhigh"));
 
-    public static final StateOptionMapping<SuctionPower> SUCTION_POWER_MAPPING = StateOptionMapping.<SuctionPower> of(
-            new StateOptionEntry<SuctionPower>(SuctionPower.SILENT, "silent",
-                    DeviceCapability.EXTENDED_CLEAN_SPEED_CONTROL),
-            new StateOptionEntry<SuctionPower>(SuctionPower.NORMAL, "normal"),
-            new StateOptionEntry<SuctionPower>(SuctionPower.HIGH, "high"), new StateOptionEntry<SuctionPower>(
-                    SuctionPower.HIGHER, "higher", DeviceCapability.EXTENDED_CLEAN_SPEED_CONTROL));
+    public static final StateOptionMapping<SuctionPower> SUCTION_POWER_MAPPING = StateOptionMapping.of(
+            new StateOptionEntry<>(SuctionPower.SILENT, "silent", DeviceCapability.EXTENDED_CLEAN_SPEED_CONTROL),
+            new StateOptionEntry<>(SuctionPower.NORMAL, "normal"), new StateOptionEntry<>(SuctionPower.HIGH, "high"),
+            new StateOptionEntry<>(SuctionPower.HIGHER, "higher", DeviceCapability.EXTENDED_CLEAN_SPEED_CONTROL));
 
-    public static final StateOptionMapping<SoundType> SOUND_TYPE_MAPPING = StateOptionMapping.<SoundType> of(
-            new StateOptionEntry<SoundType>(SoundType.BEEP, "beep"),
-            new StateOptionEntry<SoundType>(SoundType.I_AM_HERE, "iAmHere"),
-            new StateOptionEntry<SoundType>(SoundType.STARTUP, "startup"),
-            new StateOptionEntry<SoundType>(SoundType.SUSPENDED, "suspended"),
-            new StateOptionEntry<SoundType>(SoundType.BATTERY_LOW, "batteryLow"));
+    public static final StateOptionMapping<SoundType> SOUND_TYPE_MAPPING = StateOptionMapping.of(
+            new StateOptionEntry<>(SoundType.BEEP, "beep"), new StateOptionEntry<>(SoundType.I_AM_HERE, "iAmHere"),
+            new StateOptionEntry<>(SoundType.STARTUP, "startup"),
+            new StateOptionEntry<>(SoundType.SUSPENDED, "suspended"),
+            new StateOptionEntry<>(SoundType.BATTERY_LOW, "batteryLow"));
 }

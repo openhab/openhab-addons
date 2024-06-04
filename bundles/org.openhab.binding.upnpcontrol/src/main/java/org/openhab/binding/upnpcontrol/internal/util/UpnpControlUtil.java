@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -113,9 +113,8 @@ public final class UpnpControlUtil {
             return Collections.emptyList();
         }
 
-        List<String> result = (Arrays.asList(files)).stream().map(p -> p.getName().replace(extension, ""))
+        return (Arrays.asList(files)).stream().map(p -> p.getName().replace(extension, ""))
                 .collect(Collectors.toList());
-        return result;
     }
 
     private static void delete(String name, @Nullable String path, String extension) {

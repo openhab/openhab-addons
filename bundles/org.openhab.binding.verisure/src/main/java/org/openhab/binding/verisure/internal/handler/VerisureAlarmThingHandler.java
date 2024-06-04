@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.verisure.internal.VerisureBindingConstants.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -45,7 +44,7 @@ import org.openhab.core.types.UnDefType;
 @NonNullByDefault
 public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlarmsDTO> {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_ALARM);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_ALARM);
 
     private static final int REFRESH_DELAY_SECONDS = 10;
 
@@ -143,7 +142,7 @@ public class VerisureAlarmThingHandler extends VerisureThingHandler<VerisureAlar
         String alarmStatus = armState.getStatusType();
         if (alarmStatus != null) {
             getThing().getChannels().stream().map(Channel::getUID)
-                    .filter(channelUID -> isLinked(channelUID) && !channelUID.getId().equals("timestamp"))
+                    .filter(channelUID -> isLinked(channelUID) && !"timestamp".equals(channelUID.getId()))
                     .forEach(channelUID -> {
                         State state = getValue(channelUID.getId(), armState);
                         updateState(channelUID, state);

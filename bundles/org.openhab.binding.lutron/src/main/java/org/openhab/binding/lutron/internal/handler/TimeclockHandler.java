@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -95,8 +95,8 @@ public class TimeclockHandler extends LutronHandler {
         logger.debug("Handling timeclock command {} on channel {}", command, channelID);
 
         if (channelUID.getId().equals(CHANNEL_CLOCKMODE)) {
-            if (command instanceof DecimalType) {
-                Integer mode = ((DecimalType) command).intValue();
+            if (command instanceof DecimalType decimalCommand) {
+                Integer mode = decimalCommand.intValue();
                 timeclock(TimeclockCommand.ACTION_CLOCKMODE, mode, null);
             } else if (command instanceof RefreshType) {
                 queryTimeclock(TimeclockCommand.ACTION_CLOCKMODE);
@@ -104,8 +104,8 @@ public class TimeclockHandler extends LutronHandler {
                 logger.debug("Invalid command type for clockmode channnel");
             }
         } else if (channelUID.getId().equals(CHANNEL_EXECEVENT)) {
-            if (command instanceof DecimalType) {
-                Integer index = ((DecimalType) command).intValue();
+            if (command instanceof DecimalType decimalCommand) {
+                Integer index = decimalCommand.intValue();
                 timeclock(TimeclockCommand.ACTION_EXECEVENT, index, null);
             } else {
                 logger.debug("Invalid command type for execevent channnel");
@@ -123,15 +123,15 @@ public class TimeclockHandler extends LutronHandler {
                 logger.debug("Invalid command type for sunset channnel");
             }
         } else if (channelUID.getId().equals(CHANNEL_ENABLEEVENT)) {
-            if (command instanceof DecimalType) {
-                Integer index = ((DecimalType) command).intValue();
+            if (command instanceof DecimalType decimalCommand) {
+                Integer index = decimalCommand.intValue();
                 timeclock(TimeclockCommand.ACTION_SETEVENT, index, true);
             } else {
                 logger.debug("Invalid command type for enableevent channnel");
             }
         } else if (channelUID.getId().equals(CHANNEL_DISABLEEVENT)) {
-            if (command instanceof DecimalType) {
-                Integer index = ((DecimalType) command).intValue();
+            if (command instanceof DecimalType decimalCommand) {
+                Integer index = decimalCommand.intValue();
                 timeclock(TimeclockCommand.ACTION_SETEVENT, index, false);
             } else {
                 logger.debug("Invalid command type for disableevent channnel");

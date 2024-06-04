@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -57,30 +58,68 @@ public abstract class BoschSHCDeviceHandler extends BoschSHCHandler {
 
     @Override
     public void initialize() {
-        var config = this.config = getConfigAs(BoschSHCConfiguration.class);
+        this.config = getConfigAs(BoschSHCConfiguration.class);
 
         String deviceId = config.id;
+        @Nullable
+        Device deviceInfo = validateDeviceId(deviceId);
+        if (deviceInfo == null) {
+            return;
+        }
+
+        if (!processDeviceInfo(deviceInfo)) {
+            return;
+        }
+
+        super.initialize();
+    }
+
+    /**
+     * Allows the handler to process the device info that was obtained from a REST
+     * call to the Smart Home Controller at <code>/devices/{deviceId}</code>.
+     * 
+     * @param deviceInfo the device info obtained from the controller, guaranteed to be non-null
+     * @return <code>true</code> if the device info is valid and the initialization should proceed, <code>false</code>
+     *         otherwise
+     */
+    protected boolean processDeviceInfo(Device deviceInfo) {
+        return true;
+    }
+
+    /**
+     * Attempts to obtain information about the device with the specified ID via a REST call.
+     * <p>
+     * If the REST call is successful, the device ID is considered to be valid and the resulting {@link Device} object
+     * is returned.
+     * <p>
+     * If the device ID is not configured/empty or the REST call is not successful, the device ID is considered invalid
+     * and <code>null</code> is returned.
+     * 
+     * @param deviceId the device ID to check
+     * @return the {@link Device} info object if the REST call was successful, <code>null</code> otherwise
+     */
+    @Nullable
+    protected Device validateDeviceId(@Nullable String deviceId) {
         if (deviceId == null || deviceId.isBlank()) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.empty-device-id");
-            return;
+            return null;
         }
 
         // Try to get device info to make sure the device exists
         try {
             var bridgeHandler = this.getBridgeHandler();
-            var info = bridgeHandler.getDeviceInfo(deviceId);
-            logger.trace("Device initialized:\n{}", info);
+            var deviceInfo = bridgeHandler.getDeviceInfo(deviceId);
+            logger.trace("Device validated and initialized:\n{}", deviceInfo);
+            return deviceInfo;
         } catch (TimeoutException | ExecutionException | BoschSHCException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            return;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-            return;
         }
 
-        super.initialize();
+        return null;
     }
 
     /**

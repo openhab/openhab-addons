@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,8 +18,6 @@ import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -121,12 +119,16 @@ class ThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<Ther
 
     @Test
     void testUpdateChannelsTemperatureLevelService() {
-        JsonElement jsonObject = JsonParser.parseString(
-                "{\n" + "   \"@type\": \"temperatureLevelState\",\n" + "   \"temperature\": 21.5\n" + " }");
+        JsonElement jsonObject = JsonParser.parseString("""
+                {
+                   "@type": "temperatureLevelState",
+                   "temperature": 21.5
+                 }\
+                """);
         getFixture().processUpdate("TemperatureLevel", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE),
-                new QuantityType<Temperature>(21.5, SIUnits.CELSIUS));
+                new QuantityType<>(21.5, SIUnits.CELSIUS));
     }
 
     @Test

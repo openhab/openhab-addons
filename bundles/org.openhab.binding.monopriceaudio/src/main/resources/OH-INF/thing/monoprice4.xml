@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="monopriceaudio"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Monoprice 44519 4 zone/6 source variant -->
+	<thing-type id="monoprice4">
+		<label>Monoprice 44519 4 Zone Amplifier</label>
+		<description>
+			A Multi-zone Whole House Amplifier System
+		</description>
+
+		<channel-groups>
+			<channel-group id="all" typeId="all">
+				<label>All Zones</label>
+				<description>Control All Zones Simultaneously</description>
+			</channel-group>
+			<channel-group id="zone1" typeId="zone">
+				<label>Zone 1</label>
+				<description>The Controls for Zone 1</description>
+			</channel-group>
+			<channel-group id="zone2" typeId="zone">
+				<label>Zone 2</label>
+				<description>The Controls for Zone 2</description>
+			</channel-group>
+			<channel-group id="zone3" typeId="zone">
+				<label>Zone 3</label>
+				<description>The Controls for Zone 3</description>
+			</channel-group>
+			<channel-group id="zone4" typeId="zone">
+				<label>Zone 4</label>
+				<description>The Controls for Zone 4</description>
+			</channel-group>
+			<channel-group id="zone5" typeId="zone">
+				<label>Zone 5</label>
+				<description>The Controls for Zone 5</description>
+			</channel-group>
+			<channel-group id="zone6" typeId="zone">
+				<label>Zone 6</label>
+				<description>The Controls for Zone 6</description>
+			</channel-group>
+			<channel-group id="zone7" typeId="zone">
+				<label>Zone 7</label>
+				<description>The Controls for Zone 7</description>
+			</channel-group>
+			<channel-group id="zone8" typeId="zone">
+				<label>Zone 8</label>
+				<description>The Controls for Zone 8</description>
+			</channel-group>
+			<channel-group id="zone9" typeId="zone">
+				<label>Zone 9</label>
+				<description>The Controls for Zone 9</description>
+			</channel-group>
+			<channel-group id="zone10" typeId="zone">
+				<label>Zone 10</label>
+				<description>The Controls for Zone 10</description>
+			</channel-group>
+			<channel-group id="zone11" typeId="zone">
+				<label>Zone 11</label>
+				<description>The Controls for Zone 11</description>
+			</channel-group>
+			<channel-group id="zone12" typeId="zone">
+				<label>Zone 12</label>
+				<description>The Controls for Zone 12</description>
+			</channel-group>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="serialPort" type="text" required="false">
+				<context>serial-port</context>
+				<limitToOptions>false</limitToOptions>
+				<label>Serial Port</label>
+				<description>Serial Port to Use for Connecting to the Monoprice Amplifier</description>
+			</parameter>
+			<parameter name="host" type="text" required="false">
+				<context>network-address</context>
+				<label>Address</label>
+				<description>Host Name or IP Address of the Monoprice Amplifier or Serial over IP device</description>
+			</parameter>
+			<parameter name="port" type="integer" min="1" max="65535" required="false">
+				<label>Port</label>
+				<description>Communication Port for Serial over IP connection to the Monoprice Amplifier (8080 for amps with
+					built-in Serial over IP)</description>
+			</parameter>
+			<parameter name="numZones" type="integer" min="1" max="12" required="true">
+				<label>Number of Zones</label>
+				<description>Number of Zones on the Amplifier to Utilize in the Binding (Up to 12 Zones With 3 Amplifiers Connected
+					Together)</description>
+				<default>4</default>
+			</parameter>
+			<parameter name="pollingInterval" type="integer" min="5" max="60" unit="s" required="false">
+				<label>Polling Interval</label>
+				<description>Configures How Often to Poll the Amplifier to Check for Zone Updates (5-60; Default 15)</description>
+				<default>15</default>
+			</parameter>
+			<parameter name="ignoreZones" type="text" required="false">
+				<label>Ignore Zones</label>
+				<description>(Optional) A Comma Seperated List of Zone Numbers That Will Ignore the 'All Zone' (Except All Off)
+					Commands (ie: 1,6,10)</description>
+			</parameter>
+			<parameter name="initialAllVolume" type="integer" min="1" max="30" required="false">
+				<label>Initial All Volume</label>
+				<description>When 'All' Zones Are Activated, the Volume Will Reset to This Value (1-30; default 10) to Prevent
+					Excessive Blaring of Sound ;)</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="inputLabel1" type="text" required="false">
+				<label>Source 1 Input Label</label>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<default>Source 1</default>
+			</parameter>
+			<parameter name="inputLabel2" type="text" required="false">
+				<label>Source 2 Input Label</label>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<default>Source 2</default>
+			</parameter>
+			<parameter name="inputLabel3" type="text" required="false">
+				<label>Source 3 Input Label</label>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<default>Source 3</default>
+			</parameter>
+			<parameter name="inputLabel4" type="text" required="false">
+				<label>Source 4 Input Label</label>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<default>Source 4</default>
+			</parameter>
+			<parameter name="inputLabel5" type="text" required="false">
+				<label>Source 5 Input Label</label>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<default>Source 5</default>
+			</parameter>
+			<parameter name="inputLabel6" type="text" required="false">
+				<label>Source 6 Input Label</label>
+				<description>Friendly Name for the Input Source to Be Displayed in the UI (ie: Chromecast, Radio, CD, etc.)</description>
+				<default>Source 6</default>
+			</parameter>
+			<parameter name="disableKeypadPolling" type="boolean" required="false">
+				<label>Disable Keypad Polling</label>
+				<description>If physical keypads are not used, this option will disable polling the amplifier for zone updates</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="all">
+		<label>All Zones</label>
+		<description>Control All Zones Simultaneously</description>
+		<channels>
+			<channel id="allpower" typeId="allpower"/>
+			<channel id="allsource" typeId="source"/>
+			<channel id="allvolume" typeId="system.volume"/>
+			<channel id="allmute" typeId="system.mute"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="zone">
+		<label>Zone Controls</label>
+		<description>The Controls for the Zone</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="source" typeId="source"/>
+			<channel id="volume" typeId="system.volume"/>
+			<channel id="mute" typeId="system.mute"/>
+			<channel id="treble" typeId="treble"/>
+			<channel id="bass" typeId="bass"/>
+			<channel id="balance" typeId="balance"/>
+			<channel id="dnd" typeId="dnd"/>
+			<channel id="page" typeId="page"/>
+			<channel id="keypad" typeId="keypad"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-type id="allpower">
+		<item-type>Switch</item-type>
+		<label>All On</label>
+		<description>Turn All Zones On or Off</description>
+	</channel-type>
+
+	<channel-type id="source">
+		<item-type>Number</item-type>
+		<label>Source Input</label>
+		<description>Select the Source Input</description>
+		<state min="1" max="6"/>
+	</channel-type>
+
+	<channel-type id="treble">
+		<item-type>Number</item-type>
+		<label>Treble Adjustment</label>
+		<description>Adjust the Treble</description>
+		<state min="-7" max="7" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="bass">
+		<item-type>Number</item-type>
+		<label>Bass Adjustment</label>
+		<description>Adjust the Bass</description>
+		<state min="-7" max="7" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="balance">
+		<item-type>Number</item-type>
+		<label>Balance Adjustment</label>
+		<description>Adjust the Balance</description>
+		<state min="-10" max="10" step="1" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="dnd">
+		<item-type>Switch</item-type>
+		<label>Do Not Disturb</label>
+		<description>Controls if the Zone Should Ignore an Incoming Audio Page</description>
+	</channel-type>
+
+	<channel-type id="page">
+		<item-type>Contact</item-type>
+		<label>Page Active</label>
+		<description>Indicates if the Page Mode is Active for This Zone</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Inactive</option>
+				<option value="OPEN">Active</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="keypad">
+		<item-type>Contact</item-type>
+		<label>Keypad Connected</label>
+		<description>Indicates if a Physical Keypad is Attached to This Zone</description>
+		<state readOnly="true">
+			<options>
+				<option value="CLOSED">Disconnected</option>
+				<option value="OPEN">Connected</option>
+			</options>
+		</state>
+	</channel-type>
+
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link OnkyoBinding} class defines common constants, which are
+ * The {@link OnkyoBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Paul Frank - Initial contribution
@@ -75,6 +75,7 @@ public class OnkyoBindingConstants {
     public static final String CHANNEL_LISTENMODE = "player#listenmode";
     public static final String CHANNEL_AUDIOINFO = "player#audioinfo";
     public static final String CHANNEL_PLAY_URI = "player#playuri";
+    public static final String CHANNEL_AUDYSSEYEQ = "player#audysseyeq";
 
     public static final String CHANNEL_NET_MENU_TITLE = "netmenu#title";
     public static final String CHANNEL_NET_MENU_CONTROL = "netmenu#control";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Bernd Weymann - Initial contribution
  * @author Norbert Truchsess - contributor
+ * @author Martin Grassl - rename drivetrain options
  */
 @NonNullByDefault
 public class Constants {
@@ -92,11 +93,11 @@ public class Constants {
     };
 
     // Drive Train definitions from json
-    public static final String BEV = "ELECTRIC";
-    public static final String REX_EXTENSION = "(+ REX)";
-    public static final String HYBRID = "HYBRID";
-    public static final String CONV = "COMBUSTION";
-    public static final String PHEV = "PLUGIN_HYBRID";
+    public static final String DRIVETRAIN_BEV = "ELECTRIC";
+    public static final String DRIVETRAIN_REX_EXTENSION = "(+ REX)";
+    public static final String DRIVETRAIN_MILD_HYBRID = "MILD_HYBRID";
+    public static final String DRIVETRAIN_CONV = "COMBUSTION";
+    public static final String DRIVETRAIN_PHEV = "PLUGIN_HYBRID";
 
     // Carging States
     public static final String DEFAULT = "DEFAULT";

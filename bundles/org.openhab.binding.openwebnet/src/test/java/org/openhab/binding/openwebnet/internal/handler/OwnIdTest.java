@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,6 +57,12 @@ public class OwnIdTest {
      * Zigbee Switch_2u u1  789301201#9     789301200h9         1.789309800h9   789309800h9
      * Zigbee Switch_2u u2  789301202#9     789301200h9         1.789309800h9   789309800h9
      * BUS Switch           51              51                  1.51            51
+     *
+     * BUS Switch Gen       0               0                   1.0             0
+     * BUS Switch Area      5               5                   1.5             5
+     * BUS Switch Group     #25             h25                 1.h25           h25
+     * BUS Autom Group      #25             h25                 2.h25           h25
+     *
      * BUS Local Bus        25#4#01         25h4h01             1.25h4h01       25h4h01
      * BUS Autom            93              93                  2.93            93
      * BUS Thermo zone      1               1                   4.1             1
@@ -71,7 +77,8 @@ public class OwnIdTest {
      * BUS DryContact       399             399                 25.399          399
      * BUS AUX              4               4                   9.4             4
      * BUS Scenario         05              05                  0.05            05
-     * BUS Alarm Zone       #2 or 2         2                   5.2             2
+     * BUS Alarm Zone CU    #2              2                   5.2             2
+     * BUS Alarm Zone       2               2                   5.2             2
      * BUS Alarm silent     0               0                   5.0             0
      * BUS Alarm system     null            0                   5.0             0
      */
@@ -84,8 +91,16 @@ public class OwnIdTest {
         zb_switch_2u_1("*1*1*789301201#9##", Who.fromValue(1), new WhereZigBee("789301201#9"), "789301200h9", "1.789301200h9", "789301200h9"),
         zb_switch_2u_2("*1*1*789301202#9##", Who.fromValue(1),    new WhereZigBee("789301202#9"), "789301200h9", "1.789301200h9", "789301200h9"),
         bus_switch("*1*1*51##", Who.fromValue(1), new WhereLightAutom("51"),"51", "1.51", "51"),
+
+        bus_switch_gen("*1*1*0##", Who.fromValue(1), new WhereLightAutom("0"),"0", "1.0", "0"),
+        bus_switch_area("*1*1*5##", Who.fromValue(1), new WhereLightAutom("5"),"5", "1.5", "5"),
+        bus_switch_group("*1*1*#25##", Who.fromValue(1), new WhereLightAutom("#25"),"h25", "1.h25", "h25"),
+
         bus_localbus("*1*1*25#4#01##",  Who.fromValue(1), new WhereLightAutom("25#4#01"), "25h4h01", "1.25h4h01", "25h4h01"),
         bus_autom("*2*0*93##",Who.fromValue(2),  new WhereLightAutom("93"), "93", "2.93", "93"),
+
+        bus_autom_group("*2*1*#25##", Who.fromValue(2), new WhereLightAutom("#25"),"h25", "2.h25", "h25"),
+
         bus_thermo_zone("*#4*1*0*0020##", Who.fromValue(4),  new WhereThermo("1"),  "1", "4.1", "1"),
         bus_thermo_zone_via_cu("*#4*#1*0*0020##",  Who.fromValue(4), new WhereThermo("#1"), "1", "4.1", "1"),
         bus_thermo_cu_99("*#4*#0##",   Who.fromValue(4), new WhereThermo("#0") ,"0", "4.0", "0"),
@@ -98,7 +113,8 @@ public class OwnIdTest {
         bus_drycontact("*25*32#1*399##", Who.fromValue(25),   new WhereCEN("399"), "399", "25.399", "399"),
         bus_aux( "*9*1*4##", Who.fromValue(9),  new WhereAuxiliary("4"),"4","9.4","4"),
         bus_scenario( "*0*2*05##", Who.fromValue(0), new WhereLightAutom("05"), "05","0.05","05"),
-        bus_alarm_zh("*#5*#2##",  Who.fromValue(5), new WhereAlarm("#2"),  "2", "5.2", "2"),
+        bus_alarm_zone_cu("*#5*#2##",  Who.fromValue(5), new WhereAlarm("#2"),  "2", "5.2", "2"),
+        bus_alarm_zone("*#5*2##",  Who.fromValue(5), new WhereAlarm("2"),  "2", "5.2", "2"),
         bus_alarm_silent("*5*2*0##",  Who.fromValue(5), new WhereAlarm("0"),  "0", "5.0", "0"),
         bus_alarm_system( "*5*7*##", Who.fromValue(5),new WhereAlarm("0"), "0", "5.0", "0");
 
@@ -136,13 +152,13 @@ public class OwnIdTest {
         for (int i = 0; i < TEST.values().length; i++) {
             TEST test = TEST.values()[i];
             logger.info("testing {} (who={} where={})", test.msg, test.who, test.where);
-            assertEquals(test.norm, brH.normalizeWhere(test.where));
+            assertEquals(test.norm, brH.normalizeWhere(test.who, test.where));
             assertEquals(test.ownId, brH.ownIdFromWhoWhere(test.who, test.where));
             bmsg = test.msg;
             if (bmsg != null) {
                 assertEquals(test.ownId, brH.ownIdFromMessage(bmsg));
             }
-            assertEquals(test.thingId, brH.thingIdFromWhere(test.where));
+            assertEquals(test.thingId, brH.thingIdFromWhoWhere(test.who, test.where));
         }
     }
 }

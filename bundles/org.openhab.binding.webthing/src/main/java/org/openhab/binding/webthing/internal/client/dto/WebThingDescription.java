@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,7 +57,7 @@ public class WebThingDescription {
             var href = link.href;
             if ((href != null) && href.startsWith("ws")) {
                 var rel = Optional.ofNullable(link.rel).orElse("<undefined>");
-                if (rel.equals("alternate")) {
+                if ("alternate".equals(rel)) {
                     return Optional.of(URI.create(href));
                 }
             }

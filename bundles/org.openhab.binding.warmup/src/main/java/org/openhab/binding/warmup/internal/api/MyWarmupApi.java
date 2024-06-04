@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -87,7 +87,7 @@ public class MyWarmupApi {
 
         AuthResponseDTO ar = GSON.fromJson(response.getContentAsString(), AuthResponseDTO.class);
 
-        if (ar != null && ar.getStatus() != null && ar.getStatus().getResult().equals("success")) {
+        if (ar != null && ar.getStatus() != null && "success".equals(ar.getStatus().getResult())) {
             authToken = ar.getResponse().getToken();
         } else {
             throw new MyWarmupApiException("Authentication Failed");
@@ -101,9 +101,11 @@ public class MyWarmupApi {
      * @throws MyWarmupApiException API callout error
      */
     public synchronized QueryResponseDTO getStatus() throws MyWarmupApiException {
-        return callWarmupGraphQL("query QUERY { user { locations{ id name "
-                + " rooms { id roomName runMode overrideDur targetTemp currentTemp "
-                + " thermostat4ies{ deviceSN lastPoll }}}}}");
+        return callWarmupGraphQL("""
+                query QUERY { user { locations{ id name \
+                 rooms { id roomName runMode overrideDur targetTemp currentTemp \
+                 thermostat4ies{ deviceSN lastPoll }}}}}\
+                """);
     }
 
     /**
@@ -142,7 +144,7 @@ public class MyWarmupApi {
 
         QueryResponseDTO qr = GSON.fromJson(response.getContentAsString(), QueryResponseDTO.class);
 
-        if (qr != null && qr.getStatus().equals("success")) {
+        if (qr != null && "success".equals(qr.getStatus())) {
             return qr;
         } else {
             throw new MyWarmupApiException("Unexpected reponse from API");

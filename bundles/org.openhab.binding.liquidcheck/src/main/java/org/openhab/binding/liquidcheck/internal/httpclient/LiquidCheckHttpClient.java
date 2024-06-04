@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LiquidCheckHttpClient {
-
     private final Logger logger = LoggerFactory.getLogger(LiquidCheckHttpClient.class);
     private final HttpClient client;
     private final LiquidCheckConfiguration config;
@@ -78,7 +77,7 @@ public class LiquidCheckHttpClient {
      */
     public String measureCommand() throws InterruptedException, TimeoutException, ExecutionException {
         String uri = "http://" + config.hostname + "/command";
-        Request request = client.newRequest(uri);
+        Request request = client.newRequest(uri).timeout(config.connectionTimeout, TimeUnit.SECONDS);
         request.method(HttpMethod.POST);
         request.header(HttpHeader.CONTENT_TYPE, "applicaton/json");
         request.content(new StringContentProvider(

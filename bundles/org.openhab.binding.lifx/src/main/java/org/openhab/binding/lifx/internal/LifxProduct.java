@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,7 +26,8 @@ import org.openhab.core.thing.ThingTypeUID;
 /**
  * Enumerates the LIFX products, their IDs and feature set.
  *
- * @see https://lan.developer.lifx.com/docs/lifx-products
+ * @see <a href="https://lan.developer.lifx.com/docs/lifx-products">
+ *      https://lan.developer.lifx.com/docs/lifx-products</a>
  *
  * @author Wouter Born - Initial contribution
  * @author Wouter Born - Add temperature ranges and simplify feature definitions
@@ -140,7 +141,37 @@ public enum LifxProduct {
     PRODUCT_135(135, "LIFX GU10", new Features(TR_1500_9000, COLOR)),
     PRODUCT_136(136, "LIFX GU10", new Features(TR_1500_9000, COLOR)),
     PRODUCT_137(137, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
-    PRODUCT_138(138, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX));
+    PRODUCT_138(138, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_141(141, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_142(142, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_143(143, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_144(144, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_161(161, "LIFX Outdoor Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_162(162, "LIFX Outdoor Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_163(163, "LIFX A19", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_164(164, "LIFX BR30", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_165(165, "LIFX A19", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_166(166, "LIFX BR30", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_167(167, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_168(168, "LIFX Downlight", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_169(169, "LIFX A21 1600lm", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_170(170, "LIFX A21 1600lm", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_171(171, "LIFX Round Spot", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_173(173, "LIFX Round Path", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_174(174, "LIFX Square Path", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_175(175, "LIFX PAR38", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_176(176, "LIFX Ceiling", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_177(177, "LIFX Ceiling", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_181(181, "LIFX Color", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_182(182, "LIFX Color", new Features(TR_1500_9000, COLOR)),
+    PRODUCT_185(185, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_186(186, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_187(187, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_188(188, "LIFX Candle", new Features(TR_1500_9000, COLOR, MATRIX)),
+    PRODUCT_203(203, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_204(204, "LIFX String", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_205(205, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE)),
+    PRODUCT_206(206, "LIFX Neon", new Features(TR_1500_9000, COLOR, EXTENDED_MULTIZONE, MULTIZONE));
 
     /**
      * Enumerates the product features.

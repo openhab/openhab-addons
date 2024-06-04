@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -197,8 +197,8 @@ public class RioSystemFavoritesProtocol extends AbstractRioProtocol {
      * @param controller the controller number between 1 and 6
      * @param zone the zone number between 1 and 8
      * @param favJson the possibly empty, possibly null JSON representation of system favorites
-     * @throws IllegalArgumentException if controller is < 1 or > 6
-     * @throws IllegalArgumentException if zone is < 1 or > 8
+     * @throws IllegalArgumentException if controller is {@literal <} 1 or > 6
+     * @throws IllegalArgumentException if zone is {@literal < 1} or > 8
      */
     public void setSystemFavorites(int controller, int zone, @Nullable String favJson) {
         if (controller < 1 || controller > 6) {
@@ -309,7 +309,7 @@ public class RioSystemFavoritesProtocol extends AbstractRioProtocol {
      * Implements {@link SocketSessionListener#responseReceived(String)} to try to process the response from the
      * russound system. This response may be for other protocol handler - so ignore if we don't recognize the response.
      *
-     * @param a possibly null, possibly empty response
+     * @param response a possibly null, possibly empty response
      */
     @Override
     public void responseReceived(@Nullable String response) {

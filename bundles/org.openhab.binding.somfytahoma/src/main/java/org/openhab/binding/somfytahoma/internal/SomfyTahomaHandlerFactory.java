@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaAdjustableSla
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaAwningHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBioclimaticPergolaHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaBridgeHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaCarbonDioxideSensorHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaContactSensorHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaCurtainHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaDimmerLightHandler;
@@ -39,6 +40,7 @@ import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaInternalAlarm
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaLightSensorHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaMyfoxAlarmHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaMyfoxCameraHandler;
+import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaNoiseSensorHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaOccupancySensorHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaOnOffHandler;
 import org.openhab.binding.somfytahoma.internal.handler.SomfyTahomaOnOffHeatingSystemHandler;
@@ -202,6 +204,10 @@ public class SomfyTahomaHandlerFactory extends BaseThingHandlerFactory {
             return new SomfyTahomaHitachiATWMCHandler(thing);
         } else if (thingTypeUID.equals(THING_TYPE_RAINSENSOR)) {
             return new SomfyTahomaRainSensorHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_CARBON_DIOXIDE_SENSOR)) {
+            return new SomfyTahomaCarbonDioxideSensorHandler(thing);
+        } else if (thingTypeUID.equals(THING_TYPE_NOISE_SENSOR)) {
+            return new SomfyTahomaNoiseSensorHandler(thing);
         } else {
             return null;
         }

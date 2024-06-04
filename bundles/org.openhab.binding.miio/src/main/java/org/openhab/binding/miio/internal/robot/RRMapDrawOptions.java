@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,9 +93,8 @@ public class RRMapDrawOptions {
                         throw new JsonParseException("missing json text");
                     }
                     JsonObject colorSave = json.getAsJsonObject();
-                    Color color = new Color(colorSave.get("red").getAsInt(), colorSave.get("green").getAsInt(),
+                    return new Color(colorSave.get("red").getAsInt(), colorSave.get("green").getAsInt(),
                             colorSave.get("blue").getAsInt(), colorSave.get("alpha").getAsInt());
-                    return color;
                 }
             }).create();
 
@@ -301,8 +300,7 @@ public class RRMapDrawOptions {
 
     public static RRMapDrawOptions getOptionsFromFile(String fileName, Logger logger) {
         try {
-            RRMapDrawOptions options = GSON.fromJson(new FileReader(fileName), RRMapDrawOptions.class);
-            return options;
+            return GSON.fromJson(new FileReader(fileName), RRMapDrawOptions.class);
         } catch (FileNotFoundException e) {
             logger.debug("Vacuum map draw options file {} not found. Using defaults", fileName);
             return new RRMapDrawOptions();

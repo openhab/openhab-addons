@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,8 +41,7 @@ public class PersonChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
-        if (naThing instanceof HomeDataPerson) {
-            HomeDataPerson person = (HomeDataPerson) naThing;
+        if (naThing instanceof HomeDataPerson person) {
             switch (channelId) {
                 case CHANNEL_PERSON_AVATAR_URL:
                     return toStringType(person.getUrl().orElse(null));
@@ -50,8 +49,7 @@ public class PersonChannelHelper extends ChannelHelper {
                     return toRawType(person.getUrl().orElse(null));
             }
         }
-        if (naThing instanceof HomeStatusPerson) {
-            HomeStatusPerson person = (HomeStatusPerson) naThing;
+        if (naThing instanceof HomeStatusPerson person) {
             switch (channelId) {
                 case CHANNEL_PERSON_AT_HOME:
                     return OnOffType.from(person.atHome());

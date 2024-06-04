@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.deconz.internal.discovery;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -35,15 +35,16 @@ import org.openhab.binding.deconz.internal.handler.SensorThermostatThingHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.types.GroupType;
 import org.openhab.binding.deconz.internal.types.LightType;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,36 +54,35 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ThingDiscoveryService.class)
 @NonNullByDefault
-public class ThingDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
+public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<DeconzBridgeHandler>
+        implements DiscoveryService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(LightThingHandler.SUPPORTED_THING_TYPE_UIDS, SensorThingHandler.SUPPORTED_THING_TYPES,
                     SensorThermostatThingHandler.SUPPORTED_THING_TYPES)
             .flatMap(Set::stream).collect(Collectors.toSet());
     private final Logger logger = LoggerFactory.getLogger(ThingDiscoveryService.class);
 
-    private @Nullable DeconzBridgeHandler handler;
     private @Nullable ScheduledFuture<?> scanningJob;
     private @Nullable ThingUID bridgeUID;
 
+    @Activate
     public ThingDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, 30);
+        super(DeconzBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, 30);
     }
 
     @Override
     public void startScan() {
-        final DeconzBridgeHandler handler = this.handler;
-        if (handler != null) {
-            handler.getBridgeFullState().thenAccept(fullState -> {
-                stopScan();
-                fullState.ifPresent(state -> {
-                    state.sensors.forEach(this::addSensor);
-                    state.lights.forEach(this::addLight);
-                    state.groups.forEach(this::addGroup);
-                });
-
+        thingHandler.getBridgeFullState().thenAccept(fullState -> {
+            stopScan();
+            fullState.ifPresent(state -> {
+                state.sensors.forEach(this::addSensor);
+                state.lights.forEach(this::addLight);
+                state.groups.forEach(this::addGroup);
             });
-        }
+
+        });
     }
 
     @Override
@@ -193,7 +193,7 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             case COLOR_TEMPERATURE_LIGHT -> thingTypeUID = THING_TYPE_COLOR_TEMPERATURE_LIGHT;
             case COLOR_DIMMABLE_LIGHT, COLOR_LIGHT -> thingTypeUID = THING_TYPE_COLOR_LIGHT;
             case EXTENDED_COLOR_LIGHT -> thingTypeUID = THING_TYPE_EXTENDED_COLOR_LIGHT;
-            case WINDOW_COVERING_DEVICE -> thingTypeUID = THING_TYPE_WINDOW_COVERING;
+            case WINDOW_COVERING_DEVICE, WINDOW_COVERING_CONTROLLER -> thingTypeUID = THING_TYPE_WINDOW_COVERING;
             case WARNING_DEVICE -> thingTypeUID = THING_TYPE_WARNING_DEVICE;
             case DOORLOCK -> thingTypeUID = THING_TYPE_DOORLOCK;
             case CONFIGURATION_TOOL -> {
@@ -290,26 +290,14 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof DeconzBridgeHandler) {
-            this.handler = (DeconzBridgeHandler) handler;
-            this.bridgeUID = handler.getThing().getUID();
-        }
+    public void initialize() {
+        bridgeUID = thingHandler.getThing().getUID();
+        super.initialize();
     }
 
     @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        removeOlderResults(new Date().getTime());
-        super.deactivate();
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 }

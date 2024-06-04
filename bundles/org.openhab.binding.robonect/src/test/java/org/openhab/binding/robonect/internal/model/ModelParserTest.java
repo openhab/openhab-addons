@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -183,14 +183,40 @@ public class ModelParserTest {
 
     @Test
     public void shouldParseVersionInfoV1betaToNA() {
-        String versionResponse = "{\n" + "mower: {\n" + "hardware: {\n" + "serial: 170602001,\n"
-                + "production: \"2017-02-07 15:12:00\"\n" + "},\n" + "msw: {\n" + "title: \"420\",\n"
-                + "version: \"7.10.00\",\n" + "compiled: \"2016-11-29 08:44:06\"\n" + "},\n" + "sub: {\n"
-                + "version: \"6.01.00\"\n" + "}\n" + "},\n" + "serial: \"05D80037-39355548-43163930\",\n"
-                + "bootloader: {\n" + "version: \"V0.4\",\n" + "compiled: \"2016-10-22 01:12:00\",\n"
-                + "comment: \"\"\n" + "},\n" + "wlan: {\n" + "at-version: \"V1.4.0\",\n" + "sdk-version: \"V2.1.0\"\n"
-                + "},\n" + "application: {\n" + "version: \"V1.0\",\n" + "compiled: \"2018-03-12 21:01:00\",\n"
-                + "comment: \"Release V1.0 Beta2\"\n" + "},\n" + "successful: true\n" + "}";
+        String versionResponse = """
+                {
+                mower: {
+                hardware: {
+                serial: 170602001,
+                production: "2017-02-07 15:12:00"
+                },
+                msw: {
+                title: "420",
+                version: "7.10.00",
+                compiled: "2016-11-29 08:44:06"
+                },
+                sub: {
+                version: "6.01.00"
+                }
+                },
+                serial: "05D80037-39355548-43163930",
+                bootloader: {
+                version: "V0.4",
+                compiled: "2016-10-22 01:12:00",
+                comment: ""
+                },
+                wlan: {
+                at-version: "V1.4.0",
+                sdk-version: "V2.1.0"
+                },
+                application: {
+                version: "V1.0",
+                compiled: "2018-03-12 21:01:00",
+                comment: "Release V1.0 Beta2"
+                },
+                successful: true
+                }\
+                """;
         VersionInfo versionInfo = subject.parse(versionResponse, VersionInfo.class);
         assertTrue(versionInfo.isSuccessful());
         assertEquals("n/a", versionInfo.getRobonect().getSerial());

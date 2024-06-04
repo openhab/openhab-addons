@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,31 +13,22 @@
 package org.openhab.binding.shelly.internal.discovery;
 
 import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
-import static org.openhab.binding.shelly.internal.util.ShellyUtils.substringBeforeLast;
-import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
+import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.io.IOException;
-import java.util.Map;
+import java.net.Inet4Address;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.shelly.internal.api.ShellyApiException;
-import org.openhab.binding.shelly.internal.api.ShellyApiInterface;
-import org.openhab.binding.shelly.internal.api.ShellyApiResult;
 import org.openhab.binding.shelly.internal.api.ShellyDeviceProfile;
-import org.openhab.binding.shelly.internal.api1.Shelly1HttpApi;
-import org.openhab.binding.shelly.internal.api2.Shelly2ApiRpc;
 import org.openhab.binding.shelly.internal.config.ShellyBindingConfiguration;
 import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
-import org.openhab.binding.shelly.internal.handler.ShellyBaseHandler;
 import org.openhab.binding.shelly.internal.provider.ShellyTranslationProvider;
 import org.openhab.core.config.discovery.DiscoveryResult;
-import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -107,19 +98,11 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             return null;
         }
 
-        String address = "";
         try {
-            String mode = "";
-            String model = "unknown";
-            String deviceName = "";
-            ThingUID thingUID = null;
-            ShellyDeviceProfile profile;
-            Map<String, Object> properties = new TreeMap<>();
-
-            name = service.getName().toLowerCase();
-            String[] hostAddresses = service.getHostAddresses();
+            String address = "";
+            Inet4Address[] hostAddresses = service.getInet4Addresses();
             if ((hostAddresses != null) && (hostAddresses.length > 0)) {
-                address = hostAddresses[0];
+                address = substringAfter(hostAddresses[0].toString(), "/");
             }
             if (address.isEmpty()) {
                 logger.trace("{}: Shelly device discovered with empty IP address (service-name={})", name, service);
@@ -141,61 +124,14 @@ public class ShellyDiscoveryParticipant implements MDNSDiscoveryParticipant {
             config.userId = bindingConfig.defaultUserId;
             config.password = bindingConfig.defaultPassword;
 
-            boolean gen2 = "2".equals(service.getPropertyString("gen"));
-            try {
-                ShellyApiInterface api = gen2 ? new Shelly2ApiRpc(name, config, httpClient)
-                        : new Shelly1HttpApi(name, config, httpClient);
-                api.initialize();
-                profile = api.getDeviceProfile(thingType);
-                api.close();
-                logger.debug("{}: Shelly settings : {}", name, profile.settingsJson);
-                deviceName = profile.name;
-                model = profile.deviceType;
-                mode = profile.mode;
-                properties = ShellyBaseHandler.fillDeviceProperties(profile);
-                logger.trace("{}: thingType={}, deviceType={}, mode={}, symbolic name={}", name, thingType,
-                        profile.deviceType, mode.isEmpty() ? "<standard>" : mode, deviceName);
-
-                // get thing type from device name
-                thingUID = ShellyThingCreator.getThingUID(name, model, mode, false);
-            } catch (ShellyApiException e) {
-                ShellyApiResult result = e.getApiResult();
-                if (result.isHttpAccessUnauthorized()) {
-                    logger.info("{}: {}", name, messages.get("discovery.protected", address));
-
-                    // create shellyunknown thing - will be changed during thing initialization with valid credentials
-                    thingUID = ShellyThingCreator.getThingUID(name, model, mode, true);
-                } else {
-                    logger.debug("{}: {}", name, messages.get("discovery.failed", address, e.toString()));
-                }
-            } catch (IllegalArgumentException e) { // maybe some format description was buggy
-                logger.debug("{}: Discovery failed!", name, e);
-            }
-
-            if (thingUID != null) {
-                addProperty(properties, CONFIG_DEVICEIP, address);
-                addProperty(properties, PROPERTY_MODEL_ID, model);
-                addProperty(properties, PROPERTY_SERVICE_NAME, name);
-                addProperty(properties, PROPERTY_DEV_NAME, deviceName);
-                addProperty(properties, PROPERTY_DEV_TYPE, thingType);
-                addProperty(properties, PROPERTY_DEV_GEN, gen2 ? "2" : "1");
-                addProperty(properties, PROPERTY_DEV_MODE, mode);
-
-                logger.debug("{}: Adding Shelly {}, UID={}", name, deviceName, thingUID.getAsString());
-                String thingLabel = deviceName.isEmpty() ? name + " - " + address
-                        : deviceName + " (" + name + "@" + address + ")";
-                return DiscoveryResultBuilder.create(thingUID).withProperties(properties).withLabel(thingLabel)
-                        .withRepresentationProperty(PROPERTY_DEV_NAME).build();
-            }
+            String gen = getString(service.getPropertyString("gen"));
+            boolean gen2 = "2".equals(gen) || "3".equals(gen) || ShellyDeviceProfile.isGeneration2(name);
+            return ShellyBasicDiscoveryService.createResult(gen2, name, address, bindingConfig, httpClient, messages);
         } catch (IOException | NullPointerException e) {
             // maybe some format description was buggy
             logger.debug("{}: Exception on processing serviceInfo '{}'", name, service.getNiceTextString(), e);
         }
         return null;
-    }
-
-    private void addProperty(Map<String, Object> properties, String key, @Nullable String value) {
-        properties.put(key, value != null ? value : "");
     }
 
     @Nullable

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -92,12 +92,23 @@ class NhcDevice2 {
         // fields for access control
         @Nullable
         String doorlock;
+        // fields for video devices
+        @Nullable
+        String ipAddress;
+        @Nullable
+        String callStatus01;
+        @Nullable
+        String callStatus02;
+        @Nullable
+        String callStatus03;
+        @Nullable
+        String callStatus04;
     }
 
     static class NhcTrait {
         @Nullable
         String macAddress;
-        // fields for energyMeters metering
+        // fields for metering
         @Nullable
         String channel;
         @Nullable
@@ -120,6 +131,20 @@ class NhcDevice2 {
         String clampType;
         @Nullable
         String shortName;
+        // fields for access control
+        @Nullable
+        String buttonId;
+        @Nullable
+        String ringTone;
+        @Nullable
+        String declineCallAppliedOnAllDevices;
+        @Nullable
+        String iconCode;
+        // fields for video devices
+        @Nullable
+        String mjpegUri;
+        @Nullable
+        String tnUri;
     }
 
     String name = "";

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -279,8 +279,7 @@ public class HPUsage {
         int value = 0;
 
         for (Node n = parentNode.getFirstChild(); n != null; n = n.getNextSibling()) {
-            if (n instanceof Element) {
-                Element nodeItem = (Element) n;
+            if (n instanceof Element nodeItem) {
                 if (nodeItem.getElementsByTagName(collateTagName).item(0).getTextContent()
                         .equalsIgnoreCase(collateTagNameValue)) {
                     int nodeValue = Integer

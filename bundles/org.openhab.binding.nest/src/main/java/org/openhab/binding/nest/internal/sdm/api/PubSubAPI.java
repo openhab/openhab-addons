@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,8 +57,10 @@ import org.slf4j.LoggerFactory;
  *
  * @author Wouter Born - Initial contribution
  *
- * @see https://cloud.google.com/pubsub/docs/reference/rest
- * @see https://developers.google.com/nest/device-access/api/events
+ * @see <a href="https://cloud.google.com/pubsub/docs/reference/rest">
+ *      https://cloud.google.com/pubsub/docs/reference/rest</a>
+ * @see <a href="https://developers.google.com/nest/device-access/api/events">
+ *      https://developers.google.com/nest/device-access/api/events</a>
  */
 @NonNullByDefault
 public class PubSubAPI {
@@ -214,8 +216,8 @@ public class PubSubAPI {
                 listeners.remove(listener);
                 if (listeners.isEmpty()) {
                     subscriptionListeners.remove(subscriptionId);
-                    scheduler.getQueue().removeIf(runnable -> runnable instanceof Subscriber
-                            && ((Subscriber) runnable).subscriptionId.equals(subscriptionId));
+                    scheduler.getQueue().removeIf(
+                            runnable -> runnable instanceof Subscriber s && s.subscriptionId.equals(subscriptionId));
                 }
             }
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,8 +16,8 @@ import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 import org.openhab.core.library.types.OnOffType;
 
 /**
- * State for {@link ChildLockService} to activate and deactivate the child lock
- * of a device.
+ * State for {@link org.openhab.binding.boschshc.internal.services.childlock.ChildLockService}
+ * to activate and deactivate the child lock of a device.
  * 
  * @author Christian Oeing - Initial contribution
  */

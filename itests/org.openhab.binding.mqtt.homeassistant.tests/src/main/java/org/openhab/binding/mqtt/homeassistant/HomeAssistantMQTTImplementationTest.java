@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,10 +19,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledExecutorService;
@@ -160,18 +161,18 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         ComponentDiscovered cd = (haID, c) -> {
             haComponents.put(c.getGroupUID().getId(), c);
             c.addChannelTypes(channelTypeProvider);
-            channelTypeProvider.setChannelGroupType(c.getGroupTypeUID(), c.getType());
+            channelTypeProvider.setChannelGroupType(Objects.requireNonNull(c.getGroupTypeUID()),
+                    Objects.requireNonNull(c.getType()));
             latch.countDown();
         };
 
         // Start the discovery for 2000ms. Forced timeout after 4000ms.
         HaID haID = new HaID(testObjectTopic + "/config");
-        CompletableFuture<Void> future = discover.startDiscovery(haConnection, 2000, Collections.singleton(haID), cd)
-                .thenRun(() -> {
-                }).exceptionally(e -> {
-                    failure = e;
-                    return null;
-                });
+        CompletableFuture<Void> future = discover.startDiscovery(haConnection, 2000, Set.of(haID), cd).thenRun(() -> {
+        }).exceptionally(e -> {
+            failure = e;
+            return null;
+        });
 
         assertTrue(latch.await(4, TimeUnit.SECONDS));
         future.get(5, TimeUnit.SECONDS);

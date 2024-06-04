@@ -11,16 +11,26 @@
 
 		<channel-groups>
 			<channel-group id="general" typeId="general"/>
-			<channel-group id="loadpoint0" typeId="loadpoint"/>
-			<channel-group id="loadpoint1" typeId="loadpoint"/>
-			<channel-group id="loadpoint2" typeId="loadpoint"/>
-			<channel-group id="loadpoint3" typeId="loadpoint"/>
-			<channel-group id="loadpoint4" typeId="loadpoint"/>
-			<channel-group id="loadpoint5" typeId="loadpoint"/>
-			<channel-group id="loadpoint6" typeId="loadpoint"/>
-			<channel-group id="loadpoint7" typeId="loadpoint"/>
-			<channel-group id="loadpoint8" typeId="loadpoint"/>
-			<channel-group id="loadpoint9" typeId="loadpoint"/>
+			<channel-group id="loadpoint0" typeId="loadpoint0"/>
+			<channel-group id="loadpoint1" typeId="loadpoint1"/>
+			<channel-group id="loadpoint2" typeId="loadpoint2"/>
+			<channel-group id="loadpoint3" typeId="loadpoint3"/>
+			<channel-group id="loadpoint4" typeId="loadpoint4"/>
+			<channel-group id="loadpoint5" typeId="loadpoint5"/>
+			<channel-group id="loadpoint6" typeId="loadpoint6"/>
+			<channel-group id="loadpoint7" typeId="loadpoint7"/>
+			<channel-group id="loadpoint8" typeId="loadpoint8"/>
+			<channel-group id="loadpoint9" typeId="loadpoint9"/>
+			<channel-group id="loadpoint0current" typeId="loadpoint0current"/>
+			<channel-group id="loadpoint1current" typeId="loadpoint1current"/>
+			<channel-group id="loadpoint2current" typeId="loadpoint2current"/>
+			<channel-group id="loadpoint3current" typeId="loadpoint3current"/>
+			<channel-group id="loadpoint4current" typeId="loadpoint4current"/>
+			<channel-group id="loadpoint5current" typeId="loadpoint5current"/>
+			<channel-group id="loadpoint6current" typeId="loadpoint6current"/>
+			<channel-group id="loadpoint7current" typeId="loadpoint7current"/>
+			<channel-group id="loadpoint8current" typeId="loadpoint8current"/>
+			<channel-group id="loadpoint9current" typeId="loadpoint9current"/>
 		</channel-groups>
 
 		<config-description>
@@ -41,8 +51,65 @@
 	<channel-group-type id="general">
 		<label>General Data</label>
 	</channel-group-type>
-	<channel-group-type id="loadpoint">
-		<label>Loadpoint</label>
+	<channel-group-type id="loadpoint0">
+		<label>Loadpoint 0</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint1">
+		<label>Loadpoint 1</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint2">
+		<label>Loadpoint 2</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint3">
+		<label>Loadpoint 3</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint4">
+		<label>Loadpoint 4</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint5">
+		<label>Loadpoint 5</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint6">
+		<label>Loadpoint 6</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint7">
+		<label>Loadpoint 7</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint8">
+		<label>Loadpoint 8</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint9">
+		<label>Loadpoint 9</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint0current">
+		<label>Loadpoint 0: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint1current">
+		<label>Loadpoint 1: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint2current">
+		<label>Loadpoint 2: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint3current">
+		<label>Loadpoint 3: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint4current">
+		<label>Loadpoint 4: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint5current">
+		<label>Loadpoint 5: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint6current">
+		<label>Loadpoint 6: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint7current">
+		<label>Loadpoint 7: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint8current">
+		<label>Loadpoint 8: Current</label>
+	</channel-group-type>
+	<channel-group-type id="loadpoint9current">
+		<label>Loadpoint 9: Current</label>
 	</channel-group-type>
 
 	<!-- Units and description on: https://docs.evcc.io/docs/reference/configuration/messaging/#msg -->
@@ -67,12 +134,58 @@
 		<category>BatteryLevel</category>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="batteryPrioritySoC">
+	<channel-type id="batteryDischargeControl">
+		<item-type>Switch</item-type>
+		<label>Battery Discharge Control</label>
+		<description>Enable or disable battery discharge control</description>
+		<category>Switch</category>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="batteryMode">
+		<item-type>String</item-type>
+		<label>Battery Mode</label>
+		<description>Current Battery Mode</description>
+		<category>Battery</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="prioritySoC">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Priority SoC</label>
-		<description>State of Charge for which the battery has priority over charging the ev when charging mode is "pv".</description>
+		<description>State of Charge for which the battery has priority over charging the EV when charging mode is "pv"
+		</description>
 		<category>BatteryLevel</category>
 		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="bufferSoC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Buffer SoC</label>
+		<description>Until this State of Charge the discharging of a house battery is allowed in "pv" mode, when there is
+			insufficient solar surplus (below the minimum charging power)
+		</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="bufferStartSoC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery Buffer Start SoC</label>
+		<description>State of Charge for which a charging session in "pv" mode is started, even if there is insufficient solar
+			surplus
+		</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="0.1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+	</channel-type>
+	<channel-type id="residualPower">
+		<item-type>Number:Power</item-type>
+		<label>Grid Residual Power</label>
+		<description>Target operating point of the surplus regulation at the grid connection (grid meter)
+		</description>
+		<category>Energy</category>
+		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 	</channel-type>
 	<channel-type id="gridPower">
 		<item-type>Number:Power</item-type>
@@ -95,8 +208,21 @@
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-
-	<!-- Channels for loadpoints -->
+	<channel-type id="version">
+		<item-type>String</item-type>
+		<label>Version</label>
+		<description>Current evcc version</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="availableVersion">
+		<item-type>String</item-type>
+		<label>Available Version</label>
+		<description>Available evcc update version</description>
+		<category>Text</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<!-- Channel Types for loadpoints -->
 	<channel-type id="activePhases">
 		<item-type>Number</item-type>
 		<label>Charging Active Phases</label>
@@ -128,14 +254,14 @@
 	<channel-type id="chargeRemainingDuration">
 		<item-type>Number:Time</item-type>
 		<label>Charging Remaining Duration</label>
-		<description>Remaining duration until target SoC is reached</description>
+		<description>Remaining duration until limit SoC is reached</description>
 		<category>Time</category>
 		<state pattern="%.1f min" readOnly="true"/>
 	</channel-type>
 	<channel-type id="chargeRemainingEnergy">
 		<item-type>Number:Energy</item-type>
 		<label>Charging Remaining Energy</label>
-		<description>Remaining energy until target SoC is reached</description>
+		<description>Remaining energy until limit SoC is reached</description>
 		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
@@ -186,19 +312,11 @@
 		<state min="0" step="1" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="minSoC">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Charging min SoC</label>
-		<description>Charge immediately with maximum power up to the defined SoC, if the charge mode is not set to "off"</description>
-		<category>BatteryLevel</category>
-		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
 	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Charging Mode</label>
 		<description>Charging mode: "off", "now", "minpv", "pv"</description>
-		<category>String</category>
+		<category>Heating</category>
 		<state readOnly="false">
 			<options>
 				<option value="off">Off</option>
@@ -217,48 +335,49 @@
 		<state min="0" step="1" max="3" pattern="%d" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="targetEnergy">
+	<channel-type id="limitEnergy">
 		<item-type>Number:Energy</item-type>
-		<label>Charging Target Energy</label>
+		<label>Charging Limit Energy</label>
 		<description>Amount of energy to charge the vehicle with</description>
 		<category>BatteryLevel</category>
 		<state min="0" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="targetSoC">
+	<channel-type id="limitSoC">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Charging Target SoC</label>
+		<label>Charging Limit SoC</label>
 		<description>Until which state of charge (SoC) should the vehicle be charged</description>
 		<category>BatteryLevel</category>
 		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="targetTime">
-		<item-type>DateTime</item-type>
-		<label>Charging Target Time</label>
-		<description>When the target SoC should be reached</description>
-		<category>Time</category>
-		<state readOnly="false"/>
+	<channel-type id="limitTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Charging Limit Temperature</label>
+		<description>Until which Temperature should the heating device be charged</description>
+		<category>Temperature</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
-	<channel-type id="targetTimeEnabled">
-		<item-type>Switch</item-type>
-		<label>Charging Target Time Enabled</label>
-		<description>Target time for charging enabled</description>
-		<category>Switch</category>
-		<state readOnly="false">
-			<options>
-				<option value="ON">Enabled</option>
-				<option value="OFF">Disabled</option>
-			</options>
-		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	<channel-type id="effectiveLimitSoC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Effective Charging Limit</label>
+		<description>Effective state of charge (SoC) until which the vehicle will be charged</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="effectiveLimitTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Effective Charging Limit Temperature</label>
+		<description>Effective Temperature until which the heating device will be charged</description>
+		<category>Temperature</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="title">
 		<item-type>String</item-type>
 		<label>Loadpoint Title</label>
 		<description>Title of loadpoint</description>
-		<category>Text</category>
+		<category>PowerOutlet</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehicleConnected">
@@ -280,18 +399,11 @@
 		<category>Time</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="vehicleCapacity">
-		<item-type>Number:Energy</item-type>
-		<label>Vehicle Capacity</label>
-		<description>Capacity of EV battery</description>
-		<category>Energy</category>
-		<state pattern="%.0f %unit%" readOnly="true"/>
-	</channel-type>
 	<channel-type id="vehicleOdometer">
 		<item-type>Number:Length</item-type>
 		<label>Vehicle Odometer</label>
 		<description>Total distance travelled by EV</description>
-		<category></category>
+		<category>MoveControl</category>
 		<state pattern="%.1f %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="vehiclePresent">
@@ -320,11 +432,163 @@
 		<category>BatteryLevel</category>
 		<state pattern="%.0f %unit%" readOnly="true"/>
 	</channel-type>
+	<channel-type id="vehicleTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>Current Temperature of the heating device</description>
+		<category>Temperature</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="vehicleName">
+		<item-type>String</item-type>
+		<label>Vehicle Name</label>
+		<description>The unique identifier of the EV used in the evcc configuration (containing no whitespaces nor special
+			characters)</description>
+		<category>Settings</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="chargerFeatureHeating">
+		<item-type>Switch</item-type>
+		<label>Charger Feature: Heating</label>
+		<description>'True' for heating device: State of Charge in Degree instead of Percent</description>
+		<category>Switch</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">True</option>
+				<option value="OFF">False</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="chargerFeatureIntegratedDevice">
+		<item-type>Switch</item-type>
+		<label>Charger Feature: Integrated Device</label>
+		<description>'True' for integrated device: Operate without a "vehicle" (e.g. heat pump, eBike)</description>
+		<category>Switch</category>
+		<state readOnly="true">
+			<options>
+				<option value="ON">True</option>
+				<option value="OFF">False</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<!-- Channel Types for vehicles -->
 	<channel-type id="vehicleTitle">
 		<item-type>String</item-type>
 		<label>Vehicle Title</label>
-		<description>Name of EV</description>
-		<category>Text</category>
+		<description>Title of vehicle</description>
+		<category>GarageDoor</category>
 		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="heatingTitle">
+		<item-type>String</item-type>
+		<label>Heating Title</label>
+		<description>Title of heating device</description>
+		<category>Heating</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="vehicleMinSoC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Vehicle Min SoC</label>
+		<description>Minimum state of charge (SoC) a vehicle should have</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="heatingMinTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Min Temperature</label>
+		<description>Minimum Temperature a heating device should have</description>
+		<category>Temperature</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehicleLimitSoC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Vehicle Charging Limit SoC</label>
+		<description>Until which state of charge (SoC) should the specific vehicle be charged</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="heatingLimitTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Charging Temperature Limit</label>
+		<description>Until which Temperature should the specific heating device be charged</description>
+		<category>Temperature</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehicleCapacity">
+		<item-type>Number:Energy</item-type>
+		<label>Vehicle Capacity</label>
+		<description>Capacity of EV battery</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="heatingCapacity">
+		<item-type>Number:Energy</item-type>
+		<label>Heating Capacity</label>
+		<description>Capacity of heating device</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="vehiclePlanEnabled">
+		<item-type>Switch</item-type>
+		<label>Vehicle Plan Enabled</label>
+		<description>Plan for charging enabled</description>
+		<category>Switch</category>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="heatingPlanEnabled">
+		<item-type>Switch</item-type>
+		<label>Heating Plan Enabled</label>
+		<description>Plan for charging enabled</description>
+		<category>Switch</category>
+		<state readOnly="false">
+			<options>
+				<option value="ON">Enabled</option>
+				<option value="OFF">Disabled</option>
+			</options>
+		</state>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehiclePlanSoC">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Vehicle Plan SoC</label>
+		<description>Until which state of charge (SoC) should vehicle be charged in plan</description>
+		<category>BatteryLevel</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="heatingPlanTemperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Heating Plan Temperature</label>
+		<description>Until which Temperature should heating device be charged in plan</description>
+		<category>Temperature</category>
+		<state min="0" step="1" max="100" pattern="%.0f %unit%" readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="vehiclePlanTime">
+		<item-type>DateTime</item-type>
+		<label>Vehicle Plan Time</label>
+		<description>When the plan SoC should be reached</description>
+		<category>Time</category>
+		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="heatingPlanTime">
+		<item-type>DateTime</item-type>
+		<label>Heating Plan Time</label>
+		<description>When the plan Temperature should be reached</description>
+		<category>Time</category>
+		<state readOnly="false"/>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 </thing:thing-descriptions>

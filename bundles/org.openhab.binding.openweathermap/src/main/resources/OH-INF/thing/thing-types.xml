@@ -79,43 +79,6 @@
 		<config-description-ref uri="thing-type:openweathermap:weather-and-forecast"/>
 	</thing-type>
 
-	<thing-type id="uvindex">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="weather-api"/>
-		</supported-bridge-type-refs>
-
-		<label>UV Index</label>
-		<description>Provides UV Index data from the OpenWeatherMap API.</description>
-
-		<channel-groups>
-			<channel-group id="current" typeId="uvindex"/>
-			<channel-group id="forecastTomorrow" typeId="uvindexForecast">
-				<label>Tomorrows Forecast</label>
-				<description>This is the UV Index forecast for tomorrow.</description>
-			</channel-group>
-			<channel-group id="forecastDay2" typeId="uvindexForecast">
-				<label>2 Day Forecast</label>
-				<description>This is the UV Index forecast in two days.</description>
-			</channel-group>
-			<channel-group id="forecastDay3" typeId="uvindexForecast">
-				<label>3 Day Forecast</label>
-				<description>This is the UV Index forecast in three days.</description>
-			</channel-group>
-			<channel-group id="forecastDay4" typeId="uvindexForecast">
-				<label>4 Day Forecast</label>
-				<description>This is the UV Index forecast in four days.</description>
-			</channel-group>
-			<channel-group id="forecastDay5" typeId="uvindexForecast">
-				<label>5 Day Forecast</label>
-				<description>This is the UV Index forecast in five days.</description>
-			</channel-group>
-		</channel-groups>
-
-		<representation-property>location</representation-property>
-
-		<config-description-ref uri="thing-type:openweathermap:uvindex"/>
-	</thing-type>
-
 	<thing-type id="air-pollution">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="weather-api"/>
@@ -142,6 +105,9 @@
 
 		<channel-groups>
 			<channel-group id="current" typeId="oneCallCurrent"/>
+
+			<channel-group id="forecastMinutely" typeId="oneCallMinutelyTimeSeries"/>
+
 			<channel-group id="forecastMinutes01" typeId="oneCallMinutely"/>
 			<channel-group id="forecastMinutes02" typeId="oneCallMinutely"/>
 			<channel-group id="forecastMinutes03" typeId="oneCallMinutely"/>
@@ -208,6 +174,8 @@
 			<channel-group id="forecastMinutes59" typeId="oneCallMinutely"/>
 			<channel-group id="forecastMinutes60" typeId="oneCallMinutely"/>
 
+			<channel-group id="forecastHourly" typeId="oneCallHourlyTimeSeries"/>
+
 			<channel-group id="forecastHours01" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours02" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours03" typeId="oneCallHourly"/>
@@ -232,6 +200,8 @@
 			<channel-group id="forecastHours22" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours23" typeId="oneCallHourly"/>
 			<channel-group id="forecastHours24" typeId="oneCallHourly"/>
+
+			<channel-group id="forecastDaily" typeId="oneCallDailyTimeSeries"/>
 
 			<channel-group id="forecastToday" typeId="oneCallDaily">
 				<label>One Call API Todays Forecast</label>
@@ -267,6 +237,9 @@
 			</channel-group>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
 		<representation-property>location</representation-property>
 
 		<config-description-ref uri="thing-type:openweathermap:onecall"/>

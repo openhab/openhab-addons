@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -166,8 +166,10 @@ public class SnmpServiceImpl implements SnmpService {
     @Override
     public void addUser(String userName, SnmpAuthProtocol snmpAuthProtocol, @Nullable String authPassphrase,
             SnmpPrivProtocol snmpPrivProtocol, @Nullable String privPassphrase, byte[] engineId) {
-        UsmUser usmUser = new UsmUser(new OctetString(userName), snmpAuthProtocol.getOid(),
-                authPassphrase != null ? new OctetString(authPassphrase) : null, snmpPrivProtocol.getOid(),
+        UsmUser usmUser = new UsmUser(new OctetString(userName),
+                authPassphrase != null ? snmpAuthProtocol.getOid() : null,
+                authPassphrase != null ? new OctetString(authPassphrase) : null,
+                privPassphrase != null ? snmpPrivProtocol.getOid() : null,
                 privPassphrase != null ? new OctetString(privPassphrase) : null);
         OctetString securityNameOctets = new OctetString(userName);
 

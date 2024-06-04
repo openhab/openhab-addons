@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,8 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +41,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = AstroActions.class)
 @ThingActionsScope(name = "astro")
 @NonNullByDefault
 public class AstroActions implements ThingActions {
@@ -52,8 +55,8 @@ public class AstroActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof AstroThingHandler) {
-            this.handler = (AstroThingHandler) handler;
+        if (handler instanceof AstroThingHandler thingHandler) {
+            this.handler = thingHandler;
         }
     }
 
@@ -115,10 +118,9 @@ public class AstroActions implements ThingActions {
         try {
             AstroThingHandler theHandler = this.handler;
             if (theHandler != null) {
-                if (theHandler instanceof SunHandler) {
-                    SunHandler handler = (SunHandler) theHandler;
+                if (theHandler instanceof SunHandler sunHandler) {
                     SunPhaseName phase = SunPhaseName.valueOf(phaseName.toUpperCase());
-                    return handler.getEventTime(phase, date != null ? date : ZonedDateTime.now(),
+                    return sunHandler.getEventTime(phase, date != null ? date : ZonedDateTime.now(),
                             moment == null || AstroBindingConstants.EVENT_START.equalsIgnoreCase(moment));
                 } else {
                     logger.info("Astro Action service ThingHandler is not a SunHandler!");

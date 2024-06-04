@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,24 +45,23 @@ public class Util {
         String contentString = contentProvider == null ? "null"
                 : StreamSupport.stream(contentProvider.spliterator(), false)
                         .map(b -> StandardCharsets.UTF_8.decode(b).toString()).collect(Collectors.joining(", "));
-        String logString = "Method = {" + request.getMethod() + "}, Headers = {"
+        return "Method = {" + request.getMethod() + "}, Headers = {"
                 + request.getHeaders().stream().map(HttpField::toString).collect(Collectors.joining(", "))
                 + "}, Content = {" + contentString + "}";
-
-        return logString;
     }
 
     /**
      * create an URI from a string, escaping all necessary characters
      *
      * @param s the URI as unescaped string
-     * @return URI correspondign to the input string
-     * @throws MalformedURLException
-     * @throws URISyntaxException
+     * @return URI corresponding to the input string
+     * @throws MalformedURLException if parameter is not an URL
+     * @throws URISyntaxException if parameter could not be converted to an URI
      */
     public static URI uriFromString(String s) throws MalformedURLException, URISyntaxException {
         URL url = new URL(s);
-        return new URI(url.getProtocol(), url.getUserInfo(), IDN.toASCII(url.getHost()), url.getPort(), url.getPath(),
-                url.getQuery(), url.getRef());
+        URI uri = new URI(url.getProtocol(), url.getUserInfo(), IDN.toASCII(url.getHost()), url.getPort(),
+                url.getPath(), url.getQuery(), url.getRef());
+        return URI.create(uri.toASCIIString());
     }
 }

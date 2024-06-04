@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.concurrent.Future;
 
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.homematic.internal.HomematicBindingConstants;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.converter.ConverterException;
@@ -372,8 +371,10 @@ public class HomematicThingHandler extends BaseThingHandler {
      * @param datapointName The datapoint that will be updated on the device
      * @param currentValue The current value of the datapoint
      * @param newValue The value that will be sent to the device
-     * @return The rxMode ({@link HomematicBindingConstants#RX_BURST_MODE "BURST"} for burst mode,
-     *         {@link HomematicBindingConstants#RX_WAKEUP_MODE "WAKEUP"} for wakeup mode, or null for the default mode)
+     * @return The rxMode ({@link org.openhab.binding.homematic.internal.HomematicBindingConstants#RX_BURST_MODE
+     *         "BURST"} for burst mode,
+     *         {@link org.openhab.binding.homematic.internal.HomematicBindingConstants#RX_WAKEUP_MODE "WAKEUP"} for
+     *         wakeup mode, or null for the default mode)
      */
     protected String getRxModeForDatapointTransmission(String datapointName, Object currentValue, Object newValue) {
         return null;
@@ -594,15 +595,14 @@ public class HomematicThingHandler extends BaseThingHandler {
                     if (dp != null) {
                         try {
                             if (newValue != null) {
-                                if (newValue instanceof BigDecimal) {
-                                    final BigDecimal decimal = (BigDecimal) newValue;
+                                if (newValue instanceof BigDecimal decimal) {
                                     if (dp.isIntegerType()) {
                                         newValue = decimal.intValue();
                                     } else if (dp.isFloatType()) {
                                         newValue = decimal.doubleValue();
                                     }
-                                } else if (newValue instanceof String && dp.isEnumType()) {
-                                    newValue = dp.getOptionIndex((String) newValue);
+                                } else if (newValue instanceof String string && dp.isEnumType()) {
+                                    newValue = dp.getOptionIndex(string);
                                 }
                                 if (!Objects.equals(dp.getValue(), newValue)) {
                                     sendDatapoint(dp, new HmDatapointConfig(), newValue);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,6 @@ import org.openhab.binding.easee.internal.Utils;
 import org.openhab.binding.easee.internal.command.EaseeCommand;
 import org.openhab.binding.easee.internal.command.charger.ChangeConfiguration;
 import org.openhab.binding.easee.internal.command.charger.Charger;
-import org.openhab.binding.easee.internal.command.charger.ChargerState;
 import org.openhab.binding.easee.internal.command.charger.GetConfiguration;
 import org.openhab.binding.easee.internal.command.charger.LatestChargingSession;
 import org.openhab.binding.easee.internal.command.charger.SendCommand;
@@ -72,16 +71,20 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
     @Override
     public void initialize() {
         logger.debug("About to initialize Charger");
-        String chargerId = getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
-        logger.debug("Easee Charger initialized with id: {}", chargerId);
+        logger.debug("Easee Charger initialized with id: {}", getId());
 
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, STATUS_WAITING_FOR_BRIDGE);
         startPolling();
 
-        enqueueCommand(new Charger(this, chargerId, this::updateProperties));
+        enqueueCommand(new Charger(this, getId(), this::updatePropertiesAndOnlineStatus));
     }
 
-    private void updateProperties(CommunicationStatus status, JsonObject charger) {
+    public String getId() {
+        return getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
+    }
+
+    private void updatePropertiesAndOnlineStatus(CommunicationStatus status, JsonObject charger) {
+        updateOnlineStatus(status, charger);
         Map<String, String> properties = editProperties();
 
         String backPlateId = Utils.getAsString(charger.getAsJsonObject(JSON_KEY_BACK_PLATE), JSON_KEY_GENERIC_ID);
@@ -123,32 +126,45 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
         String chargerId = getConfig().get(EaseeBindingConstants.THING_CONFIG_ID).toString();
         logger.debug("polling charger data for {}", chargerId);
 
-        ChargerState state = new ChargerState(this, chargerId);
-        state.registerResultProcessor(this::updateStatusInfo);
-        enqueueCommand(state);
-
         // proceed if charger is online
         if (getThing().getStatus() == ThingStatus.ONLINE) {
-            enqueueCommand(new GetConfiguration(this, chargerId));
-            enqueueCommand(new LatestChargingSession(this, chargerId));
+            enqueueCommand(new GetConfiguration(this, chargerId, this::updateOnlineStatus));
+            enqueueCommand(new LatestChargingSession(this, chargerId, this::updateOnlineStatus));
         }
     }
 
     /**
-     * updates status depending on online information received from the API.
+     * updates online status depending on online information received from the API. this is called by the SiteState
+     * Command which retrieves whole site data inclusing charger status.
      *
-     * @param status
-     * @param jsonObject
      */
-    private void updateStatusInfo(CommunicationStatus status, JsonObject jsonObject) {
-        Boolean isOnline = Utils.getAsBool(jsonObject, JSON_KEY_ONLINE);
-
-        if (isOnline == null) {
-            super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, STATUS_NO_VALID_DATA);
-        } else if (isOnline) {
+    public void setOnline(boolean isOnline) {
+        if (isOnline) {
             super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
         } else {
             super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, STATUS_NO_CONNECTION);
+        }
+    }
+
+    /**
+     * result processor to handle online status updates
+     *
+     * @param status of command execution
+     * @param jsonObject json respone result
+     */
+    protected final void updateOnlineStatus(CommunicationStatus status, JsonObject jsonObject) {
+        String msg = Utils.getAsString(jsonObject, JSON_KEY_ERROR_TITLE);
+        if (msg == null || msg.isBlank()) {
+            msg = status.getMessage();
+        }
+
+        switch (status.getHttpCode()) {
+            case OK:
+            case ACCEPTED:
+                super.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                break;
+            default:
+                super.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
         }
     }
 
@@ -214,13 +230,13 @@ public class EaseeChargerHandler extends BaseThingHandler implements EaseeThingH
 
         switch (Utils.getWriteCommand(channel)) {
             case COMMAND_CHANGE_CONFIGURATION:
-                return new ChangeConfiguration(this, chargerId, channel, command);
+                return new ChangeConfiguration(this, chargerId, channel, command, this::updateOnlineStatus);
             case COMMAND_SEND_COMMAND:
-                return new SendCommand(this, chargerId, channel, command);
+                return new SendCommand(this, chargerId, channel, command, this::updateOnlineStatus);
             case COMMAND_SEND_COMMAND_START_STOP:
-                return new SendCommandStartStop(this, chargerId, channel, command);
+                return new SendCommandStartStop(this, chargerId, channel, command, this::updateOnlineStatus);
             case COMMAND_SEND_COMMAND_PAUSE_RESUME:
-                return new SendCommandPauseResume(this, chargerId, channel, command);
+                return new SendCommandPauseResume(this, chargerId, channel, command, this::updateOnlineStatus);
             default:
                 // this should not happen
                 logger.error("write command '{}' not found for channel '{}'", command.toString(),

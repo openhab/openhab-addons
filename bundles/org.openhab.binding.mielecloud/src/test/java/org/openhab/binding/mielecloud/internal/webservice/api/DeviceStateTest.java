@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -851,7 +852,7 @@ public class DeviceStateTest {
         when(plateStepMock.getValueLocalized()).thenReturn(Optional.empty());
 
         State state = mock(State.class);
-        when(state.getPlateStep()).thenReturn(Collections.singletonList(plateStepMock));
+        when(state.getPlateStep()).thenReturn(List.of(plateStepMock));
         when(state.getStatus()).thenReturn(Optional.of(status));
 
         Device device = mock(Device.class);
@@ -1111,7 +1112,7 @@ public class DeviceStateTest {
 
         State state = mock(State.class);
         when(state.getStatus()).thenReturn(Optional.of(status));
-        when(state.getElapsedTime()).thenReturn(Optional.of(Collections.singletonList(2)));
+        when(state.getElapsedTime()).thenReturn(Optional.of(List.of(2)));
 
         Device device = mock(Device.class);
         when(device.getState()).thenReturn(Optional.of(state));
@@ -1866,7 +1867,7 @@ public class DeviceStateTest {
 
         // Test TargetTemperature:
         Temperature targetTemperatureMock = mock(Temperature.class);
-        when(state.getTargetTemperature()).thenReturn(Collections.singletonList(targetTemperatureMock));
+        when(state.getTargetTemperature()).thenReturn(List.of(targetTemperatureMock));
         when(targetTemperatureMock.getValueLocalized()).thenReturn(Optional.of(200));
         // when:
         Optional<Integer> targetTemperature = deviceState.getTargetTemperature(0);
@@ -1875,7 +1876,7 @@ public class DeviceStateTest {
 
         // Test Temperature:
         Temperature temperature = mock(Temperature.class);
-        when(state.getTemperature()).thenReturn(Collections.singletonList(temperature));
+        when(state.getTemperature()).thenReturn(List.of(temperature));
         when(temperature.getValueLocalized()).thenReturn(Optional.of(200));
         // when:
         Optional<Integer> t = deviceState.getTemperature(0);

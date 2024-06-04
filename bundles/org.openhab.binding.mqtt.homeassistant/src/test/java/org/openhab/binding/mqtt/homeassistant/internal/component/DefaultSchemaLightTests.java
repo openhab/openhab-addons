@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,11 +27,13 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
 import org.openhab.binding.mqtt.generic.values.PercentageValue;
+import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 
 /**
  * Tests for {@link Light} confirming to the default schema
@@ -46,34 +48,36 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
     public void testRgb() throws InterruptedException {
         // @formatter:off
         var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"availability\": [ " +
-                        "    { " +
-                        "      \"topic\": \"zigbee2mqtt/bridge/state\" " +
-                        "    } " +
-                        "  ], " +
-                        "  \"device\": { " +
-                        "    \"identifiers\": [ " +
-                        "      \"zigbee2mqtt_0x0000000000000000\" " +
-                        "    ], " +
-                        "    \"manufacturer\": \"Lights inc\", " +
-                        "    \"model\": \"light v1\", " +
-                        "    \"name\": \"Light\", " +
-                        "    \"sw_version\": \"Zigbee2MQTT 1.18.2\" " +
-                        "  }, " +
-                        "  \"name\": \"light\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/light/state\", " +
-                        "  \"command_topic\": \"zigbee2mqtt/light/set/state\", " +
-                        "  \"state_value_template\": \"{{ value_json.power }}\", " +
-                        "  \"payload_on\": \"ON_\", " +
-                        "  \"payload_off\": \"OFF_\", " +
-                        "  \"rgb_state_topic\": \"zigbee2mqtt/light/rgb\", " +
-                        "  \"rgb_command_topic\": \"zigbee2mqtt/light/set/rgb\", " +
-                        "  \"rgb_value_template\": \"{{ value_json.rgb }}\", " +
-                        "  \"brightness_state_topic\": \"zigbee2mqtt/light/brightness\", " +
-                        "  \"brightness_command_topic\": \"zigbee2mqtt/light/set/brightness\", " +
-                        "  \"brightness_value_template\": \"{{ value_json.br }}\" " +
-                        "}");
+                """
+                { \
+                  "availability": [ \
+                    { \
+                      "topic": "zigbee2mqtt/bridge/state" \
+                    } \
+                  ], \
+                  "device": { \
+                    "identifiers": [ \
+                      "zigbee2mqtt_0x0000000000000000" \
+                    ], \
+                    "manufacturer": "Lights inc", \
+                    "model": "light v1", \
+                    "name": "Light", \
+                    "sw_version": "Zigbee2MQTT 1.18.2" \
+                  }, \
+                  "name": "light", \
+                  "state_topic": "zigbee2mqtt/light/state", \
+                  "command_topic": "zigbee2mqtt/light/set/state", \
+                  "state_value_template": "{{ value_json.power }}", \
+                  "payload_on": "ON_", \
+                  "payload_off": "OFF_", \
+                  "rgb_state_topic": "zigbee2mqtt/light/rgb", \
+                  "rgb_command_topic": "zigbee2mqtt/light/set/rgb", \
+                  "rgb_value_template": "{{ value_json.rgb }}", \
+                  "brightness_state_topic": "zigbee2mqtt/light/brightness", \
+                  "brightness_command_topic": "zigbee2mqtt/light/set/brightness", \
+                  "brightness_value_template": "{{ value_json.br }}" \
+                }\
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(1));
@@ -119,17 +123,19 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
     public void testRgbWithoutBrightness() throws InterruptedException {
         // @formatter:off
         var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"name\": \"light\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/light/state\", " +
-                        "  \"command_topic\": \"zigbee2mqtt/light/set/state\", " +
-                        "  \"state_value_template\": \"{{ value_json.power }}\", " +
-                        "  \"payload_on\": \"ON_\", " +
-                        "  \"payload_off\": \"OFF_\", " +
-                        "  \"rgb_state_topic\": \"zigbee2mqtt/light/rgb\", " +
-                        "  \"rgb_command_topic\": \"zigbee2mqtt/light/set/rgb\", " +
-                        "  \"rgb_value_template\": \"{{ value_json.rgb }}\"" +
-                        "}");
+                """
+                { \
+                  "name": "light", \
+                  "state_topic": "zigbee2mqtt/light/state", \
+                  "command_topic": "zigbee2mqtt/light/set/state", \
+                  "state_value_template": "{{ value_json.power }}", \
+                  "payload_on": "ON_", \
+                  "payload_off": "OFF_", \
+                  "rgb_state_topic": "zigbee2mqtt/light/rgb", \
+                  "rgb_command_topic": "zigbee2mqtt/light/set/rgb", \
+                  "rgb_value_template": "{{ value_json.rgb }}"\
+                }\
+                """);
         // @formatter:on
 
         publishMessage("zigbee2mqtt/light/rgb", "{\"rgb\": \"255,255,255\"}");
@@ -148,20 +154,22 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
     public void testHsb() throws InterruptedException {
         // @formatter:off
         var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"name\": \"light\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/light/state\", " +
-                        "  \"command_topic\": \"zigbee2mqtt/light/set/state\", " +
-                        "  \"state_value_template\": \"{{ value_json.power }}\", " +
-                        "  \"payload_on\": \"ON_\", " +
-                        "  \"payload_off\": \"OFF_\", " +
-                        "  \"hs_state_topic\": \"zigbee2mqtt/light/hs\", " +
-                        "  \"hs_command_topic\": \"zigbee2mqtt/light/set/hs\", " +
-                        "  \"hs_value_template\": \"{{ value_json.hs }}\", " +
-                        "  \"brightness_state_topic\": \"zigbee2mqtt/light/brightness\", " +
-                        "  \"brightness_command_topic\": \"zigbee2mqtt/light/set/brightness\", " +
-                        "  \"brightness_value_template\": \"{{ value_json.br }}\" " +
-                        "}");
+                """
+                { \
+                  "name": "light", \
+                  "state_topic": "zigbee2mqtt/light/state", \
+                  "command_topic": "zigbee2mqtt/light/set/state", \
+                  "state_value_template": "{{ value_json.power }}", \
+                  "payload_on": "ON_", \
+                  "payload_off": "OFF_", \
+                  "hs_state_topic": "zigbee2mqtt/light/hs", \
+                  "hs_command_topic": "zigbee2mqtt/light/set/hs", \
+                  "hs_value_template": "{{ value_json.hs }}", \
+                  "brightness_state_topic": "zigbee2mqtt/light/brightness", \
+                  "brightness_command_topic": "zigbee2mqtt/light/set/brightness", \
+                  "brightness_value_template": "{{ value_json.br }}" \
+                }\
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(1));
@@ -206,16 +214,18 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
     public void testBrightnessAndOnOff() throws InterruptedException {
         // @formatter:off
         var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"name\": \"light\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/light/state\", " +
-                        "  \"command_topic\": \"zigbee2mqtt/light/set/state\", " +
-                        "  \"state_value_template\": \"{{ value_json.power }}\", " +
-                        "  \"brightness_state_topic\": \"zigbee2mqtt/light/brightness\", " +
-                        "  \"brightness_command_topic\": \"zigbee2mqtt/light/set/brightness\", " +
-                        "  \"payload_on\": \"ON_\", " +
-                        "  \"payload_off\": \"OFF_\" " +
-                        "}");
+                """
+                { \
+                  "name": "light", \
+                  "state_topic": "zigbee2mqtt/light/state", \
+                  "command_topic": "zigbee2mqtt/light/set/state", \
+                  "state_value_template": "{{ value_json.power }}", \
+                  "brightness_state_topic": "zigbee2mqtt/light/brightness", \
+                  "brightness_command_topic": "zigbee2mqtt/light/set/brightness", \
+                  "payload_on": "ON_", \
+                  "payload_off": "OFF_" \
+                }\
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(1));
@@ -249,14 +259,16 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
     public void testOnOffOnly() throws InterruptedException {
         // @formatter:off
         var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
-                "{ " +
-                        "  \"name\": \"light\", " +
-                        "  \"state_topic\": \"zigbee2mqtt/light/state\", " +
-                        "  \"command_topic\": \"zigbee2mqtt/light/set/state\", " +
-                        "  \"state_value_template\": \"{{ value_json.power }}\", " +
-                        "  \"payload_on\": \"ON_\", " +
-                        "  \"payload_off\": \"OFF_\" " +
-                        "}");
+                """
+                { \
+                  "name": "light", \
+                  "state_topic": "zigbee2mqtt/light/state", \
+                  "command_topic": "zigbee2mqtt/light/set/state", \
+                  "state_value_template": "{{ value_json.power }}", \
+                  "payload_on": "ON_", \
+                  "payload_off": "OFF_" \
+                }\
+                """);
         // @formatter:on
 
         assertThat(component.channels.size(), is(1));
@@ -273,6 +285,40 @@ public class DefaultSchemaLightTests extends AbstractComponentTests {
 
         sendCommand(component, Light.ON_OFF_CHANNEL_ID, OnOffType.OFF);
         assertPublished("zigbee2mqtt/light/set/state", "OFF_");
+    }
+
+    @Test
+    public void testOnOffWithEffect() throws InterruptedException {
+        // @formatter:off
+        var component = (Light) discoverComponent(configTopicToMqtt(CONFIG_TOPIC),
+                "{ " +
+                        "  \"name\": \"light\", " +
+                        "  \"state_topic\": \"zigbee2mqtt/light/state\", " +
+                        "  \"command_topic\": \"zigbee2mqtt/light/set/state\", " +
+                        "  \"effect_command_topic\": \"zigbee2mqtt/light/set/effect\", " +
+                        "  \"state_value_template\": \"{{ value_json.power }}\", " +
+                        "  \"effect_list\": [\"party\", \"rainbow\"]," +
+                        "  \"effect_state_topic\": \"zigbee2mqtt/light/effect\"" +
+                        "}");
+        // @formatter:on
+
+        assertThat(component.channels.size(), is(2));
+        assertThat(component.getName(), is("light"));
+
+        assertChannel(component, Light.ON_OFF_CHANNEL_ID, "zigbee2mqtt/light/state", "zigbee2mqtt/light/set/state",
+                "On/Off State", OnOffValue.class);
+        assertChannel(component, Light.EFFECT_CHANNEL_ID, "zigbee2mqtt/light/effect", "zigbee2mqtt/light/set/effect",
+                "Lighting Effect", TextValue.class);
+
+        publishMessage("zigbee2mqtt/light/state", "{\"power\": \"ON\"}");
+        assertState(component, Light.ON_OFF_CHANNEL_ID, OnOffType.ON);
+        publishMessage("zigbee2mqtt/light/effect", "party");
+        assertState(component, Light.EFFECT_CHANNEL_ID, new StringType("party"));
+        publishMessage("zigbee2mqtt/light/state", "{\"power\": \"OFF\"}");
+        assertState(component, Light.ON_OFF_CHANNEL_ID, OnOffType.OFF);
+
+        sendCommand(component, Light.EFFECT_CHANNEL_ID, new StringType("rainbow"));
+        assertPublished("zigbee2mqtt/light/set/effect", "rainbow");
     }
 
     @Override

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -65,16 +65,17 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link $AirqHandler} is responsible for retrieving all information from the air-Q device
+ * The {@link AirqHandler} is responsible for retrieving all information from the air-Q device
  * and change properties and channels accordingly.
  *
  * @author Aurelio Caliaro - Initial contribution
+ * @author Fabian Wolter - Improve error handling
  */
 @NonNullByDefault
 public class AirqHandler extends BaseThingHandler {
-
     private final Logger logger = LoggerFactory.getLogger(AirqHandler.class);
     private final Gson gson = new Gson();
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -112,7 +113,6 @@ public class AirqHandler extends BaseThingHandler {
     public AirqHandler(Thing thing, HttpClient httpClient) {
         super(thing);
         this.httpClient = httpClient;
-        logger.warn("air-Q - airqHandler - constructor: httpClient={}", httpClient);
     }
 
     private boolean isTimeFormat(String str) {
@@ -309,17 +309,7 @@ public class AirqHandler extends BaseThingHandler {
     public void initialize() {
         config = getThing().getConfiguration().as(AirqConfiguration.class);
         updateStatus(ThingStatus.UNKNOWN);
-        // We don't have to test if ipAddress and password have been set because we have defined them
-        // as being 'required' in thing-types.xml and OpenHAB will only initialize the handler if both are set.
-        String data = getDecryptedContentString("http://" + config.ipAddress + "/data", "GET", null);
-        // we try if the device is reachable and the password is correct. Otherwise a corresponding message is
-        // thrown in Thing manager.
-        if (data == null) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "Unable to retrieve get data from air-Q device. Probable cause: invalid password.");
-        } else {
-            updateStatus(ThingStatus.ONLINE);
-        }
+
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollData, 0, POLLING_PERIOD_DATA_MSEC,
                 TimeUnit.MILLISECONDS);
         getConfigDataJob = scheduler.scheduleWithFixedDelay(this::getConfigData, 0, POLLING_PERIOD_CONFIG,
@@ -327,7 +317,7 @@ public class AirqHandler extends BaseThingHandler {
     }
 
     // AES decoding based on this tutorial: https://www.javainterviewpoint.com/aes-256-encryption-and-decryption/
-    public @Nullable String decrypt(byte[] base64text, String password) {
+    public String decrypt(byte[] base64text, String password) throws AirqException {
         String content = "";
         logger.trace("air-Q - airqHandler - decrypt(): content to decrypt: {}", base64text);
         byte[] encodedtextwithIV = Base64.getDecoder().decode(base64text);
@@ -345,16 +335,16 @@ public class AirqHandler extends BaseThingHandler {
             byte[] decryptedText = cipher.doFinal(ciphertext);
             content = new String(decryptedText, StandardCharsets.UTF_8);
             logger.trace("air-Q - airqHandler - decrypt(): Text decoded as String: {}", content);
-        } catch (BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
+            return content;
+        } catch (NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
                 | InvalidAlgorithmParameterException | IllegalBlockSizeException exc) {
-            logger.warn("Error while decrypting. Probably the provided password is wrong.");
-            return null;
+            throw new AirqException(exc);
+        } catch (BadPaddingException e) {
+            throw new AirqPasswordIncorrectException();
         }
-        return content;
     }
 
-    public String encrypt(byte[] toencode, String password) {
-        String content = "";
+    public String encrypt(byte[] toencode, String password) throws AirqException {
         logger.trace("air-Q - airqHandler - encrypt(): text to encode: {}", new String(toencode));
         byte[] passkey = Arrays.copyOf(password.getBytes(StandardCharsets.UTF_8), 32);
         if (password.length() < 32) {
@@ -375,45 +365,34 @@ public class AirqHandler extends BaseThingHandler {
             System.arraycopy(encryptedText, 0, totaltext, 16, encryptedText.length);
             byte[] encodedcontent = Base64.getEncoder().encode(totaltext);
             logger.trace("air-Q - airqHandler - encrypt(): encrypted text: {}", encodedcontent);
-            content = new String(encodedcontent);
-        } catch (Exception e) {
-            logger.warn("air-Q - airqHandler - encrypt(): Error while encrypting: {}", e.toString());
+            return new String(encodedcontent);
+        } catch (BadPaddingException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidKeyException
+                | InvalidAlgorithmParameterException | IllegalBlockSizeException exc) {
+            throw new AirqException("Failed to encrypt data", exc);
         }
-        return content;
     }
 
     // gets the data after online/offline management and does the JSON work, or at least the first step.
-    protected @Nullable String getDecryptedContentString(String url, String requestMethod, @Nullable String body) {
-        Result res = null;
-        String jsonAnswer = null;
-        res = getData(url, "GET", null);
-        if (res != null) {
-            String jsontext = res.getBody();
-            logger.trace("air-Q - airqHandler - getDecryptedContentString(): Result from getData() is {} with body={}",
-                    res, res.getBody());
-            // Gson code based on https://riptutorial.com/de/gson
-            JsonElement ans = gson.fromJson(jsontext, JsonElement.class);
-            if (ans != null) {
-                JsonObject jsonObj = ans.getAsJsonObject();
-                jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
-                if (jsonAnswer == null) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Decryption not possible, probably wrong password");
-                }
-            } else {
-                logger.warn(
-                        "air-Q - airqHandler - getDecryptedContentString(): The air-Q data could not be extracted from this string: {}",
-                        ans);
-            }
+    protected String getDecryptedContentString(String url, String requestMethod, @Nullable String body)
+            throws AirqException {
+        Result res = getData(url, "GET", null);
+        String jsontext = res.getBody();
+        logger.trace("air-Q - airqHandler - getDecryptedContentString(): Result from getData() is {} with body={}", res,
+                res.getBody());
+        // Gson code based on https://riptutorial.com/de/gson
+        JsonElement ans = gson.fromJson(jsontext, JsonElement.class);
+        if (ans == null) {
+            throw new AirqEmptyResonseException();
         }
-        return jsonAnswer;
+
+        JsonObject jsonObj = ans.getAsJsonObject();
+        return decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
     }
 
     // calls the networking job and in addition does additional tests for online/offline management
-    protected @Nullable Result getData(String address, String requestMethod, @Nullable String body) {
-        Result res = null;
+    protected Result getData(String address, String requestMethod, @Nullable String body) throws AirqException {
         int timeout = 10;
-        logger.debug("air-Q - airqHandler - getData(): connecting to {} with method {} and body {}", address,
+        logger.trace("air-Q - airqHandler - getData(): connecting to {} with method {} and body {}", address,
                 requestMethod, body);
         Request request = httpClient.newRequest(address).timeout(timeout, TimeUnit.SECONDS).method(requestMethod);
         if (body != null) {
@@ -422,22 +401,10 @@ public class AirqHandler extends BaseThingHandler {
         }
         try {
             ContentResponse response = request.send();
-            res = new Result(response.getContentAsString(), response.getStatus());
+            return new Result(response.getContentAsString(), response.getStatus());
         } catch (InterruptedException | ExecutionException | TimeoutException exc) {
-            logger.warn("air-Q - airqHandler - doNetwork(): Error while accessing air-Q: {}", exc.toString());
+            throw new AirqException("Error while accessing air-Q", exc);
         }
-        if (res == null) {
-            if (getThing().getStatus() != ThingStatus.OFFLINE) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "air-Q device not reachable");
-            } else {
-                logger.warn("air-Q - airqHandler - getData(): retried but still cannot reach the air-Q device.");
-            }
-        } else {
-            if (getThing().getStatus() == ThingStatus.OFFLINE) {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        }
-        return res;
     }
 
     public static class Result {
@@ -460,11 +427,14 @@ public class AirqHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (pollingJob != null) {
-            pollingJob.cancel(true);
+        ScheduledFuture<?> localPollingJob = pollingJob;
+        if (localPollingJob != null) {
+            localPollingJob.cancel(true);
         }
-        if (getConfigDataJob != null) {
-            getConfigDataJob.cancel(true);
+
+        ScheduledFuture<?> localGetConfigDataJob = getConfigDataJob;
+        if (localGetConfigDataJob != null) {
+            localGetConfigDataJob.cancel(true);
         }
     }
 
@@ -473,60 +443,74 @@ public class AirqHandler extends BaseThingHandler {
         try {
             String url = "http://" + config.ipAddress + "/data";
             String jsonAnswer = getDecryptedContentString(url, "GET", null);
-            if (jsonAnswer != null) {
-                JsonElement decEl = gson.fromJson(jsonAnswer, JsonElement.class);
-                if (decEl != null) {
-                    JsonObject decObj = decEl.getAsJsonObject();
-                    logger.debug("air-Q - airqHandler - run(): decObj={}, jsonAnswer={}", decObj, jsonAnswer);
-                    // 'bat' is a field that is already delivered by air-Q but as
-                    // there are no air-Q devices which are powered with batteries
-                    // it is obsolete at this moment. We implemented the code anyway
-                    // to make it easier to add afterwords, but for the moment it is not applicable.
-                    // processType(decObj, "bat", "battery", "pair");
-                    processType(decObj, "cnt0_3", "fineDustCnt00_3", "pair");
-                    processType(decObj, "cnt0_5", "fineDustCnt00_5", "pair");
-                    processType(decObj, "cnt1", "fineDustCnt01", "pair");
-                    processType(decObj, "cnt2_5", "fineDustCnt02_5", "pair");
-                    processType(decObj, "cnt5", "fineDustCnt05", "pair");
-                    processType(decObj, "cnt10", "fineDustCnt10", "pair");
-                    processType(decObj, "co", "co", "pair");
-                    processType(decObj, "co2", "co2", "pairPPM");
-                    processType(decObj, "dewpt", "dewpt", "pair");
-                    processType(decObj, "humidity", "humidityRelative", "pair");
-                    processType(decObj, "humidity_abs", "humidityAbsolute", "pair");
-                    processType(decObj, "no2", "no2", "pair");
-                    processType(decObj, "o3", "o3", "pair");
-                    processType(decObj, "oxygen", "o2", "pair");
-                    processType(decObj, "pm1", "fineDustConc01", "pair");
-                    processType(decObj, "pm2_5", "fineDustConc02_5", "pair");
-                    processType(decObj, "pm10", "fineDustConc10", "pair");
-                    processType(decObj, "pressure", "pressure", "pair");
-                    processType(decObj, "so2", "so2", "pair");
-                    processType(decObj, "sound", "sound", "pairDB");
-                    processType(decObj, "temperature", "temperature", "pair");
-                    // We have two places where the Device ID is delivered: with the measurement data and
-                    // with the configuration.
-                    // We take the info from the configuration and show it as a property, so we don't need
-                    // something like processType(decObj, "DeviceID", "DeviceID", "string") at this moment. We leave
-                    // this as a reminder in case for some reason it will be needed in future, e.g. when an air-Q
-                    // device also sends data from other devices (then with another Device ID)
-                    processType(decObj, "Status", "status", "string");
-                    processType(decObj, "TypPS", "avgFineDustSize", "number");
-                    processType(decObj, "dCO2dt", "dCO2dt", "number");
-                    processType(decObj, "dHdt", "dHdt", "number");
-                    processType(decObj, "door_event", "doorEvent", "number");
-                    processType(decObj, "health", "health", "number");
-                    processType(decObj, "measuretime", "measureTime", "number");
-                    processType(decObj, "performance", "performance", "number");
-                    processType(decObj, "timestamp", "timestamp", "datetime");
-                    processType(decObj, "uptime", "uptime", "numberTimePeriod");
-                    processType(decObj, "tvoc", "tvoc", "pairPPB");
-                } else {
-                    logger.warn("The air-Q data could not be extracted from this string: {}", decEl);
-                }
+            JsonElement decEl = gson.fromJson(jsonAnswer, JsonElement.class);
+            if (decEl == null) {
+                throw new AirqEmptyResonseException();
             }
-        } catch (Exception e) {
-            logger.warn("air-Q - airqHandler - polldata.run(): Error while retrieving air-Q data: {}", toString());
+
+            JsonObject decObj = decEl.getAsJsonObject();
+            logger.trace("air-Q - airqHandler - run(): decObj={}, jsonAnswer={}", decObj, jsonAnswer);
+            // 'bat' is a field that is already delivered by air-Q but as
+            // there are no air-Q devices which are powered with batteries
+            // it is obsolete at this moment. We implemented the code anyway
+            // to make it easier to add afterwords, but for the moment it is not applicable.
+            // processType(decObj, "bat", "battery", "pair");
+            processType(decObj, "cnt0_3", "fineDustCnt00_3", "pair");
+            processType(decObj, "cnt0_5", "fineDustCnt00_5", "pair");
+            processType(decObj, "cnt1", "fineDustCnt01", "pair");
+            processType(decObj, "cnt2_5", "fineDustCnt02_5", "pair");
+            processType(decObj, "cnt5", "fineDustCnt05", "pair");
+            processType(decObj, "cnt10", "fineDustCnt10", "pair");
+            processType(decObj, "co", "co", "pair");
+            processType(decObj, "co2", "co2", "pairPPM");
+            processType(decObj, "dewpt", "dewpt", "pair");
+            processType(decObj, "h2s", "h2s", "pair");
+            processType(decObj, "humidity", "humidityRelative", "pair");
+            processType(decObj, "humidity_abs", "humidityAbsolute", "pair");
+            processType(decObj, "no2", "no2", "pair");
+            processType(decObj, "o3", "o3", "pair");
+            processType(decObj, "oxygen", "o2", "pair");
+            processType(decObj, "pm1", "fineDustConc01", "pair");
+            processType(decObj, "pm2_5", "fineDustConc02_5", "pair");
+            processType(decObj, "pm10", "fineDustConc10", "pair");
+            processType(decObj, "pressure", "pressure", "pair");
+            processType(decObj, "so2", "so2", "pair");
+            processType(decObj, "sound", "sound", "pairDB");
+            processType(decObj, "temperature", "temperature", "pair");
+            // We have two places where the Device ID is delivered: with the measurement data and
+            // with the configuration.
+            // We take the info from the configuration and show it as a property, so we don't need
+            // something like processType(decObj, "DeviceID", "DeviceID", "string") at this moment. We leave
+            // this as a reminder in case for some reason it will be needed in future, e.g. when an air-Q
+            // device also sends data from other devices (then with another Device ID)
+            processType(decObj, "Status", "status", "string");
+            processType(decObj, "TypPS", "avgFineDustSize", "number");
+            processType(decObj, "dCO2dt", "dCO2dt", "number");
+            processType(decObj, "dHdt", "dHdt", "number");
+            processType(decObj, "door_event", "doorEvent", "number");
+            processType(decObj, "health", "healthIndex", "index");
+            processType(decObj, "health", "health", "number");
+            processType(decObj, "measuretime", "measureTime", "number");
+            processType(decObj, "performance", "performanceIndex", "index");
+            processType(decObj, "performance", "performance", "number");
+            processType(decObj, "timestamp", "timestamp", "datetime");
+            processType(decObj, "uptime", "uptime", "numberTimePeriod");
+            processType(decObj, "tvoc", "tvoc", "pairPPB");
+
+            updateStatus(ThingStatus.ONLINE);
+        } catch (AirqPasswordIncorrectException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Device password incorrect");
+        } catch (AirqException e) {
+            String causeMessage = "";
+            Throwable cause = e.getCause();
+            if (cause != null) {
+                causeMessage = cause.getClass().getSimpleName() + ": " + cause.getMessage() + ": ";
+            }
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, causeMessage + e.getMessage());
+        } catch (JsonSyntaxException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Syntax error while parsing response from device");
         }
     }
 
@@ -536,67 +520,59 @@ public class AirqHandler extends BaseThingHandler {
         try {
             String url = "http://" + config.ipAddress + "/config";
             res = getData(url, "GET", null);
-            if (res != null) {
-                String jsontext = res.getBody();
-                logger.trace("air-Q - airqHandler - getConfigData(): Result from getBody() is {} with body={}", res,
-                        res.getBody());
-                JsonElement ans = gson.fromJson(jsontext, JsonElement.class);
-                if (ans != null) {
-                    JsonObject jsonObj = ans.getAsJsonObject();
-                    String jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
-                    if (jsonAnswer != null) {
-                        JsonElement decEl = gson.fromJson(jsonAnswer, JsonElement.class);
-                        if (decEl != null) {
-                            JsonObject decObj = decEl.getAsJsonObject();
-                            logger.debug("air-Q - airqHandler - getConfigData(): decObj={}", decObj);
-                            processType(decObj, "Wifi", "wifi", "boolean");
-                            processType(decObj, "WLANssid", "ssid", "arr");
-                            processType(decObj, "pass", "password", "string");
-                            processType(decObj, "WifiInfo", "wifiInfo", "boolean");
-                            processType(decObj, "TimeServer", "timeServer", "string");
-                            processType(decObj, "geopos", "location", "coord");
-                            processType(decObj, "NightMode", "", "nightmode");
-                            processType(decObj, "devicename", "deviceName", "string");
-                            processType(decObj, "RoomType", "roomType", "string");
-                            processType(decObj, "logging", "logLevel", "string");
-                            processType(decObj, "DeleteKey", "deleteKey", "string");
-                            processType(decObj, "FireAlarm", "fireAlarm", "boolean");
-                            processType(decObj, "air-Q-Hardware-Version", "hardwareVersion", "property");
-                            processType(decObj, "WLAN config", "", "wlan");
-                            processType(decObj, "cloudUpload", "cloudUpload", "boolean");
-                            processType(decObj, "SecondsMeasurementDelay", "averagingRhythm", "number");
-                            processType(decObj, "Rejection", "powerFreqSuppression", "string");
-                            processType(decObj, "air-Q-Software-Version", "softwareVersion", "property");
-                            processType(decObj, "sensors", "sensorList", "proparr");
-                            processType(decObj, "AutoDriftCompensation", "autoDriftCompensation", "boolean");
-                            processType(decObj, "AutoUpdate", "autoUpdate", "boolean");
-                            processType(decObj, "AdvancedDataProcessing", "advancedDataProcessing", "boolean");
-                            processType(decObj, "Industry", "Industry", "property");
-                            processType(decObj, "ppm&ppb", "ppm_and_ppb", "boolean");
-                            processType(decObj, "GasAlarm", "gasAlarm", "boolean");
-                            processType(decObj, "id", "id", "property");
-                            processType(decObj, "SoundInfo", "soundPressure", "boolean");
-                            processType(decObj, "AlarmForwarding", "alarmForwarding", "boolean");
-                            processType(decObj, "usercalib", "userCalib", "calib");
-                            processType(decObj, "InitialCalFinished", "initialCalFinished", "boolean");
-                            processType(decObj, "Averaging", "averaging", "boolean");
-                            processType(decObj, "SensorInfo", "sensorInfo", "property");
-                            processType(decObj, "ErrorBars", "errorBars", "boolean");
-                            processType(decObj, "warmup-phase", "warmupPhase", "boolean");
-                        } else {
-                            logger.warn(
-                                    "air-Q - airqHandler - getConfigData(): The air-Q data could not be extracted from this string: {}",
-                                    decEl);
-                        }
-                    }
-                } else {
-                    logger.warn(
-                            "air-Q - airqHandler - getConfigData(): The air-Q data could not be extracted from this string: {}",
-                            ans);
-                }
+            String jsontext = res.getBody();
+            logger.trace("air-Q - airqHandler - getConfigData(): Result from getBody() is {} with body={}", res,
+                    res.getBody());
+            JsonElement ans = gson.fromJson(jsontext, JsonElement.class);
+            if (ans == null) {
+                throw new AirqEmptyResonseException();
             }
-        } catch (Exception e) {
-            logger.warn("air-Q - airqHandler - getConfigData(): Error in processConfigData(): {}", e.toString());
+
+            JsonObject jsonObj = ans.getAsJsonObject();
+            String jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
+            JsonElement decEl = gson.fromJson(jsonAnswer, JsonElement.class);
+            if (decEl == null) {
+                throw new AirqEmptyResonseException();
+            }
+
+            JsonObject decObj = decEl.getAsJsonObject();
+            logger.trace("air-Q - airqHandler - getConfigData(): decObj={}", decObj);
+            processType(decObj, "Wifi", "wifi", "boolean");
+            processType(decObj, "WLANssid", "ssid", "arr");
+            processType(decObj, "pass", "password", "string");
+            processType(decObj, "WifiInfo", "wifiInfo", "boolean");
+            processType(decObj, "TimeServer", "timeServer", "string");
+            processType(decObj, "geopos", "location", "coord");
+            processType(decObj, "NightMode", "", "nightmode");
+            processType(decObj, "devicename", "deviceName", "string");
+            processType(decObj, "RoomType", "roomType", "string");
+            processType(decObj, "logging", "logLevel", "string");
+            processType(decObj, "DeleteKey", "deleteKey", "string");
+            processType(decObj, "FireAlarm", "fireAlarm", "boolean");
+            processType(decObj, "air-Q-Hardware-Version", "hardwareVersion", "property");
+            processType(decObj, "WLAN config", "", "wlan");
+            processType(decObj, "cloudUpload", "cloudUpload", "boolean");
+            processType(decObj, "SecondsMeasurementDelay", "averagingRhythm", "number");
+            processType(decObj, "Rejection", "powerFreqSuppression", "string");
+            processType(decObj, "air-Q-Software-Version", "softwareVersion", "property");
+            processType(decObj, "sensors", "sensorList", "proparr");
+            processType(decObj, "AutoDriftCompensation", "autoDriftCompensation", "boolean");
+            processType(decObj, "AutoUpdate", "autoUpdate", "boolean");
+            processType(decObj, "AdvancedDataProcessing", "advancedDataProcessing", "boolean");
+            processType(decObj, "Industry", "Industry", "property");
+            processType(decObj, "ppm&ppb", "ppm_and_ppb", "boolean");
+            processType(decObj, "GasAlarm", "gasAlarm", "boolean");
+            processType(decObj, "id", "id", "property");
+            processType(decObj, "SoundInfo", "soundPressure", "boolean");
+            processType(decObj, "AlarmForwarding", "alarmForwarding", "boolean");
+            processType(decObj, "usercalib", "userCalib", "calib");
+            processType(decObj, "InitialCalFinished", "initialCalFinished", "boolean");
+            processType(decObj, "Averaging", "averaging", "boolean");
+            processType(decObj, "SensorInfo", "sensorInfo", "property");
+            processType(decObj, "ErrorBars", "errorBars", "boolean");
+            processType(decObj, "warmup-phase", "warmupPhase", "boolean");
+        } catch (AirqException | JsonSyntaxException e) {
+            logger.warn("Failed to retrieve configuration: {}", e.getMessage());
         }
     }
 
@@ -651,6 +627,10 @@ public class AirqHandler extends BaseThingHandler {
                             pairDB.getValue(), Units.DECIBEL);
                     updateState(channelName, new QuantityType<>(pairDB.getValue(), Units.DECIBEL));
                     updateState(channelName + "_maxerr", new DecimalType(pairDB.getMaxdev()));
+                    break;
+                case "index":
+                    double rawValue = Double.parseDouble(dec.get(airqName).toString());
+                    updateState(channelName, new QuantityType<>(rawValue / 10, Units.PERCENT));
                     break;
                 case "datetime":
                     Long timest = Long.valueOf(dec.get(airqName).toString());
@@ -782,24 +762,28 @@ public class AirqHandler extends BaseThingHandler {
     }
 
     private void changeSettings(JsonObject jsonchange) {
-        String jsoncmd = jsonchange.toString();
-        logger.trace("air-Q - airqHandler - changeSettings(): called with jsoncmd={}", jsoncmd);
-        Result res = null;
-        String url = "http://" + config.ipAddress + "/config";
-        String jsonbody = encrypt(jsoncmd.getBytes(StandardCharsets.UTF_8), config.password);
-        String fullbody = "request=" + jsonbody;
-        logger.trace("air-Q - airqHandler - changeSettings(): doing call to url={}, method=POST, body={}", url,
-                fullbody);
-        res = getData(url, "POST", fullbody);
-        if (res != null) {
+        try {
+            String jsoncmd = jsonchange.toString();
+            logger.trace("air-Q - airqHandler - changeSettings(): called with jsoncmd={}", jsoncmd);
+            Result res;
+            String url = "http://" + config.ipAddress + "/config";
+            String jsonbody = encrypt(jsoncmd.getBytes(StandardCharsets.UTF_8), config.password);
+            String fullbody = "request=" + jsonbody;
+            logger.trace("air-Q - airqHandler - changeSettings(): doing call to url={}, method=POST, body={}", url,
+                    fullbody);
+            res = getData(url, "POST", fullbody);
             JsonElement ans = gson.fromJson(res.getBody(), JsonElement.class);
-            if (ans != null) {
-                JsonObject jsonObj = ans.getAsJsonObject();
-                String jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
-                logger.trace("air-Q - airqHandler - changeSettings(): call returned {}", jsonAnswer);
-            } else {
-                logger.warn("The air-Q data could not be extracted from this string: {}", ans);
+
+            if (ans == null) {
+                throw new AirqEmptyResonseException();
             }
+
+            JsonObject jsonObj = ans.getAsJsonObject();
+            String jsonAnswer;
+            jsonAnswer = decrypt(jsonObj.get("content").getAsString().getBytes(), config.password);
+            logger.trace("air-Q - airqHandler - changeSettings(): call returned {}", jsonAnswer);
+        } catch (AirqException e) {
+            logger.warn("Failed to change settings", e);
         }
     }
-};
+}

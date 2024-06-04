@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,7 +86,7 @@ public class WeatherUtils {
      * Compute the associated scale appreciation of a given humidex index
      * https://www.researchgate.net/figure/The-scale-of-Humidex-and-the-degree-of-comfort_tbl1_335293174
      *
-     * @param Humidex index value
+     * @param humidex index value
      * @return scale between 0 and 4
      */
     public static int humidexScale(double humidex) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.mqtt.homie.internal.handler;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
@@ -23,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
 import org.openhab.binding.mqtt.generic.ChannelState;
+import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.tools.DelayedBatchProcessing;
 import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
@@ -39,6 +41,12 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelGroupDefinition;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.thing.type.ThingType;
+import org.openhab.core.types.CommandDescription;
+import org.openhab.core.types.StateDescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +61,8 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
     private final Logger logger = LoggerFactory.getLogger(HomieThingHandler.class);
     protected Device device;
     protected final MqttChannelTypeProvider channelTypeProvider;
+    protected final MqttChannelStateDescriptionProvider stateDescriptionProvider;
+    protected final ChannelTypeRegistry channelTypeRegistry;
     /** The timeout per attribute field subscription */
     protected final int attributeReceiveTimeout;
     protected final int subscribeTimeout;
@@ -67,16 +77,21 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
      *
      * @param thing The thing of this handler
      * @param channelTypeProvider A channel type provider
+     * @param stateDescriptionProvider A state description provider
+     * @param channelTypeRegistry The channel type registry
      * @param deviceTimeout Timeout for the entire device subscription. In milliseconds.
      * @param subscribeTimeout Timeout for an entire attribute class subscription and receive. In milliseconds.
      *            Even a slow remote device will publish a full node or property within 100ms.
      * @param attributeReceiveTimeout The timeout per attribute field subscription. In milliseconds.
      *            One attribute subscription and receiving should not take longer than 50ms.
      */
-    public HomieThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider, int deviceTimeout,
-            int subscribeTimeout, int attributeReceiveTimeout) {
+    public HomieThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider,
+            MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
+            int deviceTimeout, int subscribeTimeout, int attributeReceiveTimeout) {
         super(thing, deviceTimeout);
         this.channelTypeProvider = channelTypeProvider;
+        this.stateDescriptionProvider = stateDescriptionProvider;
+        this.channelTypeRegistry = channelTypeRegistry;
         this.deviceTimeout = deviceTimeout;
         this.subscribeTimeout = subscribeTimeout;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
@@ -105,6 +120,17 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
             return;
         }
         device.initialize(config.basetopic, config.deviceid, thing.getChannels());
+
+        updateThingType();
+        if (getThing().getThingTypeUID().equals(MqttBindingConstants.HOMIE300_MQTT_THING)) {
+            logger.debug("Migrating Homie thing {} from generic type to dynamic type {}", getThing().getUID(),
+                    device.thingTypeUID);
+            changeThingType(device.thingTypeUID, getConfig());
+            return;
+        } else {
+            updateChannels();
+        }
+
         super.initialize();
     }
 
@@ -126,11 +152,11 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
                     "Homie devices require QoS 1 but Qos 0/2 is configured. Using override. Please check the configuration");
             connection.setQos(1);
         }
-        return device.subscribe(connection, scheduler, attributeReceiveTimeout).thenCompose((Void v) -> {
-            return device.startChannels(connection, scheduler, attributeReceiveTimeout, this);
-        }).thenRun(() -> {
-            logger.debug("Homie device {} fully attached (start)", config.deviceid);
-        });
+        return device.subscribe(connection, scheduler, attributeReceiveTimeout)
+                .thenCompose((Void v) -> device.startChannels(connection, scheduler, attributeReceiveTimeout, this))
+                .thenRun(() -> {
+                    logger.debug("Homie device {} fully attached (start)", config.deviceid);
+                });
     }
 
     @Override
@@ -143,6 +169,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         }
         delayedProcessing.join();
         device.stop();
+        channelTypeProvider.removeThingType(device.thingTypeUID);
         super.stop();
     }
 
@@ -195,7 +222,7 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
 
     @Override
     public void propertyRemoved(Property property) {
-        channelTypeProvider.removeChannelType(property.channelTypeUID);
+        stateDescriptionProvider.remove(property.getChannelUID());
         delayedProcessing.accept(property);
     }
 
@@ -207,7 +234,16 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
 
     @Override
     public void propertyAddedOrChanged(Property property) {
-        channelTypeProvider.setChannelType(property.channelTypeUID, property.getType());
+        ChannelUID channelUID = property.getChannelUID();
+        stateDescriptionProvider.remove(channelUID);
+        StateDescription stateDescription = property.getStateDescription();
+        if (stateDescription != null) {
+            stateDescriptionProvider.setDescription(channelUID, stateDescription);
+        }
+        CommandDescription commandDescription = property.getCommandDescription();
+        if (commandDescription != null) {
+            stateDescriptionProvider.setDescription(channelUID, commandDescription);
+        }
         delayedProcessing.accept(property);
     }
 
@@ -220,10 +256,9 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         if (!device.isInitialized()) {
             return;
         }
-        List<Channel> channels = device.nodes().stream().flatMap(n -> n.properties.stream()).map(Property::getChannel)
-                .collect(Collectors.toList());
-        updateThing(editThing().withChannels(channels).build());
         updateProperty(MqttBindingConstants.HOMIE_PROPERTY_VERSION, device.attributes.homie);
+        updateThingType();
+        updateChannels();
         final MqttBrokerConnection connection = this.connection;
         if (connection != null) {
             device.startChannels(connection, scheduler, attributeReceiveTimeout, this).thenRun(() -> {
@@ -241,13 +276,39 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
             logger.warn("couldn't remove retained topics for {} because connection is null", thing.getUID());
             return;
         }
-        device.getRetainedTopics().stream().map(d -> {
-            return String.format("%s/%s", config.basetopic, d);
-        }).collect(Collectors.toList()).forEach(t -> connection.publish(t, new byte[0], 1, true));
+        device.getRetainedTopics().stream().map(d -> String.format("%s/%s", config.basetopic, d))
+                .collect(Collectors.toList()).forEach(t -> connection.publish(t, new byte[0], 1, true));
     }
 
     @Override
     protected void updateThingStatus(boolean messageReceived, Optional<Boolean> availabilityTopicsSeen) {
         // not used here
+    }
+
+    private void updateThingType() {
+        // Make sure any dynamic channel types exist (i.e. ones created for a number channel with a specific dimension)
+        device.nodes.stream().flatMap(n -> n.properties.stream()).map(Property::getChannelType).filter(Objects::nonNull)
+                .forEach(ct -> channelTypeProvider.setChannelType(ct.getUID(), ct));
+
+        // if this is a dynamic type, then we update the type
+        ThingTypeUID typeID = device.thingTypeUID;
+        if (!MqttBindingConstants.HOMIE300_MQTT_THING.equals(typeID)) {
+            device.nodes.stream()
+                    .forEach(n -> channelTypeProvider.setChannelGroupType(n.channelGroupTypeUID, n.type()));
+
+            List<ChannelGroupDefinition> groupDefs = device.nodes().stream().map(Node::getChannelGroupDefinition)
+                    .collect(Collectors.toList());
+            var builder = channelTypeProvider.derive(typeID, MqttBindingConstants.HOMIE300_MQTT_THING)
+                    .withChannelGroupDefinitions(groupDefs);
+            ThingType thingType = builder.build();
+
+            channelTypeProvider.setThingType(typeID, thingType);
+        }
+    }
+
+    private void updateChannels() {
+        List<Channel> channels = device.nodes().stream().flatMap(n -> n.properties.stream())
+                .map(p -> p.getChannel(channelTypeRegistry)).collect(Collectors.toList());
+        updateThing(editThing().withChannels(channels).build());
     }
 }

@@ -29,6 +29,10 @@
 			</channel-group>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
 		<representation-property>serialNumber</representation-property>
 
 		<config-description>
@@ -97,7 +101,9 @@
 		<label>General Control</label>
 		<description>General channels for this AVR.</description>
 		<channels>
-			<channel id="power" typeId="mainPower"/>
+			<channel id="power" typeId="system.power">
+				<description>Power ON/OFF the AVR</description>
+			</channel>
 			<channel id="surroundProgram" typeId="surroundProgram"/>
 			<channel id="artist" typeId="artist"/>
 			<channel id="album" typeId="album"/>
@@ -110,45 +116,26 @@
 		<label>Zone Control</label>
 		<description>Channels for a zone of this AVR.</description>
 		<channels>
-			<channel id="power" typeId="zonePower"/>
-			<channel id="volume" typeId="volume"/>
+			<channel id="power" typeId="system.power">
+				<description>Power ON/OFF this zone of the AVR</description>
+			</channel>
+			<channel id="volume" typeId="system.volume">
+				<description>Set the volume level of this zone</description>
+			</channel>
 			<channel id="volumeDB" typeId="volumeDB"/>
-			<channel id="mute" typeId="mute"/>
+			<channel id="mute" typeId="system.mute">
+				<description>Mute audio on this zone of the AVR</description>
+			</channel>
 			<channel id="input" typeId="input"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="mainPower">
-		<item-type>Switch</item-type>
-		<label>Power</label>
-		<description>Power ON/OFF the AVR</description>
-	</channel-type>
-
-	<channel-type id="zonePower">
-		<item-type>Switch</item-type>
-		<label>Power (zone)</label>
-		<description>Power ON/OFF this zone of the AVR</description>
-	</channel-type>
-
-	<channel-type id="volume">
-		<item-type>Dimmer</item-type>
-		<label>Volume</label>
-		<description>Set the volume level of this zone</description>
-		<category>SoundVolume</category>
-	</channel-type>
-
 	<channel-type id="volumeDB" advanced="true">
-		<item-type>Number</item-type>
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Volume (dB)</label>
 		<description>Set the volume level (dB). Same as [mainVolume - 80].</description>
 		<category>SoundVolume</category>
-		<state min="-80" max="18" step="0.5" pattern="%.1f dB"/>
-	</channel-type>
-
-	<channel-type id="mute">
-		<item-type>Switch</item-type>
-		<label>Mute</label>
-		<description>Enable/Disable Mute on this zone of the AVR</description>
+		<state min="-80" max="18" step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="input">
@@ -197,6 +184,12 @@
 				<option value="IRP">IRP</option>
 				<option value="FVP">FVP</option>
 				<option value="OTP">OTP</option>
+				<option value="BLUETOOTH">BLUETOOTH</option>
+				<option value="COAXIAL">COAXIAL</option>
+				<option value="DIGITALIN1">DIGITALIN1</option>
+				<option value="DIGITALIN2">DIGITALIN2</option>
+				<option value="ANALOGIN">ANALOGIN</option>
+				<option value="ANALOGIN2">ANALOGIN2</option>
 			</options>
 		</state>
 	</channel-type>

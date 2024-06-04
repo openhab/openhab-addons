@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -112,9 +112,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             return;
         }
 
-        if (command instanceof QuantityType) {
-            QuantityType<?> value = (QuantityType<?>) command;
-
+        if (command instanceof QuantityType value) {
             Unit<?> unit = channel.getUnit();
             if (unit != null) {
                 value = value.toUnit(unit);
@@ -123,8 +121,8 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
             command = new DecimalType(value.floatValue());
         }
 
-        if (command instanceof OnOffType) {
-            command = ((OnOffType) command) == OnOffType.ON ? new DecimalType(1) : DecimalType.ZERO;
+        if (command instanceof OnOffType onOffCommand) {
+            command = onOffCommand == OnOffType.ON ? new DecimalType(1) : DecimalType.ZERO;
         }
 
         if (!(command instanceof DecimalType)) {
@@ -161,6 +159,7 @@ public class LuxtronikHeatpumpHandler extends BaseThingHandler {
                 break;
             case CHANNEL_EINST_WK_AKT:
             case CHANNEL_EINST_BWS_AKT:
+            case CHANNEL_EINST_HZFTRL_AKT:
             case CHANNEL_EINST_KUCFTL_AKT:
             case CHANNEL_SOLLWERT_KUCFTL_AKT:
             case CHANNEL_SOLL_BWS_AKT:

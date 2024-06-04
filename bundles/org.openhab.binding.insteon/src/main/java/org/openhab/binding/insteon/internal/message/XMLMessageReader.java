@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public class XMLMessageReader {
             for (int i = 0; i < nodes.getLength(); i++) {
                 Node node = nodes.item(i);
                 if (node.getNodeType() == Node.ELEMENT_NODE) {
-                    if (node.getNodeName().equals("msg")) {
+                    if ("msg".equals(node.getNodeName())) {
                         Pair<String, Msg> msgDef = readMessageDefinition((Element) node);
                         messageMap.put(msgDef.getKey(), msgDef.getValue());
                     }
@@ -106,7 +106,7 @@ public class XMLMessageReader {
         for (int i = 0; i < nodes.getLength(); i++) {
             Node node = nodes.item(i);
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                if (node.getNodeName().equals("header")) {
+                if ("header".equals(node.getNodeName())) {
                     int o = readHeaderElement((Element) node, fieldMap);
                     hlength = o;
                     // Increment the offset by the header length
@@ -158,8 +158,7 @@ public class XMLMessageReader {
         // Now we have field, only need value
         String sVal = field.getTextContent();
         Object val = DataTypeParser.parseDataType(dType, sVal);
-        Pair<Field, Object> pair = new Pair<>(f, val);
-        return pair;
+        return new Pair<>(f, val);
     }
 
     private static Msg createMsg(HashMap<Field, Object> values, int length, int headerLength, Msg.Direction dir)
@@ -173,7 +172,7 @@ public class XMLMessageReader {
             } else {
                 throw new FieldException("data is null");
             }
-            if (!f.getName().equals("")) {
+            if (!"".equals(f.getName())) {
                 msg.addField(f);
             }
         }

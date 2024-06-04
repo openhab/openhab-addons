@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="smgw"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="smgw">
+		<label>Smartmeter Gateway</label>
+		<description>A Smartmeter Gateway</description>
+
+		<channels>
+			<channel id="meter" typeId="system.electric-energy">
+				<label>Meter Reading</label>
+			</channel>
+			<channel id="timestamp" typeId="timestamp">
+			</channel>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+				<default>192.168.1.200</default>
+			</parameter>
+			<parameter name="username" type="text" required="true">
+				<label>Username</label>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>The timestamp of the meter reading.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

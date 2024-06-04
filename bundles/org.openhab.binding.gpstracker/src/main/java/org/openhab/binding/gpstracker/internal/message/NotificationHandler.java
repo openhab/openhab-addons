@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,11 +48,11 @@ public class NotificationHandler {
     public void handleNotification(LocationMessage msg) {
         synchronized (this) {
             String trackerId = msg.getTrackerId();
-            if (msg instanceof TransitionMessage) {
+            if (msg instanceof TransitionMessage message) {
                 List<TransitionMessage> transitionMessages = transitionNotifications.computeIfAbsent(trackerId,
                         k -> new ArrayList<>());
                 if (transitionMessages != null) {
-                    transitionMessages.add((TransitionMessage) msg);
+                    transitionMessages.add(message);
                 }
             } else {
                 locationNotifications.put(trackerId, msg);

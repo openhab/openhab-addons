@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,32 +14,27 @@ package org.openhab.binding.samsungtv.internal.service;
 
 import static org.openhab.binding.samsungtv.internal.SamsungTvBindingConstants.*;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.samsungtv.internal.config.SamsungTvConfiguration;
+import org.openhab.binding.samsungtv.internal.Utils;
+import org.openhab.binding.samsungtv.internal.handler.SamsungTvHandler;
 import org.openhab.binding.samsungtv.internal.protocol.KeyCode;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteController;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerException;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerLegacy;
 import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerWebSocket;
-import org.openhab.binding.samsungtv.internal.protocol.RemoteControllerWebsocketCallback;
-import org.openhab.binding.samsungtv.internal.service.api.EventListener;
 import org.openhab.binding.samsungtv.internal.service.api.SamsungTvService;
 import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.RawType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.thing.ThingStatusDetail;
@@ -48,8 +43,6 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-
 /**
  * The {@link RemoteControllerService} is responsible for handling remote
  * controller commands.
@@ -57,194 +50,117 @@ import com.google.gson.Gson;
  * @author Pauli Anttila - Initial contribution
  * @author Martin van Wingerden - Some changes for manually configured devices
  * @author Arjan Mels - Implemented websocket interface for recent TVs
+ * @author Nick Waterton - added power state monitoring for Frame TV's, some refactoring, sendkeys()
  */
 @NonNullByDefault
-public class RemoteControllerService implements SamsungTvService, RemoteControllerWebsocketCallback {
+public class RemoteControllerService implements SamsungTvService {
 
     private final Logger logger = LoggerFactory.getLogger(RemoteControllerService.class);
 
     public static final String SERVICE_NAME = "RemoteControlReceiver";
 
     private final List<String> supportedCommandsUpnp = Arrays.asList(KEY_CODE, POWER, CHANNEL);
-    private final List<String> supportedCommandsNonUpnp = Arrays.asList(KEY_CODE, VOLUME, MUTE, POWER, CHANNEL);
-    private final List<String> extraSupportedCommandsWebSocket = Arrays.asList(BROWSER_URL, SOURCE_APP, ART_MODE);
+    private final List<String> supportedCommandsNonUpnp = Arrays.asList(KEY_CODE, VOLUME, MUTE, POWER, CHANNEL,
+            BROWSER_URL, STOP_BROWSER, SOURCE_APP);
+    private final List<String> supportedCommandsArt = Arrays.asList(ART_MODE, ART_JSON, ART_LABEL, ART_IMAGE,
+            ART_BRIGHTNESS, ART_COLOR_TEMPERATURE);
+    private static final List<String> REFRESH_CHANNELS = Arrays.asList();
+    private static final List<String> refreshArt = Arrays.asList(ART_BRIGHTNESS);
+    private static final List<String> refreshApps = Arrays.asList(SOURCE_APP);
+    private static final List<String> art2022 = Arrays.asList(ART_MODE, SET_ART_MODE);
 
     private String host;
-    private int port;
     private boolean upnp;
+    private String previousApp = "None";
+    private final int keyTiming = 300;
 
-    boolean power = true;
-    boolean artMode = false;
+    private long busyUntil = System.currentTimeMillis();
 
-    private boolean artModeSupported = false;
+    public boolean artMode = false;
+    public boolean justStarted = true;
+    /* retry connection count */
+    private int retryCount = 0;
 
-    private Set<EventListener> listeners = new CopyOnWriteArraySet<>();
+    public final SamsungTvHandler handler;
 
-    private @Nullable RemoteController remoteController = null;
+    private final RemoteController remoteController;
 
-    /** Path for the information endpoint (note the final slash!) */
-    private static final String WS_ENDPOINT_V2 = "/api/v2/";
-
-    /** Description of the json returned for the information endpoint */
-    @NonNullByDefault({})
-    static class TVProperties {
-        @NonNullByDefault({})
-        static class Device {
-            boolean FrameTVSupport;
-            boolean GamePadSupport;
-            boolean ImeSyncedSupport;
-            String OS;
-            boolean TokenAuthSupport;
-            boolean VoiceSupport;
-            String countryCode;
-            String description;
-            String firmwareVersion;
-            String modelName;
-            String name;
-            String networkType;
-            String resolution;
-        }
-
-        Device device;
-        String isSupport;
-    }
-
-    /**
-     * Discover the type of remote control service the TV supports.
-     *
-     * @param hostname
-     * @return map with properties containing at least the protocol and port
-     */
-    public static Map<String, Object> discover(String hostname) {
-        Map<String, Object> result = new HashMap<>();
-
-        try {
-            RemoteControllerLegacy remoteController = new RemoteControllerLegacy(hostname,
-                    SamsungTvConfiguration.PORT_DEFAULT_LEGACY, "openHAB", "openHAB");
-            remoteController.openConnection();
-            remoteController.close();
-            result.put(SamsungTvConfiguration.PROTOCOL, SamsungTvConfiguration.PROTOCOL_LEGACY);
-            result.put(SamsungTvConfiguration.PORT, SamsungTvConfiguration.PORT_DEFAULT_LEGACY);
-            return result;
-        } catch (RemoteControllerException e) {
-            // ignore error
-        }
-
-        URI uri;
-        try {
-            uri = new URI("http", null, hostname, SamsungTvConfiguration.PORT_DEFAULT_WEBSOCKET, WS_ENDPOINT_V2, null,
-                    null);
-            InputStreamReader reader = new InputStreamReader(uri.toURL().openStream());
-            TVProperties properties = new Gson().fromJson(reader, TVProperties.class);
-
-            if (properties.device.TokenAuthSupport) {
-                result.put(SamsungTvConfiguration.PROTOCOL, SamsungTvConfiguration.PROTOCOL_SECUREWEBSOCKET);
-                result.put(SamsungTvConfiguration.PORT, SamsungTvConfiguration.PORT_DEFAULT_SECUREWEBSOCKET);
-            } else {
-                result.put(SamsungTvConfiguration.PROTOCOL, SamsungTvConfiguration.PROTOCOL_WEBSOCKET);
-                result.put(SamsungTvConfiguration.PORT, SamsungTvConfiguration.PORT_DEFAULT_WEBSOCKET);
-            }
-        } catch (URISyntaxException | IOException e) {
-            LoggerFactory.getLogger(RemoteControllerService.class).debug("Cannot retrieve info from TV", e);
-            result.put(SamsungTvConfiguration.PROTOCOL, SamsungTvConfiguration.PROTOCOL_NONE);
-        }
-
-        return result;
-    }
-
-    private RemoteControllerService(String host, int port, boolean upnp) {
-        logger.debug("Creating a Samsung TV RemoteController service: {}", upnp);
+    public RemoteControllerService(String host, int port, boolean upnp, SamsungTvHandler handler)
+            throws RemoteControllerException {
+        logger.debug("{}: Creating a Samsung TV RemoteController service: is UPNP:{}", host, upnp);
         this.upnp = upnp;
         this.host = host;
-        this.port = port;
-    }
-
-    static RemoteControllerService createUpnpService(String host, int port) {
-        return new RemoteControllerService(host, port, true);
-    }
-
-    public static RemoteControllerService createNonUpnpService(String host, int port) {
-        return new RemoteControllerService(host, port, false);
+        this.handler = handler;
+        try {
+            if (upnp) {
+                remoteController = new RemoteControllerLegacy(host, port, "openHAB", "openHAB");
+                remoteController.openConnection();
+            } else {
+                remoteController = new RemoteControllerWebSocket(host, port, "openHAB", "openHAB", this);
+            }
+        } catch (RemoteControllerException e) {
+            throw new RemoteControllerException("Cannot create RemoteControllerService", e);
+        }
     }
 
     @Override
-    public List<String> getSupportedChannelNames() {
-        List<String> supported = upnp ? supportedCommandsUpnp : supportedCommandsNonUpnp;
-        if (remoteController instanceof RemoteControllerWebSocket) {
-            supported = new ArrayList<>(supported);
-            supported.addAll(extraSupportedCommandsWebSocket);
+    public String getServiceName() {
+        return SERVICE_NAME;
+    }
+
+    @Override
+    public List<String> getSupportedChannelNames(boolean refresh) {
+        // no refresh channels for UPNP remotecontroller
+        List<String> supported = new ArrayList<>(refresh ? upnp ? Arrays.asList() : REFRESH_CHANNELS
+                : upnp ? supportedCommandsUpnp : supportedCommandsNonUpnp);
+        if (getArtModeSupported()) {
+            supported.addAll(refresh ? refreshArt : supportedCommandsArt);
         }
-        logger.trace("getSupportedChannelNames: {}", supported);
+        if (getArtMode2022()) {
+            supported.addAll(refresh ? Arrays.asList() : art2022);
+        }
+        if (remoteController.noApps() && getPowerState() && refresh) {
+            supported.addAll(refreshApps);
+        }
+        if (!refresh) {
+            logger.trace("{}: getSupportedChannelNames: {}", host, supported);
+        }
         return supported;
     }
 
     @Override
-    public void addEventListener(EventListener listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeEventListener(EventListener listener) {
-        listeners.remove(listener);
-    }
-
     public boolean checkConnection() {
-        if (remoteController != null) {
-            return remoteController.isConnected();
-        } else {
-            return false;
-        }
+        return remoteController.isConnected();
     }
 
     @Override
     public void start() {
-        if (remoteController != null) {
-            try {
+        try {
+            if (!checkConnection()) {
                 remoteController.openConnection();
-            } catch (RemoteControllerException e) {
-                logger.warn("Cannot open remote interface ({})", e.getMessage());
             }
-            return;
+        } catch (RemoteControllerException e) {
+            reportError("Cannot connect to remote control service", e);
         }
-
-        String protocol = (String) getConfig(SamsungTvConfiguration.PROTOCOL);
-        logger.info("Using {} interface", protocol);
-
-        if (SamsungTvConfiguration.PROTOCOL_LEGACY.equals(protocol)) {
-            remoteController = new RemoteControllerLegacy(host, port, "openHAB", "openHAB");
-        } else if (SamsungTvConfiguration.PROTOCOL_WEBSOCKET.equals(protocol)
-                || SamsungTvConfiguration.PROTOCOL_SECUREWEBSOCKET.equals(protocol)) {
-            try {
-                remoteController = new RemoteControllerWebSocket(host, port, "openHAB", "openHAB", this);
-            } catch (RemoteControllerException e) {
-                reportError("Cannot connect to remote control service", e);
-            }
-        } else {
-            remoteController = null;
-            return;
-        }
-
-        if (remoteController != null) {
-            try {
-                remoteController.openConnection();
-            } catch (RemoteControllerException e) {
-                reportError("Cannot connect to remote control service", e);
-            }
-        }
+        previousApp = "";
     }
 
     @Override
     public void stop() {
-        if (remoteController != null) {
-            try {
-                remoteController.close();
-            } catch (RemoteControllerException ignore) {
-            }
+        try {
+            remoteController.close();
+        } catch (RemoteControllerException ignore) {
+            // ignore error
         }
     }
 
+    /**
+     * Clears the UPnP cache, or reconnects a websocket if diconnected
+     * Here we reconnect the websocket
+     */
     @Override
     public void clearCache() {
+        start();
     }
 
     @Override
@@ -253,193 +169,322 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
     }
 
     @Override
-    public void handleCommand(String channel, Command command) {
-        logger.trace("Received channel: {}, command: {}", channel, command);
-        if (command == RefreshType.REFRESH) {
-            return;
-        }
+    public boolean handleCommand(String channel, Command command) {
+        logger.trace("{}: Received channel: {}, command: {}", host, channel, Utils.truncCmd(command));
 
-        if (remoteController == null) {
-            return;
-        }
-
-        KeyCode key = null;
-
-        if (remoteController instanceof RemoteControllerWebSocket) {
-            RemoteControllerWebSocket remoteControllerWebSocket = (RemoteControllerWebSocket) remoteController;
-            switch (channel) {
-                case BROWSER_URL:
-                    if (command instanceof StringType) {
-                        remoteControllerWebSocket.sendUrl(command.toString());
-                    } else {
-                        logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
-                    }
-                    return;
-                case SOURCE_APP:
-                    if (command instanceof StringType) {
-                        remoteControllerWebSocket.sendSourceApp(command.toString());
-                    } else {
-                        logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
-                    }
-                    return;
-                case POWER:
-                    if (command instanceof OnOffType) {
-                        // websocket uses KEY_POWER
-                        // send key only to toggle state
-                        if (OnOffType.ON.equals(command) != power) {
-                            sendKeyCode(KeyCode.KEY_POWER);
-                        }
-                    } else {
-                        logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
-                    }
-                    return;
-                case ART_MODE:
-                    if (command instanceof OnOffType) {
-                        // websocket uses KEY_POWER
-                        // send key only to toggle state when power = off
-                        if (!power) {
-                            if (OnOffType.ON.equals(command)) {
-                                if (!artMode) {
-                                    sendKeyCode(KeyCode.KEY_POWER);
-                                }
-                            } else {
-                                sendKeyCodePress(KeyCode.KEY_POWER);
-                                // really switch off
-                            }
-                        } else {
-                            // switch TV off
-                            sendKeyCode(KeyCode.KEY_POWER);
-                            // switch TV to art mode
-                            sendKeyCode(KeyCode.KEY_POWER);
-                        }
-                    } else {
-                        logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
-                    }
-                    return;
+        boolean result = false;
+        if (!checkConnection() && !SET_ART_MODE.equals(channel)) {
+            logger.debug("{}: RemoteController is not connected", host);
+            if (getArtMode2022() && retryCount < 4) {
+                retryCount += 1;
+                logger.debug("{}: Reconnecting RemoteController, retry: {}", host, retryCount);
+                start();
+                return handler.handleCommand(channel, command, 3000);
+            } else {
+                logger.warn("{}: TV is not responding - not reconnecting", host);
             }
+            return false;
+        }
+        retryCount = 0;
+
+        if (command == RefreshType.REFRESH) {
+            switch (channel) {
+                case SOURCE_APP:
+                    remoteController.updateCurrentApp();
+                    break;
+                case ART_IMAGE:
+                case ART_LABEL:
+                    remoteController.getArtmodeStatus("get_current_artwork");
+                    break;
+                case ART_BRIGHTNESS:
+                    remoteController.getArtmodeStatus("get_brightness");
+                    break;
+                case ART_COLOR_TEMPERATURE:
+                    remoteController.getArtmodeStatus("get_color_temperature");
+                    break;
+            }
+            return true;
         }
 
         switch (channel) {
-            case KEY_CODE:
+            case BROWSER_URL:
                 if (command instanceof StringType) {
-                    try {
-                        key = KeyCode.valueOf(command.toString().toUpperCase());
-                    } catch (IllegalArgumentException e) {
-                        try {
-                            key = KeyCode.valueOf("KEY_" + command.toString().toUpperCase());
-                        } catch (IllegalArgumentException e2) {
-                            // do nothing, error message is logged later
-                        }
-                    }
-
-                    if (key != null) {
-                        sendKeyCode(key);
-                    } else {
-                        logger.warn("Remote control: Command '{}' not supported for channel '{}'", command, channel);
-                    }
-                } else {
-                    logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
+                    remoteController.sendUrl(command.toString());
+                    result = true;
                 }
-                return;
+                break;
+
+            case STOP_BROWSER:
+                if (command instanceof OnOffType) {
+                    if (command.equals(OnOffType.ON)) {
+                        return handleCommand(SOURCE_APP, new StringType(""));
+                    } else {
+                        sendKeys(KeyCode.KEY_EXIT, 2000);
+                    }
+                    result = true;
+                }
+                break;
+
+            case SOURCE_APP:
+                if (command instanceof StringType) {
+                    remoteController.sendSourceApp(command.toString());
+                    result = true;
+                }
+                break;
 
             case POWER:
                 if (command instanceof OnOffType) {
-                    // legacy controller uses KEY_POWERON/OFF
-                    if (command.equals(OnOffType.ON)) {
-                        sendKeyCode(KeyCode.KEY_POWERON);
+                    if (!isUpnp()) {
+                        // websocket uses KEY_POWER
+                        if (OnOffType.ON.equals(command) != getPowerState()) {
+                            // send key only to toggle state
+                            sendKeys(KeyCode.KEY_POWER);
+                            if (getArtMode2022()) {
+                                if (!getPowerState() & !artMode) {
+                                    // second key press to get out of art mode, once tv online
+                                    List<Object> commands = new ArrayList<>();
+                                    commands.add(9000);
+                                    commands.add(KeyCode.KEY_POWER);
+                                    sendKeys(commands);
+                                    updateArtMode(OnOffType.OFF.equals(command), 9000);
+                                } else {
+                                    updateArtMode(OnOffType.OFF.equals(command), 1000);
+                                }
+                            }
+                        }
                     } else {
-                        sendKeyCode(KeyCode.KEY_POWEROFF);
+                        // legacy controller uses KEY_POWERON/OFF
+                        if (command.equals(OnOffType.ON)) {
+                            sendKeys(KeyCode.KEY_POWERON);
+                        } else {
+                            sendKeys(KeyCode.KEY_POWEROFF);
+                        }
                     }
-                } else {
-                    logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
+                    result = true;
                 }
-                return;
+                break;
+
+            case SET_ART_MODE:
+                // Used to manually set art mode for >=2022 Frame TV's
+                logger.trace("{}: Setting Artmode to: {} artmode is: {}", host, command, artMode);
+                if (command instanceof OnOffType) {
+                    handler.valueReceived(SET_ART_MODE, OnOffType.from(OnOffType.ON.equals(command)));
+                    if (OnOffType.ON.equals(command) != artMode || justStarted) {
+                        justStarted = false;
+                        updateArtMode(OnOffType.ON.equals(command));
+                    }
+                    result = true;
+                }
+                break;
+
+            case ART_MODE:
+                if (command instanceof OnOffType) {
+                    // websocket uses KEY_POWER
+                    // send key only to toggle state when power = off
+                    if (!getPowerState()) {
+                        if (OnOffType.ON.equals(command)) {
+                            if (!artMode) {
+                                sendKeys(KeyCode.KEY_POWER);
+                            }
+                        } else if (artMode) {
+                            // really switch off (long press of power)
+                            sendKeys(KeyCode.KEY_POWER, 4000);
+                        }
+                    } else {
+                        // switch TV off
+                        sendKeys(KeyCode.KEY_POWER);
+                    }
+                    if (getArtMode2022()) {
+                        if (OnOffType.ON.equals(command)) {
+                            if (!getPowerState()) {
+                                // wait for TV to come online
+                                updateArtMode(true, 3000);
+                            } else {
+                                updateArtMode(true, 1000);
+                            }
+                        } else {
+                            this.artMode = false;
+                        }
+                    }
+                    result = true;
+                }
+                break;
+
+            case ART_JSON:
+                if (command instanceof StringType) {
+                    String artJson = command.toString();
+                    if (!artJson.contains("\"id\"")) {
+                        artJson = artJson.replaceFirst("}$", ",}");
+                    }
+                    remoteController.getArtmodeStatus(artJson);
+                    result = true;
+                }
+                break;
+
+            case ART_IMAGE:
+            case ART_LABEL:
+                if (command instanceof RawType) {
+                    remoteController.getArtmodeStatus("send_image", command.toFullString());
+                } else if (command instanceof StringType) {
+                    if (command.toString().startsWith("data:image")) {
+                        remoteController.getArtmodeStatus("send_image", command.toString());
+                    } else if (channel.equals(ART_LABEL)) {
+                        remoteController.getArtmodeStatus("select_image", command.toString());
+                    }
+                    result = true;
+                }
+                break;
+
+            case ART_BRIGHTNESS:
+                if (command instanceof DecimalType decimalCommand) {
+                    int value = decimalCommand.intValue();
+                    remoteController.getArtmodeStatus("set_brightness", String.valueOf(value / 10));
+                    result = true;
+                }
+                break;
+
+            case ART_COLOR_TEMPERATURE:
+                if (command instanceof DecimalType decimalCommand) {
+                    int value = Math.max(-5, Math.min(decimalCommand.intValue(), 5));
+                    remoteController.getArtmodeStatus("set_color_temperature", String.valueOf(value));
+                    result = true;
+                }
+                break;
+
+            case KEY_CODE:
+                if (command instanceof StringType) {
+                    // split on [, +], but not if encloded in "" or {}
+                    String[] cmds = command.toString().strip().split("(?=(?:(?:[^\"]*\"){2})*[^\"]*$)(?![^{]*})[, +]+",
+                            0);
+                    List<Object> commands = new ArrayList<>();
+                    for (String cmd : cmds) {
+                        try {
+                            logger.trace("{}: Procesing command: {}", host, cmd);
+                            if (cmd.startsWith("\"") || cmd.startsWith("{")) {
+                                // remove leading and trailing "
+                                cmd = cmd.replaceAll("^\"|\"$", "");
+                                commands.add(cmd);
+                                if (!cmd.startsWith("{")) {
+                                    commands.add("");
+                                }
+                            } else if (cmd.matches("-?\\d{2,5}")) {
+                                commands.add(Integer.parseInt(cmd));
+                            } else {
+                                String ucmd = cmd.toUpperCase();
+                                commands.add(KeyCode.valueOf(ucmd.startsWith("KEY_") ? ucmd : "KEY_" + ucmd));
+                            }
+                        } catch (IllegalArgumentException e) {
+                            logger.warn("{}: Remote control: unsupported cmd {} channel {}, {}", host, cmd, channel,
+                                    e.getMessage());
+                            return false;
+                        }
+                    }
+                    if (!commands.isEmpty()) {
+                        sendKeys(commands);
+                    }
+                    result = true;
+                }
+                break;
 
             case MUTE:
-                sendKeyCode(KeyCode.KEY_MUTE);
-                return;
+                if (command instanceof OnOffType) {
+                    sendKeys(KeyCode.KEY_MUTE);
+                    result = true;
+                }
+                break;
 
             case VOLUME:
-                if (command instanceof UpDownType) {
-                    if (command.equals(UpDownType.UP)) {
-                        sendKeyCode(KeyCode.KEY_VOLUP);
+                if (command instanceof UpDownType || command instanceof IncreaseDecreaseType) {
+                    if (command.equals(UpDownType.UP) || command.equals(IncreaseDecreaseType.INCREASE)) {
+                        sendKeys(KeyCode.KEY_VOLUP);
                     } else {
-                        sendKeyCode(KeyCode.KEY_VOLDOWN);
+                        sendKeys(KeyCode.KEY_VOLDOWN);
                     }
-                } else {
-                    logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
+                    result = true;
                 }
-                return;
+                break;
 
             case CHANNEL:
-                if (command instanceof DecimalType) {
-                    int val = ((DecimalType) command).intValue();
-                    int num4 = val / 1000 % 10;
-                    int num3 = val / 100 % 10;
-                    int num2 = val / 10 % 10;
-                    int num1 = val % 10;
-
-                    List<KeyCode> commands = new ArrayList<>();
-
-                    if (num4 > 0) {
-                        commands.add(KeyCode.valueOf("KEY_" + num4));
-                    }
-                    if (num4 > 0 || num3 > 0) {
-                        commands.add(KeyCode.valueOf("KEY_" + num3));
-                    }
-                    if (num4 > 0 || num3 > 0 || num2 > 0) {
-                        commands.add(KeyCode.valueOf("KEY_" + num2));
-                    }
-                    commands.add(KeyCode.valueOf("KEY_" + num1));
+                if (command instanceof DecimalType decimalCommand) {
+                    KeyCode[] codes = String.valueOf(decimalCommand.intValue()).chars()
+                            .mapToObj(c -> KeyCode.valueOf("KEY_" + String.valueOf((char) c))).toArray(KeyCode[]::new);
+                    List<Object> commands = new ArrayList<>(Arrays.asList(codes));
                     commands.add(KeyCode.KEY_ENTER);
-                    sendKeyCodes(commands);
-                } else {
-                    logger.warn("Remote control: unsupported command type {} for channel {}", command, channel);
+                    sendKeys(commands);
+                    result = true;
                 }
-                return;
+                break;
             default:
-                logger.warn("Remote control: unsupported channel: {}", channel);
+                logger.warn("{}: Remote control: unsupported channel: {}", host, channel);
+                return false;
         }
+        if (!result) {
+            logger.warn("{}: Remote control: wrong command type {} channel {}", host, command, channel);
+        }
+        return result;
+    }
+
+    public synchronized void sendKeys(KeyCode key, int press) {
+        sendKeys(Arrays.asList(key), press);
+    }
+
+    public synchronized void sendKeys(KeyCode key) {
+        sendKeys(Arrays.asList(key), 0);
+    }
+
+    public synchronized void sendKeys(List<Object> keys) {
+        sendKeys(keys, 0);
     }
 
     /**
-     * Sends a command to Samsung TV device.
+     * Send sequence of key codes to Samsung TV RemoteController instance.
+     * 300 ms between each key click. If press is > 0 then send key press/release
      *
-     * @param key Button code to send
+     * @param keys List containing key codes/Integer delays to send.
+     *            if integer delays are negative, send key press of abs(delay)
+     * @param press int value of length of keypress in ms (0 means Click)
      */
-    private void sendKeyCode(KeyCode key) {
-        try {
-            if (remoteController != null) {
-                remoteController.sendKey(key);
-            }
-        } catch (RemoteControllerException e) {
-            reportError(String.format("Could not send command to device on %s:%d", host, port), e);
+    public synchronized void sendKeys(List<Object> keys, int press) {
+        int timingInMs = keyTiming;
+        int delay = (int) Math.max(0, busyUntil - System.currentTimeMillis());
+        @Nullable
+        ScheduledExecutorService scheduler = getScheduler();
+        if (scheduler == null) {
+            logger.warn("{}: Unable to schedule key sequence", host);
+            return;
         }
-    }
-
-    private void sendKeyCodePress(KeyCode key) {
-        try {
-            if (remoteController != null && remoteController instanceof RemoteControllerWebSocket) {
-                ((RemoteControllerWebSocket) remoteController).sendKeyPress(key);
+        for (int i = 0; i < keys.size(); i++) {
+            Object key = keys.get(i);
+            if (key instanceof Integer keyAsInt) {
+                if (keyAsInt > 0) {
+                    delay += Math.max(0, keyAsInt - (2 * timingInMs));
+                } else {
+                    press = Math.max(timingInMs, Math.abs(keyAsInt));
+                    delay -= timingInMs;
+                }
+                continue;
             }
-        } catch (RemoteControllerException e) {
-            reportError(String.format("Could not send command to device on %s:%d", host, port), e);
-        }
-    }
-
-    /**
-     * Sends a sequence of command to Samsung TV device.
-     *
-     * @param keys List of button codes to send
-     */
-    private void sendKeyCodes(final List<KeyCode> keys) {
-        try {
-            if (remoteController != null) {
-                remoteController.sendKeys(keys);
+            if (press == 0 && key instanceof KeyCode && key.equals(KeyCode.KEY_BT_VOICE)) {
+                press = 3000;
+                delay -= timingInMs;
             }
-        } catch (RemoteControllerException e) {
-            reportError(String.format("Could not send command to device on %s:%d", host, port), e);
+            int duration = press;
+            scheduler.schedule(() -> {
+                if (duration > 0) {
+                    remoteController.sendKeyPress((KeyCode) key, duration);
+                } else {
+                    if (key instanceof String keyAsString) {
+                        remoteController.sendKey(keyAsString);
+                    } else {
+                        remoteController.sendKey((KeyCode) key);
+                    }
+                }
+            }, (i * timingInMs) + delay, TimeUnit.MILLISECONDS);
+            delay += press;
+            press = 0;
         }
+        busyUntil = System.currentTimeMillis() + (keys.size() * timingInMs) + delay;
+        logger.trace("{}: Key Sequence Queued", host);
     }
 
     private void reportError(String message, RemoteControllerException e) {
@@ -447,71 +492,123 @@ public class RemoteControllerService implements SamsungTvService, RemoteControll
     }
 
     private void reportError(ThingStatusDetail statusDetail, String message, RemoteControllerException e) {
-        for (EventListener listener : listeners) {
-            listener.reportError(statusDetail, message, e);
-        }
+        handler.reportError(statusDetail, message, e);
     }
 
-    @Override
     public void appsUpdated(List<String> apps) {
         // do nothing
     }
 
-    @Override
-    public void currentAppUpdated(@Nullable String app) {
-        for (EventListener listener : listeners) {
-            listener.valueReceived(SOURCE_APP, new StringType(app));
+    public void updateCurrentApp() {
+        remoteController.updateCurrentApp();
+    }
+
+    public synchronized void currentAppUpdated(String app) {
+        if (!previousApp.equals(app)) {
+            handler.valueReceived(SOURCE_APP, new StringType(app));
+            previousApp = app;
         }
     }
 
-    @Override
-    public void powerUpdated(boolean on, boolean artmode) {
-        artModeSupported = true;
-        power = on;
-        this.artMode = artmode;
-
-        for (EventListener listener : listeners) {
-            // order of state updates is important to prevent extraneous transitions in overall state
-            if (on) {
-                listener.valueReceived(POWER, on ? OnOffType.ON : OnOffType.OFF);
-                listener.valueReceived(ART_MODE, artmode ? OnOffType.ON : OnOffType.OFF);
-            } else {
-                listener.valueReceived(ART_MODE, artmode ? OnOffType.ON : OnOffType.OFF);
-                listener.valueReceived(POWER, on ? OnOffType.ON : OnOffType.OFF);
-            }
+    public void updateArtMode(boolean artMode, int ms) {
+        @Nullable
+        ScheduledExecutorService scheduler = getScheduler();
+        if (scheduler == null) {
+            logger.warn("{}: Unable to schedule art mode update", host);
+        } else {
+            scheduler.schedule(() -> {
+                updateArtMode(artMode);
+            }, ms, TimeUnit.MILLISECONDS);
         }
     }
 
-    @Override
-    public void connectionError(@Nullable Throwable error) {
-        logger.debug("Connection error: {}", error != null ? error.getMessage() : "");
-        remoteController = null;
-    }
-
-    public boolean isArtModeSupported() {
-        return artModeSupported;
-    }
-
-    @Override
-    public void putConfig(String key, Object value) {
-        for (EventListener listener : listeners) {
-            listener.putConfig(key, value);
+    public synchronized void updateArtMode(boolean artMode) {
+        // manual update of power/art mode for >=2022 frame TV's
+        if (this.artMode == artMode) {
+            logger.debug("{}: Artmode setting is already: {}", host, artMode);
+            return;
+        }
+        if (artMode) {
+            logger.debug("{}: Setting power state OFF, Art Mode ON", host);
+            powerUpdated(false, true);
+        } else {
+            logger.debug("{}: Setting power state ON, Art Mode OFF", host);
+            powerUpdated(true, false);
+        }
+        if (this.artMode) {
+            currentAppUpdated("artMode");
+        } else {
+            currentAppUpdated("");
+        }
+        handler.valueReceived(SET_ART_MODE, OnOffType.from(this.artMode));
+        if (!remoteController.noApps()) {
+            updateCurrentApp();
         }
     }
 
-    @Override
-    public @Nullable Object getConfig(String key) {
-        for (EventListener listener : listeners) {
-            return listener.getConfig(key);
+    public void powerUpdated(boolean on, boolean artMode) {
+        String powerState = fetchPowerState();
+        if (!getArtMode2022()) {
+            setArtModeSupported(true);
         }
-        return null;
+        if (!"on".equals(powerState)) {
+            on = false;
+            artMode = false;
+            currentAppUpdated("");
+        }
+        setPowerState(on);
+        this.artMode = artMode;
+        // order of state updates is important to prevent extraneous transitions in overall state
+        if (on) {
+            handler.valueReceived(POWER, OnOffType.from(on));
+            handler.valueReceived(ART_MODE, OnOffType.from(artMode));
+        } else {
+            handler.valueReceived(ART_MODE, OnOffType.from(artMode));
+            handler.valueReceived(POWER, OnOffType.from(on));
+        }
     }
 
-    @Override
+    public boolean getArtMode2022() {
+        return handler.getArtMode2022();
+    }
+
+    public void setArtMode2022(boolean artmode) {
+        handler.setArtMode2022(artmode);
+    }
+
+    public boolean getArtModeSupported() {
+        return handler.getArtModeSupported();
+    }
+
+    public void setArtModeSupported(boolean artmode) {
+        handler.setArtModeSupported(artmode);
+    }
+
+    public boolean getPowerState() {
+        return handler.getPowerState();
+    }
+
+    public void setPowerState(boolean power) {
+        handler.setPowerState(power);
+    }
+
+    public String fetchPowerState() {
+        return handler.fetchPowerState();
+    }
+
+    public void setOffline() {
+        handler.setOffline();
+    }
+
+    public void putConfig(String key, String value) {
+        handler.putConfig(key, value);
+    }
+
+    public @Nullable ScheduledExecutorService getScheduler() {
+        return handler.getScheduler();
+    }
+
     public @Nullable WebSocketFactory getWebSocketFactory() {
-        for (EventListener listener : listeners) {
-            return listener.getWebSocketFactory();
-        }
-        return null;
+        return handler.getWebSocketFactory();
     }
 }

@@ -4,12 +4,24 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>persistence</type>
-	<name>InfluxDB persistence</name>
+	<name>InfluxDB Persistence</name>
 	<description>This is the persistence add-on for InfluxDB.</description>
 	<connection>local</connection>
 
 	<service-id>org.openhab.influxdb</service-id>
 
 	<config-description-ref uri="persistence:influxdb"/>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>process</service-type>
+			<match-properties>
+				<match-property>
+					<name>command</name>
+					<regex>(?i).*[/\\](influxd)(\.exe)?$</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
 
 </addon:addon>

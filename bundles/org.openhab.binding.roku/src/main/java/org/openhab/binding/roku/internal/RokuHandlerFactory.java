@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,8 +58,7 @@ public class RokuHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID)) {
-            RokuHandler handler = new RokuHandler(thing, httpClient, stateDescriptionProvider);
-            return handler;
+            return new RokuHandler(thing, httpClient, stateDescriptionProvider);
         }
 
         return null;

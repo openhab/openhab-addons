@@ -171,7 +171,7 @@
 	</channel-type>
 
 	<channel-type id="fanSpeedStage">
-		<item-type>String</item-type>
+		<item-type>Number</item-type>
 		<label>Fan Speed</label>
 		<state readOnly="true">
 			<options>
@@ -180,6 +180,9 @@
 				<option value="1">Stage 1</option>
 				<option value="2">Stage 2</option>
 				<option value="3">Stage 3</option>
+				<option value="4">Stage 4</option>
+				<option value="5">Stage 5</option>
+				<option value="6">Off</option>
 			</options>
 		</state>
 	</channel-type>
@@ -915,6 +918,18 @@
 				<option value="RELEASED"></option>
 			</options>
 		</event>
+	</channel-type>
+
+	<channel-type id="dayNightModeState">
+		<item-type>Number</item-type>
+		<label>Day/Night Mode</label>
+		<description>Day (1) or Night (0) mode activated.</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Night</option>
+				<option value="1">Day</option>
+			</options>
+		</state>
 	</channel-type>
 
 </thing:thing-descriptions>

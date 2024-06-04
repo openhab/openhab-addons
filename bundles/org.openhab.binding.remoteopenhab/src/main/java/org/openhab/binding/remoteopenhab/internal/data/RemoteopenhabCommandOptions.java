@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Match content of field value from {@link RemoteopenhabChannelDescriptionChangedEvent) event payload when event is for
+ * Match content of field value from {@link RemoteopenhabChannelDescriptionChangedEvent} event payload when event is for
  * COMMAND_OPTIONS
  *
  * @author Laurent Garnier - Initial contribution

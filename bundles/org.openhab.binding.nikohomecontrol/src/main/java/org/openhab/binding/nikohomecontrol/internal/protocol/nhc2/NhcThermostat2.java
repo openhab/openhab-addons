@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,9 +33,9 @@ public class NhcThermostat2 extends NhcThermostat {
 
     private final Logger logger = LoggerFactory.getLogger(NhcThermostat2.class);
 
-    private String deviceType;
-    private String deviceTechnology;
-    private String deviceModel;
+    private final String deviceType;
+    private final String deviceTechnology;
+    private final String deviceModel;
 
     protected NhcThermostat2(String id, String name, String deviceType, String deviceTechnology, String deviceModel,
             @Nullable String location, NikoHomeControlCommunication nhcComm) {

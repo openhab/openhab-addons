@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ public abstract class AbstractSleepingEndDeviceHandler extends AbstractPlugwiseT
 
     private final Logger logger = LoggerFactory.getLogger(AbstractSleepingEndDeviceHandler.class);
 
-    public AbstractSleepingEndDeviceHandler(Thing thing) {
+    protected AbstractSleepingEndDeviceHandler(Thing thing) {
         super(thing);
     }
 
@@ -64,7 +64,7 @@ public abstract class AbstractSleepingEndDeviceHandler extends AbstractPlugwiseT
     }
 
     protected void handleBroadcastGroupSwitchResponseMessage(BroadcastGroupSwitchResponseMessage message) {
-        updateState(CHANNEL_TRIGGERED, message.getPowerState() ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_TRIGGERED, OnOffType.from(message.getPowerState()));
     }
 
     protected void handleInformationResponse(InformationResponseMessage message) {
@@ -72,12 +72,11 @@ public abstract class AbstractSleepingEndDeviceHandler extends AbstractPlugwiseT
     }
 
     @Override
-    public void handleReponseMessage(Message message) {
+    public void handleResponseMessage(Message message) {
         updateLastSeen();
 
         switch (message.getType()) {
-            case ACKNOWLEDGEMENT_V1:
-            case ACKNOWLEDGEMENT_V2:
+            case ACKNOWLEDGEMENT_V1, ACKNOWLEDGEMENT_V2:
                 handleAcknowledgement((AcknowledgementMessage) message);
                 break;
             case ANNOUNCE_AWAKE_REQUEST:

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -61,8 +61,8 @@ public class UrtsiHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (thingTypeUID.equals(URTSI_DEVICE_THING_TYPE) && thing instanceof Bridge) {
-            return new UrtsiDeviceHandler((Bridge) thing, serialPortManager);
+        if (thingTypeUID.equals(URTSI_DEVICE_THING_TYPE) && thing instanceof Bridge bridge) {
+            return new UrtsiDeviceHandler(bridge, serialPortManager);
         } else if (thingTypeUID.equals(RTS_DEVICE_THING_TYPE)) {
             return new RtsDeviceHandler(thing);
         }

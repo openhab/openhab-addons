@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -233,7 +233,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
         updateStatus(isOnline ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
 
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), BRIDGE_RESET);
-        updateState(channelUID, isOnline ? OnOffType.ON : OnOffType.OFF);
+        updateState(channelUID, OnOffType.from(isOnline));
     }
 
     /**
@@ -477,16 +477,16 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
             if (dscAlarmCode == DSCAlarmCode.LoginResponse) {
                 String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
-                if (dscAlarmMessageData.equals("3")) {
+                if ("3".equals(dscAlarmMessageData)) {
                     sendCommand(DSCAlarmCode.NetworkLogin);
                     // onConnected();
-                } else if (dscAlarmMessageData.equals("1")) {
+                } else if ("1".equals(dscAlarmMessageData)) {
                     onConnected();
                 }
                 return;
             } else if (dscAlarmCode == DSCAlarmCode.CommandAcknowledge) {
                 String dscAlarmMessageData = dscAlarmMessage.getMessageInfo(DSCAlarmMessageInfoType.DATA);
-                if (dscAlarmMessageData.equals("000")) {
+                if ("000".equals(dscAlarmMessageData)) {
                     setBridgeStatus(true);
                 }
             }
@@ -764,7 +764,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                                 "sendCommand(): \'keystroke\' must be a single character string from 0 to 9, *, #, F, A, P, a to e, <, >, =, or ^, it was: {}",
                                 dscAlarmData[0]);
                         break;
-                    } else if (dscAlarmData[0].equals("L")) { /* Long Key Press */
+                    } else if ("L".equals(dscAlarmData[0])) { /* Long Key Press */
                         try {
                             Thread.sleep(1500);
                             data = "^";

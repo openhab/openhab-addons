@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,23 +14,21 @@ package org.openhab.binding.tr064.internal;
 
 import static org.openhab.binding.tr064.internal.Tr064BindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.tr064.internal.dto.scpd.root.SCPDDeviceType;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.BridgeHandler;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.util.UIDUtils;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,38 +37,22 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = Tr064DiscoveryService.class)
 @NonNullByDefault
-public class Tr064DiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class Tr064DiscoveryService extends AbstractThingHandlerDiscoveryService<Tr064RootHandler> {
     private static final int SEARCH_TIME = 5;
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_SUBDEVICE);
 
     private final Logger logger = LoggerFactory.getLogger(Tr064DiscoveryService.class);
-    private @Nullable Tr064RootHandler bridgeHandler;
 
     public Tr064DiscoveryService() {
-        super(SEARCH_TIME);
+        super(Tr064RootHandler.class, SEARCH_TIME);
     }
 
     @Override
-    public void setThingHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof Tr064RootHandler) {
-            this.bridgeHandler = (Tr064RootHandler) thingHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void deactivate() {
-        BridgeHandler bridgeHandler = this.bridgeHandler;
-        if (bridgeHandler == null) {
-            logger.warn("Bridgehandler not found, could not cleanup discovery results.");
-            return;
-        }
-        removeOlderResults(new Date().getTime(), bridgeHandler.getThing().getUID());
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
     }
 
     @Override
@@ -80,13 +62,8 @@ public class Tr064DiscoveryService extends AbstractDiscoveryService implements T
 
     @Override
     public void startScan() {
-        Tr064RootHandler bridgeHandler = this.bridgeHandler;
-        if (bridgeHandler == null) {
-            logger.warn("Could not start discovery, bridge handler not set");
-            return;
-        }
-        List<SCPDDeviceType> devices = bridgeHandler.getAllSubDevices();
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        List<SCPDDeviceType> devices = thingHandler.getAllSubDevices();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         devices.forEach(device -> {
             logger.trace("Trying to add {} to discovery results on {}", device, bridgeUID);
             String udn = device.getUDN();

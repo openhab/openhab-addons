@@ -1,0 +1,49 @@
+[
+    {
+      "vin": "anonymousPHEV2",
+      "mappingInfo": {
+        "isAssociated": true,
+        "isLmmEnabled": false,
+        "mappingStatus": "CONFIRMED",
+        "isPrimaryUser": true
+      },
+      "appVehicleType": "CONNECTED",
+      "attributes": {
+        "lastFetched": "2023-02-02T03:32:13.686Z",
+        "model": "330e xDrive",
+        "year": 2020,
+        "color": 4284572518,
+        "brand": "BMW",
+        "driveTrain": "PLUGIN_HYBRID",
+        "headUnitType": "MGU",
+        "headUnitRaw": "HU_MGU",
+        "hmiVersion": "ID7",
+        "softwareVersionCurrent": {
+          "puStep": {
+            "month": 7,
+            "year": 21
+          },
+          "iStep": 550,
+          "seriesCluster": "S18A"
+        },
+        "softwareVersionExFactory": {
+          "puStep": {
+            "month": 7,
+            "year": 20
+          },
+          "iStep": 554,
+          "seriesCluster": "S18A"
+        },
+        "telematicsUnit": "ATM2",
+        "bodyType": "G21",
+        "countryOfOrigin": "FI",
+        "a4aType": "NOT_SUPPORTED",
+        "driverGuideInfo": {
+          "androidAppScheme": "com.bmwgroup.driversguide.row",
+          "iosAppScheme": "bmwdriversguide:///open",
+          "androidStoreUrl": "https://play.google.com/store/apps/details?id\u003dcom.bmwgroup.driversguide.row",
+          "iosStoreUrl": "https://apps.apple.com/de/app/id714042749?mt\u003d8"
+        }
+      }
+    }
+  ]

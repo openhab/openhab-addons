@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,8 +73,10 @@ public class ModemDBBuilder implements MsgListener {
                 if (System.currentTimeMillis() - lastMessageTimestamp > MESSAGE_TIMEOUT) {
                     String s = "";
                     if (messageCount == 0) {
-                        s = " No messages were received, the PLM or hub might be broken. If this continues see "
-                                + "'Known Limitations and Issues' in the Insteon binding documentation.";
+                        s = """
+                                 No messages were received, the PLM or hub might be broken. If this continues see \
+                                'Known Limitations and Issues' in the Insteon binding documentation.\
+                                """;
                     }
                     logger.warn("Modem database download was unsuccessful, restarting!{}", s);
                     startDownload();

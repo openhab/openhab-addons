@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -147,10 +147,16 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                     return new QuantityType<>(site.getRelAutonomy(), Units.PERCENT);
                 case FroniusBindingConstants.POWER_FLOW_SELF_CONSUMPTION:
                     return new QuantityType<>(site.getRelSelfConsumption(), Units.PERCENT);
+                case FroniusBindingConstants.POWER_FLOW_INVERTER_POWER:
+                    return new QuantityType<>(getInverter(config.deviceId).getP(), Units.WATT);
+                case FroniusBindingConstants.POWER_FLOW_INVERTER_SOC:
+                    return new QuantityType<>(getInverter(config.deviceId).getSoc(), Units.PERCENT);
+
+                // Kept for backwards compatibility
                 case FroniusBindingConstants.POWER_FLOW_INVERTER_1_POWER:
-                    return new QuantityType<>(getInverter("1").getP(), Units.WATT);
+                    return new QuantityType<>(getInverter(1).getP(), Units.WATT);
                 case FroniusBindingConstants.POWER_FLOW_INVERTER_1_SOC:
-                    return new QuantityType<>(getInverter("1").getSoc(), Units.PERCENT);
+                    return new QuantityType<>(getInverter(1).getSoc(), Units.PERCENT);
                 default:
                     break;
             }
@@ -165,8 +171,8 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * @param number The inverter object of the given index
      * @return a PowerFlowRealtimeInverter object.
      */
-    private PowerFlowRealtimeInverter getInverter(final String number) {
-        return powerFlowResponse.getBody().getData().getInverters().get(number);
+    private PowerFlowRealtimeInverter getInverter(final int number) {
+        return powerFlowResponse.getBody().getData().getInverters().get(Integer.toString(number));
     }
 
     /**

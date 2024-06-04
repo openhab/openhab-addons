@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.ecobee.internal.EcobeeBindingConstants.CONFIG_
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -137,7 +136,7 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(EcobeeDiscoveryService.class);
+        return Set.of(EcobeeDiscoveryService.class);
     }
 
     @Override
@@ -189,8 +188,7 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
 
     public SelectionDTO getSelection() {
         SelectionDTO mergedSelection = new SelectionDTO();
-        for (EcobeeThermostatBridgeHandler handler : new ArrayList<EcobeeThermostatBridgeHandler>(
-                thermostatHandlers.values())) {
+        for (EcobeeThermostatBridgeHandler handler : new ArrayList<>(thermostatHandlers.values())) {
             SelectionDTO selection = handler.getSelection();
             logger.trace("AccountBridge: Thermostat {} selection: {}", handler.getThing().getUID(), selection);
             mergedSelection.mergeSelection(selection);
@@ -222,10 +220,13 @@ public class EcobeeAccountBridgeHandler extends BaseBridgeHandler {
             refreshThermostatsCounter.set(refreshIntervalNormal);
             SummaryResponseDTO summary = api.performThermostatSummaryQuery();
             if (summary != null && summary.hasChanged(previousSummary) && !thermostatIds.isEmpty()) {
-                for (ThermostatDTO thermostat : api.performThermostatQuery(thermostatIds)) {
-                    EcobeeThermostatBridgeHandler handler = thermostatHandlers.get(thermostat.identifier);
-                    if (handler != null) {
-                        handler.updateChannels(thermostat);
+                List<ThermostatDTO> thermostats = api.performThermostatQuery(thermostatIds);
+                if (thermostats != null) {
+                    for (ThermostatDTO thermostat : thermostats) {
+                        EcobeeThermostatBridgeHandler handler = thermostatHandlers.get(thermostat.identifier);
+                        if (handler != null) {
+                            handler.updateChannels(thermostat);
+                        }
                     }
                 }
             }

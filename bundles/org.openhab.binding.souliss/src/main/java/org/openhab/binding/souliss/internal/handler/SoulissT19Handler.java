@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,10 +79,10 @@ public class SoulissT19Handler extends SoulissGenericHandler {
                     break;
 
                 case SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL:
-                    if (command instanceof PercentType) {
-                        updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL, (PercentType) command);
+                    if (command instanceof PercentType percentCommand) {
+                        updateState(SoulissBindingConstants.DIMMER_BRIGHTNESS_CHANNEL, percentCommand);
                         commandSEND(SoulissProtocolConstants.SOULISS_T1N_SET,
-                                (byte) (((PercentType) command).shortValue() * 255.00 / 100.00));
+                                (byte) (percentCommand.shortValue() * 255.00 / 100.00));
                     } else if (command.equals(OnOffType.ON)) {
                         commandSEND(SoulissProtocolConstants.SOULISS_T1N_ON_CMD);
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -93,8 +93,8 @@ public class StringChannelTest extends AbstractSnmpTargetHandlerTest {
     @Test
     public void testStringChannelsProperlyUpdatingOnHexString() throws IOException {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_STRING, SnmpChannelMode.READ, SnmpDatatype.HEXSTRING);
-        PDU responsePDU = new PDU(PDU.RESPONSE, Collections
-                .singletonList(new VariableBinding(new OID(TEST_OID), OctetString.fromHexStringPairs("aa11bb"))));
+        PDU responsePDU = new PDU(PDU.RESPONSE,
+                List.of(new VariableBinding(new OID(TEST_OID), OctetString.fromHexStringPairs("aa11bb"))));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
         verify(thingHandlerCallback, atLeast(1)).stateUpdated(eq(CHANNEL_UID), eq(new StringType("aa 11 bb")));

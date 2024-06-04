@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,6 @@ import static org.openhab.binding.plugwise.internal.PlugwiseCommunicationContext
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.Iterator;
 import java.util.TooManyListenersException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +30,7 @@ import org.openhab.binding.plugwise.internal.protocol.field.MessageType;
 import org.openhab.core.io.transport.serial.SerialPort;
 import org.openhab.core.io.transport.serial.SerialPortEvent;
 import org.openhab.core.io.transport.serial.SerialPortEventListener;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +94,7 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
      */
     private void parseAndQueue(ByteBuffer readBuffer) {
         String response = new String(readBuffer.array(), 0, readBuffer.limit());
-        response = response.replaceAll("\r", "").replaceAll("\n", "");
+        response = StringUtils.chomp(response);
 
         Matcher matcher = RESPONSE_PATTERN.matcher(response);
 
@@ -123,10 +123,10 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
                     try {
                         Message message = messageFactory.createMessage(messageType, sequenceNumber, payload);
 
-                        if (message instanceof AcknowledgementMessage
-                                && !((AcknowledgementMessage) message).isExtended()) {
+                        if (message instanceof AcknowledgementMessage acknowledgementMessage
+                                && !acknowledgementMessage.isExtended()) {
                             logger.debug("Adding to acknowledgedQueue: {}", message);
-                            context.getAcknowledgedQueue().put((AcknowledgementMessage) message);
+                            context.getAcknowledgedQueue().put(acknowledgementMessage);
                         } else {
                             logger.debug("Adding to receivedQueue: {}", message);
                             context.getReceivedQueue().put(message);
@@ -159,9 +159,7 @@ public class PlugwiseMessageProcessor implements SerialPortEventListener {
         try {
             context.getSentQueueLock().lock();
 
-            Iterator<@Nullable PlugwiseQueuedMessage> messageIterator = context.getSentQueue().iterator();
-            while (messageIterator.hasNext()) {
-                PlugwiseQueuedMessage queuedSentMessage = messageIterator.next();
+            for (PlugwiseQueuedMessage queuedSentMessage : context.getSentQueue()) {
                 if (queuedSentMessage != null
                         && queuedSentMessage.getMessage().getSequenceNumber() == message.getSequenceNumber()) {
                     logger.debug("Removing from sentQueue: {}", queuedSentMessage.getMessage());

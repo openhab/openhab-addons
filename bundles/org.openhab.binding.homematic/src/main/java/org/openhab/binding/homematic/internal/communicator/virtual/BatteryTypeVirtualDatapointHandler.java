@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,12 +33,12 @@ import org.slf4j.LoggerFactory;
 public class BatteryTypeVirtualDatapointHandler extends AbstractVirtualDatapointHandler {
     private final Logger logger = LoggerFactory.getLogger(BatteryTypeVirtualDatapointHandler.class);
 
-    private static final Properties batteries = new Properties();
+    private static final Properties BATT_PROPERTIES = new Properties();
 
     public BatteryTypeVirtualDatapointHandler() {
         Bundle bundle = FrameworkUtil.getBundle(getClass());
         try (InputStream stream = bundle.getResource("homematic/batteries.properties").openStream()) {
-            batteries.load(stream);
+            BATT_PROPERTIES.load(stream);
         } catch (IllegalStateException | IOException e) {
             logger.warn("The resource homematic/batteries.properties could not be loaded! Battery types not available",
                     e);
@@ -52,7 +52,7 @@ public class BatteryTypeVirtualDatapointHandler extends AbstractVirtualDatapoint
 
     @Override
     public void initialize(HmDevice device) {
-        String batteryType = batteries.getProperty(device.getType());
+        String batteryType = BATT_PROPERTIES.getProperty(device.getType());
         if (batteryType != null) {
             addDatapoint(device, 0, getName(), HmValueType.STRING, batteryType, true);
         }

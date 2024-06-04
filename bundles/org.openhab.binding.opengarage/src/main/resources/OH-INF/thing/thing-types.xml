@@ -16,7 +16,12 @@
 			<channel id="status-rollershutter" typeId="opengarage-status-rollershutter"/>
 			<channel id="vehicle" typeId="opengarage-vehicle"/>
 			<channel id="vehicle-status" typeId="opengarage-vehicle-status"/>
+			<channel id="status-text" typeId="opengarage-status-text"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
@@ -34,13 +39,38 @@
 				<context>password</context>
 				<default>opendoor</default>
 			</parameter>
-			<parameter name="refresh" type="integer">
+			<parameter name="refresh" type="integer" unit="s">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="doorTransitionTimeSeconds" type="integer" unit="s">
+				<label>Door Transition Time</label>
+				<description>Specifies number of seconds that it takes for the garage door to fully open / close, including the time
+					it takes for OpenHab to emit beeps. Round up.</description>
+				<default>17</default>
+			</parameter>
+			<parameter name="doorOpeningState" type="text">
+				<label>Door Opening State</label>
+				<description>Text state to report when garage is opening</description>
+				<default>OPENING</default>
+			</parameter>
+			<parameter name="doorOpenState" type="text">
+				<label>Door Open State</label>
+				<description>Text state to report when garage is open (and not in transition)</description>
+				<default>OPEN</default>
+			</parameter>
+			<parameter name="doorClosingState" type="text">
+				<label>Door Closing State</label>
+				<description>Text state to report when garage is closing</description>
+				<default>CLOSING</default>
+			</parameter>
+			<parameter name="doorClosedState" type="text">
+				<label>Door Closed State</label>
+				<description>Text state to report when garage is closed (and not in transition)</description>
+				<default>CLOSED</default>
+			</parameter>
 		</config-description>
-
 	</thing-type>
 
 	<channel-type id="opengarage-distance">
@@ -112,5 +142,12 @@
 				<option value="3">Vehicle status not available</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="opengarage-status-text">
+		<item-type>String</item-type>
+		<label>Text status</label>
+		<description>Text status of the current door state, including transition, using values from configuration:
+			doorOpeningState, doorOpenState, doorClosingState, doorClosedState.</description>
+		<state readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

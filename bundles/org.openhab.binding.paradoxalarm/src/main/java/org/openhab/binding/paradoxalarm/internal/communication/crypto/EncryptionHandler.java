@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -163,8 +163,7 @@ public class EncryptionHandler {
             byteArray[i] = (byte) (keyBytes[i] & 0xFF);
         }
 
-        byte[] expandedArray = ParadoxUtil.extendArray(byteArray, KEY_ARRAY_LENGTH);
-        return expandedArray;
+        return ParadoxUtil.extendArray(byteArray, KEY_ARRAY_LENGTH);
     }
 
     private void expandKey(byte[] input) {

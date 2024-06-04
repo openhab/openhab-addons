@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link EgateHandler} is responsible for handling commands, which are
+ * The {@link EGateHandler} is responsible for handling commands, which are
  * sent to one of the channels.
  *
  * @author Frieso Aeschbacher - Initial contribution
@@ -65,7 +65,7 @@ public class EGateHandler extends BaseBridgeHandler {
 
     public EGateHandler(Bridge thing) {
         super(thing);
-        registeredBlinds = new HashMap<String, ThingUID>();
+        registeredBlinds = new HashMap<>();
     }
 
     @Override
@@ -274,7 +274,6 @@ public class EGateHandler extends BaseBridgeHandler {
     private void startAutomaticRefresh() {
         Runnable runnable = () -> {
             try {
-
                 Socket localSocket = egateSocket;
                 if (localSocket == null) {
                     return;
@@ -318,7 +317,7 @@ public class EGateHandler extends BaseBridgeHandler {
 
     protected void onData(String input) {
         // Instruction=2;ID=19;Command=1;Value=0;Priority=0;
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         // split on ;
         String[] parts = input.split(";");
         if (parts.length >= 2) {

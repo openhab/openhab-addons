@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ public class HostHandler extends ApiConsumerHandler {
     private final Logger logger = LoggerFactory.getLogger(HostHandler.class);
 
     // We start in pull mode and switch to push after a first update...
-    private boolean pushSubscribed = false;
+    protected boolean pushSubscribed = false;
 
     public HostHandler(Thing thing) {
         super(thing);
@@ -82,8 +82,7 @@ public class HostHandler extends ApiConsumerHandler {
         LanHost host = getLanHost();
         updateConnectivityChannels(host);
         logger.debug("Switching to push mode - refreshInterval will now be ignored for Connectivity data");
-        getManager(WebSocketManager.class).registerListener(host.getMac(), this);
-        pushSubscribed = true;
+        pushSubscribed = getManager(WebSocketManager.class).registerListener(host.getMac(), this);
     }
 
     protected LanHost getLanHost() throws FreeboxException {

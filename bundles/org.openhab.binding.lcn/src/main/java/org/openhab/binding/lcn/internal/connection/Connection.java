@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -251,7 +251,7 @@ public class Connection {
 
                                     writeInProgress = false;
 
-                                    if (sendQueue.size() > 0) {
+                                    if (!sendQueue.isEmpty()) {
                                         /**
                                          * This could lead to stack overflows, since the CompletionHandler may run in
                                          * the same Thread as triggerWriteToSocket() is invoked (see
@@ -407,7 +407,7 @@ public class Connection {
     /**
      * Gets the SocketChannel of the Connection.
      *
-     * @returnthe socket channel
+     * @return the socket channel
      */
     @Nullable
     public Channel getSocketChannel() {

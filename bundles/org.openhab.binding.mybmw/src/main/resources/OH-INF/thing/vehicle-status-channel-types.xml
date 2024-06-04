@@ -37,24 +37,24 @@
 		<label>Charging Status</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="charging-info-channel">
-		<item-type>String</item-type>
-		<label>Charging Information</label>
-		<state readOnly="true"/>
+	<channel-type id="charging-remaining-channel">
+		<item-type>Number:Time</item-type>
+		<label>Remaining Charging Time</label>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="plug-connection-channel">
 		<item-type>String</item-type>
 		<label>Plug Connection Status</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="motion-channel">
-		<item-type>Switch</item-type>
-		<label>Motion Status</label>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="last-update-channel">
 		<item-type>DateTime</item-type>
-		<label>Last Status Timestamp</label>
+		<label>Last Car Status Timestamp</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+	</channel-type>
+	<channel-type id="last-fetched-channel">
+		<item-type>DateTime</item-type>
+		<label>Last Openhab Update Timestamp</label>
 		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 	<channel-type id="raw-channel" advanced="true">

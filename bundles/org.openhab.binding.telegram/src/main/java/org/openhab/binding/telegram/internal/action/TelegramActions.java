@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,12 +42,15 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.AnswerCallbackQuery;
+import com.pengrad.telegrambot.request.DeleteMessage;
 import com.pengrad.telegrambot.request.EditMessageReplyMarkup;
 import com.pengrad.telegrambot.request.SendAnimation;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -61,6 +64,7 @@ import com.pengrad.telegrambot.response.SendResponse;
  *
  * @author Alexander Krasnogolowy - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = TelegramActions.class)
 @ThingActionsScope(name = "telegram")
 @NonNullByDefault
 public class TelegramActions implements ThingActions {
@@ -202,7 +206,7 @@ public class TelegramActions implements ThingActions {
         return true;
     }
 
-    @RuleAction(label = "send a message", description = "Send a Telegram using the Telegram API.")
+    @RuleAction(label = "send a query", description = "Send a Telegram Query using the Telegram API.")
     public boolean sendTelegramQuery(@ActionInput(name = "chatId") @Nullable Long chatId,
             @ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "replyId") @Nullable String replyId,
@@ -210,7 +214,7 @@ public class TelegramActions implements ThingActions {
         return sendTelegramGeneral(chatId, message, replyId, buttons);
     }
 
-    @RuleAction(label = "send a message", description = "Send a Telegram using the Telegram API.")
+    @RuleAction(label = "send a query", description = "Send a Telegram Query using the Telegram API.")
     public boolean sendTelegramQuery(@ActionInput(name = "message") @Nullable String message,
             @ActionInput(name = "replyId") @Nullable String replyId,
             @ActionInput(name = "buttons") @Nullable String... buttons) {
@@ -279,6 +283,39 @@ public class TelegramActions implements ThingActions {
         }
         return false;
     }
+
+    @RuleAction(label = "delete a query", description = "Delete a Query using the Telegram API.")
+    public boolean deleteTelegramQuery(@ActionInput(name = "replyId") @Nullable String replyId) {
+        if (replyId == null) {
+            logger.warn("deleteTelegramQuery() - replyId not passed!");
+            return false;
+        }
+        TelegramHandler localHandler = handler;
+        if (localHandler == null) {
+            logger.debug("deleteTelegramQuery() - localHandler is null!");
+            return false;
+        }
+
+        Integer messageId = 0;
+        BaseResponse response = null;
+
+        for (Long chatId : localHandler.getReceiverChatIds()) {
+            messageId = localHandler.removeMessageId(chatId, replyId);
+            if (messageId == null) {
+                logger.debug("deleteTelegramQuery() - messageId not found!");
+                return false;
+            }
+            DeleteMessage deleteMessage = new DeleteMessage(chatId, messageId);
+            response = localHandler.execute(deleteMessage);
+
+            if (response == null || response.errorCode() != 0) {
+                logger.debug("deleteTelegramQuery() - DeleteMessage execution not successful! Response: {}", response);
+                return false;
+            }
+        }
+
+        return true;
+    } // public boolean deleteTelegramQuery(String replyId)
 
     @RuleAction(label = "send a message", description = "Send a Telegram using the Telegram API.")
     public boolean sendTelegram(@ActionInput(name = "chatId") @Nullable Long chatId,
@@ -633,6 +670,14 @@ public class TelegramActions implements ThingActions {
         return ((TelegramActions) actions).sendTelegramAnswer(replyId, message);
     }
 
+    public static boolean deleteTelegramQuery(ThingActions actions, @Nullable String replyId) {
+        if (actions instanceof TelegramActions telegramActions) {
+            return telegramActions.deleteTelegramQuery(replyId);
+        } else {
+            throw new IllegalArgumentException("Instance is not a TelegramActions class.");
+        }
+    }
+
     /* APIs with chatId parameter */
 
     public static boolean sendTelegram(ThingActions actions, @Nullable Long chatId, @Nullable String format,
@@ -672,11 +717,11 @@ public class TelegramActions implements ThingActions {
 
     public static boolean sendTelegramAnswer(ThingActions actions, @Nullable String chatId, @Nullable String replyId,
             @Nullable String message) {
-        if (actions instanceof TelegramActions) {
+        if (actions instanceof TelegramActions telegramActions) {
             if (chatId == null) {
                 return false;
             }
-            return ((TelegramActions) actions).sendTelegramAnswer(Long.valueOf(chatId), replyId, message);
+            return telegramActions.sendTelegramAnswer(Long.valueOf(chatId), replyId, message);
         } else {
             throw new IllegalArgumentException("Actions is not an instance of TelegramActions");
         }
@@ -689,11 +734,11 @@ public class TelegramActions implements ThingActions {
 
     public static boolean sendTelegramAnswer(ThingActions actions, @Nullable String chatId, @Nullable String callbackId,
             @Nullable String messageId, @Nullable String message) {
-        if (actions instanceof TelegramActions) {
+        if (actions instanceof TelegramActions telegramActions) {
             if (chatId == null) {
                 return false;
             }
-            return ((TelegramActions) actions).sendTelegramAnswer(Long.valueOf(chatId), callbackId,
+            return telegramActions.sendTelegramAnswer(Long.valueOf(chatId), callbackId,
                     messageId != null ? Long.parseLong(messageId) : null, message);
         } else {
             throw new IllegalArgumentException("Actions is not an instance of TelegramActions");

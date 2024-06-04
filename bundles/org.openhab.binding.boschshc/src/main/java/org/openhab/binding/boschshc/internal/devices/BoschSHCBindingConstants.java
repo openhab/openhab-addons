@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,10 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class BoschSHCBindingConstants {
 
+    private BoschSHCBindingConstants() {
+        // Class containing constants only
+    }
+
     public static final String BINDING_ID = "boschshc";
 
     // List of all Thing Type UIDs
@@ -36,8 +40,10 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_INWALL_SWITCH = new ThingTypeUID(BINDING_ID, "in-wall-switch");
     public static final ThingTypeUID THING_TYPE_TWINGUARD = new ThingTypeUID(BINDING_ID, "twinguard");
     public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT = new ThingTypeUID(BINDING_ID, "window-contact");
+    public static final ThingTypeUID THING_TYPE_WINDOW_CONTACT_2 = new ThingTypeUID(BINDING_ID, "window-contact-2");
     public static final ThingTypeUID THING_TYPE_MOTION_DETECTOR = new ThingTypeUID(BINDING_ID, "motion-detector");
     public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL = new ThingTypeUID(BINDING_ID, "shutter-control");
+    public static final ThingTypeUID THING_TYPE_SHUTTER_CONTROL_2 = new ThingTypeUID(BINDING_ID, "shutter-control-2");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
     public static final ThingTypeUID THING_TYPE_CLIMATE_CONTROL = new ThingTypeUID(BINDING_ID, "climate-control");
     public static final ThingTypeUID THING_TYPE_WALL_THERMOSTAT = new ThingTypeUID(BINDING_ID, "wall-thermostat");
@@ -48,9 +54,19 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_SMART_PLUG_COMPACT = new ThingTypeUID(BINDING_ID, "smart-plug-compact");
     public static final ThingTypeUID THING_TYPE_SMART_BULB = new ThingTypeUID(BINDING_ID, "smart-bulb");
     public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR = new ThingTypeUID(BINDING_ID, "smoke-detector");
+    public static final ThingTypeUID THING_TYPE_UNIVERSAL_SWITCH = new ThingTypeUID(BINDING_ID, "universal-switch");
+    public static final ThingTypeUID THING_TYPE_UNIVERSAL_SWITCH_2 = new ThingTypeUID(BINDING_ID, "universal-switch-2");
+    public static final ThingTypeUID THING_TYPE_SMOKE_DETECTOR_2 = new ThingTypeUID(BINDING_ID, "smoke-detector-2");
+    public static final ThingTypeUID THING_TYPE_LIGHT_CONTROL_2 = new ThingTypeUID(BINDING_ID, "light-control-2");
+    public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
+    public static final ThingTypeUID THING_TYPE_WATER_DETECTOR = new ThingTypeUID(BINDING_ID, "water-detector");
+
+    public static final ThingTypeUID THING_TYPE_USER_DEFINED_STATE = new ThingTypeUID(BINDING_ID, "user-defined-state");
 
     // List of all Channel IDs
     // Auto-generated from thing-types.xml via script, don't modify
+    public static final String CHANNEL_SCENARIO_TRIGGERED = "scenario-triggered";
+    public static final String CHANNEL_TRIGGER_SCENARIO = "trigger-scenario";
     public static final String CHANNEL_POWER_SWITCH = "power-switch";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_TEMPERATURE_RATING = "temperature-rating";
@@ -68,6 +84,7 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_VALVE_TAPPET_POSITION = "valve-tappet-position";
     public static final String CHANNEL_SETPOINT_TEMPERATURE = "setpoint-temperature";
     public static final String CHANNEL_CHILD_LOCK = "child-lock";
+    public static final String CHANNEL_CHILD_PROTECTION = "child-protection";
     public static final String CHANNEL_PRIVACY_MODE = "privacy-mode";
     public static final String CHANNEL_CAMERA_NOTIFICATION = "camera-notification";
     public static final String CHANNEL_SYSTEM_AVAILABILITY = "system-availability";
@@ -83,6 +100,28 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_SMOKE_CHECK = "smoke-check";
     public static final String CHANNEL_SILENT_MODE = "silent-mode";
+    public static final String CHANNEL_ILLUMINANCE = "illuminance";
+    public static final String CHANNEL_BYPASS_STATE = "bypass-state";
+    public static final String CHANNEL_SIGNAL_STRENGTH = "signal-strength";
+    public static final String CHANNEL_KEY_CODE = "key-code";
+    public static final String CHANNEL_KEY_NAME = "key-name";
+    public static final String CHANNEL_KEY_EVENT_TYPE = "key-event-type";
+    public static final String CHANNEL_KEY_EVENT_TIMESTAMP = "key-event-timestamp";
+    public static final String CHANNEL_WATER_LEAKAGE = "water-leakage";
+    public static final String CHANNEL_PUSH_NOTIFICATIONS_ON_MOVE = "push-notifications-on-move";
+    public static final String CHANNEL_ACOUSTIC_SIGNALS_ON_MOVE = "acoustic-signals-on-move";
+    public static final String CHANNEL_WATER_LEAKAGE_SENSOR_CHECK = "water-leakage-sensor-check";
+    public static final String CHANNEL_SENSOR_MOVED = "sensor-moved";
+
+    // numbered channels
+    // the rationale for introducing numbered channels was discussed in
+    // https://github.com/openhab/openhab-addons/pull/16400
+    public static final String CHANNEL_POWER_SWITCH_1 = "power-switch-1";
+    public static final String CHANNEL_POWER_SWITCH_2 = "power-switch-2";
+    public static final String CHANNEL_CHILD_PROTECTION_1 = "child-protection-1";
+    public static final String CHANNEL_CHILD_PROTECTION_2 = "child-protection-2";
+
+    public static final String CHANNEL_USER_DEFINED_STATE = "user-state";
 
     // static device/service names
     public static final String SERVICE_INTRUSION_DETECTION = "intrusionDetectionSystem";

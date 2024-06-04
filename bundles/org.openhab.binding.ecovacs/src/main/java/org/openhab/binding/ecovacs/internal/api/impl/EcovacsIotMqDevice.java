@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ import org.openhab.binding.ecovacs.internal.api.commands.GetCleanLogsCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.GetFirmwareVersionCommand;
 import org.openhab.binding.ecovacs.internal.api.commands.IotDeviceCommand;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.Device;
+import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalCleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.portal.PortalLoginResponse;
 import org.openhab.binding.ecovacs.internal.api.model.CleanLogRecord;
 import org.openhab.binding.ecovacs.internal.api.model.DeviceCapability;
@@ -103,10 +104,23 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
         if (desc.protoVersion == ProtocolVersion.XML) {
             logEntries = sendCommand(new GetCleanLogsCommand()).stream();
         } else {
-            logEntries = api.fetchCleanLogs(device).stream().map(record -> new CleanLogRecord(record.timestamp,
-                    record.duration, record.area, Optional.ofNullable(record.imageUrl), record.type));
+            List<PortalCleanLogRecord> log = hasCapability(DeviceCapability.USES_CLEAN_RESULTS_LOG_API)
+                    ? api.fetchCleanResultsLog(device)
+                    : api.fetchCleanLogs(device);
+            logEntries = log.stream().map(record -> new CleanLogRecord(record.timestamp, record.duration, record.area,
+                    Optional.ofNullable(record.imageUrl), record.type));
         }
         return logEntries.sorted((lhs, rhs) -> rhs.timestamp.compareTo(lhs.timestamp)).collect(Collectors.toList());
+    }
+
+    @Override
+    public Optional<byte[]> downloadCleanMapImage(CleanLogRecord record)
+            throws EcovacsApiException, InterruptedException {
+        if (record.mapImageUrl.isEmpty()) {
+            return Optional.empty();
+        }
+        boolean needsSigning = hasCapability(DeviceCapability.USES_CLEAN_RESULTS_LOG_API);
+        return Optional.of(api.downloadCleanMapImage(record.mapImageUrl.get(), needsSigning));
     }
 
     @Override
@@ -177,8 +191,8 @@ public class EcovacsIotMqDevice implements EcovacsDevice {
             logger.debug("Established MQTT connection to device {}", getSerialNumber());
         } catch (ExecutionException e) {
             Throwable cause = e.getCause();
-            boolean isAuthFailure = cause instanceof Mqtt3ConnAckException && ((Mqtt3ConnAckException) cause)
-                    .getMqttMessage().getReturnCode() == Mqtt3ConnAckReturnCode.NOT_AUTHORIZED;
+            boolean isAuthFailure = cause instanceof Mqtt3ConnAckException connAckException
+                    && connAckException.getMqttMessage().getReturnCode() == Mqtt3ConnAckReturnCode.NOT_AUTHORIZED;
             throw new EcovacsApiException(e, isAuthFailure);
         }
     }

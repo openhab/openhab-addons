@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -132,7 +132,7 @@ public class EnOceanDeviceDiscoveryService extends AbstractDiscoveryService impl
                         if (senderIdOffset == null) {
                             return;
                         }
-                    } else if ((eep instanceof _4BSMessage) && ((_4BSMessage) eep).isTeachInVariation3Supported()) {
+                    } else if (eep instanceof _4BSMessage message && message.isTeachInVariation3Supported()) {
                         // if 4BS teach in variation 3 => send response
                         logger.debug("Sending 4BS teach in variation 3 response to {}", enoceanId);
                         senderIdOffset = sendTeachInResponse(msg, enoceanId);

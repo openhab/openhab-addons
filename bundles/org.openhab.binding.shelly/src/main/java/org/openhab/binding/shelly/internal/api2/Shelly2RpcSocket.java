@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -206,19 +206,23 @@ public class Shelly2RpcSocket {
                 if (s.isOpen()) {
                     logger.debug("{}: Disconnecting WebSocket ({} -> {})", thingName, s.getLocalAddress(),
                             s.getRemoteAddress());
-                    s.disconnect();
                 }
+                s.disconnect();
                 s.close(StatusCode.NORMAL, "Socket closed");
                 session = null;
-            }
-            if (client.isStarted()) {
-                client.stop();
             }
         } catch (Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                 logger.debug("{}: Unable to close socket - interrupted", thingName); // e.g. device was rebooted
             } else {
                 logger.debug("{}: Unable to close socket", thingName, e);
+            }
+        } finally {
+            // make sure client is stopped / thread terminates / socket resource is free up
+            try {
+                client.stop();
+            } catch (Exception e) {
+                logger.debug("{}: Unable to close Web Socket", thingName, e);
             }
         }
     }
@@ -259,7 +263,7 @@ public class Shelly2RpcSocket {
                         } else {
                             for (Shelly2NotifyEvent e : events.params.events) {
                                 if (getString(e.event).startsWith(SHELLY2_EVENT_BLUPREFIX)) {
-                                    String address = getString(e.data.addr).replaceAll(":", "");
+                                    String address = getString(e.data.addr).replace(":", "");
                                     if (thingTable != null && thingTable.findThing(address) != null) {
                                         if (thingTable != null) { // known device
                                             ShellyThingInterface thing = thingTable.getThing(address);

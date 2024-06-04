@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,8 @@ import java.util.List;
  *
  * @author Wouter Born - Initial contribution
  *
- * @see https://cloud.google.com/pubsub/docs/reference/rest
+ * @see <a href="https://cloud.google.com/pubsub/docs/reference/rest">
+ *      https://cloud.google.com/pubsub/docs/reference/rest</a>
  */
 public class PubSubRequestsResponses {
 

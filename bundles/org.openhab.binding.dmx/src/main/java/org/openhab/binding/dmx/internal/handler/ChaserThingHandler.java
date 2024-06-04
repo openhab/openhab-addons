@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,8 +68,8 @@ public class ChaserThingHandler extends DmxThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
             case CHANNEL_SWITCH:
-                if (command instanceof OnOffType) {
-                    if (((OnOffType) command).equals(OnOffType.ON)) {
+                if (command instanceof OnOffType onOffCommand) {
+                    if (onOffCommand.equals(OnOffType.ON)) {
                         Integer channelCounter = 0;
                         for (DmxChannel channel : channels) {
                             if (resumeAfter) {
@@ -104,8 +104,8 @@ public class ChaserThingHandler extends DmxThingHandler {
                 }
                 break;
             case CHANNEL_CONTROL:
-                if (command instanceof StringType) {
-                    List<ValueSet> newValues = ValueSet.parseChaseConfig(((StringType) command).toString());
+                if (command instanceof StringType stringCommand) {
+                    List<ValueSet> newValues = ValueSet.parseChaseConfig(stringCommand.toString());
                     if (!newValues.isEmpty()) {
                         values = newValues;
                         logger.debug("updated chase config in {}", this.thing.getUID());
@@ -206,8 +206,8 @@ public class ChaserThingHandler extends DmxThingHandler {
     @Override
     public void updateSwitchState(ChannelUID channelUID, State state) {
         logger.trace("received {} for {}", state, channelUID);
-        if (channelUID.getId().equals(CHANNEL_SWITCH) && (state instanceof OnOffType)) {
-            this.isRunning = (OnOffType) state;
+        if (channelUID.getId().equals(CHANNEL_SWITCH) && (state instanceof OnOffType onOffState)) {
+            this.isRunning = onOffState;
             updateState(channelUID, state);
         } else {
             logger.debug("unknown state received: {} in channel {} thing {}", state, channelUID, this.thing.getUID());

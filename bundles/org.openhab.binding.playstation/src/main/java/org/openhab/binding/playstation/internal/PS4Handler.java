@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -120,20 +120,20 @@ public class PS4Handler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             refreshFromState(channelUID);
         } else {
-            if (command instanceof StringType) {
+            if (command instanceof StringType stringCommand) {
                 switch (channelUID.getId()) {
                     case CHANNEL_APPLICATION_ID:
-                        if (!currentApplicationId.equals(((StringType) command).toString())) {
-                            updateApplicationTitleid(((StringType) command).toString());
+                        if (!currentApplicationId.equals(stringCommand.toString())) {
+                            updateApplicationTitleid(stringCommand.toString());
                             startApplication(currentApplicationId);
                         }
                         break;
                     case CHANNEL_OSK_TEXT:
-                        setOSKText(((StringType) command).toString());
+                        setOSKText(stringCommand.toString());
                         break;
                     case CHANNEL_SEND_KEY:
                         int ps4Key = 0;
-                        switch (((StringType) command).toString()) {
+                        switch (stringCommand.toString()) {
                             case SEND_KEY_UP:
                                 ps4Key = PS4_KEY_UP;
                                 break;
@@ -168,12 +168,11 @@ public class PS4Handler extends BaseThingHandler {
                     default:
                         break;
                 }
-            } else if (command instanceof OnOffType) {
-                OnOffType onOff = (OnOffType) command;
+            } else if (command instanceof OnOffType onOffCommand) {
                 switch (channelUID.getId()) {
                     case CHANNEL_POWER:
-                        if (currentPower != onOff) {
-                            currentPower = onOff;
+                        if (currentPower != onOffCommand) {
+                            currentPower = onOffCommand;
                             if (currentPower.equals(OnOffType.ON)) {
                                 turnOnPS4();
                             } else if (currentPower.equals(OnOffType.OFF)) {
@@ -183,9 +182,9 @@ public class PS4Handler extends BaseThingHandler {
                         break;
                     case CHANNEL_CONNECT:
                         boolean connected = socketChannelHandler != null && socketChannelHandler.isChannelOpen();
-                        if (connected && onOff.equals(OnOffType.OFF)) {
+                        if (connected && onOffCommand.equals(OnOffType.OFF)) {
                             sendByeBye();
-                        } else if (!connected && onOff.equals(OnOffType.ON)) {
+                        } else if (!connected && onOffCommand.equals(OnOffType.ON)) {
                             scheduler.execute(() -> login());
                         }
                         break;

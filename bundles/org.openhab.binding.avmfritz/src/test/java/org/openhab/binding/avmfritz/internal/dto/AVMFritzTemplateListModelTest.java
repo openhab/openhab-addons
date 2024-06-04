@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,10 +44,12 @@ public class AVMFritzTemplateListModelTest {
     public void setUp() throws JAXBException, XMLStreamException {
         //@formatter:off
         String xml =
-                "<templatelist version=\"1\">" +
-                    "<template identifier=\"tmpXXXXX-39DC738C5\" id=\"30103\" functionbitmask=\"6784\" applymask=\"64\"><name>Test template #1</name><devices><device identifier=\"YY:5D:AA-900\" /><device identifier=\"XX:5D:AA-900\" /></devices><applymask><relay_automatic /></applymask></template>" +
-                    "<template identifier=\"tmpXXXXX-39722FC0F\" id=\"30003\" functionbitmask=\"6784\" applymask=\"64\"><name>Test template #2</name><devices><device identifier=\"YY:5D:AA-900\" /></devices><applymask><relay_automatic /></applymask></template>" +
-                "</templatelist>";
+                """
+                <templatelist version="1">\
+                <template identifier="tmpXXXXX-39DC738C5" id="30103" functionbitmask="6784" applymask="64"><name>Test template #1</name><devices><device identifier="YY:5D:AA-900" /><device identifier="XX:5D:AA-900" /></devices><applymask><relay_automatic /></applymask></template>\
+                <template identifier="tmpXXXXX-39722FC0F" id="30003" functionbitmask="6784" applymask="64"><name>Test template #2</name><devices><device identifier="YY:5D:AA-900" /></devices><applymask><relay_automatic /></applymask></template>\
+                </templatelist>\
+                """;
         //@formatter:on
         XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(xml));
         Unmarshaller u = JAXBUtils.JAXBCONTEXT_TEMPLATES.createUnmarshaller();

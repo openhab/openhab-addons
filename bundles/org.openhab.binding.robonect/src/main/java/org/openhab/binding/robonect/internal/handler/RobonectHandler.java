@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,8 +107,8 @@ public class RobonectHandler extends BaseThingHandler {
     private void sendCommand(ChannelUID channelUID, Command command) {
         switch (channelUID.getId()) {
             case CHANNEL_MOWER_NAME:
-                if (command instanceof StringType) {
-                    updateName((StringType) command);
+                if (command instanceof StringType stringCommand) {
+                    updateName(stringCommand);
                 } else {
                     logger.debug("Got name update of type {} but StringType is expected.",
                             command.getClass().getName());
@@ -125,8 +125,8 @@ public class RobonectHandler extends BaseThingHandler {
                 break;
 
             case CHANNEL_MOWER_START:
-                if (command instanceof OnOffType) {
-                    handleStartStop((OnOffType) command);
+                if (command instanceof OnOffType onOffCommand) {
+                    handleStartStop(onOffCommand);
                 } else {
                     logger.debug("Got stopped update of type {} but OnOffType is expected.",
                             command.getClass().getName());
@@ -242,7 +242,7 @@ public class RobonectHandler extends BaseThingHandler {
             updateState(CHANNEL_STATUS_DISTANCE, new QuantityType<>(info.getStatus().getDistance(), SIUnits.METRE));
             updateState(CHANNEL_STATUS_HOURS, new QuantityType<>(info.getStatus().getHours(), Units.HOUR));
             updateState(CHANNEL_STATUS_MODE, new StringType(info.getStatus().getMode().name()));
-            updateState(CHANNEL_MOWER_START, info.getStatus().isStopped() ? OnOffType.OFF : OnOffType.ON);
+            updateState(CHANNEL_MOWER_START, OnOffType.from(!info.getStatus().isStopped()));
             if (info.getHealth() != null) {
                 updateState(CHANNEL_HEALTH_TEMP,
                         new QuantityType<>(info.getHealth().getTemperature(), SIUnits.CELSIUS));
@@ -255,7 +255,7 @@ public class RobonectHandler extends BaseThingHandler {
                 updateState(CHANNEL_TIMER_STATUS, new StringType(info.getTimer().getStatus().name()));
             }
             updateState(CHANNEL_WLAN_SIGNAL, new DecimalType(info.getWlan().getSignal()));
-            updateState(CHANNEL_JOB, robonectClient.isJobRunning() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_JOB, OnOffType.from(robonectClient.isJobRunning()));
         } else {
             logger.error("Could not retrieve mower info. Robonect error response message: {}", info.getErrorMessage());
         }

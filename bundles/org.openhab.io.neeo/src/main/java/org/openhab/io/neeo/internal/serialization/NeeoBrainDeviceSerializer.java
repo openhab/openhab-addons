@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -203,8 +203,7 @@ public class NeeoBrainDeviceSerializer implements JsonSerializer<NeeoDevice> {
                         compPath + "/textlabel/actor", new JsonPrimitive(sensorItemName));
 
                 capObj.addProperty("isLabelVisible",
-                        channel instanceof NeeoDeviceChannelText ? ((NeeoDeviceChannelText) channel).isLabelVisible()
-                                : true);
+                        channel instanceof NeeoDeviceChannelText ndct ? ndct.isLabelVisible() : true);
 
                 capabilities.add(capObj);
 

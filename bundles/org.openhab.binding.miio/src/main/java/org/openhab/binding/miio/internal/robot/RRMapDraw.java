@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -123,7 +123,7 @@ public class RRMapDraw {
      */
     private void drawMap(Graphics2D g2d, float scale) {
         Stroke stroke = new BasicStroke(1.1f * scale);
-        Set<Integer> roomIds = new HashSet<Integer>();
+        Set<Integer> roomIds = new HashSet<>();
         g2d.setStroke(stroke);
         for (int y = 0; y < rmfp.getImgHeight() - 1; y++) {
             for (int x = 0; x < rmfp.getImgWidth() + 1; x++) {
@@ -281,7 +281,6 @@ public class RRMapDraw {
                 g2d.draw(noGo);
             }
         }
-        ;
     }
 
     private void drawWalls(Graphics2D g2d, float scale) {
@@ -369,8 +368,8 @@ public class RRMapDraw {
         if (!(x == 0 && y == 0)) {
             g2d.setStroke(new BasicStroke());
             g2d.setColor(Color.YELLOW);
-            int x3[] = { (int) x, (int) (x - 2 * scale), (int) (x + 2 * scale) };
-            int y3[] = { (int) y, (int) (y - 5 * scale), (int) (y - 5 * scale) };
+            int[] x3 = { (int) x, (int) (x - 2 * scale), (int) (x + 2 * scale) };
+            int[] y3 = { (int) y, (int) (y - 5 * scale), (int) (y - 5 * scale) };
             g2d.fill(new Polygon(x3, y3, 3));
         }
     }

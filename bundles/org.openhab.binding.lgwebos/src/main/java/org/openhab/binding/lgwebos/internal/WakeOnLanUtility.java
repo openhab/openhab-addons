@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,9 +48,9 @@ public class WakeOnLanUtility {
     static {
         String os = System.getProperty("os.name").toLowerCase();
         LOGGER.debug("os: {}", os);
-        if ((os.indexOf("win") >= 0)) {
+        if ((os.contains("win"))) {
             COMMAND = "arp -a %s";
-        } else if ((os.indexOf("mac") >= 0)) {
+        } else if ((os.contains("mac"))) {
             COMMAND = "arp %s";
         } else { // linux
             if (checkIfLinuxCommandExists("arp")) {
@@ -102,7 +102,7 @@ public class WakeOnLanUtility {
     /**
      * Send single WOL (Wake On Lan) package on all interfaces
      *
-     * @macAddress MAC address to send WOL package to
+     * @param macAddress MAC address to send WOL package to
      */
     public static void sendWOLPacket(String macAddress) {
         byte[] bytes = getWOLPackage(macAddress);

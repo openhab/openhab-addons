@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -310,7 +310,7 @@ public class GlobalCacheHandler extends BaseThingHandler {
             throw new HexCodeConversionException("Hex code is too short");
         }
 
-        if (!hexCodeArray[0].equals("0000")) {
+        if (!"0000".equals(hexCodeArray[0])) {
             throw new HexCodeConversionException("Illegal hex code element 0, should be 0000");
         }
 

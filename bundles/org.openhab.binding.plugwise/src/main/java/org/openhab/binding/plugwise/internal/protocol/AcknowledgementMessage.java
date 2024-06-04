@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,9 +67,9 @@ public class AcknowledgementMessage extends Message {
             return TYPES_BY_VALUE.get(value);
         }
 
-        private int identifier;
+        private final int identifier;
 
-        private ExtensionCode(int value) {
+        ExtensionCode(int value) {
             identifier = value;
         }
 

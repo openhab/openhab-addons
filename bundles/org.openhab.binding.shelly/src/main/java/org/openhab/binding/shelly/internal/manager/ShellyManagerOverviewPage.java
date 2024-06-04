@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
         String action = getUrlParm(parameters, URLPARM_ACTION).toLowerCase();
         String uidParm = getUrlParm(parameters, URLPARM_UID).toLowerCase();
 
-        logger.debug("Generating overview for {} devices", getThingHandlers().size());
+        logger.debug("Generating overview for {} devices", getThingHandlers().size());
 
         String html = "";
         Map<String, String> properties = new HashMap<>();
@@ -117,6 +117,11 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                         properties.put(ATTRIBUTE_FIRMWARE_SEL, "");
                         properties.put(ATTRIBUTE_ACTION_LIST, "");
                     }
+                    if (profile.isBlu) {
+                        properties.put(ATTRIBUTE_DISPLAY_NAME, profile.thingName);
+                        properties.put(ATTRIBUTE_DEVICEIP, "n/a");
+                        properties.put(PROPERTY_WIFI_NETW, "Bluetooth");
+                    }
                     html += loadHTML(OVERVIEW_DEVICE, properties);
                 }
             } catch (ShellyApiException e) {
@@ -126,7 +131,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
 
         properties.clear();
         properties.put("numberDevices", "<span class=\"footerDevices\">" + "Number of devices: " + filteredDevices
-                + " of " + String.valueOf(getThingHandlers().size()) + "&nbsp;</span>");
+                + " of " + getThingHandlers().size() + "&nbsp;</span>");
         properties.put(ATTRIBUTE_CSS_FOOTER, loadHTML(OVERVIEW_FOOTER, properties));
         html += deviceHtml + loadHTML(FOOTER_HTML, properties);
         return new ShellyMgrResponse(fillAttributes(html, properties), HttpStatus.OK_200);
@@ -143,7 +148,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
         try {
             if (!profile.isGen2) { // currently there is no public firmware repo for Gen2
                 logger.debug("{}: Load firmware version list for device type {}", LOG_PREFIX, deviceType);
-                FwRepoEntry fw = getFirmwareRepoEntry(deviceType, profile.mode);
+                FwRepoEntry fw = getFirmwareRepoEntry(deviceType, profile.device.mode);
 
                 pVersion = extractFwVersion(fw.version);
                 bVersion = extractFwVersion(fw.betaVer);
@@ -193,10 +198,13 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
             logger.debug("{}: Unable to retrieve firmware list: {}", LOG_PREFIX, e.toString());
         }
 
-        html += "\t\t\t\t\t<option class=\"select-hr\" value=\"" + SHELLY_MGR_FWUPDATE_URI + "?uid=" + uid
-                + "&connection=custom\">Custom URL</option>\n";
-
-        html += "\t\t\t\t</select>\n\t\t\t";
+        html += "\t\t\t\t\t<option class=\"select-hr\" value=\"" + SHELLY_MGR_FWUPDATE_URI + "?uid=" + uid;
+        if (!profile.isBlu) {
+            html += "&connection=custom\">Custom URL";
+        } else {
+            html += "\">Check Device App";
+        }
+        html += "</option>\n\t\t\t\t</select>\n\t\t\t";
 
         return html;
     }
@@ -238,7 +246,9 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
                 // return handler.getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_UPDATE) == OnOffType.ON;
                 return getBool(profile.status.hasUpdate);
             case FILTER_UNPROTECTED:
-                return !profile.auth;
+                if (profile.device.auth != null) {
+                    return !profile.device.auth;
+                }
             case "*":
             default:
                 return true;

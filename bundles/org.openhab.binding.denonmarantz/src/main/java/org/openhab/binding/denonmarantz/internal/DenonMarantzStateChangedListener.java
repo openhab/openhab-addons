@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,15 +12,17 @@
  */
 package org.openhab.binding.denonmarantz.internal;
 
-import org.openhab.binding.denonmarantz.internal.handler.DenonMarantzHandler;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.types.State;
 
 /**
- * Interface to notify the {@link DenonMarantzHandler} about state changes.
+ * Interface to notify the {@link org.openhab.binding.denonmarantz.internal.handler.DenonMarantzHandler} about state
+ * changes.
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
+@NonNullByDefault
 public interface DenonMarantzStateChangedListener {
     /**
      * Update was received.

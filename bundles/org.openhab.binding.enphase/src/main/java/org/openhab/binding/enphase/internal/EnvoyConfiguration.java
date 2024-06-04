@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,9 @@ public class EnvoyConfiguration {
     public String hostname = "";
     public String username = DEFAULT_USERNAME;
     public String password = "";
+    public String jwt = "";
+    public boolean autoJwt = true;
+    public String siteName = "";
     public int refresh = DEFAULT_REFRESH_MINUTES;
 
     @Override

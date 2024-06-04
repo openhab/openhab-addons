@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ class TypeRollershutter extends KNXChannel {
             CHANNEL_ROLLERSHUTTER_CONTROL);
 
     TypeRollershutter(Channel channel) {
-        super(Set.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA),
+        super(List.of(UP_DOWN_GA, STOP_MOVE_GA, POSITION_GA),
                 List.of(PercentType.class, UpDownType.class, StopMoveType.class), channel);
     }
 

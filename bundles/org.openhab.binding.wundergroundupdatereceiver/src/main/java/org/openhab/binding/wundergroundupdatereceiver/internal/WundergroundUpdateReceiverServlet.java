@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -77,6 +77,7 @@ public class WundergroundUpdateReceiverServlet extends HttpServlet
         active = discoveryService.isBackgroundDiscoveryEnabled();
     }
 
+    @Override
     public boolean isActive() {
         synchronized (LOCK) {
             return this.active;
@@ -127,6 +128,7 @@ public class WundergroundUpdateReceiverServlet extends HttpServlet
     }
 
     @Deactivate
+    @Override
     public void disable() {
         errorDetail = "";
         active = false;

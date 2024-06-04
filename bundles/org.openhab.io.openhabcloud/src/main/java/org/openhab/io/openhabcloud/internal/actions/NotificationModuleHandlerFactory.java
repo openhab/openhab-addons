@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,17 +62,17 @@ public class NotificationModuleHandlerFactory extends BaseModuleHandlerFactory {
 
     @Override
     protected @Nullable ModuleHandler internalCreate(Module module, String ruleUID) {
-        if (module instanceof Action) {
+        if (module instanceof Action action) {
             switch (module.getTypeUID()) {
                 case SendNotificationActionHandler.TYPE_ID:
                 case SendNotificationActionHandler.EXTENDED_TYPE_ID:
-                    return new SendNotificationActionHandler((Action) module, cloudService);
+                    return new SendNotificationActionHandler(action, cloudService);
                 case SendBroadcastNotificationActionHandler.TYPE_ID:
                 case SendBroadcastNotificationActionHandler.EXTENDED_TYPE_ID:
-                    return new SendBroadcastNotificationActionHandler((Action) module, cloudService);
+                    return new SendBroadcastNotificationActionHandler(action, cloudService);
                 case SendLogNotificationActionHandler.TYPE_ID:
                 case SendLogNotificationActionHandler.EXTENDED_TYPE_ID:
-                    return new SendLogNotificationActionHandler((Action) module, cloudService);
+                    return new SendLogNotificationActionHandler(action, cloudService);
                 default:
                     break;
             }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,6 +11,8 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.gpio.internal.configuration;
+
+import static org.openhab.binding.gpio.internal.GPIOBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -31,5 +33,12 @@ public class GPIOInputConfiguration extends GPIOConfiguration {
      * Setup a pullup resistor on the GPIO pin
      * OFF = PI_PUD_OFF, DOWN = PI_PUD_DOWN, UP = PI_PUD_UP
      */
-    public String pullupdown = "OFF";
+    public String pullupdown = PUD_OFF;
+
+    /**
+     * Sets the input detection type.
+     * EDGE_EITHER = PI_EITHER_EDGE, EDGE_FALLING = PI_FALLING_EDGE,
+     * EDGE_RISING = PI_RISING_EDGE
+     */
+    public String edgeMode = EDGE_EITHER;
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -98,7 +98,7 @@ public class ParadoxDiscoveryService extends AbstractDiscoveryService {
 
     private void discoverZones(List<Zone> zones) {
         zones.stream().forEach(zone -> {
-            String thingId = zone.getLabel().replaceAll(" ", "_");
+            String thingId = zone.getLabel().replace(" ", "_");
             String label = zone.getLabel();
             ThingUID bridgeUid = ip150BridgeHandler.getThing().getUID();
 

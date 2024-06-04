@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,8 +52,7 @@ public class UpnpDynamicCommandDescriptionProvider implements DynamicCommandDesc
     @Override
     public @Nullable CommandDescription getCommandDescription(Channel channel,
             @Nullable CommandDescription originalCommandDescription, @Nullable Locale locale) {
-        CommandDescription description = descriptions.get(channel.getUID());
-        return description;
+        return descriptions.get(channel.getUID());
     }
 
     @Deactivate

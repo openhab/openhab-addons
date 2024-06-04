@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,10 +23,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.openhab.binding.hue.internal.dto.FullConfig;
-import org.openhab.binding.hue.internal.dto.FullLight;
-import org.openhab.binding.hue.internal.dto.State.ColorMode;
-import org.openhab.binding.hue.internal.dto.StateUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullConfig;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullLight;
+import org.openhab.binding.hue.internal.api.dto.clip1.State.ColorMode;
+import org.openhab.binding.hue.internal.api.dto.clip1.StateUpdate;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -265,13 +265,13 @@ public class HueLightHandlerTest {
 
     @Test
     public void assertXYCommandForColorChannelWhite() {
-        String expectedReply = "{\"xy\" : [ 0.3227 , 0.32900003 ], \"bri\" : 254, \"transitiontime\" : 4}";
+        String expectedReply = "{\"xy\" : [ 0.3227267 , 0.3290229 ], \"bri\" : 254, \"transitiontime\" : 4}";
         assertSendCommandForColor(HSBType.WHITE, new HueLightState().colormode(ColorMode.XY), expectedReply);
     }
 
     @Test
     public void assertXYCommandForColorChannelColorful() {
-        String expectedReply = "{\"xy\" : [ 0.14649999 , 0.115600005 ], \"bri\" : 127, \"transitiontime\" : 4}";
+        String expectedReply = "{\"xy\" : [ 0.14657576 , 0.115629844 ], \"bri\" : 127, \"transitiontime\" : 4}";
         assertSendCommandForColor(new HSBType("220,90,50"), new HueLightState().colormode(ColorMode.XY), expectedReply);
     }
 

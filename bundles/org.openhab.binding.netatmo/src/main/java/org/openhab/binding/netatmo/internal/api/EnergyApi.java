@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,7 @@ public class EnergyApi extends RestManager {
      *
      * @param homeId The id of home (required)
      * @param mode The mode. (required)
-     * @throws NetatmoCommunicationException when call failed, e.g. server error or cannot deserialize
+     * @throws NetatmoException when call failed, e.g. server error or cannot deserialize
      */
     public void setThermMode(String homeId, String mode) throws NetatmoException {
         UriBuilder uriBuilder = getApiUriBuilder(SUB_PATH_SET_THERM_MODE, PARAM_HOME_ID, homeId, PARAM_MODE, mode);
@@ -76,7 +76,7 @@ public class EnergyApi extends RestManager {
      * @param mode The mode. (required)
      * @param endtime For manual or max setpoint_mode, defines when the setpoint expires.
      * @param temp For manual setpoint_mode, defines the temperature setpoint (in °C)
-     * @throws NetatmoCommunicationException when call failed, e.g. server error or cannot deserialize
+     * @throws NetatmoException when call failed, e.g. server error or cannot deserialize
      */
     public void setThermpoint(String homeId, String roomId, SetpointMode mode, long endtime, double temp)
             throws NetatmoException {

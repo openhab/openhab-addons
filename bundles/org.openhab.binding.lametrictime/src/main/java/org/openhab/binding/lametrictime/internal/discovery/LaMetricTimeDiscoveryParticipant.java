@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.lametrictime.internal.discovery;
 import static org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants.THING_TYPE_DEVICE;
 import static org.openhab.binding.lametrictime.internal.config.LaMetricTimeConfiguration.HOST;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -46,7 +45,7 @@ public class LaMetricTimeDiscoveryParticipant implements UpnpDiscoveryParticipan
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_DEVICE);
+        return Set.of(THING_TYPE_DEVICE);
     }
 
     @Override

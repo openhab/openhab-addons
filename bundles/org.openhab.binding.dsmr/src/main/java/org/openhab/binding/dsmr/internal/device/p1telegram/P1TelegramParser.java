@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -425,7 +425,7 @@ public class P1TelegramParser implements TelegramParser {
         final String obisIdString = obisId.toString();
 
         if (!obisIdString.isEmpty()) {
-            cosemObjects.add(new SimpleEntry<String, String>(obisIdString, obisValue.toString()));
+            cosemObjects.add(new SimpleEntry<>(obisIdString, obisValue.toString()));
         }
         clearObisData();
     }

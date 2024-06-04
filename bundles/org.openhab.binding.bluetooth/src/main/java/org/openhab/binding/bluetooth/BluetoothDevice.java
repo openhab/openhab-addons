@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -91,7 +91,7 @@ public abstract class BluetoothDevice {
      * Construct a Bluetooth device taking the Bluetooth address
      *
      * @param adapter
-     * @param sender
+     * @param address
      */
     public BluetoothDevice(BluetoothAdapter adapter, BluetoothAddress address) {
         this.address = address;
@@ -175,7 +175,7 @@ public abstract class BluetoothDevice {
 
     /**
      * Connects to a device. This is an asynchronous method. Once the connection state is updated, the
-     * {@link BluetoothDeviceListener.onConnectionState} method will be called with the connection state.
+     * {@link BluetoothDeviceListener#onConnectionStateChange} method will be called with the connection state.
      * <p>
      * If the device is already connected, this will return false.
      *
@@ -185,7 +185,7 @@ public abstract class BluetoothDevice {
 
     /**
      * Disconnects from a device. Once the connection state is updated, the
-     * {@link BluetoothDeviceListener.onConnectionState}
+     * {@link BluetoothDeviceListener#onConnectionStateChange}
      * method will be called with the connection state.
      * <p>
      * If the device is not currently connected, this will return false.

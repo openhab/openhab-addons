@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * The {@link TapoBindingSettings} class defines common constants, which are
+ * The {@link TapoThingConstants} class defines thing constants, which are
  * used across the whole binding.
  *
  * @author Christian Wild - Initial contribution
@@ -34,6 +34,7 @@ public class TapoThingConstants {
 
     /*** LIST OF SUPPORTED DEVICE NAMES ***/
     public static final String DEVICE_BRIDGE = "bridge";
+    public static final String DEVICE_H100 = "H100";
     public static final String DEVICE_P100 = "P100";
     public static final String DEVICE_P105 = "P105";
     public static final String DEVICE_P110 = "P110";
@@ -46,18 +47,26 @@ public class TapoThingConstants {
     public static final String DEVICE_L900 = "L900";
     public static final String DEVICE_L920 = "L920";
     public static final String DEVICE_L930 = "L930";
+    public static final String DEVICE_T110 = "T110";
+    public static final String DEVICE_T310 = "T310";
+    public static final String DEVICE_T315 = "T315";
     public static final String DEVICE_UNIVERSAL = "Test_Device";
 
     /*** LIST OF SUPPORTED DEVICE DESCRIPTIONS ***/
     public static final String DEVICE_DESCRIPTION_BRIDGE = "TapoControl Cloud-Login";
-    public static final String DEVICE_DESCRIPTION_SMART_PLUG = "SmartPlug";
-    public static final String DEVICE_DESCRIPTION_POWER_STRIP = "PowerStrip";
+    public static final String DEVICE_DESCRIPTION_HUB = "SmartHub";
+    public static final String DEVICE_DESCRIPTION_SOCKET = "SmartPlug";
+    public static final String DEVICE_DESCRIPTION_SOCKET_STRIP = "PowerStrip";
     public static final String DEVICE_DESCRIPTION_WHITE_BULB = "White-Light-Bulb";
     public static final String DEVICE_DESCRIPTION_COLOR_BULB = "Color-Light-Bulb";
     public static final String DEVICE_DESCRIPTION_LIGHTSTRIP = "LightStrip";
+    public static final String DEVICE_DESCRIPTION_SMART_CONTACT = "Smart-Contact-Sensor";
+    public static final String DEVICE_DESCRIPTION_MOTION_SENSOR = "Motion-Sensor";
+    public static final String DEVICE_DESCRIPTION_TEMP_SENSOR = "Temperature-Sensor";
 
     /*** LIST OF SUPPORTED THING UIDS ***/
     public static final ThingTypeUID BRIDGE_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_BRIDGE);
+    public static final ThingTypeUID H100_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_H100);
     public static final ThingTypeUID P100_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P100);
     public static final ThingTypeUID P105_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P105);
     public static final ThingTypeUID P110_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_P110);
@@ -72,92 +81,45 @@ public class TapoThingConstants {
     public static final ThingTypeUID L930_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_L930);
     public static final ThingTypeUID UNIVERSAL_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_UNIVERSAL);
 
+    /*** LIST OF SUPPORTED HUB CHILD THING UIDS ***/
+    public static final ThingTypeUID T110_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_T110);
+    public static final ThingTypeUID T310_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_T310);
+    public static final ThingTypeUID T315_THING_TYPE = new ThingTypeUID(BINDING_ID, DEVICE_T315);
+
     /*** SET OF SUPPORTED UIDS ***/
     public static final Set<ThingTypeUID> SUPPORTED_BRIDGE_UIDS = Set.of(BRIDGE_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_SMART_PLUG_UIDS = Set.of(P100_THING_TYPE, P105_THING_TYPE,
-            P110_THING_TYPE, P115_THING_TYPE, P300_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_HUB_UIDS = Set.of(H100_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_SOCKET_UIDS = Set.of(P100_THING_TYPE, P105_THING_TYPE,
+            P110_THING_TYPE, P115_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_SOCKET_STRIP_UIDS = Set.of(P300_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_WHITE_BULB_UIDS = Set.of(L510_THING_TYPE, L610_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_COLOR_BULB_UIDS = Set.of(L530_THING_TYPE, L630_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_LIGHT_STRIP_UIDS = Set.of(L900_THING_TYPE, L920_THING_TYPE,
             L930_THING_TYPE);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream
-                    .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_SMART_PLUG_UIDS, SUPPORTED_WHITE_BULB_UIDS,
-                            SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS)
-                    .flatMap(Set::stream).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> SUPPORTED_HUB_CHILD_TYPES_UIDS = Set.of(T110_THING_TYPE, T310_THING_TYPE,
+            T315_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_SMART_CONTACTS = Set.of(T110_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_MOTION_SENSORS = Set.of();
+    public static final Set<ThingTypeUID> SUPPORTED_WHEATHER_SENSORS = Set.of(T310_THING_TYPE, T315_THING_TYPE);
+
+    /*** SET OF ALL SUPPORTED THINGS ***/
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
+            .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_HUB_UIDS, SUPPORTED_SOCKET_UIDS, SUPPORTED_SOCKET_STRIP_UIDS,
+                    SUPPORTED_WHITE_BULB_UIDS, SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS,
+                    SUPPORTED_SMART_CONTACTS, SUPPORTED_MOTION_SENSORS, SUPPORTED_WHEATHER_SENSORS)
+            .flatMap(Set::stream).collect(Collectors.toSet()));
+
     /*** THINGS WITH ENERGY DATA ***/
     public static final Set<ThingTypeUID> SUPPORTED_ENERGY_DATA_UIDS = Set.of(P110_THING_TYPE, P115_THING_TYPE);
 
-    /*** THINGS WITH CHILDS DATA ***/
-    public static final Set<ThingTypeUID> SUPPORTED_CHILDS_DATA_UIDS = Set.of(P300_THING_TYPE);
-
     /*** THINGS WITH CHANNEL GROUPS ***/
-    public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections
-            .unmodifiableSet(Stream
-                    .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_SMART_PLUG_UIDS, SUPPORTED_WHITE_BULB_UIDS,
-                            SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS)
-                    .flatMap(Set::stream).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections.unmodifiableSet(Stream
+            .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_HUB_UIDS, SUPPORTED_SOCKET_UIDS, SUPPORTED_SOCKET_STRIP_UIDS,
+                    SUPPORTED_WHITE_BULB_UIDS, SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS,
+                    SUPPORTED_SMART_CONTACTS, SUPPORTED_MOTION_SENSORS, SUPPORTED_WHEATHER_SENSORS)
+            .flatMap(Set::stream).collect(Collectors.toSet()));
 
-    /*** DEVICE JSON STRINGS (CLOUD) ***/
-    public static final String CLOUD_JSON_KEY_ALIAS = "alias";
-    public static final String CLOUD_JSON_KEY_FW = "fwVer";
-    public static final String CLOUD_JSON_KEY_HW = "deviceHwVer";
-    public static final String CLOUD_JSON_KEY_ID = "deviceId";
-    public static final String CLOUD_JSON_KEY_MAC = "deviceMac";
-    public static final String CLOUD_JSON_KEY_MODEL = "deviceName"; // use name cause modell returns different values
-    public static final String CLOUD_JSON_KEY_NAME = "deviceName";
-    public static final String CLOUD_JSON_KEY_REGION = "deviceRegion";
-    public static final String CLOUD_JSON_KEY_SERVER_URL = "appServerUrl";
-    public static final String CLOUD_JSON_KEY_TYPE = "deviceType";
-
-    /*** DEVICE JSON STRINGS (DEVICE) ***/
-    public static final String JSON_KEY_BRIGHTNESS = "brightness";
-    public static final String JSON_KEY_COLORTEMP = "color_temp";
-    public static final String JSON_KEY_FW = "fw_ver";
-    public static final String JSON_KEY_HUE = "hue";
-    public static final String JSON_KEY_HW_VER = "hw_ver";
-    public static final String JSON_KEY_ID = "device_id";
-    public static final String JSON_KEY_IP = "ip";
-    public static final String JSON_KEY_MAC = "mac";
-    public static final String JSON_KEY_MODEL = "model";
-    public static final String JSON_KEY_NICKNAME = "nickname";
-    public static final String JSON_KEY_ON = "device_on";
-    public static final String JSON_KEY_ONTIME = "on_time";
-    public static final String JSON_KEY_OVERHEAT = "overheated";
-    public static final String JSON_KEY_REGION = "region";
-    public static final String JSON_KEY_SATURATION = "saturation";
-    public static final String JSON_KEY_SIGNAL_LEVEL = "signal_level";
-    public static final String JSON_KEY_RSSI = "rssi";
-    public static final String JSON_KEY_TYPE = "type";
-    public static final String JSON_KEY_USAGE_7 = "time_usage_past7";
-    public static final String JSON_KEY_USAGE_30 = "time_usage_past30";
-    public static final String JSON_KEY_USAGE_TODAY = "time_usage_today";
-    public static final String DEVICE_REPRESENTATION_PROPERTY = "macAddress";
-    // lightning effects
-    public static final String JSON_KEY_LIGHTNING_EFFECT = "lighting_effect";
-    public static final String JSON_KEY_LIGHTNING_EFFECT_BRIGHNTESS = "brightness";
-    public static final String JSON_KEY_LIGHTNING_EFFECT_COLORTEMPRANGE = "color_temp_range";
-    public static final String JSON_KEY_LIGHTNING_EFFECT_CUSTOM = "custom";
-    public static final String JSON_KEY_LIGHTNING_EFFECT_OFF = "off";
-    public static final String JSON_KEY_LIGHTNING_EFFECT_DISPLAYCOLORS = "displayColors";
-    public static final String JSON_KEY_LIGHTNING_EFFECT_ENABLE = "enable";
-    public static final String JSON_KEY_LIGHTNING_EFFECT_ID = "id";
-    public static final String JSON_KEY_LIGHTNING_EFFECT_NAME = "name";
-    public static final String JSON_KEY_LIGHTNING_DYNAMIC_ENABLE = "dynamic_light_effect_enable";
-    public static final String JSON_KEY_LIGHTNING_DYNAMIC_ID = "dynamic_light_effect_id";
-
-    // energy monitoring
-    public static final String JSON_KEY_ENERGY_POWER = "current_power";
-    public static final String JSON_KEY_ENERGY_RUNTIME_TODAY = "today_runtime";
-    public static final String JSON_KEY_ENERGY_RUNTIME_MONTH = "month_runtime";
-    public static final String JSON_KEY_ENERGY_ENERGY_TODAY = "today_energy";
-    public static final String JSON_KEY_ENERGY_ENERGY_MONTH = "month_energy";
-    public static final String JSON_KEY_ENERGY_PAST24H = "past24h";
-    public static final String JSON_KEY_ENERGY_PAST7D = "past7d";
-    public static final String JSON_KEY_ENERGY_PAST30D = "past30d";
-    public static final String JSON_KEY_ENERGY_PAST1Y = "past1y";
-    // childs management
-    public static final String JSON_KEY_CHILD_START_INDEX = "start_index";
+    public static final String CHILD_REPRESENTATION_PROPERTY = "serialNumber";
 
     /*** DEVICE SETTINGS ***/
     public static final Integer BULB_MIN_COLORTEMP = 2500;
@@ -169,18 +131,32 @@ public class TapoThingConstants {
     public static final String CHANNEL_BRIGHTNESS = "brightness";
     public static final String CHANNEL_COLOR = "color";
     public static final String CHANNEL_COLOR_TEMP = "colorTemperature";
+    public static final String CHANNEL_MODE = "mode";
     public static final String CHANNEL_OUTPUT = "output";
     public static final String CHANNEL_SWITCH = "switch";
     // channel group device
     public static final String CHANNEL_GROUP_DEVICE = "device";
+    public static final String CHANNEL_BATTERY_LOW = "batteryLow";
     public static final String CHANNEL_ONTIME = "onTime";
     public static final String CHANNEL_OVERHEAT = "overheated";
+    public static final String CHANNEL_SIGNAL_STRENGTH = "signalStrength";
     public static final String CHANNEL_WIFI_STRENGTH = "wifiSignal";
+    // channel group alarm
+    public static final String CHANNEL_GROUP_ALARM = "alarm";
+    public static final String CHANNEL_ALARM_ACTIVE = "alarmActive";
+    public static final String CHANNEL_ALARM_SOURCE = "alarmSource";
+    // channel group sensor
+    public static final String CHANNEL_GROUP_SENSOR = "sensor";
+    public static final String CHANNEL_IS_OPEN = "isOpen";
+    public static final String CHANNEL_TEMPERATURE = "currentTemp";
+    public static final String CHANNEL_HUMIDITY = "currentHumidity";
     // channel group energy monitor
     public static final String CHANNEL_GROUP_ENERGY = "energy";
     public static final String CHANNEL_NRG_POWER = "actualPower";
     public static final String CHANNEL_NRG_USAGE_TODAY = "todayEnergyUsage";
     public static final String CHANNEL_NRG_RUNTIME_TODAY = "todayRuntime";
+    public static final String CHANNEL_NRG_USAGE_MONTH = "monthEnergyUsage";
+    public static final String CHANNEL_NRG_RUNTIME_MONTH = "monthRuntime";
     // channel group effect
     public static final String CHANNEL_GROUP_EFFECTS = "effects";
     public static final String CHANNEL_FX_BRIGHTNESS = "fxBrightness";
@@ -191,4 +167,13 @@ public class TapoThingConstants {
     public static final String PROPERTY_FAMILY = "deviceFamily";
     public static final String PROPERTY_LOCATION = "location";
     public static final String PROPERTY_WIFI_LEVEL = "signal-strength";
+
+    /*** EVENT LISTS ***/
+    // hub child events
+    public static final String EVENT_BATTERY_LOW = "batteryIsLow";
+    public static final String EVENT_CONTACT_OPENED = "contactOpened";
+    public static final String EVENT_CONTACT_CLOSED = "contactClosed";
+    public static final String EVENT_STATE_BATTERY_LOW = "batteryLow";
+    public static final String EVENT_STATE_OPENED = "open";
+    public static final String EVENT_STATE_CLOSED = "closed";
 }

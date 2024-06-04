@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class DeviceFeature {
-    public static enum QueryStatus {
+    public enum QueryStatus {
         NEVER_QUERIED,
         QUERY_PENDING,
         QUERY_ANSWERED
@@ -300,8 +300,7 @@ public class DeviceFeature {
         }
         logger.trace("{} making poll msg for {} using handler {}", getName(), getDevice().getAddress(),
                 pollHandler.getClass().getSimpleName());
-        Msg m = pollHandler.makeMsg(device);
-        return m;
+        return pollHandler.makeMsg(device);
     }
 
     /**

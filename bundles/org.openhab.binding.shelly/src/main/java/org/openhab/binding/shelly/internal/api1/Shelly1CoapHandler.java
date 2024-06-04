@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,6 +49,7 @@ import org.openhab.binding.shelly.internal.config.ShellyThingConfiguration;
 import org.openhab.binding.shelly.internal.handler.ShellyColorUtils;
 import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,9 +108,9 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
     /**
      * Initialize CoAP access, send discovery packet and start Status server
      *
-     * @parm thingName Thing name derived from Thing Type/hostname
-     * @parm config ShellyThingConfiguration
-     * @thows ShellyApiException
+     * @param thingName Thing name derived from Thing Type/hostname
+     * @param config ShellyThingConfiguration
+     * @throws ShellyApiException
      */
     public synchronized void start(String thingName, ShellyThingConfiguration config) throws ShellyApiException {
         try {
@@ -182,10 +183,10 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
             for (Option opt : options) {
                 if (opt.getNumber() == COIOT_OPTION_GLOBAL_DEVID) {
                     String devid = opt.getStringValue();
-                    if (devid.contains("#")) {
+                    if (devid.contains("#") && profile.device.mac != null) {
                         // Format: <device type>#<mac address>#<coap version>
                         String macid = substringBetween(devid, "#", "#");
-                        if (profile.mac.toUpperCase().contains(macid.toUpperCase())) {
+                        if (getString(profile.device.mac).toUpperCase().contains(macid.toUpperCase())) {
                             match = true;
                             break;
                         }
@@ -241,7 +242,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                         }
                         if (!coiotBound) {
                             thingHandler.updateProperties(PROPERTY_COAP_VERSION, sVersion);
-                            logger.debug("{}: CoIoT Version {} detected", thingName, iVersion);
+                            logger.debug("{}: CoIoT Version {} detected", thingName, iVersion);
                             if (iVersion == COIOT_VERSION_1) {
                                 coiot = new Shelly1CoIoTVersion1(thingName, thingHandler, blkMap, sensorMap);
                             } else if (iVersion == COIOT_VERSION_2) {
@@ -265,13 +266,20 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                 }
             }
 
+            // Don't change state to online when thing is in status config error
+            // (e.g. auth failed, but device sends COAP packets via multicast)
+            if (thingHandler.getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_ERROR) {
+                logger.debug("{}: The device is not configuired correctly, skip Coap packet", thingName);
+                return;
+            }
+
             // If we received a CoAP message successful the thing must be online
             thingHandler.setThingOnline();
 
             // The device changes the serial on every update, receiving a message with the same serial is a
             // duplicate, excep for battery devices! Those reset the serial every time when they wake-up
             if ((serial == lastSerial) && payload.equals(lastPayload) && (!profile.hasBattery
-                    || coiot.getLastWakeup().equalsIgnoreCase("ext_power") || ((serial & 0xFF) != 0))) {
+                    || "ext_power".equalsIgnoreCase(coiot.getLastWakeup()) || ((serial & 0xFF) != 0))) {
                 logger.debug("{}: Serial {} was already processed, ignore update", thingName, serial);
                 return;
             }
@@ -351,16 +359,13 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                     valid &= addSensor(descr.sen.get(i));
                 }
             }
-            coiot.completeMissingSensorDefinition(sensorMap);
-
             if (!valid) {
-                logger.debug(
-                        "{}: Incompatible device description detected for CoIoT version {} (id length mismatch), discarding!",
-                        thingName, coiot.getVersion());
-
-                discover();
+                logger.debug("{}: WARNING: Incompatible device description detected for CoIoT version {}!", thingName,
+                        coiot.getVersion());
                 return;
             }
+
+            coiot.completeMissingSensorDefinition(sensorMap); // fix incomplete format
         } catch (JsonSyntaxException e) {
             logger.warn("{}: Unable to parse CoAP Device Description! JSON={}", thingName, payload);
         } catch (NullPointerException | IllegalArgumentException e) {
@@ -382,8 +387,8 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         // This happens on firmware up/downgrades (version 1.8 brings CoIoT v2 with 4 digit IDs)
         int vers = coiot.getVersion();
         if (((vers == COIOT_VERSION_1) && (sen.id.length() > 3))
-                || ((vers >= COIOT_VERSION_2) && (sen.id.length() < 4))) {
-            logger.debug("{}: Invalid format for sensor defition detected, id={}", thingName, sen.id);
+                || ((vers >= COIOT_VERSION_2) && (sen.id.length() < 4) && !sen.id.equals("6"))) {
+            logger.debug("{}: Invalid format for sensor definition detected, id={}", thingName, sen.id);
             return false;
         }
 
@@ -440,8 +445,8 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
         }
 
         List<CoIotSensor> sensorUpdates = list.generic;
-        Map<String, State> updates = new TreeMap<String, State>();
-        logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
+        Map<String, State> updates = new TreeMap<>();
+        logger.debug("{}: {} CoAP sensor updates received", thingName, sensorUpdates.size());
         int failed = 0;
         ShellyColorUtils col = new ShellyColorUtils();
         for (int i = 0; i < sensorUpdates.size(); i++) {

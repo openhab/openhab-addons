@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,10 +82,10 @@ public final class ThingInformationExtractor {
         if (deviceType.isPresent() && techType.isPresent()) {
             return Optional.of(deviceType.get() + " " + techType.get());
         }
-        if (!deviceType.isPresent() && techType.isPresent()) {
+        if (deviceType.isEmpty() && techType.isPresent()) {
             return techType;
         }
-        if (deviceType.isPresent() && !techType.isPresent()) {
+        if (deviceType.isPresent() && techType.isEmpty()) {
             return deviceType;
         }
         return Optional.empty();

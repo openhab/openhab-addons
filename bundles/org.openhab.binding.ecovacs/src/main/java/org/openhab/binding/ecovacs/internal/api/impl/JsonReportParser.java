@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -109,8 +109,12 @@ class JsonReportParser implements ReportParser {
             }
             case "error": {
                 ErrorReport report = payloadAs(response, ErrorReport.class);
-                for (Integer code : report.errorCodes) {
-                    listener.onErrorReported(device, code);
+                if (report.errorCodes.isEmpty()) {
+                    listener.onErrorReported(device, 0);
+                } else {
+                    for (Integer code : report.errorCodes) {
+                        listener.onErrorReported(device, code);
+                    }
                 }
             }
             case "stats": {

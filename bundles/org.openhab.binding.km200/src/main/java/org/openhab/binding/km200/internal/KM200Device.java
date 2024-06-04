@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -332,7 +332,7 @@ public class KM200Device {
         String decodedData = null;
         JsonObject nodeRoot = null;
         logger.debug("{}: trying to query information.", service);
-        byte[] recData = deviceCommunicator.getDataFromService(service.toString());
+        byte[] recData = deviceCommunicator.getDataFromService(service);
         try {
             if (recData == null) {
                 logger.debug("Communication to {} is not possible!", service);
@@ -361,7 +361,7 @@ public class KM200Device {
                     logger.warn("{}: SERVICE NOT AVAILABLE", service);
                     return null;
                 } else {
-                    logger.debug("{}: trying to parse {}", service, decodedData.toString());
+                    logger.debug("{}: trying to parse {}", service, decodedData);
                     nodeRoot = (JsonObject) JsonParser.parseString(decodedData);
                 }
             } else {

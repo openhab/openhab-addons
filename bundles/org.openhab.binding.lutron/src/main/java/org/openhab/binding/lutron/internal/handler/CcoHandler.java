@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,9 +37,9 @@ import org.slf4j.LoggerFactory;
  * Handler responsible for communicating with Lutron contact closure outputs (CCOs).
  * e.g. VCRX CCOs and CCO RF module
  *
- * Note: For a RA2 Pulsed CCO, querying the output state with ?OUTPUT,<id>,1 is meaningless and will always
- * return 100 (on). Also, the main repeater will not report ~OUTPUT commands for a pulsed CCO regardless of
- * the #MONITORING setting. So this binding supports sending pulses ONLY.
+ * Note: For a RA2 Pulsed CCO, querying the output state with {@code ?OUTPUT,<id>,1} is meaningless and will
+ * always return 100 (on). Also, the main repeater will not report ~OUTPUT commands for a pulsed CCO regardless
+ * of the #MONITORING setting. So this binding supports sending pulses ONLY.
  *
  * @author Bob Adair - Initial contribution
  *
@@ -191,7 +191,7 @@ public class CcoHandler extends LutronHandler {
                 }
                 try {
                     BigDecimal state = new BigDecimal(parameters[1]);
-                    updateState(CHANNEL_SWITCH, state.compareTo(BigDecimal.ZERO) == 0 ? OnOffType.OFF : OnOffType.ON);
+                    updateState(CHANNEL_SWITCH, OnOffType.from(state.compareTo(BigDecimal.ZERO) != 0));
                 } catch (NumberFormatException e) {
                     logger.warn("Unable to parse update {} {} from CCO {}", type, Arrays.asList(parameters),
                             integrationId);

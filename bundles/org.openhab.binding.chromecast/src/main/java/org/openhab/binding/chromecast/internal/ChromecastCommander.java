@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -158,18 +158,16 @@ public class ChromecastCommander {
                 return;
             }
 
-            if (command instanceof PlayPauseType) {
+            if (command instanceof PlayPauseType playPauseCommand) {
                 MediaStatus mediaStatus = chromeCast.getMediaStatus();
                 logger.debug("mediaStatus {}", mediaStatus);
                 if (mediaStatus == null || mediaStatus.playerState == MediaStatus.PlayerState.IDLE) {
                     logger.debug("{} command ignored because media is not loaded", command);
                     return;
                 }
-
-                final PlayPauseType playPause = (PlayPauseType) command;
-                if (playPause == PlayPauseType.PLAY) {
+                if (playPauseCommand == PlayPauseType.PLAY) {
                     chromeCast.play();
-                } else if (playPause == PlayPauseType.PAUSE
+                } else if (playPauseCommand == PlayPauseType.PAUSE
                         && ((mediaStatus.supportedMediaCommands & 0x00000001) == 0x1)) {
                     chromeCast.pause();
                 } else {
@@ -199,8 +197,8 @@ public class ChromecastCommander {
     }
 
     public void handleVolume(final Command command) {
-        if (command instanceof PercentType) {
-            setVolumeInternal((PercentType) command);
+        if (command instanceof PercentType percentCommand) {
+            setVolumeInternal(percentCommand);
         } else if (command == IncreaseDecreaseType.INCREASE) {
             setVolumeInternal(new PercentType(
                     Math.min(statusUpdater.getVolume().intValue() + VOLUMESTEP, PercentType.HUNDRED.intValue())));

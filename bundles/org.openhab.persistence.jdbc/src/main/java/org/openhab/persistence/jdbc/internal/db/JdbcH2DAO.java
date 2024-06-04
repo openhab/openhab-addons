@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -52,6 +52,8 @@ public class JdbcH2DAO extends JdbcBaseDAO {
     private void initSqlQueries() {
         logger.debug("JDBC::initSqlQueries: '{}'", this.getClass().getSimpleName());
         sqlIfTableExists = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME='#searchTable#'";
+        sqlGetItemTables = "SELECT LOWER(table_name) AS table_name FROM information_schema.tables WHERE table_type='BASE TABLE' AND table_schema='PUBLIC' AND NOT table_name=UPPER('#itemsManageTable#')";
+        sqlGetTableColumnTypes = "SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema='#jdbcUriDatabaseName#' AND table_name='#tableName#'";
         // SQL_INSERT_ITEM_VALUE = "INSERT INTO #tableName# (TIME, VALUE) VALUES( NOW(), CAST( ? as #dbType#) )";
         // http://stackoverflow.com/questions/19768051/h2-sql-database-insert-if-the-record-does-not-exist
         sqlInsertItemValue = "MERGE INTO #tableName# (TIME, VALUE) VALUES( #tablePrimaryValue#, CAST( ? as #dbType#) )";
@@ -69,8 +71,6 @@ public class JdbcH2DAO extends JdbcBaseDAO {
     private void initDbProps() {
         // Properties for HikariCP
         databaseProps.setProperty("driverClassName", DRIVER_CLASS_NAME);
-        // driverClassName OR BETTER USE dataSourceClassName
-        // databaseProps.setProperty("dataSourceClassName", DATA_SOURCE_CLASS_NAME);
     }
 
     /**************

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -57,36 +57,54 @@ public class GoogleTVMessageParser {
             if (msg.startsWith(DELIMITER_1A)) {
                 logger.warn("{} - GoogleTV Error Message: {}", thingId, msg);
                 callback.getHandler().dispose();
+            } else if (msg.equals(VERSION_01)) {
+                logger.warn("{} - GoogleTV version on device needs to be updated", thingId);
             } else if (msg.startsWith(DELIMITER_0A)) {
                 // First message on connection from GTV
                 //
-                // 0a 5b08 ff 041256 0a 11 534849454c4420416e64726f6964205456 12 06 4e5649444941 18 01 22 02 3131 2a
-                // ---------------------LEN-SHIELD Android TV--------------------LEN-NVIDIA---------LEN---LEN-Android
+                // 0a 5b 08 ff 04 12 56 0a 11 534849454c4420416e64726f6964205456 12 06 4e5649444941 18 01 22 02 3131 2a
+                // ---LEN------------LEN---LEN-SHIELD Android TV--------------------LEN-NVIDIA---------LEN---LEN-Android
                 // 24 636f6d2e676f6f676c652e616e64726f69642e74762e72656d6f74652e73657276696365 32
                 // LEN-com.google.android.tv.remote.service
                 // 0d 352e322e343733323534313333
                 // LEN-5.2.473254133
                 //
-                // 0a 5308 ff 04124e 0a 0c 42524156494120344b204742 12 04 536f6e79 18 01 22 01 39 2a
-                // ---------------------LEN-BRAVIA 4K GB---------------LEN-Sony-------LEN---LEN-Android Version
+                // 0a 53 08 ff 04 12 4e 0a 0c 42524156494120344b204742 12 04 536f6e79 18 01 22 01 39 2a
+                // ---LEN------------LEN---LEN-BRAVIA 4K GB---------------LEN-Sony-------LEN---LEN-Android Version
                 // 24 636f6d2e676f6f676c652e616e64726f69642e74762e72656d6f74652e73657276696365 32
                 // 0d 352e322e343733323534313333
                 //
-                // 0a 5408 ff 04124f 0a 0a 4368726f6d6563617374 12 06 476f6f676c65 18 01 22 02 3132 2a
-                // ---------------------LEN-Chromecast-------------LEN-Google---------LEN---LEN-Android Version
+                // 0a 54 08 ff 04 12 4f 0a 0a 4368726f6d6563617374 12 06 476f6f676c65 18 01 22 02 3132 2a
+                // ---LEN------------LEN---LEN-Chromecast-------------LEN-Google---------LEN---LEN-Android Version
                 // 24 636f6d2e676f6f676c652e616e64726f69642e74762e72656d6f74652e73657276696365 32
                 // 0d 352e322e343733323534313333
                 //
-                // 0a 5708 ff 041252 0a 0d 4368726f6d6563617374204844 12 06 476f6f676c65 18 01 22 02 3132 2a
-                // ---------------------LEN-Chromecast HD----------------LEN-Google---------LEN---LEN-Android Version
+                // 0a 57 08 ff 04 12 52 0a 0d 4368726f6d6563617374204844 12 06 476f6f676c65 18 01 22 02 3132 2a
+                // ---LEN------------LEN---LEN-Chromecast HD----------------LEN-Google---------LEN---LEN-Android Version
                 // 24 636f6d2e676f6f676c652e616e64726f69642e74762e72656d6f74652e73657276696365 32
                 // 0d352e322e343733323534313333
+                //
+                // 0a 55 08 ef 04 12 50 0a 09 535754562d32304145 12 08 736b79776f727468 18 01 22 02 3130 2a
+                // ---LEN------------LEN---LEN-SWTV-20AE------------LEN-skyworth-----------LEN---LEN-Android
+                // 24 636f6d2e676f6f676c652e616e64726f69642e74762e72656d6f74652e73657276696365 32
+                // LEN-com.google.android.tv.remote.service
+                // 0d 352e322e343733323534313333
+                // LEN-5.2.473254133
+                //
+                // 0a 5b 08 fd 04 12 56 0a 11 534849454c4420416e64726f6964205456 12 06 4e5649444941 18 01 22 02 3131 2a
+                // ---LEN------------LEN---LEN-SHIELD Android TV--------------------LEN-NVIDIA---------LEN---LEN-Android
+                // 24 636f6d2e676f6f676c652e616e64726f69642e74762e72656d6f74652e73657276696365 32
+                // LEN-com.google.android.tv.remote.service
+                // 0d 352e322e343733323534313333
+                // LEN-5.2.473254133
 
                 if (callback.getLoggedIn()) {
                     logger.warn("{} - Unexpected Login Message: {}", thingId, msg);
                 } else {
+                    String flag = "" + charArray[6] + charArray[7];
+                    logger.trace("{} - Encoding Flag Data: {}", thingId, flag);
                     callback.sendCommand(
-                            new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(4))));
+                            new GoogleTVCommand(GoogleTVRequest.encodeMessage(GoogleTVRequest.loginRequest(4, flag))));
                 }
 
                 String st = "";

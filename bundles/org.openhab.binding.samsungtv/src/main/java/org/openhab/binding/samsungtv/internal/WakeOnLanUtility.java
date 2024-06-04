@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,32 +35,44 @@ import org.slf4j.LoggerFactory;
  *
  * @author Arjan Mels - Initial contribution
  * @author Laurent Garnier - Use improvements from the LG webOS binding
+ * @author Nick Waterton - use single ip address as source per interface
  *
  */
 @NonNullByDefault
 public class WakeOnLanUtility {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WakeOnLanUtility.class);
-    private static final Pattern MAC_REGEX = Pattern.compile("(([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2})");
     private static final int CMD_TIMEOUT_MS = 1000;
+    private static String host = "";
 
-    private static final String COMMAND;
-    static {
-        String os = System.getProperty("os.name").toLowerCase();
-        LOGGER.debug("os: {}", os);
-        if ((os.indexOf("win") >= 0)) {
-            COMMAND = "arp -a %s";
-        } else if ((os.indexOf("mac") >= 0)) {
-            COMMAND = "arp %s";
-        } else { // linux
-            if (checkIfLinuxCommandExists("arp")) {
+    /**
+     * Get os command to find MAC address
+     *
+     * @return os COMMAND
+     */
+    public static String getCommand() {
+        String os = System.getProperty("os.name");
+        String COMMAND = "";
+        if (os != null) {
+            os = os.toLowerCase();
+            LOGGER.debug("{}: os: {}", host, os);
+            if ((os.contains("win"))) {
+                COMMAND = "arp -a %s";
+            } else if ((os.contains("mac"))) {
                 COMMAND = "arp %s";
-            } else if (checkIfLinuxCommandExists("arping")) { // typically OH provided docker image
-                COMMAND = "arping -r -c 1 -C 1 %s";
-            } else {
-                COMMAND = "";
+            } else { // linux
+                if (checkIfLinuxCommandExists("arp")) {
+                    COMMAND = "arp %s";
+                } else if (checkIfLinuxCommandExists("arping")) { // typically OH provided docker image
+                    COMMAND = "arping -r -c 1 -C 1 %s";
+                } else {
+                    LOGGER.warn("{}: arping not installed", host);
+                }
             }
+        } else {
+            LOGGER.warn("{}: Unable to determine os", host);
         }
+        return COMMAND;
     }
 
     /**
@@ -70,11 +82,14 @@ public class WakeOnLanUtility {
      * @return MAC address
      */
     public static @Nullable String getMACAddress(String hostName) {
+        host = hostName;
+        String COMMAND = getCommand();
         if (COMMAND.isEmpty()) {
-            LOGGER.debug("MAC address detection not possible. No command to identify MAC found.");
+            LOGGER.debug("{}: MAC address detection not possible. No command to identify MAC found.", hostName);
             return null;
         }
 
+        Pattern MAC_REGEX = Pattern.compile("(([0-9a-fA-F]{2}[:-]){5}[0-9a-fA-F]{2})");
         String[] cmds = Stream.of(COMMAND.split(" ")).map(arg -> String.format(arg, hostName)).toArray(String[]::new);
         String response = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofMillis(CMD_TIMEOUT_MS), cmds);
         String macAddress = null;
@@ -91,9 +106,9 @@ public class WakeOnLanUtility {
             }
         }
         if (macAddress != null) {
-            LOGGER.debug("MAC address of host {} is {}", hostName, macAddress);
+            LOGGER.debug("{}: MAC address of host {} is {}", hostName, hostName, macAddress);
         } else {
-            LOGGER.debug("Problem executing command {} to retrieve MAC address for {}: {}",
+            LOGGER.debug("{}: Problem executing command {} to retrieve MAC address for {}: {}", hostName,
                     String.format(COMMAND, hostName), hostName, response);
         }
         return macAddress;
@@ -102,17 +117,17 @@ public class WakeOnLanUtility {
     /**
      * Send single WOL (Wake On Lan) package on all interfaces
      *
-     * @macAddress MAC address to send WOL package to
+     * @param macAddress MAC address to send WOL package to
      */
     public static void sendWOLPacket(String macAddress) {
         byte[] bytes = getWOLPackage(macAddress);
 
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
+            while (interfaces != null && interfaces.hasMoreElements()) {
                 NetworkInterface networkInterface = interfaces.nextElement();
-                if (networkInterface.isLoopback()) {
-                    continue; // Do not want to use the loopback interface.
+                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                    continue; // Do not want to use the loopback or down interface.
                 }
                 for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses()) {
                     InetAddress broadcast = interfaceAddress.getBroadcast();
@@ -120,12 +135,14 @@ public class WakeOnLanUtility {
                         continue;
                     }
 
+                    InetAddress local = interfaceAddress.getAddress();
                     DatagramPacket packet = new DatagramPacket(bytes, bytes.length, broadcast, 9);
                     try (DatagramSocket socket = new DatagramSocket()) {
                         socket.send(packet);
-                        LOGGER.trace("Sent WOL packet to {} {}", broadcast, macAddress);
+                        LOGGER.trace("Sent WOL packet from {} to {} {}", local, broadcast, macAddress);
+                        break;
                     } catch (IOException e) {
-                        LOGGER.warn("Problem sending WOL packet to {} {}", broadcast, macAddress);
+                        LOGGER.warn("Problem sending WOL packet from {} to {} {}", local, broadcast, macAddress);
                     }
                 }
             }
@@ -138,7 +155,7 @@ public class WakeOnLanUtility {
     /**
      * Create WOL UDP package: 6 bytes 0xff and then 16 times the 6 byte mac address repeated
      *
-     * @param macStr String representation of teh MAC address (either with : or -)
+     * @param macStr String representation of the MAC address (either with : or -)
      * @return byte array with the WOL package
      * @throws IllegalArgumentException
      */
@@ -171,7 +188,7 @@ public class WakeOnLanUtility {
         try {
             return 0 == Runtime.getRuntime().exec(String.format("which %s", cmd)).waitFor();
         } catch (InterruptedException | IOException e) {
-            LOGGER.debug("Error trying to check if command {} exists: {}", cmd, e.getMessage());
+            LOGGER.debug("{}: Error trying to check if command {} exists: {}", host, cmd, e.getMessage());
         }
         return false;
     }

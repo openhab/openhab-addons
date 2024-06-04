@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,6 +62,7 @@ public class DynamoDBQueryUtils {
         }
         addFilterbyItemAndTimeFilter(queryBuilder, expectedTableSchema, itemName, filter);
         addStateFilter(queryBuilder, expectedTableSchema, item, dtoClass, filter, unitProvider);
+        addLimit(queryBuilder, filter);
         addProjection(dtoClass, expectedTableSchema, queryBuilder);
         return queryBuilder.build();
     }
@@ -91,6 +92,27 @@ public class DynamoDBQueryUtils {
                     return null;
                 }
             });
+        }
+    }
+
+    /**
+     * Add optimization to limit amount of data queried from DynamoDB
+     *
+     * DynamoDB allows to limit the amount of items read by the query ("Limit" parameter) - additional items are
+     * paginated in the raw DynamoDB responses. We can use this to optimize the read capacity.
+     *
+     * DynamoDB FilterExpression is applied after the query finishes but before results are returned. The query
+     * still consumes the same read capacity. It is also to note here that the query might return less than "Limit"
+     * items, and the results are paginated. Since the final openHAB pagination is done in the persistence service, the
+     * pagination of the DynamoDB remains as a hidden implementation detail.
+     *
+     * @param queryBuilder builder for DynamoDB query
+     * @param filter openHAB filter
+     */
+    private static void addLimit(QueryEnhancedRequest.Builder queryBuilder, final FilterCriteria filter) {
+        boolean pageSizeSpecified = filter.getPageSize() != Integer.MAX_VALUE;
+        if (pageSizeSpecified) {
+            queryBuilder.limit(filter.getPageSize());
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ public class RioFavorite {
      * "Favorite " + id
      *
      * @param id a favorite ID between 1 and 32
-     * @throws IllegalArgumentException if id < 1 or > 32
+     * @throws IllegalArgumentException if id {@literal < 1} or > 32
      */
     public RioFavorite(int id) {
         this(id, false, null);
@@ -57,7 +57,7 @@ public class RioFavorite {
      * @param id a favorite ID between 1 and 32
      * @param isValid true if the favorite is valid, false otherwise
      * @param name a possibly null, possibly empty favorite name
-     * @throws IllegalArgumentException if id < 1 or > 32
+     * @throws IllegalArgumentException if id {@literal < 1} or > 32
      */
     public RioFavorite(int id, boolean isValid, @Nullable String name) {
         if (id < 1 || id > 32) {

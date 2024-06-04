@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,46 +28,48 @@ import static org.junit.jupiter.api.Assertions.*;
 @NonNullByDefault
 public class VesyncManagedDevicesPageTest {
 
-    public final static String testGoodSearchResponsePageBody = "{\n" +
-            "    \"traceId\": \"1634387642\",\n" +
-            "    \"code\": 0,\n" +
-            "    \"msg\": \"request success\",\n" +
-            "    \"result\": {\n" +
-            "        \"total\": 2,\n" +
-            "        \"pageSize\": 100,\n" +
-            "        \"pageNo\": 1,\n" +
-            "        \"list\": [\n" +
-            "            {\n" +
-            "                \"deviceRegion\": \"EU\",\n" +
-            "                \"isOwner\": true,\n" +
-            "                \"authKey\": null,\n" +
-            "                \"deviceName\": \"Air Filter\",\n" +
-            "                \"deviceImg\": \"https://image.vesync.com/defaultImages/Core_400S_Series/icon_core400s_purifier_160.png\",\n" +
-            "                \"cid\": \"cidValue1\",\n" +
-            "                \"deviceStatus\": \"on\",\n" +
-            "                \"connectionStatus\": \"online\",\n" +
-            "                \"connectionType\": \"WiFi+BTOnboarding+BTNotify\",\n" +
-            "                \"deviceType\": \"Core400S\",\n" +
-            "                \"type\": \"wifi-air\",\n" +
-            "                \"uuid\": \"abcdefab-1234-1234-abcd-123498761234\",\n" +
-            "                \"configModule\": \"WiFiBTOnboardingNotify_AirPurifier_Core400S_EU\",\n" +
-            "                \"macID\": \"ab:cd:ef:12:34:56\",\n" +
-            "                \"mode\": \"simModeData\",\n" +
-            "                \"speed\": 4,\n" +
-            "                \"extension\": {\n" +
-            "                    \"airQuality\": -1,\n" +
-            "                    \"airQualityLevel\": 1,\n" +
-            "                    \"mode\": \"auto\",\n" +
-            "                    \"fanSpeedLevel\": \"1\"\n" +
-            "                },\n" +
-            "                \"currentFirmVersion\": null,\n" +
-            "                \"subDeviceNo\": \"simSubDevice\",\n" +
-            "                \"subDeviceType\": \"simSubDeviceType\",\n" +
-            "                \"deviceFirstSetupTime\": \"Oct 15, 2021 3:43:02 PM\"\n" +
-            "            }\n" +
-            "        ]\n" +
-            "    }\n" +
-            "}";
+    public static final String testGoodSearchResponsePageBody = """
+            {
+                "traceId": "1634387642",
+                "code": 0,
+                "msg": "request success",
+                "result": {
+                    "total": 2,
+                    "pageSize": 100,
+                    "pageNo": 1,
+                    "list": [
+                        {
+                            "deviceRegion": "EU",
+                            "isOwner": true,
+                            "authKey": null,
+                            "deviceName": "Air Filter",
+                            "deviceImg": "https://image.vesync.com/defaultImages/Core_400S_Series/icon_core400s_purifier_160.png",
+                            "cid": "cidValue1",
+                            "deviceStatus": "on",
+                            "connectionStatus": "online",
+                            "connectionType": "WiFi+BTOnboarding+BTNotify",
+                            "deviceType": "Core400S",
+                            "type": "wifi-air",
+                            "uuid": "abcdefab-1234-1234-abcd-123498761234",
+                            "configModule": "WiFiBTOnboardingNotify_AirPurifier_Core400S_EU",
+                            "macID": "ab:cd:ef:12:34:56",
+                            "mode": "simModeData",
+                            "speed": 4,
+                            "extension": {
+                                "airQuality": -1,
+                                "airQualityLevel": 1,
+                                "mode": "auto",
+                                "fanSpeedLevel": "1"
+                            },
+                            "currentFirmVersion": null,
+                            "subDeviceNo": "simSubDevice",
+                            "subDeviceType": "simSubDeviceType",
+                            "deviceFirstSetupTime": "Oct 15, 2021 3:43:02 PM"
+                        }
+                    ]
+                }
+            }\
+            """;
 
     @Test
     public void testParseManagedDevicesSearchGoodResponse() {

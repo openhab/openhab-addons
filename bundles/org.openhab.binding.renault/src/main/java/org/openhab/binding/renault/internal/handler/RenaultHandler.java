@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,10 +24,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.measure.quantity.Energy;
-import javax.measure.quantity.Length;
 import javax.measure.quantity.Temperature;
-import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -116,24 +113,23 @@ public class RenaultHandler extends BaseThingHandler {
         }
         updateStatus(ThingStatus.UNKNOWN);
         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
-                new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
+                new QuantityType<>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
 
         reschedulePollingJob();
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-
         switch (channelUID.getId()) {
             case RenaultBindingConstants.CHANNEL_HVAC_TARGET_TEMPERATURE:
                 if (!car.isDisableHvac()) {
                     if (command instanceof RefreshType) {
                         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
-                                new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
-                    } else if (command instanceof DecimalType) {
-                        car.setHvacTargetTemperature(((DecimalType) command).doubleValue());
+                                new QuantityType<>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
+                    } else if (command instanceof DecimalType decimalCommand) {
+                        car.setHvacTargetTemperature(decimalCommand.doubleValue());
                         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
-                                new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
+                                new QuantityType<>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
                     } else if (command instanceof QuantityType) {
                         @Nullable
                         QuantityType<Temperature> celsius = ((QuantityType<Temperature>) command)
@@ -142,7 +138,7 @@ public class RenaultHandler extends BaseThingHandler {
                             car.setHvacTargetTemperature(celsius.doubleValue());
                         }
                         updateState(CHANNEL_HVAC_TARGET_TEMPERATURE,
-                                new QuantityType<Temperature>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
+                                new QuantityType<>(car.getHvacTargetTemperature(), SIUnits.CELSIUS));
                     }
                 }
                 break;
@@ -288,7 +284,7 @@ public class RenaultHandler extends BaseThingHandler {
                 Double externalTemperature = car.getExternalTemperature();
                 if (externalTemperature != null) {
                     updateState(CHANNEL_EXTERNAL_TEMPERATURE,
-                            new QuantityType<Temperature>(externalTemperature.doubleValue(), SIUnits.CELSIUS));
+                            new QuantityType<>(externalTemperature.doubleValue(), SIUnits.CELSIUS));
                 }
             } catch (RenaultNotImplementedException e) {
                 logger.warn("Disabling unsupported HVAC status update.");
@@ -329,7 +325,7 @@ public class RenaultHandler extends BaseThingHandler {
                 httpSession.getCockpit(car);
                 Double odometer = car.getOdometer();
                 if (odometer != null) {
-                    updateState(CHANNEL_ODOMETER, new QuantityType<Length>(odometer.doubleValue(), KILO(METRE)));
+                    updateState(CHANNEL_ODOMETER, new QuantityType<>(odometer.doubleValue(), KILO(METRE)));
                 }
             } catch (RenaultNotImplementedException e) {
                 logger.warn("Disabling unsupported cockpit status update.");
@@ -352,18 +348,17 @@ public class RenaultHandler extends BaseThingHandler {
                 }
                 Double estimatedRange = car.getEstimatedRange();
                 if (estimatedRange != null) {
-                    updateState(CHANNEL_ESTIMATED_RANGE,
-                            new QuantityType<Length>(estimatedRange.doubleValue(), KILO(METRE)));
+                    updateState(CHANNEL_ESTIMATED_RANGE, new QuantityType<>(estimatedRange.doubleValue(), KILO(METRE)));
                 }
                 Double batteryAvailableEnergy = car.getBatteryAvailableEnergy();
                 if (batteryAvailableEnergy != null) {
                     updateState(CHANNEL_BATTERY_AVAILABLE_ENERGY,
-                            new QuantityType<Energy>(batteryAvailableEnergy.doubleValue(), KILOWATT_HOUR));
+                            new QuantityType<>(batteryAvailableEnergy.doubleValue(), KILOWATT_HOUR));
                 }
                 Integer chargingRemainingTime = car.getChargingRemainingTime();
                 if (chargingRemainingTime != null) {
                     updateState(CHANNEL_CHARGING_REMAINING_TIME,
-                            new QuantityType<Time>(chargingRemainingTime.doubleValue(), MINUTE));
+                            new QuantityType<>(chargingRemainingTime.doubleValue(), MINUTE));
                 }
                 ZonedDateTime batteryStatusUpdated = car.getBatteryStatusUpdated();
                 if (batteryStatusUpdated != null) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -107,12 +107,12 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
             if (shutterRunConfig == null) {
                 shutterRunConfig = AUTO_CALIBRATION;
                 logger.debug("shutterRun null --> default to AUTO");
-            } else if (shutterRunConfig instanceof String) {
-                if (AUTO_CALIBRATION.equalsIgnoreCase(((String) shutterRunConfig))) {
+            } else if (shutterRunConfig instanceof String stringValue) {
+                if (AUTO_CALIBRATION.equalsIgnoreCase(stringValue)) {
                     logger.debug("shutterRun set to AUTO via configuration");
                     shutterRun = SHUTTER_RUN_UNDEFINED; // reset shutterRun
                 } else { // try to parse int>=1000
-                    int shutterRunInt = Integer.parseInt((String) shutterRunConfig);
+                    int shutterRunInt = Integer.parseInt(stringValue);
                     if (shutterRunInt < 1000) {
                         throw new NumberFormatException();
                     }
@@ -155,7 +155,7 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     @Override
     protected long getRefreshAllLastTS() {
         return lastAllDevicesRefreshTS;
-    };
+    }
 
     @Override
     protected void refreshDevice(boolean refreshAll) {
@@ -210,8 +210,8 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
                             } else {
                                 send(Automation.requestMoveDown(w.value()));
                             }
-                        } else if (command instanceof PercentType) {
-                            handlePercentCommand((PercentType) command, w.value());
+                        } else if (command instanceof PercentType percentCommand) {
+                            handlePercentCommand(percentCommand, w.value());
                         }
                     }
                 } else {
@@ -309,8 +309,8 @@ public class OpenWebNetAutomationHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return Who.AUTOMATION.value().toString();
+    protected Who getManagedWho() {
+        return Who.AUTOMATION;
     }
 
     @Override

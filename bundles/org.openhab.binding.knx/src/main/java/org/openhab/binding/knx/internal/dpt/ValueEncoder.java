@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.knx.internal.dpt.DPTUtil.NORMALIZED_DPT;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.Locale;
 import java.util.regex.Matcher;
 
@@ -33,6 +34,7 @@ import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Type;
 import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
@@ -45,6 +47,7 @@ import tuwien.auto.calimero.dptxlator.DPTXlator1BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator2ByteFloat;
 import tuwien.auto.calimero.dptxlator.DPTXlator3BitControlled;
 import tuwien.auto.calimero.dptxlator.DPTXlator4ByteFloat;
+import tuwien.auto.calimero.dptxlator.DPTXlatorBoolean;
 import tuwien.auto.calimero.dptxlator.DPTXlatorDate;
 import tuwien.auto.calimero.dptxlator.DPTXlatorDateTime;
 import tuwien.auto.calimero.dptxlator.DPTXlatorTime;
@@ -107,6 +110,10 @@ public class ValueEncoder {
             } else if (value instanceof DecimalType || value instanceof QuantityType<?>) {
                 return handleNumericTypes(dptId, mainNumber, dpt, value);
             } else if (value instanceof StringType) {
+                if ("243.600".equals(dptId) || "249.600".equals(dptId)) {
+                    return value.toString().replace('.', ((DecimalFormat) DecimalFormat.getInstance())
+                            .getDecimalFormatSymbols().getDecimalSeparator());
+                }
                 return value.toString();
             } else if (value instanceof DateTimeType type) {
                 return handleDateTimeType(dptId, type);
@@ -161,8 +168,13 @@ public class ValueEncoder {
                 double[] xyY = ColorUtil.hsbToXY(hsb);
                 return String.format("(%,.4f %,.4f) %,.1f %%", xyY[0], xyY[1], xyY[2] * 100.0);
             case "251.600":
-                rgb = ColorUtil.hsbToRgb(hsb);
-                return String.format("%d %d %d - %%", rgb[0], rgb[1], rgb[2]);
+                PercentType[] rgbw = ColorUtil.hsbToRgbPercent(hsb);
+                return String.format("%,.1f %,.1f %,.1f - %%", rgbw[0].doubleValue(), rgbw[1].doubleValue(),
+                        rgbw[2].doubleValue());
+            case "251.60600":
+                PercentType[] rgbw2 = ColorUtil.hsbToRgbwPercent(hsb);
+                return String.format("%,.1f %,.1f %,.1f %,.1f %%", rgbw2[0].doubleValue(), rgbw2[1].doubleValue(),
+                        rgbw2[2].doubleValue(), rgbw2[3].doubleValue());
             case "5.003":
                 return hsb.getHue().toString();
             default:
@@ -192,10 +204,15 @@ public class ValueEncoder {
                         unit = unit.replace("K", "°C");
                     }
                 } else if (value.toString().contains("°F")) {
-                    if (unit != null) {
-                        unit = unit.replace("K", "°F");
+                    // an new approach to handle temperature differences was introduced to core
+                    // after 4.0, stripping the unit and and creating a new QuantityType works
+                    // both with core release 4.0 and current snapshot
+                    boolean perPercent = value.toString().contains("/%");
+                    value = new QuantityType<>(((QuantityType<?>) value).doubleValue() * 5.0 / 9.0, Units.KELVIN);
+                    // PercentType needs to be adapted
+                    if (perPercent) {
+                        value = ((QuantityType<?>) value).multiply(BigDecimal.valueOf(100));
                     }
-                    value = ((QuantityType<?>) value).multiply(BigDecimal.valueOf(5.0 / 9.0));
                 }
             } else if (DPTXlator4ByteFloat.DPT_LIGHT_QUANTITY.getID().equals(dptId)) {
                 if (!value.toString().contains("J")) {
@@ -224,6 +241,11 @@ public class ValueEncoder {
             }
         }
         switch (mainNumber) {
+            case "1":
+                if (DPTXlatorBoolean.DPT_SCENE_AB.getID().equals(dptId)) {
+                    return (bigDecimal.intValue() == 0) ? dpt.getLowerValue() : dpt.getUpperValue();
+                }
+                return bigDecimal.stripTrailingZeros().toPlainString();
             case "2":
                 DPT valueDPT = ((DPTXlator1BitControlled.DPT1BitControlled) dpt).getValueDPT();
                 switch (bigDecimal.intValue()) {
@@ -243,6 +265,14 @@ public class ValueEncoder {
                 } else {
                     return "activate " + intVal;
                 }
+            case "8":
+                if ("8.010".equals(dptId)) {
+                    // 8.010 has a resolution of 0.01 and will be scaled. Calimero expects locale-specific separator.
+                    return bigDecimal.stripTrailingZeros().toPlainString().replace('.',
+                            ((DecimalFormat) DecimalFormat.getInstance()).getDecimalFormatSymbols()
+                                    .getDecimalSeparator());
+                }
+                // fallthrough
             default:
                 return bigDecimal.stripTrailingZeros().toPlainString();
         }

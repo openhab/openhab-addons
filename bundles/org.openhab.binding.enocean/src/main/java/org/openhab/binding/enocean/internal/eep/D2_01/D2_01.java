@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -86,7 +86,7 @@ public abstract class D2_01 extends _VLDMessage {
 
     protected State getSwitchingData() {
         if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE) {
-            return (bytes[bytes.length - 1] & OUTPUT_VALUE_MASK) == STATUS_SWITCHING_OFF ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from((bytes[bytes.length - 1] & OUTPUT_VALUE_MASK) != STATUS_SWITCHING_OFF);
         }
 
         return UnDefType.UNDEF;
@@ -98,7 +98,7 @@ public abstract class D2_01 extends _VLDMessage {
 
     protected State getSwitchingData(byte channel) {
         if (getCMD() == CMD_ACTUATOR_STATUS_RESPONE && (getChannel() == channel || getChannel() == ALL_CHANNELS_MASK)) {
-            return (bytes[bytes.length - 1] & OUTPUT_VALUE_MASK) == STATUS_SWITCHING_OFF ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from((bytes[bytes.length - 1] & OUTPUT_VALUE_MASK) != STATUS_SWITCHING_OFF);
         }
 
         return UnDefType.UNDEF;
@@ -107,11 +107,11 @@ public abstract class D2_01 extends _VLDMessage {
     protected void setDimmingData(Command command, byte outputChannel, Configuration config) {
         byte outputValue;
 
-        if (command instanceof DecimalType) {
-            if (((DecimalType) command).equals(DecimalType.ZERO)) {
+        if (command instanceof DecimalType decimalCommand) {
+            if (decimalCommand.equals(DecimalType.ZERO)) {
                 outputValue = STATUS_SWITCHING_OFF;
             } else {
-                outputValue = ((DecimalType) command).byteValue();
+                outputValue = decimalCommand.byteValue();
             }
         } else if ((OnOffType) command == OnOffType.ON) {
             outputValue = STATUS_DIMMING_100;

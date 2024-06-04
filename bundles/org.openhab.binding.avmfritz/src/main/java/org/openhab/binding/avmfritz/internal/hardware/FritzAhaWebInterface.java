@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -220,7 +220,7 @@ public class FritzAhaWebInterface {
      * Constructs an URL from the stored information, a specified path and a specified argument string
      *
      * @param path Path to include in URL
-     * @param args String of arguments, in standard HTTP format (arg1=value1&arg2=value2&...)
+     * @param args String of arguments, in standard HTTP format ({@code arg1=value1&arg2=value2&...})
      * @return URL
      */
     public String getURL(String path, String args) {

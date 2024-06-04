@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Container class for enums related to Daikin A/C systems
  *
- * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
+ * @author Tim Waterhouse - Initial contribution
  * @author Lukas Agethen - Add special modes
  *
  */
@@ -28,6 +28,8 @@ public class Enums {
     public enum Mode {
         UNKNOWN(-1),
         AUTO(0),
+        AUTO1(1), // BRP069A81 only accepts mode=1 for AUTO mode. 0 and 7 are rejected.
+        AUTO7(7), // Some adapters may return 7 as auto (heating)
         DEHUMIDIFIER(2),
         COLD(3),
         HEAT(4),

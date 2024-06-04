@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -75,7 +76,8 @@ public class NetatmoThingTypeProvider implements ThingTypeProvider {
                         .withRepresentationProperty(NAThingConfiguration.ID)
                         .withExtensibleChannelTypeIds(moduleType.getExtensions())
                         .withChannelGroupDefinitions(getGroupDefinitions(moduleType))
-                        .withConfigDescriptionURI(moduleType.getConfigDescription());
+                        .withProperties(Map.of(PROPERTY_THING_TYPE_VERSION, moduleType.thingTypeVersion))
+                        .withConfigDescriptionURI(moduleType.configDescription);
 
                 ThingTypeUID bridgeType = moduleType.getBridge().thingTypeUID;
                 if (!ModuleType.UNKNOWN.thingTypeUID.equals(bridgeType)) {

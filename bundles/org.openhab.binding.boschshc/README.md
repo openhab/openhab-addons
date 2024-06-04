@@ -1,15 +1,19 @@
 # Bosch Smart Home Binding
 
-Binding for the Bosch Smart Home.
+Binding for Bosch Smart Home devices.
 
 - [Bosch Smart Home Binding](#bosch-smart-home-binding)
   - [Supported Things](#supported-things)
+    - [Smart Home Controller](#smart-home-controller)
     - [In-Wall Switch](#in-wall-switch)
     - [Compact Smart Plug](#compact-smart-plug)
     - [Twinguard Smoke Detector](#twinguard-smoke-detector)
     - [Door/Window Contact](#door-window-contact)
+    - [Door/Window Contact II](#door-window-contact-ii)
+    - [Light Control II](#light-control-ii)
     - [Motion Detector](#motion-detector)
     - [Shutter Control](#shutter-control)
+    - [Shutter Control II](#shutter-control-ii)
     - [Thermostat](#thermostat)
     - [Climate Control](#climate-control)
     - [Wall Thermostat](#wall-thermostat)
@@ -18,6 +22,11 @@ Binding for the Bosch Smart Home.
     - [Intrusion Detection System](#intrusion-detection-system)
     - [Smart Bulb](#smart-bulb)
     - [Smoke Detector](#smoke-detector)
+    - [Smoke Detector II](#smoke-detector-ii)
+    - [User-defined States](#user-defined-states)
+    - [Universal Switch](#universal-switch)
+    - [Universal Switch II](#universal-switch-ii)
+    - [Water Detector](#water-detector)
   - [Limitations](#limitations)
   - [Discovery](#discovery)
   - [Bridge Configuration](#bridge-configuration)
@@ -26,6 +35,17 @@ Binding for the Bosch Smart Home.
   - [Item Configuration](#item-configuration)
 
 ## Supported Things
+
+### Smart Home Controller
+
+The Smart Home Controller is the central hub that allows you to monitor and control your smart home devices from one place.
+
+**Bridge Type ID**: ``shc``
+
+| Channel Type ID    | Item Type | Writable | Description                                                             |
+|--------------------|-----------|:--------:|-------------------------------------------------------------------------|
+| scenario-triggered | String    | &#9744;  | Name of the triggered scenario (e.g. by the Universal Switch Flex)      | 
+| trigger-scenario   | String    | &#9745;  | Name of a scenario to be triggered on the Bosch Smart Home Controller.  |
 
 ### In-Wall Switch
 
@@ -50,6 +70,19 @@ A compact smart plug with energy monitoring capabilities.
 | power-switch       | Switch        | &#9745;  | Current state of the switch.                     |
 | power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.     |
 | energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device. |
+
+### Dimmer
+
+Smart dimmer capable of controlling any dimmable lamp.
+
+**Thing Type ID**: `dimmer`
+
+| Channel Type ID    | Item Type     | Writable | Description                                                    |
+| ------------------ | ------------- | :------: | -------------------------------------------------------------- |
+| power-switch       | Switch        | &#9745;  | Current state of the switch.                                   |
+| brightness         | Dimmer        | &#9745;  | Regulates the brightness on a percentage scale from 0 to 100%. |
+| signal-strength    | Number        | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+| child-protection   | Switch        | &#9745;  | Indicates whether the child protection is active.              |
 
 ### Twinguard Smoke Detector
 
@@ -83,6 +116,36 @@ Detects open windows and doors.
 | battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
+### Door/Window Contact II
+
+Detects open windows and doors and features an additional button.
+
+**Thing Type ID**: `window-contact`
+
+| Channel Type ID | Item Type | Writable | Description                  |
+| ----------------| --------- | :------: | ---------------------------- |
+| contact         | Contact   | &#9744;  | Contact state of the device. |
+| battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
+| bypass          | Switch    | &#9744;  | Indicates whether the device is currently bypassed. Possible values are `ON`,`OFF` and `UNDEF` if the bypass state cannot be determined. |
+| signal-strength | Number    | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+
+### Light Control II
+
+This thing type is used if Light/Shutter Control II devices are configured as light controls.
+
+**Thing Type ID**: `light-control-2`
+
+| Channel Type ID    | Item Type     | Writable | Description                                                   |
+| ------------------ | ------------- | :------: | ------------------------------------------------------------- |
+| signal-strength    | Number        | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.                  |
+| energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device.              |
+| power-switch-1     | Switch        | &#9745;  | Switches the light on or off (circuit 1).                     |
+| child-protection-1 | Switch        | &#9745;  | Indicates whether the child protection is active (circuit 1). |
+| power-switch-2     | Switch        | &#9745;  | Switches the light on or off (circuit 2).                     |
+| child-protection-2 | Switch        | &#9745;  | Indicates whether the child protection is active (circuit 2). |
+
 ### Motion Detector
 
 Detects every movement through an intelligent combination of passive infra-red technology and an additional temperature sensor.
@@ -92,6 +155,7 @@ Detects every movement through an intelligent combination of passive infra-red t
 | Channel Type ID | Item Type | Writable | Description                    |
 | --------------- | --------- | :------: | ------------------------------ |
 | latest-motion   | DateTime  | &#9744;  | The date of the latest motion. |
+| illuminance     | Number    | &#9744;  | The illuminance level measured by the sensor as integer value in the range 0 to 1000. Note that the sensor only reports the value if the motion light service is activated or if the illuminance state is used in a scenario trigger condition. |
 | battery-level   | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
 | low-battery     | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`). |
 
@@ -104,6 +168,20 @@ Control of your shutter to take any position you desire.
 | Channel Type ID | Item Type     | Writable | Description                              |
 | --------------- | ------------- | :------: | ---------------------------------------- |
 | level           | Rollershutter | &#9745;  | Current open ratio (0 to 100, Step 0.5). |
+
+### Shutter Control II
+
+This thing type is used if Light/Shutter Control II devices are configured as shutter controls.
+
+**Thing Type ID**: `shutter-control-2`
+
+| Channel Type ID    | Item Type     | Writable | Description                                       |
+| ------------------ | ------------- | :------: | ------------------------------------------------- |
+| level              | Rollershutter | &#9745;  | Current open ratio (0 to 100, Step 0.5).          |
+| signal-strength    | Number        | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+| child-protection   | Switch        | &#9745;  | Indicates whether the child protection is active. |
+| power-consumption  | Number:Power  | &#9744;  | Current power consumption (W) of the device.      |
+| energy-consumption | Number:Energy | &#9744;  | Cumulated energy consumption (Wh) of the device.  |
 
 ### Thermostat
 
@@ -204,6 +282,74 @@ The smoke detector warns you in case of fire.
 | ------------------ | -------------------- | :------: | ------------------------------------------------------------------------------------------------- |
 | smoke-check        | String               | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                 |
 
+### Smoke Detector II
+
+The smoke detector warns you in case of fire.
+
+**Thing Type ID**: `smoke-detector`
+
+| Channel Type ID   | Item Type   | Writable | Description                                                                                                                                                                                                                 |
+|-------------------|-------------| :------: |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| smoke-check       | String      | &#9745;  | State of the smoke check. Also used to request a new smoke check.                                                                                                                                                           |
+| battery-level     | Number      | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery       | Switch      | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+| signal-strength   | Number      | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
+
+
+### User-defined States
+
+User-defined states enable automations to be better adapted to specific needs and everyday situations. 
+Individual states can be activated/deactivated and can be used as triggers, conditions and actions in automations.
+
+**Thing Type ID**: `user-defined-state`
+
+
+| Channel Type ID | Item Type | Writable | Description                                |
+|-----------------|-----------| :------: |--------------------------------------------|
+| user-state      | Switch    | &#9745;  | Switches the User-defined state on or off. |
+
+### Universal Switch
+
+A universally configurable switch with two buttons.
+
+**Thing Type ID**: `universal-switch`
+
+| Channel Type ID     | Item Type            | Writable | Description                               |
+| ------------------- | -------------------- | :------: | ----------------------------------------- |
+| key-code            | Number:Dimensionless | &#9744;  | Integer code of the key that was pressed. |
+| key-name            | String               | &#9744;  | Name of a key pressed on a device. Possible values for Universal Switch: `LOWER_BUTTON`, `UPPER_BUTTON`. |
+| key-event-type      | String               | &#9744;  | Indicates how the key was pressed. Possible values are `PRESS_SHORT`, `PRESS_LONG` and `PRESS_LONG_RELEASED`. |
+| key-event-timestamp | DateTime             | &#9744;  | Timestamp indicating when the key was pressed. |
+
+### Universal Switch II
+
+A universally configurable switch with four buttons.
+
+**Thing Type ID**: `universal-switch-2`
+
+| Channel Type ID     | Item Type            | Writable | Description                               |
+| ------------------- | -------------------- | :------: | ----------------------------------------- |
+| key-code            | Number:Dimensionless | &#9744;  | Integer code of the key that was pressed. |
+| key-name            | String               | &#9744;  | Name of the key that was pressed. Possible values for Universal Switch II: `LOWER_LEFT_BUTTON`, `LOWER_RIGHT_BUTTON`, `UPPER_LEFT_BUTTON`, `UPPER_RIGHT_BUTTON`. |
+| key-event-type      | String               | &#9744;  | Indicates how the key was pressed. Possible values are `PRESS_SHORT`, `PRESS_LONG` and `PRESS_LONG_RELEASED`. |
+| key-event-timestamp | DateTime             | &#9744;  | Timestamp indicating when the key was pressed. |
+
+### Water Detector
+
+Smart water leakage detector.
+
+**Thing Type ID**: `water-detector` 
+
+| Channel Type ID            | Item Type | Writable | Description                                       |
+| -------------------------- | --------- | :------: | ------------------------------------------------- |
+| battery-level              | Number    | &#9744;  | Current battery level percentage as integer number. Bosch-specific battery levels are mapped to numbers as follows: `OK`: 100, `LOW_BATTERY`: 10, `CRITICAL_LOW`: 1, `CRITICALLY_LOW_BATTERY`: 1, `NOT_AVAILABLE`: `UNDEF`. |
+| low-battery                | Switch    | &#9744;  | Indicates whether the battery is low (`ON`) or OK (`OFF`).                                                                                                                                                                  |
+| signal-strength            | Number    | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength).                                                                             |
+| water-leakage              | Switch    | &#9744;  | Indicates whether a water leakage was detected.               |
+| push-notifications         | Switch    | &#9745;  | Indicates whether push notifications are enabled.             |
+| acoustic-signals           | Switch    | &#9745;  | Indicates whether acoustic signals are enabled.               |
+| water-leakage-sensor-check | String    | &#9744;  | Provides the result of the last water leakage sensor check.   |
+| sensor-moved               | Trigger   | &#9744;  | Triggered when the sensor is moved.                           |
 
 ## Limitations
 

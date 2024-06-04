@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -104,7 +104,7 @@ public class NeeoDeviceChannelSerializer
                 }
 
                 for (Class<? extends Command> cmd : item.getAcceptedCommandTypes()) {
-                    if (!cmd.getSimpleName().equalsIgnoreCase("refreshtype")) {
+                    if (!"refreshtype".equalsIgnoreCase(cmd.getSimpleName())) {
                         commandTypes.add(cmd.getSimpleName().toLowerCase());
                     }
                 }
@@ -153,10 +153,10 @@ public class NeeoDeviceChannelSerializer
 
         }
 
-        if (chnl instanceof NeeoDeviceChannelText) {
-            jo.addProperty("labelVisible", ((NeeoDeviceChannelText) chnl).isLabelVisible());
-        } else if (chnl instanceof NeeoDeviceChannelDirectory) {
-            jo.add("listItems", jsonContext.serialize(((NeeoDeviceChannelDirectory) chnl).getListItems()));
+        if (chnl instanceof NeeoDeviceChannelText text) {
+            jo.addProperty("labelVisible", text.isLabelVisible());
+        } else if (chnl instanceof NeeoDeviceChannelDirectory directory) {
+            jo.add("listItems", jsonContext.serialize(directory.getListItems()));
         }
 
         return jo;

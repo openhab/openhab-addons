@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,7 @@ import org.openhab.binding.ihc.internal.ws.resourcevalues.WSBooleanValue;
 import org.openhab.core.library.types.OnOffType;
 
 /**
- * OnOffType <-> WSBooleanValue converter.
+ * OnOffType {@literal <->} WSBooleanValue converter.
  *
  * @author Pauli Anttila - Initial contribution
  */
@@ -27,7 +27,7 @@ public class OnOffTypeWSBooleanValueConverter implements Converter<WSBooleanValu
     @Override
     public OnOffType convertFromResourceValue(@NonNull WSBooleanValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        return from.value ^ convertData.getInverted() ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(from.value ^ convertData.getInverted());
     }
 
     @Override

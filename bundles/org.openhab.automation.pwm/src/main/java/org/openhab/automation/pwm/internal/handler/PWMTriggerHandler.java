@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,7 @@ package org.openhab.automation.pwm.internal.handler;
 import static org.openhab.automation.pwm.internal.PWMConstants.*;
 
 import java.math.BigDecimal;
-import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -115,8 +115,8 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
     private Optional<Double> getOptionalDoubleFromConfig(Configuration config, String key) {
         Object o = config.get(key);
 
-        if (o instanceof BigDecimal) {
-            return Optional.of(((BigDecimal) o).doubleValue());
+        if (o instanceof BigDecimal decimal) {
+            return Optional.of(decimal.doubleValue());
         }
 
         return Optional.empty();
@@ -202,21 +202,21 @@ public class PWMTriggerHandler extends BaseTriggerModuleHandler implements Event
     }
 
     private void setOutput(boolean enable) {
-        getCallback().triggered(module, Collections.singletonMap(OUTPUT, OnOffType.from(enable)));
+        getCallback().triggered(module, Map.of(OUTPUT, OnOffType.from(enable)));
     }
 
     private TriggerHandlerCallback getCallback() {
         ModuleHandlerCallback localCallback = callback;
-        if (localCallback != null && localCallback instanceof TriggerHandlerCallback) {
-            return (TriggerHandlerCallback) localCallback;
+        if (localCallback != null && localCallback instanceof TriggerHandlerCallback handlerCallback) {
+            return handlerCallback;
         }
 
         throw new IllegalStateException();
     }
 
     private double getDutyCycleValueInPercent(State state) throws PWMException {
-        if (state instanceof DecimalType) {
-            return ((DecimalType) state).doubleValue();
+        if (state instanceof DecimalType decimal) {
+            return decimal.doubleValue();
         } else if (state instanceof StringType) {
             try {
                 return Integer.parseInt(state.toString());

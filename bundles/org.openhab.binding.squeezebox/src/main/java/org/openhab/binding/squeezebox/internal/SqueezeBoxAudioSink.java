@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,8 +88,8 @@ public class SqueezeBoxAudioSink extends AudioSinkSync {
         }
 
         String url;
-        if (audioStream instanceof URLAudioStream) {
-            url = ((URLAudioStream) audioStream).getURL();
+        if (audioStream instanceof URLAudioStream urlAudioStream) {
+            url = urlAudioStream.getURL();
             tryClose(audioStream);
         } else {
             try {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -163,8 +163,8 @@ public class SmartherAccountService {
      *
      * @return a string containing the name of the authorized BTicino/Legrand portal user
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the Smarther API or no account handler found
+     * @throws SmartherGatewayException in case of communication issues with the Smarther API or no account handler
+     *             found
      */
     public String dispatchAuthorization(String servletBaseURL, String state, String code)
             throws SmartherGatewayException {
@@ -191,8 +191,8 @@ public class SmartherAccountService {
      * @param notification
      *            the received notification to handle
      *
-     * @throws {@link SmartherGatewayException}
-     *             in case of communication issues with the Smarther API or no notification handler found
+     * @throws SmartherGatewayException in case of communication issues with the Smarther API or no notification handler
+     *             found
      */
     public void dispatchNotification(Notification notification) throws SmartherGatewayException {
         final Sender sender = notification.getSender();

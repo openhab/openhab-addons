@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,14 +18,14 @@ import org.openhab.binding.lirc.internal.messages.LIRCResponse;
 /**
  * Defines an interface to receive messages from the LIRC server
  *
- * @author Andrew Nagle
+ * @author Andrew Nagle - Initial contribution
  */
 public interface LIRCEventListener {
 
     /**
      * Procedure to receive messages from the LIRC server
      *
-     * @param reponse
+     * @param message
      *            Message received
      */
     void messageReceived(LIRCResponse message);

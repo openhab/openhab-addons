@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -43,8 +43,8 @@ public class HomeSecurityThingCapability extends Capability {
             List<ChannelHelper> channelHelpers) {
         super(handler);
         this.descriptionProvider = descriptionProvider;
-        this.eventHelper = (EventChannelHelper) channelHelpers.stream().filter(c -> c instanceof EventChannelHelper)
-                .findFirst().orElseThrow(() -> new IllegalArgumentException(
+        this.eventHelper = channelHelpers.stream().filter(EventChannelHelper.class::isInstance)
+                .map(EventChannelHelper.class::cast).findFirst().orElseThrow(() -> new IllegalArgumentException(
                         "HomeSecurityThingCapability must find an EventChannelHelper, please file a bug report."));
         eventHelper.setModuleType(moduleType);
     }

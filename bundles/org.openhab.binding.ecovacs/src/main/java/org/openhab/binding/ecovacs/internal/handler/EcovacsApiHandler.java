@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,8 @@ package org.openhab.binding.ecovacs.internal.handler;
 import static org.openhab.binding.ecovacs.internal.EcovacsBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -96,7 +96,7 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(EcovacsDeviceDiscoveryService.class);
+        return Set.of(EcovacsDeviceDiscoveryService.class);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class EcovacsApiHandler extends BaseBridgeHandler {
         String deviceId = config.installId + deviceIdSuffix;
         org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration apiConfig = new org.openhab.binding.ecovacs.internal.api.EcovacsApiConfiguration(
                 deviceId, config.email, config.password, config.continent, country, "EN", CLIENT_KEY, CLIENT_SECRET,
-                AUTH_CLIENT_KEY, AUTH_CLIENT_SECRET);
+                AUTH_CLIENT_KEY, AUTH_CLIENT_SECRET, APP_KEY);
 
         return EcovacsApi.create(httpClient, apiConfig);
     }

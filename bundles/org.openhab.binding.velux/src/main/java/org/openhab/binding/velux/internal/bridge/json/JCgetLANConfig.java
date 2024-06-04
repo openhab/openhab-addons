@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -179,8 +179,7 @@ class JCgetLANConfig extends GetLANConfig implements BridgeCommunicationProtocol
      */
     @Override
     public VeluxGwLAN getLANConfig() {
-        VeluxGwLAN gwLAN = new VeluxGwLAN(response.data.ipAddress, response.data.subnetMask,
-                response.data.defaultGateway, response.data.dhcp);
-        return gwLAN;
+        return new VeluxGwLAN(response.data.ipAddress, response.data.subnetMask, response.data.defaultGateway,
+                response.data.dhcp);
     }
 }

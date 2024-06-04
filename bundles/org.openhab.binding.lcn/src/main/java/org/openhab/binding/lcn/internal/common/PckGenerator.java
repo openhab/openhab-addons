@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,7 +34,8 @@ public final class PckGenerator {
     /**
      * Generates a keep-alive.
      * LCN-PCHK will close the connection if it does not receive any commands from
-     * an open {@link Connection} for a specific period (10 minutes by default).
+     * an open {@link org.openhab.binding.lcn.internal.connection.Connection} for a specific period
+     * (10 minutes by default).
      *
      * @param counter the current ping's id (optional, but "best practice"). Should start with 1
      * @return the PCK command as text
@@ -177,7 +178,7 @@ public final class PckGenerator {
      * Generates a control command for switching all outputs ON or OFF with a fixed ramp of 0.5s.
      *
      * @param percent 0..100
-     * @returnthe PCK command (without address header) as text
+     * @return the PCK command (without address header) as text
      */
     public static String controlAllOutputs(double percent) {
         return String.format("AH%03d", Math.round(percent));
@@ -398,7 +399,6 @@ public final class PckGenerator {
      * @param number regulator number 0..1
      * @param value the absolute value to set
      * @return the PCK command (without address header) as text
-     * @throws LcnException
      */
     public static String setSetpointAbsolute(int number, int value) {
         int internalValue = value;
@@ -447,7 +447,6 @@ public final class PckGenerator {
      * @param type the reference-point
      * @param value the native LCN value to add/subtract (can be negative)
      * @return the PCK command (without address header) as text
-     * @throws LcnException if command is not supported
      */
     public static String setVariableRelative(Variable variable, LcnDefs.RelVarRef type, int value) {
         if (variable.getNumber() == 0) {
@@ -844,7 +843,8 @@ public final class PckGenerator {
     /**
      * Generates a command to let the beeper connected to the LCN module beep.
      *
-     * @param volume the sound volume
+     * @param tonality N=normal, S=special, 1-7 tonalities 1-7.
+     * @param count count number of beeps.
      * @return the PCK command (without address header) as text
      * @throws LcnException if out of range
      */

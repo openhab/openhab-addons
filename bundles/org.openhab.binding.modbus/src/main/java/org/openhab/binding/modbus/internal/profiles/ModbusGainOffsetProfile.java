@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -104,18 +104,18 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
     @Override
     public void onCommandFromItem(Command command) {
         Type result = applyGainOffset(command, false);
-        if (result instanceof Command) {
+        if (result instanceof Command cmd) {
             logger.trace("Command '{}' from item, sending converted '{}' state towards handler.", command, result);
-            callback.handleCommand((Command) result);
+            callback.handleCommand(cmd);
         }
     }
 
     @Override
     public void onCommandFromHandler(Command command) {
         Type result = applyGainOffset(command, true);
-        if (result instanceof Command) {
+        if (result instanceof Command cmd) {
             logger.trace("Command '{}' from handler, sending converted '{}' command towards item.", command, result);
-            callback.sendCommand((Command) result);
+            callback.sendCommand(cmd);
         }
     }
 
@@ -141,23 +141,22 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
         QuantityType<Dimensionless> pregainOffsetQt = localPregainOffset.get();
         String formula = towardsItem ? String.format("( '%s' + '%s') * '%s'", state, pregainOffsetQt, gain)
                 : String.format("'%s'/'%s' - '%s'", state, gain, pregainOffsetQt);
-        if (state instanceof QuantityType) {
+        if (state instanceof QuantityType quantityState) {
             try {
                 if (towardsItem) {
                     @SuppressWarnings("unchecked") // xx.toUnit(ONE) returns null or QuantityType<Dimensionless>
                     @Nullable
-                    QuantityType<Dimensionless> qtState = (QuantityType<Dimensionless>) (((QuantityType<?>) state)
+                    QuantityType<Dimensionless> qtState = (QuantityType<Dimensionless>) (quantityState
                             .toUnit(Units.ONE));
                     if (qtState == null) {
                         logger.warn("Profile can only process plain numbers from handler. Got unit {}. Returning UNDEF",
-                                ((QuantityType<?>) state).getUnit());
+                                quantityState.getUnit());
                         return UnDefType.UNDEF;
                     }
                     QuantityType<Dimensionless> offsetted = qtState.add(pregainOffsetQt);
                     result = applyGainTowardsItem(offsetted, gain);
                 } else {
-                    final QuantityType<?> qtState = (QuantityType<?>) state;
-                    result = applyGainTowardsHandler(qtState, gain).subtract(pregainOffsetQt);
+                    result = applyGainTowardsHandler(quantityState, gain).subtract(pregainOffsetQt);
 
                 }
             } catch (UnconvertibleException | UnsupportedOperationException e) {
@@ -166,8 +165,7 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
                         gain, pregainOffsetQt, state, formula, towardsItem, e.getMessage());
                 return UnDefType.UNDEF;
             }
-        } else if (state instanceof DecimalType) {
-            DecimalType decState = (DecimalType) state;
+        } else if (state instanceof DecimalType decState) {
             return applyGainOffset(new QuantityType<>(decState, Units.ONE), towardsItem);
         } else if (state instanceof RefreshType) {
             result = state;
@@ -188,18 +186,17 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
             Object parameterValue, @Nullable Unit<QU> assertUnit) {
         Optional<QuantityType<QU>> result = Optional.empty();
         Unit<QU> sourceUnit = null;
-        if (parameterValue instanceof String) {
+        if (parameterValue instanceof String str) {
             try {
-                QuantityType<QU> qt = new QuantityType<>((String) parameterValue);
+                QuantityType<QU> qt = new QuantityType<>(str);
                 result = Optional.of(qt);
                 sourceUnit = qt.getUnit();
             } catch (IllegalArgumentException e) {
                 logger.error("Cannot convert value '{}' of parameter '{}' into a QuantityType.", parameterValue,
                         parameterName);
             }
-        } else if (parameterValue instanceof BigDecimal) {
-            BigDecimal parameterBigDecimal = (BigDecimal) parameterValue;
-            result = Optional.of(new QuantityType<QU>(parameterBigDecimal.toString()));
+        } else if (parameterValue instanceof BigDecimal parameterBigDecimal) {
+            result = Optional.of(new QuantityType<>(parameterBigDecimal.toString()));
         } else {
             logger.error("Parameter '{}' is not of type String or BigDecimal", parameterName);
             return result;
@@ -248,7 +245,7 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
     private static Object orDefault(Object defaultValue, @Nullable Object value) {
         if (value == null) {
             return defaultValue;
-        } else if (value instanceof String && ((String) value).isBlank()) {
+        } else if (value instanceof String str && str.isBlank()) {
             return defaultValue;
         } else {
             return value;

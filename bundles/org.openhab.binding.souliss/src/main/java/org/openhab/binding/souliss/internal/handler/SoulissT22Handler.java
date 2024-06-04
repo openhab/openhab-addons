@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -88,8 +88,8 @@ public class SoulissT22Handler extends SoulissGenericHandler {
     }
 
     public void setState(PrimitiveType state) {
-        if (state instanceof PercentType) {
-            this.updateState(SoulissBindingConstants.ROLLERSHUTTER_CHANNEL, (PercentType) state);
+        if (state instanceof PercentType percentCommand) {
+            this.updateState(SoulissBindingConstants.ROLLERSHUTTER_CHANNEL, percentCommand);
 
         }
     }

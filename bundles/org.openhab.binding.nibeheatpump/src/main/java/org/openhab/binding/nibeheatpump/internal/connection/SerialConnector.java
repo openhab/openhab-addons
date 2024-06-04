@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -278,7 +278,7 @@ public class SerialConnector extends NibeHeatPumpBaseConnector {
             int b;
             // wait first byte (blocking)
             if ((b = in.read()) > -1) {
-                byte d[] = new byte[] { (byte) b };
+                byte[] d = new byte[] { (byte) b };
                 os.write(d);
 
                 // read rest of the available bytes

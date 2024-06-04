@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link CarNetException} implements an extension to the standard Exception class. This allows to keep also the
+ * The {@link ShellyApiException} implements an extension to the standard Exception class. This allows to keep also the
  * result of the last API call (e.g. including the http status code in the message).
  *
  * @author Markus Michels - Initial contribution
@@ -116,6 +116,10 @@ public class ShellyApiException extends Exception {
         return isUnknownHost() || isMalformedURL() || exType == ConnectException.class
                 || exType == SocketException.class || exType == PortUnreachableException.class
                 || exType == NoRouteToHostException.class;
+    }
+
+    public boolean isNoRouteToHost() {
+        return getCauseClass() == NoRouteToHostException.class;
     }
 
     public boolean isUnknownHost() {

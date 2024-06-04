@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,12 +21,15 @@ import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * Spotify Rule Actions.
  *
  * @author Hilbrand Bouwkamp - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = SpotifyActions.class)
 @ThingActionsScope(name = "spotify")
 @NonNullByDefault
 public class SpotifyActions implements ThingActions, ThingHandlerService {
@@ -37,7 +40,6 @@ public class SpotifyActions implements ThingActions, ThingHandlerService {
      * Play a context uri (track or other) on the current active device (if null is passed for deviceID) or the given
      * device at the given offset and/or position in milliseconds.
      *
-     * @param actions Spotify Actions object.
      * @param contextUri context uri (track or other)
      * @param deviceId Id of the device to play on, or current device if given null
      * @param offset Offset in the list, default 0.

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,12 +64,12 @@ public enum Pollutant {
             new ConcentrationRange(205, 404, TWO_HUNDRED), new ConcentrationRange(405, 504, THREE_HUNDRED),
             new ConcentrationRange(505, 604, FOUR_HUNDRED));
 
-    public static enum SensitiveGroup {
+    public enum SensitiveGroup {
         RESPIRATORY,
         HEART,
         ELDERLY,
         CHILDREN,
-        ASTHMA;
+        ASTHMA
     }
 
     public final Set<SensitiveGroup> sensitiveGroups;

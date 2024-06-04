@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -361,16 +361,16 @@ public class SocketSession {
                     final Object response = responsesQueue.poll(1, TimeUnit.SECONDS);
 
                     if (response != null) {
-                        if (response instanceof String) {
+                        if (response instanceof String str) {
                             try {
                                 logger.debug("Dispatching response: {}", response);
-                                ssCallback.responseReceived((String) response);
+                                ssCallback.responseReceived(str);
                             } catch (Exception e) {
                                 logger.warn("Exception occurred processing the response '{}': ", response, e);
                             }
-                        } else if (response instanceof Exception) {
+                        } else if (response instanceof Exception exception) {
                             logger.debug("Dispatching exception: {}", response);
-                            ssCallback.responseException((Exception) response);
+                            ssCallback.responseException(exception);
                         } else {
                             logger.error("Unknown response class: {}", response);
                         }

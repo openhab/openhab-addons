@@ -3,7 +3,7 @@
 The system information binding provides operating system and hardware information including:
 
 - Operating system name, version and manufacturer;
-- CPU average load for last 1, 5, 15 minutes, name, description, number of physical and logical cores, running threads number, system uptime;
+- CPU average load for last 1, 5, 15 minutes, name, description, number of physical and logical cores, running threads number, system uptime, max frequency and frequency by logical core;
 - Free, total and available memory;
 - Free, total and available swap memory;
 - Hard drive name, model and serial number;
@@ -76,9 +76,9 @@ In the list below, you can find, how are channel group and channels id`s related
 - **group** `battery` (deviceIndex)
   - **channel** `name, remainingCapacity, remainingTime`
 - **group** `cpu`
-  - **channel** `name, description, load, load1, load5, load15, uptime, threads`
+  - **channel** `name, description, maxfreq, freq `(deviceIndex)`, load, load1, load5, load15, uptime, threads`
 - **group** `sensors`
-  - **channel** `cpuTemp, cpuVoltage, fanSpeed`
+  - **channel** `cpuTemp, cpuVoltage, fanSpeed `(deviceIndex)
 - **group** `network` (deviceIndex)
   - **channel** `ip, mac, networkDisplayName, networkName, packetsSent, packetsReceived, dataSent, dataReceived`
 - **group** `currentProcess`
@@ -92,7 +92,7 @@ The groups marked with "(deviceIndex)" may have device index attached to the Cha
 - deviceIndex ::= number >= 0
 - (e.g. _storage1#available_)
 
-The `fanSpeed` channel in the `sensors` group may have a device index attached to the Channel.
+The channels marked with "(deviceIndex)" may have a device index attached to the Channel.
 
 - channel ::= channel_group & # channel_id & (deviceIndex)
 - deviceIndex ::= number >= 0
@@ -119,6 +119,8 @@ The binding introduces the following channels:
 | load5              | Load for the last 5 minutes                                      | Number              | Medium           | True     |
 | load15             | Load for the last 15 minutes                                     | Number              | Medium           | True     |
 | threads            | Number of threads currently running or for the process           | Number              | Medium           | True     |
+| maxfreq            | CPU maximum frequency                                            | Number:Frequency    | Low              | True     |
+| freq               | Logical processor frequency                                      | Number:Frequency    | High             | True     |
 | path               | The full path of the process                                     | String              | Low              | False    |
 | uptime             | System uptime (time after start) in minutes                      | Number:Time         | Medium           | True     |
 | name               | Name of the device or process                                    | String              | Low              | False    |
@@ -172,6 +174,7 @@ Parameter PID has a default value 0 - this is the PID of the System Idle process
 ## Known issues and workarounds
 
 - Temperature readings are not well supported on standard Windows systems, run [OpenHardwareMonitor.exe](https://openhardwaremonitor.org) for the binding to get more reliable readings.
+- CPU frequency readings are not available on some OS versions.
 
 ## Reporting issues
 
@@ -179,9 +182,9 @@ As already mentioned this binding depends heavily on the [OSHI](https://github.c
 
 Take a look at the console for an ERROR log message.
 
-If you find an issue with a support for a specific hardware or software architecture please take a look at the [OSHI issues](https://github.com/oshi/oshi/issues).
+If you find an issue with support for a specific hardware or software architecture please take a look at the [OSHI issues](https://github.com/oshi/oshi/issues).
 Your problem might have be already reported and solved!
-Feel free to open a new issue there with the log message and the and information about your software or hardware configuration.
+Feel free to open a new issue there with the log message and the information about your software or hardware configuration.
 
 For a general problem with the binding report the issue directly to openHAB.
 
@@ -201,14 +204,16 @@ String Network_AdapterName         "Adapter name"        <network>       { chann
 String Network_Name                "Name"                <network>       { channel="systeminfo:computer:work:network#networkName" }
 String Network_IP                  "IP address"          <network>       { channel="systeminfo:computer:work:network#ip" }
 String Network_Mac                 "Mac address"         <network>       { channel="systeminfo:computer:work:network#mac" }
-Number Network_DataSent            "Data sent"           <flowpipe>      { channel="systeminfo:computer:work:network#dataSent" }
-Number Network_DataReceived        "Data received"       <returnpipe>    { channel="systeminfo:computer:work:network#dataReceived" }
+Number:DataAmount Network_DataSent "Data sent"           <flowpipe>      { channel="systeminfo:computer:work:network#dataSent" }
+Number:DataAmount Network_DataReceived "Data received"   <returnpipe>    { channel="systeminfo:computer:work:network#dataReceived" }
 Number Network_PacketsSent         "Packets sent"        <flowpipe>      { channel="systeminfo:computer:work:network#packetsSent" }
 Number Network_PacketsReceived     "Packets received"    <returnpipe>    { channel="systeminfo:computer:work:network#packetsReceived" }
 
 /* CPU information*/
 String CPU_Name                    "Name"                <none>          { channel="systeminfo:computer:work:cpu#name" }
 String CPU_Description             "Description"         <none>          { channel="systeminfo:computer:work:cpu#description" }
+Number:Frequency CPU_MaxFreq       "CPU Max Frequency"   <none>          { channel="systeminfo:computer:work:cpu#maxfreq" }
+Number:Frequency CPU_Freq          "CPU Frequency"       <none>          { channel="systeminfo:computer:work:cpu#freq" }
 Number:Dimensionless CPU_Load      "CPU Load"            <none>          { channel="systeminfo:computer:work:cpu#load" }
 Number CPU_Load1                   "Load (1 min)"        <none>          { channel="systeminfo:computer:work:cpu#load1" }
 Number CPU_Load5                   "Load (5 min)"        <none>          { channel="systeminfo:computer:work:cpu#load5" }
@@ -232,7 +237,7 @@ Number:Dimensionless Storage_Available_Percent "Available (%)" <none>    { chann
 Number:Dimensionless Storage_Used_Percent "Used (%)"     <none>          { channel="systeminfo:computer:work:storage#usedPercent" }
 
 /* Memory information*/
-Number Memory_Available            "Available"           <none>          { channel="systeminfo:computer:work:memory#available" }
+Number:DataAmount Memory_Available "Available"           <none>          { channel="systeminfo:computer:work:memory#available" }
 Number:DataAmount Memory_Used      "Used"                <none>          { channel="systeminfo:computer:work:memory#used" }
 Number:DataAmount Memory_Total     "Total"               <none>          { channel="systeminfo:computer:work:memory#total" }
 Number:Dimensionless Memory_Available_Percent "Available (%)" <none>     { channel="systeminfo:computer:work:memory#availablePercent" }
@@ -260,14 +265,14 @@ Number Sensor_FanSpeed             "Fan speed"           <fan>           { chann
 
 /* Current process information*/
 Number:Dimensionless Current_process_load "Load"         <none>          { channel="systeminfo:computer:work:currentProcess#load" }
-Number:Dimensionless Current_process_used "Used"         <none>          { channel="systeminfo:computer:work:currentProcess#used" }
+Number:DataAmount Current_process_used "Used"            <none>          { channel="systeminfo:computer:work:currentProcess#used" }
 String Current_process_name        "Name"                <none>          { channel="systeminfo:computer:work:currentProcess#name" }
 Number Current_process_threads     "Threads"             <none>          { channel="systeminfo:computer:work:currentProcess#threads" }
 String Current_process_path        "Path"                <none>          { channel="systeminfo:computer:work:currentProcess#path" }
 
 /* Process information*/
 Number:Dimensionless Process_load  "Load"                <none>          { channel="systeminfo:computer:work:process#load" }
-Number:Dimensionless Process_used  "Used"                <none>          { channel="systeminfo:computer:work:process#used" }
+Number:DataAmount Process_used     "Used"                <none>          { channel="systeminfo:computer:work:process#used" }
 String Process_name                "Name"                <none>          { channel="systeminfo:computer:work:process#name" }
 Number Process_threads             "Threads"             <none>          { channel="systeminfo:computer:work:process#threads" }
 String Process_path                "Path"                <none>          { channel="systeminfo:computer:work:process#path" }
@@ -290,6 +295,8 @@ sitemap systeminfo label="Systeminfo" {
     Frame label="CPU Information" {
         Default item=CPU_Name
         Default item=CPU_Description
+        Default item=CPU_MaxFreq
+        Default item=CPU_Freq
         Default item=CPU_Load1
         Default item=CPU_Load5
         Default item=CPU_Load15

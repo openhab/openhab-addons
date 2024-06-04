@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.shelly.internal.discovery.ShellyBluDiscoveryService;
+import org.openhab.binding.shelly.internal.discovery.ShellyBasicDiscoveryService;
+import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.thing.ThingTypeUID;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.component.annotations.Component;
@@ -34,7 +35,7 @@ import org.osgi.service.component.annotations.Deactivate;
 @Component(service = ShellyThingTable.class, configurationPolicy = ConfigurationPolicy.OPTIONAL)
 public class ShellyThingTable {
     private Map<String, ShellyThingInterface> thingTable = new ConcurrentHashMap<>();
-    private @Nullable ShellyBluDiscoveryService bluDiscoveryService;
+    private @Nullable ShellyBasicDiscoveryService discoveryService;
 
     public void addThing(String key, ShellyThingInterface thing) {
         if (thingTable.containsKey(key)) {
@@ -80,9 +81,9 @@ public class ShellyThingTable {
     }
 
     public void startDiscoveryService(BundleContext bundleContext) {
-        if (bluDiscoveryService == null) {
-            bluDiscoveryService = new ShellyBluDiscoveryService(bundleContext, this);
-            bluDiscoveryService.registerDeviceDiscoveryService();
+        if (discoveryService == null) {
+            discoveryService = new ShellyBasicDiscoveryService(bundleContext, this);
+            discoveryService.registerDeviceDiscoveryService();
         }
     }
 
@@ -93,16 +94,22 @@ public class ShellyThingTable {
     }
 
     public void stopDiscoveryService() {
-        if (bluDiscoveryService != null) {
-            bluDiscoveryService.unregisterDeviceDiscoveryService();
-            bluDiscoveryService = null;
+        if (discoveryService != null) {
+            discoveryService.unregisterDeviceDiscoveryService();
+            discoveryService = null;
         }
     }
 
     public void discoveredResult(ThingTypeUID uid, String model, String serviceName, String address,
             Map<String, Object> properties) {
-        if (bluDiscoveryService != null) {
-            bluDiscoveryService.discoveredResult(uid, model, serviceName, address, properties);
+        if (discoveryService != null) {
+            discoveryService.discoveredResult(uid, model, serviceName, address, properties);
+        }
+    }
+
+    public void discoveredResult(DiscoveryResult result) {
+        if (discoveryService != null) {
+            discoveryService.discoveredResult(result);
         }
     }
 

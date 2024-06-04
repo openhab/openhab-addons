@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,7 +36,7 @@ public class RioBank {
      * Create the object from the given ID (using the default name of "Bank" + id)
      *
      * @param id a bank identifier between 1 and 6
-     * @throws IllegalArgumentException if id is < 1 or > 6
+     * @throws IllegalArgumentException if id is {@literal <} 1 or > 6
      */
     public RioBank(int id) {
         this(id, null);
@@ -48,7 +48,7 @@ public class RioBank {
      *
      * @param id a bank identifier between 1 and 6
      * @param name a possibly null, possibly empty bank name (null or empty will result in a bank name of "Bank "+ id)
-     * @throws IllegalArgumentException if id is < 1 or > 6
+     * @throws IllegalArgumentException if id is {@literal < 1} or > 6
      */
     public RioBank(int id, @Nullable String name) {
         if (id < 1 || id > 6) {

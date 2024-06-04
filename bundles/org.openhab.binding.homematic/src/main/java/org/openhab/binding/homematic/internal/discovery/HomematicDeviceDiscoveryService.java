@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,27 +14,25 @@ package org.openhab.binding.homematic.internal.discovery;
 
 import static org.openhab.binding.homematic.internal.HomematicBindingConstants.BINDING_ID;
 
-import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jdt.annotation.NonNull;
 import org.openhab.binding.homematic.internal.common.HomematicConfig;
 import org.openhab.binding.homematic.internal.communicator.HomematicGateway;
 import org.openhab.binding.homematic.internal.handler.HomematicBridgeHandler;
 import org.openhab.binding.homematic.internal.model.HmDevice;
 import org.openhab.binding.homematic.internal.type.UidUtils;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,44 +41,24 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gerhard Riegler - Initial contribution
  */
-public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
+@Component(scope = ServiceScope.PROTOTYPE, service = HomematicDeviceDiscoveryService.class)
+public class HomematicDeviceDiscoveryService
+        extends AbstractThingHandlerDiscoveryService<@NonNull HomematicBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(HomematicDeviceDiscoveryService.class);
     private static final int DISCOVER_TIMEOUT_SECONDS = 300;
 
-    private @NonNullByDefault({}) HomematicBridgeHandler bridgeHandler;
     private Future<?> loadDevicesFuture;
     private volatile boolean isInInstallMode = false;
     private volatile Object installModeSync = new Object();
 
     public HomematicDeviceDiscoveryService() {
-        super(Collections.singleton(new ThingTypeUID(BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, false);
+        super(HomematicBridgeHandler.class, Set.of(new ThingTypeUID(BINDING_ID, "-")), DISCOVER_TIMEOUT_SECONDS, false);
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof HomematicBridgeHandler) {
-            this.bridgeHandler = (HomematicBridgeHandler) handler;
-            this.bridgeHandler.setDiscoveryService(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    /**
-     * Called on component activation.
-     */
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+    public void initialize() {
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 
     @Override
@@ -96,13 +74,10 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
      */
     private void enableInstallMode() {
         try {
-            HomematicGateway gateway = bridgeHandler.getGateway();
-            ThingStatus bridgeStatus = null;
+            HomematicGateway gateway = thingHandler.getGateway();
+            Thing bridge = thingHandler.getThing();
+            ThingStatus bridgeStatus = bridge.getStatus();
 
-            if (bridgeHandler != null) {
-                Thing bridge = bridgeHandler.getThing();
-                bridgeStatus = bridge.getStatus();
-            }
             if (ThingStatus.ONLINE == bridgeStatus) {
                 gateway.setInstallMode(true, getInstallModeDuration());
 
@@ -122,10 +97,7 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     private int getInstallModeDuration() {
-        if (bridgeHandler != null) {
-            return bridgeHandler.getThing().getConfiguration().as(HomematicConfig.class).getInstallModeDuration();
-        }
-        return HomematicConfig.DEFAULT_INSTALL_MODE_DURATION;
+        return thingHandler.getThing().getConfiguration().as(HomematicConfig.class).getInstallModeDuration();
     }
 
     @Override
@@ -136,10 +108,8 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
     @Override
     public synchronized void stopScan() {
         logger.debug("Stopping Homematic discovery scan");
-        if (bridgeHandler != null && bridgeHandler.getGateway() != null) {
-            disableInstallMode();
-            bridgeHandler.getGateway().cancelLoadAllDeviceMetadata();
-        }
+        disableInstallMode();
+        thingHandler.getGateway().cancelLoadAllDeviceMetadata();
         waitForScanFinishing();
         super.stopScan();
     }
@@ -150,7 +120,7 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
                 if (isInInstallMode) {
                     isInInstallMode = false;
                     installModeSync.notify();
-                    bridgeHandler.getGateway().setInstallMode(false, 0);
+                    thingHandler.getGateway().setInstallMode(false, 0);
                 }
             }
 
@@ -192,6 +162,7 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
         } catch (Exception ex) {
             logger.error("Error waiting for device discovery scan: {}", ex.getMessage(), ex);
         }
+        HomematicBridgeHandler bridgeHandler = thingHandler;
         String gatewayId = bridgeHandler != null && bridgeHandler.getGateway() != null
                 ? bridgeHandler.getGateway().getId()
                 : "UNKNOWN";
@@ -202,17 +173,17 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
      * Starts a thread which loads all Homematic devices connected to the gateway.
      */
     public void loadDevices() {
-        if (loadDevicesFuture == null && bridgeHandler.getGateway() != null) {
+        if (loadDevicesFuture == null && thingHandler.getGateway() != null) {
             loadDevicesFuture = scheduler.submit(() -> {
                 try {
-                    final HomematicGateway gateway = bridgeHandler.getGateway();
+                    final HomematicGateway gateway = thingHandler.getGateway();
                     gateway.loadAllDeviceMetadata();
-                    bridgeHandler.getTypeGenerator().validateFirmwares();
+                    thingHandler.getTypeGenerator().validateFirmwares();
                 } catch (Throwable ex) {
                     logger.error("{}", ex.getMessage(), ex);
                 } finally {
                     loadDevicesFuture = null;
-                    bridgeHandler.setOfflineStatus();
+                    thingHandler.setOfflineStatus();
                     removeOlderResults(getTimestampOfLastScan());
                 }
             });
@@ -225,7 +196,7 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
      * Removes the Homematic device.
      */
     public void deviceRemoved(HmDevice device) {
-        ThingUID thingUID = UidUtils.generateThingUID(device, bridgeHandler.getThing());
+        ThingUID thingUID = UidUtils.generateThingUID(device, thingHandler.getThing());
         thingRemoved(thingUID);
     }
 
@@ -233,12 +204,11 @@ public class HomematicDeviceDiscoveryService extends AbstractDiscoveryService
      * Generates the DiscoveryResult from a Homematic device.
      */
     public void deviceDiscovered(HmDevice device) {
-        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         ThingTypeUID typeUid = UidUtils.generateThingTypeUID(device);
         ThingUID thingUID = new ThingUID(typeUid, bridgeUID, device.getAddress());
         String label = device.getName() != null ? device.getName() : device.getAddress();
-        long timeToLive = bridgeHandler.getThing().getConfiguration().as(HomematicConfig.class)
-                .getDiscoveryTimeToLive();
+        long timeToLive = thingHandler.getThing().getConfiguration().as(HomematicConfig.class).getDiscoveryTimeToLive();
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
                 .withProperty(Thing.PROPERTY_SERIAL_NUMBER, device.getAddress())

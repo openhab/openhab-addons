@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,8 @@ enum NutName {
     // Battery
     BATTERY_CHARGE("batteryCharge", "battery.charge", Units.PERCENT),
     BATTERY_RUNTIME("batteryRuntime", "battery.runtime", Units.SECOND),
-    BATTERY_VOLTAGE("batteryVoltage", "battery.voltage", Units.VOLT);
+    BATTERY_VOLTAGE("batteryVoltage", "battery.voltage", Units.VOLT),
+    BATTERY_TEMPERATURE("batteryTemperature", "battery.temperature", SIUnits.CELSIUS);
 
     static final Map<String, NutName> NUT_NAME_MAP = Stream.of(NutName.values())
             .collect(Collectors.toMap(NutName::getChannelId, Function.identity()));

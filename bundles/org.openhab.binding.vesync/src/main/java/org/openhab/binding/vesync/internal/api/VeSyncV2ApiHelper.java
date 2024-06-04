@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -147,25 +147,21 @@ public class VeSyncV2ApiHelper {
         requestData.applyAuthentication(loggedInSession);
 
         // Apply specific addressing parameters
-        if (requestData instanceof VeSyncRequestManagedDeviceBypassV2) {
+        if (requestData instanceof VeSyncRequestManagedDeviceBypassV2 veSyncRequestManagedDeviceBypassV2) {
             final VeSyncManagedDeviceBase deviceData = macLookup.get(macId);
             if (deviceData == null) {
                 throw new DeviceUnknownException(String.format("Device not discovered with mac id: %s", macId));
             }
-            ((VeSyncRequestManagedDeviceBypassV2) requestData).cid = deviceData.cid;
-            ((VeSyncRequestManagedDeviceBypassV2) requestData).configModule = deviceData.configModule;
-            ((VeSyncRequestManagedDeviceBypassV2) requestData).deviceRegion = deviceData.deviceRegion;
+            veSyncRequestManagedDeviceBypassV2.cid = deviceData.cid;
+            veSyncRequestManagedDeviceBypassV2.configModule = deviceData.configModule;
+            veSyncRequestManagedDeviceBypassV2.deviceRegion = deviceData.deviceRegion;
         }
         return reqV1Authorized(url, requestData);
     }
 
     public String reqV1Authorized(final String url, final VeSyncAuthenticatedRequest requestData)
             throws AuthenticationException {
-        try {
-            return directReqV1Authorized(url, requestData);
-        } catch (final AuthenticationException ae) {
-            throw ae;
-        }
+        return directReqV1Authorized(url, requestData);
     }
 
     private String directReqV1Authorized(final String url, final VeSyncAuthenticatedRequest requestData)

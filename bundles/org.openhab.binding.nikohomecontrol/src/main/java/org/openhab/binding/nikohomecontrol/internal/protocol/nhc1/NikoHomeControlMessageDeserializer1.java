@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,23 +70,33 @@ class NikoHomeControlMessageDeserializer1 implements JsonDeserializer<NhcMessage
                         data.put(entry.getKey(), entry.getValue().getAsString());
                     }
                     ((NhcMessageMap1) message).setData(data);
-
                 } else if (jsonData.isJsonArray()) {
                     JsonArray jsonDataArray = jsonData.getAsJsonArray();
 
-                    message = new NhcMessageListMap1();
+                    // check if this is an array of primitives or objects
+                    if ((jsonDataArray.size() > 0) && jsonDataArray.get(0).isJsonPrimitive()) {
+                        message = new NhcMessageList1();
 
-                    List<Map<String, String>> dataList = new ArrayList<>();
-                    for (int i = 0; i < jsonDataArray.size(); i++) {
-                        JsonObject jsonDataObject = jsonDataArray.get(i).getAsJsonObject();
-
-                        Map<String, String> data = new HashMap<>();
-                        for (Entry<String, JsonElement> entry : jsonDataObject.entrySet()) {
-                            data.put(entry.getKey(), entry.getValue().getAsString());
+                        List<String> dataList = new ArrayList<>();
+                        for (JsonElement jsonElement : jsonDataArray) {
+                            dataList.add(jsonElement.getAsJsonPrimitive().getAsString());
                         }
-                        dataList.add(data);
+                        ((NhcMessageList1) message).setData(dataList);
+                    } else {
+                        message = new NhcMessageListMap1();
+
+                        List<Map<String, String>> dataList = new ArrayList<>();
+                        for (JsonElement jsonElement : jsonDataArray) {
+                            JsonObject jsonDataObject = jsonElement.getAsJsonObject();
+
+                            Map<String, String> data = new HashMap<>();
+                            for (Entry<String, JsonElement> entry : jsonDataObject.entrySet()) {
+                                data.put(entry.getKey(), entry.getValue().getAsString());
+                            }
+                            dataList.add(data);
+                        }
+                        ((NhcMessageListMap1) message).setData(dataList);
                     }
-                    ((NhcMessageListMap1) message).setData(dataList);
                 }
             }
 

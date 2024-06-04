@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,8 +38,8 @@ public class Therm1ChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
-        return (naThing instanceof HomeStatusModule && CHANNEL_THERM_RELAY.equals(channelId))
-                ? ((HomeStatusModule) naThing).getBoilerStatus()
+        return (naThing instanceof HomeStatusModule homeStatusModule && CHANNEL_THERM_RELAY.equals(channelId))
+                ? homeStatusModule.getBoilerStatus()
                 : null;
     }
 }

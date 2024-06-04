@@ -13,7 +13,7 @@
 	<feature name="openhab-persistence-jdbc-h2" description="JDBC Persistence H2" version="${project.version}">
 		<configfile finalname="${openhab.conf}/services/jdbc.cfg" override="false">mvn:org.openhab.addons.features.karaf/org.openhab.addons.features.karaf.openhab-addons-external/${project.version}/cfg/jdbc</configfile>
 		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
-		<bundle start-level="80">mvn:com.h2database/h2/1.4.191</bundle>
+		<bundle start-level="80">mvn:com.h2database/h2/2.2.224</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.persistence.jdbc/${project.version}</bundle>
 	</feature>
 
@@ -34,21 +34,21 @@
 	<feature name="openhab-persistence-jdbc-mysql" description="JDBC Persistence MySQL" version="${project.version}">
 		<configfile finalname="${openhab.conf}/services/jdbc.cfg" override="false">mvn:org.openhab.addons.features.karaf/org.openhab.addons.features.karaf.openhab-addons-external/${project.version}/cfg/jdbc</configfile>
 		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
-		<bundle start-level="80">mvn:com.mysql/mysql-connector-j/8.0.33</bundle>
+		<bundle start-level="80">mvn:com.mysql/mysql-connector-j/8.2.0</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.persistence.jdbc/${project.version}</bundle>
 	</feature>
 
 	<feature name="openhab-persistence-jdbc-postgresql" description="JDBC Persistence PostgreSQL" version="${project.version}">
 		<configfile finalname="${openhab.conf}/services/jdbc.cfg" override="false">mvn:org.openhab.addons.features.karaf/org.openhab.addons.features.karaf.openhab-addons-external/${project.version}/cfg/jdbc</configfile>
 		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
-		<bundle start-level="80">mvn:org.postgresql/postgresql/42.4.3</bundle>
+		<bundle start-level="80">mvn:org.postgresql/postgresql/42.4.4</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.persistence.jdbc/${project.version}</bundle>
 	</feature>
 
 	<feature name="openhab-persistence-jdbc-sqlite" description="JDBC Persistence SQLite" version="${project.version}">
 		<configfile finalname="${openhab.conf}/services/jdbc.cfg" override="false">mvn:org.openhab.addons.features.karaf/org.openhab.addons.features.karaf.openhab-addons-external/${project.version}/cfg/jdbc</configfile>
 		<feature prerequisite="false" dependency="false">openhab-runtime-base</feature>
-		<bundle start-level="80">mvn:org.xerial/sqlite-jdbc/3.40.0.0</bundle>
+		<bundle start-level="80">mvn:org.xerial/sqlite-jdbc/3.42.0.0</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.persistence.jdbc/${project.version}</bundle>
 	</feature>
 
