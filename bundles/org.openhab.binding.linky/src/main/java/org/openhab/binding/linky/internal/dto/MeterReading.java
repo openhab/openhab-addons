@@ -24,7 +24,6 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class MeterReading {
-    @SerializedName("usage_point_id")
     public String usagePointId;
 
     @SerializedName("start")
@@ -33,10 +32,8 @@ public class MeterReading {
     @SerializedName("end")
     public String endDate;
 
-    @SerializedName("quality")
     public String quality;
 
-    @SerializedName("reading_type")
     public ReadingType readingType;
 
     @SerializedName("interval_reading")

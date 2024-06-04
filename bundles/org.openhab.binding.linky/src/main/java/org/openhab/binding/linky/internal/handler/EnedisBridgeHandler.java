@@ -47,8 +47,6 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     private static final String MEASURE_MAX_POWER_URL = BASE_URL
             + "metering_data_dcmp/v5/daily_consumption_max_power?usage_point_id=%s&start=%s&end=%s";
 
-    private static final String TEMPO_URL = BASE_URL + "rte/tempo/%s/%s";
-
     public EnedisBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
@@ -129,6 +127,6 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public String getTempoUrl() {
-        return TEMPO_URL;
+        return "";
     }
 }
