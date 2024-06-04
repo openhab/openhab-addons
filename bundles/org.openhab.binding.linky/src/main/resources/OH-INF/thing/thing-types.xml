@@ -26,7 +26,7 @@
 	</bridge-type>
 
 	<bridge-type id="MyElectricalDataBridge">
-		<label>EnedisBridge</label>
+		<label>MyElectricalDataBridge</label>
 		<description>
 			Provides your energy consumption data.
 			In order to receive the data, you must activate your account at
@@ -34,11 +34,6 @@
 		</description>
 
 		<config-description>
-			<parameter name="token" type="text" required="false">
-				<label>Token</label>
-				<description>Your Enedis token (can be left empty, use the connection page to automatically fill it
-					http://youopenhab/connectlinky)</description>
-			</parameter>
 		</config-description>
 	</bridge-type>
 
@@ -73,6 +68,11 @@
 			<parameter name="prmId" type="text" required="true">
 				<label>PrmId</label>
 				<description>Your PrmId</description>
+			</parameter>
+			<parameter name="token" type="text" required="false">
+				<label>Token</label>
+				<description>Your Enedis token (can be left empty, use the connection page to automatically fill it
+					http://youopenhab/connectlinky)</description>
 			</parameter>
 		</config-description>
 

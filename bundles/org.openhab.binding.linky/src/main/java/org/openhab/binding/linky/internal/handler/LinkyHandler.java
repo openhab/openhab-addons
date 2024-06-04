@@ -138,7 +138,7 @@ public class LinkyHandler extends BaseThingHandler {
                     LinkyConfiguration config = this.config;
 
                     if (api != null && config != null) {
-                        PrmInfo prmInfo = api.getPrmInfo(config.prmId);
+                        PrmInfo prmInfo = api.getPrmInfo(this, config.prmId);
                         updateProperties(Map.of(USER_ID, prmInfo.customerId, PUISSANCE,
                                 prmInfo.contractInfo.subscribedPower, PRM_ID, prmInfo.prmId));
 
@@ -175,7 +175,7 @@ public class LinkyHandler extends BaseThingHandler {
 
         if (api != null && config != null) {
             try {
-                PrmInfo info = api.getPrmInfo(config.prmId);
+                PrmInfo info = api.getPrmInfo(this, config.prmId);
                 String title = info.identityInfo.title;
                 String firstName = info.identityInfo.firstname;
                 String lastName = info.identityInfo.lastname;
@@ -395,7 +395,7 @@ public class LinkyHandler extends BaseThingHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                MeterReading meterReading = api.getEnergyData(config.prmId, from, to);
+                MeterReading meterReading = api.getEnergyData(this, config.prmId, from, to);
                 updateStatus(ThingStatus.ONLINE);
                 return meterReading;
             } catch (LinkyException e) {
@@ -413,7 +413,7 @@ public class LinkyHandler extends BaseThingHandler {
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                MeterReading meterReading = api.getPowerData(config.prmId, from, to);
+                MeterReading meterReading = api.getPowerData(this, config.prmId, from, to);
                 updateStatus(ThingStatus.ONLINE);
                 return meterReading;
             } catch (LinkyException e) {
