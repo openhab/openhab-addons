@@ -69,6 +69,7 @@ public class LinkyAuthServlet extends HttpServlet {
 
     public LinkyAuthServlet(ApiBridgeHandler apiBridgeHandler, String indexTemplate) {
         this.indexTemplate = indexTemplate;
+        this.apiBridgeHandler = apiBridgeHandler;
     }
 
     @Override

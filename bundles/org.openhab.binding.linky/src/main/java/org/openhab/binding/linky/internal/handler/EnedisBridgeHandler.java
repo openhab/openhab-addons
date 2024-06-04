@@ -13,6 +13,8 @@
 package org.openhab.binding.linky.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.linky.internal.LinkyException;
+import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -47,10 +49,6 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
 
     private static final String TEMPO_URL = BASE_URL + "rte/tempo/%s/%s";
 
-    // private static final String TOKEN_URL = BASE_URL
-    // +
-    // "v1/oauth2/authorize?client_id=%s&response_type=code&redirect_uri=na&user_type=na&state=na&person_id=-1&usage_points_id=%s";
-
     public EnedisBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
@@ -63,10 +61,35 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     }
 
     @Override
+    public String getClientId() {
+        return config.clientId;
+    }
+
+    @Override
+    public String getClientSecret() {
+        return config.clientSecret;
+    }
+
+    @Override
     public void dispose() {
         logger.debug("Shutting down Netatmo API bridge handler.");
 
         super.dispose();
+    }
+
+    @Override
+    public String getToken(LinkyHandler handler) throws LinkyException {
+
+        AccessTokenResponse accesToken = getAccessTokenResponse();
+        if (accesToken == null) {
+            accesToken = getAccessTokenByClientCredentials();
+        }
+
+        if (accesToken == null) {
+            throw new LinkyException("no token");
+        }
+
+        return "Bearer " + accesToken.getAccessToken();
     }
 
     @Override

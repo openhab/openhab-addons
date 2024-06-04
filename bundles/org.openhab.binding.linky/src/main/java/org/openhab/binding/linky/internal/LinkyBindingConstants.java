@@ -106,18 +106,20 @@ public class LinkyBindingConstants {
     // "r:locations:*", "w:locations:*", "x:locations:*", "r:scenes:*", "x:scenes:*", "r:rules:*", "w:rules:*",
     // "r:installedapps", "w:installedapps"
 
-    // List of Linky services related urls, information
-    public static final String LINKY_MYELECTRICALDATA_ACCOUNT_URL = "https://www.myelectricaldata.fr/";
-    public static final String LINKY_MYELECTRICALDATA_AUTHORIZE_URL = LINKY_MYELECTRICALDATA_ACCOUNT_URL
-            + "v1/oauth2/authorize";
-    public static final String LINKY_MYELECTRICALDATA_API_TOKEN_URL = LINKY_MYELECTRICALDATA_ACCOUNT_URL + "token";
-
     public static final String ENEDIS_ACCOUNT_URL_PROD = "https://mon-compte-particulier.enedis.fr/";
     public static final String ENEDIS_AUTHORIZE_URL_PROD = ENEDIS_ACCOUNT_URL_PROD + "dataconnect/v1/oauth2/authorize";
     public static final String ENEDIS_API_TOKEN_URL_PROD = ENEDIS_ACCOUNT_URL_PROD + "oauth2/v3/token";
 
     public static final String ENEDIS_ACCOUNT_URL_PREPROD = "https://ext.prod-sandbox.api.enedis.fr/";
-    public static final String ENEDIS_AUTHORIZE_URL_PREPROD = ENEDIS_ACCOUNT_URL_PREPROD
+    public static final String ENEDIS_AUTHORIZE_URL_PREPROD = ENEDIS_ACCOUNT_URL_PROD
             + "dataconnect/v1/oauth2/authorize";
     public static final String ENEDIS_API_TOKEN_URL_PREPROD = ENEDIS_ACCOUNT_URL_PREPROD + "oauth2/v3/token";
+
+    // List of Linky services related urls, information
+    public static final String LINKY_MYELECTRICALDATA_ACCOUNT_URL = "https://www.myelectricaldata.fr/";
+    // public static final String LINKY_MYELECTRICALDATA_AUTHORIZE_URL = LINKY_MYELECTRICALDATA_ACCOUNT_URL
+    // + "v1/oauth2/authorize?usage_points_id=21454992660003&user_type=aa&person_id=-1";
+    public static final String LINKY_MYELECTRICALDATA_AUTHORIZE_URL = ENEDIS_AUTHORIZE_URL_PROD;
+    public static final String LINKY_MYELECTRICALDATA_API_TOKEN_URL = LINKY_MYELECTRICALDATA_ACCOUNT_URL
+            + "v1/oauth2/authorize?client_id=%s&response_type=code&redirect_uri=na&user_type=na&state=na&person_id=-1&usage_points_id=%s";
 }

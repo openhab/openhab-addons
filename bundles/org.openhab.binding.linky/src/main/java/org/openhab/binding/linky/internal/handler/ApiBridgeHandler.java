@@ -82,7 +82,7 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
     private @Nullable EnedisHttpApi enedisApi;
     private final Gson gson;
     private OAuthClientService oAuthService;
-    private final ThingRegistry thingRegistry;
+    protected final ThingRegistry thingRegistry;
 
     private static @Nullable HttpServlet servlet;
     protected @Nullable LinkyConfiguration config;
@@ -125,9 +125,19 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
 
         config = getConfigAs(LinkyConfiguration.class);
 
-        this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID,
-                LinkyBindingConstants.ENEDIS_API_TOKEN_URL_PREPROD, LinkyBindingConstants.ENEDIS_AUTHORIZE_URL_PREPROD,
-                config.clientId, config.clientSecret, LinkyBindingConstants.LINKY_SCOPES, true);
+        String tokenUrl = "";
+        String authorizeUrl = "";
+        if (this instanceof MyElectricalDataBridgeHandler) {
+            tokenUrl = LinkyBindingConstants.LINKY_MYELECTRICALDATA_API_TOKEN_URL;
+            authorizeUrl = LinkyBindingConstants.LINKY_MYELECTRICALDATA_AUTHORIZE_URL;
+        } else if (this instanceof EnedisBridgeHandler) {
+            tokenUrl = LinkyBindingConstants.ENEDIS_API_TOKEN_URL_PREPROD;
+            authorizeUrl = LinkyBindingConstants.ENEDIS_AUTHORIZE_URL_PREPROD;
+
+        }
+
+        this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID, tokenUrl,
+                authorizeUrl, config.clientId, config.clientSecret, LinkyBindingConstants.LINKY_SCOPES, true);
 
         registerServlet();
 
@@ -137,6 +147,10 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
     public @Nullable EnedisHttpApi getEnedisApi() {
         return enedisApi;
     }
+
+    public abstract String getClientId();
+
+    public abstract String getClientSecret();
 
     @Override
     public void initialize() {
@@ -260,21 +274,9 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
                 && accessTokenResponse.getRefreshToken() != null;
     }
 
-    public String getToken() throws LinkyException {
+    public abstract String getToken(LinkyHandler handler) throws LinkyException;
 
-        AccessTokenResponse accesToken = getAccessTokenResponse();
-        if (accesToken == null) {
-            accesToken = getAccessTokenByClientCredentials();
-        }
-
-        if (accesToken == null) {
-            throw new LinkyException("no token");
-        }
-
-        return "Bearer " + accesToken.getAccessToken();
-    }
-
-    private @Nullable AccessTokenResponse getAccessTokenByClientCredentials() {
+    protected @Nullable AccessTokenResponse getAccessTokenByClientCredentials() {
         try {
             return oAuthService.getAccessTokenByClientCredentials(LinkyBindingConstants.LINKY_SCOPES);
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
@@ -283,7 +285,7 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    private @Nullable AccessTokenResponse getAccessTokenResponse() {
+    protected @Nullable AccessTokenResponse getAccessTokenResponse() {
         try {
             return oAuthService.getAccessTokenResponse();
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
@@ -293,8 +295,6 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
     }
 
     public String formatAuthorizationUrl(String redirectUri) {
-        // Will work only in case of direct oAuth2 authentification to enedis
-        // this is not the case in v1 as we go trough MyElectricalData
         try {
             String uri = this.oAuthService.getAuthorizationUrl(redirectUri, LinkyBindingConstants.LINKY_SCOPES,
                     LinkyBindingConstants.BINDING_ID);
@@ -337,5 +337,4 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
     public abstract String getMaxPowerUrl();
 
     public abstract String getTempoUrl();
-
 }
