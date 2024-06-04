@@ -13,13 +13,18 @@
 		<description>Conventional Fuel Vehicle with supporting Electric Engine</description>
 
 		<channel-groups>
-			<channel-group id="range" typeId="range-hybrid-values"/>
+			<channel-group id="vehicle" typeId="vehicle-values"/>
 			<channel-group id="doors" typeId="door-values"/>
-			<channel-group id="windows" typeId="window-values"/>
-			<channel-group id="lights" typeId="light-values"/>
 			<channel-group id="lock" typeId="lock-values"/>
-			<channel-group id="location" typeId="location-values"/>
-			<channel-group id="image" typeId="image-values"/>
+			<channel-group id="windows" typeId="window-values"/>
+			<channel-group id="hvac" typeId="hvac-values"/>
+			<channel-group id="service" typeId="service-values"/>
+			<channel-group id="range" typeId="range-hybrid-values"/>
+			<channel-group id="charge" typeId="charge-values"/>
+			<channel-group id="trip" typeId="trip-hybrid-values"/>
+			<channel-group id="position" typeId="position-values"/>
+			<channel-group id="tires" typeId="tires-values"/>
+			<channel-group id="command" typeId="command-values"/>
 		</channel-groups>
 
 		<config-description-ref uri="thing-type:mercedesme:hybrid"/>
