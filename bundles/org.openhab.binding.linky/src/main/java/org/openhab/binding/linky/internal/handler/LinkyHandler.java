@@ -71,7 +71,7 @@ public class LinkyHandler extends BaseThingHandler {
     private final ExpiringDayCache<MeterReading> dailyConsumptionMaxPower;
 
     private @Nullable ScheduledFuture<?> refreshJob;
-    private @Nullable LinkyConfiguration config;
+    private LinkyConfiguration config;
     private @Nullable EnedisHttpApi enedisApi;
 
     private enum Target {
@@ -82,6 +82,8 @@ public class LinkyHandler extends BaseThingHandler {
 
     public LinkyHandler(Thing thing, LocaleProvider localeProvider) {
         super(thing);
+
+        config = getConfigAs(LinkyConfiguration.class);
 
         this.dailyConsumption = new ExpiringDayCache<>("dailyConsumption", REFRESH_FIRST_HOUR_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
@@ -129,15 +131,13 @@ public class LinkyHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        config = getConfigAs(LinkyConfiguration.class);
         if (config.seemsValid()) {
             scheduler.submit(() -> {
                 try {
 
                     EnedisHttpApi api = this.enedisApi;
-                    LinkyConfiguration config = this.config;
 
-                    if (api != null && config != null) {
+                    if (api != null) {
                         PrmInfo prmInfo = api.getPrmInfo(this, config.prmId);
                         updateProperties(Map.of(USER_ID, prmInfo.customerId, PUISSANCE,
                                 prmInfo.contractInfo.subscribedPower, PRM_ID, prmInfo.prmId));
@@ -171,9 +171,8 @@ public class LinkyHandler extends BaseThingHandler {
 
     private synchronized void updateMetaData() {
         EnedisHttpApi api = this.enedisApi;
-        LinkyConfiguration config = this.config;
 
-        if (api != null && config != null) {
+        if (api != null) {
             try {
                 PrmInfo info = api.getPrmInfo(this, config.prmId);
                 String title = info.identityInfo.title;

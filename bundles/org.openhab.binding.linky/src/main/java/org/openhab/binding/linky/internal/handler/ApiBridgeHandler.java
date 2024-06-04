@@ -85,7 +85,7 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
     protected final ThingRegistry thingRegistry;
 
     private static @Nullable HttpServlet servlet;
-    protected @Nullable LinkyConfiguration config;
+    protected LinkyConfiguration config;
 
     private static final String TEMPLATE_PATH = "templates/";
     private static final String TEMPLATE_INDEX = TEMPLATE_PATH + "index.html";
