@@ -7,14 +7,16 @@
 		<label>Detailed Door Status</label>
 		<description>Detailed Status of all Doors and Windows</description>
 		<channels>
-			<channel id="driver-front" typeId="driver-front-channel"/>
-			<channel id="driver-rear" typeId="driver-rear-channel"/>
-			<channel id="passenger-front" typeId="passenger-front-channel"/>
-			<channel id="passenger-rear" typeId="passenger-rear-channel"/>
-			<channel id="deck-lid" typeId="deck-lid-channel"/>
-			<channel id="sunroof" typeId="sunroof-channel"/>
-			<channel id="rooftop" typeId="rooftop-channel"/>
-			<channel id="last-update" typeId="last-doors-update-channel"/>
+			<channel id="front-left" typeId="front-left"/>
+			<channel id="front-right" typeId="front-right"/>
+			<channel id="rear-left" typeId="rear-left"/>
+			<channel id="rear-right" typeId="rear-right"/>
+			<channel id="deck-lid" typeId="deck-lid"/>
+			<channel id="engine-hood" typeId="engine-hood"/>
+			<channel id="rooftop" typeId="rooftop"/>
+			<channel id="sunroof" typeId="sunroof"/>
+			<channel id="sunroof-front-blind" typeId="sunroof-front-blind"/>
+			<channel id="sunroof-rear-blind" typeId="sunroof-rear-blind"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

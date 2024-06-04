@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="hvac-values">
+		<label>Vehicle Climate Control</label>
+		<channels>
+			<channel id="front-left" typeId="front-left-hvac"/>
+			<channel id="front-right" typeId="front-right-hvac"/>
+			<channel id="rear-left" typeId="rear-left-hvac"/>
+			<channel id="rear-right" typeId="rear-right-hvac"/>
+			<channel id="zone" typeId="zone-hvac"/>
+			<channel id="temperature" typeId="temperature-hvac"/>
+			<channel id="active" typeId="active-hvac"/>
+			<channel id="aux-heat" typeId="aux-heat"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>
