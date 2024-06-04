@@ -12,11 +12,18 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.linky.internal.LinkyBindingConstants;
+import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
+import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
@@ -46,6 +53,8 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
 
     private static final String TEMPO_URL = BASE_URL + "rte/tempo/%s/%s";
 
+    // https://www.myelectricaldata.fr/v1/oauth2/authorize?response_type=code&client_id=&state=linky&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fconnectlinky&scope=am_application_scope+default&user_type=aa&person_id=-1&usage_points_id=aa
+
     public MyElectricalDataBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
@@ -58,6 +67,54 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
     }
 
     @Override
+    public String getClientId() {
+        return "e551937c-5250-48bc-b4a6-2323af68db92";
+    }
+
+    @Override
+    public String getClientSecret() {
+        return "";
+    }
+
+    @Override
+    public String formatAuthorizationUrl(String redirectUri) {
+        return super.formatAuthorizationUrl("");
+    }
+
+    @Override
+    public String authorize(String redirectUri, String reqState, String reqCode) throws LinkyException {
+        String url = String.format(LinkyBindingConstants.LINKY_MYELECTRICALDATA_API_TOKEN_URL, getClientId(), reqCode);
+        EnedisHttpApi enedisApi = getEnedisApi();
+        if (enedisApi == null) {
+            return "";
+        }
+        String token = enedisApi.getData(url);
+
+        logger.debug("token: {}", token);
+
+        Collection<Thing> col = this.thingRegistry.getAll();
+
+        for (Thing thing : col) {
+            if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
+                Configuration config = thing.getConfiguration();
+                String prmId = (String) config.get("prmId");
+
+                if (!prmId.equals(reqCode)) {
+                    continue;
+                }
+
+                config.put("token", token);
+                LinkyHandler handler = (LinkyHandler) thing.getHandler();
+                if (handler != null) {
+                    handler.saveConfiguration(config);
+                }
+
+            }
+        }
+        return token;
+    }
+
+    @Override
     public void dispose() {
         logger.debug("Shutting down Netatmo API bridge handler.");
 
@@ -65,7 +122,11 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
     }
 
     @Override
-    public String getToken() throws LinkyException {
+    public String getToken(LinkyHandler handler) throws LinkyException {
+        LinkyConfiguration config = handler.getLinkyConfig();
+        if (config == null) {
+            return "";
+        }
         return config.token;
     }
 
