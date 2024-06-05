@@ -154,76 +154,82 @@
 		</channels>
 	</channel-group-type>
 
+    <channel-group-type id="temp">
+        <label>Tempo</label>
+        <channels>
+            <channel id="linkyTestSelect" typeId="info">
+                <label>linkyTestSelect</label>
+            </channel>
+        </channels>
+    </channel-group-type>
+
 	<channel-group-type id="main">
 		<label>Main</label>
 
 		<channels>
-			<channel id="linkyTestSelect" typeId="typeTest">
-				<label>linkyTestSelect</label>
-			</channel>
-			<channel id="identity" typeId="typeTest">
+			<channel id="identity" typeId="info">
 				<label>Identity</label>
 			</channel>
 
-			<channel id="contractSubscribedPower" typeId="typeTest">
+			<channel id="contractSubscribedPower" typeId="info">
 				<label>Subscribed Power</label>
 			</channel>
-			<channel id="contractLastActivationDate" typeId="typeTest">
+			<channel id="contractLastActivationDate" typeId="info">
 				<label>Last Activation Date</label>
 			</channel>
-			<channel id="contractDistributionTariff" typeId="typeTest">
+			<channel id="contractDistributionTariff" typeId="info">
 				<label>Distribution Tariff</label>
 			</channel>
-			<channel id="contractOffpeakHours" typeId="typeTest">
+			<channel id="contractOffpeakHours" typeId="info">
 				<label>Offpeak Hours</label>
 			</channel>
-			<channel id="contractStatus" typeId="typeTest">
+			<channel id="contractStatus" typeId="info">
 				<label>Contract Status</label>
 			</channel>
-			<channel id="contractType" typeId="typeTest">
+			<channel id="contractType" typeId="info">
 				<label>Contract Type</label>
 			</channel>
-			<channel id="contractLastDistributionTariffChangeDate" typeId="typeTest">
+			<channel id="contractLastDistributionTariffChangeDate" typeId="info">
 				<label>Last Distribution Tariff ChangeDate</label>
 			</channel>
-			<channel id="contractSegment" typeId="typeTest">
+			<channel id="contractSegment" typeId="info">
 				<label>Contract Segment</label>
 			</channel>
 
 
-			<channel id="usagePointId" typeId="typeTest">
+			<channel id="usagePointId" typeId="info">
 				<label>UsagePoint Id</label>
 			</channel>
-			<channel id="usagePointStatus" typeId="typeTest">
+			<channel id="usagePointStatus" typeId="info">
 				<label>UsagePoin Status</label>
 			</channel>
-			<channel id="usagePointMeterType" typeId="typeTest">
+			<channel id="usagePointMeterType" typeId="info">
 				<label>UsagePoint Meter Type</label>
 			</channel>
 
-			<channel id="usagePointAddressCity" typeId="typeTest">
+			<channel id="usagePointAddressCity" typeId="info">
 				<label>City</label>
 			</channel>
-			<channel id="usagePointAddressCountry" typeId="typeTest">
+			<channel id="usagePointAddressCountry" typeId="info">
 				<label>Country</label>
 			</channel>
-			<channel id="usagePointAddressInseeCode" typeId="typeTest">
+			<channel id="usagePointAddressInseeCode" typeId="info">
 				<label>Insee Code</label>
 			</channel>
-			<channel id="usagePointAddressPostalCode" typeId="typeTest">
+			<channel id="usagePointAddressPostalCode" typeId="info">
 				<label>Postal Code</label>
 			</channel>
-			<channel id="usagePointAddressStreet" typeId="typeTest">
+			<channel id="usagePointAddressStreet" typeId="info">
 				<label>Street</label>
 			</channel>
 
 
 
 
-			<channel id="contactMail" typeId="typeTest">
+			<channel id="contactMail" typeId="info">
 				<label>Mail</label>
 			</channel>
-			<channel id="contactPhone" typeId="typeTest">
+			<channel id="contactPhone" typeId="info">
 				<label>Phone</label>
 			</channel>
 
@@ -234,11 +240,13 @@
 		</channels>
 	</channel-group-type>
 
-	<channel-type id="typeTest">
-		<item-type>String</item-type>
-		<label>Test Select</label>
-		<description>Test Select</description>
-	</channel-type>
+    <channel-type id="info" advanced="false">
+        <item-type>String</item-type>
+        <label>Status of Sensors</label>
+        <state readOnly="true"></state>
+    </channel-type>
+
+	
 
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>
