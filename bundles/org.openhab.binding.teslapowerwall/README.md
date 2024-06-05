@@ -50,7 +50,7 @@ As a minimum, the IP address is needed:
 teslapowerwall:teslapowerwall:TeslaPowerwall [ hostname="192.168.0.5" ]
 ```
 
-teslapowerwall.items:
+### `teslapowerwall.item`s:
 
 ```java
 String TeslaPowerwall_gridstatus { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:gridstatus" }
