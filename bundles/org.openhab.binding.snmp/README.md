@@ -78,7 +78,7 @@ The default is `v1`.
 ### `target3`
 
 The `target3` thing has an additional mandatory parameter: `user`.
-This value is named "securityName" or "userName" in most agents.
+This value of this parameter is named "securityName" or "userName" in most agents.
 
 Optional configuration parameters are: `securityModel`, `authProtocol`, `authPassphrase`, `privProtocol` and `privPassphrase`.
 
