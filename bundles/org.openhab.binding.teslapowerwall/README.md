@@ -4,7 +4,7 @@ This binding enables the capture of key data from a Tesla Powerwall 2 into openH
 
 ## Supported Things
 
-Tesla Powerwall 2
+- `powerwall` Tesla Powerwall 2
 
 ## Discovery
 
