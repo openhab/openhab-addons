@@ -50,7 +50,8 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(TeslaPowerwallHandler.class);
 
     private long refreshInterval;
-
+    private @NonNullByDefault({}) TeslaPowerwallConfiguration config;
+    private String token = "";
     private @NonNullByDefault({}) TeslaPowerwallWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
 
@@ -65,14 +66,14 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        TeslaPowerwallConfiguration config = getConfigAs(TeslaPowerwallConfiguration.class);
+        config = getConfigAs(TeslaPowerwallConfiguration.class);
         logger.debug("config.hostname = {}, refresh = {}", config.hostname, config.refresh);
         if (config.hostname.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname/IP address must be set");
         } else {
             webTargets = new TeslaPowerwallWebTargets(config.hostname);
             refreshInterval = config.refresh;
-
+            updateStatus(ThingStatus.UNKNOWN);
             schedulePoll();
         }
     }
@@ -114,9 +115,9 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
     }
 
     private void pollStatus() throws IOException {
-
-        TeslaPowerwallConfiguration config = getConfigAs(TeslaPowerwallConfiguration.class);
-        String token = webTargets.getToken(config.email, config.password);
+        if (token.isEmpty()) {
+            token = webTargets.getToken(config.email, config.password);
+        }
         Operations operations = webTargets.getOperations(token);
         updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_MODE, new StringType(operations.mode));
         updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_RESERVE,

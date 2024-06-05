@@ -27,7 +27,7 @@ import org.osgi.service.component.annotations.Component;
  *
  * @author Paul Smedley - Initial contribution
  */
-@Component(service = ThingHandlerFactory.class, configurationPid = "binding.teslapowerwall")
+@Component(service = ThingHandlerFactory.class, configurationPid = "binding.tesla-powerwall")
 @NonNullByDefault
 public class TeslaPowerwallHandlerFactory extends BaseThingHandlerFactory {
 

@@ -12,13 +12,6 @@
 
   <artifactId>org.openhab.binding.teslapowerwall</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: TeslaPowerwall Binding</name>
+  <name>openHAB Add-ons :: Bundles :: Tesla Powerwall Binding</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>javax.measure</groupId>
-      <artifactId>unit-api</artifactId>
-      <version>1.0</version>
-    </dependency>
-  </dependencies>
 </project>

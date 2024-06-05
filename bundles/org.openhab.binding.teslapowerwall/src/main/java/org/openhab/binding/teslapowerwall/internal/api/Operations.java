@@ -36,7 +36,7 @@ public class Operations {
     }
 
     public static Operations parse(String response) {
-        LOGGER.debug("Parsing string: \"{}\"", response);
+        LOGGER.trace("Parsing string: \"{}\"", response);
         /* parse json string */
         JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         Operations info = new Operations();

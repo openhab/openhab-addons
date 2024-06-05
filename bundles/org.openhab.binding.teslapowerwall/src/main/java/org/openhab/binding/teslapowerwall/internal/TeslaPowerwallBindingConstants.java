@@ -30,7 +30,7 @@ public class TeslaPowerwallBindingConstants {
     private static final String BINDING_ID = "teslapowerwall";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID TESLAPOWERWALL_THING = new ThingTypeUID(BINDING_ID, "teslapowerwall");
+    public static final ThingTypeUID TESLAPOWERWALL_THING = new ThingTypeUID(BINDING_ID, "tesla-powerwall");
 
     // List of all Channel ids
     public static final String CHANNEL_TESLAPOWERWALL_GRIDSTATUS = "gridstatus";

@@ -35,7 +35,7 @@ public class SystemStatus {
     }
 
     public static SystemStatus parse(String response) {
-        LOGGER.debug("Parsing string: \"{}\"", response);
+        LOGGER.trace("Parsing string: \"{}\"", response);
         /* parse json string */
         JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         SystemStatus info = new SystemStatus();
