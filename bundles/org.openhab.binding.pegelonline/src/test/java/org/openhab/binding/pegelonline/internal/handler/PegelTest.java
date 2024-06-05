@@ -54,7 +54,7 @@ class PegelTest {
         assertFalse(config.uuidCheck(), config.uuid);
         config.uuid = "abc d";
         assertFalse(config.uuidCheck(), config.uuid);
-        config.uuid = "1234567a-abc1-efh9-cdf3-0123456789ab";
+        config.uuid = "1234567a-abc1-efd9-cdf3-0123456789ab";
         assertTrue(config.uuidCheck(), config.uuid);
         assertTrue(config.warningCheck(), "Warnings");
         assertTrue(config.floodingCheck(), "flooding");
