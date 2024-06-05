@@ -73,7 +73,7 @@ Number:Percent TeslaPowerwall_degradation { channel="teslapowerwall:teslapowerwa
 Number:Energy TeslaPowerwall_full_pack_energy { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:full_pack_energy" }
 ```
 
-teslapowerwall.sitemap:
+### `teslapowerwall.sitemap`:
 
 ```perl
 Text item=OpenGarage_StatusText label="Status"
