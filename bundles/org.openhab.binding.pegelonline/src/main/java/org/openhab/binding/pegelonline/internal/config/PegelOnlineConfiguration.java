@@ -33,7 +33,8 @@ public class PegelOnlineConfiguration {
     public int refreshInterval = 15;
 
     public boolean uuidCheck() {
-        return uuid.matches("^[-a-z0-9]+$") && !UNKNOWN.equals(uuid);
+        // https://stackoverflow.com/questions/20041051/how-to-judge-a-string-is-uuid-type
+        return uuid.matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$");
     }
 
     public boolean warningCheck() {
