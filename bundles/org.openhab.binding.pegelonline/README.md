@@ -30,12 +30,7 @@ Thing configuration contains 3 sections
 
 Stations can be selected with an Universally Unique Identifier (uuid). 
 It's automatically added by the Discovery. 
-Configure a station manually using 
-
-- Website with [list of all available stations](https://pegelonline.wsv.de/gast/pegeltabelle) or
-- [stations.json](https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations.json) 
-
-and choose the uuid of your desired measurement station.
+Configure a station manually using [list of all available stations](https://pegelonline.wsv.de/gast/pegeltabelle) or [stations.json](https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations.json) and choose the uuid of your desired measurement station.
 
 ### Warning Levels
 
@@ -123,5 +118,5 @@ Number           Lahn_Giessen_Warning        "Warning Level Lahn Giessen"       
 
 ## Links
 
-[PegelOnine API Documentation](https://www.pegelonline.wsv.de/webservice/dokuRestapi#caching)
+[PegelOnline API Documentation](https://www.pegelonline.wsv.de/webservice/dokuRestapi#caching)
 
