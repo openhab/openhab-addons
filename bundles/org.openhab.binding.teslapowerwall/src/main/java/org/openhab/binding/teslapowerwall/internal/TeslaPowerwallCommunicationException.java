@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public class TeslaPowerwallCommunicationException extends IOException {
+public class TeslaPowerwallCommunicationException extends Exception {
     private static final long serialVersionUID = 529232811860854017L;
 
     public TeslaPowerwallCommunicationException(String message) {
