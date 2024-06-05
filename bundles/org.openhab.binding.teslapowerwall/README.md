@@ -97,4 +97,3 @@ Text item=TeslaPowerwall_Battery_full_pack_energy label="Full Pack Energy"
 Text item=TeslaPowerwall_Battery_degradation label="Degradation level"
 ```
 
-
