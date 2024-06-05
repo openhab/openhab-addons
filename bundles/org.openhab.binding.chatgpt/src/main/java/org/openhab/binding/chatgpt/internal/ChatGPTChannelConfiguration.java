@@ -24,9 +24,13 @@ public class ChatGPTChannelConfiguration {
 
     public String model = "gpt-3.5-turbo";
 
-    public float temperature = 0.5f;
+    public Double temperature = 0.5;
+
+    public Double topP = 1.0;
 
     public String systemMessage = "";
 
-    int maxTokens = 500;
+    public String type = "";
+
+    public int maxTokens = 500;
 }
