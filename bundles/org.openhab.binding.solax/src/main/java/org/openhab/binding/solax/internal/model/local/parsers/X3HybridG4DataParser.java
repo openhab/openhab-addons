@@ -18,8 +18,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
-import org.openhab.binding.solax.internal.model.local.LocalInverterData;
-import org.openhab.binding.solax.internal.model.local.X3HybridG4InverterData;
+import org.openhab.binding.solax.internal.model.local.LocalData;
+import org.openhab.binding.solax.internal.model.local.X3HybridG4Data;
 
 /**
  * The {@link X3HybridG4DataParser} is the implementation that parses raw data into a LocalInverterData for the
@@ -47,8 +47,8 @@ public class X3HybridG4DataParser implements RawDataParser {
             CHANNEL_TODAY_BATTERY_CHARGE_ENERGY, CHANNEL_TODAY_BATTERY_DISCHARGE_ENERGY, CHANNEL_INVERTER_WORKMODE);
 
     @Override
-    public LocalInverterData getData(LocalConnectRawDataBean rawData) {
-        return new X3HybridG4InverterData(rawData);
+    public LocalData getData(LocalConnectRawDataBean rawData) {
+        return new X3HybridG4Data(rawData);
     }
 
     @Override

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solax.internal.local;
+package org.openhab.binding.solax.internal.local.parsers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterType;
-import org.openhab.binding.solax.internal.model.local.LocalInverterData;
+import org.openhab.binding.solax.internal.model.local.LocalData;
 import org.openhab.binding.solax.internal.model.local.parsers.RawDataParser;
 
 /**
@@ -56,7 +56,7 @@ public class TestX3MicOrProG2Parser {
         RawDataParser parser = inverterType.getParser();
         assertNotNull(parser);
 
-        LocalInverterData data = parser.getData(bean);
+        LocalData data = parser.getData(bean);
         assertEquals("XYZ", data.getWifiSerial());
         assertEquals("3.003.02", data.getWifiVersion());
 

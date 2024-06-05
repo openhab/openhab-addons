@@ -18,8 +18,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
-import org.openhab.binding.solax.internal.model.local.LocalInverterData;
-import org.openhab.binding.solax.internal.model.local.X1BoostAirMiniInverterData;
+import org.openhab.binding.solax.internal.model.local.LocalData;
+import org.openhab.binding.solax.internal.model.local.X1BoostAirMiniData;
 
 /**
  * The {@link X1BoostAirMiniDataParser} is the implementation that parses raw data into a LocalInverterData for the
@@ -38,8 +38,8 @@ public class X1BoostAirMiniDataParser implements RawDataParser {
             CHANNEL_TOTAL_ENERGY, CHANNEL_TODAY_ENERGY, CHANNEL_POWER_USAGE);
 
     @Override
-    public LocalInverterData getData(LocalConnectRawDataBean bean) {
-        return new X1BoostAirMiniInverterData(bean);
+    public LocalData getData(LocalConnectRawDataBean bean) {
+        return new X1BoostAirMiniData(bean);
     }
 
     @Override
