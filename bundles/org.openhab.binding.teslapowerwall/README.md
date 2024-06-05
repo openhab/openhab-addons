@@ -44,7 +44,7 @@ As a minimum, the IP address is needed:
 
 ## Full Example
 
-teslapowerwall.things:
+### `teslapowerwall.things`:
 
 ```java
 teslapowerwall:teslapowerwall:TeslaPowerwall [ hostname="192.168.0.5" ]
