@@ -27,20 +27,20 @@ As a minimum, the IP address is needed:
 | batterysoe             | Number:Percent | Current battery state of charge
 | mode                   | String         | Current operating mode
 | reserve                | Number:Percent | Current battery reserve %
-| grid_instpower         | Number:Power   | Instantaneous Grid Power Supply
-| battery_instpower      | Number:Power   | Instantaneous Battery Power Supply
-| home_instpower         | Number:Power   | Instantaneous Home Power Supply
-| solar_instpower        | Number:Power   | Instantaneous Solar Power Supply
-| grid_energyexported    | Number:Energy  | Total Grid Energy Exported
-| battery_energyexported | Number:Energy  | Total Battery Energy Exported
-| home_energyexported    | Number:Energy  | Total Home Energy Exported
-| solar_energyexported   | Number:Energy  | Total Solar Energy Exported
-| grid_energyimported    | Number:Energy  | Total Grid Energy Imported
-| battery_energyimported | Number:Energy  | Total Battery Energy Imported
-| home_energyimported    | Number:Energy  | Total Home Energy Imported
-| solar_energyimported   | Number:Energy  | Total Solar Energy Imported
+| grid-instpower         | Number:Power   | Instantaneous Grid Power Supply
+| battery-instpower      | Number:Power   | Instantaneous Battery Power Supply
+| home-instpower         | Number:Power   | Instantaneous Home Power Supply
+| solar-instpower        | Number:Power   | Instantaneous Solar Power Supply
+| grid-energyexported    | Number:Energy  | Total Grid Energy Exported
+| battery-energyexported | Number:Energy  | Total Battery Energy Exported
+| home-energyexported    | Number:Energy  | Total Home Energy Exported
+| solar-energyexported   | Number:Energy  | Total Solar Energy Exported
+| grid-energyimported    | Number:Energy  | Total Grid Energy Imported
+| battery-energyimported | Number:Energy  | Total Battery Energy Imported
+| home-energyimported    | Number:Energy  | Total Home Energy Imported
+| solar-energyimported   | Number:Energy  | Total Solar Energy Imported
 | degradation            | Number:Percent | Current battery degradation % (Based on single battery)
-| full_pack_energy       | Number:Energy  | Reported battery capacity at full
+| full-pack-energy       | Number:Energy  | Reported battery capacity at full
 
 ## Full Example
 
@@ -57,20 +57,20 @@ String TeslaPowerwall_gridstatus { channel="teslapowerwall:teslapowerwall:TeslaP
 Number:Percent TeslaPowerwall_batterysoe { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:batterysoe" }
 String TeslaPowerwall_mode { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:mode" }
 Number:Percent TeslaPowerwall_reserve { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:reserve" }
-Number:Power TeslaPowerwall_grid_instpower { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:grid_instpower" }
-Number:Power TeslaPowerwall_battery_instpower { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:battery_instpower" }
-Number:Power TeslaPowerwall_home_instpower { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:home_instpower" }
-Number:Power TeslaPowerwall_solar_instpower { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:solar_instpower" }
-Number:Energy TeslaPowerwall_grid_energyexported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:grid_energyexported" }
-Number:Energy TeslaPowerwall_grid_energyimported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:grid_energyimported" }
-Number:Energy TeslaPowerwall_battery_energyexported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:battery_energyexported" }
-Number:Energy TeslaPowerwall_battery_energyimported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:battery_energyimported" }
-Number:Energy TeslaPowerwall_home_energyexported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:home_energyexported" }
-Number:Energy TeslaPowerwall_home_energyimported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:home_energyimported" }
-Number:Energy TeslaPowerwall_solar_energyexported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:solar_energyexported" }
-Number:Energy TeslaPowerwall_solar_energyimported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:solar_energyimported" }
+Number:Power TeslaPowerwall_grid_instpower { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:grid-instpower" }
+Number:Power TeslaPowerwall_battery_instpower { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:battery-instpower" }
+Number:Power TeslaPowerwall_home_instpower { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:home-instpower" }
+Number:Power TeslaPowerwall_solar_instpower { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:solar-instpower" }
+Number:Energy TeslaPowerwall_grid_energyexported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:grid-energyexported" }
+Number:Energy TeslaPowerwall_grid_energyimported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:grid-energyimported" }
+Number:Energy TeslaPowerwall_battery_energyexported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:battery-energyexported" }
+Number:Energy TeslaPowerwall_battery_energyimported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:battery-energyimported" }
+Number:Energy TeslaPowerwall_home_energyexported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:home-energyexported" }
+Number:Energy TeslaPowerwall_home_energyimported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:home-energyimported" }
+Number:Energy TeslaPowerwall_solar_energyexported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:solar-energyexported" }
+Number:Energy TeslaPowerwall_solar_energyimported { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:solar-energyimported" }
 Number:Percent TeslaPowerwall_degradation { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:degradation" }
-Number:Energy TeslaPowerwall_full_pack_energy { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:full_pack_energy" }
+Number:Energy TeslaPowerwall_full_pack_energy { channel="teslapowerwall:teslapowerwall:TeslaPowerwall:full-pack-energy" }
 ```
 
 ### `teslapowerwall.sitemap`:
