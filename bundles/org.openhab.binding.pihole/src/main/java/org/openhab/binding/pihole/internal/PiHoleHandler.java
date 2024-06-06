@@ -16,9 +16,7 @@ import static java.util.concurrent.TimeUnit.*;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.*;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DisableEnable.ENABLE;
 import static org.openhab.core.library.unit.Units.PERCENT;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatus.UNKNOWN;
+import static org.openhab.core.thing.ThingStatus.*
 import static org.openhab.core.thing.ThingStatusDetail.*;
 
 import java.math.BigDecimal;
