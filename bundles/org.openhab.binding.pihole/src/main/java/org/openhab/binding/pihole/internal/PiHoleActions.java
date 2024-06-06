@@ -50,7 +50,7 @@ public class PiHoleActions implements ThingActions {
     public void disableBlocking(
             @ActionInput(name = "time", label = "@text/action.disable.timeLabel", description = "@text/action.disable.timeDescription") long time,
             @ActionInput(name = "timeUnit", label = "@text/action.disable.timeUnitLabel", description = "@text/action.disable.timeUnitDescription") @Nullable TimeUnit timeUnit)
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws PiHoleException {
         if (time < 0) {
             return;
         }
@@ -67,34 +67,34 @@ public class PiHoleActions implements ThingActions {
     }
 
     public static void disableBlocking(@Nullable ThingActions actions, long time, @Nullable TimeUnit timeUnit)
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws PiHoleException {
         ((PiHoleActions) requireNonNull(actions)).disableBlocking(time, timeUnit);
     }
 
     @RuleAction(label = "@text/action.disable.label", description = "@text/action.disable.description")
     public void disableBlocking(
             @ActionInput(name = "time", label = "@text/action.disable.timeLabel", description = "@text/action.disable.timeDescription") long time)
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws PiHoleException {
         disableBlocking(time, null);
     }
 
     public static void disableBlocking(@Nullable ThingActions actions, long time)
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws PiHoleException {
         ((PiHoleActions) requireNonNull(actions)).disableBlocking(time);
     }
 
     @RuleAction(label = "@text/action.disableInf.label", description = "@text/action.disableInf.description")
-    public void disableBlocking() throws ExecutionException, InterruptedException, TimeoutException {
+    public void disableBlocking() throws PiHoleException {
         disableBlocking(0, null);
     }
 
     public static void disableBlocking(@Nullable ThingActions actions)
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws PiHoleException {
         ((PiHoleActions) requireNonNull(actions)).disableBlocking(0);
     }
 
     @RuleAction(label = "@text/action.enable.label", description = "@text/action.enable.description")
-    public void enableBlocking() throws ExecutionException, InterruptedException, TimeoutException {
+    public void enableBlocking() throws PiHoleException {
         var local = handler;
         if (local == null) {
             return;
@@ -103,7 +103,7 @@ public class PiHoleActions implements ThingActions {
     }
 
     public static void enableBlocking(@Nullable ThingActions actions)
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws PiHoleException {
         ((PiHoleActions) requireNonNull(actions)).enableBlocking();
     }
 }

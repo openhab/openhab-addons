@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.pihole.internal.PiHoleException;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
 
 /**
@@ -28,28 +29,22 @@ public interface AdminService {
      * Retrieves a summary of DNS statistics.
      *
      * @return An optional containing the DNS statistics.
-     * @throws ExecutionException If an execution exception occurs.
-     * @throws InterruptedException If the operation is interrupted.
-     * @throws TimeoutException If the operation times out.
+     * @throws PiHoleException In case of error
      */
-    Optional<DnsStatistics> summary() throws ExecutionException, InterruptedException, TimeoutException;
+    Optional<DnsStatistics> summary() throws PiHoleException;
 
     /**
      * Disables blocking for a specified duration.
      *
      * @param seconds The duration in seconds for which blocking should be disabled.
-     * @throws ExecutionException If an execution exception occurs.
-     * @throws InterruptedException If the operation is interrupted.
-     * @throws TimeoutException If the operation times out.
+     * @throws PiHoleException In case of error
      */
-    void disableBlocking(long seconds) throws ExecutionException, InterruptedException, TimeoutException;
+    void disableBlocking(long seconds) throws PiHoleException;
 
     /**
      * Enables blocking.
      *
-     * @throws ExecutionException If an execution exception occurs.
-     * @throws InterruptedException If the operation is interrupted.
-     * @throws TimeoutException If the operation times out.
+     * @throws PiHoleException In case of error
      */
-    void enableBlocking() throws ExecutionException, InterruptedException, TimeoutException;
+    void enableBlocking() throws PiHoleException;
 }

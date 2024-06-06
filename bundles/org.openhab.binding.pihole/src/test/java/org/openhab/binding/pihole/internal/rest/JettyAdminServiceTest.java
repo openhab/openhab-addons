@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.pihole.internal.rest;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -78,7 +79,7 @@ public class JettyAdminServiceTest {
     @Test
     @DisplayName("Returns a DnsStatistics object when called with valid token and baseUrl")
     public void testReturnsDnsStatisticsObjectWithValidTokenAndBaseUrl()
-            throws ExecutionException, InterruptedException, TimeoutException {
+            throws Exception {
         // Given
         var token = "validToken";
         var baseUrl = URI.create("https://example.com");
@@ -114,6 +115,7 @@ public class JettyAdminServiceTest {
                 new GravityLastUpdated(true, 1712457841L, new Relative(0, 7, 3)));
         var response = mock(ContentResponse.class);
         var request = mock(Request.class);
+        given(request.timeout(10, SECONDS)).willReturn(request);
 
         given(client.newRequest(URI.create("https://example.com/admin/api.php?summaryRaw&auth=validToken")))
                 .willReturn(request);

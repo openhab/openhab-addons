@@ -16,7 +16,10 @@ import static java.util.concurrent.TimeUnit.*;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.*;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DisableEnable.ENABLE;
 import static org.openhab.core.library.unit.Units.PERCENT;
-import static org.openhab.core.thing.ThingStatus.*
+import static org.openhab.core.thing.ThingStatus.*;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatus.UNKNOWN;
 import static org.openhab.core.thing.ThingStatusDetail.*;
 
 import java.math.BigDecimal;
@@ -32,7 +35,6 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.*;
 import org.openhab.binding.pihole.internal.rest.AdminService;
 import org.openhab.binding.pihole.internal.rest.JettyAdminService;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
@@ -142,7 +144,7 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
                         case FOR_5_MIN -> disableBlocking(MINUTES.toSeconds(5));
                         case ENABLE -> enableBlocking();
                     }
-                } catch (ExecutionException | InterruptedException | TimeoutException ex) {
+                } catch (PiHoleException ex) {
                     logger.debug("Cannot invoke {} on channel {}", value, channelUID, ex);
                     updateStatus(OFFLINE, COMMUNICATION_ERROR, ex.getLocalizedMessage());
                 }
@@ -218,7 +220,7 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
     }
 
     @Override
-    public Optional<DnsStatistics> summary() throws ExecutionException, InterruptedException, TimeoutException {
+    public Optional<DnsStatistics> summary() throws PiHoleException {
         var local = adminService;
         if (local == null) {
             throw new IllegalStateException("AdminService not initialized");
@@ -227,7 +229,7 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
     }
 
     @Override
-    public void disableBlocking(long seconds) throws ExecutionException, InterruptedException, TimeoutException {
+    public void disableBlocking(long seconds) throws PiHoleException {
         var local = adminService;
         if (local == null) {
             throw new IllegalStateException("AdminService not initialized");
@@ -243,7 +245,7 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
     }
 
     @Override
-    public void enableBlocking() throws ExecutionException, InterruptedException, TimeoutException {
+    public void enableBlocking() throws PiHoleException {
         var local = adminService;
         if (local == null) {
             throw new IllegalStateException("AdminService not initialized");

@@ -19,6 +19,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.openhab.binding.pihole.internal.PiHoleException;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,28 +52,36 @@ public class JettyAdminService implements AdminService {
     }
 
     @Override
-    public Optional<DnsStatistics> summary() throws ExecutionException, InterruptedException, TimeoutException {
+    public Optional<DnsStatistics> summary() throws PiHoleException {
         logger.debug("Getting summary");
         var url = baseUrl.resolve("/admin/api.php?summaryRaw&auth=" + token);
         var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS);
-        var response = request.send();
+        var response = send(request);
         var content = response.getContentAsString();
         return Optional.ofNullable(GSON.fromJson(content, DnsStatistics.class));
     }
 
-    @Override
-    public void disableBlocking(long seconds) throws ExecutionException, InterruptedException, TimeoutException {
-        logger.debug("Disabling blocking for {} seconds", seconds);
-        var url = baseUrl.resolve("/admin/api.php?disable=%s&auth=%s".formatted(seconds, token));
-        var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS);
-        request.send();
+    private static ContentResponse send(Request request) throws PiHoleException {
+        try {
+            return request.send();
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            throw new PiHoleException("Exception while sending request to Pi-hole. %s".formatted(e.getLocalizedMessage()), e);
+        }
     }
 
     @Override
-    public void enableBlocking() throws ExecutionException, InterruptedException, TimeoutException {
+    public void disableBlocking(long seconds) throws PiHoleException {
+        logger.debug("Disabling blocking for {} seconds", seconds);
+        var url = baseUrl.resolve("/admin/api.php?disable=%s&auth=%s".formatted(seconds, token));
+        var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS);
+        send(request);
+    }
+
+    @Override
+    public void enableBlocking() throws PiHoleException {
         logger.debug("Enabling blocking");
         var url = baseUrl.resolve("/admin/api.php?disable&auth=%s".formatted(token));
         var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS);
-        request.send();
+        send(request);
     }
 }
