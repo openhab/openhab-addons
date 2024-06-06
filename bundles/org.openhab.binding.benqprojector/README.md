@@ -64,7 +64,7 @@ Some notes:
 | freeze             | Switch    | Turn the freeze image mode on or off.               |            |
 | blank              | Switch    | Turn the screen blank mode on or off.               |            |
 | directcmd          | String    | Send a command directly to the projector.           | Write only |
-| lamptime           | Number    | Retrieves the nuber of lamp hours used.             | Read only  |
+| lamptime           | Number    | Retrieves the number of lamp hours used.            | Read only  |
 
 ## Full Example
 
