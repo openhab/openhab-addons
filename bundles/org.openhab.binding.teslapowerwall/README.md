@@ -12,7 +12,7 @@ The binding does not support auto discovery.
 
 ## Thing Configuration
 
-As a minimum, the IP address is needed:
+As a minimum, the hostname is needed:
 
 * hostname - The hostname of the Tesla Powerwall 2. Defaults to powerwall to avoid SSL certificate issues
 * email - the email of the local account on the Powerwall that the installer provided
