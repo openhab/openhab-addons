@@ -33,21 +33,21 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AmberElectricWebTargets {
     private static final int TIMEOUT_MS = 30000;
-
+    String baseUri = "https://api.amber.com.au/v1/";
     private final Logger logger = LoggerFactory.getLogger(AmberElectricWebTargets.class);
 
     public AmberElectricWebTargets() {
     }
 
-    public Sites getSites(String apikey, String nmi) throws AmberElectricCommunicationException {
-        String getSitesUri = "https://api.amber.com.au/v1/sites";
-        String response = invoke("GET", getSitesUri, apikey);
+    public Sites getSites(String apiKey, String nmi) throws AmberElectricCommunicationException {
+        String getSitesUri = baseUri + "sites";
+        String response = invoke("GET", getSitesUri, apiKey);
         return Sites.parse(response, nmi);
     }
 
-    public CurrentPrices getCurrentPrices(String siteid, String apikey) throws AmberElectricCommunicationException {
-        String getCurrentPricesUri = "https://api.amber.com.au/v1/sites/" + siteid + "/prices/current";
-        String response = invoke("GET", getCurrentPricesUri, apikey);
+    public CurrentPrices getCurrentPrices(String siteid, String apiKey) throws AmberElectricCommunicationException {
+        String getCurrentPricesUri = baseUri + "sites/" + siteid + "/prices/current";
+        String response = invoke("GET", getCurrentPricesUri, apiKey);
         return CurrentPrices.parse(response);
     }
 
@@ -63,13 +63,13 @@ public class AmberElectricWebTargets {
         return invoke(httpMethod, uri, accessToken, null, null);
     }
 
-    private String invoke(String httpMethod, String uri, String apikey, @Nullable InputStream content,
+    private String invoke(String httpMethod, String uri, String apiKey, @Nullable InputStream content,
             @Nullable String contentType) throws AmberElectricCommunicationException {
         logger.debug("Calling url: {}", uri);
         @Nullable
         String response;
         try {
-            response = HttpUtil.executeUrl(httpMethod, uri, getHttpHeaders(apikey), content, contentType, TIMEOUT_MS);
+            response = HttpUtil.executeUrl(httpMethod, uri, getHttpHeaders(apiKey), content, contentType, TIMEOUT_MS);
         } catch (IOException ex) {
             logger.debug("{}", ex.getLocalizedMessage(), ex);
             // Response will also be set to null if parsing in executeUrl fails so we use null here to make the

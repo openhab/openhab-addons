@@ -4,24 +4,24 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="amber-electric">
+	<thing-type id="service">
 		<label>Amber Electric</label>
 		<description>Amber Electric - wholesale access to power prices</description>
 
 		<channels>
-			<channel id="elecprice" typeId="amber-electric-elecprice"/>
-			<channel id="elecstatus" typeId="amber-electric-elecstatus"/>
-			<channel id="clprice" typeId="amber-electric-clprice"/>
-			<channel id="clstatus" typeId="amber-electric-clstatus"/>
-			<channel id="feedinprice" typeId="amber-electric-feedinprice"/>
-			<channel id="feedinstatus" typeId="amber-electric-feedinstatus"/>
-			<channel id="nemtime" typeId="amber-electric-nemtime"/>
-			<channel id="spike" typeId="amber-electric-spike"/>
-			<channel id="renewables" typeId="amber-electric-renewables"/>
+			<channel id="electricity-price" typeId="electricity-price"/>
+			<channel id="electricity-status" typeId="electricity-status"/>
+			<channel id="controlled-load-price" typeId="controlled-load-price"/>
+			<channel id="controlled-load-status" typeId="controlled-load-status"/>
+			<channel id="feed-in-price" typeId="feed-in-price"/>
+			<channel id="feed-in-status" typeId="feed-in-status"/>
+			<channel id="nem-time" typeId="nemtime"/>
+			<channel id="spike" typeId="spike"/>
+			<channel id="renewables" typeId="renewables"/>
 		</channels>
 
 		<config-description>
-			<parameter name="apikey" type="text" required="true">
+			<parameter name="apiKey" type="text" required="true">
 				<label>API Key</label>
 				<description>API key from the Amber website</description>
 			</parameter>
@@ -29,7 +29,7 @@
 				<label>NMI</label>
 				<description>NMI for your address (Optional)</description>
 			</parameter>
-			<parameter name="refresh" type="integer">
+			<parameter name="refresh" type="integer" min="60" unit="s">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>
 				<default>60</default>
@@ -38,55 +38,55 @@
 
 	</thing-type>
 
-	<channel-type id="amber-electric-elecprice">
-		<item-type>Number</item-type>
+	<channel-type id="electricity-price">
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Current Electricity Price</label>
 		<description>Current price to import power from the grid</description>
-		<state readOnly="true" pattern="%.1f c/kWh"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="amber-electric-clprice">
-		<item-type>Number</item-type>
+	<channel-type id="controlled-load-price">
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Current Controlled Load Price</label>
 		<description>Current price to import power for Controlled Load</description>
-		<state readOnly="true" pattern="%.1f c/kWh"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="amber-electric-feedinprice">
-		<item-type>Number</item-type>
+	<channel-type id="feed-in-price">
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Current Feed-In Price</label>
 		<description>Current price to export power to the grid</description>
-		<state readOnly="true" pattern="%.1f c/kWh"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="amber-electric-elecstatus">
+	<channel-type id="electricity-status">
 		<item-type>String</item-type>
 		<label>Current Electricity Status</label>
 		<description>Current price status of grid import</description>
-		<state readOnly="true" pattern="%d c/kWh"/>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="amber-electric-clstatus">
+	<channel-type id="controlled-load-status">
 		<item-type>String</item-type>
 		<label>Current Controlled Load Status</label>
 		<description>Current price status of Controlled Load</description>
-		<state readOnly="true" pattern="%d c/kWh"/>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="amber-electric-feedinstatus">
+	<channel-type id="feed-in-status">
 		<item-type>String</item-type>
 		<label>Current Feed-In Status</label>
 		<description>Current price status of Feed-In</description>
-		<state readOnly="true" pattern="%d c/kWh"/>
+		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="amber-electric-nemtime">
+	<channel-type id="nem-time">
 		<item-type>String</item-type>
 		<label>NEM Time</label>
 		<description>NEM time of last pricing update</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
-	<channel-type id="amber-electric-renewables">
-		<item-type>Number</item-type>
+	<channel-type id="renewables">
+		<item-type>Number:Dimensionless</item-type>
 		<label>Current Renewables</label>
 		<description>Current level of renewables in the grid</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
-	<channel-type id="amber-electric-spike">
+	<channel-type id="spike">
 		<item-type>Switch</item-type>
 		<label>Energy Price Spike</label>
 		<description>Report if the grid has a current price spike</description>

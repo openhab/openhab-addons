@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.amberelectric.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -30,18 +29,18 @@ public class AmberElectricBindingConstants {
     private static final String BINDING_ID = "amberelectric";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID AMBERELECTRIC_THING = new ThingTypeUID(BINDING_ID, "amber-electric");
+    public static final ThingTypeUID AMBERELECTRIC_THING = new ThingTypeUID(BINDING_ID, "service");
 
     // List of all Channel ids
-    public static final String CHANNEL_AMBERELECTRIC_ELECPRICE = "elecprice";
-    public static final String CHANNEL_AMBERELECTRIC_CLPRICE = "clprice";
-    public static final String CHANNEL_AMBERELECTRIC_FEEDINPRICE = "feedinprice";
-    public static final String CHANNEL_AMBERELECTRIC_ELECSTATUS = "elecstatus";
-    public static final String CHANNEL_AMBERELECTRIC_CLSTATUS = "clstatus";
-    public static final String CHANNEL_AMBERELECTRIC_FEEDINSTATUS = "feedinstatus";
-    public static final String CHANNEL_AMBERELECTRIC_NEMTIME = "nemtime";
+    public static final String CHANNEL_AMBERELECTRIC_ELECPRICE = "electricity-price";
+    public static final String CHANNEL_AMBERELECTRIC_CLPRICE = "controlled-load-price";
+    public static final String CHANNEL_AMBERELECTRIC_FEEDINPRICE = "feed-in-price";
+    public static final String CHANNEL_AMBERELECTRIC_ELECSTATUS = "electricity-status";
+    public static final String CHANNEL_AMBERELECTRIC_CLSTATUS = "controlled-load-status";
+    public static final String CHANNEL_AMBERELECTRIC_FEEDINSTATUS = "feed-in-status";
+    public static final String CHANNEL_AMBERELECTRIC_NEMTIME = "nem-time";
     public static final String CHANNEL_AMBERELECTRIC_RENEWABLES = "renewables";
     public static final String CHANNEL_AMBERELECTRIC_SPIKE = "spike";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(AMBERELECTRIC_THING);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(AMBERELECTRIC_THING);
 }
