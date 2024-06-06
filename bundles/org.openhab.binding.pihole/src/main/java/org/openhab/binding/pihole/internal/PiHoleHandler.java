@@ -85,7 +85,6 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             return;
         }
 
-        {
             URI hostname;
             try {
                 hostname = new URI(config.hostname);
@@ -99,7 +98,6 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
                 return;
             }
             adminService = new JettyAdminService(config.token, hostname, httpClient);
-        }
         scheduledFuture = scheduler.scheduleWithFixedDelay(this::update, 0, config.refreshIntervalSeconds, SECONDS);
 
         // do not set status here, the background task will do it.
