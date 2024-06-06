@@ -70,7 +70,8 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
         logger.debug("config.hostname = {}, refresh = {}", config.hostname, config.refresh);
         if (config.hostname.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname/IP address must be set");
-        } else {
+        return;
+        }
             webTargets = new TeslaPowerwallWebTargets(config.hostname);
             refreshInterval = config.refresh;
             updateStatus(ThingStatus.UNKNOWN);
