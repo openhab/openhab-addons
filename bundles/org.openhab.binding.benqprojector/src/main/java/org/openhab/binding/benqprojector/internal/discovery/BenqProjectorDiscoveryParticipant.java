@@ -49,7 +49,7 @@ public class BenqProjectorDiscoveryParticipant implements SddpDiscoveryParticipa
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return SUPPORTED_THING_TYPES_UIDS;
+        return Set.of(THING_TYPE_PROJECTOR_TCP);
     }
 
     @Override
