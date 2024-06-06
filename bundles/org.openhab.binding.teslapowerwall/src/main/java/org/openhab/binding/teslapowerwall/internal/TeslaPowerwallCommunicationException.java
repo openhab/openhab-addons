@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.teslapowerwall.internal;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
