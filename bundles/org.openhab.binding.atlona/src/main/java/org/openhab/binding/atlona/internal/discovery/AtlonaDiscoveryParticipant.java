@@ -60,7 +60,7 @@ public class AtlonaDiscoveryParticipant implements SddpDiscoveryParticipant {
             final Map<String, Object> properties = new HashMap<>(2);
             final String label = device.model + " (" + device.ipAddress + ")";
 
-            properties.put(Thing.PROPERTY_MAC_ADDRESS, uid.getId());
+            properties.put(Thing.PROPERTY_MAC_ADDRESS, device.macAddress);
             properties.put(AtlonaPro3Config.IP_ADDRESS, device.ipAddress);
 
             final DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
@@ -93,7 +93,7 @@ public class AtlonaDiscoveryParticipant implements SddpDiscoveryParticipant {
     @Override
     public @Nullable ThingUID getThingUID(SddpDevice device) {
         if (ATLONA.equals(device.manufacturer) && PROXY_AVSWITCH.equals(device.primaryProxy)
-                && !device.macAddress.isBlank()) {
+                && !device.macAddress.isBlank() && !device.ipAddress.isBlank()) {
             final ThingTypeUID typeId;
 
             switch (device.model) {
