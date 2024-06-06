@@ -49,59 +49,59 @@
 				<label>DNS Queries (All Types)</label>
 				<description>The total number of DNS queries of all types.</description>
 			</channel>
-			<channel id="reply-UNKNOWN" typeId="number-channel">
+			<channel id="reply-unknown" typeId="number-channel">
 				<label>Reply UNKNOWN</label>
 				<description>DNS replies with an unknown status.</description>
 			</channel>
-			<channel id="reply-NODATA" typeId="number-channel">
+			<channel id="reply-nodata" typeId="number-channel">
 				<label>Reply NODATA</label>
 				<description>DNS replies indicating no data.</description>
 			</channel>
-			<channel id="reply-NXDOMAIN" typeId="number-channel">
+			<channel id="reply-nxdomain" typeId="number-channel">
 				<label>Reply NXDOMAIN</label>
 				<description>DNS replies indicating non-existent domain.</description>
 			</channel>
-			<channel id="reply-CNAME" typeId="number-channel">
+			<channel id="reply-cname" typeId="number-channel">
 				<label>Reply CNAME</label>
 				<description>DNS replies with a CNAME record.</description>
 			</channel>
-			<channel id="reply-IP" typeId="number-channel">
+			<channel id="reply-ip" typeId="number-channel">
 				<label>Reply IP</label>
 				<description>DNS replies with an IP address.</description>
 			</channel>
-			<channel id="reply-DOMAIN" typeId="number-channel">
+			<channel id="reply-domain" typeId="number-channel">
 				<label>Reply DOMAIN</label>
 				<description>DNS replies with a domain name.</description>
 			</channel>
-			<channel id="reply-RRNAME" typeId="number-channel">
+			<channel id="reply-rrname" typeId="number-channel">
 				<label>Reply RRNAME</label>
 				<description>DNS replies with a resource record name.</description>
 			</channel>
-			<channel id="reply-SERVFAIL" typeId="number-channel">
+			<channel id="reply-servfail" typeId="number-channel">
 				<label>Reply SERVFAIL</label>
 				<description>DNS replies indicating a server failure.</description>
 			</channel>
-			<channel id="reply-REFUSED" typeId="number-channel">
+			<channel id="reply-refused" typeId="number-channel">
 				<label>Reply REFUSED</label>
 				<description>DNS replies indicating refusal.</description>
 			</channel>
-			<channel id="reply-NOTIMP" typeId="number-channel">
+			<channel id="reply-notimp" typeId="number-channel">
 				<label>Reply NOTIMP</label>
 				<description>DNS replies indicating not implemented.</description>
 			</channel>
-			<channel id="reply-OTHER" typeId="number-channel">
+			<channel id="reply-other" typeId="number-channel">
 				<label>Reply OTHER</label>
 				<description>DNS replies with other statuses.</description>
 			</channel>
-			<channel id="reply-DNSSEC" typeId="number-channel">
+			<channel id="reply-dnssec" typeId="number-channel">
 				<label>Reply DNSSEC</label>
 				<description>DNS replies with DNSSEC information.</description>
 			</channel>
-			<channel id="reply-NONE" typeId="number-channel">
+			<channel id="reply-none" typeId="number-channel">
 				<label>Reply NONE</label>
 				<description>DNS replies with no data.</description>
 			</channel>
-			<channel id="reply-BLOB" typeId="number-channel">
+			<channel id="reply-blob" typeId="number-channel">
 				<label>Reply BLOB</label>
 				<description>DNS replies with a BLOB (binary large object).</description>
 			</channel>

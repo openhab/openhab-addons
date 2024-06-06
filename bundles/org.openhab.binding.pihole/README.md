@@ -40,20 +40,20 @@ The Pi-hole Binding allows you to monitor Pi-hole statistics and control its fun
 | clients-ever-seen       | Number | RO         | The total number of unique clients ever seen.              |
 | unique-clients          | Number | RO         | The current count of unique clients.                       |
 | dns-queries-all-types   | Number | RO         | The total number of DNS queries of all types.              |
-| reply-UNKNOWN           | Number | RO         | DNS replies with an unknown status.                        |
-| reply-NODATA            | Number | RO         | DNS replies indicating no data.                            |
-| reply-NXDOMAIN          | Number | RO         | DNS replies indicating non-existent domain.                |
-| reply-CNAME             | Number | RO         | DNS replies with a CNAME record.                           |
-| reply-IP                | Number | RO         | DNS replies with an IP address.                            |
-| reply-DOMAIN            | Number | RO         | DNS replies with a domain name.                            |
-| reply-RRNAME            | Number | RO         | DNS replies with a resource record name.                   |
-| reply-SERVFAIL          | Number | RO         | DNS replies indicating a server failure.                   |
-| reply-REFUSED           | Number | RO         | DNS replies indicating refusal.                            |
-| reply-NOTIMP            | Number | RO         | DNS replies indicating not implemented.                    |
-| reply-OTHER             | Number | RO         | DNS replies with other statuses.                           |
-| reply-DNSSEC            | Number | RO         | DNS replies with DNSSEC information.                       |
-| reply-NONE              | Number | RO         | DNS replies with no data.                                  |
-| reply-BLOB              | Number | RO         | DNS replies with a BLOB (binary large object).             |
+| reply-unknown           | Number | RO         | DNS replies with an unknown status.                        |
+| reply-nodata            | Number | RO         | DNS replies indicating no data.                            |
+| reply-nxdomain          | Number | RO         | DNS replies indicating non-existent domain.                |
+| reply-cname             | Number | RO         | DNS replies with a CNAME record.                           |
+| reply-ip                | Number | RO         | DNS replies with an IP address.                            |
+| reply-domain            | Number | RO         | DNS replies with a domain name.                            |
+| reply-rrname            | Number | RO         | DNS replies with a resource record name.                   |
+| reply-servfail          | Number | RO         | DNS replies indicating a server failure.                   |
+| reply-refused           | Number | RO         | DNS replies indicating refusal.                            |
+| reply-notimp            | Number | RO         | DNS replies indicating not implemented.                    |
+| reply-other             | Number | RO         | DNS replies with other statuses.                           |
+| reply-dnssec            | Number | RO         | DNS replies with DNSSEC information.                       |
+| reply-none              | Number | RO         | DNS replies with no data.                                  |
+| reply-blob              | Number | RO         | DNS replies with a BLOB (binary large object).             |
 | dns-queries-all-replies | Number | RO         | The total number of DNS queries with all reply types.      |
 | privacy-level           | Number | RO         | The privacy level setting.                                 |
 | enabled                 | Switch | RO         | The current status of blocking                             |
