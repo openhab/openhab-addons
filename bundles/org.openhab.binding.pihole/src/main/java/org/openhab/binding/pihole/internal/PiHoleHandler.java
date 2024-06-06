@@ -211,13 +211,8 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
         dnsStatistics = null;
         var localScheduledFuture = scheduledFuture;
         if (localScheduledFuture != null) {
-            try {
                 localScheduledFuture.cancel(true);
-            } catch (Exception e) {
-                logger.debug("Failed to cancel scheduled future", e);
-            } finally {
                 scheduledFuture = null;
-            }
         }
         super.dispose();
     }
