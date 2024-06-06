@@ -23,10 +23,10 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 
 /**
- * Smart power socket handler with night-light
+ * Smart power socket handler with nightlight
  *
  * @author Cato Sognen - Initial contribution
- * @author John Marshall - night-light support
+ * @author John Marshall - Nightlight support
  */
 @NonNullByDefault
 public class BroadlinkSocketModel3Handler extends BroadlinkSocketModel2Handler {
@@ -35,14 +35,14 @@ public class BroadlinkSocketModel3Handler extends BroadlinkSocketModel2Handler {
         super(thing, false);
     }
 
-    OnOffType derivenight-lightStateFromStatusBytes(byte[] statusPayload) {
+    OnOffType deriveNightLightStateFromStatusBytes(byte[] statusPayload) {
         return deriveOnOffBitFromStatusPayload(statusPayload, (byte) 0x02);
     }
 
-    static int mergeOnOffBits(Command power-onOff, Command night-lightOnOff) {
-        int powerBit = power-onOff == OnOffType.ON ? 0x01 : 0x00;
-        int night-lightBit = night-lightOnOff == OnOffType.ON ? 0x02 : 0x00;
-        return powerBit | night-lightBit;
+    static int mergeOnOffBits(Command powerOnOff, Command nightLightOnOff) {
+        int powerBit = powerOnOff == OnOffType.ON ? 0x01 : 0x00;
+        int nightLightBit = nightLightOnOff == OnOffType.ON ? 0x02 : 0x00;
+        return powerBit | nightLightBit;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class BroadlinkSocketModel3Handler extends BroadlinkSocketModel2Handler {
             logger.debug("SP3 getting status...");
             byte[] statusBytes = getStatusBytesFromDevice();
             updateState(COMMAND_POWER_ON, derivePowerStateFromStatusBytes(statusBytes));
-            updateState(COMMAND_night-light, derivenight-lightStateFromStatusBytes(statusBytes));
+            updateState(COMMAND_NIGHTLIGHT, deriveNightLightStateFromStatusBytes(statusBytes));
             return true;
         } catch (Exception ex) {
             logger.warn("Unexpected exception while getting status from device: {}, please check device address.",
@@ -66,13 +66,13 @@ public class BroadlinkSocketModel3Handler extends BroadlinkSocketModel2Handler {
             // Always pull back the latest device status and merge it:
             byte[] statusBytes = getStatusBytesFromDevice();
             OnOffType powerStatus = derivePowerStateFromStatusBytes(statusBytes);
-            OnOffType night-lightStatus = derivenight-lightStateFromStatusBytes(statusBytes);
+            OnOffType nightLightStatus = deriveNightLightStateFromStatusBytes(statusBytes);
 
             if (channelUID.getId().equals(COMMAND_POWER_ON)) {
-                setStatusOnDevice(mergeOnOffBits(command, night-lightStatus));
+                setStatusOnDevice(mergeOnOffBits(command, nightLightStatus));
             }
 
-            if (channelUID.getId().equals(COMMAND_night-light)) {
+            if (channelUID.getId().equals(COMMAND_NIGHTLIGHT)) {
                 setStatusOnDevice(mergeOnOffBits(powerStatus, command));
             }
         } catch (IOException e) {

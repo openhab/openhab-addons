@@ -31,5 +31,4 @@ public class BroadlinkRemoteModel4ProHandler extends BroadlinkRemoteModel4MiniHa
             StorageService storageService) {
         super(thing, commandDescriptionProvider, storageService);
     }
-
 }

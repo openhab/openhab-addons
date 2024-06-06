@@ -86,7 +86,7 @@ public class BroadlinkBindingConstants {
     public static final String CHANNEL_POWER_CONSUMPTION = "power-consumption";
 
     public static final String COMMAND_POWER_ON = "power-on";
-    public static final String COMMAND_night-light = "night-light";
+    public static final String COMMAND_NIGHTLIGHT = "night-light";
 
     public static final String IR_MAP_NAME = "broadlink_ir";
     public static final String RF_MAP_NAME = "broadlink_rf";

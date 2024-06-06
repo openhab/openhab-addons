@@ -13,8 +13,7 @@
 package org.openhab.binding.broadlink.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.*;
 
 import java.util.List;
@@ -25,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
@@ -35,7 +35,7 @@ import org.openhab.core.types.State;
 
 /**
  * Tests the Socket Model 3S (SP3S) handler.
- * 
+ *
  * @author John Marshall - Initial contribution
  */
 @NonNullByDefault
@@ -49,36 +49,37 @@ public class BroadlinkSocketModel3SHandlerTest extends AbstractBroadlinkThingHan
         model3s = new BroadlinkSocketModel3SHandler(thing);
     }
 
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this).close();
     }
 
     @Test
-    public void deriveSp3spower-consumptionTooShort() {
+    public void deriveSp3sPowerConsumptionTooShort() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x33 };
-        double result = model3s.deriveSP3spower-consumption(payload);
+        double result = model3s.deriveSP3sPowerConsumption(payload);
         assertEquals(0D, result, 0.1D);
     }
 
     @Test
-    public void deriveSp3spower-consumptionCorrectSmallValue() {
+    public void deriveSp3sPowerConsumptionCorrectSmallValue() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x19, 0x02, 0x00 };
-        double result = model3s.deriveSP3spower-consumption(payload);
+        double result = model3s.deriveSP3sPowerConsumption(payload);
         assertEquals(2.19D, result, 0.1D);
     }
 
     @Test
-    public void deriveSp3spower-consumptionCorrectMediumValue() {
+    public void deriveSp3sPowerConsumptionCorrectMediumValue() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x33, 0x75, 0x00 };
-        double result = model3s.deriveSP3spower-consumption(payload);
+        double result = model3s.deriveSP3sPowerConsumption(payload);
         assertEquals(75.33D, result, 0.1D);
     }
 
     @Test
-    public void deriveSp3spower-consumptionCorrectLargeValue() {
+    public void deriveSp3sPowerConsumptionCorrectLargeValue() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0x99, (byte) 0x88, 0x07 };
-        double result = model3s.deriveSP3spower-consumption(payload);
+        double result = model3s.deriveSP3sPowerConsumption(payload);
         assertEquals(788.99D, result, 0.1D);
     }
 
@@ -89,7 +90,7 @@ public class BroadlinkSocketModel3SHandlerTest extends AbstractBroadlinkThingHan
         byte[] payload = { 0x08, 0x00, 0x11, 0x22, 0x01, (byte) 0x91, (byte) 0x82, 0x3, 0x16, 0x27, 0x28, 0x01, 0x02,
                 0x04, 0x05, 0x16 };
         byte[] responseMessage = generateReceivedBroadlinkMessage(payload);
-        Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString()))
+        Mockito.when(mockSocket.sendAndReceive(ArgumentMatchers.any(byte[].class), ArgumentMatchers.anyString()))
                 .thenReturn(responseMessage);
         setMocksForTesting(model3s);
 

@@ -33,11 +33,11 @@ import org.openhab.core.types.Command;
  */
 @NonNullByDefault
 public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
-    protected boolean supportspower-consumptionMeasurement;
+    protected boolean supportsPowerConsumptionMeasurement;
 
-    public BroadlinkSocketModel2Handler(Thing thing, boolean supportspower-consumptionMeasurement) {
+    public BroadlinkSocketModel2Handler(Thing thing, boolean supportsPowerConsumptionMeasurement) {
         super(thing);
-        this.supportspower-consumptionMeasurement = supportspower-consumptionMeasurement;
+        this.supportsPowerConsumptionMeasurement = supportsPowerConsumptionMeasurement;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
     }
 
     // https://github.com/mjg59/python-broadlink/blob/822b3c326631c1902b5892a83db126291acbf0b6/broadlink/switch.py#L186
-    double derivepower-consumption(byte[] statusPayload) throws IOException {
+    double derivePowerConsumption(byte[] statusPayload) throws IOException {
         if (statusPayload.length > 6) {
             // Bytes are little-endian, at positions 4,5 and 6
             int highByte = statusPayload[6] & 0xFF;
@@ -74,22 +74,22 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         return 0D;
     }
 
-    protected int topower-onOffBits(Command power-onOff) {
-        return power-onOff == OnOffType.ON ? 0x01 : 0x00;
+    protected int toPowerOnOffBits(Command powerOnOff) {
+        return powerOnOff == OnOffType.ON ? 0x01 : 0x00;
     }
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             if (channelUID.getId().equals(COMMAND_POWER_ON)) {
-                setStatusOnDevice(topower-onOffBits(command));
+                setStatusOnDevice(toPowerOnOffBits(command));
             }
         } catch (IOException e) {
             logger.warn("Could not send command to socket device: {}", e.getMessage());
         }
     }
 
-    protected void updatepower-consumption(double consumptionWatts) {
+    protected void updatePowerConsumption(double consumptionWatts) {
         updateState(CHANNEL_POWER_CONSUMPTION,
                 new QuantityType<Power>(consumptionWatts, BROADLINK_POWER_CONSUMPTION_UNIT));
     }
@@ -99,8 +99,8 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
         try {
             byte[] statusBytes = getStatusBytesFromDevice();
             updateState(COMMAND_POWER_ON, derivePowerStateFromStatusBytes(statusBytes));
-            if (supportspower-consumptionMeasurement) {
-                updatepower-consumption(derivepower-consumption(statusBytes));
+            if (supportsPowerConsumptionMeasurement) {
+                updatePowerConsumption(derivePowerConsumption(statusBytes));
             }
             return true;
         } catch (Exception ex) {

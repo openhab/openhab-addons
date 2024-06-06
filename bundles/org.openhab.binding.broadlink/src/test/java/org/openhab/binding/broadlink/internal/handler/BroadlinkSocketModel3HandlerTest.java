@@ -13,8 +13,7 @@
 package org.openhab.binding.broadlink.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.*;
 import static org.openhab.binding.broadlink.internal.handler.BroadlinkSocketModel3Handler.mergeOnOffBits;
 
@@ -24,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
@@ -33,7 +33,7 @@ import org.openhab.core.types.State;
 
 /**
  * Tests the Socket Model 3 handler.
- * 
+ *
  * @author John Marshall - Initial contribution
  */
 @NonNullByDefault
@@ -55,10 +55,12 @@ public class BroadlinkSocketModel3HandlerTest extends AbstractBroadlinkThingHand
         model3 = new BroadlinkSocketModel3Handler(thing);
     }
 
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         MockitoAnnotations.openMocks(this).close();
-        Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
+        Mockito.when(mockSocket.sendAndReceive(ArgumentMatchers.any(byte[].class), ArgumentMatchers.anyString()))
+                .thenReturn(response);
     }
 
     @Test
@@ -68,13 +70,13 @@ public class BroadlinkSocketModel3HandlerTest extends AbstractBroadlinkThingHand
     }
 
     @Test
-    public void mergeOnOffBitspower-on() {
+    public void mergeOnOffBitsPowerOn() {
         int result = mergeOnOffBits(OnOffType.ON, OnOffType.OFF);
         assertEquals(0x01, result);
     }
 
     @Test
-    public void mergeOnOffBitsnight-lightOn() {
+    public void mergeOnOffBitsNightlightOn() {
         int result = mergeOnOffBits(OnOffType.OFF, OnOffType.ON);
         assertEquals(0x02, result);
     }
@@ -86,36 +88,37 @@ public class BroadlinkSocketModel3HandlerTest extends AbstractBroadlinkThingHand
     }
 
     @Test
-    public void derivenight-lightStateBitsOff() {
+    public void deriveNightLightStateBitsOff() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x00 };
-        OnOffType result = model3.derivenight-lightStateFromStatusBytes(payload);
+        OnOffType result = model3.deriveNightLightStateFromStatusBytes(payload);
         assertEquals(OnOffType.OFF, result);
     }
 
     @Test
-    public void derivenight-lightStateBitsOn2() {
+    public void deriveNightLightStateBitsOn2() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x02 };
-        OnOffType result = model3.derivenight-lightStateFromStatusBytes(payload);
+        OnOffType result = model3.deriveNightLightStateFromStatusBytes(payload);
         assertEquals(OnOffType.ON, result);
     }
 
     @Test
-    public void derivenight-lightStateBitsOn3() {
+    public void deriveNightLightStateBitsOn3() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x03 };
-        OnOffType result = model3.derivenight-lightStateFromStatusBytes(payload);
+        OnOffType result = model3.deriveNightLightStateFromStatusBytes(payload);
         assertEquals(OnOffType.ON, result);
     }
 
     @Test
-    public void derivenight-lightStateBitsOnFF() {
+    public void deriveNightLightStateBitsOnFF() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, (byte) 0xFF };
-        OnOffType result = model3.derivenight-lightStateFromStatusBytes(payload);
+        OnOffType result = model3.deriveNightLightStateFromStatusBytes(payload);
         assertEquals(OnOffType.ON, result);
     }
 
     @Test
-    public void setsThePowerChannelAndnight-lightAfterGettingStatusOnSP3() {
-        Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
+    public void setsThePowerChannelAndNightlightAfterGettingStatusOnSP3() {
+        Mockito.when(mockSocket.sendAndReceive(ArgumentMatchers.any(byte[].class), ArgumentMatchers.anyString()))
+                .thenReturn(response);
         setMocksForTesting(model3);
 
         reset(mockCallback);
@@ -134,8 +137,8 @@ public class BroadlinkSocketModel3HandlerTest extends AbstractBroadlinkThingHand
 
         assertEquals(OnOffType.ON, states.get(0));
 
-        ChannelUID expectednight-lightChannel = new ChannelUID(thing.getUID(), COMMAND_night-light);
-        assertEquals(expectednight-lightChannel, channels.get(1));
+        ChannelUID expectedNightlightChannel = new ChannelUID(thing.getUID(), COMMAND_NIGHTLIGHT);
+        assertEquals(expectedNightlightChannel, channels.get(1));
 
         assertEquals(OnOffType.OFF, states.get(1));
     }
