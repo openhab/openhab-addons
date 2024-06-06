@@ -163,9 +163,3 @@ then
 	} 
 end
 ```
-
-## Support ❤️
-
-If you want to support the author of this binding, buy him a coffee:
-
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S8UBWWY) <a href="https://buycoffee.to/magx2" target="_blank"><img src="https://buycoffee.to/btn/buycoffeeto-btn-primary.svg" alt="Postaw mi kawę na buycoffee.to" width="150"></a>
