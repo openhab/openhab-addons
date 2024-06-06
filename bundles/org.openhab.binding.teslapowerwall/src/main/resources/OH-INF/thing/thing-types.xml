@@ -9,41 +9,38 @@
 		<description>Tesla Powerwall</description>
 
 		<channels>
-			<channel id="gridstatus" typeId="tesla-powerwall-gridstatus"/>
-			<channel id="gridservices" typeId="tesla-powerwall-gridservices"/>
-			<channel id="batterysoe" typeId="tesla-powerwall-batterysoe"/>
-			<channel id="mode" typeId="tesla-powerwall-mode"/>
-			<channel id="reserve" typeId="tesla-powerwall-reserve"/>
-			<channel id="grid-instpower" typeId="tesla-powerwall-grid-instpower"/>
-			<channel id="battery-instpower" typeId="tesla-powerwall-battery-instpower"/>
-			<channel id="home-instpower" typeId="tesla-powerwall-home-instpower"/>
-			<channel id="solar-instpower" typeId="tesla-powerwall-solar-instpower"/>
-			<channel id="grid-energyexported" typeId="tesla-powerwall-grid-energyexported"/>
-			<channel id="battery-energyexported" typeId="tesla-powerwall-battery-energyexported"/>
-			<channel id="home-energyexported" typeId="tesla-powerwall-home-energyexported"/>
-			<channel id="solar-energyexported" typeId="tesla-powerwall-solar-energyexported"/>
-			<channel id="grid-energyimported" typeId="tesla-powerwall-grid-energyimported"/>
-			<channel id="battery-energyimported" typeId="tesla-powerwall-battery-energyimported"/>
-			<channel id="home-energyimported" typeId="tesla-powerwall-home-energyimported"/>
-			<channel id="solar-energyimported" typeId="tesla-powerwall-solar-energyimported"/>
-			<channel id="full-pack-energy" typeId="tesla-powerwall-full-pack-energy"/>
-			<channel id="degradation" typeId="tesla-powerwall-degradation"/>
+			<channel id="grid-status" typeId="grid-status"/>
+			<channel id="gridservices" typeId="gridservices"/>
+			<channel id="battery-soe" typeId="battery-soe"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="reserve" typeId="reserve"/>
+			<channel id="grid-inst-power" typeId="grid-inst-power"/>
+			<channel id="battery-inst-power" typeId="battery-inst-power"/>
+			<channel id="home-inst-power" typeId="home-inst-power"/>
+			<channel id="solar-inst-power" typeId="solar-inst-power"/>
+			<channel id="grid-energy-exported" typeId="grid-energy-exported"/>
+			<channel id="battery-energy-exported" typeId="battery-energy-exported"/>
+			<channel id="home-energy-exported" typeId="home-energy-exported"/>
+			<channel id="solar-energy-exported" typeId="solar-energy-exported"/>
+			<channel id="grid-energy-imported" typeId="grid-energy-imported"/>
+			<channel id="battery-energy-imported" typeId="battery-energy-imported"/>
+			<channel id="home-energy-imported" typeId="home-energy-imported"/>
+			<channel id="solar-energy-imported" typeId="solar-energy-imported"/>
+			<channel id="full-pack-energy" typeId="full-pack-energy"/>
+			<channel id="degradation" typeId="degradation"/>
 		</channels>
 
-		<properties>
-			<property name="thingTypeVersion">1</property>
-		</properties>
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname/IP Address</label>
 				<description>The host name or IP address of the Tesla Powerwall.</description>
 			</parameter>
 			<parameter name="email" type="text" required="true">
-				<label>Local Powerwall Login Email</label>
+				<label>Email</label>
 				<description>Local Powerwall Account Email</description>
 			</parameter>
 			<parameter name="password" type="text" required="true">
-				<label>Local Powerwall Login Password</label>
+				<label>Password</label>
 				<description>Local Powerwall Account Password</description>
 				<context>password</context>
 			</parameter>
@@ -56,114 +53,114 @@
 
 	</thing-type>
 
-	<channel-type id="tesla-powerwall-gridstatus">
+	<channel-type id="grid-status">
 		<item-type>String</item-type>
 		<label>Grid Status</label>
 		<description>Current status of the Power Grid</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-gridservices">
+	<channel-type id="gridservices">
 		<item-type>Switch</item-type>
 		<label>Grid Services</label>
 		<description>Grid Services Activation Status</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-batterysoe">
+	<channel-type id="battery-soe">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery SOE</label>
 		<description>Current battery state of charge</description>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-mode">
+	<channel-type id="mode">
 		<item-type>String</item-type>
 		<label>Operating Mode</label>
 		<description>Current operating mode</description>
 	</channel-type>
-	<channel-type id="tesla-powerwall-reserve">
+	<channel-type id="reserve">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Reserve</label>
 		<description>Current battery reserve %</description>
 		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-grid-instpower">
+	<channel-type id="grid-inst-power">
 		<item-type>Number:Power</item-type>
 		<label>Instant Grid Power</label>
 		<description>Instantaneous Grid Power Supply</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-battery-instpower">
+	<channel-type id="battery-inst-power">
 		<item-type>Number:Power</item-type>
 		<label>Instant Battery Power</label>
 		<description>Instantaneous Battery Power Supply</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-home-instpower">
+	<channel-type id="home-inst-power">
 		<item-type>Number:Power</item-type>
 		<label>Instant Home Power</label>
 		<description>Instantaneous Home Power Supply</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-solar-instpower">
+	<channel-type id="solar-inst-power">
 		<item-type>Number:Power</item-type>
 		<label>Instant Solar Power</label>
 		<description>Instantaneous Solar Power Supply</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-grid-energyexported">
+	<channel-type id="grid-energy-exported">
 		<item-type>Number:Energy</item-type>
 		<label>Grid Energy Exported</label>
 		<description>Total Grid Energy Exported</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-battery-energyexported">
+	<channel-type id="battery-energy-exported">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Exported</label>
 		<description>Total Battery Energy Exported</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-home-energyexported">
+	<channel-type id="home-energy-exported">
 		<item-type>Number:Energy</item-type>
 		<label>Home Energy Exported</label>
 		<description>Total Home Energy Exported</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-solar-energyexported">
+	<channel-type id="solar-energy-exported">
 		<item-type>Number:Energy</item-type>
 		<label>Solar Energy Exported</label>
 		<description>Total Solar Energy Exported</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-grid-energyimported">
+	<channel-type id="grid-energy-imported">
 		<item-type>Number:Energy</item-type>
 		<label>Grid Energy Imported</label>
 		<description>Total Grid Energy Imported</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-battery-energyimported">
+	<channel-type id="battery-energy-imported">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Imported</label>
 		<description>Total Battery Energy Imported</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-home-energyimported">
+	<channel-type id="home-energy-imported">
 		<item-type>Number:Energy</item-type>
 		<label>Home Energy Imported</label>
 		<description>Total Home Energy Imported</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-solar-energyimported">
+	<channel-type id="solar-energy-imported">
 		<item-type>Number:Energy</item-type>
 		<label>Solar Energy Imported</label>
 		<description>Total Solar Energy Imported</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-full-pack-energy">
+	<channel-type id="full-pack-energy">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Full Pack Energy</label>
 		<description>Battery Full Pack Energy</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="tesla-powerwall-degradation">
+	<channel-type id="degradation">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Degradation</label>
 		<description>Current battery degradation %, based on 13.5kW full capacity</description>

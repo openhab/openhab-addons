@@ -46,6 +46,7 @@ public class TeslaPowerwallWebTargets {
     private String getMeterAggregatesUri;
     private String getTokenUri;
     private String getOperationUri;
+    private String token = "";
     private final Logger logger = LoggerFactory.getLogger(TeslaPowerwallWebTargets.class);
 
     public TeslaPowerwallWebTargets(String ipAddress) {
@@ -95,7 +96,7 @@ public class TeslaPowerwallWebTargets {
         jsonObject.addProperty("email", email);
         jsonObject.addProperty("force_sm_off", false);
         logger.debug("logonjson = {}", jsonObject.toString());
-        String response = invoke(getTokenUri, "POST", "application/json", jsonObject.toString());
+        String response = invoke(getTokenUri, "POST", "Content-Type", "application/json", jsonObject.toString());
         JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
         String token = jsonResponse.get("token").getAsString();
         logger.debug("Token: {}", token);
@@ -103,14 +104,14 @@ public class TeslaPowerwallWebTargets {
     }
 
     private String invoke(String uri, String token) throws TeslaPowerwallCommunicationException {
-        return invoke(uri, "GET", token, "");
+        return invoke(uri, "GET", "Authorization", "Bearer " + token, "");
     }
 
-    private String invoke(String uri, String request, String contenttype, String params)
+    private String invoke(String uri, String request, String contenttype, String contenttypeparam, String params)
             throws TeslaPowerwallCommunicationException {
         logger.debug("Calling url: {}", uri);
         Properties headers = new Properties();
-        headers.setProperty("Content-Type", contenttype);
+        headers.setProperty(contenttype, contenttypeparam);
         ByteArrayInputStream input = new ByteArrayInputStream(params.getBytes(StandardCharsets.UTF_8));
         String response;
         synchronized (this) {
