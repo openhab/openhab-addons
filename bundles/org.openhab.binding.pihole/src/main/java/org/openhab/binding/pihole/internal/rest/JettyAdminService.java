@@ -27,6 +27,8 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
@@ -34,6 +36,7 @@ import com.google.gson.GsonBuilder;
 public class JettyAdminService implements AdminService {
     private static final Gson GSON = new GsonBuilder()
             .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+    private static final long TIMEOUT_SECONDS = 10L;
     private final Logger logger = LoggerFactory.getLogger(JettyAdminService.class);
     private final String token;
     private final URI baseUrl;
@@ -49,7 +52,7 @@ public class JettyAdminService implements AdminService {
     public Optional<DnsStatistics> summary() throws ExecutionException, InterruptedException, TimeoutException {
         logger.debug("Getting summary");
         var url = baseUrl.resolve("/admin/api.php?summaryRaw&auth=" + token);
-        var request = client.newRequest(url);
+        var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS);
         var response = request.send();
         var content = response.getContentAsString();
         return Optional.ofNullable(GSON.fromJson(content, DnsStatistics.class));
@@ -59,7 +62,7 @@ public class JettyAdminService implements AdminService {
     public void disableBlocking(long seconds) throws ExecutionException, InterruptedException, TimeoutException {
         logger.debug("Disabling blocking for {} seconds", seconds);
         var url = baseUrl.resolve("/admin/api.php?disable=%s&auth=%s".formatted(seconds, token));
-        var request = client.newRequest(url);
+        var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS);
         request.send();
     }
 
@@ -67,7 +70,7 @@ public class JettyAdminService implements AdminService {
     public void enableBlocking() throws ExecutionException, InterruptedException, TimeoutException {
         logger.debug("Enabling blocking");
         var url = baseUrl.resolve("/admin/api.php?disable&auth=%s".formatted(token));
-        var request = client.newRequest(url);
+        var request = client.newRequest(url).timeout(TIMEOUT_SECONDS, SECONDS);
         request.send();
     }
 }
