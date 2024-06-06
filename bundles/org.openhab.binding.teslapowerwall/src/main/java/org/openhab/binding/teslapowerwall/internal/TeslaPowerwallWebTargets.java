@@ -59,91 +59,33 @@ public class TeslaPowerwallWebTargets {
     }
 
     public BatterySOE getBatterySOE(String token) throws TeslaPowerwallCommunicationException {
-        String response;
-        Properties headers = new Properties();
-        headers.setProperty("Content-Type", token);
-
-        try {
-            response = HttpUtil.executeUrl("GET", getBatterySOEUri, headers, null, null, TIMEOUT_MS);
-        } catch (IOException ex) {
-            logger.debug("{}", ex.getLocalizedMessage(), ex);
-            // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
-            // error check below consistent.
-            response = null;
-        }
-
-        if (response == null) {
-            throw new TeslaPowerwallCommunicationException(
-                    String.format("Tesla Powerwall returned error while invoking %s", getBatterySOEUri));
-        }
+        String response = invoke(getBatterySOEUri, token);
         logger.trace("getBatterySOE response = {}", response);
         return BatterySOE.parse(response);
     }
 
     public GridStatus getGridStatus(String token) throws TeslaPowerwallCommunicationException {
-        String response;
-        Properties headers = new Properties();
-        headers.setProperty("Content-Type", token);
-
-        try {
-            response = HttpUtil.executeUrl("GET", getGridStatusUri, headers, null, null, TIMEOUT_MS);
-        } catch (IOException ex) {
-            logger.debug("{}", ex.getLocalizedMessage(), ex);
-            // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
-            // error check below consistent.
-            response = null;
-        }
-
-        if (response == null) {
-            throw new TeslaPowerwallCommunicationException(
-                    String.format("Tesla Powerwall returned error while invoking %s", getGridStatusUri));
-        }
+        String response = invoke(getGridStatusUri, token);
         logger.trace("getGridStatus response = {}", response);
         return GridStatus.parse(response);
     }
 
     public SystemStatus getSystemStatus(String token) throws TeslaPowerwallCommunicationException {
-        String response;
-        Properties headers = new Properties();
-        headers.setProperty("Content-Type", token);
-
-        try {
-            response = HttpUtil.executeUrl("GET", getSystemStatusUri, headers, null, null, TIMEOUT_MS);
-        } catch (IOException ex) {
-            logger.debug("{}", ex.getLocalizedMessage(), ex);
-            // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
-            // error check below consistent.
-            response = null;
-        }
-
-        if (response == null) {
-            throw new TeslaPowerwallCommunicationException(
-                    String.format("Tesla Powerwall returned error while invoking %s", getSystemStatusUri));
-        }
+        String response = invoke(getSystemStatusUri, token);
         logger.trace("getSystemStatus response = {}", response);
         return SystemStatus.parse(response);
     }
 
     public MeterAggregates getMeterAggregates(String token) throws TeslaPowerwallCommunicationException {
-        String response;
-        Properties headers = new Properties();
-        headers.setProperty("Content-Type", token);
-
-        try {
-            response = HttpUtil.executeUrl("GET", getMeterAggregatesUri, headers, null, null, TIMEOUT_MS);
-        } catch (IOException ex) {
-            logger.debug("{}", ex.getLocalizedMessage(), ex);
-            // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
-            // error check below consistent.
-            response = null;
-        }
-
-        if (response == null) {
-            throw new TeslaPowerwallCommunicationException(
-                    String.format("Tesla Powerwall returned error while invoking %s", getMeterAggregatesUri));
-        }
+        String response = invoke(getMeterAggregatesUri, token);
         logger.trace("getMeterAggregates response = {}", response);
         return MeterAggregates.parse(response);
+    }
+
+    public Operations getOperations(String token) throws TeslaPowerwallCommunicationException {
+        String response = invoke(getOperationUri, token);
+        logger.trace("getOperations response = {}", response);
+        return Operations.parse(response);
     }
 
     public String getToken(String email, String password) throws TeslaPowerwallCommunicationException {
@@ -153,46 +95,27 @@ public class TeslaPowerwallWebTargets {
         jsonObject.addProperty("email", email);
         jsonObject.addProperty("force_sm_off", false);
         logger.debug("logonjson = {}", jsonObject.toString());
-        String response = invoke(getTokenUri, jsonObject.toString());
+        String response = invoke(getTokenUri, "POST", "application/json", jsonObject.toString());
         JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
         String token = jsonResponse.get("token").getAsString();
         logger.debug("Token: {}", token);
         return token;
     }
 
-    public Operations getOperations(String token) throws TeslaPowerwallCommunicationException {
-        String response;
-        Properties headers = new Properties();
-        headers.setProperty("Content-Type", token);
-
-        synchronized (this) {
-            try {
-                response = HttpUtil.executeUrl("GET", getOperationUri, headers, null, null, TIMEOUT_MS);
-            } catch (IOException ex) {
-                logger.debug("{}", ex.getLocalizedMessage(), ex);
-                // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
-                // error check below consistent.
-                response = null;
-            }
-        }
-
-        if (response == null) {
-            throw new TeslaPowerwallCommunicationException(
-                    String.format("Tesla Powerwall returned error while invoking %s", getOperationUri));
-        }
-        logger.trace("getOperations response = {}", response);
-        return Operations.parse(response);
+    private String invoke(String uri, String token) throws TeslaPowerwallCommunicationException {
+        return invoke(uri, "GET", token, "");
     }
 
-    private String invoke(String uri, String jsonparams) throws TeslaPowerwallCommunicationException {
+    private String invoke(String uri, String request, String contenttype, String params)
+            throws TeslaPowerwallCommunicationException {
         logger.debug("Calling url: {}", uri);
         Properties headers = new Properties();
-        headers.setProperty("Content-Type", "application/json");
-        ByteArrayInputStream input = new ByteArrayInputStream(jsonparams.getBytes(StandardCharsets.UTF_8));
+        headers.setProperty("Content-Type", contenttype);
+        ByteArrayInputStream input = new ByteArrayInputStream(params.getBytes(StandardCharsets.UTF_8));
         String response;
         synchronized (this) {
             try {
-                response = HttpUtil.executeUrl("POST", uri, headers, input, "application/json", TIMEOUT_MS);
+                response = HttpUtil.executeUrl(request, uri, headers, input, contenttype, TIMEOUT_MS);
             } catch (IOException ex) {
                 logger.debug("{}", ex.getLocalizedMessage(), ex);
                 // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
