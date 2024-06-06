@@ -55,30 +55,30 @@ public class BroadlinkSocketModel3SHandlerTest extends AbstractBroadlinkThingHan
     }
 
     @Test
-    public void deriveSp3sPowerConsumptionTooShort() {
+    public void deriveSp3spower-consumptionTooShort() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x33 };
-        double result = model3s.deriveSP3sPowerConsumption(payload);
+        double result = model3s.deriveSP3spower-consumption(payload);
         assertEquals(0D, result, 0.1D);
     }
 
     @Test
-    public void deriveSp3sPowerConsumptionCorrectSmallValue() {
+    public void deriveSp3spower-consumptionCorrectSmallValue() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x19, 0x02, 0x00 };
-        double result = model3s.deriveSP3sPowerConsumption(payload);
+        double result = model3s.deriveSP3spower-consumption(payload);
         assertEquals(2.19D, result, 0.1D);
     }
 
     @Test
-    public void deriveSp3sPowerConsumptionCorrectMediumValue() {
+    public void deriveSp3spower-consumptionCorrectMediumValue() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x33, 0x75, 0x00 };
-        double result = model3s.deriveSP3sPowerConsumption(payload);
+        double result = model3s.deriveSP3spower-consumption(payload);
         assertEquals(75.33D, result, 0.1D);
     }
 
     @Test
-    public void deriveSp3sPowerConsumptionCorrectLargeValue() {
+    public void deriveSp3spower-consumptionCorrectLargeValue() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x00, (byte) 0x99, (byte) 0x88, 0x07 };
-        double result = model3s.deriveSP3sPowerConsumption(payload);
+        double result = model3s.deriveSP3spower-consumption(payload);
         assertEquals(788.99D, result, 0.1D);
     }
 

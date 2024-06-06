@@ -8,16 +8,16 @@
 		<label>Broadlink MP1</label>
 		<description>The Broadlink MP1 Smart Home Wifi Plug Power Strip 4 Ports Individual Wireless Remote Control.</description>
 		<channels>
-			<channel id="s1powerOn" typeId="powerOn">
+			<channel id="s1power-on" typeId="power-on">
 				<label>Socket 1 Power</label>
 			</channel>
-			<channel id="s2powerOn" typeId="powerOn">
+			<channel id="s2power-on" typeId="power-on">
 				<label>Socket 2 Power</label>
 			</channel>
-			<channel id="s3powerOn" typeId="powerOn">
+			<channel id="s3power-on" typeId="power-on">
 				<label>Socket 3 Power</label>
 			</channel>
-			<channel id="s4powerOn" typeId="powerOn">
+			<channel id="s4power-on" typeId="power-on">
 				<label>Socket 4 Power</label>
 			</channel>
 		</channels>
@@ -28,16 +28,16 @@
 		<label>Broadlink MP1 1K3S2U</label>
 		<description>The Broadlink MP1 1K3S2U Smart Home Wifi Plug Power Strip 3 AC, 2 USB Individual Wireless Remote Control.</description>
 		<channels>
-			<channel id="s1powerOn" typeId="powerOn">
+			<channel id="s1power-on" typeId="power-on">
 				<label>Socket 1 Power</label>
 			</channel>
-			<channel id="s2powerOn" typeId="powerOn">
+			<channel id="s2power-on" typeId="power-on">
 				<label>Socket 2 Power</label>
 			</channel>
-			<channel id="s3powerOn" typeId="powerOn">
+			<channel id="s3power-on" typeId="power-on">
 				<label>Socket 3 Power</label>
 			</channel>
-			<channel id="usbPowerOn" typeId="powerOn">
+			<channel id="usbpower-on" typeId="power-on">
 				<label>USB Power</label>
 			</channel>
 		</channels>
@@ -49,8 +49,8 @@
 		<description>The Broadlink MP2 is a smart socket with Wi-Fi connectivity. It does not support switching individual
 			ports.</description>
 		<channels>
-			<channel id="powerOn" typeId="powerOn"/>
-			<channel id="powerConsumption" typeId="powerConsumption"/>
+			<channel id="power-on" typeId="power-on"/>
+			<channel id="power-consumption" typeId="power-consumption"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:config"/>

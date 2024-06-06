@@ -90,18 +90,18 @@ public class BroadlinkSocketModel2HandlerTest extends AbstractBroadlinkThingHand
     }
 
     @Test
-    public void derivePowerConsumptionFromStatusBytesTooShort() throws IOException {
+    public void derivepower-consumptionFromStatusBytesTooShort() throws IOException {
         BroadlinkSocketModel2Handler model2 = new BroadlinkSocketModel2Handler(thing, false);
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x33 };
-        double result = model2.derivePowerConsumption(payload);
+        double result = model2.derivepower-consumption(payload);
         assertEquals(0D, result, 0.1D);
     }
 
     @Test
-    public void derivePowerConsumptionFromStatusBytesCorrect() throws IOException {
+    public void derivepower-consumptionFromStatusBytesCorrect() throws IOException {
         BroadlinkSocketModel2Handler model2 = new BroadlinkSocketModel2Handler(thing, false);
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x03, 0x02, 0x01, 0x00 };
-        double result = model2.derivePowerConsumption(payload);
+        double result = model2.derivepower-consumption(payload);
         assertEquals(66.051D, result, 0.1D);
     }
 
@@ -134,7 +134,7 @@ public class BroadlinkSocketModel2HandlerTest extends AbstractBroadlinkThingHand
     }
 
     @Test
-    public void setsThePowerAndPowerConsumptionAfterGettingStatusOnSP2S() {
+    public void setsThePowerAndpower-consumptionAfterGettingStatusOnSP2S() {
         // Power bytes are 4, 5, 6 (little-endian)
         // So here it's 0x38291 => 230033, divided by 1000 ==> 230.033W
         byte[] payload = { 0x08, 0x00, 0x11, 0x22, (byte) 0x91, (byte) 0x82, 0x3, 0x16, 0x27, 0x28, 0x01, 0x02, 0x03,

@@ -37,7 +37,7 @@ public abstract class BroadlinkSocketHandler extends BroadlinkBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
-            if (channelUID.getId().equals("powerOn")) {
+            if (channelUID.getId().equals("power-on")) {
                 if (command == OnOffType.ON) {
                     setStatusOnDevice(1);
                 } else if (command == OnOffType.OFF) {

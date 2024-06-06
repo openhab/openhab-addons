@@ -68,13 +68,13 @@ public class BroadlinkSocketModel3HandlerTest extends AbstractBroadlinkThingHand
     }
 
     @Test
-    public void mergeOnOffBitsPowerOn() {
+    public void mergeOnOffBitspower-on() {
         int result = mergeOnOffBits(OnOffType.ON, OnOffType.OFF);
         assertEquals(0x01, result);
     }
 
     @Test
-    public void mergeOnOffBitsNightlightOn() {
+    public void mergeOnOffBitsnight-lightOn() {
         int result = mergeOnOffBits(OnOffType.OFF, OnOffType.ON);
         assertEquals(0x02, result);
     }
@@ -86,35 +86,35 @@ public class BroadlinkSocketModel3HandlerTest extends AbstractBroadlinkThingHand
     }
 
     @Test
-    public void deriveNightLightStateBitsOff() {
+    public void derivenight-lightStateBitsOff() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x00 };
-        OnOffType result = model3.deriveNightLightStateFromStatusBytes(payload);
+        OnOffType result = model3.derivenight-lightStateFromStatusBytes(payload);
         assertEquals(OnOffType.OFF, result);
     }
 
     @Test
-    public void deriveNightLightStateBitsOn2() {
+    public void derivenight-lightStateBitsOn2() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x02 };
-        OnOffType result = model3.deriveNightLightStateFromStatusBytes(payload);
+        OnOffType result = model3.derivenight-lightStateFromStatusBytes(payload);
         assertEquals(OnOffType.ON, result);
     }
 
     @Test
-    public void deriveNightLightStateBitsOn3() {
+    public void derivenight-lightStateBitsOn3() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, 0x03 };
-        OnOffType result = model3.deriveNightLightStateFromStatusBytes(payload);
+        OnOffType result = model3.derivenight-lightStateFromStatusBytes(payload);
         assertEquals(OnOffType.ON, result);
     }
 
     @Test
-    public void deriveNightLightStateBitsOnFF() {
+    public void derivenight-lightStateBitsOnFF() {
         byte[] payload = { 0x00, 0x00, 0x00, 0x00, (byte) 0xFF };
-        OnOffType result = model3.deriveNightLightStateFromStatusBytes(payload);
+        OnOffType result = model3.derivenight-lightStateFromStatusBytes(payload);
         assertEquals(OnOffType.ON, result);
     }
 
     @Test
-    public void setsThePowerChannelAndNightlightAfterGettingStatusOnSP3() {
+    public void setsThePowerChannelAndnight-lightAfterGettingStatusOnSP3() {
         Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
         setMocksForTesting(model3);
 
@@ -134,8 +134,8 @@ public class BroadlinkSocketModel3HandlerTest extends AbstractBroadlinkThingHand
 
         assertEquals(OnOffType.ON, states.get(0));
 
-        ChannelUID expectedNightlightChannel = new ChannelUID(thing.getUID(), COMMAND_NIGHTLIGHT);
-        assertEquals(expectedNightlightChannel, channels.get(1));
+        ChannelUID expectednight-lightChannel = new ChannelUID(thing.getUID(), COMMAND_night-light);
+        assertEquals(expectednight-lightChannel, channels.get(1));
 
         assertEquals(OnOffType.OFF, states.get(1));
     }

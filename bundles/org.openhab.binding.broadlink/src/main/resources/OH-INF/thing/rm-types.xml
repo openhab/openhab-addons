@@ -9,9 +9,9 @@
 		<description>The Broadlink RM Pro is a Wi-Fi IR/RF transmitter with a temperature sensor.</description>
 		<channels>
 			<channel id="command" typeId="command"/>
-			<channel id="learningControl" typeId="learningControl"/>
+			<channel id="learning-control" typeId="learning-control"/>
 			<channel id="rfcommand" typeId="rfcommand"/>
-			<channel id="learningRFControl" typeId="learningRFControl"/>
+			<channel id="learning-rf-control" typeId="learning-rf-control"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
 		</channels>
@@ -23,7 +23,7 @@
 		<description>The Broadlink RM 3/Mini is a Wi-Fi IR transmitter.</description>
 		<channels>
 			<channel id="command" typeId="command"/>
-			<channel id="learningControl" typeId="learningControl"/>
+			<channel id="learning-control" typeId="learning-control"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
@@ -33,7 +33,7 @@
 		<description>The Broadlink RM 3/Mini is a Wi-Fi IR transmitter running v44057 firmware.</description>
 		<channels>
 			<channel id="command" typeId="command"/>
-			<channel id="learningControl" typeId="learningControl"/>
+			<channel id="learning-control" typeId="learning-control"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
@@ -43,7 +43,7 @@
 		<description>The Broadlink RM 4 Mini is a Wi-Fi IR transmitter with temperature and humidity sensors.</description>
 		<channels>
 			<channel id="command" typeId="command"/>
-			<channel id="learningControl" typeId="learningControl"/>
+			<channel id="learning-control" typeId="learning-control"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
 		</channels>
@@ -55,9 +55,9 @@
 		<description>The Broadlink RM 4 Pro is a Wi-Fi IR and RF transmitter with temperature and humidity sensors.</description>
 		<channels>
 			<channel id="command" typeId="command"/>
-			<channel id="learningControl" typeId="learningControl"/>
+			<channel id="learning-control" typeId="learning-control"/>
 			<channel id="rfcommand" typeId="rfcommand"/>
-			<channel id="learningRFControl" typeId="learningRFControl"/>
+			<channel id="learning-rf-control" typeId="learning-rf-control"/>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="humidity" typeId="humidity"/>
 		</channels>
