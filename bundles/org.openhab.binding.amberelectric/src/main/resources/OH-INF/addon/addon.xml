@@ -4,8 +4,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>AmberElectric Binding</name>
-	<description>This is the binding for AmberElectric.</description>
+	<name>Amber Electric Binding</name>
+	<description>This is the binding for Amber Electric.</description>
 	<connection>cloud</connection>
 
 </addon:addon>

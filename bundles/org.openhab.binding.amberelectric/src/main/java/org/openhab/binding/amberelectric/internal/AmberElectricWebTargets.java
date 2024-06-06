@@ -68,16 +68,13 @@ public class AmberElectricWebTargets {
         logger.debug("Calling url: {}", uri);
         @Nullable
         String response;
-        synchronized (this) {
-            try {
-                response = HttpUtil.executeUrl(httpMethod, uri, getHttpHeaders(apikey), content, contentType,
-                        TIMEOUT_MS);
-            } catch (IOException ex) {
-                logger.debug("{}", ex.getLocalizedMessage(), ex);
-                // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
-                // error check below consistent.
-                response = null;
-            }
+        try {
+            response = HttpUtil.executeUrl(httpMethod, uri, getHttpHeaders(apikey), content, contentType, TIMEOUT_MS);
+        } catch (IOException ex) {
+            logger.debug("{}", ex.getLocalizedMessage(), ex);
+            // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
+            // error check below consistent.
+            response = null;
         }
 
         if (response == null) {

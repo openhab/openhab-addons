@@ -30,7 +30,7 @@ public class AmberElectricBindingConstants {
     private static final String BINDING_ID = "amberelectric";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID AMBERELECTRIC_THING = new ThingTypeUID(BINDING_ID, "amberelectric");
+    public static final ThingTypeUID AMBERELECTRIC_THING = new ThingTypeUID(BINDING_ID, "amber-electric");
 
     // List of all Channel ids
     public static final String CHANNEL_AMBERELECTRIC_ELECPRICE = "elecprice";

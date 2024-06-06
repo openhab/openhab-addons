@@ -4,12 +4,11 @@ A binding that supports the Australian energy retailer Amber Electric's API (htt
 
 ## Supported Things
 
-Amber Electric API 
+- `amber-electric` Amber Electric API 
 
 ## Discovery
 
-Auto-discover is not currently supported.
-You need to manually add a new thing using your API key
+The binding does not support auto discovery.
 
 ## Thing Configuration
 
@@ -35,13 +34,13 @@ As a minimum, the IP address is needed:
 
 ## Full Example
 
-amberelectric.things:
+### `amberelectric.things`:
 
 ```java
 amberelectric:amberelectric:AmberElectric [ apikey="psk_xxxxxxxxxxxxxxxxxxxx" ]
 ```
 
-amberelectric.items:
+### `amberelectric.items`:
 
 ```java
 Number AmberElectric_ElecPrice { channel="amberelectric:amberelectric:AmberElectric:elecprice" }
@@ -55,7 +54,7 @@ Number AmberElectric_Renewables { channel="amberelectric:amberelectric:AmberElec
 Switch AmberElectric_Spike { channel="amberelectric:amberelectric:AmberElectric:spike" }
 ```
     
-amberelectric.sitemap:
+### `amberelectric.sitemap`:
 
 ```perl
 Text item=AmberElectric_ElecPrice label="Electricity Price"

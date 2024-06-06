@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.amberelectric.internal;
 
-import java.io.IOException;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -23,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public class AmberElectricCommunicationException extends IOException {
+public class AmberElectricCommunicationException extends Exception {
     private static final long serialVersionUID = 529232811860854017L;
 
     public AmberElectricCommunicationException(String message) {

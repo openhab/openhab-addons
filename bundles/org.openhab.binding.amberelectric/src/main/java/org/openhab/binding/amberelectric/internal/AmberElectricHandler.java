@@ -49,6 +49,7 @@ public class AmberElectricHandler extends BaseThingHandler {
     private String nmi = "";
     private String siteID = "";
 
+    private @NonNullByDefault({}) AmberElectricConfiguration config;
     private @NonNullByDefault({}) AmberElectricWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
 
@@ -63,11 +64,12 @@ public class AmberElectricHandler extends BaseThingHandler {
 
     @Override
     public void initialize() {
-        AmberElectricConfiguration config = getConfigAs(AmberElectricConfiguration.class);
-        if (config.apikey.isEmpty()) {
+        config = getConfigAs(AmberElectricConfiguration.class);
+        if (config.apikey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "API Key must be set");
         } else {
             webTargets = new AmberElectricWebTargets();
+            updateStatus(ThingStatus.UNKNOWN);
             refreshInterval = config.refresh;
             nmi = config.nmi;
             apikey = config.apikey;
@@ -88,7 +90,7 @@ public class AmberElectricHandler extends BaseThingHandler {
             pollFuture.cancel(false);
         }
         logger.debug("Scheduling poll for 1 second out, then every {} s", refreshInterval);
-        pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 1, refreshInterval, TimeUnit.SECONDS);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 1, refreshInterval, TimeUnit.SECONDS);
     }
 
     private void poll() {
@@ -114,37 +116,43 @@ public class AmberElectricHandler extends BaseThingHandler {
 
     private void pollStatus() throws IOException {
 
-        if (siteID.isEmpty()) {
-            Sites sites = webTargets.getSites(apikey, nmi);
-            // add error handling
-            siteID = sites.siteid;
-            logger.debug("Detected amber siteid is {}, for nmi {}", sites.siteid, sites.nmi);
-        }
+        try {
+            if (siteID.isEmpty()) {
+                Sites sites = webTargets.getSites(apikey, nmi);
+                // add error handling
+                siteID = sites.siteid;
+                logger.debug("Detected amber siteid is {}, for nmi {}", sites.siteid, sites.nmi);
+            }
 
-        CurrentPrices currentPrices = webTargets.getCurrentPrices(siteID, apikey);
-        updateStatus(ThingStatus.ONLINE);
-        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECPRICE,
-                new DecimalType(currentPrices.elecPerKwh));
-        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLPRICE,
-                new DecimalType(currentPrices.clPerKwh));
-        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLSTATUS,
-                new StringType(currentPrices.clStatus));
-        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINPRICE,
-                new DecimalType(currentPrices.feedInPerKwh));
-        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECSTATUS,
-                new StringType(currentPrices.elecStatus));
-        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINSTATUS,
-                new StringType(currentPrices.feedInStatus));
-        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_NEMTIME, new StringType(currentPrices.nemTime));
-        updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_RENEWABLES,
-                new DecimalType(currentPrices.renewables));
-        switch (currentPrices.spikeStatus) {
-            case "none":
-                updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_SPIKE, OnOffType.OFF);
-                break;
-            default:
-                updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_SPIKE, OnOffType.ON);
-                break;
+            CurrentPrices currentPrices = webTargets.getCurrentPrices(siteID, apikey);
+            updateStatus(ThingStatus.ONLINE);
+            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECPRICE,
+                    new DecimalType(currentPrices.elecPerKwh));
+            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLPRICE,
+                    new DecimalType(currentPrices.clPerKwh));
+            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLSTATUS,
+                    new StringType(currentPrices.clStatus));
+            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINPRICE,
+                    new DecimalType(currentPrices.feedInPerKwh));
+            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECSTATUS,
+                    new StringType(currentPrices.elecStatus));
+            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINSTATUS,
+                    new StringType(currentPrices.feedInStatus));
+            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_NEMTIME,
+                    new StringType(currentPrices.nemTime));
+            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_RENEWABLES,
+                    new DecimalType(currentPrices.renewables));
+            switch (currentPrices.spikeStatus) {
+                case "none":
+                    updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_SPIKE, OnOffType.OFF);
+                    break;
+                default:
+                    updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_SPIKE, OnOffType.ON);
+                    break;
+            }
+        } catch (AmberElectricCommunicationException e) {
+            logger.debug("Unexpected error connecting to Amber Electric API", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 }
