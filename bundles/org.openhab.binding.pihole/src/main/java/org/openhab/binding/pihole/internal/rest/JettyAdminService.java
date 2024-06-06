@@ -43,9 +43,6 @@ public class JettyAdminService implements AdminService {
         this.token = token;
         this.baseUrl = baseUrl;
         this.client = client;
-        if (this.client.isStopped()) {
-            throw new IllegalStateException("HttpClient is stopped");
-        }
     }
 
     @Override
