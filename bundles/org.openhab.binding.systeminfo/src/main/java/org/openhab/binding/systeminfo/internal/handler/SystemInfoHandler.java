@@ -211,6 +211,11 @@ public class SystemInfoHandler extends BaseThingHandler {
      * index added to the channel groups and channels. The base channel groups and channels will remain without index
      * and are equal to the channel groups and channels with index 0. If there is only one entity in a group, do not add
      * a channels group and channels with index 0.
+     * <p>
+     * If channel groups are added, the thing type will change to
+     * {@link org.openhab.binding.systeminfo.internal.SystemInfoBindingConstants#THING_TYPE_COMPUTER_IMPL
+     * computer-impl}. A new handler will be created and initialization restarted.
+     * Therefore further initialization of the current handler can be aborted if the method returns true.
      *
      * @return true if channel groups where added
      */

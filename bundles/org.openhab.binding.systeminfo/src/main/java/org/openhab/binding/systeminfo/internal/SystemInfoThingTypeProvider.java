@@ -108,7 +108,6 @@ public class SystemInfoThingTypeProvider extends AbstractStorageBasedTypeProvide
         final ThingTypeBuilder builder = ThingTypeBuilder.instance(THING_TYPE_COMPUTER_IMPL, baseType.getLabel());
         builder.withChannelGroupDefinitions(baseType.getChannelGroupDefinitions());
         builder.withChannelDefinitions(baseType.getChannelDefinitions());
-        ;
         builder.withExtensibleChannelTypeIds(baseType.getExtensibleChannelTypeIds());
         builder.withSupportedBridgeTypeUIDs(baseType.getSupportedBridgeTypeUIDs());
         builder.withProperties(baseType.getProperties()).isListed(false);
