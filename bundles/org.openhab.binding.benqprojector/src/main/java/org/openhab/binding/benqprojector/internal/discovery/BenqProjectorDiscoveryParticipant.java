@@ -76,9 +76,10 @@ public class BenqProjectorDiscoveryParticipant implements SddpDiscoveryParticipa
     @Override
     public @Nullable ThingUID getThingUID(SddpDevice device) {
         if (device.manufacturer.toUpperCase(Locale.ENGLISH).contains(BENQ)
-                && device.type.toUpperCase(Locale.ENGLISH).contains(TYPE_PROJECTOR) && !device.macAddress.isBlank()) {
-
+                && device.type.toUpperCase(Locale.ENGLISH).contains(TYPE_PROJECTOR) && !device.macAddress.isBlank()
+                && !device.ipAddress.isBlank()) {
             logger.debug("BenQ projector with mac {} found at {}", device.macAddress, device.ipAddress);
+
             return new ThingUID(THING_TYPE_PROJECTOR_TCP,
                     device.macAddress.replaceAll("-", "").toUpperCase(Locale.ENGLISH));
         }
