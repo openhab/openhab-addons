@@ -55,9 +55,7 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -114,19 +112,19 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             return;
         }
 
-            URI hostname;
-            try {
-                hostname = new URI(config.hostname);
-            } catch (URISyntaxException e) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR,
-                        "@token/handler.init.invalidHostname[\"" + config.hostname + "\"]");
-                return;
-            }
-            if (config.token.isEmpty()) {
-                updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/handler.init.noToken");
-                return;
-            }
-            adminService = new JettyAdminService(config.token, hostname, httpClient);
+        URI hostname;
+        try {
+            hostname = new URI(config.hostname);
+        } catch (URISyntaxException e) {
+            updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                    "@token/handler.init.invalidHostname[\"" + config.hostname + "\"]");
+            return;
+        }
+        if (config.token.isEmpty()) {
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@token/handler.init.noToken");
+            return;
+        }
+        adminService = new JettyAdminService(config.token, hostname, httpClient);
         scheduledFuture = scheduler.scheduleWithFixedDelay(this::update, 0, config.refreshIntervalSeconds, SECONDS);
 
         // do not set status here, the background task will do it.
@@ -240,8 +238,8 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
         dnsStatistics = null;
         var localScheduledFuture = scheduledFuture;
         if (localScheduledFuture != null) {
-                localScheduledFuture.cancel(true);
-                scheduledFuture = null;
+            localScheduledFuture.cancel(true);
+            scheduledFuture = null;
         }
         super.dispose();
     }

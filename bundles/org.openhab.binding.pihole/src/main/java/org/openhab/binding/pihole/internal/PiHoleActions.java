@@ -16,9 +16,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.BINDING_ID;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -78,8 +76,7 @@ public class PiHoleActions implements ThingActions {
         disableBlocking(time, null);
     }
 
-    public static void disableBlocking(@Nullable ThingActions actions, long time)
-            throws PiHoleException {
+    public static void disableBlocking(@Nullable ThingActions actions, long time) throws PiHoleException {
         ((PiHoleActions) requireNonNull(actions)).disableBlocking(time);
     }
 
@@ -88,8 +85,7 @@ public class PiHoleActions implements ThingActions {
         disableBlocking(0, null);
     }
 
-    public static void disableBlocking(@Nullable ThingActions actions)
-            throws PiHoleException {
+    public static void disableBlocking(@Nullable ThingActions actions) throws PiHoleException {
         ((PiHoleActions) requireNonNull(actions)).disableBlocking(0);
     }
 
@@ -102,8 +98,7 @@ public class PiHoleActions implements ThingActions {
         local.enableBlocking();
     }
 
-    public static void enableBlocking(@Nullable ThingActions actions)
-            throws PiHoleException {
+    public static void enableBlocking(@Nullable ThingActions actions) throws PiHoleException {
         ((PiHoleActions) requireNonNull(actions)).enableBlocking();
     }
 }

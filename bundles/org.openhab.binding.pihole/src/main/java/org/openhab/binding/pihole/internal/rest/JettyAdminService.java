@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.pihole.internal.rest;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import java.net.URI;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -29,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * @author Martin Grzeslowski - Initial contribution
@@ -65,7 +65,8 @@ public class JettyAdminService implements AdminService {
         try {
             return request.send();
         } catch (InterruptedException | TimeoutException | ExecutionException e) {
-            throw new PiHoleException("Exception while sending request to Pi-hole. %s".formatted(e.getLocalizedMessage()), e);
+            throw new PiHoleException(
+                    "Exception while sending request to Pi-hole. %s".formatted(e.getLocalizedMessage()), e);
         }
     }
 

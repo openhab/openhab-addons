@@ -13,8 +13,6 @@
 package org.openhab.binding.pihole.internal.rest;
 
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.pihole.internal.PiHoleException;

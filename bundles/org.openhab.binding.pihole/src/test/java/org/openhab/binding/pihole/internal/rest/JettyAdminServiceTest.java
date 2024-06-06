@@ -18,8 +18,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 import java.net.URI;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
@@ -78,8 +76,7 @@ public class JettyAdminServiceTest {
     // Returns a DnsStatistics object when called with valid token and baseUrl
     @Test
     @DisplayName("Returns a DnsStatistics object when called with valid token and baseUrl")
-    public void testReturnsDnsStatisticsObjectWithValidTokenAndBaseUrl()
-            throws Exception {
+    public void testReturnsDnsStatisticsObjectWithValidTokenAndBaseUrl() throws Exception {
         // Given
         var token = "validToken";
         var baseUrl = URI.create("https://example.com");
