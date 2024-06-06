@@ -88,7 +88,7 @@ These configuration settings needs AirGradient firmware on the sensor of version
 | Channel               | Type                 | Read/Write | Description                                                                      |
 |-----------------------|----------------------|------------|----------------------------------------------------------------------------------|
 | country-code          | String               | Read/Write | The ALPHA-2 Country code used for the device                                     |
-| pm-standard           | Stromg               | Read/Write | Standard used for Parts per Million measurements (us-aqi or ugm3)                |
+| pm-standard           | String               | Read/Write | Standard used for Parts per Million measurements (us-aqi or ugm3)                |
 | abc-days              | Number:Days          | Read/Write | Co2 calibration automatic baseline calibration days                              |
 | tvoc-learning-offset  | Number:Dimensionless | Read/Write | Time constant of long-term estimator for offset.                                 |
 | nox-learning-offset   | Number:Dimensionless | Read/Write | Time constant of long-term estimator for offset.                                 |
