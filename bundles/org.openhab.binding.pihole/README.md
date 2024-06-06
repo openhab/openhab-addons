@@ -1,6 +1,6 @@
 # Pi-hole Binding
 
-The Pi-hole Binding is a bridge between OpenHAB and Pi-hole, enabling users to integrate Pi-hole statistics and controls into their home automation setup. Pi-hole is a DNS-based ad blocker that can run on a variety of platforms, including Raspberry Pi.
+The Pi-hole Binding is a bridge between openHAB and Pi-hole, enabling users to integrate Pi-hole statistics and controls into their home automation setup. Pi-hole is a DNS-based ad blocker that can run on a variety of platforms, including Raspberry Pi.
 
 Pi-hole is a powerful network-level advertisement and internet tracker blocking application.
 By intercepting DNS requests, it can prevent unwanted content from being displayed on devices connected to your network.
@@ -9,8 +9,8 @@ The Pi-hole Binding allows you to monitor Pi-hole statistics and control its fun
 ### Features
 
 - Real-time Statistics: Monitor key metrics such as the number of domains being blocked, DNS queries made today, ads blocked today, and more.
-- Control: Enable or disable Pi-hole's blocking functionality, configure blocking options, and adjust privacy settings directly from OpenHAB.
-- Integration: Seamlessly integrate Pi-hole data and controls with other OpenHAB items and rules to create advanced automation scenarios.
+- Control: Enable or disable Pi-hole's blocking functionality, configure blocking options, and adjust privacy settings directly from openHAB.
+- Integration: Seamlessly integrate Pi-hole data and controls with other openHAB items and rules to create advanced automation scenarios.
 
 ## Supported Things
 
