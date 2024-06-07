@@ -89,8 +89,8 @@ public class AmberElectricHandler extends BaseThingHandler {
 
     private void schedulePoll() {
         ScheduledFuture<?> pollFuture = this.pollFuture;
-        logger.debug("Scheduling poll for 1 second out, then every {} s", refreshInterval);
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 1, refreshInterval, TimeUnit.SECONDS);
+        logger.debug("Scheduling poll every {} s", refreshInterval);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 0, refreshInterval, TimeUnit.SECONDS);
     }
 
     private void poll() {
