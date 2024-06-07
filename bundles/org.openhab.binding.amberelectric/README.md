@@ -37,7 +37,7 @@ As a minimum, the IP address is needed:
 ### `amberelectric.things`:
 
 ```java
-amberelectric:amberelectric:AmberElectric [ apiKey="psk_xxxxxxxxxxxxxxxxxxxx" ]
+amberelectric:service:AmberElectric [ apiKey="psk_xxxxxxxxxxxxxxxxxxxx" ]
 ```
 
 ### `amberelectric.items`:
