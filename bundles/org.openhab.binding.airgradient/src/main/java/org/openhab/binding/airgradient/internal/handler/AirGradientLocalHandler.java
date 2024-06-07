@@ -130,6 +130,10 @@ public class AirGradientLocalHandler extends BaseThingHandler {
             if (command instanceof OnOffType onOffCommand) {
                 updateConfiguration((var c) -> c.postDataToAirGradient = onOffCommand.equals(OnOffType.ON));
             }
+        } else if (CHANNEL_MODEL.equals(channelUID.getId())) {
+            if (command instanceof StringType stringCommand) {
+                updateConfiguration((var c) -> c.model = stringCommand.toFullString());
+            }
         } else if (CHANNEL_LED_BAR_TEST.equals(channelUID.getId())) {
             updateConfiguration((var c) -> c.ledBarTestRequested = true);
         } else {

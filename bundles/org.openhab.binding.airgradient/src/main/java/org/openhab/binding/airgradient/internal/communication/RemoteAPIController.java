@@ -75,7 +75,7 @@ public class RemoteAPIController {
                 RESTHelper.generateRequest(httpClient, RESTHelper.generateMeasuresUrl(apiConfig)));
         if (response != null) {
             String contentType = response.getMediaType();
-            logger.debug("Got measurements with status {}: {} ({})", response.getStatus(),
+            logger.trace("Got measurements with status {}: {} ({})", response.getStatus(),
                     response.getContentAsString(), contentType);
 
             if (HttpStatus.isSuccess(response.getStatus())) {
@@ -106,7 +106,7 @@ public class RemoteAPIController {
             return null;
         }
 
-        logger.debug("Got configuration with status {}: {}", response.getStatus(), response.getContentAsString());
+        logger.trace("Got configuration with status {}: {}", response.getStatus(), response.getContentAsString());
 
         Type configType = new TypeToken<LocalConfiguration>() {
         }.getType();
@@ -154,7 +154,7 @@ public class RemoteAPIController {
         try {
             response = request.send();
             if (response != null) {
-                logger.debug("Response from {} ({}): {}", request.getURI(), response.getStatus(),
+                logger.trace("Response from {} ({}): {}", request.getURI(), response.getStatus(),
                         response.getContentAsString());
                 if (!HttpStatus.isSuccess(response.getStatus())) {
                     throw new AirGradientCommunicationException("Returned status code: " + response.getStatus());

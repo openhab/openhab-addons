@@ -98,6 +98,7 @@ These configuration settings needs AirGradient firmware on the sensor of version
 | post-to-cloud         | Switch               | Read/Write | Send data to the AirGradient cloud                                               |
 | led-bar-brightness    | Number:Dimensionless | Read/Write | Brightness of the LED bar                                                        |
 | display-brightness    | Number:Dimensionless | Read/Write | Brightness of the display                                                        |
+| model                 | String               | Read/Write | The model of the device (can be changed e.g. if you change sensors)              |
 | led-bar-test          | String               | Write      | Trigger test of LED bar                                                          |
 
 
