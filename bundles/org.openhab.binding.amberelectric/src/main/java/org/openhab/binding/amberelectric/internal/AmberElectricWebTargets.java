@@ -40,13 +40,13 @@ public class AmberElectricWebTargets {
     }
 
     public Sites getSites(String apiKey, String nmi) throws AmberElectricCommunicationException {
-        String getSitesUri = baseUri + "sites";
+        String getSitesUri = BASE_URI + "sites";
         String response = invoke("GET", getSitesUri, apiKey);
         return Sites.parse(response, nmi);
     }
 
     public CurrentPrices getCurrentPrices(String siteid, String apiKey) throws AmberElectricCommunicationException {
-        String getCurrentPricesUri = baseUri + "sites/" + siteid + "/prices/current";
+        String getCurrentPricesUri = BASE_URI + "sites/" + siteid + "/prices/current";
         String response = invoke("GET", getCurrentPricesUri, apiKey);
         return CurrentPrices.parse(response);
     }
