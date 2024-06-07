@@ -82,9 +82,9 @@
 		<label>Current Controlled Load Status</label>
 		<description>Current price status of Controlled Load</description>
 	</channel-type>
-	<channel id="feed-in-status" typeId="electricity-status">
-		<label>Current Feed-In Status</label>
-		<description>Current price status of Feed-In</description>
-	</channel-type>
+		<channel id="feed-in-status" typeId="electricity-status">
+			<label>Current Feed-In Status</label>
+			<description>Current price status of Feed-In</description>
+		</channel-type>
 
 </thing:thing-descriptions>
