@@ -24,6 +24,9 @@
   <build>
     <plugins>
       <plugin>
+        <!-- when upgrading, carefully compare generated source files in
+          target/generated-sources/swagger/src/main/java/org/openhab/binding/tado/internal/api
+          as 2.4. series created code which lead to runtime errors in the past -->
         <groupId>io.swagger</groupId>
         <artifactId>swagger-codegen-maven-plugin</artifactId>
         <version>2.3.1</version>

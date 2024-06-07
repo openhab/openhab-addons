@@ -96,7 +96,7 @@
 		<category>SoundVolume</category>
 	</channel-type>
 	<channel-type id="volumeDB">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="dB">Number:Dimensionless</item-type>
 		<label>Volume in dB</label>
 		<description>Volume level - decibel (dB)</description>
 		<category>SoundVolume</category>

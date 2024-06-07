@@ -85,8 +85,9 @@ public class ModelMapper {
             case 0x279D:
             case 0x27A1:
             case 0x27A6:
+            case 0x27A9:
             case 0x27C3:
-                return BroadlinkBindingConstants.THING_TYPE_RM2;
+                return BroadlinkBindingConstants.THING_TYPE_RM_PRO;
             case 0x5F36:
             case 0x6507:
             case 0x6508:
@@ -108,7 +109,6 @@ public class ModelMapper {
             case 0x6539:
             case 0x653A:
                 return BroadlinkBindingConstants.THING_TYPE_RM4_MINI;
-            case 0x27A9:
             case 0x520B:
             case 0x5213:
             case 0x5218:

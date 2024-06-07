@@ -41,16 +41,16 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
         }
 
         switch (channelUID.getId()) {
-            case "s1powerOn":
+            case "s1power-on":
                 interpretCommandForSocket(1, command);
                 break;
-            case "s2powerOn":
+            case "s2power-on":
                 interpretCommandForSocket(2, command);
                 break;
-            case "s3powerOn":
+            case "s3power-on":
                 interpretCommandForSocket(3, command);
                 break;
-            case "s4powerOn":
+            case "s4power-on":
                 interpretCommandForSocket(4, command);
                 break;
             default:
@@ -117,10 +117,10 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
             byte decodedPayload[] = decodeDevicePacket(response);
             final int status = decodedPayload[14];
 
-            this.updateState("s1powerOn", (status & 1) == 1 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("s2powerOn", (status & 2) == 2 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("s3powerOn", (status & 4) == 4 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("s4powerOn", (status & 8) == 8 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("s1power-on", (status & 1) == 1 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("s2power-on", (status & 2) == 2 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("s3power-on", (status & 4) == 4 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("s4power-on", (status & 8) == 8 ? OnOffType.ON : OnOffType.OFF);
         } catch (Exception ex) {
             logger.warn("Exception while getting status from device: {}", ex.getMessage());
             return false;

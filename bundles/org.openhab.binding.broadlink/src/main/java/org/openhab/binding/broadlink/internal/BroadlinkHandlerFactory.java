@@ -15,11 +15,11 @@ package org.openhab.binding.broadlink.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlink.internal.handler.BroadlinkA1Handler;
-import org.openhab.binding.broadlink.internal.handler.BroadlinkRemoteModel2Handler;
 import org.openhab.binding.broadlink.internal.handler.BroadlinkRemoteModel3Handler;
 import org.openhab.binding.broadlink.internal.handler.BroadlinkRemoteModel3V44057Handler;
 import org.openhab.binding.broadlink.internal.handler.BroadlinkRemoteModel4MiniHandler;
 import org.openhab.binding.broadlink.internal.handler.BroadlinkRemoteModel4ProHandler;
+import org.openhab.binding.broadlink.internal.handler.BroadlinkRemoteModelProHandler;
 import org.openhab.binding.broadlink.internal.handler.BroadlinkSocketModel1Handler;
 import org.openhab.binding.broadlink.internal.handler.BroadlinkSocketModel2Handler;
 import org.openhab.binding.broadlink.internal.handler.BroadlinkSocketModel3Handler;
@@ -71,8 +71,8 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
         if (logger.isDebugEnabled()) {
             logger.debug("Creating Thing handler for '{}'", thingTypeUID.getAsString());
         }
-        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM2)) {
-            return new BroadlinkRemoteModel2Handler(thing, commandDescriptionProvider, storageService);
+        if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM_PRO)) {
+            return new BroadlinkRemoteModelProHandler(thing, commandDescriptionProvider, storageService);
         }
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM3)) {
             return new BroadlinkRemoteModel3Handler(thing, commandDescriptionProvider, storageService);

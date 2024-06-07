@@ -14,7 +14,7 @@ This binding supports a range of home networking devices made by (and occasional
 | sp2        | Broadlink SP2 WiFi Smart Socket with night light                        |
 | sp3        | Broadlink SP3/Mini WiFi Smart Socket with night light                   |
 | sp3s       | Broadlink SP3s WiFi Smart Socket with Power Meter                       |
-| rm2        | Broadline RM2/Pro WiFi IR/RF Transmitter with temperature sensor        |
+| rm pro     | Broadline RM Pro WiFi IR/RF Transmitter with temperature sensor        |
 | rm3        | Broadlink RM3/Mini WiFi IR Transmitter                                  |
 | rm3q       | Broadlink RM3 WiFi IR Transmitter with Firmware v44057                  |
 | rm4        | Broadlink RM4 WiFi IR Transmitter with temperature and humidity sensors |
@@ -43,23 +43,23 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 
 ## Channels
 
-| Channel          | Supported Devices        | Type                 | Description                                     |
-|------------------|--------------------------|----------------------|-------------------------------------------------|
-| powerOn          | MP2, all SPx             | Switch               | Power on/off for switches/strips                |
-| nightLight       | SP3                      | Switch               | Night light on/off                              |
-| temperature      | A1, RM2, RM4             | Number:Temperature   | Temperature                                     |
-| humidity         | A1, RM4                  | Number:Dimensionless | Air humidity percentage                         |
-| noise            | A1                       | String               | Noise level: `QUIET`/`NORMAL`/`NOISY`/`EXTREME` |
-| light            | A1                       | String               | Light level: `DARK`/`DIM`/`NORMAL`/`BRIGHT`     |
-| air              | A1                       | String               | Air quality: `PERFECT`/`GOOD`/`NORMAL`/`BAD`    |
-| s1powerOn        | MP1, MP1_1k3s2u          | Switch               | Socket 1 power                                  |
-| s2powerOn        | MP1, MP1_1k3s2u          | Switch               | Socket 2 power                                  |
-| s3powerOn        | MP1, v_1k3s2u            | Switch               | Socket 3 power                                  |
-| s4powerOn        | MP1                      | Switch               | Socket 4 power                                  |
-| usbPowerOn       | MP1_1k3s2u               | Switch               | USB power                                       |
-| powerConsumption | MP2, SP2s,SP3s           | Number:Power         | Power consumption                               |
-| command          | all RMx                  | String               | IR Command code to transmit                     |
-| learningControl  | all RMx                  | String               | Learn mode command channel (see below)          |
+| Channel           | Supported Devices        | Type                 | Description                                     |
+|-------------------|--------------------------|----------------------|-------------------------------------------------|
+| power-on          | MP2, all SPx             | Switch               | Power on/off for switches/strips                |
+| night-light       | SP3                      | Switch               | Night light on/off                              |
+| temperature       | A1, RM Pro, RM4          | Number:Temperature   | Temperature                                     |
+| humidity          | A1, RM4                  | Number:Dimensionless | Air humidity percentage                         |
+| noise             | A1                       | String               | Noise level: `QUIET`/`NORMAL`/`NOISY`/`EXTREME` |
+| light             | A1                       | String               | Light level: `DARK`/`DIM`/`NORMAL`/`BRIGHT`     |
+| air               | A1                       | String               | Air quality: `PERFECT`/`GOOD`/`NORMAL`/`BAD`    |
+| s1power-on        | MP1, MP1_1k3s2u          | Switch               | Socket 1 power                                  |
+| s2power-on        | MP1, MP1_1k3s2u          | Switch               | Socket 2 power                                  |
+| s3power-on        | MP1, v_1k3s2u            | Switch               | Socket 3 power                                  |
+| s4power-on        | MP1                      | Switch               | Socket 4 power                                  |
+| usbpower-on       | MP1_1k3s2u               | Switch               | USB power                                       |
+| power-consumption | MP2, SP2s,SP3s           | Number:Power         | Power consumption                               |
+| command           | all RMx                  | String               | IR Command code to transmit                     |
+| learning-control  | all RMx                  | String               | Learn mode command channel (see below)          |
 
 
 ## Learning new remote codes
@@ -174,7 +174,7 @@ else:
 Items file example; `sockets.items`:
 
 ```
-Switch BroadlinkSP3 "Christmas Lights" [ "Lighting" ] { channel="broadlink:sp3:34-ea-34-22-44-66:powerOn" } 
+Switch BroadlinkSP3 "Christmas Lights" [ "Lighting" ] { channel="broadlink:sp3:34-ea-34-22-44-66:power-on" } 
 ```
 
 ## Credits

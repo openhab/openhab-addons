@@ -66,7 +66,7 @@ public class BroadlinkSocketModel3SHandler extends BroadlinkSocketModel2Handler 
     }
 
     private double fromBCD(byte bcdDigit) {
-        int highNibble = ((int) bcdDigit & 0xF0) >> 4;
+        int highNibble = (bcdDigit & 0xF0) >> 4;
         int lowNibble = bcdDigit & 0x0F;
         return highNibble * 10 + lowNibble;
     }

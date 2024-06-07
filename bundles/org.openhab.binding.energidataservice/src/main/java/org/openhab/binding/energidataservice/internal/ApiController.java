@@ -106,7 +106,7 @@ public class ApiController {
      * @throws DataServiceException
      */
     public ElspotpriceRecord[] getSpotPrices(String priceArea, Currency currency, DateQueryParameter start,
-            Map<String, String> properties) throws InterruptedException, DataServiceException {
+            DateQueryParameter end, Map<String, String> properties) throws InterruptedException, DataServiceException {
         if (!SUPPORTED_CURRENCIES.contains(currency)) {
             throw new IllegalArgumentException("Invalid currency " + currency.getCurrencyCode());
         }
@@ -119,15 +119,15 @@ public class ApiController {
                 .agent(userAgent) //
                 .method(HttpMethod.GET);
 
+        if (!end.isEmpty()) {
+            request = request.param("end", end.toString());
+        }
+
         try {
             String responseContent = sendRequest(request, properties);
             ElspotpriceRecords records = gson.fromJson(responseContent, ElspotpriceRecords.class);
-            if (records == null) {
+            if (records == null || Objects.isNull(records.records())) {
                 throw new DataServiceException("Error parsing response");
-            }
-
-            if (records.total() == 0 || Objects.isNull(records.records()) || records.records().length == 0) {
-                throw new DataServiceException("No records");
             }
 
             return Arrays.stream(records.records()).filter(Objects::nonNull).toArray(ElspotpriceRecord[]::new);
@@ -213,9 +213,14 @@ public class ApiController {
                 .agent(userAgent) //
                 .method(HttpMethod.GET);
 
-        DateQueryParameter dateQueryParameter = tariffFilter.getDateQueryParameter();
-        if (!dateQueryParameter.isEmpty()) {
-            request = request.param("start", dateQueryParameter.toString());
+        DateQueryParameter start = tariffFilter.getStart();
+        if (!start.isEmpty()) {
+            request = request.param("start", start.toString());
+        }
+
+        DateQueryParameter end = tariffFilter.getEnd();
+        if (!end.isEmpty()) {
+            request = request.param("end", end.toString());
         }
 
         try {
@@ -262,6 +267,9 @@ public class ApiController {
             Map<String, String> properties) throws InterruptedException, DataServiceException {
         if (dataset != Dataset.CO2Emission && dataset != Dataset.CO2EmissionPrognosis) {
             throw new IllegalArgumentException("Invalid dataset " + dataset + " for getting CO2 emissions");
+        }
+        if (!"DK1".equals(priceArea) && !"DK2".equals(priceArea)) {
+            throw new IllegalArgumentException("Invalid price area " + priceArea + " for getting CO2 emissions");
         }
         Request request = httpClient.newRequest(ENDPOINT + DATASET_PATH + dataset)
                 .timeout(REQUEST_TIMEOUT_SECONDS, TimeUnit.SECONDS) //

@@ -34,7 +34,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class BroadlinkBindingConstants {
 
-    public static final ThingTypeUID THING_TYPE_RM2 = new ThingTypeUID("broadlink", "rm2");
+    public static final ThingTypeUID THING_TYPE_RM_PRO = new ThingTypeUID("broadlink", "rmpro");
     public static final ThingTypeUID THING_TYPE_RM3 = new ThingTypeUID("broadlink", "rm3");
     public static final ThingTypeUID THING_TYPE_RM3Q = new ThingTypeUID("broadlink", "rm3q");
     public static final ThingTypeUID THING_TYPE_RM4_MINI = new ThingTypeUID("broadlink", "rm4mini");
@@ -51,9 +51,10 @@ public class BroadlinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_PIR = new ThingTypeUID("broadlink", "s1p");
     public static final ThingTypeUID THING_TYPE_MAGNET = new ThingTypeUID("broadlink", "s1m");
 
-    public static final String RM2 = "Broadlink RM2";
+    public static final String RM_PRO = "Broadlink RM pro / pro+ / plus";
     public static final String RM3 = "Broadlink RM3";
     public static final String RM3Q = "Broadlink RM3 v11057";
+    public static final String RM3_MINI = "Broadlink RM3 Mini";
     public static final String RM4_MINI = "Broadlink RM4 Mini";
     public static final String RM4_PRO = "Broadlink RM4 Pro";
     public static final String A1 = "Broadlink A1";
@@ -73,19 +74,19 @@ public class BroadlinkBindingConstants {
     public static final String BROADLINK_IV = "562e17996d093d28ddb3ba695a2e6f58";
 
     public static final String COMMAND_CHANNEL = "command";
-    public static final String LEARNING_CONTROL_CHANNEL = "learningControl";
+    public static final String LEARNING_CONTROL_CHANNEL = "learning-control";
     public static final String RF_COMMAND_CHANNEL = "rfcommand";
-    public static final String RF_LEARNING_CONTROL_CHANNEL = "learningRFControl";
+    public static final String RF_LEARNING_CONTROL_CHANNEL = "learning-rf-control";
     public static final String LEARNING_CONTROL_COMMAND_LEARN = "LEARN";
     public static final String LEARNING_CONTROL_COMMAND_CHECK = "CHECK";
     public static final String LEARNING_CONTROL_COMMAND_MODIFY = "MODIFY";
     public static final String LEARNING_CONTROL_COMMAND_DELETE = "DELETE";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
-    public static final String CHANNEL_POWER_CONSUMPTION = "powerConsumption";
+    public static final String CHANNEL_POWER_CONSUMPTION = "power-consumption";
 
-    public static final String COMMAND_POWER_ON = "powerOn";
-    public static final String COMMAND_NIGHTLIGHT = "nightLight";
+    public static final String COMMAND_POWER_ON = "power-on";
+    public static final String COMMAND_NIGHTLIGHT = "night-light";
 
     public static final String IR_MAP_NAME = "broadlink_ir";
     public static final String RF_MAP_NAME = "broadlink_rf";
@@ -97,7 +98,7 @@ public class BroadlinkBindingConstants {
     public static final Map<ThingTypeUID, String> SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP = new HashMap<>();
 
     static {
-        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM2, RM2);
+        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM_PRO, RM_PRO);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM3, RM3);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM3Q, RM3Q);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_RM4_MINI, RM4_MINI);

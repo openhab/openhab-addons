@@ -55,7 +55,7 @@ public class LatencyParser {
 
         Matcher m = LATENCY_PATTERN.matcher(inputLine);
         if (m.find() && m.groupCount() == 1) {
-            return millisToDuration(Double.parseDouble(m.group(1)));
+            return millisToDuration(Double.parseDouble(m.group(1).replace(",", ".")));
         }
 
         logger.debug("Did not find a latency value");

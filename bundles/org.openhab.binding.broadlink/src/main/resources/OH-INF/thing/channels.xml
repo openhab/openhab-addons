@@ -10,7 +10,7 @@
 		<description>The IR command sent to the device</description>
 		<category>Text</category>
 	</channel-type>
-	<channel-type id="learningControl">
+	<channel-type id="learning-control">
 		<item-type>String</item-type>
 		<label>Remote IR Learning Control</label>
 		<description>Instructs the Broadlink device to perform tasks related to IR code learning</description>
@@ -29,7 +29,7 @@
 		<description>The RF command sent to the device</description>
 		<category>Text</category>
 	</channel-type>
-	<channel-type id="learningRFControl">
+	<channel-type id="learning-rf-control">
 		<item-type>String</item-type>
 		<label>Remote RF Learning Control</label>
 		<description>Instructs the Broadlink device to perform tasks related to RF code learning</description>
@@ -54,17 +54,17 @@
 		<category>Humidity</category>
 		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%"/>
 	</channel-type>
-	<channel-type id="powerOn">
+	<channel-type id="power-on">
 		<item-type>Switch</item-type>
 		<label>Socket Power</label>
 		<category>PowerOutlet</category>
 	</channel-type>
-	<channel-type id="nightLight">
+	<channel-type id="night-light">
 		<item-type>Switch</item-type>
 		<label>Night Light</label>
 		<category>Lightbulb</category>
 	</channel-type>
-	<channel-type id="powerConsumption" advanced="true">
+	<channel-type id="power-consumption" advanced="true">
 		<item-type>Number:Power</item-type>
 		<label>Power Consumption</label>
 		<state pattern="%.2f" readOnly="true"></state>

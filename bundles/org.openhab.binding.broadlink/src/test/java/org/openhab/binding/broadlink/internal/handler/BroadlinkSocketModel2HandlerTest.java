@@ -13,8 +13,7 @@
 package org.openhab.binding.broadlink.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 import static org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.*;
 
 import java.io.IOException;
@@ -26,6 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
@@ -36,7 +36,7 @@ import org.openhab.core.types.State;
 
 /**
  * Tests the Socket Model 2 handler.
- * 
+ *
  * @author John Marshall - Initial contribution
  */
 @NonNullByDefault
@@ -50,11 +50,13 @@ public class BroadlinkSocketModel2HandlerTest extends AbstractBroadlinkThingHand
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, };
 
+    @Override
     @BeforeEach
     public void setUp() throws Exception {
         configureUnderlyingThing(BroadlinkBindingConstants.THING_TYPE_SP2, "sp2-test");
         MockitoAnnotations.openMocks(this).close();
-        Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
+        Mockito.when(mockSocket.sendAndReceive(ArgumentMatchers.any(byte[].class), ArgumentMatchers.anyString()))
+                .thenReturn(response);
     }
 
     @Test
@@ -115,7 +117,8 @@ public class BroadlinkSocketModel2HandlerTest extends AbstractBroadlinkThingHand
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
                 0x00, 0x00, 0x00, };
-        Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString())).thenReturn(response);
+        Mockito.when(mockSocket.sendAndReceive(ArgumentMatchers.any(byte[].class), ArgumentMatchers.anyString()))
+                .thenReturn(response);
         BroadlinkSocketHandler model2 = new BroadlinkSocketModel2Handler(thing, false);
         setMocksForTesting(model2);
 
@@ -140,7 +143,7 @@ public class BroadlinkSocketModel2HandlerTest extends AbstractBroadlinkThingHand
         byte[] payload = { 0x08, 0x00, 0x11, 0x22, (byte) 0x91, (byte) 0x82, 0x3, 0x16, 0x27, 0x28, 0x01, 0x02, 0x03,
                 0x04, 0x05, 0x16 };
         byte[] responseMessage = generateReceivedBroadlinkMessage(payload);
-        Mockito.when(mockSocket.sendAndReceive(Mockito.any(byte[].class), Mockito.anyString()))
+        Mockito.when(mockSocket.sendAndReceive(ArgumentMatchers.any(byte[].class), ArgumentMatchers.anyString()))
                 .thenReturn(responseMessage);
         BroadlinkSocketHandler model2s = new BroadlinkSocketModel2Handler(thing, true);
         setMocksForTesting(model2s);
