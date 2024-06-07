@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class AmberElectricWebTargets {
     private static final int TIMEOUT_MS = 30000;
-    String baseUri = "https://api.amber.com.au/v1/";
+    private static final String BASE_URI = "https://api.amber.com.au/v1/";
     private final Logger logger = LoggerFactory.getLogger(AmberElectricWebTargets.class);
 
     public AmberElectricWebTargets() {
