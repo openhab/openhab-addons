@@ -11,7 +11,7 @@ This binding supports two thing types based on the connection used: `projector-s
 
 ## Discovery
 
-If the projector has a built-in Ethernet port connected to the same network as the openHAB server and supports AMX Device Discovery, the thing will be discovered automatically.
+If the projector has a built-in Ethernet port connected to the same network as the openHAB server and either the 'AMX Device Discovery' or 'Control4' options are present and enabled in the projector's network menu, the thing will be discovered automatically.
 Serial port or serial over IP connections must be configured manually.
 
 ## Binding Configuration
@@ -55,16 +55,16 @@ Some notes:
 
 ## Channels
 
-| Channel            | Item Type | Purpose                                             | Values    |
-| ------------------ | --------- | --------------------------------------------------- | --------- |
-| power              | Switch    | Powers the projector on or off.                     |           |
-| source             | String    | Retrieve or set the input source.                   | See above |
-| picturemode        | String    | Retrieve or set the picture mode.                   | See above |
-| aspectratio        | String    | Retrieve or set the aspect ratio.                   | See above |
-| freeze             | Switch    | Turn the freeze image mode on or off.               |           |
-| blank              | Switch    | Turn the screen blank mode on or off.               |           |
-| directcmd          | String    | Send a command directly to the projector.           | Send only |
-| lamptime           | Number    | Retrieves the lamp hours.                           | Read only |
+| Channel            | Item Type | Purpose                                               | Values     |
+| ------------------ | --------- | ----------------------------------------------------- | ---------- |
+| power              | Switch    | Powers the projector on or off.                       |            |
+| source             | String    | Retrieve or set the input source.                     | See above  |
+| picturemode        | String    | Retrieve or set the picture mode.                     | See above  |
+| aspectratio        | String    | Retrieve or set the aspect ratio.                     | See above  |
+| freeze             | Switch    | Turn the freeze image mode on or off.                 |            |
+| blank              | Switch    | Turn the screen blank mode on or off.                 |            |
+| directcmd          | String    | Send a command directly to the projector.             | Write only |
+| lamptime           | Number    | Retrieves the number of hours the lamp has been used. | Read only  |
 
 ## Full Example
 
