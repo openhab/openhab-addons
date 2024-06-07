@@ -4,7 +4,7 @@ A binding that supports the Australian energy retailer Amber's API (https://www.
 
 ## Supported Things
 
-- `amber-electric` Amber Electric API 
+- `service` Amber Electric API 
 
 ## Discovery
 
