@@ -93,8 +93,9 @@ public class AtlonaDiscoveryParticipant implements SddpDiscoveryParticipant {
      */
     @Override
     public @Nullable ThingUID getThingUID(SddpDevice device) {
-        if (device.manufacturer.toUpperCase(Locale.ENGLISH).contains(ATLONA) && PROXY_AVSWITCH.equals(device.primaryProxy)
-                && !device.macAddress.isBlank() && !device.ipAddress.isBlank()) {
+        if (device.manufacturer.toUpperCase(Locale.ENGLISH).contains(ATLONA)
+                && PROXY_AVSWITCH.equals(device.primaryProxy) && !device.macAddress.isBlank()
+                && !device.ipAddress.isBlank()) {
             final ThingTypeUID typeId;
 
             switch (device.model) {
