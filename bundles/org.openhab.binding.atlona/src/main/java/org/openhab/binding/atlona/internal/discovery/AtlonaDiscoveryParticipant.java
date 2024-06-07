@@ -15,6 +15,7 @@ package org.openhab.binding.atlona.internal.discovery;
 import static org.openhab.binding.atlona.internal.AtlonaBindingConstants.*;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
