@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 public class AtlonaDiscoveryParticipant implements SddpDiscoveryParticipant {
     private final Logger logger = LoggerFactory.getLogger(AtlonaDiscoveryParticipant.class);
 
-    private static final String ATLONA = "Atlona";
+    private static final String ATLONA = "ATLONA";
     private static final String PROXY_AVSWITCH = "avswitch";
 
     @Override
@@ -92,7 +92,7 @@ public class AtlonaDiscoveryParticipant implements SddpDiscoveryParticipant {
      */
     @Override
     public @Nullable ThingUID getThingUID(SddpDevice device) {
-        if (ATLONA.equals(device.manufacturer) && PROXY_AVSWITCH.equals(device.primaryProxy)
+        if (device.manufacturer.toUpperCase(Locale.ENGLISH).contains(ATLONA) && PROXY_AVSWITCH.equals(device.primaryProxy)
                 && !device.macAddress.isBlank() && !device.ipAddress.isBlank()) {
             final ThingTypeUID typeId;
 
