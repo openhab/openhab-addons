@@ -45,34 +45,10 @@
 		<category>Price</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="controlled-load-price">
-		<item-type>Number:EnergyPrice</item-type>
-		<label>Current Controlled Load Price</label>
-		<description>Current price to import power for Controlled Load</description>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="feed-in-price">
-		<item-type>Number:EnergyPrice</item-type>
-		<label>Current Feed-In Price</label>
-		<description>Current price to export power to the grid</description>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
 	<channel-type id="electricity-status">
 		<item-type>String</item-type>
 		<label>Current Electricity Status</label>
 		<description>Current price status of grid import</description>
-		<state readOnly="true" pattern="%s"/>
-	</channel-type>
-	<channel-type id="controlled-load-status">
-		<item-type>String</item-type>
-		<label>Current Controlled Load Status</label>
-		<description>Current price status of Controlled Load</description>
-		<state readOnly="true" pattern="%s"/>
-	</channel-type>
-	<channel-type id="feed-in-status">
-		<item-type>String</item-type>
-		<label>Current Feed-In Status</label>
-		<description>Current price status of Feed-In</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="nem-time">
@@ -92,6 +68,23 @@
 		<label>Energy Price Spike</label>
 		<description>Report if the grid has a current price spike</description>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel id="controlled-load-price" typeId="electricity-price">
+		<label>Current Controlled Load Price</label>
+		<description>Current price to import power for Controlled Load</description>
+	</channel>
+	<channel id="feed-in-price" typeId="electricity-price">
+		<label>Current Feed-In Price</label>
+		<description>Current price to export power to the grid</description>
+	</channel>
+	<channel id="controlled-load-status" typeId="electricity-status">
+		<label>Current Controlled Load Status</label>
+		<description>Current price status of Controlled Load</description>
+	</channel-type>
+	<channel id="feed-in-status" typeId="electricity-status">
+		<label>Current Feed-In Status</label>
+		<description>Current price status of Feed-In</description>
 	</channel-type>
 
 </thing:thing-descriptions>
