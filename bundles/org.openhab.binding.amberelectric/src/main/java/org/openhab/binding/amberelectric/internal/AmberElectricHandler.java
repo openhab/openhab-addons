@@ -13,6 +13,7 @@
 package org.openhab.binding.amberelectric.internal;
 
 import java.io.IOException;
+import java.util.Currency;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +26,6 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.CurrencyUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -124,15 +124,18 @@ public class AmberElectricHandler extends BaseThingHandler {
             }
 
             CurrentPrices currentPrices = webTargets.getCurrentPrices(siteID, apiKey);
+            Currency currency = Currency.getInstance("AUD");
+            String currencyCode = currency.getCurrencyCode();
+
             updateStatus(ThingStatus.ONLINE);
             updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECPRICE,
-                    new QuantityType<>(currentPrices.elecPerKwh / 100, CurrencyUnits.BASE_ENERGY_PRICE));
+                    new QuantityType<>(currentPrices.elecPerKwh / 100 + " " + currencyCode + "/kWh"));
             updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLPRICE,
-                    new QuantityType<>(currentPrices.clPerKwh / 100, CurrencyUnits.BASE_ENERGY_PRICE));
+                    new QuantityType<>(currentPrices.clPerKwh / 100 + " " + currencyCode + "/kWh"));
+            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINPRICE,
+                    new QuantityType<>(currentPrices.feedInPerKwh / 100 + " " + currencyCode + "/kWh"));
             updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLSTATUS,
                     new StringType(currentPrices.clStatus));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINPRICE,
-                    new QuantityType<>(currentPrices.feedInPerKwh / 100, CurrencyUnits.BASE_ENERGY_PRICE));
             updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECSTATUS,
                     new StringType(currentPrices.elecStatus));
             updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINSTATUS,
