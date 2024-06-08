@@ -38,7 +38,9 @@ import org.slf4j.LoggerFactory;
 @Component
 public class HDPowerViewHubDiscoveryParticipantSddp implements SddpDiscoveryParticipant {
 
-    private static final String LABEL_KEY = "discovery.hub.label";
+    private static final String LABEL_KEY_HUB = "discovery.hub.label";
+    private static final String LABEL_KEY_GATEWAY = "discovery.gateway.label";
+
     private static final String HUNTER_DOUGLAS = "hunterdouglas:";
     private static final String POWERVIEW_HUB_ID = "hub:powerview";
     private static final String POWERVIEW_GEN3_ID = "powerview:gen3:gateway";
@@ -54,12 +56,18 @@ public class HDPowerViewHubDiscoveryParticipantSddp implements SddpDiscoveryPart
     public @Nullable DiscoveryResult createResult(SddpDevice device) {
         final ThingUID thingUID = getThingUID(device);
         if (thingUID != null) {
-            DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
-                    .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
-                    .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
-                    .withLabel(String.format("@text/%s [\"%s\"]", LABEL_KEY, device.ipAddress)).build();
-            logger.debug("SDDP discovered hub/gateway '{}' on host '{}'", thingUID, device.ipAddress);
-            return hub;
+            try {
+                DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
+                        .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
+                        .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
+                        .withLabel(String.format("@text/%s [\"%s\"]",
+                                isGateway(device) ? LABEL_KEY_GATEWAY : LABEL_KEY_HUB, device.ipAddress))
+                        .build();
+                logger.debug("SDDP discovered hub/gateway '{}' on host '{}'", thingUID, device.ipAddress);
+                return hub;
+            } catch (IllegalArgumentException e) {
+                // error already logged, so fall through
+            }
         }
         return null;
     }
@@ -67,14 +75,33 @@ public class HDPowerViewHubDiscoveryParticipantSddp implements SddpDiscoveryPart
     @Override
     public @Nullable ThingUID getThingUID(SddpDevice device) {
         if (device.type.startsWith(HUNTER_DOUGLAS)) {
-            final ThingTypeUID bridgeTypeUID = device.type.contains(POWERVIEW_HUB_ID) ? THING_TYPE_HUB
-                    : device.type.contains(POWERVIEW_GEN3_ID) ? THING_TYPE_GATEWAY : null;
-            if (bridgeTypeUID != null) {
+            try {
                 if (VALID_IP_V4_ADDRESS.matcher(device.ipAddress).matches()) {
-                    return new ThingUID(bridgeTypeUID, device.ipAddress.replace('.', '_'));
+                    return new ThingUID(isGateway(device) ? THING_TYPE_GATEWAY : THING_TYPE_HUB,
+                            device.ipAddress.replace('.', '_'));
                 }
+            } catch (IllegalArgumentException e) {
+                // error already logged, so fall through
             }
         }
         return null;
+    }
+
+    /**
+     * Check if the device 'type' property represents a Gen 3 gateway or a Gen 1/2 hub.
+     *
+     * @return true if a Gen 3 gateway or false if a Gen 1/2 hub.
+     * @throws IllegalArgumentException if neither Gen 3, 2 or 1.
+     */
+    private boolean isGateway(SddpDevice device) throws IllegalArgumentException {
+        if (device.type.contains(POWERVIEW_GEN3_ID)) {
+            return true;
+        }
+        if (device.type.contains(POWERVIEW_HUB_ID)) {
+            return false;
+        }
+        final IllegalArgumentException e = new IllegalArgumentException("Device has unexpected 'type' property");
+        logger.debug("{}", e.getMessage());
+        throw e;
     }
 }
