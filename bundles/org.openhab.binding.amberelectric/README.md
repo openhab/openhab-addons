@@ -43,9 +43,9 @@ amberelectric:service:AmberElectric [ apiKey="psk_xxxxxxxxxxxxxxxxxxxx" ]
 ### `amberelectric.items`:
 
 ```java
-Number AmberElectric_ElectricityPrice { channel="amberelectric:service:AmberElectric:electricity-price" }
-Number AmberElectric_ControlledLoadPrice { channel="amberelectric:service:AmberElectric:controlled-load-price" }
-Number AmberElectric_FeedInPrice { channel="amberelectric:service:AmberElectric:feed-in-price" }
+Number:EnergyPrice AmberElectric_ElectricityPrice { channel="amberelectric:service:AmberElectric:electricity-price" }
+Number:EnergyPrice AmberElectric_ControlledLoadPrice { channel="amberelectric:service:AmberElectric:controlled-load-price" }
+Number:EnergyPrice AmberElectric_FeedInPrice { channel="amberelectric:service:AmberElectric:feed-in-price" }
 String AmberElectric_ElectricityStatus { channel="amberelectric:service:AmberElectric:electricity-status" }
 String AmberElectric_ControlledLoadStatus { channel="amberelectric:service:AmberElectric:controlled-load-status" }
 String AmberElectric_FeedInStatus { channel="amberelectric:service:AmberElectric:feed-in-status" }
