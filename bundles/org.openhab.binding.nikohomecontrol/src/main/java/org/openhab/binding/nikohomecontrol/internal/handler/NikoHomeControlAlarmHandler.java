@@ -69,15 +69,13 @@ public class NikoHomeControlAlarmHandler extends NikoHomeControlBaseHandler impl
         }
 
         if ((CHANNEL_CONTROL.equals(channelUID.getId()) || CHANNEL_ARMED.equals(channelUID.getId()))
-                && command instanceof OnOffType) {
-            OnOffType s = (OnOffType) command;
+                && command instanceof OnOffType s) {
             if (OnOffType.ON.equals(s)) {
                 nhcAlarm.executeArm();
             } else {
                 nhcAlarm.executeDisarm();
             }
-        } else if (CHANNEL_TARGET_STATE.equals(channelUID.getId()) && command instanceof StringType) {
-            StringType s = (StringType) command;
+        } else if (CHANNEL_TARGET_STATE.equals(channelUID.getId()) && command instanceof StringType s) {
             String alarmState = s.toString();
             if (alarmState.equals(ALARMSTATES.get(NHCARMED))) {
                 nhcAlarm.executeArm();
@@ -173,8 +171,7 @@ public class NikoHomeControlAlarmHandler extends NikoHomeControlBaseHandler impl
     private void updateProperties(NhcAlarm nhcAlarm) {
         Map<String, String> properties = new HashMap<>();
 
-        if (nhcAlarm instanceof NhcAlarm2) {
-            NhcAlarm2 alarm = (NhcAlarm2) nhcAlarm;
+        if (nhcAlarm instanceof NhcAlarm2 alarm) {
             properties.put(PROPERTY_DEVICE_TYPE, alarm.getDeviceType());
             properties.put(PROPERTY_DEVICE_TECHNOLOGY, alarm.getDeviceTechnology());
             properties.put(PROPERTY_DEVICE_MODEL, alarm.getDeviceModel());

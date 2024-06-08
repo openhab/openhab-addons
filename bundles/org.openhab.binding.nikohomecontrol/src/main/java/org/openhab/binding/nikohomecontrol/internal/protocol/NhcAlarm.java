@@ -59,7 +59,7 @@ public abstract class NhcAlarm {
     }
 
     /**
-     * This method should be called when an object implementing the {@NhcAccessEvent} interface is disposed.
+     * This method should be called when an object implementing the {@NhcAlarmEvent} interface is disposed.
      * It resets the reference, so no updates go to the handler anymore.
      */
     public void unsetEventHandler() {
@@ -170,7 +170,7 @@ public abstract class NhcAlarm {
     }
 
     public void executeDisarm() {
-        logger.debug("arm the alarm with id {}", id);
+        logger.debug("disarm the alarm with id {}", id);
         nhcComm.executeDisarm(id);
     }
 }
