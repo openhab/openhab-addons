@@ -59,32 +59,33 @@ public class TeslaPowerwallWebTargets {
         getOperationUri = baseUri + "api/operation";
     }
 
-    public BatterySOE getBatterySOE(String token) throws TeslaPowerwallCommunicationException {
-        String response = invoke(getBatterySOEUri, token);
+    public BatterySOE getBatterySOE(String email, String password) throws TeslaPowerwallCommunicationException {
+        String response = invoke(getBatterySOEUri, email, password);
         logger.trace("getBatterySOE response = {}", response);
         return BatterySOE.parse(response);
     }
 
-    public GridStatus getGridStatus(String token) throws TeslaPowerwallCommunicationException {
-        String response = invoke(getGridStatusUri, token);
+    public GridStatus getGridStatus(String email, String password) throws TeslaPowerwallCommunicationException {
+        String response = invoke(getGridStatusUri, email, password);
         logger.trace("getGridStatus response = {}", response);
         return GridStatus.parse(response);
     }
 
-    public SystemStatus getSystemStatus(String token) throws TeslaPowerwallCommunicationException {
-        String response = invoke(getSystemStatusUri, token);
+    public SystemStatus getSystemStatus(String email, String password) throws TeslaPowerwallCommunicationException {
+        String response = invoke(getSystemStatusUri, email, password);
         logger.trace("getSystemStatus response = {}", response);
         return SystemStatus.parse(response);
     }
 
-    public MeterAggregates getMeterAggregates(String token) throws TeslaPowerwallCommunicationException {
-        String response = invoke(getMeterAggregatesUri, token);
+    public MeterAggregates getMeterAggregates(String email, String password)
+            throws TeslaPowerwallCommunicationException {
+        String response = invoke(getMeterAggregatesUri, email, password);
         logger.trace("getMeterAggregates response = {}", response);
         return MeterAggregates.parse(response);
     }
 
-    public Operations getOperations(String token) throws TeslaPowerwallCommunicationException {
-        String response = invoke(getOperationUri, token);
+    public Operations getOperations(String email, String password) throws TeslaPowerwallCommunicationException {
+        String response = invoke(getOperationUri, email, password);
         logger.trace("getOperations response = {}", response);
         return Operations.parse(response);
     }
@@ -103,7 +104,10 @@ public class TeslaPowerwallWebTargets {
         return token;
     }
 
-    private String invoke(String uri, String token) throws TeslaPowerwallCommunicationException {
+    private String invoke(String uri, String email, String password) throws TeslaPowerwallCommunicationException {
+        if (token.isEmpty()) {
+            token = getToken(email, password);
+        }
         return invoke(uri, "GET", "Authorization", "Bearer " + token, "");
     }
 

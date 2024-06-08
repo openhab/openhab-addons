@@ -50,7 +50,6 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(TeslaPowerwallHandler.class);
 
     private @NonNullByDefault({}) TeslaPowerwallConfiguration config;
-    private String token = "";
     private @NonNullByDefault({}) TeslaPowerwallWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
 
@@ -116,14 +115,11 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
         SystemStatus systemStatus = null;
         MeterAggregates meterAggregates = null;
         try {
-            if (token.isEmpty()) {
-                token = webTargets.getToken(config.email, config.password);
-            }
-            operations = webTargets.getOperations(token);
-            batterySOE = webTargets.getBatterySOE(token);
-            gridStatus = webTargets.getGridStatus(token);
-            systemStatus = webTargets.getSystemStatus(token);
-            meterAggregates = webTargets.getMeterAggregates(token);
+            operations = webTargets.getOperations(config.email, config.password);
+            batterySOE = webTargets.getBatterySOE(config.email, config.password);
+            gridStatus = webTargets.getGridStatus(config.email, config.password);
+            systemStatus = webTargets.getSystemStatus(config.email, config.password);
+            meterAggregates = webTargets.getMeterAggregates(config.email, config.password);
             updateStatus(ThingStatus.ONLINE);
         } catch (TeslaPowerwallCommunicationException e) {
             logger.debug("Unexpected error connecting to Tesla Powerwall", e);
