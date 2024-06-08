@@ -13,8 +13,6 @@
 package org.openhab.binding.amberelectric.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -28,8 +26,6 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class CurrentPrices {
-    private static Logger LOGGER = LoggerFactory.getLogger(CurrentPrices.class);
-
     public double elecPerKwh;
     public double clPerKwh;
     public double feedInPerKwh;
@@ -44,7 +40,6 @@ public class CurrentPrices {
     }
 
     public static CurrentPrices parse(String response) {
-        LOGGER.debug("Parsing string: \"{}\"", response);
         /* parse json string */
         JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
         JsonObject jsonObject = jsonArray.get(0).getAsJsonObject();

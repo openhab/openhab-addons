@@ -13,7 +13,6 @@
 package org.openhab.binding.amberelectric.internal;
 
 import java.io.IOException;
-import java.util.Currency;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -70,15 +69,16 @@ public class AmberElectricHandler extends BaseThingHandler {
         if (config.apiKey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.no-api-key");
-        } else {
-            webTargets = new AmberElectricWebTargets();
-            updateStatus(ThingStatus.UNKNOWN);
-            refreshInterval = config.refresh;
-            nmi = config.nmi;
-            apiKey = config.apiKey;
-
-            schedulePoll();
+            return;
         }
+
+        webTargets = new AmberElectricWebTargets();
+        updateStatus(ThingStatus.UNKNOWN);
+        refreshInterval = config.refresh;
+        nmi = config.nmi;
+        apiKey = config.apiKey;
+
+        schedulePoll();
     }
 
     @Override
@@ -124,27 +124,24 @@ public class AmberElectricHandler extends BaseThingHandler {
             }
 
             CurrentPrices currentPrices = webTargets.getCurrentPrices(siteID, apiKey);
-            Currency currency = Currency.getInstance("AUD");
-            String currencyCode = currency.getCurrencyCode();
+            String currencyCode = "AUD";
 
             updateStatus(ThingStatus.ONLINE);
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECPRICE,
+            updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
                     new QuantityType<>(currentPrices.elecPerKwh / 100 + " " + currencyCode + "/kWh"));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLPRICE,
+            updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
                     new QuantityType<>(currentPrices.clPerKwh / 100 + " " + currencyCode + "/kWh"));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINPRICE,
+            updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE,
                     new QuantityType<>(currentPrices.feedInPerKwh / 100 + " " + currencyCode + "/kWh"));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_CLSTATUS,
+            updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
                     new StringType(currentPrices.clStatus));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_ELECSTATUS,
+            updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_STATUS,
                     new StringType(currentPrices.elecStatus));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_FEEDINSTATUS,
+            updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_STATUS,
                     new StringType(currentPrices.feedInStatus));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_NEMTIME,
-                    new StringType(currentPrices.nemTime));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_RENEWABLES,
-                    new DecimalType(currentPrices.renewables));
-            updateState(AmberElectricBindingConstants.CHANNEL_AMBERELECTRIC_SPIKE,
+            updateState(AmberElectricBindingConstants.CHANNEL_NEM_TIME, new StringType(currentPrices.nemTime));
+            updateState(AmberElectricBindingConstants.CHANNEL_RENEWABLES, new DecimalType(currentPrices.renewables));
+            updateState(AmberElectricBindingConstants.CHANNEL_SPIKE,
                     OnOffType.from(!"none".equals(currentPrices.spikeStatus)));
         } catch (AmberElectricCommunicationException e) {
             logger.debug("Unexpected error connecting to Amber Electric API", e);

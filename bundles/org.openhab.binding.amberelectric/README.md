@@ -49,7 +49,7 @@ Number:EnergyPrice AmberElectric_FeedInPrice { channel="amberelectric:service:Am
 String AmberElectric_ElectricityStatus { channel="amberelectric:service:AmberElectric:electricity-status" }
 String AmberElectric_ControlledLoadStatus { channel="amberelectric:service:AmberElectric:controlled-load-status" }
 String AmberElectric_FeedInStatus { channel="amberelectric:service:AmberElectric:feed-in-status" }
-String AmberElectric_nem-time { channel="amberelectric:service:AmberElectric:nem-time" }
+String AmberElectric_nemtime { channel="amberelectric:service:AmberElectric:nem-time" }
 Number AmberElectric_Renewables { channel="amberelectric:service:AmberElectric:renewables" }
 Switch AmberElectric_Spike { channel="amberelectric:service:AmberElectric:spike" }
 ```
@@ -63,7 +63,7 @@ Text item=AmberElectric_FeedInPrice label="Feed-In Price"
 Text item=AmberElectric_ElectricityStatus label="Electricity Price Status"
 Text item=AmberElectric_ControlledLoadStatus label="Controlled Load Price Status"
 Text item=AmberElectric_FeedInStatus label="Feed-In Price Status"
-Text item=AmberElectric_nem-time label="Current time of NEM pricing"
+Text item=AmberElectric_nemtime label="Current time of NEM pricing"
 Text item=AmberElectric_Renewables label="Renewables Level"
 Switch item=AmberElectric_Spike  label="Spike Status"
 ```

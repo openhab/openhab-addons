@@ -32,15 +32,15 @@ public class AmberElectricBindingConstants {
     public static final ThingTypeUID AMBERELECTRIC_THING = new ThingTypeUID(BINDING_ID, "service");
 
     // List of all Channel ids
-    public static final String CHANNEL_AMBERELECTRIC_ELECPRICE = "electricity-price";
-    public static final String CHANNEL_AMBERELECTRIC_CLPRICE = "controlled-load-price";
-    public static final String CHANNEL_AMBERELECTRIC_FEEDINPRICE = "feed-in-price";
-    public static final String CHANNEL_AMBERELECTRIC_ELECSTATUS = "electricity-status";
-    public static final String CHANNEL_AMBERELECTRIC_CLSTATUS = "controlled-load-status";
-    public static final String CHANNEL_AMBERELECTRIC_FEEDINSTATUS = "feed-in-status";
-    public static final String CHANNEL_AMBERELECTRIC_NEMTIME = "nem-time";
-    public static final String CHANNEL_AMBERELECTRIC_RENEWABLES = "renewables";
-    public static final String CHANNEL_AMBERELECTRIC_SPIKE = "spike";
+    public static final String CHANNEL_ELECTRICITY_PRICE = "electricity-price";
+    public static final String CHANNEL_CONTROLLED_LOAD_PRICE = "controlled-load-price";
+    public static final String CHANNEL_FEED_IN_PRICE = "feed-in-price";
+    public static final String CHANNEL_ELECTRICITY_STATUS = "electricity-status";
+    public static final String CHANNEL_CONTROLLED_LOAD_STATUS = "controlled-load-status";
+    public static final String CHANNEL_FEED_IN_STATUS = "feed-in-status";
+    public static final String CHANNEL_NEM_TIME = "nem-time";
+    public static final String CHANNEL_RENEWABLES = "renewables";
+    public static final String CHANNEL_SPIKE = "spike";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(AMBERELECTRIC_THING);
 }

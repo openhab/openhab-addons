@@ -13,8 +13,6 @@
 package org.openhab.binding.amberelectric.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -28,8 +26,6 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class Sites {
-    private static Logger LOGGER = LoggerFactory.getLogger(Sites.class);
-
     public String siteid = "";
     public String nmi = "";
 
@@ -37,7 +33,6 @@ public class Sites {
     }
 
     public static Sites parse(String response, String nem) {
-        LOGGER.debug("Parsing string: \"{}\"", response);
         /* parse json string */
         JsonArray jsonArray = JsonParser.parseString(response).getAsJsonArray();
         Sites sites = new Sites();
