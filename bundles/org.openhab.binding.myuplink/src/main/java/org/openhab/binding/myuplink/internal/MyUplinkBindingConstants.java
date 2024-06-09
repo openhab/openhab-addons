@@ -66,6 +66,9 @@ public class MyUplinkBindingConstants {
     public static final String CHANNEL_TYPE_DOUBLE = "type-number-double";
     public static final String CHANNEL_TYPE_ON_OFF = "type-on-off";
     public static final String CHANNEL_TYPE_RW_SWITCH = "rwtype-switch";
+    public static final String CHANNEL_TYPE_RW_COMMAND = "rwtype-command";
+
+    public static final String CHANNEL_ID_COMMAND = "command";
 
     // JSON Keys
     public static final String JSON_KEY_ROOT_DATA = "data";

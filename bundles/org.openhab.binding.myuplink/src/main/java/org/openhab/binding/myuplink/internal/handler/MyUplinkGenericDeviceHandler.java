@@ -28,6 +28,7 @@ import org.openhab.binding.myuplink.internal.command.MyUplinkCommand;
 import org.openhab.binding.myuplink.internal.command.account.GetSystems;
 import org.openhab.binding.myuplink.internal.command.device.GetPoints;
 import org.openhab.binding.myuplink.internal.command.device.SetPoints;
+import org.openhab.binding.myuplink.internal.command.device.SetPointsAdvanced;
 import org.openhab.binding.myuplink.internal.config.MyUplinkConfiguration;
 import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.myuplink.internal.provider.ChannelFactory;
@@ -129,8 +130,13 @@ public class MyUplinkGenericDeviceHandler extends BaseThingHandler
 
     @Override
     public MyUplinkCommand buildMyUplinkCommand(Command command, Channel channel) {
-        String deviceId = getConfig().get(MyUplinkBindingConstants.THING_CONFIG_ID).toString();
-        return new SetPoints(this, channel, command, deviceId, this::updateOnlineStatus);
+        var deviceId = getConfig().get(MyUplinkBindingConstants.THING_CONFIG_ID).toString();
+        var channelTypeId = Utils.getChannelTypeId(channel);
+        return switch (channelTypeId) {
+            case CHANNEL_TYPE_RW_COMMAND ->
+                new SetPointsAdvanced(this, channel, command, deviceId, this::updateOnlineStatus);
+            default -> new SetPoints(this, channel, command, deviceId, this::updateOnlineStatus);
+        };
     }
 
     /**

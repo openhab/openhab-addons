@@ -39,7 +39,7 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
     private final Logger logger = LoggerFactory.getLogger(AbstractWriteCommand.class);
 
     protected final Channel channel;
-    protected Command command;
+    protected final Command command;
 
     /**
      * the constructor
@@ -76,11 +76,22 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
      * helper that transforms channelId + commandvalue in a JSON string that can be added as content to a POST request.
      *
      * @return converted JSON string
-     * @throws ValidationException
      */
-    protected String getJsonContent() throws ValidationException {
+    protected String getJsonContent() {
+        return buildJsonObject(channel.getUID().getIdWithoutGroup(), getCommandValue());
+    }
+
+    /**
+     * helper that creates a simple json object as string.
+     *
+     * @param key identifier of the value
+     * @param value the value to assign to the key
+     *
+     * @return converted JSON string
+     */
+    protected String buildJsonObject(String key, String value) {
         Map<String, String> content = new HashMap<>(1);
-        content.put(channel.getUID().getIdWithoutGroup(), getCommandValue());
+        content.put(key, value);
 
         return gson.toJson(content);
     }
