@@ -50,19 +50,21 @@
 			<channel id="leds" typeId="leds-mode"/>
 			<channel id="calibration" typeId="calibration"/>
 			<channel id="uploads-since-boot" typeId="uploads-since-boot"/>
-			<channel id="country-code" typeId="country-code"/>
-			<channel id="pm-standard" typeId="pm-standard"/>
-			<channel id="abc-days" typeId="abc-days"/>
-			<channel id="tvoc-learning-offset" typeId="tvoc-learning-offset"/>
-			<channel id="nox-learning-offset" typeId="nox-learning-offset"/>
-			<channel id="mqtt-broker-url" typeId="mqtt-broker-url"/>
-			<channel id="temperature-unit" typeId="temperature-unit"/>
-			<channel id="configuration-control" typeId="configuration-control"/>
-			<channel id="post-to-cloud" typeId="post-to-cloud"/>
-			<channel id="led-bar-brightness" typeId="led-bar-brightness"/>
-			<channel id="display-brightness" typeId="display-brightness"/>
-			<channel id="model" typeId="model"/>
-			<channel id="led-bar-test" typeId="led-bar-test"/>
+			<!-- These are added dynamically if the device supports them
+				<channel id="country-code" typeId="country-code"/>
+				<channel id="pm-standard" typeId="pm-standard"/>
+				<channel id="abc-days" typeId="abc-days"/>
+				<channel id="tvoc-learning-offset" typeId="tvoc-learning-offset"/>
+				<channel id="nox-learning-offset" typeId="nox-learning-offset"/>
+				<channel id="mqtt-broker-url" typeId="mqtt-broker-url"/>
+				<channel id="temperature-unit" typeId="temperature-unit"/>
+				<channel id="configuration-control" typeId="configuration-control"/>
+				<channel id="post-to-cloud" typeId="post-to-cloud"/>
+				<channel id="led-bar-brightness" typeId="led-bar-brightness"/>
+				<channel id="display-brightness" typeId="display-brightness"/>
+				<channel id="model" typeId="model"/>
+				<channel id="led-bar-test" typeId="led-bar-test"/>
+			-->
 		</channels>
 
 		<properties>

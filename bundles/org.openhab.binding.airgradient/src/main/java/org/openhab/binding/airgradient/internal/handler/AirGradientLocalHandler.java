@@ -36,6 +36,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -173,8 +174,9 @@ public class AirGradientLocalHandler extends BaseThingHandler {
                 return;
             }
 
-            updateProperties(MeasureHelper.createProperties(measures.get(0)));
-            Map<String, State> states = MeasureHelper.createStates(measures.get(0));
+            Measure measure = measures.get(0);
+            updateProperties(MeasureHelper.createProperties(measure));
+            Map<String, State> states = MeasureHelper.createStates(measure);
             for (Map.Entry<String, State> entry : states.entrySet()) {
                 if (isLinked(entry.getKey())) {
                     updateState(entry.getKey(), entry.getValue());
@@ -183,6 +185,10 @@ public class AirGradientLocalHandler extends BaseThingHandler {
 
             LocalConfiguration localConfig = apiController.getConfig();
             if (localConfig != null) {
+                // If we are able to read config, we add config channels
+                ThingBuilder builder = DynamicChannelHelper.updateThingWithConfigurationChannels(thing, editThing());
+                updateThing(builder.build());
+
                 updateProperties(ConfigurationHelper.createProperties(localConfig));
                 Map<String, State> configStates = ConfigurationHelper.createStates(localConfig);
                 for (Map.Entry<String, State> entry : configStates.entrySet()) {
@@ -191,6 +197,7 @@ public class AirGradientLocalHandler extends BaseThingHandler {
                     }
                 }
             }
+
         } catch (AirGradientCommunicationException agce) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
         }

@@ -26,7 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class AirGradientBindingConstants {
 
-    private static final String BINDING_ID = "airgradient";
+    public static final String BINDING_ID = "airgradient";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_API = new ThingTypeUID(BINDING_ID, "airgradient-api");
