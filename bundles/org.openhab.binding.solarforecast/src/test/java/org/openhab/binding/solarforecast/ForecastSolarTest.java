@@ -14,6 +14,7 @@ package org.openhab.binding.solarforecast;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,7 +42,11 @@ import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.internal.BridgeImpl;
+import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 
@@ -358,6 +363,10 @@ class ForecastSolarTest {
 
     @Test
     void testPowerTimeSeries() {
+        // Instant matching the date of test resources
+        String fixedInstant = "2022-07-17T15:00:00Z";
+        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
+        Utils.setClock(fixedClock);
         ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
                 new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
                 Optional.of(PointType.valueOf("1,2")));
@@ -389,11 +398,16 @@ class ForecastSolarTest {
 
     @Test
     void testCommonForecastStartEnd() {
+        // Instant matching the date of test resources
+        String fixedInstant = "2022-07-17T15:00:00Z";
+        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
+        Utils.setClock(fixedClock);
         ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
                 new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
                 Optional.of(PointType.valueOf("1,2")));
         CallbackMock cmSite = new CallbackMock();
         fsbh.setCallback(cmSite);
+
         String contentOne = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne,
                 Instant.now().plus(1, ChronoUnit.DAYS));
@@ -433,11 +447,16 @@ class ForecastSolarTest {
 
     @Test
     void testActions() {
+        // Instant matching the date of test resources
+        String fixedInstant = "2022-07-17T15:00:00Z";
+        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
+        Utils.setClock(fixedClock);
         ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
                 new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
                 Optional.of(PointType.valueOf("1,2")));
         CallbackMock cmSite = new CallbackMock();
         fsbh.setCallback(cmSite);
+
         String contentOne = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
         ForecastSolarObject fso1One = new ForecastSolarObject("fs-test", contentOne,
                 Instant.now().plus(1, ChronoUnit.DAYS));
@@ -467,6 +486,10 @@ class ForecastSolarTest {
 
     @Test
     void testEnergyTimeSeries() {
+        // Instant matching the date of test resources
+        String fixedInstant = "2022-07-17T15:00:00Z";
+        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
+        Utils.setClock(fixedClock);
         ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
                 new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
                 Optional.of(PointType.valueOf("1,2")));
@@ -494,5 +517,51 @@ class ForecastSolarTest {
             assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() / 2,
                     0.1, "Power Value");
         }
+    }
+
+    @Test
+    void testCalmDown() {
+        // Instant matching the date of test resources
+        String fixedInstant = "2022-07-17T15:00:00Z";
+        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
+        Utils.setClock(fixedClock);
+        ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
+                new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
+                Optional.of(PointType.valueOf("1,2")));
+        CallbackMock cm = new CallbackMock();
+        fsbh.setCallback(cm);
+
+        String content = FileReader.readFileInString("src/test/resources/forecastsolar/result.json");
+        ForecastSolarObject fso1 = new ForecastSolarObject("fs-test", content, Instant.now().plus(1, ChronoUnit.DAYS));
+        ForecastSolarPlaneHandler fsph1 = new ForecastSolarPlaneMock(fso1);
+        fsbh.addPlane(fsph1);
+        // first update after add plane - 1 state shall be received
+        assertEquals(1, cm.getStateList("solarforecast:fs-site:bridge:power-actual").size(), "First update");
+        assertEquals(ThingStatus.ONLINE, cm.getStatus().getStatus(), "Online");
+        fsbh.handleCommand(
+                new ChannelUID("solarforecast:fs-site:bridge:" + SolarForecastBindingConstants.CHANNEL_ENERGY_ACTUAL),
+                RefreshType.REFRESH);
+        // second update after refresh request - 2 states shall be received
+        assertEquals(2, cm.getStateList("solarforecast:fs-site:bridge:power-actual").size(), "Second update");
+        assertEquals(ThingStatus.ONLINE, cm.getStatus().getStatus(), "Online");
+
+        fsbh.calmDown();
+        fsbh.handleCommand(
+                new ChannelUID("solarforecast:fs-site:bridge:" + SolarForecastBindingConstants.CHANNEL_ENERGY_ACTUAL),
+                RefreshType.REFRESH);
+        // after calm down refresh shall have no effect . still 2 states
+        assertEquals(2, cm.getStateList("solarforecast:fs-site:bridge:power-actual").size(), "Calm update");
+        assertEquals(ThingStatus.OFFLINE, cm.getStatus().getStatus(), "Offline");
+        assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, cm.getStatus().getStatusDetail(), "Offline");
+
+        // forward Clock to get ONLINE again
+        fixedInstant = "2022-07-17T16:15:00Z";
+        fixedClock = Clock.fixed(Instant.parse(fixedInstant), ZoneId.of("UTC"));
+        Utils.setClock(fixedClock);
+        fsbh.handleCommand(
+                new ChannelUID("solarforecast:fs-site:bridge:" + SolarForecastBindingConstants.CHANNEL_ENERGY_ACTUAL),
+                RefreshType.REFRESH);
+        assertEquals(3, cm.getStateList("solarforecast:fs-site:bridge:power-actual").size(), "Second update");
+        assertEquals(ThingStatus.ONLINE, cm.getStatus().getStatus(), "Online");
     }
 }

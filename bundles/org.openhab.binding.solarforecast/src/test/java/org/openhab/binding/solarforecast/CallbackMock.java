@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.solarforecast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,8 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
@@ -45,10 +48,27 @@ import org.openhab.core.types.TimeSeries.Policy;
 @NonNullByDefault
 public class CallbackMock implements ThingHandlerCallback {
 
-    Map<String, TimeSeries> seriesMap = new HashMap<String, TimeSeries>();
+    Map<String, TimeSeries> seriesMap = new HashMap<>();
+    Map<String, List<State>> stateMap = new HashMap<>();
+    ThingStatusInfo currentInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
 
     @Override
     public void stateUpdated(ChannelUID channelUID, State state) {
+        String key = channelUID.getAsString();
+        List<State> stateList = stateMap.get(key);
+        if (stateList == null) {
+            stateList = new ArrayList<>();
+        }
+        stateList.add(state);
+        stateMap.put(key, stateList);
+    }
+
+    public List<State> getStateList(String cuid) {
+        List<State> stateList = stateMap.get(cuid);
+        if (stateList == null) {
+            stateList = new ArrayList<State>();
+        }
+        return stateList;
     }
 
     @Override
@@ -70,6 +90,11 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
+        currentInfo = thingStatus;
+    }
+
+    public ThingStatusInfo getStatus() {
+        return currentInfo;
     }
 
     @Override
