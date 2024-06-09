@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amberelectric.internal.api.CurrentPrices;
 import org.openhab.binding.amberelectric.internal.api.Sites;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -120,6 +121,9 @@ public class AmberElectricHandler extends BaseThingHandler {
                 Sites sites = webTargets.getSites(apiKey, nmi);
                 // add error handling
                 siteID = sites.siteid;
+                Configuration configuration = editConfiguration();
+                configuration.put("nmi", sites.nmi);
+                updateConfiguration(configuration);
                 logger.debug("Detected amber siteid is {}, for nmi {}", sites.siteid, sites.nmi);
             }
 
