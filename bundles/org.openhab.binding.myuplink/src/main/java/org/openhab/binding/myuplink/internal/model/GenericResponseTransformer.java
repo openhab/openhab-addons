@@ -26,6 +26,7 @@ import org.openhab.binding.myuplink.internal.handler.DynamicChannelProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -103,6 +104,7 @@ public class GenericResponseTransformer {
                             case CHANNEL_TYPE_DOUBLE -> new DecimalType(Double.parseDouble(value));
                             case CHANNEL_TYPE_ON_OFF -> new DecimalType(Double.valueOf(value).longValue());
                             case CHANNEL_TYPE_RW_SWITCH -> convertToOnOffType(value);
+                            case CHANNEL_TYPE_RW_COMMAND -> new StringType(value);
 
                             default -> channelTypeId.startsWith(CHANNEL_TYPE_ENUM_PRFIX)
                                     ? new DecimalType(Double.valueOf(value).longValue())

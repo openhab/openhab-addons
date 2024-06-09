@@ -14,6 +14,15 @@
 		</supported-bridge-type-refs>
 		<label>myUplink Generic Device</label>
 		<description>Cloud connection to a myUplink device.</description>
+		<channels>
+			<channel id="command" typeId="rwtype-command">
+				<label>Generic Command</label>
+				<description>Allows to send commands to any channel. Format 'channel:value'</description>
+				<properties>
+					<property name="validationExpression">[0-9]+:[0-9,]+</property>
+				</properties>
+			</channel>
+		</channels>
 		<config-description-ref uri="thing-type:myuplink:genericDevice"/>
 	</thing-type>
 </thing:thing-descriptions>

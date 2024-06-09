@@ -6,7 +6,12 @@
 
 	<channel-type id="rwtype-switch">
 		<item-type>Switch</item-type>
-		<label>Unnamed Switch</label>
+		<label>Generic Switch</label>
+		<state readOnly="false"></state>
+	</channel-type>
+	<channel-type id="rwtype-command" advanced="true">
+		<item-type>String</item-type>
+		<label>Generic Command</label>
 		<state readOnly="false"></state>
 	</channel-type>
 </thing:thing-descriptions>
