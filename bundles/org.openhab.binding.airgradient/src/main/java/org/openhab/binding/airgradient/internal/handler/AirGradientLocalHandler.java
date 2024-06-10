@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.airgradient.internal.handler;
 
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_CALIBRATION;
-import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CHANNEL_LEDS_MODE;
+import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,13 +26,17 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.airgradient.internal.communication.AirGradientCommunicationException;
 import org.openhab.binding.airgradient.internal.communication.RemoteAPIController;
 import org.openhab.binding.airgradient.internal.config.AirGradientAPIConfiguration;
+import org.openhab.binding.airgradient.internal.model.LocalConfiguration;
 import org.openhab.binding.airgradient.internal.model.Measure;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -72,7 +76,7 @@ public class AirGradientLocalHandler extends BaseThingHandler {
             pollingCode();
         } else if (CHANNEL_LEDS_MODE.equals(channelUID.getId())) {
             if (command instanceof StringType stringCommand) {
-                setLedModeOnDevice(stringCommand.toFullString());
+                updateConfiguration((var c) -> c.ledBarMode = stringCommand.toFullString());
             } else {
                 logger.warn("Received command {} for channel {}, but it needs a string command", command.toString(),
                         channelUID.getId());
@@ -80,17 +84,63 @@ public class AirGradientLocalHandler extends BaseThingHandler {
         } else if (CHANNEL_CALIBRATION.equals(channelUID.getId())) {
             if (command instanceof StringType stringCommand) {
                 if ("co2".equals(stringCommand.toFullString())) {
-                    calibrateCo2OnDevice();
+                    updateConfiguration((var c) -> c.co2CalibrationRequested = true);
                 } else {
                     logger.warn(
                             "Received unknown command {} for calibration on channel {}, which we don't know how to handle",
                             command.toString(), channelUID.getId());
                 }
             }
+        } else if (CHANNEL_TEMPERATURE_UNIT.equals(channelUID.getId())) {
+            if (command instanceof StringType stringCommand) {
+                updateConfiguration((var c) -> c.temperatureUnit = stringCommand.toFullString());
+            }
+        } else if (CHANNEL_PM_STANDARD.equals(channelUID.getId())) {
+            if (command instanceof StringType stringCommand) {
+                updateConfiguration((var c) -> c.pmStandard = stringCommand.toFullString());
+            }
+        } else if (CHANNEL_ABC_DAYS.equals(channelUID.getId())) {
+            if (command instanceof QuantityType quantityCommand) {
+                updateConfiguration((var c) -> c.abcDays = quantityCommand.longValue());
+            }
+        } else if (CHANNEL_TVOC_LEARNING_OFFSET.equals(channelUID.getId())) {
+            if (command instanceof QuantityType quantityCommand) {
+                updateConfiguration((var c) -> c.tvocLearningOffset = quantityCommand.longValue());
+            }
+        } else if (CHANNEL_NOX_LEARNING_OFFSET.equals(channelUID.getId())) {
+            if (command instanceof QuantityType quantityCommand) {
+                updateConfiguration((var c) -> c.noxLearningOffset = quantityCommand.longValue());
+            }
+        } else if (CHANNEL_MQTT_BROKER_URL.equals(channelUID.getId())) {
+            if (command instanceof StringType stringCommand) {
+                updateConfiguration((var c) -> c.mqttBrokerUrl = stringCommand.toFullString());
+            }
+        } else if (CHANNEL_CONFIGURATION_CONTROL.equals(channelUID.getId())) {
+            if (command instanceof StringType stringCommand) {
+                updateConfiguration((var c) -> c.configurationControl = stringCommand.toFullString());
+            }
+        } else if (CHANNEL_LED_BAR_BRIGHTNESS.equals(channelUID.getId())) {
+            if (command instanceof QuantityType quantityCommand) {
+                updateConfiguration((var c) -> c.ledBarBrightness = quantityCommand.longValue());
+            }
+        } else if (CHANNEL_DISPLAY_BRIGHTNESS.equals(channelUID.getId())) {
+            if (command instanceof QuantityType quantityCommand) {
+                updateConfiguration((var c) -> c.displayBrightness = quantityCommand.longValue());
+            }
+        } else if (CHANNEL_POST_TO_CLOUD.equals(channelUID.getId())) {
+            if (command instanceof OnOffType onOffCommand) {
+                updateConfiguration((var c) -> c.postDataToAirGradient = onOffCommand.equals(OnOffType.ON));
+            }
+        } else if (CHANNEL_MODEL.equals(channelUID.getId())) {
+            if (command instanceof StringType stringCommand) {
+                updateConfiguration((var c) -> c.model = stringCommand.toFullString());
+            }
+        } else if (CHANNEL_LED_BAR_TEST.equals(channelUID.getId())) {
+            updateConfiguration((var c) -> c.ledBarTestRequested = true);
         } else {
             // This is read only
-            logger.warn("Received command {} for channel {}, which we don't know how to handle", command.toString(),
-                    channelUID.getId());
+            logger.warn("Received command {} for channel {}, which we don't know how to handle (type: {})",
+                    command.toString(), channelUID.getId(), command.getClass());
         }
     }
 
@@ -124,48 +174,44 @@ public class AirGradientLocalHandler extends BaseThingHandler {
                 return;
             }
 
-            updateProperties(MeasureHelper.createProperties(measures.get(0)));
-            Map<String, State> states = MeasureHelper.createStates(measures.get(0));
+            Measure measure = measures.get(0);
+            updateProperties(MeasureHelper.createProperties(measure));
+            Map<String, State> states = MeasureHelper.createStates(measure);
             for (Map.Entry<String, State> entry : states.entrySet()) {
                 if (isLinked(entry.getKey())) {
                     updateState(entry.getKey(), entry.getValue());
                 }
             }
+
+            LocalConfiguration localConfig = apiController.getConfig();
+            if (localConfig != null) {
+                // If we are able to read config, we add config channels
+                ThingBuilder builder = DynamicChannelHelper.updateThingWithConfigurationChannels(thing, editThing());
+                updateThing(builder.build());
+
+                updateProperties(ConfigurationHelper.createProperties(localConfig));
+                Map<String, State> configStates = ConfigurationHelper.createStates(localConfig);
+                for (Map.Entry<String, State> entry : configStates.entrySet()) {
+                    if (isLinked(entry.getKey())) {
+                        updateState(entry.getKey(), entry.getValue());
+                    }
+                }
+            }
+
         } catch (AirGradientCommunicationException agce) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
         }
     }
 
-    private void setLedModeOnDevice(String mode) {
+    private void updateConfiguration(Consumer<LocalConfiguration> action) {
         try {
-            apiController.setLedMode(getSerialNo(), mode);
+            LocalConfiguration config = new LocalConfiguration();
+            action.accept(config);
+            apiController.setConfig(config);
             updateStatus(ThingStatus.ONLINE);
         } catch (AirGradientCommunicationException agce) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
         }
-    }
-
-    private void calibrateCo2OnDevice() {
-        try {
-            apiController.calibrateCo2(getSerialNo());
-            updateStatus(ThingStatus.ONLINE);
-        } catch (AirGradientCommunicationException agce) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, agce.getMessage());
-        }
-    }
-
-    /**
-     * Returns the serial number of this sensor.
-     *
-     * @return serial number of this sensor.
-     */
-    public String getSerialNo() {
-        String serialNo = thing.getProperties().get(Thing.PROPERTY_SERIAL_NUMBER);
-        if (serialNo == null) {
-            serialNo = "";
-        }
-
-        return serialNo;
     }
 
     @Override

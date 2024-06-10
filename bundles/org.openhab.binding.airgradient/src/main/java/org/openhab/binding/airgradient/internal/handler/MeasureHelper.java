@@ -66,13 +66,13 @@ public class MeasureHelper {
     public static Map<String, State> createStates(Measure measure) {
         Map<String, State> states = new HashMap<>(11);
 
-        states.put(CHANNEL_ATMP, toQuantityType(measure.atmp, SIUnits.CELSIUS));
+        states.put(CHANNEL_ATMP, toQuantityType(measure.getTemperature(), SIUnits.CELSIUS));
         states.put(CHANNEL_PM_003_COUNT, toQuantityType(measure.pm003Count, Units.ONE));
         states.put(CHANNEL_PM_01, toQuantityType(measure.pm01, Units.MICROGRAM_PER_CUBICMETRE));
         states.put(CHANNEL_PM_02, toQuantityType(measure.pm02, Units.MICROGRAM_PER_CUBICMETRE));
         states.put(CHANNEL_PM_10, toQuantityType(measure.pm10, Units.MICROGRAM_PER_CUBICMETRE));
-        states.put(CHANNEL_RHUM, toQuantityType(measure.rhum, Units.PERCENT));
-        states.put(CHANNEL_UPLOADS_SINCE_BOOT, toQuantityType(measure.boot, Units.ONE));
+        states.put(CHANNEL_RHUM, toQuantityType(measure.getHumidity(), Units.PERCENT));
+        states.put(CHANNEL_UPLOADS_SINCE_BOOT, toQuantityType(measure.getBootCount(), Units.ONE));
 
         Double rco2 = measure.rco2;
         if (rco2 != null) {

@@ -50,6 +50,21 @@
 			<channel id="leds" typeId="leds-mode"/>
 			<channel id="calibration" typeId="calibration"/>
 			<channel id="uploads-since-boot" typeId="uploads-since-boot"/>
+			<!-- These are added dynamically if the device supports them
+				<channel id="country-code" typeId="country-code"/>
+				<channel id="pm-standard" typeId="pm-standard"/>
+				<channel id="abc-days" typeId="abc-days"/>
+				<channel id="tvoc-learning-offset" typeId="tvoc-learning-offset"/>
+				<channel id="nox-learning-offset" typeId="nox-learning-offset"/>
+				<channel id="mqtt-broker-url" typeId="mqtt-broker-url"/>
+				<channel id="temperature-unit" typeId="temperature-unit"/>
+				<channel id="configuration-control" typeId="configuration-control"/>
+				<channel id="post-to-cloud" typeId="post-to-cloud"/>
+				<channel id="led-bar-brightness" typeId="led-bar-brightness"/>
+				<channel id="display-brightness" typeId="display-brightness"/>
+				<channel id="model" typeId="model"/>
+				<channel id="led-bar-test" typeId="led-bar-test"/>
+			-->
 		</channels>
 
 		<properties>
@@ -197,6 +212,115 @@
 				<option value="co2">co2</option>
 			</options>
 		</command>
+	</channel-type>
+
+	<channel-type id="country-code">
+		<item-type>String</item-type>
+		<label>Country code</label>
+		<description>2 digit country code (ALPHA-2)</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="pm-standard">
+		<item-type>String</item-type>
+		<label>Parts per Million Standard</label>
+		<description>Standard used for Parts per Million measurements</description>
+		<state readOnly="false">
+			<options>
+				<option value="us-aqi">USAqi</option>
+				<option value="ugm3">ugm3</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="abc-days">
+		<item-type>Number</item-type>
+		<label>Automatic Baseline Calibration (Days)</label>
+		<description>Co2 calibration automatic baseline calibration days</description>
+		<state min="0" max="200" step="1" readOnly="false" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="tvoc-learning-offset">
+		<item-type>Number</item-type>
+		<label>TVOC learnings offset (hours)</label>
+		<description>Time constant of long-term estimator for offset. Past events will be forgotten after about twice the
+			learning time.</description>
+		<state min="0" max="1000" step="1" readOnly="false" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="nox-learning-offset">
+		<item-type>Number</item-type>
+		<label>NOX learnings offset (hours)</label>
+		<description>Time constant of long-term estimator for offset. Past events will be forgotten after about twice the
+			learning time.</description>
+		<state min="0" max="1000" step="1" readOnly="false" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="mqtt-broker-url">
+		<item-type>String</item-type>
+		<label>MQTT Broker URL</label>
+		<description>MQTT Broker URL</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="temperature-unit">
+		<item-type>String</item-type>
+		<label>Temperature Unit</label>
+		<description>Temperature unit used on the display</description>
+		<state readOnly="false">
+			<options>
+				<option value="c">Celsius</option>
+				<option value="f">Fahrenheit</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="configuration-control">
+		<item-type>String</item-type>
+		<label>Configuration Control</label>
+		<description>Where the unit is configured from</description>
+		<state readOnly="false">
+			<options>
+				<option value="both">Both</option>
+				<option value="local">Local</option>
+				<option value="cloud">Cloud</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="post-to-cloud">
+		<item-type>Switch</item-type>
+		<label>Send to cloud</label>
+		<description>Send data to the AirGradient cloud</description>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="led-bar-brightness">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Led bar brightness</label>
+		<description>Brightness of the LED bar.</description>
+		<state min="0" max="100" step="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="display-brightness">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Display brightness</label>
+		<description>Brightness of the display.</description>
+		<state min="0" max="100" step="1" readOnly="false" pattern="%d"/>
+	</channel-type>
+
+	<channel-type id="model">
+		<item-type>String</item-type>
+		<label>Model</label>
+		<description>Model of the device</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="led-bar-test">
+		<item-type>String</item-type>
+		<label>LED Bar test</label>
+		<description>Test LED bar</description>
+		<state readOnly="false"/>
 	</channel-type>
 
 </thing:thing-descriptions>

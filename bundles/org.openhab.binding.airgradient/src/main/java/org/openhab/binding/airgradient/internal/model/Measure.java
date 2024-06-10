@@ -91,6 +91,30 @@ public class Measure {
         return null;
     }
 
+    public @Nullable Long getBootCount() {
+        if (bootCount == null) {
+            return boot;
+        }
+
+        return bootCount;
+    }
+
+    public @Nullable Double getTemperature() {
+        if (atmpCompensated == null) {
+            return atmp;
+        }
+
+        return atmpCompensated;
+    }
+
+    public @Nullable Double getHumidity() {
+        if (rhumCompensated == null) {
+            return rhum;
+        }
+
+        return rhumCompensated;
+    }
+
     @Nullable
     public String locationId;
 
@@ -116,7 +140,13 @@ public class Measure {
     public Double atmp; // The ambient temperature in celsius
 
     @Nullable
+    public Double atmpCompensated; // The ambient temperature, compensated for sensor inaccuracies
+
+    @Nullable
     public Double rhum; // The relative humidity in percent
+
+    @Nullable
+    public Double rhumCompensated; // The relative humidity in percent, compensated for sensor inaccuracies
 
     @Nullable
     public Double rco2; // The CO2 value in ppm
@@ -128,7 +158,13 @@ public class Measure {
     public Double tvocIndex; // The value of the TVOC index, sensor model dependent
 
     @Nullable
+    public Double tvocRaw; // Raw data from TVOC senosor
+
+    @Nullable
     public Double noxIndex; // The value of the NOx index, sensor model dependent
+
+    @Nullable
+    public Double noxRaw; // Raw data from NOx sensor
 
     @Nullable
     public Double wifi; // The wifi signal strength in dBm
@@ -156,6 +192,9 @@ public class Measure {
 
     @Nullable
     public Long boot; // Number of times sensor has uploaded data since last reboot
+
+    @Nullable
+    public Long bootCount; // Same as boot, in firmwares > v3
 
     @Nullable
     public String fwMode; // Model of sensor from local API
