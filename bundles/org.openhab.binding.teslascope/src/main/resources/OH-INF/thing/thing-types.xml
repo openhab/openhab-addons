@@ -43,50 +43,60 @@
 		<item-type>String</item-type>
 		<label>VIN</label>
 		<description>Vehicle Identification Number</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vehiclename">
 		<item-type>String</item-type>
 		<label>Name</label>
 		<description>Vehicle Name</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="vehiclestate">
 		<item-type>String</item-type>
 		<label>Vehicle State</label>
 		<description>Vehicle State</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="odometer">
 		<item-type>Number</item-type>
 		<label>Odometer</label>
 		<description>Vehicle Odometer</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batterylevel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Level</label>
 		<description>Vehicle Battery Level</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargingstate">
 		<item-type>String</item-type>
 		<label>Charging State</label>
 		<description>Charging State</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="tpms_pressure_fl">
 		<item-type>Number:Pressure</item-type>
 		<label>Tyre Pressure FL</label>
 		<description>Tyre Pressure Front Left</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="tpms_pressure_fr">
 		<item-type>Number:Pressure</item-type>
 		<label>Tyre Pressure FR</label>
 		<description>Tyre Pressure Front Right</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="tpms_pressure_rl">
 		<item-type>Number:Pressure</item-type>
 		<label>Tyre Pressure RL</label>
 		<description>Tyre Pressure Rear Left</description>
+		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="tpms_pressure_rr">
 		<item-type>Number:Pressure</item-type>
 		<label>Tyre Pressure RR</label>
 		<description>Tyre Pressure Rear Right</description>
+		<state readOnly="true"></state>
 	</channel-type>
 </thing:thing-descriptions>
