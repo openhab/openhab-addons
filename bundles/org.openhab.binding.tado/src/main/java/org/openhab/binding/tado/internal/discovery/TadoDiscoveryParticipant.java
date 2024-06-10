@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovers Tado Internet Bridges hubs by means of mDNS
+ * Discovers Tado Internet Bridges by means of mDNS
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
