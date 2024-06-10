@@ -99,21 +99,21 @@
 	</channel-type>
 
 	<channel-type id="calciumHardness">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>Calcium Hardess</label>
 		<description>Calcium hardness (ppm).</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="cyaReading">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>CYA Reading</label>
 		<description>Cyanuric acid reading (ppm).</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="alkalinity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>Total Alkalinity</label>
 		<description>Total Alkalinity reading (ppm).</description>
 		<state readOnly="true"/>
@@ -165,7 +165,7 @@
 	</channel-type>
 
 	<channel-type id="saltLevel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>Salt Level (PPM)</label>
 		<description>Current salt content reading of the water (PPM).</description>
 		<state readOnly="true"/>

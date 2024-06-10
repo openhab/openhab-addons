@@ -35,14 +35,14 @@
 	</thing-type>
 
 	<channel-type id="saltOutput">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Salt Output (%)</label>
 		<description>Current salt output setting for the chlorinator (%).</description>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="salinity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="ppm">Number:Dimensionless</item-type>
 		<label>Salinity (PPM)</label>
 		<description>Current salt content reading of the water (PPM).</description>
 		<state readOnly="true"/>
