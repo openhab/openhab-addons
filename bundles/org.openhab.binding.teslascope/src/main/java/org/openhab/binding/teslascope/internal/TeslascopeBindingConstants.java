@@ -36,4 +36,8 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_ODOMETER = "odometer";
     public static final String CHANNEL_BATTERYLEVEL = "batterylevel";
     public static final String CHANNEL_CHARGINGSTATE = "chargingstate";
+    public static final String CHANNEL_TPMSFL = "tpms_pressure_fl";
+    public static final String CHANNEL_TPMSFR = "tpms_pressure_fr";
+    public static final String CHANNEL_TPMSRL = "tpms_pressure_rl";
+    public static final String CHANNEL_TPMSRR = "tpms_pressure_rr";
 }

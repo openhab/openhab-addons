@@ -15,6 +15,10 @@
 			<channel id="odometer" typeId="odometer"/>
 			<channel id="batterylevel" typeId="batterylevel"/>
 			<channel id="chargingstate" typeId="chargingstate"/>
+			<channel id="tpms_pressure_fl" typeId="tpms_pressure_fl"/>
+			<channel id="tpms_pressure_fr" typeId="tpms_pressure_fr"/>
+			<channel id="tpms_pressure_rl" typeId="tpms_pressure_rl"/>
+			<channel id="tpms_pressure_rr" typeId="tpms_pressure_rr"/>
 		</channels>
 
 		<config-description>
@@ -64,5 +68,25 @@
 		<item-type>String</item-type>
 		<label>Charging State</label>
 		<description>Charging State</description>
+	</channel-type>
+	<channel-type id="tpms_pressure_fl">
+		<item-type>Number:Pressure</item-type>
+		<label>Tyre Pressure FL</label>
+		<description>Tyre Pressure Front Left</description>
+	</channel-type>
+	<channel-type id="tpms_pressure_fr">
+		<item-type>Number:Pressure</item-type>
+		<label>Tyre Pressure FR</label>
+		<description>Tyre Pressure Front Right</description>
+	</channel-type>
+	<channel-type id="tpms_pressure_rl">
+		<item-type>Number:Pressure</item-type>
+		<label>Tyre Pressure RL</label>
+		<description>Tyre Pressure Rear Left</description>
+	</channel-type>
+	<channel-type id="tpms_pressure_rr">
+		<item-type>Number:Pressure</item-type>
+		<label>Tyre Pressure RR</label>
+		<description>Tyre Pressure Rear Right</description>
 	</channel-type>
 </thing:thing-descriptions>

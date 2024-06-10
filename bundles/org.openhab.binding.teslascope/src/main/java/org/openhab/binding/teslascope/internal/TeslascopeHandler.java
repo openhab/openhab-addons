@@ -23,7 +23,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.teslascope.internal.api.DetailedInformation;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -127,6 +129,14 @@ public class TeslascopeHandler extends BaseThingHandler {
                     new DecimalType(detailedInformation.batterylevel));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGINGSTATE,
                     new StringType(detailedInformation.chargingstate));
+            updateState(TeslascopeBindingConstants.CHANNEL_TPMSFL,
+                    new QuantityType<>(detailedInformation.tpms_pressure_fl, Units.BAR));
+            updateState(TeslascopeBindingConstants.CHANNEL_TPMSFR,
+                    new QuantityType<>(detailedInformation.tpms_pressure_fr, Units.BAR));
+            updateState(TeslascopeBindingConstants.CHANNEL_TPMSRL,
+                    new QuantityType<>(detailedInformation.tpms_pressure_rl, Units.BAR));
+            updateState(TeslascopeBindingConstants.CHANNEL_TPMSRR,
+                    new QuantityType<>(detailedInformation.tpms_pressure_rr, Units.BAR));
         } catch (TeslascopeCommunicationException e) {
             logger.debug("Unexpected error connecting to Teslascope API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
