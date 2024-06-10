@@ -128,15 +128,15 @@ public class AmberElectricHandler extends BaseThingHandler {
             }
 
             CurrentPrices currentPrices = webTargets.getCurrentPrices(siteID, apiKey);
-            String currencyCode = "AUD";
+            final String electricityUnit = " AUD/kWh";
 
             updateStatus(ThingStatus.ONLINE);
             updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
-                    new QuantityType<>(currentPrices.elecPerKwh / 100 + " " + currencyCode + "/kWh"));
+                    new QuantityType<>(currentPrices.elecPerKwh / 100 + " " + electricityUnit));
             updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
-                    new QuantityType<>(currentPrices.clPerKwh / 100 + " " + currencyCode + "/kWh"));
+                    new QuantityType<>(currentPrices.clPerKwh / 100 + " " + electricityUnit));
             updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE,
-                    new QuantityType<>(currentPrices.feedInPerKwh / 100 + " " + currencyCode + "/kWh"));
+                    new QuantityType<>(currentPrices.feedInPerKwh / 100 + " " + electricityUnit));
             updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
                     new StringType(currentPrices.clStatus));
             updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_STATUS,
