@@ -22,10 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class TeslascopeConfiguration {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
-    public String hostname = "";
-    public String password = "";
-    public int refreshInterval = 600;
+    public String apiKey = "";
+    public String publicID = "";
+    public int refreshInterval = 60;
 }
