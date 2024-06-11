@@ -99,19 +99,8 @@ public class PegelOnlineHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
             return;
         }
-        if (!config.floodingCheck()) {
-            String description = "@text/pegelonline.handler.status.flooding";
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, description);
-            return;
-        }
+        warnMap = config.getWarnings();
         configuration = Optional.of(config);
-        warnMap.put(0, NO_WARNING);
-        warnMap.put(config.warningLevel1, WARN_LEVEL_1);
-        warnMap.put(config.warningLevel2, WARN_LEVEL_2);
-        warnMap.put(config.warningLevel3, WARN_LEVEL_3);
-        warnMap.put(config.hq10, HQ10);
-        warnMap.put(config.hq100, HQ100);
-        warnMap.put(config.hqExtreme, HQ_EXTREME);
         String description = "@text/pegelonline.handler.status.wait-feedback";
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, description);
         schedule = Optional.of(scheduler.scheduleWithFixedDelay(this::performMeasurement, 0,

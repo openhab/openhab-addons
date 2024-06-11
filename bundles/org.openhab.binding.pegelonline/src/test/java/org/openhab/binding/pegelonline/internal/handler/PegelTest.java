@@ -57,7 +57,6 @@ class PegelTest {
         config.uuid = "1234567a-abc1-efd9-cdf3-0123456789ab";
         assertTrue(config.uuidCheck(), config.uuid);
         assertTrue(config.warningCheck(), "Warnings");
-        assertTrue(config.floodingCheck(), "flooding");
 
         String content = FileReader.readFileInString("src/test/resources/stations.json");
         Station[] stationArray = GSON.fromJson(content, Station[].class);
@@ -242,6 +241,24 @@ class PegelTest {
         config.put("warningLevel1", 100);
         config.put("warningLevel2", 200);
         config.put("warningLevel3", 300);
+        config.put("hqExtreme", 600);
+        handler.updateConfiguration(new Configuration(config));
+        handler.initialize();
+
+        tsi = callback.getThingStatus();
+        assertNotNull(tsi);
+        assertEquals(ThingStatus.UNKNOWN, tsi.getStatus(), "Status");
+        assertEquals(ThingStatusDetail.NONE, tsi.getStatusDetail(), "Detail");
+        description = tsi.getDescription();
+        assertNotNull(description);
+        assertEquals("@text/pegelonline.handler.status.wait-feedback", description, "Description");
+
+        handler.dispose();
+        config = new Configuration();
+        config.put("uuid", TEST_STATION_UUID);
+        config.put("warningLevel1", 100);
+        config.put("warningLevel2", 200);
+        config.put("warningLevel3", 300);
         config.put("hq10", 100);
         config.put("hq100", 200);
         config.put("hqExtreme", 150);
@@ -254,7 +271,7 @@ class PegelTest {
         assertEquals(ThingStatusDetail.CONFIGURATION_ERROR, tsi.getStatusDetail(), "Detail");
         description = tsi.getDescription();
         assertNotNull(description);
-        assertEquals("@text/pegelonline.handler.status.flooding", description, "Description");
+        assertEquals("@text/pegelonline.handler.status.warning", description, "Description");
     }
 
     @Test

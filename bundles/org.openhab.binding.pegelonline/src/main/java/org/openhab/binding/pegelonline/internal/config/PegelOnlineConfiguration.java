@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.pegelonline.internal.config;
 
-import static org.openhab.binding.pegelonline.internal.PegelOnlineBindingConstants.UNKNOWN;
+import static org.openhab.binding.pegelonline.internal.PegelOnlineBindingConstants.*;
+
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -38,10 +41,30 @@ public class PegelOnlineConfiguration {
     }
 
     public boolean warningCheck() {
-        return warningLevel1 <= warningLevel2 && warningLevel2 <= warningLevel3;
+        TreeMap<Integer, Integer> warnMap = this.getWarnings();
+        Entry<Integer, Integer> currentEntry = warnMap.firstEntry();
+        Entry<Integer, Integer> nextEntry = warnMap.higherEntry(currentEntry.getKey());
+        while (nextEntry != null) {
+            if (nextEntry.getKey() != Integer.MAX_VALUE) {
+                if (nextEntry.getValue() < currentEntry.getValue()) {
+                    return false;
+                }
+            }
+            currentEntry = nextEntry;
+            nextEntry = warnMap.higherEntry(currentEntry.getKey());
+        }
+        return true;
     }
 
-    public boolean floodingCheck() {
-        return hq10 <= hq100 && hq100 <= hqExtreme;
+    public TreeMap<Integer, Integer> getWarnings() {
+        TreeMap<Integer, Integer> warnMap = new TreeMap<>();
+        warnMap.put(0, NO_WARNING);
+        warnMap.put(warningLevel1, WARN_LEVEL_1);
+        warnMap.put(warningLevel2, WARN_LEVEL_2);
+        warnMap.put(warningLevel3, WARN_LEVEL_3);
+        warnMap.put(hq10, HQ10);
+        warnMap.put(hq100, HQ100);
+        warnMap.put(hqExtreme, HQ_EXTREME);
+        return warnMap;
     }
 }
