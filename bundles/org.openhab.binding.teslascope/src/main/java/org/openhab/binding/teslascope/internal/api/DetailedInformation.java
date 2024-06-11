@@ -113,7 +113,7 @@ public class DetailedInformation {
         detailedInformation.latitude = driveStateJsonObject.get("latitude").getAsDouble();
         detailedInformation.longitude = driveStateJsonObject.get("longitude").getAsDouble();
         // if car is parked, these will be
-                if (!driveStateJsonObject.get("shift_state").isJsonNull()) {
+        if (!driveStateJsonObject.get("shift_state").isJsonNull()) {
             detailedInformation.shift_state = driveStateJsonObject.get("shift_state").getAsString();
         }
         if (!driveStateJsonObject.get("speed").isJsonNull()) {

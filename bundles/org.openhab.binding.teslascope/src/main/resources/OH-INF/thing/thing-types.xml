@@ -115,10 +115,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="odometer">
-		<item-type>Number</item-type>
+		<item-type>Number:Length</item-type>
 		<label>Odometer</label>
 		<description>Vehicle Odometer</description>
-		<state readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="batterylevel">
 		<item-type>Number:Dimensionless</item-type>

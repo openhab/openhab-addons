@@ -25,6 +25,7 @@ import org.openhab.binding.teslascope.internal.api.DetailedInformation;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -124,7 +125,8 @@ public class TeslascopeHandler extends BaseThingHandler {
                     new StringType(detailedInformation.vehiclename));
             updateState(TeslascopeBindingConstants.CHANNEL_VEHICLESTATE,
                     new StringType(detailedInformation.vehiclestate));
-            updateState(TeslascopeBindingConstants.CHANNEL_ODOMETER, new DecimalType(detailedInformation.odometer));
+            updateState(TeslascopeBindingConstants.CHANNEL_ODOMETER,
+                    new QuantityType<>(detailedInformation.odometer, ImperialUnits.MILE));
             updateState(TeslascopeBindingConstants.CHANNEL_BATTERYLEVEL,
                     new DecimalType(detailedInformation.batterylevel));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGINGSTATE,
