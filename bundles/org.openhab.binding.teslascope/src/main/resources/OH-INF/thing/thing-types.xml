@@ -25,6 +25,7 @@
 			<channel id="batteryrange" typeId="batteryrange"/>
 			<channel id="centerrearseatheater" typeId="centerrearseatheater"/>
 			<channel id="charge" typeId="charge"/>
+			<channel id="chargeenergyadded" typeId="chargeenergyadded"/>
 			<channel id="chargelimitsocstandard" typeId="chargelimitsocstandard"/>
 			<channel id="chargerate" typeId="chargerate"/>
 			<channel id="chargerpower" typeId="chargerpower"/>
