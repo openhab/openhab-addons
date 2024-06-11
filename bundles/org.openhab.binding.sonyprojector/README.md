@@ -94,7 +94,7 @@ This binding supports the following thing types:
 
 ## Discovery
 
-If the projector is connected via Ethernet and the 'Start SDDP Service' option is present and enabled in the projector Advanced Settings->Service page, the thing using Ethernet connection and PJ Talk will be discovered automatically.
+If the projector is connected via Ethernet and the 'Start SDDP Service' option is present and enabled in the projector Advanced Settings->Service page, the Thing using Ethernet connection and PJ Talk will be discovered automatically.
 Serial or Serial over IP connections must be configured manually.
 
 ## Binding Configuration
