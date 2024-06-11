@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:basic-profiles:state-filter">
+		<parameter name="conditions" type="text" required="true">
+			<label>Conditions</label>
+			<description>Comma separated list of expressions on the format ITEM_NAME OPERATOR ITEM_STATE, ie "MyItem EQ OFF". Use
+				quotes around ITEM_STATE to treat value as string ie "'OFF'".</description>
+		</parameter>
+		<parameter name="mismatchState" type="text">
+			<label>State for filter rejects</label>
+			<description>State to pass to item instead if conditions are NOT met. Use quotes to treat as `StringType`</description>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>
