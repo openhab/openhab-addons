@@ -5,25 +5,12 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="device-info-firmware">
-		<!--
-			Switch,
-			Rollershutter,
-			Contact,
-			String,
-			Number,
-			Dimmer,
-			DateTime,
-			Color,
-			Image,
-			Location,
-			Player,
-			Call.
-		-->
 		<item-type>String</item-type>
 		<label>Firmware Version</label>
 		<description>Installed firmware version</description>
 		<state readOnly="true"/>
 	</channel-type>
+
 	<channel-type id="device-info-firmware-available">
 		<item-type>String</item-type>
 		<label>Latest Firmware Version</label>
@@ -38,7 +25,6 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<!-- unplugged, plugged, linked, unknown -->
 	<channel-type id="connection-status">
 		<item-type>String</item-type>
 		<label>HDMI connection Status</label>

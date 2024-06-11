@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.huesync.internal.exceptions;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.huesync.internal.i18n.HueSyncLocalizer;
 import org.slf4j.Logger;
@@ -27,20 +25,15 @@ import org.slf4j.Logger;
 public abstract class HueSyncException extends Exception {
     private static final long serialVersionUID = 0L;
 
-    private Optional<String> key = Optional.empty();
-
     public HueSyncException(String message, Logger logger) {
         super(message);
 
+        String logMessage = message;
+
         if (message.startsWith("@text")) {
-            key = Optional.of(message);
+            logMessage = HueSyncLocalizer.getResourceString(message);
         }
 
-        logger.error("{}", this.getLogMessage());
-    }
-
-    private String getLogMessage() {
-        Optional<String> message = Optional.ofNullable(this.getMessage());
-        return key.isPresent() ? HueSyncLocalizer.getResourceString(key.get()) : message.orElse("");
+        logger.error("{}", logMessage);
     }
 }

@@ -23,15 +23,16 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.HttpResponseException;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
 import org.openhab.binding.huesync.internal.HueSyncConstants.ENDPOINTS;
-import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
 import org.osgi.framework.BundleContext;
@@ -50,9 +51,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class HueSyncConnection {
     public static final ObjectMapper ObjectMapper = new ObjectMapper();
     /**
-     * Request format: The Sync Box API can be accessed locally via HTTPS on root
-     * level (port 443, /api/v1), resource level /api/v1/<resource> and in some
-     * cases sub-resource level /api/v1/<resource>/<sub-resource>.
+     * Request format: The Sync Box API can be accessed locally via HTTPS on root level (port 443,
+     * /api/v1), resource level /api/v1/<resource> and in some cases sub-resource level
+     * /api/v1/<resource>/<sub-resource>.
      */
     private static final String REQUEST_FORMAT = "https://%s:%s/%s/%s";
     private static final String API = "api/v1";
@@ -65,8 +66,7 @@ public class HueSyncConnection {
     private HttpClient httpClient;
     private URI uri;
 
-    @Nullable
-    private HueSyncAuthenticationResult authentication;
+    private Optional<HueSyncAuthenticationResult> authentication = Optional.empty();
 
     protected String registrationId = "";
 
@@ -78,8 +78,6 @@ public class HueSyncConnection {
 
         this.uri = new URI(String.format("https://%s:%s", this.host, this.port));
 
-        // this.registrationId = registrationId;
-
         HueSyncTrustManagerProvider trustManagerProvider = new HueSyncTrustManagerProvider(this.host, this.port);
         BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
 
@@ -88,26 +86,43 @@ public class HueSyncConnection {
         this.httpClient = httpClient;
     }
 
-    // TODO: Invalid Token results in "HttpResponseException: HTTP protocol violation: Authentication challenge without
-    // WWW-Authenticate header" exception, Not the expected 401 status.
+    public void updateAuthentication(String id, String token) {
+        // TODO: Simplify this check ...
+        if (id.equals(this.registrationId) && this.authentication.isPresent()
+                && this.authentication.get().getToken().equals(token)) {
+            return;
+        }
+
+        this.removeAuthentication();
+
+        if (!id.isBlank() && !token.isBlank()) {
+            this.registrationId = id;
+
+            this.authentication = Optional.of(new HueSyncAuthenticationResult(this.uri, token));
+            this.httpClient.getAuthenticationStore().addAuthenticationResult(this.authentication.get());
+        }
+    }
+
+    // #region protected
     protected @Nullable <T> T executeRequest(HttpMethod method, String endpoint, String payload,
             @Nullable Class<T> type) {
         try {
-            ContentResponse response = this.executeRequest(method, endpoint, payload);
-
-            return processedResponse(response, type);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            return this.processedResponse(this.executeRequest(method, endpoint, payload), type);
+        } catch (ExecutionException e) {
+            this.handleExecutionException(e);
+        } catch (InterruptedException | TimeoutException e) {
             this.logger.error("{}", e.getMessage());
         }
+
         return null;
     }
 
     protected @Nullable <T> T executeGetRequest(String endpoint, Class<T> type) {
         try {
-            ContentResponse response = this.executeGetRequest(endpoint);
-
-            return processedResponse(response, type);
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            return this.processedResponse(this.executeGetRequest(endpoint), type);
+        } catch (ExecutionException e) {
+            this.handleExecutionException(e);
+        } catch (InterruptedException | TimeoutException e) {
             this.logger.error("{}", e.getMessage());
         }
 
@@ -115,72 +130,56 @@ public class HueSyncConnection {
     }
 
     protected boolean isRegistered() {
-        return Optional.ofNullable(this.authentication).isPresent();
+        return this.authentication.isPresent();
     }
 
-    protected void setAuthentication(String token) {
-        this.unsetAuthentication();
-
-        if (!token.isBlank()) {
-            this.authentication = new HueSyncAuthenticationResult(this.uri, token);
-            this.httpClient.getAuthenticationStore().addAuthenticationResult(this.authentication);
-        }
-    }
-
-    protected void unsetAuthentication() {
-        if (isRegistered()) {
-            this.httpClient.getAuthenticationStore().removeAuthenticationResult(this.authentication);
-
-            this.registrationId = "";
-            this.authentication = null;
-        }
-    }
-
-    protected boolean unregisterDevice() {
+    protected void unregisterDevice() {
         if (this.isRegistered()) {
             try {
                 String endpoint = ENDPOINTS.REGISTRATIONS + "/" + this.registrationId;
                 ContentResponse response = this.executeRequest(HttpMethod.DELETE, endpoint);
 
                 if (response.getStatus() == HttpStatus.OK_200) {
-                    this.unsetAuthentication();
-                    return true;
+                    this.removeAuthentication();
                 }
             } catch (InterruptedException | TimeoutException | ExecutionException e) {
                 this.logger.error("{}", e.getMessage());
             }
         }
-        return false;
     }
 
     protected void dispose() {
         this.tlsProviderService.unregister();
     }
+    // #endregion
 
-    private @Nullable <T> T processedResponse(ContentResponse response, @Nullable Class<T> type) {
+    // #region private
+    private @Nullable <T> T processedResponse(Response response, @Nullable Class<T> type) {
         int status = response.getStatus();
+
         /*
-         * 400 Invalid State:
-         * Registration in progress
+         * 400 Invalid State: Registration in progress
          * 
-         * 401 Authentication failed:
-         * If credentials are missing or invalid, errors out. If credentials are missing, continues on to GET only the
-         * Configuration state when unauthenticated, to allow for device identification.
+         * 401 Authentication failed: If credentials are missing or invalid, errors out. If
+         * credentials are missing, continues on to GET only the Configuration state when
+         * unauthenticated, to allow for device identification.
          * 
-         * 404 Invalid URI Path:
-         * Accessing URI path which is not supported
+         * 404 Invalid URI Path: Accessing URI path which is not supported
          * 
-         * 500 Internal:
-         * Internal errors like out of memory
+         * 500 Internal: Internal errors like out of memory
          */
         switch (status) {
             case HttpStatus.OK_200:
-                return (type != null) ? this.deserialize(response.getContentAsString(), type) : null;
+                return (type != null && (response instanceof ContentResponse))
+                        ? this.deserialize(((ContentResponse) response).getContentAsString(), type)
+                        : null;
             case HttpStatus.BAD_REQUEST_400:
                 logger.trace("registration in progress: no token received yet");
                 break;
             case HttpStatus.UNAUTHORIZED_401:
                 logger.error("credentials missing or invalid");
+
+                this.removeAuthentication();
                 break;
             case HttpStatus.NOT_FOUND_404:
                 logger.error("invalid device URI or API endpoint");
@@ -231,8 +230,22 @@ public class HueSyncConnection {
         return request.send();
     }
 
-    public void updateConfig(HueSyncConfiguration config) {
-        this.registrationId = config.registrationId;
-        this.setAuthentication(config.apiAccessToken);
+    private void handleExecutionException(ExecutionException e) {
+        this.logger.error("{}", e.getMessage());
+
+        Throwable cause = e.getCause();
+        if (cause != null && cause instanceof HttpResponseException) {
+            processedResponse(((HttpResponseException) cause).getResponse(), null);
+        }
     }
+
+    private void removeAuthentication() {
+        this.registrationId = "";
+        if (this.authentication.isPresent()) {
+            this.httpClient.getAuthenticationStore().removeAuthenticationResult(this.authentication.get());
+            this.authentication = Optional.empty();
+        }
+    }
+
+    // #endregion
 }

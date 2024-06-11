@@ -23,7 +23,7 @@ import org.openhab.binding.huesync.internal.api.dto.hdmi.HueSyncHdmiDto;
  * @author Patrik Gfeller - Initial contribution
  */
 @NonNullByDefault
-public class HueSyncUpdateInfo {
+public class HueSyncUpdateTaskResultDto {
     public @Nullable HueSyncDeviceDtoDetailed deviceStatus;
     public @Nullable HueSyncHdmiDto hdmiStatus;
     public @Nullable HueSyncExecutionDto execution;

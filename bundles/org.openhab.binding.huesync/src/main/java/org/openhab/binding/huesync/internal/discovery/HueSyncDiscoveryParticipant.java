@@ -13,11 +13,9 @@
 package org.openhab.binding.huesync.internal.discovery;
 
 import java.util.Collections;
-import java.util.Dictionary;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.jmdns.ServiceInfo;
@@ -110,9 +108,9 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
     @Override
     public @Nullable ThingUID getThingUID(ServiceInfo service) {
         String id = service.getName();
-        String[] addressses = service.getHostAddresses();
+        String[] addresses = service.getHostAddresses();
 
-        if (addressses.length == 0 || id == null || id.isBlank()) {
+        if (addresses.length == 0 || id == null || id.isBlank()) {
             logger.debug("Incomplete mDNS device discovery information - {} ignored.",
                     id == null ? "[name: null]" : id);
             return null;
@@ -132,19 +130,17 @@ public class HueSyncDiscoveryParticipant implements MDNSDiscoveryParticipant {
     }
 
     private void updateService(ComponentContext componentContext) {
-        Dictionary<String, Object> properties = componentContext.getProperties();
-
-        String autoDiscoveryPropertyValue = (String) properties
+        String autoDiscoveryPropertyValue = (String) componentContext.getProperties()
                 .get(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY);
-        if (Optional.ofNullable(autoDiscoveryPropertyValue).isPresent()) {
-            if (!autoDiscoveryPropertyValue.isBlank()) {
-                boolean value = Boolean.valueOf(autoDiscoveryPropertyValue);
-                if (value != this.autoDiscoveryEnabled) {
-                    logger.debug("{} update: {} ➡️ {}", DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
-                            autoDiscoveryPropertyValue, value);
-                    this.autoDiscoveryEnabled = value;
-                }
+
+        if (autoDiscoveryPropertyValue != null && !autoDiscoveryPropertyValue.isBlank()) {
+            boolean value = Boolean.valueOf(autoDiscoveryPropertyValue);
+            if (value != this.autoDiscoveryEnabled) {
+                logger.debug("{} update: {} ➡️ {}", DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY,
+                        autoDiscoveryPropertyValue, value);
+                this.autoDiscoveryEnabled = value;
             }
+
         }
     }
 }

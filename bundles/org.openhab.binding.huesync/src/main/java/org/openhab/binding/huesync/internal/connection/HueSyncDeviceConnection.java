@@ -17,7 +17,6 @@ import java.net.URISyntaxException;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -48,15 +47,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 @NonNullByDefault
 public class HueSyncDeviceConnection {
     private final Logger logger = HueSyncLogFactory.getLogger(HueSyncDeviceConnection.class);
+
     private HueSyncConnection connection;
 
     public Map<String, Consumer<Command>> DeviceCommandsExecutors = new HashMap<>();
 
-    public HueSyncDeviceConnection(HttpClient httpClient, String host, Integer port)
+    public HueSyncDeviceConnection(HttpClient httpClient, HueSyncConfiguration configuration)
             throws CertificateException, IOException, URISyntaxException {
 
-        this.connection = new HueSyncConnection(httpClient, host, port);
+        this.connection = new HueSyncConnection(httpClient, configuration.host, configuration.port);
 
+        // TODO: POC - create real implementation to handle simple commands ...
         this.DeviceCommandsExecutors.put(COMMANDS.MODE, command -> {
             this.logger.info("Command executor: {}", command);
 
@@ -67,8 +68,6 @@ public class HueSyncDeviceConnection {
             this.connection.executeRequest(HttpMethod.PUT, ENDPOINTS.EXECUTION, json, null);
         });
     }
-
-    // #region get
 
     public @Nullable HueSyncDeviceDto getDeviceInfo() {
         return this.connection.isRegistered()
@@ -94,48 +93,42 @@ public class HueSyncDeviceConnection {
                 : null;
     }
 
-    public @Nullable HueSyncRegistrationDto registerDevice(@Nullable String id) {
-        if (id == null || id.isBlank()) {
-            return null;
+    public @Nullable HueSyncRegistrationDto registerDevice(String id) {
+        if (!id.isBlank()) {
+            try {
+                HueSyncRegistrationRequestDto dto = new HueSyncRegistrationRequestDto();
+                dto.appName = HueSyncConstants.APPLICATION_NAME;
+                dto.instanceName = id;
+
+                String payload = HueSyncConnection.ObjectMapper.writeValueAsString(dto);
+
+                HueSyncRegistrationDto registration = this.connection.executeRequest(HttpMethod.POST,
+                        ENDPOINTS.REGISTRATIONS, payload, HueSyncRegistrationDto.class);
+                if (registration != null) {
+                    this.connection.updateAuthentication(id, registration.accessToken);
+
+                    return registration;
+                }
+            } catch (JsonProcessingException e) {
+                this.logger.error("{}", e.getMessage());
+            }
         }
-
-        HueSyncRegistrationRequestDto dto = new HueSyncRegistrationRequestDto();
-
-        dto.appName = HueSyncConstants.APPLICATION_NAME;
-        dto.instanceName = id;
-
-        try {
-            String json = HueSyncConnection.ObjectMapper.writeValueAsString(dto);
-            HueSyncRegistrationDto registration = this.connection.executeRequest(HttpMethod.POST,
-                    ENDPOINTS.REGISTRATIONS, json, HueSyncRegistrationDto.class);
-
-            Optional.ofNullable(registration).ifPresent((obj) -> {
-                Optional.ofNullable(obj.accessToken).ifPresent((token) -> {
-                    this.connection.setAuthentication(token);
-                });
-            });
-            return registration;
-        } catch (JsonProcessingException e) {
-            this.logger.error("{}", e.getMessage());
-        }
-
         return null;
     }
-    // #endregion
 
     public boolean isRegistered() {
         return this.connection.isRegistered();
     }
 
-    public boolean unregisterDevice() {
-        return this.connection.unregisterDevice();
+    public void unregisterDevice() {
+        this.connection.unregisterDevice();
     }
 
     public void dispose() {
         this.connection.dispose();
     }
 
-    public void updateConfig(HueSyncConfiguration config) {
-        this.connection.updateConfig(config);
+    public void updateConfiguration(HueSyncConfiguration config) {
+        this.connection.updateAuthentication(config.registrationId, config.apiAccessToken);
     }
 }

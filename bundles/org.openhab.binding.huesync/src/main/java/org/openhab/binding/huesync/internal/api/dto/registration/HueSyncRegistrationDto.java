@@ -13,7 +13,6 @@
 package org.openhab.binding.huesync.internal.api.dto.registration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * 
@@ -21,6 +20,6 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class HueSyncRegistrationDto {
-    public @Nullable String registrationId;
-    public @Nullable String accessToken;
+    public String registrationId = "";
+    public String accessToken = "";
 }

@@ -13,7 +13,6 @@
 package org.openhab.binding.huesync.internal.connection;
 
 import java.net.URI;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,18 +34,19 @@ public class HueSyncAuthenticationResult implements Result {
         this.token = token;
     }
 
+    public String getToken() {
+        return this.token;
+    }
+
     @Override
     public URI getURI() {
         return this.uri;
     }
 
-    @SuppressWarnings("null")
     @Override
     public void apply(@Nullable Request request) {
-        if (Optional.ofNullable(request).isPresent()) {
-            if (!request.getHeaders().contains(HttpHeader.AUTHORIZATION)) {
-                request.header(HttpHeader.AUTHORIZATION, "Bearer " + this.token);
-            }
+        if (request != null && !request.getHeaders().contains(HttpHeader.AUTHORIZATION)) {
+            request.header(HttpHeader.AUTHORIZATION, "Bearer " + this.token);
         }
     }
 }

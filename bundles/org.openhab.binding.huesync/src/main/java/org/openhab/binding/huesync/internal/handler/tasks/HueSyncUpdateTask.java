@@ -34,10 +34,10 @@ public class HueSyncUpdateTask implements Runnable {
     private HueSyncDeviceConnection connection;
     private HueSyncDeviceDto deviceInfo;
 
-    private Consumer<@Nullable HueSyncUpdateInfo> action;
+    private Consumer<@Nullable HueSyncUpdateTaskResultDto> action;
 
     public HueSyncUpdateTask(HueSyncDeviceConnection connection, HueSyncDeviceDto deviceInfo,
-            Consumer<@Nullable HueSyncUpdateInfo> action) {
+            Consumer<@Nullable HueSyncUpdateTaskResultDto> action) {
 
         this.connection = connection;
         this.deviceInfo = deviceInfo;
@@ -48,20 +48,24 @@ public class HueSyncUpdateTask implements Runnable {
     @Override
     public void run() {
         try {
-            if (this.connection.isRegistered()) {
-                this.logger.trace("Status update query for {} {}:{}", this.deviceInfo.name, this.deviceInfo.deviceType,
-                        this.deviceInfo.uniqueId);
+            this.logger.trace("Status update query for {} {}:{}", this.deviceInfo.name, this.deviceInfo.deviceType,
+                    this.deviceInfo.uniqueId);
 
-                HueSyncUpdateInfo updateInfo = new HueSyncUpdateInfo();
-
-                updateInfo.deviceStatus = this.connection.getDetailedDeviceInfo();
-                updateInfo.hdmiStatus = this.connection.getHdmiInfo();
-                updateInfo.execution = this.connection.getExecutionInfo();
-
-                this.action.accept(updateInfo);
+            if (!this.connection.isRegistered()) {
+                this.action.accept(null);
             }
+
+            HueSyncUpdateTaskResultDto updateInfo = new HueSyncUpdateTaskResultDto();
+
+            updateInfo.deviceStatus = this.connection.getDetailedDeviceInfo();
+            updateInfo.hdmiStatus = this.connection.getHdmiInfo();
+            updateInfo.execution = this.connection.getExecutionInfo();
+
+            this.action.accept(updateInfo);
+
         } catch (Exception e) {
             this.logger.debug("{}", e.getMessage());
+            this.action.accept(null);
         }
     }
 }

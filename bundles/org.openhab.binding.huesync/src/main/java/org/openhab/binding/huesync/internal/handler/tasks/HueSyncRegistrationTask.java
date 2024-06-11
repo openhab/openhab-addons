@@ -13,14 +13,12 @@
 package org.openhab.binding.huesync.internal.handler.tasks;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.huesync.internal.api.dto.device.HueSyncDeviceDto;
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationDto;
 import org.openhab.binding.huesync.internal.connection.HueSyncDeviceConnection;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
-import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
 
 /**
@@ -36,31 +34,33 @@ public class HueSyncRegistrationTask implements Runnable {
     private HueSyncDeviceDto deviceInfo;
 
     private Consumer<HueSyncRegistrationDto> action;
-    private Supplier<ThingStatus> status;
 
     public HueSyncRegistrationTask(HueSyncDeviceConnection connection, HueSyncDeviceDto deviceInfo,
-            Supplier<ThingStatus> status, Consumer<HueSyncRegistrationDto> action) {
+            Consumer<HueSyncRegistrationDto> action) {
 
         this.connection = connection;
         this.deviceInfo = deviceInfo;
-        this.status = status;
         this.action = action;
     }
 
     @Override
     public void run() {
         try {
-            if (!this.connection.isRegistered()) {
-                this.logger.info("Starting device registration for {} {}:{}", this.deviceInfo.name,
-                        this.deviceInfo.deviceType, this.deviceInfo.uniqueId);
+            String id = this.deviceInfo.uniqueId;
 
-                if (this.status.get() == ThingStatus.OFFLINE) {
-                    HueSyncRegistrationDto registration = this.connection.registerDevice(deviceInfo.uniqueId);
+            if (this.connection.isRegistered() || id == null) {
+                return;
+            }
 
-                    if (registration != null) {
-                        this.action.accept(registration);
-                    }
-                }
+            this.logger.info("Listening for device registration - {} {}:{}", this.deviceInfo.name,
+                    this.deviceInfo.deviceType, id);
+
+            HueSyncRegistrationDto registration = this.connection.registerDevice(id);
+
+            if (registration != null) {
+                this.logger.info("API token for {} received", this.deviceInfo.name);
+
+                this.action.accept(registration);
             }
         } catch (Exception e) {
             this.logger.debug("{}", e.getMessage());
