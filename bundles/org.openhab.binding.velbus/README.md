@@ -31,75 +31,77 @@ xidel -e \
 ```
 -->
 
-| Type         | Description                                                                                |
-|--------------|--------------------------------------------------------------------------------------------|
-| vmb1bl       | 1-channel blind control module for din rail                                                |
-| vmb1bls      | 1-channel blind control module for universal mounting                                      |
-| vmb1dm       | Dimmer module for inductive/resistive and capacitive load                                  |
-| vmb1led      | 1-channel 0-10V controlled PWM dimmer for led strips                                       |
-| vmb1ry       | 1-channel relay module                                                                     |
-| vmb1ryno     | 1-channel relay module with potential-free changeover contact                              |
-| vmb1rynos    | 1-channel relay module with potential-free changeover contact                              |
-| vmb1rys      | 1-channel relay module with input                                                          |
-| vmb1ts       | Temperature Sensor Module                                                                  |
-| vmb2bl       | 2-channel blind control module                                                             |
-| vmb2ble-10   | 2-channel blind control module with extended possibilities                                 |
-| vmb2ble      | 2-channel blind control module with extended possibilities                                 |
-| vmb2pbn      | Push-button interface for Niko 1- or 2-fold push-buttons                                   |
-| vmb4an       | Analog I/O module                                                                          |
-| vmb4dc       | 4-channel 0/1-10V dimmer controller                                                        |
-| vmb4pb       | 4 button interface module                                                                  |
-| vmb4ry       | 4-channel relay module                                                                     |
-| vmb4ryld-10  | 4-channel relay module with voltage outputs                                                |
-| vmb4ryld     | 4-channel relay module with voltage outputs                                                |
-| vmb4ryno-10  | 4-channel relay module with potential-free contacts                                        |
-| vmb4ryno     | 4-channel relay module with potential-free contacts                                        |
-| vmb6in       | 6-channel input module                                                                     |
-| vmb6pb-20    | 6-channel input module                                                                     |
-| vmb6pbn      | Push-button interface module for Niko 4- or 6-fold push-button                             |
-| vmb7in       | 7-channel input module (potentialfree + pulse)                                             |
-| vmb8ir       | Infrared remote control receiver module                                                    |
-| vmb8pb       | 8-Channel Push Button module                                                               |
-| vmb8pbu      | Push-button interface with 8 channels for universal mounting                               |
-| vmbdali-20   | DALI gateway module                                                                        |
-| vmbdali      | DALI gateway module                                                                        |
-| vmbdme       | Dimmer for electronic/resistive load                                                       |
-| vmbdmir      | Single channel triac dimmer for resistive and inductive loads                              |
-| vmbdmi       | Single channel triac dimmer for resistive and inductive loads                              |
-| vmbel1-20    | Edge-lit one touch button module                                                           |
-| vmbel1       | Edge-lit one touch button module                                                           |
-| vmbel2-20    | Edge-lit two touch buttons module                                                          |
-| vmbel2       | Edge-lit two touch buttons module                                                          |
-| vmbel4pir-20 | Edge-lit Motion detector with four touch buttons                                            |
-| vmbel4-20    | Edge-lit four touch buttons module                                                         |
-| vmbel4       | Edge-lit four touch buttons module                                                         |
-| vmbelo-20    | Edge-lit touch panel with Oled display                                                     |
-| vmbelo       | Edge-lit touch panel with Oled display                                                     |
-| vmbelpir     | Edge-lit Motion detector with one touch button                                             |
-| vmbgp1-20    | Glass control module with 1 touch key                                                      |
-| vmbgp1-2     | Glass control module with 1 touch key (Edition 2)                                          |
-| vmbgp1       | Glass control module with 1 touch key                                                      |
-| vmbgp2-20    | Glass control module with 2 touch keys                                                     |
-| vmbgp2-2     | Glass control module with 2 touch keys (Edition 2)                                         |
-| vmbgp2       | Glass control module with 2 touch keys                                                     |
-| vmbgp4-20    | Glass control module with 4 touch keys                                                     |
-| vmbgp4-2     | Glass control module with 4 touch keys (Edition 2)                                         |
-| vmbgp4       | Glass control module with 4 touch keys                                                     |
-| vmbgp4pir-20 | Glass control module with 4 touch keys and built-in motion and twilight sensor             |
-| vmbgp4pir-2  | Glass control module with 4 touch keys and built-in motion and twilight sensor (Edition 2) |
-| vmbgp4pir    | Glass control module with 4 touch keys and built-in motion and twilight sensor             |
-| vmbgpod-2    | Glass control module with oled display and temperature controller (Edition 2)              |
-| vmbgpod      | Glass control module with oled display and temperature controller                          |
-| vmbgpo-20    | Glass control module with oled display and temperature controller                          |
-| vmbgpo       | Glass control module with oled display                                                     |
-| vmbin        | 1-channel input module                                                                     |
-| vmbkp        | Keypad interface module                                                                    |
-| vmbmeteo     | Weather station with thermometer, anemometer, rain sensor and light sensor                 |
-| vmbpirc      | Motion and twilight sensor for ceiling mounting                                            |
-| vmbpirm      | Mini motion and twilight sensor for recessed or surface mounting                           |
-| vmbpiro      | Outdoor motion, twilight and temperature sensor, Theben                                    |
-| vmbrfr8s     | 8 channel RF receiver module                                                               |
-| vmbvp1       | Doorbird interface module                                                                  |
+| Type          | Description                                                                                |
+|---------------|--------------------------------------------------------------------------------------------|
+| vmb1bl        | 1-channel blind control module for din rail                                                |
+| vmb1bls       | 1-channel blind control module for universal mounting                                      |
+| vmb1dm        | Dimmer module for inductive/resistive and capacitive load                                  |
+| vmb1led       | 1-channel 0-10V controlled PWM dimmer for led strips                                       |
+| vmb1ry        | 1-channel relay module                                                                     |
+| vmb1ryno      | 1-channel relay module with potential-free changeover contact                              |
+| vmb1rynos     | 1-channel relay module with potential-free changeover contact                              |
+| vmb1rys       | 1-channel relay module with input                                                          |
+| vmb1ts        | Temperature Sensor Module                                                                  |
+| vmb2bl        | 2-channel blind control module                                                             |
+| vmb2ble-10    | 2-channel blind control module with extended possibilities                                 |
+| vmb2ble       | 2-channel blind control module with extended possibilities                                 |
+| vmb2pbn       | Push-button interface for Niko 1- or 2-fold push-buttons                                   |
+| vmb4an        | Analog I/O module                                                                          |
+| vmb4dc        | 4-channel 0/1-10V dimmer controller                                                        |
+| vmb4ledpwm-20 | 4 channel led PWM dimmer module                                                            |
+| vmb4pb        | 4 button interface module                                                                  |
+| vmb4ry        | 4-channel relay module                                                                     |
+| vmb4ryld-10   | 4-channel relay module with voltage outputs                                                |
+| vmb4ryld      | 4-channel relay module with voltage outputs                                                |
+| vmb4ryno-10   | 4-channel relay module with potential-free contacts                                        |
+| vmb4ryno      | 4-channel relay module with potential-free contacts                                        |
+| vmb6in        | 6-channel input module                                                                     |
+| vmb6pb-20     | 6-channel input module                                                                     |
+| vmb6pbn       | Push-button interface module for Niko 4- or 6-fold push-button                             |
+| vmb7in        | 7-channel input module (potentialfree + pulse)                                             |
+| vmb8dc-20     | 8 channel 0 to 10 V dimmer control module                                                  | 
+| vmb8ir        | Infrared remote control receiver module                                                    |
+| vmb8pb        | 8-Channel Push Button module                                                               |
+| vmb8pbu       | Push-button interface with 8 channels for universal mounting                               |
+| vmbdali-20    | DALI gateway module                                                                        |
+| vmbdali       | DALI gateway module                                                                        |
+| vmbdme        | Dimmer for electronic/resistive load                                                       |
+| vmbdmir       | Single channel triac dimmer for resistive and inductive loads                              |
+| vmbdmi        | Single channel triac dimmer for resistive and inductive loads                              |
+| vmbel1-20     | Edge-lit one touch button module                                                           |
+| vmbel1        | Edge-lit one touch button module                                                           |
+| vmbel2-20     | Edge-lit two touch buttons module                                                          |
+| vmbel2        | Edge-lit two touch buttons module                                                          |
+| vmbel4pir-20  | Edge-lit Motion detector with four touch buttons                                           |
+| vmbel4-20     | Edge-lit four touch buttons module                                                         |
+| vmbel4        | Edge-lit four touch buttons module                                                         |
+| vmbelo-20     | Edge-lit touch panel with Oled display                                                     |
+| vmbelo        | Edge-lit touch panel with Oled display                                                     |
+| vmbelpir      | Edge-lit Motion detector with one touch button                                             |
+| vmbgp1-20     | Glass control module with 1 touch key                                                      |
+| vmbgp1-2      | Glass control module with 1 touch key (Edition 2)                                          |
+| vmbgp1        | Glass control module with 1 touch key                                                      |
+| vmbgp2-20     | Glass control module with 2 touch keys                                                     |
+| vmbgp2-2      | Glass control module with 2 touch keys (Edition 2)                                         |
+| vmbgp2        | Glass control module with 2 touch keys                                                     |
+| vmbgp4-20     | Glass control module with 4 touch keys                                                     |
+| vmbgp4-2      | Glass control module with 4 touch keys (Edition 2)                                         |
+| vmbgp4        | Glass control module with 4 touch keys                                                     |
+| vmbgp4pir-20  | Glass control module with 4 touch keys and built-in motion and twilight sensor             |
+| vmbgp4pir-2   | Glass control module with 4 touch keys and built-in motion and twilight sensor (Edition 2) |
+| vmbgp4pir     | Glass control module with 4 touch keys and built-in motion and twilight sensor             |
+| vmbgpod-2     | Glass control module with oled display and temperature controller (Edition 2)              |
+| vmbgpod       | Glass control module with oled display and temperature controller                          |
+| vmbgpo-20     | Glass control module with oled display and temperature controller                          |
+| vmbgpo        | Glass control module with oled display                                                     |
+| vmbin         | 1-channel input module                                                                     |
+| vmbkp         | Keypad interface module                                                                    |
+| vmbmeteo      | Weather station with thermometer, anemometer, rain sensor and light sensor                 |
+| vmbpirc       | Motion and twilight sensor for ceiling mounting                                            |
+| vmbpirm       | Mini motion and twilight sensor for recessed or surface mounting                           |
+| vmbpiro       | Outdoor motion, twilight and temperature sensor, Theben                                    |
+| vmbrfr8s      | 8 channel RF receiver module                                                               |
+| vmbvp1        | Doorbird interface module                                                                  |
 
 ## Discovery
 
@@ -353,7 +355,7 @@ They have a number of channels to set the module's alarms: `clockAlarm#clockAlar
 They have a number of channels to set the module's thermostat thermostat (`thermostat#currentTemperatureSetpoint`, `thermostat#heatingModeComfortTemperatureSetpoint`, `thermostat#heatingModeDayTemperatureSetpoint`, `thermostat#heatingModeNightTemperatureSetpoint`, `thermostat#heatingModeAntiFrostTemperatureSetpoint`, `thermostat#coolingModeComfortTemperatureSetpoint`, `thermostat#coolingModeDayTemperatureSetpoint`, `thermostat#coolingModeNightTemperatureSetpoint`, `thermostat#coolingModeSafeTemperatureSetpoint`, `operatingMode` and `thermostat#mode`) and thermostat trigger channels: `thermostat#heater`, `thermostat#boost`, `thermostat#pump`, `thermostat#cooler`, `thermostat#alarm1`, `thermostat#alarm2`, `thermostat#alarm3`, `thermostat#alarm4`.
 They also have two channels to control the module's display `oledDisplay:MEMO` and `oledDisplay:SCREENSAVER`.
 
-Thing type `vmbmeteo`has 8 trigger channels (`input#CH1` ... `input#CH8`). These channels will be triggered by the module's alarms.
+Thing type `vmbmeteo` has 8 trigger channels (`input#CH1` ... `input#CH8`). These channels will be triggered by the module's alarms.
 It has a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.
 It also has a number of channels to read out the weather station's sensors: `weatherStation:temperature`, `weatherStation:rainfall`, `weatherStation:illuminance` and `weatherStation:windspeed`.
 
@@ -369,7 +371,23 @@ Values 1 to 15 are supported on channels `scene#CH1` ... `scene#CH64` (A1 ... A6
 hsbColor command type is supported on channels `virtual-light#VL1` ... `virtual-light#VL16`. This is to set the color on the virtual light.
 They have a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.
 
-The trigger channels can be used as a trigger to rules. The event message can be `PRESSED`, `RELEASED`or `LONG_PRESSED`.
+Things type `vmb4ledpwm-20` has 4 trigger channels `input#CH1` ... `input#CH4`. 
+It has 4 channels to steer the button LED feedback `feedback#CH1` ... `feedback#CH4`.
+hsbColor command type is supported on channels `color#CH1` ... `color#CH4`. This is to set the color on the channels.
+Percent command type is supported on channels `brightness#CH1` ... `brightness#CH4`. This is to set the brightness on the channels.
+Percent command type is supported on channels `white#CH1` ... `white#CH4`. This is to set the white on the channels.
+Values 1 to 15 are supported on channels `scene#CH1` ... `scene#CH4`. This is to set the scene on the channels.
+It has a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.
+
+Things type `vmb8dc-20` has 8 trigger channels `input#CH1` ... `input#CH8`.
+It has 8 channels to steer the button LED feedback `feedback#CH1` ... `feedback#CH8`.
+hsbColor command type is supported on channels `color#CH1` ... `color#CH8`. This is to set the color on the channels.
+Percent command type is supported on channels `brightness#CH1` ... `brightness#CH8`. This is to set the brightness on the channels.
+Percent command type is supported on channels `white#CH1` ... `white#CH8`. This is to set the white on the channels.
+Values 1 to 15 are supported on channels `scene#CH1` ... `scene#CH8`. This is to set the scene on the channels.
+It has a number of channels to set the module's alarms: `clockAlarm#clockAlarm1Enabled`,  `clockAlarm#clockAlarm1WakeupHour`, `clockAlarm#clockAlarm1WakeupMinute`, `clockAlarm#clockAlarm1BedtimeHour`, `clockAlarm#clockAlarm1BedtimeMinute`, `clockAlarm#clockAlarm2Enabled`,  `clockAlarm#clockAlarm2WakeupHour`, `clockAlarm#clockAlarm2WakeupMinute`, `clockAlarm#clockAlarm2BedtimeHour` and `clockAlarm#clockAlarm2BedtimeMinute`.
+
+The trigger channels can be used as a trigger to rules. The event message can be `PRESSED`, `RELEASED` or `LONG_PRESSED`.
 
 To remove the state of the Item in the Sitemap for a `button` channel.
 Go to the Items list, select the Item, add a State Description Metadata, and set the Pattern value to a blank space.
