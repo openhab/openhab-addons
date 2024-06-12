@@ -23,9 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.teslascope.internal.api.DetailedInformation;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.ImperialUnits;
+import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -127,10 +129,45 @@ public class TeslascopeHandler extends BaseThingHandler {
                     new StringType(detailedInformation.vehiclestate));
             updateState(TeslascopeBindingConstants.CHANNEL_ODOMETER,
                     new QuantityType<>(detailedInformation.odometer, ImperialUnits.MILE));
+
+            // charge state
             updateState(TeslascopeBindingConstants.CHANNEL_BATTERYLEVEL,
-                    new DecimalType(detailedInformation.batterylevel));
+                    new DecimalType(detailedInformation.battery_level));
+            updateState(TeslascopeBindingConstants.CHANNEL_USABLEBATTERYLEVEL,
+                    new DecimalType(detailedInformation.usable_battery_level));
+            updateState(TeslascopeBindingConstants.CHANNEL_BATTERYRANGE,
+                    new QuantityType<>(detailedInformation.battery_range, ImperialUnits.MILE));
+            updateState(TeslascopeBindingConstants.CHANNEL_ESTIMATEDBATTERYRANGE,
+                    new QuantityType<>(detailedInformation.est_battery_range, ImperialUnits.MILE));
+            // charge_enable_request isn't the right flag to determine if car is charging or not
+            if (detailedInformation.chargingstate.equals("Charging")) {
+                updateState(TeslascopeBindingConstants.CHANNEL_CHARGE, OnOffType.ON);
+            } else {
+                updateState(TeslascopeBindingConstants.CHANNEL_CHARGE, OnOffType.OFF);
+            }
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGEENERGYADDED,
+                    new QuantityType<>(detailedInformation.charge_energy_added, Units.KILOWATT_HOUR));
+            updateState(CHANNEL_CHARGELIMITSOCSTANDARD, new DecimalType(detailedInformation.charge_limit_soc));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGEPORT,
+                    OnOffType.from(detailedInformation.charge_port_door_open));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGERATE,
+                    new QuantityType<>(detailedInformation.charge_rate, ImperialUnits.MILE));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGERPOWER,
+                    new QuantityType<>(detailedInformation.charger_power, MetricPrefix.KILO(Units.WATT)));
+            updateState(TeslascopeBindingConstants.CHANNEL_CHARGERVOLTAGE,
+                    new QuantityType<>(detailedInformation.charger_voltage, Units.VOLT));
+            updateState(TeslascopeBindingConstants.CHANNEL_TIMETOFULLCHARGE,
+                    new DecimalType(detailedInformation.time_to_full_charge));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGINGSTATE,
                     new StringType(detailedInformation.chargingstate));
+
+            // drive state
+
+            // vehicle state
+            updateState(TeslascopeBindingConstants.CHANNEL_SOFTWAREUPDATESTATUS,
+                    new StringType(detailedInformation.software_update_status));
+            updateState(TeslascopeBindingConstants.CHANNEL_SOFTWAREUPDATEVERSION,
+                    new StringType(detailedInformation.software_update_version));
             updateState(TeslascopeBindingConstants.CHANNEL_TPMSFL,
                     new QuantityType<>(detailedInformation.tpms_pressure_fl, Units.BAR));
             updateState(TeslascopeBindingConstants.CHANNEL_TPMSFR,

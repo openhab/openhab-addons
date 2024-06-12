@@ -27,6 +27,7 @@
 			<channel id="charge" typeId="charge"/>
 			<channel id="chargeenergyadded" typeId="chargeenergyadded"/>
 			<channel id="chargelimitsocstandard" typeId="chargelimitsocstandard"/>
+			<channel id="chargeport" typeId="chargeport"/>
 			<channel id="chargerate" typeId="chargerate"/>
 			<channel id="chargerpower" typeId="chargerpower"/>
 			<channel id="chargervoltage" typeId="chargervoltage"/>
@@ -36,7 +37,6 @@
 			<channel id="driverreardoor" typeId="driverreardoor"/>
 			<channel id="drivertemp" typeId="drivertemp"/>
 			<channel id="estimatedbatteryrange" typeId="estimatedbatteryrange"/>
-			<channel id="estimatedrange" typeId="estimatedrange"/>
 			<channel id="fan" typeId="fan"/>
 			<channel id="flashlights" typeId="flashlights"/>
 			<channel id="frontdefroster" typeId="frontdefroster"/>
@@ -202,6 +202,11 @@
 		<description>Standard charging limit of the vehicle, in %</description>
 		<state pattern="%.1f %%" readOnly="true"></state>
 	</channel-type>
+	<channel-type id="chargeport">
+		<item-type>Switch</item-type>
+		<label>Charge Port</label>
+		<description>Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed)</description>
+	</channel-type>
 	<channel-type id="chargerate" advanced="true">
 		<item-type>Number:Speed</item-type>
 		<label>Charge Rate</label>
@@ -254,12 +259,6 @@
 		<label>Estimated Battery Range</label>
 		<description>Estimated battery range</description>
 		<state pattern="%.0f %unit%" readOnly="true"></state>
-	</channel-type>
-	<channel-type id="estimatedrange" advanced="true">
-		<item-type>Number</item-type>
-		<label>Estimated Range</label>
-		<description>Estimated range of the vehicle</description>
-		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="fan" advanced="true">
 		<item-type>Number</item-type>

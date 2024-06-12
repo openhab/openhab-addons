@@ -46,7 +46,9 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_BATTERYRANGE = "batteryrange";
     public static final String CHANNEL_CENTERREARSEATHEATER = "centerrearseatheater";
     public static final String CHANNEL_CHARGE = "charge";
+    public static final String CHANNEL_CHARGEENERGYADDED = "chargeenergyadded";
     public static final String CHANNEL_CHARGELIMITSOCSTANDARD = "chargelimitsocstandard";
+    public static final String CHANNEL_CHARGEPORT = "chargeport";
     public static final String CHANNEL_CHARGERATE = "chargerate";
     public static final String CHANNEL_CHARGERPOWER = "chargerpower";
     public static final String CHANNEL_CHARGERVOLTAGE = "chargervoltage";
@@ -56,7 +58,6 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_DRIVERREARDOOR = "driverreardoor";
     public static final String CHANNEL_DRIVERTEMP = "drivertemp";
     public static final String CHANNEL_ESTIMATEDBATTERYRANGE = "estimatedbatteryrange";
-    public static final String CHANNEL_ESTIMATEDRANGE = "estimatedrange";
     public static final String CHANNEL_FAN = "fan";
     public static final String CHANNEL_FLASHLIGHTS = "flashlights";
     public static final String CHANNEL_FRONTDEFROSTER = "frontdefroster";

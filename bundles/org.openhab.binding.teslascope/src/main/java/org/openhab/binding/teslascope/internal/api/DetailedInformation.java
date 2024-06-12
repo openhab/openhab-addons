@@ -31,14 +31,14 @@ public class DetailedInformation {
     public double odometer;
 
     // charge_state
-    public double batterylevel;
+    public double battery_level;
     public double usable_battery_level;
     public double battery_range;
     public double est_battery_range;
-    public int charge_enable_request;
+    public boolean charge_enable_request = false;
     public double charge_energy_added;
     public double charge_limit_soc;
-    public int charge_port_door_open;
+    public boolean charge_port_door_open = false;
     public double charge_rate;
     public double charger_power;
     public double charger_voltage;
@@ -53,28 +53,28 @@ public class DetailedInformation {
     public double speed;
 
     // vehicle_state
-    public int locked;
-    public int sentry_mode;
-    public int valet_mode;
+    public boolean locked;
+    public boolean sentry_mode;
+    public boolean valet_mode;
     public String software_update_status = "";
     public String software_update_version = "";
-    public int fd_window;
-    public int fp_window;
-    public int rd_window;
-    public int rp_window;
+    public boolean fd_window;
+    public boolean fp_window;
+    public boolean rd_window;
+    public boolean rp_window;
     public String sun_roof_state = "";
     public int sun_roof_percent_open;
-    public int homelink_nearby;
+    public boolean homelink_nearby;
     public double tpms_pressure_fl;
     public double tpms_pressure_fr;
     public double tpms_pressure_rl;
     public double tpms_pressure_rr;
-    public int df;
-    public int dr;
-    public int pf;
-    public int pr;
-    public int ft;
-    public int rt;
+    public boolean df;
+    public boolean dr;
+    public boolean pf;
+    public boolean pr;
+    public boolean ft;
+    public boolean rt;
 
     private DetailedInformation() {
     }
@@ -94,14 +94,16 @@ public class DetailedInformation {
         detailedInformation.odometer = jsonObject.get("odometer").getAsDouble();
 
         // data from chargeState
-        detailedInformation.batterylevel = chargeStateJsonObject.get("battery_level").getAsDouble();
+        detailedInformation.battery_level = chargeStateJsonObject.get("battery_level").getAsDouble();
         detailedInformation.usable_battery_level = chargeStateJsonObject.get("usable_battery_level").getAsDouble();
         detailedInformation.battery_range = chargeStateJsonObject.get("battery_range").getAsDouble();
         detailedInformation.est_battery_range = chargeStateJsonObject.get("est_battery_range").getAsDouble();
-        detailedInformation.charge_enable_request = chargeStateJsonObject.get("charge_enable_request").getAsInt();
+        detailedInformation.charge_enable_request = "1"
+                .equals(chargeStateJsonObject.get("charge_enable_request").getAsString());
         detailedInformation.charge_energy_added = chargeStateJsonObject.get("charge_energy_added").getAsDouble();
         detailedInformation.charge_limit_soc = chargeStateJsonObject.get("charge_limit_soc").getAsDouble();
-        detailedInformation.charge_port_door_open = chargeStateJsonObject.get("charge_port_door_open").getAsInt();
+        detailedInformation.charge_port_door_open = "1"
+                .equals(chargeStateJsonObject.get("charge_port_door_open").getAsString());
         detailedInformation.charge_rate = chargeStateJsonObject.get("charge_rate").getAsDouble();
         detailedInformation.charger_power = chargeStateJsonObject.get("charger_power").getAsDouble();
         detailedInformation.charger_voltage = chargeStateJsonObject.get("charger_voltage").getAsDouble();
@@ -121,32 +123,32 @@ public class DetailedInformation {
         }
 
         // data from vehicleState
-        detailedInformation.locked = vehicleStateJsonObject.get("locked").getAsInt();
-        detailedInformation.sentry_mode = vehicleStateJsonObject.get("sentry_mode").getAsInt();
-        detailedInformation.valet_mode = vehicleStateJsonObject.get("valet_mode").getAsInt();
+        detailedInformation.locked = "1".equals(vehicleStateJsonObject.get("locked").getAsString());
+        detailedInformation.sentry_mode = "1".equals(vehicleStateJsonObject.get("sentry_mode").getAsString());
+        detailedInformation.valet_mode = "1".equals(vehicleStateJsonObject.get("valet_mode").getAsString());
         detailedInformation.software_update_status = vehicleStateJsonObject.get("software_update_status").getAsString();
         detailedInformation.software_update_version = vehicleStateJsonObject.get("software_update_version")
                 .getAsString();
-        detailedInformation.fd_window = vehicleStateJsonObject.get("fd_window").getAsInt();
-        detailedInformation.fp_window = vehicleStateJsonObject.get("fp_window").getAsInt();
-        detailedInformation.rd_window = vehicleStateJsonObject.get("rd_window").getAsInt();
-        detailedInformation.rp_window = vehicleStateJsonObject.get("rp_window").getAsInt();
+        detailedInformation.fd_window = "1".equals(vehicleStateJsonObject.get("fd_window").getAsString());
+        detailedInformation.fp_window = "1".equals(vehicleStateJsonObject.get("fp_window").getAsString());
+        detailedInformation.rd_window = "1".equals(vehicleStateJsonObject.get("rd_window").getAsString());
+        detailedInformation.rp_window = "1".equals(vehicleStateJsonObject.get("rp_window").getAsString());
         // not all cars have a sun roof
         if (!vehicleStateJsonObject.get("sun_roof_state").isJsonNull()) {
             detailedInformation.sun_roof_state = vehicleStateJsonObject.get("sun_roof_state").getAsString();
             detailedInformation.sun_roof_percent_open = vehicleStateJsonObject.get("sun_roof_percent_open").getAsInt();
         }
-        detailedInformation.homelink_nearby = vehicleStateJsonObject.get("homelink_nearby").getAsInt();
+        detailedInformation.homelink_nearby = "1".equals(vehicleStateJsonObject.get("homelink_nearby").getAsString());
         detailedInformation.tpms_pressure_fl = vehicleStateJsonObject.get("tpms_pressure_fl").getAsDouble();
         detailedInformation.tpms_pressure_fr = vehicleStateJsonObject.get("tpms_pressure_fr").getAsDouble();
         detailedInformation.tpms_pressure_rl = vehicleStateJsonObject.get("tpms_pressure_rl").getAsDouble();
         detailedInformation.tpms_pressure_rr = vehicleStateJsonObject.get("tpms_pressure_rr").getAsDouble();
-        detailedInformation.df = vehicleStateJsonObject.get("df").getAsInt();
-        detailedInformation.dr = vehicleStateJsonObject.get("dr").getAsInt();
-        detailedInformation.pf = vehicleStateJsonObject.get("pf").getAsInt();
-        detailedInformation.pr = vehicleStateJsonObject.get("pr").getAsInt();
-        detailedInformation.ft = vehicleStateJsonObject.get("ft").getAsInt();
-        detailedInformation.rt = vehicleStateJsonObject.get("rt").getAsInt();
+        detailedInformation.df = "1".equals(vehicleStateJsonObject.get("df").getAsString());
+        detailedInformation.dr = "1".equals(vehicleStateJsonObject.get("dr").getAsString());
+        detailedInformation.pf = "1".equals(vehicleStateJsonObject.get("pf").getAsString());
+        detailedInformation.pr = "1".equals(vehicleStateJsonObject.get("pr").getAsString());
+        detailedInformation.ft = "1".equals(vehicleStateJsonObject.get("ft").getAsString());
+        detailedInformation.rt = "1".equals(vehicleStateJsonObject.get("rt").getAsString());
         return detailedInformation;
     }
 }
