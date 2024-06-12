@@ -90,7 +90,7 @@ Dynamic configuration is enabled by default.
 
 ### Config.h:
 
-```
+```c
 //#define PRODINO_BOARD
 #define PRODINO_BOARD_ESP32
 //#define TRANSPORT_ETH_ENC28J6A0
@@ -98,7 +98,7 @@ Dynamic configuration is enabled by default.
 
 ### NibeGW.h:
 
-```
+```c
 #define HARDWARE_SERIAL_WITH_PINS
 //#define HARDWARE_SERIAL
 ```
@@ -129,7 +129,7 @@ Enable debugging in Config.h:
 
 You can connect to NibeGW with any telnet client.
 You can also set some options via telnet.
-With 'h' you get a menue with all available options:
+With 'h' you get a menu with all available options:
 
 ```
 Arduino NibeGW
@@ -149,24 +149,24 @@ On the target IP you can see the receiving udp messages with netcat (if you chan
 nc -lu 9999 | hexdump -C
 ```
 
-## Dynamic configuration
+## Dynamic Configuration
 
-When dynamic configuration is enabled (only ESP32 boards), NibeGW can be configured via WiFi connection.
+When dynamic configuration is enabled (only ESP32 boards), NibeGW can be configured via Wi-Fi connection.
 Also OTA firmware update is supported.
 
-Following libraries are required
+The following libraries are required:
  * Bleeper (tested with version 1.1.0)
  * ElegantOTA (tested with version 2.2.9)
 
 Dynamic configuration mode is loaded if input 0 is ON during boot.
-When dynamic configuration mode is activated, login to the 'Bleeper' WiFi Access point.
+When dynamic configuration mode is activated, login to the 'Bleeper' Wi-Fi access point.
 Configuration page is available on port 80.
 OTA update page on port 8080.
 
-### Disable dynamic configuration
+### Disable Dynamic Configuration
 
 Dynamic configuration can be disabled by commenting out following line from config.h file.
 
-```
+```c
 //#define ENABLE_DYNAMIC_CONFIG
 ```
