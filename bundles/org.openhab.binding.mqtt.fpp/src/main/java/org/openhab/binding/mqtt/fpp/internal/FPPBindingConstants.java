@@ -39,30 +39,30 @@ public class FPPBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_PLAYER);
 
     // Channels
-    public static final String CHANNEL_PLAYER = "fppPlayer";
-    public static final String CHANNEL_STATUS = "fppStatus";
-    public static final String CHANNEL_VOLUME = "fppVolume";
-    public static final String CHANNEL_MODE = "fppMode";
-    public static final String CHANNEL_CURRENT_SEQUENCE = "fppCurrentSequence";
-    public static final String CHANNEL_CURRENT_SONG = "fppCurrentSong";
-    public static final String CHANNEL_CURRENT_PLAYLIST = "fppCurrentPlaylist";
-    public static final String CHANNEL_SEC_PLAYED = "fppSecPlayed";
-    public static final String CHANNEL_SEC_REMAINING = "fppSecRemaining";
-    public static final String CHANNEL_UPTIME = "fppUptime";
-    public static final String CHANNEL_UUID = "fppUUID";
-    public static final String CHANNEL_VERSION = "fppVersion";
-    public static final String CHANNEL_BRIDGING = "fppBridging";
-    public static final String CHANNEL_MULTISYNC = "fppMultisync";
-    public static final String CHANNEL_TESTING = "fppTesting";
-    public static final String CHANNEL_LAST_PLAYLIST = "fppLastPlaylist";
+    public static final String CHANNEL_PLAYER = "player";
+    public static final String CHANNEL_STATUS = "status";
+    public static final String CHANNEL_VOLUME = "volume";
+    public static final String CHANNEL_MODE = "mode";
+    public static final String CHANNEL_CURRENT_SEQUENCE = "current-sequence";
+    public static final String CHANNEL_CURRENT_SONG = "current-song";
+    public static final String CHANNEL_CURRENT_PLAYLIST = "current-playlist";
+    public static final String CHANNEL_SEC_PLAYED = "seconds-played";
+    public static final String CHANNEL_SEC_REMAINING = "seconds-remaining";
+    public static final String CHANNEL_UPTIME = "uptime";
+    public static final String CHANNEL_UUID = "uuid";
+    public static final String CHANNEL_VERSION = "version";
+    public static final String CHANNEL_BRIDGING = "bridging-enabled";
+    public static final String CHANNEL_MULTISYNC = "multisync-enabled";
+    public static final String CHANNEL_TESTING = "testing-enabled";
+    public static final String CHANNEL_LAST_PLAYLIST = "last-playlist";
 
-    public static final String CHANNEL_SCHEDULERSTATUS = "fppSchedulerStatus";
-    public static final String CHANNEL_SCHEDULERCURRENTPLAYLIST = "fppSchedulerCurrentPlaylist";
-    public static final String CHANNEL_SCHEDULERCURRENTPLAYLISTSTART = "fppSchedulerCurrentPlaylistStart";
-    public static final String CHANNEL_SCHEDULERCURRENTPLAYLISTEND = "fppSchedulerCurrentPlaylistEnd";
-    public static final String CHANNEL_SCHEDULERCURRENTPLAYLISTSTOPTYPE = "fppSchedulerCurrentPlaylistStopType";
-    public static final String CHANNEL_SCHEDULERNEXTPLAYLIST = "fppSchedulerNextPlaylist";
-    public static final String CHANNEL_SCHEDULERNEXTPLAYLISTSTART = "fppSchedulerNextPlaylistStart";
+    public static final String CHANNEL_SCHEDULERSTATUS = "scheduler-status";
+    public static final String CHANNEL_SCHEDULERCURRENTPLAYLIST = "scheduler-current-playlist";
+    public static final String CHANNEL_SCHEDULERCURRENTPLAYLISTSTART = "scheduler-current-playlist-start";
+    public static final String CHANNEL_SCHEDULERCURRENTPLAYLISTEND = "scheduler-current-playlist-end";
+    public static final String CHANNEL_SCHEDULERCURRENTPLAYLISTSTOPTYPE = "scheduler-current-playlist-stop-type";
+    public static final String CHANNEL_SCHEDULERNEXTPLAYLIST = "scheduler-next-playlist";
+    public static final String CHANNEL_SCHEDULERNEXTPLAYLISTSTART = "scheduler-next-playlist-start";
 
     // Status
     public static final String CONNECTED = "connected";

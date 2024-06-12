@@ -11,162 +11,162 @@
 		<label>FPP Player</label>
 		<description>FPP Player.</description>
 		<channels>
-			<channel id="fppPlayer" typeId="fppPlayer"/>
-			<channel id="fppStatus" typeId="fppStatus"/>
-			<channel id="fppVolume" typeId="fppVolume"/>
-			<channel id="fppVersion" typeId="fppVersion"/>
-			<channel id="fppMode" typeId="fppMode"/>
-			<channel id="fppCurrentSequence" typeId="fppCurrentSequence"/>
-			<channel id="fppCurrentSong" typeId="fppCurrentSong"/>
-			<channel id="fppCurrentPlaylist" typeId="fppCurrentPlaylist"/>
-			<channel id="fppSecPlayed" typeId="fppSecPlayed"/>
-			<channel id="fppSecRemaining" typeId="fppSecRemaining"/>
-			<channel id="fppUptime" typeId="fppUptime"/>
-			<channel id="fppUUID" typeId="fppUUID"/>
-			<channel id="fppBridging" typeId="fppBridging"/>
-			<channel id="fppMultisync" typeId="fppMultisync"/>
-			<channel id="fppTesting" typeId="fppTesting"/>
-			<channel id="fppLastPlaylist" typeId="fppLastPlaylist"/>
-			<channel id="fppSchedulerStatus" typeId="fppSchedulerStatus"/>
-			<channel id="fppSchedulerCurrentPlaylist" typeId="fppSchedulerCurrentPlaylist"/>
-			<channel id="fppSchedulerCurrentPlaylistStart" typeId="fppSchedulerCurrentPlaylistStart"/>
-			<channel id="fppSchedulerCurrentPlaylistEnd" typeId="fppSchedulerCurrentPlaylistEnd"/>
-			<channel id="fppSchedulerCurrentPlaylistStopType" typeId="fppSchedulerCurrentPlaylistStopType"/>
-			<channel id="fppSchedulerNextPlaylist" typeId="fppSchedulerNextPlaylist"/>
-			<channel id="fppSchedulerNextPlaylistStart" typeId="fppSchedulerNextPlaylistStart"/>
+			<channel id="player" typeId="player"/>
+			<channel id="status" typeId="status"/>
+			<channel id="volume" typeId="volume"/>
+			<channel id="version" typeId="version"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="current-sequence" typeId="current-sequence"/>
+			<channel id="current-song" typeId="current-song"/>
+			<channel id="current-playlist" typeId="current-playlist"/>
+			<channel id="seconds-played" typeId="seconds-played"/>
+			<channel id="seconds-remaining" typeId="seconds-remaining"/>
+			<channel id="uptime" typeId="uptime"/>
+			<channel id="uuid" typeId="uuid"/>
+			<channel id="bridging-enabled" typeId="bridging-enabled"/>
+			<channel id="multisync-enabled" typeId="multisync-enabled"/>
+			<channel id="testing-enabled" typeId="testing-enabled"/>
+			<channel id="last-playlist" typeId="last-playlist"/>
+			<channel id="scheduler-status" typeId="scheduler-status"/>
+			<channel id="scheduler-current-playlist" typeId="scheduler-current-playlist"/>
+			<channel id="scheduler-current-playlist-start" typeId="scheduler-current-playlist-start"/>
+			<channel id="scheduler-current-playlist-end" typeId="scheduler-current-playlist-end"/>
+			<channel id="scheduler-current-playlist-stop-type" typeId="scheduler-current-playlist-stop-type"/>
+			<channel id="scheduler-next-playlist" typeId="scheduler-next-playlist"/>
+			<channel id="scheduler-next-playlist-start" typeId="scheduler-next-playlist-start"/>
 		</channels>
 		<config-description-ref uri="thing-type:mqtt:player"/>
 	</thing-type>
-	<channel-type id="fppStatus">
+	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>FPP Player Status</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppVersion" advanced="true">
+	<channel-type id="version" advanced="true">
 		<item-type>String</item-type>
 		<label>Version</label>
 		<description>FPP Version</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppMode" advanced="true">
+	<channel-type id="mode" advanced="true">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<description>FPP Player Mode</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppCurrentSequence">
+	<channel-type id="current-sequence">
 		<item-type>String</item-type>
 		<label>Current Sequence</label>
 		<description>FPP Current Sequence</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppCurrentSong">
+	<channel-type id="current-song">
 		<item-type>String</item-type>
 		<label>Current Song</label>
 		<description>FPP Current Song</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppCurrentPlaylist">
+	<channel-type id="current-playlist">
 		<item-type>String</item-type>
 		<label>Current Playlist</label>
 		<description>FPP Current Playlist</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppSecPlayed" advanced="true">
+	<channel-type id="seconds-played" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Seconds Played</label>
 		<description>FPP Seconds Played</description>
 		<state readOnly="true" pattern="%.1f sec"/>
 	</channel-type>
-	<channel-type id="fppSecRemaining" advanced="true">
+	<channel-type id="seconds-remaining" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Seconds Remaining</label>
 		<description>FPP Seconds Remaining</description>
 		<state readOnly="true" pattern="%.1f sec"/>
 	</channel-type>
-	<channel-type id="fppUptime" advanced="true">
+	<channel-type id="uptime" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>FPP Uptime</label>
 		<description>FPP uptime (time after start)</description>
 		<state readOnly="true" pattern="%.1f sec"/>
 	</channel-type>
-	<channel-type id="fppUUID" advanced="true">
+	<channel-type id="uuid" advanced="true">
 		<item-type>String</item-type>
 		<label>UUID</label>
 		<description>FPP Hardware UUID</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppPlayer">
+	<channel-type id="player">
 		<item-type>Player</item-type>
 		<label>Player</label>
 		<description>FPP Player Control</description>
 	</channel-type>
-	<channel-type id="fppVolume">
+	<channel-type id="volume">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
 		<description>FPP Volume of the sound</description>
 	</channel-type>
-	<channel-type id="fppBridging" advanced="true">
+	<channel-type id="bridging-enabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Bridging</label>
 		<description>FPP Is Bridging</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppMultisync" advanced="true">
+	<channel-type id="multisync-enabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Multisync</label>
 		<description>FPP Multisync</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppTesting">
+	<channel-type id="testing-enabled">
 		<item-type>Switch</item-type>
 		<label>Testing</label>
 		<description>FPP Is Testing</description>
 	</channel-type>
-	<channel-type id="fppLastPlaylist" advanced="true">
+	<channel-type id="last-playlist" advanced="true">
 		<item-type>String</item-type>
 		<label>Last Run Playlist</label>
 		<description>FPP Last Run Playlist</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppSchedulerStatus" advanced="true">
+	<channel-type id="scheduler-status" advanced="true">
 		<item-type>String</item-type>
 		<label>Scheduler Status</label>
 		<description>FPP Scheduler Status</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppSchedulerCurrentPlaylist">
+	<channel-type id="scheduler-current-playlist">
 		<item-type>String</item-type>
 		<label>Scheduler Current Playlist</label>
 		<description>FPP Current Playlist</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppSchedulerCurrentPlaylistStart" advanced="true">
+	<channel-type id="scheduler-current-playlist-start" advanced="true">
 		<item-type>String</item-type>
 		<label>Scheduler Current Playlist Start</label>
 		<description>FPP Scheduler Current Playlist Start Time</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppSchedulerCurrentPlaylistEnd" advanced="true">
+	<channel-type id="scheduler-current-playlist-end" advanced="true">
 		<item-type>String</item-type>
 		<label>Scheduler Current Playlist End</label>
 		<description>FPP Scheduler Current Playlist End Time</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppSchedulerCurrentPlaylistStopType" advanced="true">
+	<channel-type id="scheduler-current-playlist-stop-type" advanced="true">
 		<item-type>String</item-type>
 		<label>Scheduler Current Playlist Stop Type</label>
 		<description>FPP Scheduler Current Playlist Stop Type</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppSchedulerNextPlaylist" advanced="true">
+	<channel-type id="scheduler-next-playlist" advanced="true">
 		<item-type>String</item-type>
 		<label>Scheduler Next Playlist</label>
 		<description>FPP Scheduler Next Playlist</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="fppSchedulerNextPlaylistStart" advanced="true">
+	<channel-type id="scheduler-next-playlist-start" advanced="true">
 		<item-type>String</item-type>
 		<label>Scheduler Next Playlist Start</label>
 		<description>FPP Scheduler Next Playlist Start Time</description>
