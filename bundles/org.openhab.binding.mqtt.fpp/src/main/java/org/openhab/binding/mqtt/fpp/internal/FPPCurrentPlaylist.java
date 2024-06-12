@@ -1,5 +1,3 @@
-package org.openhab.binding.mqtt.fpp.internal;
-
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
@@ -12,6 +10,7 @@ package org.openhab.binding.mqtt.fpp.internal;
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+package org.openhab.binding.mqtt.fpp.internal;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
