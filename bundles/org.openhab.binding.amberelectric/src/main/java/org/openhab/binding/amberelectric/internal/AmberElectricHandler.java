@@ -17,6 +17,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.amberelectric.internal.api.CurrentPrices;
@@ -26,6 +28,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.CurrencyUnits;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -131,12 +134,23 @@ public class AmberElectricHandler extends BaseThingHandler {
             final String electricityUnit = " AUD/kWh";
 
             updateStatus(ThingStatus.ONLINE);
-            updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
-                    new QuantityType<>(currentPrices.elecPerKwh / 100 + " " + electricityUnit));
-            updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
-                    new QuantityType<>(currentPrices.clPerKwh / 100 + " " + electricityUnit));
-            updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE,
-                    new QuantityType<>(currentPrices.feedInPerKwh / 100 + " " + electricityUnit));
+            Unit<?> unit = CurrencyUnits.getInstance().getUnit("AUD");
+            if (unit == null) {
+                logger.trace("Currency AUD is unknown, falling back to DecimalType");
+                updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
+                        new DecimalType(currentPrices.elecPerKwh));
+                updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
+                        new DecimalType(currentPrices.clPerKwh));
+                updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE,
+                        new DecimalType(currentPrices.feedInPerKwh));
+            } else {
+                updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
+                        new QuantityType<>(currentPrices.elecPerKwh / 100 + " " + electricityUnit));
+                updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
+                        new QuantityType<>(currentPrices.clPerKwh / 100 + " " + electricityUnit));
+                updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE,
+                        new QuantityType<>(currentPrices.feedInPerKwh / 100 + " " + electricityUnit));
+            }
             updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_STATUS,
                     new StringType(currentPrices.clStatus));
             updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_STATUS,
