@@ -23,9 +23,12 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.sddp.SddpDevice;
 import org.openhab.core.config.discovery.sddp.SddpDiscoveryParticipant;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,16 +39,21 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component
-public class HDPowerViewHubDiscoveryParticipantSddp implements SddpDiscoveryParticipant {
+public class HDPowerViewHubSddpDiscoveryParticipant extends HDPowerViewHubDiscoveryParticipant
+        implements SddpDiscoveryParticipant {
 
-    private static final String LABEL_KEY_HUB = "discovery.hub.label";
     private static final String LABEL_KEY_GATEWAY = "discovery.gateway.label";
 
     private static final String HUNTER_DOUGLAS = "hunterdouglas:";
     private static final String POWERVIEW_HUB_ID = "hub:powerview";
     private static final String POWERVIEW_GEN3_ID = "powerview:gen3:gateway";
 
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryParticipantSddp.class);
+    private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubSddpDiscoveryParticipant.class);
+
+    @Activate
+    public HDPowerViewHubSddpDiscoveryParticipant(@Reference HttpClientFactory httpClientFactory) {
+        super(httpClientFactory);
+    }
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -57,13 +65,17 @@ public class HDPowerViewHubDiscoveryParticipantSddp implements SddpDiscoveryPart
         final ThingUID thingUID = getThingUID(device);
         if (thingUID != null) {
             try {
+                boolean isGateway = isGateway(device);
+                String generation = isGateway ? "3" : getGeneration(device.ipAddress);
+                String label = isGateway //
+                        ? String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress)
+                        : String.format("@text/%s [\"%s\", \"%s\"]", LABEL_KEY_HUB, device.ipAddress, generation);
+
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
-                        .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
-                        .withLabel(String.format("@text/%s [\"%s\"]",
-                                isGateway(device) ? LABEL_KEY_GATEWAY : LABEL_KEY_HUB, device.ipAddress))
-                        .build();
-                logger.debug("SDDP discovered hub/gateway '{}' on host '{}'", thingUID, device.ipAddress);
+                        .withRepresentationProperty(HDPowerViewHubConfiguration.HOST).withLabel(label).build();
+                logger.debug("SDDP discovered Gen {} hub/gateway '{}' on host '{}'", generation, thingUID,
+                        device.ipAddress);
                 return hub;
             } catch (IllegalArgumentException e) {
                 // error already logged, so fall through
