@@ -13,28 +13,28 @@ Binding to Controls Falcon Player (FPP) Devices. Uses MQTT to update status. Man
 
 | Channel | Type | Description |
 |-|-|-|
-| `fppPlayer` | Player | Play/Stop Current Playlist. |
-| `fppVolume` | Dimmer | Playback Audio Volume. |
-| `fppStatus` | String | Playback Status. |
-| `fppVersion` | String | Software Version. |
-| `fppMode` | String | Playback Mode. |
-| `fppUptime` | Number:Time | Device Uptime. |
-| `fppTesting` | Switch | Device is in Testing Mode. |
-| `fppCurrentSequence` | String (read only) | Currently Playing Sequence File. |
-| `fppCurrentSong` | String (read only) | Currently Playing Audio/Media File. |
-| `fppCurrentPlaylist` | String (read only) | Currently Playing Playlist. |
-| `fppSecPlayed` | Number:Time | Sequence Playback time in secs. |
-| `fppSecRemaining` | Number:Time | Sequence Playback time remaining in secs. |
-| `fppLastPlaylist` | String | Lasted Played Playlist. |
-| `fppUUID` | String | Device UUID. |
-| `fppBridging` | Switch | Is Recieving Bridge Data. |
-| `fppMultisync` | Switch | Multisync Mode Enabled. |
-| `fppSchedulerCurrentPlaylist` | String (read only) | Scheduler Current Playlist. |
-| `fppSchedulerCurrentPlaylistStart` | String (read only) | Scheduler Current Playlist Start Time. |
-| `fppSchedulerCurrentPlaylistEnd` | String (read only) | Scheduler Current Playlist End Time. |
-| `fppSchedulerCurrentPlaylistStopType` | String (read only) | Scheduler Current Playlist End Type. |
-| `fppSchedulerNextPlaylist` | String (read only) | Next Scheduled Playlist. |
-| `fppSchedulerNextPlaylistStart` | String (read only) | Next Scheduled Start Time. |
+| `player` | Player | Play/Stop Current Playlist. |
+| `volume` | Dimmer | Playback Audio Volume. |
+| `status` | String | Playback Status. |
+| `version` | String | Software Version. |
+| `mode` | String | Playback Mode. |
+| `uptime` | Number:Time | Device Uptime. |
+| `testing-enabled` | Switch | Device is in Testing Mode. |
+| `current-sequence` | String (read only) | Currently Playing Sequence File. |
+| `current-song` | String (read only) | Currently Playing Audio/Media File. |
+| `current-playlist` | String (read only) | Currently Playing Playlist. |
+| `seconds-played` | Number:Time | Sequence Playback time in secs. |
+| `seconds-remaining` | Number:Time | Sequence Playback time remaining in secs. |
+| `last-playlist` | String | Lasted Played Playlist. |
+| `uuid` | String | Device UUID. |
+| `bridging-enabled` | Switch | Is Recieving Bridge Data. |
+| `multisync-enabled` | Switch | Multisync Mode Enabled. |
+| `scheduler-current-playlist` | String (read only) | Scheduler Current Playlist. |
+| `scheduler-current-playlist-start` | String (read only) | Scheduler Current Playlist Start Time. |
+| `scheduler-current-playlist-end` | String (read only) | Scheduler Current Playlist End Time. |
+| `scheduler-current-playlist-stop-type` | String (read only) | Scheduler Current Playlist End Type. |
+| `scheduler-next-playlist` | String (read only) | Next Scheduled Playlist. |
+| `scheduler-next-playlist-start` | String (read only) | Next Scheduled Start Time. |
 
 
 ## Full Example
@@ -53,19 +53,19 @@ Thing mqtt:player:myBroker:mainPlayer "Main Player" (mqtt:broker:myBroker) @ "MQ
 *.items
 
 ```java
-Player FPP_Player "FPP Player" {channel="mqtt:player:myBroker:mainPlayer:fppPlayer"}
-Dimmer Audio_Volume "Audio Volume" {channel="mqtt:player:myBroker:mainPlayer:fppVolume"}
-String Current_Sequence "Current Sequence" {channel="mqtt:player:myBroker:mainPlayer:fppCurrentSequence"}
-String Current_Song "Current Song" {channel="mqtt:player:myBroker:mainPlayer:fppCurrentSong"}
-String Current_Playlist "Current Playlist" {channel="mqtt:player:myBroker:mainPlayer:fppCurrentPlaylist"}
-String Status "FPP Status" {channel="mqtt:player:myBroker:mainPlayer:fppStatus"}
-String Version "FPP Version" {channel="mqtt:player:myBroker:mainPlayer:fppVersion"}
-String Mode "FPP Mode" {channel="mqtt:player:myBroker:mainPlayer:fppMode"}
-String Last_Playlist "Last Playlist" {channel="mqtt:player:myBroker:mainPlayer:fppLastPlaylist"}
-Number:Time Seconds_Played "Seconds Played [%d %unit%]" {channel="mqtt:player:myBroker:mainPlayer:fppSecPlayed"}
-Number:Time Seconds_Remaining "Seconds Remaining [%d %unit%]" {channel="mqtt:player:myBroker:mainPlayer:fppSecRemaining"}
-Switch Testing "Testing Mode" {channel="mqtt:player:myBroker:mainPlayer:fppTesting"}
-Switch Multisync "Multisync" {channel="mqtt:player:myBroker:mainPlayer:fppMultisync"}
+Player FPP_Player "FPP Player" {channel="mqtt:player:myBroker:mainPlayer:player"}
+Dimmer Audio_Volume "Audio Volume" {channel="mqtt:player:myBroker:mainPlayer:volume"}
+String Current_Sequence "Current Sequence" {channel="mqtt:player:myBroker:mainPlayer:current-sequence"}
+String Current_Song "Current Song" {channel="mqtt:player:myBroker:mainPlayer:current-song"}
+String Current_Playlist "Current Playlist" {channel="mqtt:player:myBroker:mainPlayer:current-playlist"}
+String Status "FPP Status" {channel="mqtt:player:myBroker:mainPlayer:status"}
+String Version "FPP Version" {channel="mqtt:player:myBroker:mainPlayer:version"}
+String Mode "FPP Mode" {channel="mqtt:player:myBroker:mainPlayer:mode"}
+String Last_Playlist "Last Playlist" {channel="mqtt:player:myBroker:mainPlayer:last-playlist"}
+Number:Time Seconds_Played "Seconds Played [%d %unit%]" {channel="mqtt:player:myBroker:mainPlayer:seconds-played"}
+Number:Time Seconds_Remaining "Seconds Remaining [%d %unit%]" {channel="mqtt:player:myBroker:mainPlayer:seconds-remaining"}
+Switch Testing "Testing Mode" {channel="mqtt:player:myBroker:mainPlayer:testing-enabled"}
+Switch Multisync "Multisync" {channel="mqtt:player:myBroker:mainPlayer:multisync-enabled"}
 ```
 
 *.sitemap
