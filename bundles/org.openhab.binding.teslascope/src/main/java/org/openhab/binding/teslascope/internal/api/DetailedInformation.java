@@ -45,7 +45,7 @@ public class DetailedInformation {
     public String chargingstate = "";
     public float time_to_full_charge;
     public boolean scheduled_charging_pending = false;
-    public String scheduled_charging_start_time = "";
+    public String scheduled_charging_start_time = " ";
 
     // climate_state
     public boolean is_auto_conditioning_on;
@@ -74,10 +74,11 @@ public class DetailedInformation {
 
     // drive state
     public int heading;
-    public double latitude;
-    public double longitude;
+    public float latitude;
+    public float longitude;
     public String shift_state = "";
-    public double speed;
+    public float power;
+    public float speed = 0;
 
     // vehicle_state
     public boolean locked;
@@ -135,6 +136,9 @@ public class DetailedInformation {
         if (!chargeStateJsonObject.get("charge_rate").isJsonNull()) {
             detailedInformation.charge_rate = chargeStateJsonObject.get("charge_rate").getAsFloat();
             detailedInformation.charger_power = chargeStateJsonObject.get("charger_power").getAsInt();
+        } else {
+            detailedInformation.charge_rate = 0;
+            detailedInformation.charger_power = 0;
         }
         detailedInformation.charger_voltage = chargeStateJsonObject.get("charger_voltage").getAsInt();
         detailedInformation.chargingstate = chargeStateJsonObject.get("charging_state").getAsString();
@@ -145,8 +149,9 @@ public class DetailedInformation {
         if (!chargeStateJsonObject.get("scheduled_charging_start_time").isJsonNull()) {
             detailedInformation.scheduled_charging_start_time = chargeStateJsonObject
                     .get("scheduled_charging_start_time").getAsString();
+        } else {
+            detailedInformation.scheduled_charging_start_time = "N/A";
         }
-
         // data from climateState
         detailedInformation.is_auto_conditioning_on = "1"
                 .equals(climateStateJsonObject.get("is_auto_conditioning_on").getAsString());
@@ -182,14 +187,19 @@ public class DetailedInformation {
 
         // data from driveState
         detailedInformation.heading = driveStateJsonObject.get("heading").getAsInt();
-        detailedInformation.latitude = driveStateJsonObject.get("latitude").getAsDouble();
-        detailedInformation.longitude = driveStateJsonObject.get("longitude").getAsDouble();
+        detailedInformation.latitude = driveStateJsonObject.get("latitude").getAsFloat();
+        detailedInformation.longitude = driveStateJsonObject.get("longitude").getAsFloat();
+        detailedInformation.power = driveStateJsonObject.get("power").getAsFloat();
         // if car is parked, these will be NULL
         if (!driveStateJsonObject.get("shift_state").isJsonNull()) {
             detailedInformation.shift_state = driveStateJsonObject.get("shift_state").getAsString();
+        } else {
+            detailedInformation.shift_state = "N/A";
         }
         if (!driveStateJsonObject.get("speed").isJsonNull()) {
-            detailedInformation.speed = driveStateJsonObject.get("speed").getAsDouble();
+            detailedInformation.speed = driveStateJsonObject.get("speed").getAsFloat();
+        } else {
+            detailedInformation.speed = 0;
         }
 
         // data from vehicleState
@@ -207,6 +217,9 @@ public class DetailedInformation {
         if (!vehicleStateJsonObject.get("sun_roof_state").isJsonNull()) {
             detailedInformation.sun_roof_state = vehicleStateJsonObject.get("sun_roof_state").getAsString();
             detailedInformation.sun_roof_percent_open = vehicleStateJsonObject.get("sun_roof_percent_open").getAsInt();
+        } else {
+            detailedInformation.sun_roof_state = "Not fitted";
+            detailedInformation.sun_roof_percent_open = 0;
         }
         detailedInformation.homelink_nearby = "1".equals(vehicleStateJsonObject.get("homelink_nearby").getAsString());
         detailedInformation.tpms_pressure_fl = vehicleStateJsonObject.get("tpms_pressure_fl").getAsDouble();

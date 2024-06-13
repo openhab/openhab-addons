@@ -154,7 +154,7 @@ public class TeslascopeHandler extends BaseThingHandler {
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGEPORT,
                     OnOffType.from(detailedInformation.charge_port_door_open));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGERATE,
-                    new QuantityType<>(detailedInformation.charge_rate, ImperialUnits.MILE));
+                    new QuantityType<>(detailedInformation.charge_rate, ImperialUnits.MILES_PER_HOUR));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGERPOWER,
                     new QuantityType<>(detailedInformation.charger_power, MetricPrefix.KILO(Units.WATT)));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGERVOLTAGE,
@@ -218,9 +218,11 @@ public class TeslascopeHandler extends BaseThingHandler {
             updateState(TeslascopeBindingConstants.CHANNEL_HEADING, new DecimalType(detailedInformation.heading));
             updateState(TeslascopeBindingConstants.CHANNEL_LOCATION,
                     new PointType(detailedInformation.latitude + "," + detailedInformation.longitude));
+            updateState(TeslascopeBindingConstants.CHANNEL_POWER,
+                    new QuantityType<>(detailedInformation.power, MetricPrefix.KILO(Units.WATT)));
             updateState(TeslascopeBindingConstants.CHANNEL_SHIFTSTATE, new StringType(detailedInformation.shift_state));
             updateState(TeslascopeBindingConstants.CHANNEL_SPEED,
-                    new QuantityType<>(detailedInformation.speed, ImperialUnits.MILE));
+                    new QuantityType<>(detailedInformation.speed, ImperialUnits.MILES_PER_HOUR));
 
             // vehicle state
             updateState(TeslascopeBindingConstants.CHANNEL_DOORLOCK, OnOffType.from(detailedInformation.locked));
