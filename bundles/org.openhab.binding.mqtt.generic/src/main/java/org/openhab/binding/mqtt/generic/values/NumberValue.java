@@ -115,6 +115,7 @@ public class NumberValue extends Value {
         }
         // items with units specified in the label in the UI but no unit on mqtt are stored as
         // DecimalType to avoid conversions (e.g. % expects 0-1 rather than 0-100)
+        Unit<?> unit = this.unit;
         if (unit != null) {
             return new QuantityType<>(newValue, unit);
         } else {
@@ -146,6 +147,7 @@ public class NumberValue extends Value {
 
     private BigDecimal getQuantityTypeAsDecimal(QuantityType<?> qType) {
         BigDecimal val = qType.toBigDecimal();
+        Unit<?> unit = this.unit;
         if (unit != null) {
             QuantityType<?> convertedType = qType.toInvertibleUnit(unit);
             if (convertedType != null) {
