@@ -81,7 +81,8 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
                             .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
                             .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
                             .parseDefaulting(ChronoField.DAY_OF_MONTH, 1).parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
-                            .parseDefaulting(ChronoField.YEAR, 2024);
+                            .parseDefaulting(ChronoField.YEAR,
+                                    ZonedDateTime.now(this.timeZoneProvider.getTimeZone()).getYear());
 
                     LocalDateTime parsedDate = LocalDateTime.parse(value.getAsString(),
                             formatterBuilder.toFormatter(locale));

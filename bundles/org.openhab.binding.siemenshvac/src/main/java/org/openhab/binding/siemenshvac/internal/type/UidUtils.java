@@ -48,7 +48,7 @@ public class UidUtils {
             result = result.replaceAll("\\p{M}", "");
         }
 
-        result = result.replaceAll("[^a-zA-Z0-9_]", "_").toLowerCase();
+        result = result.replaceAll("[^a-zA-Z0-9_]", "-").toLowerCase();
 
         return result;
     }

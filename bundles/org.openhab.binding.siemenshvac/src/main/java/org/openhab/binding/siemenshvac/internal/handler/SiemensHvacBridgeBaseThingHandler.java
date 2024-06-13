@@ -16,7 +16,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -75,15 +75,14 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
 
     @Override
     public void initialize() {
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/offline.waiting-bridge-initialization");
-
         SiemensHvacBridgeConfig lcConfig = getConfigAs(SiemensHvacBridgeConfig.class);
         String baseUrl = null;
 
         baseUrl = lcConfig.baseUrl;
 
         if (baseUrl.isEmpty()) {
-            logger.debug("@text/offline.error-gateway-init");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
+                    "@text/offline.error-gateway-init");
             return;
         }
 
@@ -97,6 +96,8 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
 
         config = lcConfig;
 
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "@text/offline.waiting-bridge-initialization");
+
         // Will read metadata in background to not block initialize for a long period !
         scheduler.schedule(this::initializeCode, 1, TimeUnit.SECONDS);
     }
@@ -108,7 +109,7 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
                 URL res = cl.getResource(getClass().getCanonicalName().replace('.', '/') + ".class");
                 if (res != null) {
                     URLConnection cnx = res.openConnection();
-                    Date dt = new Date(cnx.getLastModified());
+                    LocalDate dt = LocalDate.ofEpochDay(cnx.getLastModified());
                     DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
                     return df.format(dt);
                 }

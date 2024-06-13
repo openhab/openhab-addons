@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 /*
  * Copyright (C) 2011 Google Inc.
  *
@@ -33,7 +21,7 @@
  * com.google.gson.internal.{Streams,TypeAdapters,LazilyParsedNumber}
  * to avoid using the internal package.
  */
-package org.openhab.binding.siemenshvac.internal.metadata;
+package org.openhab.binding.siemenshvac.internal.thirdparty;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -155,9 +143,9 @@ import com.google.gson.stream.MalformedJsonException;
  *
  * <pre>
  *    {@code
- *   shapeAdapter.registerSubtype(Rectangle.class, "Rectangle");
- *   shapeAdapter.registerSubtype(Circle.class, "Circle");
- *   shapeAdapter.registerSubtype(Diamond.class, "Diamond");
+ * shapeAdapter.registerSubtype(Rectangle.class, "Rectangle");
+ * shapeAdapter.registerSubtype(Circle.class, "Circle");
+ * shapeAdapter.registerSubtype(Diamond.class, "Diamond");
  * }
  * </pre>
  *
@@ -179,10 +167,6 @@ import com.google.gson.stream.MalformedJsonException;
  *             .registerSubtype(Rectangle.class).registerSubtype(Circle.class).registerSubtype(Diamond.class);
  * }
  * </pre>
- */
-/**
- *
- * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
 public final class RuntimeTypeAdapterFactory<T> implements TypeAdapterFactory {

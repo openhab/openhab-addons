@@ -11,3 +11,10 @@ https://www.eclipse.org/legal/epl-2.0/.
 == Source Code
 
 https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+RuntimeTypeAdapterFactory
+* License: Apache License, Version 2.0 
+* Project: https://github.com/google/gson
+* Source:  https://github.com/google/gson/blob/main/extras/src/main/java/com/google/gson/typeadapters/RuntimeTypeAdapterFactory.java

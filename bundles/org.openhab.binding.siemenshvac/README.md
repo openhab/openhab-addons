@@ -29,7 +29,7 @@ Support many different things as the thing type is handle by autodiscovery.
 
 Mainly, it will first discover the gateway.
 Currently test was done with the OZW672.x series.
-No test was conducted using the OZW772.x series, the code will currently not handle initialization of OZW772 gateway.
+No test was conducted using the OZW772.x series, the code will currently not handle initialization of an OZW772 gateway.
 You can request support in the community forum, if you have the gateway model and want it to be supported.
 
 After, it will discover thing inside your PAC, mainly main controller of type RVS...
