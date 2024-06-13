@@ -33,8 +33,8 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeBaseThingHandler;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeConfig;
+import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeThingHandler;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadata;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataMenu;
@@ -86,7 +86,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     private int timeout = 10;
     private SiemensHvacRequestListener.ErrorSource errorSource = SiemensHvacRequestListener.ErrorSource.ErrorBridge;
 
-    private @Nullable SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler;
+    private @Nullable SiemensHvacBridgeThingHandler hvacBridgeBaseThingHandler;
 
     @Activate
     public SiemensHvacConnectorImpl(@Reference HttpClientFactory httpClientFactory) {
@@ -127,11 +127,11 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
     @Override
     public void setSiemensHvacBridgeBaseThingHandler(
-            @Nullable SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler) {
+            @Nullable SiemensHvacBridgeThingHandler hvacBridgeBaseThingHandler) {
         this.hvacBridgeBaseThingHandler = hvacBridgeBaseThingHandler;
     }
 
-    public void unsetSiemensHvacBridgeBaseThingHandler(SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler) {
+    public void unsetSiemensHvacBridgeBaseThingHandler(SiemensHvacBridgeThingHandler hvacBridgeBaseThingHandler) {
         this.hvacBridgeBaseThingHandler = null;
     }
 
@@ -282,7 +282,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
     }
 
     private void initConfig() throws SiemensHvacException {
-        SiemensHvacBridgeBaseThingHandler lcHvacBridgeBaseThingHandler = hvacBridgeBaseThingHandler;
+        SiemensHvacBridgeThingHandler lcHvacBridgeBaseThingHandler = hvacBridgeBaseThingHandler;
 
         if (lcHvacBridgeBaseThingHandler != null) {
             config = lcHvacBridgeBaseThingHandler.getBridgeConfiguration();

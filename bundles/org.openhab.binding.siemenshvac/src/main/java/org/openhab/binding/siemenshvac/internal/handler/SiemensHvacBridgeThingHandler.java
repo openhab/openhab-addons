@@ -17,6 +17,8 @@ import java.net.URLConnection;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -32,6 +34,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,15 +46,15 @@ import org.slf4j.LoggerFactory;
  * @author Laurent Arnal - Initial contribution and API
  */
 @NonNullByDefault
-public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandler {
+public class SiemensHvacBridgeThingHandler extends BaseBridgeHandler {
 
-    private final Logger logger = LoggerFactory.getLogger(SiemensHvacBridgeBaseThingHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(SiemensHvacBridgeThingHandler.class);
     private @Nullable SiemensHvacDeviceDiscoveryService discoveryService;
     private final @Nullable HttpClientFactory httpClientFactory;
     private final SiemensHvacMetadataRegistry metaDataRegistry;
     private @Nullable SiemensHvacBridgeConfig config;
 
-    public SiemensHvacBridgeBaseThingHandler(Bridge bridge, @Nullable NetworkAddressService networkAddressService,
+    public SiemensHvacBridgeThingHandler(Bridge bridge, @Nullable NetworkAddressService networkAddressService,
             @Nullable HttpClientFactory httpClientFactory, SiemensHvacMetadataRegistry metaDataRegistry) {
         super(bridge);
         SiemensHvacConnector lcConnector = null;
@@ -77,6 +80,10 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
     public void initialize() {
         SiemensHvacBridgeConfig lcConfig = getConfigAs(SiemensHvacBridgeConfig.class);
         String baseUrl = null;
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Initialize() bridge: {}", getBuildDate());
+        }
 
         baseUrl = lcConfig.baseUrl;
 
@@ -184,5 +191,10 @@ public abstract class SiemensHvacBridgeBaseThingHandler extends BaseBridgeHandle
 
     public @Nullable HttpClientFactory getHttpClientFactory() {
         return this.httpClientFactory;
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return Set.of(SiemensHvacDeviceDiscoveryService.class);
     }
 }

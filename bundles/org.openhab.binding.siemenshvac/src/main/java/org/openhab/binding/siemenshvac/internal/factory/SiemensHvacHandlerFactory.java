@@ -16,8 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterFactory;
+import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeThingHandler;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacHandlerImpl;
-import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacOZWBridgeThingHandler;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -85,7 +85,7 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (thing.getThingTypeUID().equals(SiemensHvacBindingConstants.THING_TYPE_OZW)) {
-            return new SiemensHvacOZWBridgeThingHandler((Bridge) thing, networkAddressService, httpClientFactory,
+            return new SiemensHvacBridgeThingHandler((Bridge) thing, networkAddressService, httpClientFactory,
                     metaDataRegistry);
         } else if (SiemensHvacBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {
             SiemensHvacHandlerImpl handler = new SiemensHvacHandlerImpl(thing,

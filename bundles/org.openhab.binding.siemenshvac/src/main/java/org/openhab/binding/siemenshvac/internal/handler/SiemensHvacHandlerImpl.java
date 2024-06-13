@@ -149,8 +149,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             double errorRate = (double) errorCount / requestCount * 100.00;
 
             if (errorRate > 50) {
-                SiemensHvacBridgeBaseThingHandler bridgeHandler = (SiemensHvacBridgeBaseThingHandler) lcBridge
-                        .getHandler();
+                SiemensHvacBridgeThingHandler bridgeHandler = (SiemensHvacBridgeThingHandler) lcBridge.getHandler();
 
                 if (lcHvacConnector.getErrorSource() == ErrorSource.ErrorBridge) {
                     if (bridgeHandler != null) {
@@ -164,8 +163,7 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.ONLINE);
 
-                SiemensHvacBridgeBaseThingHandler bridgeHandler = (SiemensHvacBridgeBaseThingHandler) lcBridge
-                        .getHandler();
+                SiemensHvacBridgeThingHandler bridgeHandler = (SiemensHvacBridgeThingHandler) lcBridge.getHandler();
 
                 // Automatically recover from communication errors if errorRate is ok.
                 if (bridgeHandler != null) {

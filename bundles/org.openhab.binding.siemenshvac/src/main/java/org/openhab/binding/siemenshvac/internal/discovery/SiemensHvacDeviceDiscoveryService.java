@@ -19,7 +19,7 @@ import java.util.Map;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.constants.SiemensHvacBindingConstants;
-import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeBaseThingHandler;
+import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeThingHandler;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDevice;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
@@ -49,7 +49,7 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
     private final Logger logger = LoggerFactory.getLogger(SiemensHvacDeviceDiscoveryService.class);
 
     private @Nullable SiemensHvacMetadataRegistry metadataRegistry;
-    private @Nullable SiemensHvacBridgeBaseThingHandler siemensHvacBridgeHandler;
+    private @Nullable SiemensHvacBridgeThingHandler siemensHvacBridgeHandler;
 
     private static final int SEARCH_TIME = 10;
 
@@ -75,7 +75,7 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
     }
 
     private @Nullable ThingUID getThingUID(ThingTypeUID thingTypeUID, String serial) {
-        final SiemensHvacBridgeBaseThingHandler lcSiemensHvacBridgeHandler = siemensHvacBridgeHandler;
+        final SiemensHvacBridgeThingHandler lcSiemensHvacBridgeHandler = siemensHvacBridgeHandler;
         if (lcSiemensHvacBridgeHandler != null) {
             ThingUID localBridgeUID = lcSiemensHvacBridgeHandler.getThing().getUID();
             return new ThingUID(thingTypeUID, localBridgeUID, serial);
@@ -86,7 +86,7 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
     @Override
     public void startScan() {
         final SiemensHvacMetadataRegistry lcMetadataRegistry = metadataRegistry;
-        final SiemensHvacBridgeBaseThingHandler lcSiemensHvacBridgeHandler = siemensHvacBridgeHandler;
+        final SiemensHvacBridgeThingHandler lcSiemensHvacBridgeHandler = siemensHvacBridgeHandler;
         logger.debug("call startScan()");
 
         if (lcMetadataRegistry != null) {
@@ -145,7 +145,7 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof SiemensHvacBridgeBaseThingHandler siemensHvacBridgeHandler) {
+        if (handler instanceof SiemensHvacBridgeThingHandler siemensHvacBridgeHandler) {
             this.siemensHvacBridgeHandler = siemensHvacBridgeHandler;
             this.siemensHvacBridgeHandler.registerDiscoveryListener(this);
         }

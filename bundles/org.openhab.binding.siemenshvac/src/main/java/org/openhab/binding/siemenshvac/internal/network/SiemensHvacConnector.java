@@ -15,8 +15,8 @@ package org.openhab.binding.siemenshvac.internal.network;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.Request;
-import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeBaseThingHandler;
 import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeConfig;
+import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeThingHandler;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
 
 import com.google.gson.Gson;
@@ -46,7 +46,7 @@ public interface SiemensHvacConnector {
     void onError(Request request, SiemensHvacRequestHandler reqListener,
             SiemensHvacRequestListener.ErrorSource errorSource, boolean mayRetry) throws SiemensHvacException;
 
-    void setSiemensHvacBridgeBaseThingHandler(SiemensHvacBridgeBaseThingHandler hvacBridgeBaseThingHandler);
+    void setSiemensHvacBridgeBaseThingHandler(SiemensHvacBridgeThingHandler hvacBridgeBaseThingHandler);
 
     @Nullable
     SiemensHvacBridgeConfig getBridgeConfiguration();
