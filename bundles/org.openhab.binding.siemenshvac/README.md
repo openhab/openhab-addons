@@ -87,10 +87,6 @@ Bridge siemenshvac:ozw672:local "Ozw672" [ baseUrl="https://192.168.254.42/", us
 {
     Thing RVS41_813_327 local "RVS41.813/327"  [  ]
     {
-        Channels:
-            Type Setpoint:temperature                 "Temperature"  [ id="1726" ]
-            Type Regime:cc1                           "CC1"          [ id="1725" ]
-    
     }
 ```
 
