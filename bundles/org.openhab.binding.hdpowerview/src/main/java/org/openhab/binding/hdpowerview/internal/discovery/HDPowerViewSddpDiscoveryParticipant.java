@@ -23,24 +23,20 @@ import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.sddp.SddpDevice;
 import org.openhab.core.config.discovery.sddp.SddpDiscoveryParticipant;
-import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovers HD PowerView hubs by means of SDDP
+ * Discovers HD PowerView hubs/gateways by means of SDDP
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 @Component
-public class HDPowerViewHubSddpDiscoveryParticipant extends HDPowerViewHubDiscoveryParticipant
-        implements SddpDiscoveryParticipant {
+public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryParticipant {
 
     private static final String LABEL_KEY_GATEWAY = "discovery.gateway.label";
 
@@ -48,12 +44,7 @@ public class HDPowerViewHubSddpDiscoveryParticipant extends HDPowerViewHubDiscov
     private static final String POWERVIEW_HUB_ID = "hub:powerview";
     private static final String POWERVIEW_GEN3_ID = "powerview:gen3:gateway";
 
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubSddpDiscoveryParticipant.class);
-
-    @Activate
-    public HDPowerViewHubSddpDiscoveryParticipant(@Reference HttpClientFactory httpClientFactory) {
-        super(httpClientFactory);
-    }
+    private final Logger logger = LoggerFactory.getLogger(HDPowerViewSddpDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -66,10 +57,11 @@ public class HDPowerViewHubSddpDiscoveryParticipant extends HDPowerViewHubDiscov
         if (thingUID != null) {
             try {
                 boolean isGateway = isGateway(device);
-                String generation = isGateway ? "3" : getGeneration(device.ipAddress);
+                String generation = isGateway ? "3" : device.type.endsWith("v2") ? "2" : "1";
                 String label = isGateway //
                         ? String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress)
-                        : String.format("@text/%s [\"%s\", \"%s\"]", LABEL_KEY_HUB, device.ipAddress, generation);
+                        : String.format("@text/%s [\"%s\", \"%s\"]",
+                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, device.ipAddress, generation);
 
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)

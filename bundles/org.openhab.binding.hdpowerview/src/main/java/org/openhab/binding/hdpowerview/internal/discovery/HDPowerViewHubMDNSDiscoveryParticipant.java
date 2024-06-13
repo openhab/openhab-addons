@@ -20,7 +20,12 @@ import javax.jmdns.ServiceInfo;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.hdpowerview.internal.HDPowerViewWebTargets;
 import org.openhab.binding.hdpowerview.internal.config.HDPowerViewHubConfiguration;
+import org.openhab.binding.hdpowerview.internal.dto.Firmware;
+import org.openhab.binding.hdpowerview.internal.dto.HubFirmware;
+import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.mdns.MDNSDiscoveryParticipant;
@@ -40,14 +45,16 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 @Component
-public class HDPowerViewHubMDNSDiscoveryParticipant extends HDPowerViewHubDiscoveryParticipant
-        implements MDNSDiscoveryParticipant {
+public class HDPowerViewHubMDNSDiscoveryParticipant implements MDNSDiscoveryParticipant {
+
+    public static final String LABEL_KEY_HUB = "discovery.hub.label";
 
     private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubMDNSDiscoveryParticipant.class);
+    private final HttpClient httpClient;
 
     @Activate
     public HDPowerViewHubMDNSDiscoveryParticipant(@Reference HttpClientFactory httpClientFactory) {
-        super(httpClientFactory);
+        httpClient = httpClientFactory.getCommonHttpClient();
     }
 
     @Override
@@ -85,5 +92,19 @@ public class HDPowerViewHubMDNSDiscoveryParticipant extends HDPowerViewHubDiscov
             }
         }
         return null;
+    }
+
+    private String getGeneration(String host) {
+        var webTargets = new HDPowerViewWebTargets(httpClient, host);
+        try {
+            HubFirmware firmware = webTargets.getFirmwareVersions();
+            Firmware mainProcessor = firmware.mainProcessor;
+            if (mainProcessor != null) {
+                return String.valueOf(mainProcessor.revision);
+            }
+        } catch (HubException e) {
+            logger.debug("Failed to discover hub firmware versions", e);
+        }
+        return "1/2";
     }
 }
