@@ -32,6 +32,7 @@ import org.openhab.binding.velbus.internal.packets.VelbusSetScenePacket;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -54,11 +55,17 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
     private @NonNullByDefault({}) VelbusSensorConfig sensorConfig;
 
     private VelbusColorChannel[] colorChannels;
+    private byte[] fadeModeChannels;
+
+    private static final StringType DIRECT = new StringType("DIRECT");
+    private static final StringType FADE_RATE = new StringType("FADE_RATE");
+    private static final StringType FADE_TIME = new StringType("FADE_TIME");
 
     public VelbusNewDimmerHandler(Thing thing) {
         super(thing, 0);
 
         colorChannels = new VelbusColorChannel[8];
+        fadeModeChannels = new byte[8];
     }
 
     @Override
@@ -69,6 +76,7 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
 
         initializeAutomaticRefresh();
         initializeColorChannel();
+        initializeFadeMode();
         initializeChannelStates();
     }
 
@@ -83,6 +91,12 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
     private void initializeColorChannel() {
         for (int i = 0; i <= 8; i++) {
             colorChannels[i] = new VelbusColorChannel();
+        }
+    }
+
+    private void initializeFadeMode() {
+        for (int i = 0; i <= 8; i++) {
+            fadeModeChannels[i] = 0x00;
         }
     }
 
@@ -153,6 +167,23 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
                 throw new UnsupportedOperationException(
                         "The command '" + command + "' is not supported on channel '" + channelUID + "'.");
             }
+        } else if (isFadeModeGroupChannel(channelUID)) {
+            if (command instanceof StringType stringCommand) {
+                byte fadeMode = 0x00;
+
+                if (stringCommand.equals(DIRECT)) {
+                    fadeMode = 0x00;
+                } else if (stringCommand.equals(FADE_RATE)) {
+                    fadeMode = 0x01;
+                } else if (stringCommand.equals(FADE_TIME)) {
+                    fadeMode = 0x02;
+                }
+
+                fadeModeChannels[Byte.toUnsignedInt(channel) - 1] = fadeMode;
+            } else {
+                throw new UnsupportedOperationException(
+                        "The command '" + command + "' is not supported on channel '" + channelUID + "'.");
+            }
         } else if (isColorGroupChannel(channelUID) || isBrightnessGroupChannel(channelUID)
                 || isWhiteGroupChannel(channelUID)) {
             VelbusColorChannel colorChannel = colorChannels[Byte.toUnsignedInt(channel) - 1];
@@ -163,8 +194,7 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
 
                     VelbusSetDimPacket packet = new VelbusSetDimPacket(address, channel);
                     packet.setDim(colorChannel.getBrightnessVelbus());
-                    packet.setMode((byte) 0x00); // force direct mode -> need an update to permit the selection between
-                                                 // : direct, fade rate, fade time.
+                    packet.setMode(fadeModeChannels[Byte.toUnsignedInt(channel) - 1]);
                     velbusBridgeHandler.sendPacket(packet.getBytes());
                 } else {
                     throw new UnsupportedOperationException(
@@ -212,6 +242,10 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
 
     private boolean isSceneGroupChannel(ChannelUID channelUID) {
         return CHANNEL_GROUP_SCENE.equals(channelUID.getGroupId());
+    }
+
+    private boolean isFadeModeGroupChannel(ChannelUID channelUID) {
+        return CHANNEL_GROUP_FADE_MODE.equals(channelUID.getGroupId());
     }
 
     @Override
