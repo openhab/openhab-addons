@@ -115,7 +115,7 @@ public class SiemensHvacDeviceDiscoveryService extends AbstractDiscoveryService
                 String typeSn = UidUtils.sanetizeId(type);
                 ThingTypeUID thingTypeUID = new ThingTypeUID(SiemensHvacBindingConstants.BINDING_ID, typeSn);
 
-                ThingUID thingUID = getThingUID(thingTypeUID, serialNr);
+                ThingUID thingUID = getThingUID(thingTypeUID, typeSn);
 
                 if (lcSiemensHvacBridgeHandler != null) {
                     ThingUID bridgeUID = lcSiemensHvacBridgeHandler.getThing().getUID();

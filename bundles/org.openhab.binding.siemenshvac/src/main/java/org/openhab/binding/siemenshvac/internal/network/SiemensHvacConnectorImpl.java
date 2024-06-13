@@ -406,7 +406,7 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
 
         SiemensHvacBridgeConfig config = this.config;
         if (config == null) {
-            throw new SiemensHvacException("Missing SiemensHvacOZW672 Bridge configuration");
+            throw new SiemensHvacException("Missing SiemensHvac OZW Bridge configuration");
         }
 
         String baseUri = config.baseUrl;

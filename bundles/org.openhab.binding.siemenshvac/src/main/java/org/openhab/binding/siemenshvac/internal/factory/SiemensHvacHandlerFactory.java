@@ -72,8 +72,7 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
     @Override
     public @Nullable Thing createThing(ThingTypeUID thingTypeUID, Configuration configuration,
             @Nullable ThingUID thingUID, @Nullable ThingUID bridgeUID) {
-        if (SiemensHvacBindingConstants.THING_TYPE_OZW672.equals(thingTypeUID)
-                || SiemensHvacBindingConstants.THING_TYPE_OZW772.equals(thingTypeUID)) {
+        if (SiemensHvacBindingConstants.THING_TYPE_OZW.equals(thingTypeUID)) {
             ThingUID iPBridgeUID = getIPBridgeThingUID(thingTypeUID, thingUID, configuration);
             return super.createThing(thingTypeUID, configuration, iPBridgeUID, null);
         } else if (SiemensHvacBindingConstants.BINDING_ID.equals(thingTypeUID.getBindingId())) {
@@ -85,8 +84,7 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (thing.getThingTypeUID().equals(SiemensHvacBindingConstants.THING_TYPE_OZW672)
-                || thing.getThingTypeUID().equals(SiemensHvacBindingConstants.THING_TYPE_OZW772)) {
+        if (thing.getThingTypeUID().equals(SiemensHvacBindingConstants.THING_TYPE_OZW)) {
             return new SiemensHvacOZWBridgeThingHandler((Bridge) thing, networkAddressService, httpClientFactory,
                     metaDataRegistry);
         } else if (SiemensHvacBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {

@@ -70,7 +70,7 @@ public class SiemenesHvacDiscoveryParticipant implements UpnpDiscoveryParticipan
 
             if (uid.getAsString().contains("ozw672")) {
                 label = "OZW672 IP Gateway";
-            } else if (uid.getAsString().contains("ozw672")) {
+            } else if (uid.getAsString().contains("ozw772")) {
                 label = "OZW772 IP Gateway";
             }
 
@@ -100,9 +100,9 @@ public class SiemenesHvacDiscoveryParticipant implements UpnpDiscoveryParticipan
                 String modelName = modelDetails.getModelName();
                 if (modelName != null) {
                     if (modelName.startsWith("Web Server OZW672")) {
-                        return new ThingUID(SiemensHvacBindingConstants.THING_TYPE_OZW672, serialNumber.toLowerCase());
+                        return new ThingUID(SiemensHvacBindingConstants.THING_TYPE_OZW, "ozw672");
                     } else if (modelName.startsWith("Web Server OZW772")) {
-                        return new ThingUID(SiemensHvacBindingConstants.THING_TYPE_OZW772, serialNumber.toLowerCase());
+                        return new ThingUID(SiemensHvacBindingConstants.THING_TYPE_OZW, "ozw772");
                     }
                 }
             }

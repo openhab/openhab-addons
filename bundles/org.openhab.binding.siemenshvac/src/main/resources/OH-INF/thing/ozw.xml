@@ -5,9 +5,9 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- Bridge Thing Type -->
-	<bridge-type id="ozw672">
-		<label>OZW672 IP Gateway</label>
-		<description>This is a OZW672 IP interface</description>
+	<bridge-type id="ozw">
+		<label>OZW IP Gateway</label>
+		<description>This is a OZW IP interface</description>
 
 		<config-description>
 			<parameter name="baseUrl" type="text" pattern="(http|https):\/\/(.+)\/">
@@ -32,99 +32,4 @@
 			</parameter>
 		</config-description>
 	</bridge-type>
-
-	<bridge-type id="ozw772">
-		<label>OZW772 IP Gateway</label>
-		<description>This is a OZW772 IP interface</description>
-
-		<config-description>
-			<parameter name="baseUrl" type="text" pattern="(http|https):\/\/(.+)\/">
-				<label>Base URL</label>
-				<context>url</context>
-				<description>The URL of the Siemens Hvac IP gateway. Must be in format http://hostname/ or https://hostname/. Don't
-					forget the trailing '/'</description>
-				<required>true</required>
-			</parameter>
-			<parameter name="userName" type="text">
-				<description>User name of the Siemens Hvac gateway</description>
-				<required>false</required>
-				<label>User Name</label>
-				<default>Administrator</default>
-			</parameter>
-			<parameter name="userPassword" type="text">
-				<context>password</context>
-				<description>User password of the Siemens Hvac gateway</description>
-				<required>false</required>
-				<label>User Password</label>
-				<default>password</default>
-			</parameter>
-		</config-description>
-	</bridge-type>
-
-	<channel-type id="outside-temp">
-		<item-type>Number:Temperature</item-type>
-		<label>Outside Temperature</label>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>
-	</channel-type>
-
-	<channel-type id="setpoint-heat-pump">
-		<item-type>Number:Temperature</item-type>
-		<label>Setpoint Heat Pump</label>
-		<description>Setpoint Heat Pump</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.1"/>
-	</channel-type>
-
-	<channel-type id="room-temp-comfort-setpoint-hc">
-		<item-type>Number:Temperature</item-type>
-		<label>RoomTemp ComfSetp HC</label>
-		<description>Room temperature Comfort setpoint HC</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
-	</channel-type>
-
-	<channel-type id="room-temp-reduce-setpoint-hc">
-		<item-type>Number:Temperature</item-type>
-		<label>RmTmp RedSetp HC</label>
-		<description>Room temp reduced setpoint heat circuit</description>
-		<category>Temperature</category>
-		<state readOnly="true" pattern="%.1f %unit%" step="0.5"/>
-	</channel-type>
-
-	<channel-type id="operating-mode-hc">
-		<item-type>Number</item-type>
-		<label>OptgMode HC</label>
-		<description>Operating mode heat circuit</description>
-		<state>
-			<options>
-				<option value="0">Protection mode</option>
-				<option value="1">Automatic mode</option>
-				<option value="2">Reduced mode</option>
-				<option value="3">Comfort mode</option>
-			</options>
-		</state>
-	</channel-type>
-
-	<channel-type id="status-hc2">
-		<item-type>Number</item-type>
-		<label>Status</label>
-		<description>Status heating circuit</description>
-		<category>Temperature</category>
-		<state>
-			<options>
-				<option value="0">---</option>
-				<option value="1">SLT cut out</option>
-				<option value="2">Fault</option>
-				<option value="3">Switch cut out</option>
-				<option value="4">Manual operation active</option>
-				<option value="5">Chimney sweep function, full load</option>
-				<option value="6">Chimney sweep function, partial load</option>
-				<option value="7">Chimney sweep function active</option>
-				<option value="8">Locked, manually</option>
-				<option value="9">Locked, automatically</option>
-			</options>
-		</state>
-	</channel-type>
-
 </thing:thing-descriptions>

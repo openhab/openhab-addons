@@ -31,10 +31,9 @@ public class SiemensHvacBindingConstants {
     public static final String CONFIG_DESCRIPTION_URI_CHANNEL = "channel-type:siemenshvac:config";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_OZW672 = new ThingTypeUID(BINDING_ID, "ozw672");
-    public static final ThingTypeUID THING_TYPE_OZW772 = new ThingTypeUID(BINDING_ID, "ozw772");
+    public static final ThingTypeUID THING_TYPE_OZW = new ThingTypeUID(BINDING_ID, "ozw");
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(SiemensHvacBindingConstants.THING_TYPE_OZW672);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(SiemensHvacBindingConstants.THING_TYPE_OZW);
 
     public static final String IP_ADDRESS = "ipAddress";
     public static final String BASE_URL = "baseUrl";
