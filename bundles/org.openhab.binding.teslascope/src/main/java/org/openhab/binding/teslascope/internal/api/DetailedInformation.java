@@ -149,9 +149,8 @@ public class DetailedInformation {
         if (!chargeStateJsonObject.get("scheduled_charging_start_time").isJsonNull()) {
             detailedInformation.scheduled_charging_start_time = chargeStateJsonObject
                     .get("scheduled_charging_start_time").getAsString();
-        } else {
-            detailedInformation.scheduled_charging_start_time = "N/A";
         }
+        
         // data from climateState
         detailedInformation.is_auto_conditioning_on = "1"
                 .equals(climateStateJsonObject.get("is_auto_conditioning_on").getAsString());

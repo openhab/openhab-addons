@@ -256,6 +256,11 @@ public class TeslascopeHandler extends BaseThingHandler {
                     detailedInformation.pr ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
             updateState(TeslascopeBindingConstants.CHANNEL_FRONTTRUNK, OnOffType.from(detailedInformation.ft));
             updateState(TeslascopeBindingConstants.CHANNEL_REARTRUNK, OnOffType.from(detailedInformation.rt));
+
+            // virtual items
+            updateState(TeslascopeBindingConstants.CHANNEL_HONKHORN, OnOffType.OFF);
+            updateState(TeslascopeBindingConstants.CHANNEL_FLASHLIGHTS, OnOffType.OFF);
+
         } catch (TeslascopeCommunicationException e) {
             logger.debug("Unexpected error connecting to Teslascope API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
