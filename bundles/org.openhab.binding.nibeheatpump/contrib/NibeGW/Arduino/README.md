@@ -85,7 +85,30 @@ Enable support for HARDWARE_SERIAL:
 
 ##  ProDiNo ESP32 Ethernet v1 
 
-Todo
+NibeGW default settings are valid for ProDiNo ESP32 Ethernet v1 board.
+Dynamic configuration is enabled by default.
+
+### Config.h:
+
+```c
+//#define PRODINO_BOARD
+#define PRODINO_BOARD_ESP32
+//#define TRANSPORT_ETH_ENC28J6A0
+```
+
+### NibeGW.h:
+
+```c
+#define HARDWARE_SERIAL_WITH_PINS
+//#define HARDWARE_SERIAL
+```
+
+### Install libraries
+
+Install [ProDinoESP32](https://github.com/kmpelectronics/ProDinoESP32) library (tested with version 2.0.0).
+
+NibeGW code is compatible with ESP32 v2.0.x board library by Espressif Systems.
+Install correct ESP32 library via Arduino IDE board manager.
 
 
 ## ProDiNo Ethernet V2
@@ -95,7 +118,8 @@ Todo
 
 ## Debugging
 
-Debugging messages are available by connecting to port 23 to your NibeGW via telnet. Enable debugging in Config.h:
+Debugging messages are available by connecting to port 23 to your NibeGW via telnet.
+Enable debugging in Config.h:
 
 ```
 #define ENABLE_DEBUG
@@ -103,7 +127,9 @@ Debugging messages are available by connecting to port 23 to your NibeGW via tel
 #define ENABLE_REMOTE_DEBUG     // Remote debug is available in telnet port 23
 ```
 
-You can connect to NibeGW with any telnet client. You can also set some options via telnet. With 'h' you get a menue with all available options:
+You can connect to NibeGW with any telnet client.
+You can also set some options via telnet.
+With 'h' you get a menu with all available options:
 
 ```
 Arduino NibeGW
@@ -123,3 +149,24 @@ On the target IP you can see the receiving udp messages with netcat (if you chan
 nc -lu 9999 | hexdump -C
 ```
 
+## Dynamic Configuration
+
+When dynamic configuration is enabled (only ESP32 boards), NibeGW can be configured via Wi-Fi connection.
+Also OTA firmware update is supported.
+
+The following libraries are required:
+ * Bleeper (tested with version 1.1.0)
+ * ElegantOTA (tested with version 2.2.9)
+
+Dynamic configuration mode is loaded if input 0 is ON during boot.
+When dynamic configuration mode is activated, login to the 'Bleeper' Wi-Fi access point.
+Configuration page is available on port 80.
+OTA update page on port 8080.
+
+### Disable Dynamic Configuration
+
+Dynamic configuration can be disabled by commenting out following line from config.h file.
+
+```c
+//#define ENABLE_DYNAMIC_CONFIG
+```
