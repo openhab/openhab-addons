@@ -63,8 +63,8 @@ Each channel is strongly typed, so for example, for heating mode, openHAB will p
 
 Channel                | Description                                              | Type          | Unit     | Security Access Level   |  ReadOnly | Advanced
 -----------------------|----------------------------------------------------------|---------------|----------|-------------------------|-----------|-------------------
-controlBoilerApproval  | Set Boiler Approval (`AUTO`, `OFF`, `ON`)                | String        |          |                         |  R/W      | true
-controlProgram         | Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`)     | String        |          |                         |  R/W      | true
+control-boiler-approval  | Set Boiler Approval (`AUTO`, `OFF`, `ON`)                | String        |          |                         |  R/W      | true
+control-program         | Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`)     | String        |          |                         |  R/W      | true
 
 Channel Type ID        | Item Type                                | Description
 -----------------------|------------------------------------------|----------------------------------------------
