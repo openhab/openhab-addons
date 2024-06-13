@@ -56,9 +56,8 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
         final ThingUID thingUID = getThingUID(device);
         if (thingUID != null) {
             try {
-                boolean isGateway = isGateway(device);
-                String generation = isGateway ? "3" : device.type.endsWith("v2") ? "2" : "1";
-                String label = isGateway //
+                int generation = getGeneration(device);
+                String label = generation == 3 //
                         ? String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress)
                         : String.format("@text/%s [\"%s\", \"%s\"]",
                                 HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, device.ipAddress, generation);
@@ -81,7 +80,7 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
         if (device.type.startsWith(HUNTER_DOUGLAS)) {
             try {
                 if (VALID_IP_V4_ADDRESS.matcher(device.ipAddress).matches()) {
-                    return new ThingUID(isGateway(device) ? THING_TYPE_GATEWAY : THING_TYPE_HUB,
+                    return new ThingUID(getGeneration(device) == 3 ? THING_TYPE_GATEWAY : THING_TYPE_HUB,
                             device.ipAddress.replace('.', '_'));
                 }
             } catch (IllegalArgumentException e) {
@@ -94,15 +93,15 @@ public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryPartici
     /**
      * Check if the device 'type' property represents a Gen 3 gateway or a Gen 1/2 hub.
      *
-     * @return true if a Gen 3 gateway or false if a Gen 1/2 hub.
+     * @return 3 if a Gen 3 gateway, 2 if Gen 2 hub or 1 if Gen 1 hub.
      * @throws IllegalArgumentException if neither Gen 3, 2 or 1.
      */
-    private boolean isGateway(SddpDevice device) throws IllegalArgumentException {
+    private int getGeneration(SddpDevice device) throws IllegalArgumentException {
         if (device.type.contains(POWERVIEW_GEN3_ID)) {
-            return true;
+            return 3;
         }
         if (device.type.contains(POWERVIEW_HUB_ID)) {
-            return false;
+            return device.type.endsWith("v2") ? 2 : 1;
         }
         final IllegalArgumentException e = new IllegalArgumentException("Device has unexpected 'type' property");
         logger.debug("{}", e.getMessage());
