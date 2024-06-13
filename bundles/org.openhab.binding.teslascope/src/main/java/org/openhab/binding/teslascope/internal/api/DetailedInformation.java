@@ -31,19 +31,46 @@ public class DetailedInformation {
     public double odometer;
 
     // charge_state
-    public double battery_level;
-    public double usable_battery_level;
-    public double battery_range;
-    public double est_battery_range;
+    public int battery_level;
+    public int usable_battery_level;
+    public float battery_range;
+    public float est_battery_range;
     public boolean charge_enable_request = false;
-    public double charge_energy_added;
-    public double charge_limit_soc;
+    public float charge_energy_added;
+    public int charge_limit_soc;
     public boolean charge_port_door_open = false;
-    public double charge_rate;
-    public double charger_power;
-    public double charger_voltage;
+    public float charge_rate;
+    public int charger_power;
+    public int charger_voltage;
     public String chargingstate = "";
-    public double time_to_full_charge;
+    public float time_to_full_charge;
+    public boolean scheduled_charging_pending = false;
+    public String scheduled_charging_start_time = "";
+
+    // climate_state
+    public boolean is_auto_conditioning_on;
+    public boolean is_climate_on;
+    public boolean is_front_defroster_on;
+    public boolean is_preconditioning;
+    public boolean is_rear_defroster_on;
+    public int seat_heater_left;
+    public int seat_heater_rear_center;
+    public int seat_heater_rear_left;
+    public int seat_heater_rear_right;
+    public int seat_heater_right;
+    public boolean side_mirror_heaters;
+    public boolean smart_preconditioning;
+    public boolean steering_wheel_heater;
+    public boolean wiper_blade_heater;
+    public float driver_temp_setting;
+    public float inside_temp;
+    public float outside_temp;
+    public float passenger_temp_setting;
+    public float fan_status;
+    public int left_temp_direction;
+    public float max_avail_temp;
+    public float min_avail_temp;
+    public int right_temp_direction;
 
     // drive state
     public int heading;
@@ -94,27 +121,70 @@ public class DetailedInformation {
         detailedInformation.odometer = jsonObject.get("odometer").getAsDouble();
 
         // data from chargeState
-        detailedInformation.battery_level = chargeStateJsonObject.get("battery_level").getAsDouble();
-        detailedInformation.usable_battery_level = chargeStateJsonObject.get("usable_battery_level").getAsDouble();
-        detailedInformation.battery_range = chargeStateJsonObject.get("battery_range").getAsDouble();
-        detailedInformation.est_battery_range = chargeStateJsonObject.get("est_battery_range").getAsDouble();
+        detailedInformation.battery_level = chargeStateJsonObject.get("battery_level").getAsInt();
+        detailedInformation.usable_battery_level = chargeStateJsonObject.get("usable_battery_level").getAsInt();
+        detailedInformation.battery_range = chargeStateJsonObject.get("battery_range").getAsFloat();
+        detailedInformation.est_battery_range = chargeStateJsonObject.get("est_battery_range").getAsFloat();
         detailedInformation.charge_enable_request = "1"
                 .equals(chargeStateJsonObject.get("charge_enable_request").getAsString());
-        detailedInformation.charge_energy_added = chargeStateJsonObject.get("charge_energy_added").getAsDouble();
-        detailedInformation.charge_limit_soc = chargeStateJsonObject.get("charge_limit_soc").getAsDouble();
+        detailedInformation.charge_energy_added = chargeStateJsonObject.get("charge_energy_added").getAsFloat();
+        detailedInformation.charge_limit_soc = chargeStateJsonObject.get("charge_limit_soc").getAsInt();
         detailedInformation.charge_port_door_open = "1"
                 .equals(chargeStateJsonObject.get("charge_port_door_open").getAsString());
-        detailedInformation.charge_rate = chargeStateJsonObject.get("charge_rate").getAsDouble();
-        detailedInformation.charger_power = chargeStateJsonObject.get("charger_power").getAsDouble();
-        detailedInformation.charger_voltage = chargeStateJsonObject.get("charger_voltage").getAsDouble();
+        // if car is not charging, these might be NULL
+        if (!chargeStateJsonObject.get("charge_rate").isJsonNull()) {
+            detailedInformation.charge_rate = chargeStateJsonObject.get("charge_rate").getAsFloat();
+            detailedInformation.charger_power = chargeStateJsonObject.get("charger_power").getAsInt();
+        }
+        detailedInformation.charger_voltage = chargeStateJsonObject.get("charger_voltage").getAsInt();
         detailedInformation.chargingstate = chargeStateJsonObject.get("charging_state").getAsString();
-        detailedInformation.time_to_full_charge = chargeStateJsonObject.get("time_to_full_charge").getAsDouble();
+        detailedInformation.time_to_full_charge = chargeStateJsonObject.get("time_to_full_charge").getAsFloat();
+        detailedInformation.scheduled_charging_pending = "1"
+                .equals(chargeStateJsonObject.get("scheduled_charging_pending").getAsString());
+        // if car has no scheduled charge, these might be NULL
+        if (!chargeStateJsonObject.get("scheduled_charging_start_time").isJsonNull()) {
+            detailedInformation.scheduled_charging_start_time = chargeStateJsonObject
+                    .get("scheduled_charging_start_time").getAsString();
+        }
+
+        // data from climateState
+        detailedInformation.is_auto_conditioning_on = "1"
+                .equals(climateStateJsonObject.get("is_auto_conditioning_on").getAsString());
+        detailedInformation.is_climate_on = "1".equals(climateStateJsonObject.get("is_climate_on").getAsString());
+        detailedInformation.is_front_defroster_on = "1"
+                .equals(climateStateJsonObject.get("is_front_defroster_on").getAsString());
+        detailedInformation.is_preconditioning = "1"
+                .equals(climateStateJsonObject.get("is_preconditioning").getAsString());
+        detailedInformation.is_rear_defroster_on = "1"
+                .equals(climateStateJsonObject.get("is_rear_defroster_on").getAsString());
+        detailedInformation.seat_heater_left = climateStateJsonObject.get("seat_heater_left").getAsInt();
+        detailedInformation.seat_heater_rear_center = climateStateJsonObject.get("seat_heater_rear_center").getAsInt();
+        detailedInformation.seat_heater_rear_left = climateStateJsonObject.get("seat_heater_rear_left").getAsInt();
+        detailedInformation.seat_heater_rear_right = climateStateJsonObject.get("seat_heater_rear_right").getAsInt();
+        detailedInformation.seat_heater_right = climateStateJsonObject.get("seat_heater_right").getAsInt();
+        detailedInformation.side_mirror_heaters = "1"
+                .equals(climateStateJsonObject.get("side_mirror_heaters").getAsString());
+        detailedInformation.smart_preconditioning = "1"
+                .equals(climateStateJsonObject.get("smart_preconditioning").getAsString());
+        detailedInformation.steering_wheel_heater = "1"
+                .equals(climateStateJsonObject.get("steering_wheel_heater").getAsString());
+        detailedInformation.wiper_blade_heater = "1"
+                .equals(climateStateJsonObject.get("wiper_blade_heater").getAsString());
+        detailedInformation.driver_temp_setting = climateStateJsonObject.get("driver_temp_setting").getAsFloat();
+        detailedInformation.inside_temp = climateStateJsonObject.get("inside_temp").getAsFloat();
+        detailedInformation.outside_temp = climateStateJsonObject.get("outside_temp").getAsFloat();
+        detailedInformation.passenger_temp_setting = climateStateJsonObject.get("passenger_temp_setting").getAsFloat();
+        detailedInformation.fan_status = climateStateJsonObject.get("fan_status").getAsFloat();
+        detailedInformation.left_temp_direction = climateStateJsonObject.get("left_temp_direction").getAsInt();
+        detailedInformation.max_avail_temp = climateStateJsonObject.get("max_avail_temp").getAsFloat();
+        detailedInformation.min_avail_temp = climateStateJsonObject.get("min_avail_temp").getAsFloat();
+        detailedInformation.right_temp_direction = climateStateJsonObject.get("right_temp_direction").getAsInt();
 
         // data from driveState
         detailedInformation.heading = driveStateJsonObject.get("heading").getAsInt();
         detailedInformation.latitude = driveStateJsonObject.get("latitude").getAsDouble();
         detailedInformation.longitude = driveStateJsonObject.get("longitude").getAsDouble();
-        // if car is parked, these will be
+        // if car is parked, these will be NULL
         if (!driveStateJsonObject.get("shift_state").isJsonNull()) {
             detailedInformation.shift_state = driveStateJsonObject.get("shift_state").getAsString();
         }

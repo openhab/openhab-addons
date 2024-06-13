@@ -67,7 +67,7 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_HONKHORN = "honkhorn";
     public static final String CHANNEL_INSIDETEMP = "insidetemp";
     public static final String CHANNEL_LEFTREARSEATHEATER = "leftrearseatheater";
-    public static final String CHANNEL_LEFSEATHEATER = "leftseatheater";
+    public static final String CHANNEL_LEFTSEATHEATER = "leftseatheater";
     public static final String CHANNEL_LEFTTEMPDIRECTION = "lefttempdirection";
     public static final String CHANNEL_LOCATION = "location";
     public static final String CHANNEL_MINAVAILABLETEMP = "minavailabletemp";
