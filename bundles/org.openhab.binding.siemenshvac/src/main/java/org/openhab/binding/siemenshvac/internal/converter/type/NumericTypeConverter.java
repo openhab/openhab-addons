@@ -23,6 +23,7 @@ import javax.measure.quantity.Time;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
+import org.openhab.binding.siemenshvac.internal.converter.type.SiemensUnit.SIEUnits.TemperatureChangeRate;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
@@ -43,6 +44,7 @@ import com.google.gson.JsonElement;
  */
 @NonNullByDefault
 public class NumericTypeConverter extends AbstractTypeConverter {
+
     @Override
     protected boolean toBindingValidation(Type type) {
         return true;
@@ -83,12 +85,20 @@ public class NumericTypeConverter extends AbstractTypeConverter {
 
                     if ("°C".equals(unit)) {
                         targetUnit = SIUnits.CELSIUS;
-                    } else if ("°C*min".equals(unit)) {
-                        targetUnit = SIUnits.CELSIUS;
                     } else if ("°F".equals(unit)) {
                         targetUnit = ImperialUnits.FAHRENHEIT;
+                    }
+
+                    if (targetUnit != null) {
+                        return new QuantityType<>(dValue, targetUnit);
+                    }
+                } else if ("Number:TemperatureChangeRate".equals(itemType)) {
+                    Unit<TemperatureChangeRate> targetUnit = null;
+
+                    if ("°C*min".equals(unit)) {
+                        targetUnit = SiemensUnit.SIEUnits.CELSIUS_PER_MINUTE;
                     } else if ("°F*min".equals(unit)) {
-                        targetUnit = ImperialUnits.FAHRENHEIT;
+                        targetUnit = SiemensUnit.SIEUnits.FAHRENHEIT_PER_MINUTE;
                     }
 
                     if (targetUnit != null) {
@@ -149,6 +159,7 @@ public class NumericTypeConverter extends AbstractTypeConverter {
     @Override
     public String getItemType(SiemensHvacMetadataDataPoint dpt) {
         String unit = dpt.getDptUnit();
+        Unit<TemperatureChangeRate> unit2 = SiemensUnit.SIEUnits.CELSIUS_PER_MINUTE;
 
         if (unit == null) {
             return CoreItemFactory.NUMBER;
@@ -161,8 +172,10 @@ public class NumericTypeConverter extends AbstractTypeConverter {
         switch (unit) {
             case "°F":
             case "°C":
-            case "°C*min":
                 return CoreItemFactory.NUMBER + ":Temperature";
+            case "°F*min":
+            case "°C*min":
+                return CoreItemFactory.NUMBER + ":TemperatureChangeRate";
             case "V":
                 return CoreItemFactory.NUMBER + ":ElectricPotential";
             case "%":
