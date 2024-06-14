@@ -15,15 +15,16 @@ package org.openhab.binding.salus.internal.aws.http;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Objects.requireNonNull;
+import static org.openhab.binding.salus.internal.aws.http.AwsSigner.*;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutionException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,13 +37,6 @@ import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.UnsuportedSalusApiException;
 import org.openhab.core.io.net.http.HttpClientFactory;
-
-import software.amazon.awssdk.crt.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.crt.auth.signing.AwsSigner;
-import software.amazon.awssdk.crt.auth.signing.AwsSigningConfig;
-import software.amazon.awssdk.crt.auth.signing.AwsSigningResult;
-import software.amazon.awssdk.crt.http.HttpHeader;
-import software.amazon.awssdk.crt.http.HttpRequest;
 
 /**
  * The SalusApi class is responsible for interacting with a REST API to perform various operations related to the Salus
@@ -146,11 +140,10 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
             throws SalusApiException, AuthSalusApiException {
         var path = "https://%s.iot.%s.amazonaws.com/things/%s/shadow".formatted(awsService, region, dsn);
         var time = ZonedDateTime.now(clock).withZoneSameInstant(ZoneId.of("UTC"));
-        var signingResult = buildSigningResult(dsn, time);
-        var headers = signingResult.getSignedRequest()//
-                .getHeaders()//
+        var signingResult = buildSigningResult("/things/%s/shadow".formatted(dsn), time, null);
+        var headers = signingResult.entrySet()//
                 .stream()//
-                .map(header -> new RestClient.Header(header.getName(), header.getValue()))//
+                .map(header -> new RestClient.Header(header.getKey(), header.getValue()))//
                 .toList()//
                 .toArray(new RestClient.Header[0]);
         var response = get(path, headers);
@@ -161,24 +154,10 @@ public class AwsSalusApi extends AbstractSalusApi<Authentication> {
         return new TreeSet<>(mapper.parseAwsDeviceProperties(response));
     }
 
-    private AwsSigningResult buildSigningResult(String dsn, ZonedDateTime time)
-            throws SalusApiException, AuthSalusApiException {
+    private Map<String, String> buildSigningResult(String pathAndQuery, ZonedDateTime time, @Nullable String body)
+            throws AuthSalusApiException, SalusApiException {
         refreshAccessToken();
-        HttpRequest httpRequest = new HttpRequest("GET", "/things/%s/shadow".formatted(dsn),
-                new HttpHeader[] { new HttpHeader("host", "") }, null);
-        var localCredentials = requireNonNull(cogitoCredentials);
-        try (var config = new AwsSigningConfig()) {
-            config.setRegion(region);
-            config.setService("iotdevicegateway");
-            config.setCredentialsProvider(new StaticCredentialsProvider.StaticCredentialsProviderBuilder()
-                    .withAccessKeyId(localCredentials.accessKeyId().getBytes(UTF_8))
-                    .withSecretAccessKey(localCredentials.secretKey().getBytes(UTF_8))
-                    .withSessionToken(localCredentials.sessionToken().getBytes(UTF_8)).build());
-            config.setTime(time.toInstant().toEpochMilli());
-            return AwsSigner.sign(httpRequest, config).get();
-        } catch (ExecutionException | InterruptedException e) {
-            throw new SalusApiException("Cannot build AWS signature!", e);
-        }
+        return sign(pathAndQuery, time, requireNonNull(cogitoCredentials), region, "iotdevicegateway", body);
     }
 
     @Override
