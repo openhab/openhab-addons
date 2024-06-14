@@ -138,11 +138,11 @@ public class AmberElectricHandler extends BaseThingHandler {
             if (unit == null) {
                 logger.trace("Currency AUD is unknown, falling back to DecimalType");
                 updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
-                        new DecimalType(currentPrices.elecPerKwh));
+                        new DecimalType(currentPrices.elecPerKwh / 100));
                 updateState(AmberElectricBindingConstants.CHANNEL_CONTROLLED_LOAD_PRICE,
-                        new DecimalType(currentPrices.clPerKwh));
+                        new DecimalType(currentPrices.clPerKwh / 100));
                 updateState(AmberElectricBindingConstants.CHANNEL_FEED_IN_PRICE,
-                        new DecimalType(currentPrices.feedInPerKwh));
+                        new DecimalType(currentPrices.feedInPerKwh / 100));
             } else {
                 updateState(AmberElectricBindingConstants.CHANNEL_ELECTRICITY_PRICE,
                         new QuantityType<>(currentPrices.elecPerKwh / 100 + " " + electricityUnit));
