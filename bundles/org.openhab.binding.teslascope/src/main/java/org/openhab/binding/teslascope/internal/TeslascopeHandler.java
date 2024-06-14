@@ -80,6 +80,54 @@ public class TeslascopeHandler extends BaseThingHandler {
                         return;
                     }
                     break;
+                case TeslascopeBindingConstants.CHANNEL_CHARGE:
+                    if (command instanceof OnOffType onOffCommand) {
+                        if (onOffCommand == OnOffType.ON) {
+                            charge(true);
+                        } else {
+                            charge(false);
+                        }
+                    }
+                    break;
+                case TeslascopeBindingConstants.CHANNEL_CHARGEPORT:
+                    if (command instanceof OnOffType onOffCommand) {
+                        if (onOffCommand == OnOffType.ON) {
+                            chargeDoor(true);
+                        } else {
+                            chargeDoor(false);
+                        }
+                    }
+                    break;
+                case TeslascopeBindingConstants.CHANNEL_SENTRYMODE:
+                    if (command instanceof OnOffType onOffCommand) {
+                        if (onOffCommand == OnOffType.ON) {
+                            sentry(true);
+                        } else {
+                            sentry(false);
+                        }
+                    }
+                    break;
+                case TeslascopeBindingConstants.CHANNEL_AUTOCONDITIONING:
+                    if (command instanceof OnOffType onOffCommand) {
+                        if (onOffCommand == OnOffType.ON) {
+                            ac(true);
+                        } else {
+                            ac(false);
+                        }
+                    }
+                    break;
+                case TeslascopeBindingConstants.CHANNEL_FRONTTRUNK:
+                    if (command instanceof OnOffType onOffCommand) {
+                        openFrunk();
+                        return;
+                    }
+                    break;
+                case TeslascopeBindingConstants.CHANNEL_REARTRUNK:
+                    if (command instanceof OnOffType onOffCommand) {
+                        openTrunk();
+                        return;
+                    }
+                    break;
             }
             logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
                     thing.getUID().getAsString(), channelUID.getId());
@@ -286,13 +334,37 @@ public class TeslascopeHandler extends BaseThingHandler {
         }
     }
 
-    protected void honkHorn() throws TeslascopeCommunicationException {
-        webTargets.sendCommand(publicID, apiKey, "honkHorn");
-        updateState(TeslascopeBindingConstants.CHANNEL_HONKHORN, OnOffType.OFF);
+    protected void ac(boolean b) throws TeslascopeCommunicationException {
+        webTargets.sendCommand(publicID, apiKey, b ? "startAC" : "stopAC");
+    }
+
+    protected void charge(boolean b) throws TeslascopeCommunicationException {
+        webTargets.sendCommand(publicID, apiKey, b ? "startCharging" : "stopCharging");
+    }
+
+    protected void chargeDoor(boolean b) throws TeslascopeCommunicationException {
+        webTargets.sendCommand(publicID, apiKey, b ? "openChargeDoor" : "closeChargeDoor");
     }
 
     protected void flashLights() throws TeslascopeCommunicationException {
         webTargets.sendCommand(publicID, apiKey, "flashLights");
         updateState(TeslascopeBindingConstants.CHANNEL_FLASHLIGHTS, OnOffType.OFF);
+    }
+
+    protected void honkHorn() throws TeslascopeCommunicationException {
+        webTargets.sendCommand(publicID, apiKey, "honkHorn");
+        updateState(TeslascopeBindingConstants.CHANNEL_HONKHORN, OnOffType.OFF);
+    }
+
+    protected void openFrunk() throws TeslascopeCommunicationException {
+        webTargets.sendCommand(publicID, apiKey, "openFrunk");
+    }
+
+    protected void openTrunk() throws TeslascopeCommunicationException {
+        webTargets.sendCommand(publicID, apiKey, "openTrunk");
+    }
+
+    protected void sentry(boolean b) throws TeslascopeCommunicationException {
+        webTargets.sendCommand(publicID, apiKey, b ? "enableSentryMode" : "disableSentryMode");
     }
 }
