@@ -718,8 +718,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
         }
 
         if (unit != null && !unit.isEmpty()) {
-            // return String.format("%s %s", "%." + digits + "f", "%unit%");
-            return String.format("%s %s", "%." + digits + "f", unit);
         } else {
             return String.format("%s", "%." + digits + "f");
         }
