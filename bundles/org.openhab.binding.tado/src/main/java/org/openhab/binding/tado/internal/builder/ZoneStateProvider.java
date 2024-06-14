@@ -16,9 +16,9 @@ import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tado.internal.api.ApiException;
-import org.openhab.binding.tado.internal.api.model.ZoneState;
 import org.openhab.binding.tado.internal.handler.TadoZoneHandler;
+import org.openhab.binding.tado.swagger.codegen.api.ApiException;
+import org.openhab.binding.tado.swagger.codegen.api.model.ZoneState;
 
 /**
  * Wrapper for zone state to support lazy loading.
