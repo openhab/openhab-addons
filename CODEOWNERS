@@ -313,7 +313,7 @@
 /bundles/org.openhab.binding.sagercaster/ @clinique
 /bundles/org.openhab.binding.saicismart/ @tisoft @dougculnane
 /bundles/org.openhab.binding.salus/ @magx2
-/bundles/org.openhab.binding.samsungtv/ @paulianttila
+/bundles/org.openhab.binding.samsungtv/ @NickWaterton
 /bundles/org.openhab.binding.satel/ @druciak
 /bundles/org.openhab.binding.semsportal/ @itb3
 /bundles/org.openhab.binding.senechome/ @vctender @KorbinianP @eguib
