@@ -14,7 +14,7 @@ package org.openhab.binding.tado.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.tado.internal.api.client.HomeApi;
+import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
