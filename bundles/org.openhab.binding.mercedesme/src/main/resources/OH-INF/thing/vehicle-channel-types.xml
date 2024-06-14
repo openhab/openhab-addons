@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="lock">
+		<item-type>Number</item-type>
+		<label>Lock Status/Control</label>
+		<state>
+			<options>
+				<option value="0">Locked</option>
+				<option value="1">Unlocked</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="0">Lock</option>
+				<option value="1">Unlock</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="windows">
+		<item-type>Number</item-type>
+		<label>Windows Status/Control</label>
+		<state>
+			<options>
+				<option value="0">Intermediate</option>
+				<option value="1">Closed</option>
+				<option value="2">Open</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="0">Ventilate</option>
+				<option value="1">Close</option>
+				<option value="2">Open</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="door-status">
+		<item-type>Number</item-type>
+		<label>Door Status</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">Open</option>
+				<option value="1">Closed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="ignition">
+		<item-type>Number</item-type>
+		<label>Ignition</label>
+		<state>
+			<options>
+				<option value="0">Lock</option>
+				<option value="1">Off</option>
+				<option value="2">Accessory</option>
+				<option value="4">On</option>
+				<option value="5">Start</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="0">Off</option>
+				<option value="4">On</option>
+			</options>
+		</command>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="park-brake">
+		<item-type>Switch</item-type>
+		<label>Park Brake Active</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="feature-capabilities" advanced="true">
+		<item-type>String</item-type>
+		<label>Feature Capabilities</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="command-capabilities" advanced="true">
+		<item-type>String</item-type>
+		<label>Command Capabilities</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="proto-update" advanced="true">
+		<item-type>String</item-type>
+		<label>Proto Data Update</label>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

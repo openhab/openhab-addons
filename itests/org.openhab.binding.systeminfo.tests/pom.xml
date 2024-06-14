@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.systeminfo.tests</artifactId>
 
-  <name>openHAB Add-ons :: Integration Tests :: Systeminfo Binding Tests</name>
+  <name>openHAB Add-ons :: Integration Tests :: SystemInfo Binding Tests</name>
 
   <dependencies>
     <dependency>
@@ -23,17 +23,17 @@
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna-platform</artifactId>
-      <version>5.12.1</version>
+      <version>${jna.version}</version>
     </dependency>
     <dependency>
       <groupId>net.java.dev.jna</groupId>
       <artifactId>jna</artifactId>
-      <version>5.12.1</version>
+      <version>${jna.version}</version>
     </dependency>
     <dependency>
       <groupId>com.github.oshi</groupId>
       <artifactId>oshi-core</artifactId>
-      <version>6.4.8</version>
+      <version>6.5.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.slf4j</groupId>
