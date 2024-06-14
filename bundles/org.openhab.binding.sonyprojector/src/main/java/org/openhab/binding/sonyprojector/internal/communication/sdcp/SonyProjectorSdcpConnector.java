@@ -311,4 +311,15 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
     public String getModelName() throws SonyProjectorException {
         return new String(getSetting(SonyProjectorItem.MODEL_NAME), StandardCharsets.UTF_8);
     }
+
+    /**
+     * Request the MAC address
+     *
+     * @return the MAC address
+     *
+     * @throws SonyProjectorException in case of any problem
+     */
+    public String getMacAddress() throws SonyProjectorException {
+        return new String(getSetting(SonyProjectorItem.MAC_ADDRESS), StandardCharsets.UTF_8);
+    }
 }

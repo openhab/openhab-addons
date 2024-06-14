@@ -13,7 +13,6 @@
 package org.openhab.binding.sonyprojector.internal.configuration;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link SonyProjectorEthernetConfiguration} class contains fields mapping thing configuration parameters.
@@ -23,9 +22,12 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class SonyProjectorEthernetConfiguration {
+    public static final int DEFAULT_PORT = 53484;
+    private static final String DEFAULT_COMMUNITY = "SONY";
+    public static final String MODEL_AUTO = "AUTO";
 
-    public @NonNullByDefault({}) String host;
-    public @Nullable Integer port;
-    public @Nullable String community;
-    public @Nullable String model;
+    public String host = "";
+    public int port = DEFAULT_PORT;
+    public String community = DEFAULT_COMMUNITY;
+    public String model = MODEL_AUTO;
 }
