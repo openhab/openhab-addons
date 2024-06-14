@@ -97,6 +97,10 @@ public class NumericTypeConverter extends AbstractTypeConverter {
 
                     if ("°C*min".equals(unit)) {
                         targetUnit = SiemensUnit.SIEUnits.CELSIUS_PER_MINUTE;
+                    } else if ("°Cmin".equals(unit)) {
+                        targetUnit = SiemensUnit.SIEUnits.CELSIUS_PER_MINUTE;
+                    } else if ("°Cdak".equals(unit)) {
+                        targetUnit = SiemensUnit.SIEUnits.CELSIUS_PER_MINUTE;
                     } else if ("°F*min".equals(unit)) {
                         targetUnit = SiemensUnit.SIEUnits.FAHRENHEIT_PER_MINUTE;
                     }
@@ -117,14 +121,50 @@ public class NumericTypeConverter extends AbstractTypeConverter {
                 } else if ("Number:Time".equals(itemType)) {
                     Unit<Time> targetUnit = null;
 
-                    if ("s".equals(unit)) {
-                        targetUnit = Units.SECOND;
-                    } else if ("m".equals(unit) || ("min".equals(unit))) {
-                        targetUnit = Units.MINUTE;
-                    } else if ("h".equals(unit)) {
-                        targetUnit = Units.HOUR;
-                    } else if ("Mois".equals(unit)) {
-                        targetUnit = Units.MONTH;
+                    switch (unit) {
+                        case "s":
+                        case "sek":
+                            targetUnit = Units.SECOND;
+                            break;
+                        case "m":
+                        case "min":
+                        case "perc":
+                        case "dak":
+                        case "мин":
+                            targetUnit = Units.MINUTE;
+                            break;
+                        case "h":
+                        case "sa":
+                            targetUnit = Units.HOUR;
+                            break;
+                        case "Months":
+                        case "Monate":
+                        case "Mois":
+                        case "Mesi":
+                        case "Maanden":
+                        case "mies.":
+                        case "Měsíce":
+                        case "hónap":
+                        case "Meses":
+                        case "mdr.":
+                        case "Månader":
+                        case "kk":
+                        case "месяцы":
+                        case "Aylar":
+                        case "mesiac":
+                            targetUnit = Units.MONTH;
+                            break;
+                        case "d":
+                        case "Jours":
+                        case "giorni":
+                        case "Dny":
+                        case "nap":
+                        case "dage":
+                        case "dag":
+                        case "vrk":
+                        case "д":
+                            targetUnit = Units.DAY;
+                            break;
                     }
 
                     if (targetUnit != null) {
@@ -175,16 +215,46 @@ public class NumericTypeConverter extends AbstractTypeConverter {
                 return CoreItemFactory.NUMBER + ":Temperature";
             case "°F*min":
             case "°C*min":
+            case "°Cmin":
+            case "°Cdak":
                 return CoreItemFactory.NUMBER + ":TemperatureChangeRate";
             case "V":
                 return CoreItemFactory.NUMBER + ":ElectricPotential";
             case "%":
                 return CoreItemFactory.NUMBER + ":Dimensionless";
+            case "d":
+            case "Jours":
+            case "giorni":
+            case "Dny":
+            case "nap":
+            case "dage":
+            case "dag":
+            case "vrk":
+            case "д":
             case "h":
+            case "sa":
             case "m":
             case "s":
+            case "сек":
             case "min":
+            case "perc":
+            case "мин":
+            case "dak":
+            case "Months":
+            case "Monate":
             case "Mois":
+            case "Mesi":
+            case "Maanden":
+            case "mies.":
+            case "Měsíce":
+            case "hónap":
+            case "Meses":
+            case "mdr.":
+            case "Månader":
+            case "kk":
+            case "месяцы":
+            case "Aylar":
+            case "mesiac":
                 return CoreItemFactory.NUMBER + ":Time";
             default:
                 return CoreItemFactory.NUMBER;
