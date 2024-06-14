@@ -45,6 +45,13 @@ public class TeslascopeWebTargets {
         return DetailedInformation.parse(response);
     }
 
+    public void sendCommand(String publicID, String apiKey, String command) throws TeslascopeCommunicationException {
+        String sendCommandUri = BASE_URI + publicID + "/command/" + command + "?api_key=" + apiKey;
+        String response = invoke(sendCommandUri);
+        logger.trace("Received response: \"{}\"", response);
+        return;
+    }
+
     protected Properties getHttpHeaders() {
         Properties httpHeaders = new Properties();
         httpHeaders.put("Content-Type", "application/json");

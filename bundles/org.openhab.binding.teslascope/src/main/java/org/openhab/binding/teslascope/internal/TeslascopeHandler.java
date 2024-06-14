@@ -66,7 +66,26 @@ public class TeslascopeHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        logger.warn("This binding is read only (for now)");
+        try {
+            switch (channelUID.getId()) {
+                case TeslascopeBindingConstants.CHANNEL_HONKHORN:
+                    if (command instanceof OnOffType onOffCommand) {
+                        honkHorn();
+                        return;
+                    }
+                    break;
+                case TeslascopeBindingConstants.CHANNEL_FLASHLIGHTS:
+                    if (command instanceof OnOffType onOffCommand) {
+                        flashLights();
+                        return;
+                    }
+                    break;
+            }
+            logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
+                    thing.getUID().getAsString(), channelUID.getId());
+        } catch (TeslascopeCommunicationException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+        }
     }
 
     @Override
@@ -265,5 +284,15 @@ public class TeslascopeHandler extends BaseThingHandler {
             logger.debug("Unexpected error connecting to Teslascope API", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
+    }
+
+    protected void honkHorn() throws TeslascopeCommunicationException {
+        webTargets.sendCommand(publicID, apiKey, "honkHorn");
+        updateState(TeslascopeBindingConstants.CHANNEL_HONKHORN, OnOffType.OFF);
+    }
+
+    protected void flashLights() throws TeslascopeCommunicationException {
+        webTargets.sendCommand(publicID, apiKey, "flashLights");
+        updateState(TeslascopeBindingConstants.CHANNEL_FLASHLIGHTS, OnOffType.OFF);
     }
 }

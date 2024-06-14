@@ -150,7 +150,7 @@ public class DetailedInformation {
             detailedInformation.scheduled_charging_start_time = chargeStateJsonObject
                     .get("scheduled_charging_start_time").getAsString();
         }
-        
+
         // data from climateState
         detailedInformation.is_auto_conditioning_on = "1"
                 .equals(climateStateJsonObject.get("is_auto_conditioning_on").getAsString());
