@@ -35,7 +35,6 @@ import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.State;
 import org.openhab.core.types.TypeParser;
 import org.openhab.core.types.UnDefType;
 
@@ -70,17 +69,17 @@ public class ValueTests {
     @Test
     public void colorUpdate() {
         ColorValue v = new ColorValue(ColorMode.RGB, "fancyON", "fancyOFF", 77);
-        v.update((State) v.parseCommand(p(v, "255,255,255")));
+        v.update(v.parseCommand(p(v, "255,255,255")));
 
-        HSBType hsb = (HSBType) v.parseCommand(p(v, "OFF"));
+        HSBType hsb = v.parseCommand(p(v, "OFF"));
         assertThat(hsb.getBrightness().intValue(), is(0));
         v.update(hsb);
-        hsb = (HSBType) v.parseCommand(p(v, "ON"));
+        hsb = v.parseCommand(p(v, "ON"));
         assertThat(hsb.getBrightness().intValue(), is(77));
 
-        hsb = (HSBType) v.parseCommand(p(v, "0"));
+        hsb = v.parseCommand(p(v, "0"));
         assertThat(hsb.getBrightness().intValue(), is(0));
-        hsb = (HSBType) v.parseCommand(p(v, "1"));
+        hsb = v.parseCommand(p(v, "1"));
         assertThat(hsb.getBrightness().intValue(), is(1));
 
         assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
@@ -218,8 +217,13 @@ public class ValueTests {
         assertThat(command, is(new QuantityType<>(20, Units.PERCENT)));
         assertThat(v.getMQTTpublishValue(command, null), is("20"));
 
-        // Test with command without units
-        command = v.parseCommand(new QuantityType<>("20"));
+        // Test with command with units.ONE
+        command = v.parseCommand(new QuantityType<>("0.2"));
+        assertThat(command, is(new QuantityType<>(20, Units.PERCENT)));
+        assertThat(v.getMQTTpublishValue(command, null), is("20"));
+
+        // Test with command with DecimalType
+        command = v.parseCommand(new DecimalType(20));
         assertThat(command, is(new QuantityType<>(20, Units.PERCENT)));
         assertThat(v.getMQTTpublishValue(command, null), is("20"));
     }
@@ -241,7 +245,7 @@ public class ValueTests {
 
         // Test with exact percent
         Command command = new PercentType(27);
-        assertThat(v.parseCommand((Command) command), is(command));
+        assertThat(v.parseCommand(command), is(command));
         assertThat(v.getMQTTpublishValue(command, null), is("27"));
 
         // Test formatting 0/100
@@ -272,7 +276,7 @@ public class ValueTests {
 
         // Test with exact percent
         Command command = new PercentType(27);
-        assertThat(v.parseCommand((Command) command), is(command));
+        assertThat(v.parseCommand(command), is(command));
         assertThat(v.getMQTTpublishValue(command, null), is("27"));
 
         // Test formatting 0/100
@@ -338,7 +342,7 @@ public class ValueTests {
                 null, null);
         assertThat(v.parseCommand(new DecimalType(1.0)), is(PercentType.HUNDRED));
         assertThat(v.parseCommand(new DecimalType(0.1)), is(PercentType.ZERO));
-        PercentType command = (PercentType) v.parseCommand(new DecimalType(0.2));
+        PercentType command = v.parseCommand(new DecimalType(0.2));
         assertEquals(command.floatValue(), 11.11f, 0.01f);
     }
 
@@ -348,26 +352,26 @@ public class ValueTests {
                 null, null);
 
         // Normal operation.
-        PercentType command = (PercentType) v.parseCommand(new DecimalType("6.0"));
+        PercentType command = v.parseCommand(new DecimalType("6.0"));
         assertEquals(command.floatValue(), 50.0f, 0.01f);
         v.update(command);
-        command = (PercentType) v.parseCommand(IncreaseDecreaseType.INCREASE);
+        command = v.parseCommand(IncreaseDecreaseType.INCREASE);
         assertEquals(command.floatValue(), 55.0f, 0.01f);
-        command = (PercentType) v.parseCommand(IncreaseDecreaseType.DECREASE);
+        command = v.parseCommand(IncreaseDecreaseType.DECREASE);
         assertEquals(command.floatValue(), 45.0f, 0.01f);
 
         // Lower limit.
-        command = (PercentType) v.parseCommand(new DecimalType("1.1"));
+        command = v.parseCommand(new DecimalType("1.1"));
         assertEquals(command.floatValue(), 1.0f, 0.01f);
         v.update(command);
-        command = (PercentType) v.parseCommand(IncreaseDecreaseType.DECREASE);
+        command = v.parseCommand(IncreaseDecreaseType.DECREASE);
         assertEquals(command.floatValue(), 0.0f, 0.01f);
 
         // Upper limit.
-        command = (PercentType) v.parseCommand(new DecimalType("10.8"));
+        command = v.parseCommand(new DecimalType("10.8"));
         assertEquals(command.floatValue(), 98.0f, 0.01f);
         v.update(command);
-        command = (PercentType) v.parseCommand(IncreaseDecreaseType.INCREASE);
+        command = v.parseCommand(IncreaseDecreaseType.INCREASE);
         assertEquals(command.floatValue(), 100.0f, 0.01f);
     }
 
@@ -377,26 +381,26 @@ public class ValueTests {
                 null, null);
 
         // Normal operation.
-        PercentType command = (PercentType) v.parseCommand(new DecimalType("6.0"));
+        PercentType command = v.parseCommand(new DecimalType("6.0"));
         assertEquals(command.floatValue(), 50.0f, 0.01f);
         v.update(command);
-        command = (PercentType) v.parseCommand(UpDownType.UP);
+        command = v.parseCommand(UpDownType.UP);
         assertEquals(command.floatValue(), 55.0f, 0.01f);
-        command = (PercentType) v.parseCommand(UpDownType.DOWN);
+        command = v.parseCommand(UpDownType.DOWN);
         assertEquals(command.floatValue(), 45.0f, 0.01f);
 
         // Lower limit.
-        command = (PercentType) v.parseCommand(new DecimalType("1.1"));
+        command = v.parseCommand(new DecimalType("1.1"));
         assertEquals(command.floatValue(), 1.0f, 0.01f);
         v.update(command);
-        command = (PercentType) v.parseCommand(UpDownType.DOWN);
+        command = v.parseCommand(UpDownType.DOWN);
         assertEquals(command.floatValue(), 0.0f, 0.01f);
 
         // Upper limit.
-        command = (PercentType) v.parseCommand(new DecimalType("10.8"));
+        command = v.parseCommand(new DecimalType("10.8"));
         assertEquals(command.floatValue(), 98.0f, 0.01f);
         v.update(command);
-        command = (PercentType) v.parseCommand(UpDownType.UP);
+        command = v.parseCommand(UpDownType.UP);
         assertEquals(command.floatValue(), 100.0f, 0.01f);
     }
 

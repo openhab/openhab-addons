@@ -25,7 +25,6 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.types.UpDownType;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
 import org.openhab.core.types.Type;
@@ -53,16 +52,16 @@ public class NumberValue extends Value {
     private final @Nullable BigDecimal min;
     private final @Nullable BigDecimal max;
     private final BigDecimal step;
-    private final Unit<?> unit;
+    private final @Nullable Unit<?> unit;
 
     public NumberValue(@Nullable BigDecimal min, @Nullable BigDecimal max, @Nullable BigDecimal step,
             @Nullable Unit<?> unit) {
-        super(CoreItemFactory.NUMBER,
-                List.of(QuantityType.class, IncreaseDecreaseType.class, UpDownType.class, StringType.class));
+        super(CoreItemFactory.NUMBER, List.of(DecimalType.class, QuantityType.class, IncreaseDecreaseType.class,
+                UpDownType.class, StringType.class));
         this.min = min;
         this.max = max;
         this.step = step == null ? BigDecimal.ONE : step;
-        this.unit = unit != null ? unit : Units.ONE;
+        this.unit = unit;
     }
 
     protected boolean checkConditions(BigDecimal newValue) {
@@ -116,7 +115,8 @@ public class NumberValue extends Value {
         }
         // items with units specified in the label in the UI but no unit on mqtt are stored as
         // DecimalType to avoid conversions (e.g. % expects 0-1 rather than 0-100)
-        if (!Units.ONE.equals(unit)) {
+        Unit<?> unit = this.unit;
+        if (unit != null) {
             return new QuantityType<>(newValue, unit);
         } else {
             return new DecimalType(newValue);
@@ -147,7 +147,8 @@ public class NumberValue extends Value {
 
     private BigDecimal getQuantityTypeAsDecimal(QuantityType<?> qType) {
         BigDecimal val = qType.toBigDecimal();
-        if (!qType.getUnit().isCompatible(Units.ONE)) {
+        Unit<?> unit = this.unit;
+        if (unit != null) {
             QuantityType<?> convertedType = qType.toInvertibleUnit(unit);
             if (convertedType != null) {
                 val = convertedType.toBigDecimal();
@@ -167,10 +168,10 @@ public class NumberValue extends Value {
         if (min != null) {
             builder = builder.withMinimum(min);
         }
-        if (!unit.equals(Units.ONE)) {
-            builder.withPattern("%s " + unit);
+        if (unit != null) {
+            builder.withPattern("%.0f %unit%");
         } else {
-            builder.withPattern("%s %unit%");
+            builder.withPattern("%.0f");
         }
         return builder.withStep(step);
     }
