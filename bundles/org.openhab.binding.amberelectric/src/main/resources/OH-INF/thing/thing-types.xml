@@ -73,7 +73,7 @@
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Current Renewables</label>
 		<description>Current level of renewables in the grid</description>
-		<state readOnly="true" pattern="%d %%"/>
+		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 	<channel-type id="spike">
 		<item-type>Switch</item-type>
