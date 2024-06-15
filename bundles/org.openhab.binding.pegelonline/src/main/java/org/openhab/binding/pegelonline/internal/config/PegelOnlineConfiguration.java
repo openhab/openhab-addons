@@ -40,11 +40,17 @@ public class PegelOnlineConfiguration {
         return uuid.matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$");
     }
 
+    /**
+     * Check if configured warning levels are in ascending order
+     *
+     * @return true if ascending, false otherwise
+     */
     public boolean warningCheck() {
         TreeMap<Integer, Integer> warnMap = this.getWarnings();
         Entry<Integer, Integer> currentEntry = warnMap.firstEntry();
         Entry<Integer, Integer> nextEntry = warnMap.higherEntry(currentEntry.getKey());
         while (nextEntry != null) {
+            // ignore non configured values
             if (nextEntry.getKey() != Integer.MAX_VALUE) {
                 if (nextEntry.getValue() < currentEntry.getValue()) {
                     return false;
@@ -56,6 +62,11 @@ public class PegelOnlineConfiguration {
         return true;
     }
 
+    /**
+     * Calculate sorted map with level height and warning level based on configuration
+     *
+     * @return TreeMap with keys containing level height and values containing warning level
+     */
     public TreeMap<Integer, Integer> getWarnings() {
         TreeMap<Integer, Integer> warnMap = new TreeMap<>();
         warnMap.put(0, NO_WARNING);
