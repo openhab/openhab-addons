@@ -97,6 +97,10 @@ public class DetailedInformation {
     public double tpms_pressure_fr;
     public double tpms_pressure_rl;
     public double tpms_pressure_rr;
+    public boolean tpms_soft_warning_fl;
+    public boolean tpms_soft_warning_fr;
+    public boolean tpms_soft_warning_rl;
+    public boolean tpms_soft_warning_rr;
     public boolean df;
     public boolean dr;
     public boolean pf;
@@ -225,6 +229,14 @@ public class DetailedInformation {
         detailedInformation.tpms_pressure_fr = vehicleStateJsonObject.get("tpms_pressure_fr").getAsDouble();
         detailedInformation.tpms_pressure_rl = vehicleStateJsonObject.get("tpms_pressure_rl").getAsDouble();
         detailedInformation.tpms_pressure_rr = vehicleStateJsonObject.get("tpms_pressure_rr").getAsDouble();
+        detailedInformation.tpms_soft_warning_fl = "1"
+                .equals(vehicleStateJsonObject.get("tpms_soft_warning_fl").getAsString());
+        detailedInformation.tpms_soft_warning_fr = "1"
+                .equals(vehicleStateJsonObject.get("tpms_soft_warning_fr").getAsString());
+        detailedInformation.tpms_soft_warning_rl = "1"
+                .equals(vehicleStateJsonObject.get("tpms_soft_warning_rl").getAsString());
+        detailedInformation.tpms_soft_warning_rr = "1"
+                .equals(vehicleStateJsonObject.get("tpms_soft_warning_rr").getAsString());
         detailedInformation.df = "1".equals(vehicleStateJsonObject.get("df").getAsString());
         detailedInformation.dr = "1".equals(vehicleStateJsonObject.get("dr").getAsString());
         detailedInformation.pf = "1".equals(vehicleStateJsonObject.get("pf").getAsString());

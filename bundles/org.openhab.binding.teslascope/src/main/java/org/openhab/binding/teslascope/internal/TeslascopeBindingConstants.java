@@ -40,6 +40,10 @@ public class TeslascopeBindingConstants {
     public static final String CHANNEL_TPMSFR = "tpms_pressure_fr";
     public static final String CHANNEL_TPMSRL = "tpms_pressure_rl";
     public static final String CHANNEL_TPMSRR = "tpms_pressure_rr";
+    public static final String CHANNEL_TPMSSOFTWARNINGFL = "tpms_soft_warning_fl";
+    public static final String CHANNEL_TPMSSOFTWARNINGFR = "tpms_soft_warning_fr";
+    public static final String CHANNEL_TPMSSOFTWARNINGRL = "tpms_soft_warning_rl";
+    public static final String CHANNEL_TPMSSOFTWARNINGRR = "tpms_soft_warning_rr";
     public static final String CHANNEL_SOFTWAREUPDATESTATUS = "softwareupdatestatus";
     public static final String CHANNEL_SOFTWAREUPDATEVERSION = "softwareupdateversion";
     public static final String CHANNEL_AUTOCONDITIONING = "autoconditioning";

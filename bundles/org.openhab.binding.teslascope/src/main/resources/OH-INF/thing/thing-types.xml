@@ -19,6 +19,10 @@
 			<channel id="tpms_pressure_fr" typeId="tpms_pressure_fr"/>
 			<channel id="tpms_pressure_rl" typeId="tpms_pressure_rl"/>
 			<channel id="tpms_pressure_rr" typeId="tpms_pressure_rr"/>
+			<channel id="tpms_soft_warning_fl" typeId="tpms_soft_warning_fl"/>
+			<channel id="tpms_soft_warning_fr" typeId="tpms_soft_warning_fr"/>
+			<channel id="tpms_soft_warning_rl" typeId="tpms_soft_warning_rl"/>
+			<channel id="tpms_soft_warning_rr" typeId="tpms_soft_warning_rr"/>
 			<channel id="softwareupdatestatus" typeId="softwareupdatestatus"/>
 			<channel id="softwareupdateversion" typeId="softwareupdateversion"/>
 			<channel id="autoconditioning" typeId="autoconditioning"/>
@@ -154,6 +158,30 @@
 		<item-type>Number:Pressure</item-type>
 		<label>Tyre Pressure RR</label>
 		<description>Tyre Pressure Rear Right</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="tpms_soft_warning_fl">
+		<item-type>Switch</item-type>
+		<label>Tyre Pressure Warning FL</label>
+		<description>Tyre Pressure Front Left - warning for low pressure</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="tpms_soft_warning_fr">
+		<item-type>Switch</item-type>
+		<label>Tyre Pressure Warning FR</label>
+		<description>Tyre Pressure Front Right - warning for low pressure</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="tpms_soft_warning_rl">
+		<item-type>Switch</item-type>
+		<label>Tyre Pressure Warning RL</label>
+		<description>Tyre Pressure Rear Left - warning for low pressure</description>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="tpms_soft_warning_rr">
+		<item-type>Switch</item-type>
+		<label>Tyre Pressure Warning RR</label>
+		<description>Tyre Pressure Rear Right - warning for low pressure</description>
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="softwareupdatestatus">

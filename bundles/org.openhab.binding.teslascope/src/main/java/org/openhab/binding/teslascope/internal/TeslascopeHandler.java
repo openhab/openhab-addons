@@ -313,6 +313,14 @@ public class TeslascopeHandler extends BaseThingHandler {
                     new QuantityType<>(detailedInformation.tpms_pressure_rl, Units.BAR));
             updateState(TeslascopeBindingConstants.CHANNEL_TPMSRR,
                     new QuantityType<>(detailedInformation.tpms_pressure_rr, Units.BAR));
+            updateState(TeslascopeBindingConstants.CHANNEL_TPMSSOFTWARNINGFL,
+                    OnOffType.from(detailedInformation.tpms_soft_warning_fl));
+            updateState(TeslascopeBindingConstants.CHANNEL_TPMSSOFTWARNINGFR,
+                    OnOffType.from(detailedInformation.tpms_soft_warning_fr));
+            updateState(TeslascopeBindingConstants.CHANNEL_TPMSSOFTWARNINGRL,
+                    OnOffType.from(detailedInformation.tpms_soft_warning_rl));
+            updateState(TeslascopeBindingConstants.CHANNEL_TPMSSOFTWARNINGRR,
+                    OnOffType.from(detailedInformation.tpms_soft_warning_rr));
             updateState(TeslascopeBindingConstants.CHANNEL_DRIVERFRONTDOOR,
                     detailedInformation.df ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
             updateState(TeslascopeBindingConstants.CHANNEL_DRIVERREARDOOR,
