@@ -24,7 +24,6 @@ import org.openhab.core.thing.type.ChannelGroupTypeUID;
  */
 @NonNullByDefault
 public class AwattarBindingConstants {
-
     public static final String BINDING_ID = "awattar";
     public static final String API = "api";
 

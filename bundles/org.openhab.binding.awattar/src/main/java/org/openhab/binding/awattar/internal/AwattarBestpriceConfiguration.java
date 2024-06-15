@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AwattarBestpriceConfiguration {
-
     public int rangeStart = 0;
     public int rangeDuration = 24;
     public int length = 1;
