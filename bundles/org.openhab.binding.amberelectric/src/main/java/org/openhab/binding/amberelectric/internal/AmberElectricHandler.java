@@ -118,7 +118,6 @@ public class AmberElectricHandler extends BaseThingHandler {
     }
 
     private void pollStatus() throws IOException {
-
         try {
             if (siteID.isEmpty()) {
                 Sites sites = webTargets.getSites(apiKey, nmi);
