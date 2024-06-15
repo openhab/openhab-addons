@@ -22,6 +22,7 @@
 /bundles/org.openhab.binding.allplay/ @dominicdesu
 /bundles/org.openhab.binding.amazondashbutton/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.amazonechocontrol/ @mgeramb
+/bundles/org.openhab.binding.amberelectric/ @psmedley
 /bundles/org.openhab.binding.ambientweather/ @mhilbush
 /bundles/org.openhab.binding.amplipi/ @kaikreuzer
 /bundles/org.openhab.binding.androiddebugbridge/ @GiviMAD
