@@ -237,7 +237,7 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
         return result;
     }
 
-    private Timerange getRange(int start, int duration, ZoneId zoneId) {
+    protected Timerange getRange(int start, int duration, ZoneId zoneId) {
         ZonedDateTime startCal = getCalendarForHour(start, zoneId);
         ZonedDateTime endCal = startCal.plusHours(duration);
         ZonedDateTime now = ZonedDateTime.now(zoneId);
@@ -254,7 +254,7 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
         return new Timerange(startCal.toInstant().toEpochMilli(), endCal.toInstant().toEpochMilli());
     }
 
-    private class Timerange {
+    class Timerange {
         long start;
         long end;
 
