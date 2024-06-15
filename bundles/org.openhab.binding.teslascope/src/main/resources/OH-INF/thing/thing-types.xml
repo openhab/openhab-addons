@@ -242,10 +242,10 @@
 		<state pattern="%d %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargerpower" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Charger Power</label>
 		<description>Power actually delivered by the charger</description>
-		<state pattern="%.1f kW" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="chargervoltage" advanced="true">
 		<item-type>Number:ElectricPotential</item-type>
@@ -393,10 +393,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="power" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Net kW flowing in (+) or out (-) of the battery</description>
-		<state pattern="%.1f kW" readOnly="true"></state>
+		<state pattern="%.1f %unit%" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="preconditioning" advanced="true">
 		<item-type>Switch</item-type>
