@@ -30,22 +30,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Discovers HD PowerView hubs by means of SDDP
+ * Discovers HD PowerView hubs/gateways by means of SDDP
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
 @Component
-public class HDPowerViewHubDiscoveryParticipantSddp implements SddpDiscoveryParticipant {
+public class HDPowerViewSddpDiscoveryParticipant implements SddpDiscoveryParticipant {
 
-    private static final String LABEL_KEY_HUB = "discovery.hub.label";
     private static final String LABEL_KEY_GATEWAY = "discovery.gateway.label";
 
     private static final String HUNTER_DOUGLAS = "hunterdouglas:";
     private static final String POWERVIEW_HUB_ID = "hub:powerview";
     private static final String POWERVIEW_GEN3_ID = "powerview:gen3:gateway";
 
-    private final Logger logger = LoggerFactory.getLogger(HDPowerViewHubDiscoveryParticipantSddp.class);
+    private final Logger logger = LoggerFactory.getLogger(HDPowerViewSddpDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
@@ -57,13 +56,17 @@ public class HDPowerViewHubDiscoveryParticipantSddp implements SddpDiscoveryPart
         final ThingUID thingUID = getThingUID(device);
         if (thingUID != null) {
             try {
+                int generation = getGeneration(device);
+                String label = generation == 3 //
+                        ? String.format("@text/%s [\"%s\"]", LABEL_KEY_GATEWAY, device.ipAddress)
+                        : String.format("@text/%s [\"%s\", \"%s\"]",
+                                HDPowerViewHubMDNSDiscoveryParticipant.LABEL_KEY_HUB, device.ipAddress, generation);
+
                 DiscoveryResult hub = DiscoveryResultBuilder.create(thingUID)
                         .withProperty(HDPowerViewHubConfiguration.HOST, device.ipAddress)
-                        .withRepresentationProperty(HDPowerViewHubConfiguration.HOST)
-                        .withLabel(String.format("@text/%s [\"%s\"]",
-                                isGateway(device) ? LABEL_KEY_GATEWAY : LABEL_KEY_HUB, device.ipAddress))
-                        .build();
-                logger.debug("SDDP discovered hub/gateway '{}' on host '{}'", thingUID, device.ipAddress);
+                        .withRepresentationProperty(HDPowerViewHubConfiguration.HOST).withLabel(label).build();
+                logger.debug("SDDP discovered Gen {} hub/gateway '{}' on host '{}'", generation, thingUID,
+                        device.ipAddress);
                 return hub;
             } catch (IllegalArgumentException e) {
                 // error already logged, so fall through
@@ -77,7 +80,7 @@ public class HDPowerViewHubDiscoveryParticipantSddp implements SddpDiscoveryPart
         if (device.type.startsWith(HUNTER_DOUGLAS)) {
             try {
                 if (VALID_IP_V4_ADDRESS.matcher(device.ipAddress).matches()) {
-                    return new ThingUID(isGateway(device) ? THING_TYPE_GATEWAY : THING_TYPE_HUB,
+                    return new ThingUID(getGeneration(device) == 3 ? THING_TYPE_GATEWAY : THING_TYPE_HUB,
                             device.ipAddress.replace('.', '_'));
                 }
             } catch (IllegalArgumentException e) {
@@ -90,15 +93,15 @@ public class HDPowerViewHubDiscoveryParticipantSddp implements SddpDiscoveryPart
     /**
      * Check if the device 'type' property represents a Gen 3 gateway or a Gen 1/2 hub.
      *
-     * @return true if a Gen 3 gateway or false if a Gen 1/2 hub.
+     * @return 3 if a Gen 3 gateway, 2 if Gen 2 hub or 1 if Gen 1 hub.
      * @throws IllegalArgumentException if neither Gen 3, 2 or 1.
      */
-    private boolean isGateway(SddpDevice device) throws IllegalArgumentException {
+    private int getGeneration(SddpDevice device) throws IllegalArgumentException {
         if (device.type.contains(POWERVIEW_GEN3_ID)) {
-            return true;
+            return 3;
         }
         if (device.type.contains(POWERVIEW_HUB_ID)) {
-            return false;
+            return device.type.endsWith("v2") ? 2 : 1;
         }
         final IllegalArgumentException e = new IllegalArgumentException("Device has unexpected 'type' property");
         logger.debug("{}", e.getMessage());
