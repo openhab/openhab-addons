@@ -54,7 +54,7 @@ import com.google.gson.JsonSyntaxException;
  * The {@link AwattarBridgeHandler} is responsible for retrieving data from the aWATTar API.
  *
  * The API provides hourly prices for the current day and, starting from 14:00, hourly prices for the next day.
- * Check the documentation at https://www.awattar.de/services/api
+ * Check the documentation at <a href="https://www.awattar.de/services/api" />
  *
  *
  *
@@ -76,8 +76,6 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     private @Nullable SortedSet<AwattarPrice> prices;
     private double vatFactor = 0;
     private double basePrice = 0;
-    private long minTimestamp = 0;
-    private long maxTimestamp = 0;
     private ZoneId zone;
     private final TimeZoneProvider timeZoneProvider;
 
@@ -123,7 +121,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         prices = null;
     }
 
-    private void refreshIfNeeded() {
+    void refreshIfNeeded() {
         if (needRefresh()) {
             refresh();
         }
@@ -152,13 +150,11 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
             if (httpStatus == OK_200) {
                 Gson gson = new Gson();
                 SortedSet<AwattarPrice> result = new TreeSet<>(Comparator.comparing(AwattarPrice::timerange));
-                minTimestamp = 0;
-                maxTimestamp = 0;
                 AwattarApiData apiData = gson.fromJson(content, AwattarApiData.class);
                 if (apiData != null) {
                     for (Datum d : apiData.data) {
                         double netPrice = d.marketprice / 10.0;
-                        Timerange timerange = new Timerange(d.startTimestamp, d.endTimestamp);
+                        TimeRange timerange = new TimeRange(d.startTimestamp, d.endTimestamp);
                         result.add(new AwattarPrice(netPrice, netPrice * vatFactor, netPrice + basePrice,
                                 (netPrice + basePrice) * vatFactor, timerange));
                     }

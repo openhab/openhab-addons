@@ -44,7 +44,7 @@ public class AwattarUtil {
     }
 
     public static ZonedDateTime getCalendarForHour(int hour, ZoneId zone) {
-        return ZonedDateTime.now(zone).truncatedTo(ChronoUnit.DAYS).plus(hour, ChronoUnit.HOURS);
+        return ZonedDateTime.now(zone).truncatedTo(ChronoUnit.DAYS).plusHours(hour);
     }
 
     public static DateTimeType getDateTimeType(long time, TimeZoneProvider tz) {

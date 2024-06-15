@@ -23,7 +23,8 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.util.Map;
-import java.util.SortedMap;
+import java.util.Objects;
+import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -72,6 +73,7 @@ public class AwattarBridgeHandlerTest extends JavaTest {
 
     // bridge mocks
     private @Mock @NonNullByDefault({}) Bridge bridgeMock;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback bridgeCallbackMock;
     private @Mock @NonNullByDefault({}) HttpClient httpClientMock;
     private @Mock @NonNullByDefault({}) TimeZoneProvider timeZoneProviderMock;
     private @Mock @NonNullByDefault({}) Request requestMock;
@@ -79,7 +81,7 @@ public class AwattarBridgeHandlerTest extends JavaTest {
 
     // best price handler mocks
     private @Mock @NonNullByDefault({}) Thing bestpriceMock;
-    private @Mock @NonNullByDefault({}) ThingHandlerCallback callbackMock;
+    private @Mock @NonNullByDefault({}) ThingHandlerCallback bestPriceCallbackMock;
 
     private @NonNullByDefault({}) AwattarBridgeHandler bridgeHandler;
 
@@ -104,6 +106,7 @@ public class AwattarBridgeHandlerTest extends JavaTest {
         when(timeZoneProviderMock.getTimeZone()).thenReturn(ZoneId.of("GMT+2"));
 
         bridgeHandler = new AwattarBridgeHandler(bridgeMock, httpClientMock, timeZoneProviderMock);
+        bridgeHandler.setCallback(bridgeCallbackMock);
         bridgeHandler.refreshIfNeeded();
 
         when(bridgeMock.getHandler()).thenReturn(bridgeHandler);
@@ -111,21 +114,21 @@ public class AwattarBridgeHandlerTest extends JavaTest {
         // other mocks
         when(bestpriceMock.getBridgeUID()).thenReturn(BRIDGE_UID);
 
-        when(callbackMock.getBridge(any())).thenReturn(bridgeMock);
-        when(callbackMock.isChannelLinked(any())).thenReturn(true);
+        when(bestPriceCallbackMock.getBridge(any())).thenReturn(bridgeMock);
+        when(bestPriceCallbackMock.isChannelLinked(any())).thenReturn(true);
     }
 
     @Test
     public void testPricesRetrieval() {
-        SortedMap<Long, AwattarPrice> priceMap = bridgeHandler.getPriceMap();
+        SortedSet<AwattarPrice> prices = bridgeHandler.getPrices();
 
-        assertThat(priceMap, is(aMapWithSize(72)));
+        assertThat(prices, hasSize(72));
+
+        Objects.requireNonNull(prices);
 
         // check if first and last element are correct
-        AwattarPrice firstPrice = priceMap.get(priceMap.firstKey());
-        AwattarPrice lastPrice = priceMap.get(priceMap.lastKey());
-        assertThat(firstPrice.getStartTimestamp(), is(1718316000000L));
-        assertThat(lastPrice.getEndTimestamp(), is(1718575200000L));
+        assertThat(prices.first().timerange().start(), is(1718316000000L));
+        assertThat(prices.last().timerange().end(), is(1718575200000L));
     }
 
     @Test
@@ -133,7 +136,8 @@ public class AwattarBridgeHandlerTest extends JavaTest {
         AwattarPrice price = bridgeHandler.getPriceFor(1718503200000L);
 
         assertThat(price, is(notNullValue()));
-        assertThat(price.getPrice(), is(closeTo(0.219, 0.001)));
+        Objects.requireNonNull(price);
+        assertThat(price.netPrice(), is(closeTo(0.219, 0.001)));
     }
 
     @Test
@@ -175,15 +179,15 @@ public class AwattarBridgeHandlerTest extends JavaTest {
 
         AwattarBestpriceHandler handler = new AwattarBestpriceHandler(bestpriceMock, timeZoneProviderMock) {
             @Override
-            protected Timerange getRange(int start, int duration, ZoneId zoneId) {
-                return new Timerange(1718402400000L, 1718488800000L);
+            protected TimeRange getRange(int start, int duration, ZoneId zoneId) {
+                return new TimeRange(1718402400000L, 1718488800000L);
             }
         };
 
-        handler.setCallback(callbackMock);
+        handler.setCallback(bestPriceCallbackMock);
 
         ChannelUID channelUID = new ChannelUID(bestPriceUid, channelId);
         handler.refreshChannel(channelUID);
-        verify(callbackMock).stateUpdated(channelUID, expectedState);
+        verify(bestPriceCallbackMock).stateUpdated(channelUID, expectedState);
     }
 }

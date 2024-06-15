@@ -138,17 +138,17 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
             return;
         }
         AwattarBestpriceConfiguration config = getConfigAs(AwattarBestpriceConfiguration.class);
-        Timerange timerange = getRange(config.rangeStart, config.rangeDuration, bridgeHandler.getTimeZone());
+        TimeRange timerange = getRange(config.rangeStart, config.rangeDuration, bridgeHandler.getTimeZone());
         if (!(bridgeHandler.containsPriceFor(timerange.start()) && bridgeHandler.containsPriceFor(timerange.end()))) {
             updateState(channelUID, state);
             return;
         }
 
         AwattarBestPriceResult result;
+        List<AwattarPrice> range = getPriceRange(bridgeHandler, timerange);
+
         if (config.consecutive) {
-            ArrayList<AwattarPrice> range = new ArrayList<>(config.rangeDuration);
-            range.addAll(getPriceRange(bridgeHandler, timerange,
-                    (o1, o2) -> Long.compare(o1.timerange().start(), o2.timerange().end())));
+            range.sort(Comparator.comparing(AwattarPrice::timerange));
             AwattarConsecutiveBestPriceResult res = new AwattarConsecutiveBestPriceResult(
                     range.subList(0, config.length), bridgeHandler.getTimeZone());
 
@@ -161,8 +161,7 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
             }
             result = res;
         } else {
-            List<AwattarPrice> range = getPriceRange(bridgeHandler, timerange,
-                    Comparator.comparingDouble(AwattarPrice::netPrice));
+            range.sort(Comparator.naturalOrder());
             AwattarNonConsecutiveBestPriceResult res = new AwattarNonConsecutiveBestPriceResult(
                     bridgeHandler.getTimeZone());
             int ct = 0;
@@ -216,8 +215,7 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
         }
     }
 
-    private List<AwattarPrice> getPriceRange(AwattarBridgeHandler bridgeHandler, Timerange range,
-            Comparator<AwattarPrice> comparator) {
+    private List<AwattarPrice> getPriceRange(AwattarBridgeHandler bridgeHandler, TimeRange range) {
         List<AwattarPrice> result = new ArrayList<>();
         SortedSet<AwattarPrice> prices = bridgeHandler.getPrices();
         if (prices == null) {
@@ -225,11 +223,10 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
             return result;
         }
         result.addAll(prices.stream().filter(x -> range.contains(x.timerange())).toList());
-        result.sort(comparator);
         return result;
     }
 
-    protected Timerange getRange(int start, int duration, ZoneId zoneId) {
+    protected TimeRange getRange(int start, int duration, ZoneId zoneId) {
         ZonedDateTime startCal = getCalendarForHour(start, zoneId);
         ZonedDateTime endCal = startCal.plusHours(duration);
         ZonedDateTime now = ZonedDateTime.now(zoneId);
@@ -243,6 +240,6 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
             startCal = startCal.plusDays(1);
             endCal = endCal.plusDays(1);
         }
-        return new Timerange(startCal.toInstant().toEpochMilli(), endCal.toInstant().toEpochMilli());
+        return new TimeRange(startCal.toInstant().toEpochMilli(), endCal.toInstant().toEpochMilli());
     }
 }

@@ -13,7 +13,7 @@
 package org.openhab.binding.awattar.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.awattar.internal.handler.Timerange;
+import org.openhab.binding.awattar.internal.handler.TimeRange;
 
 /**
  * Class to store hourly price data.
@@ -23,7 +23,7 @@ import org.openhab.binding.awattar.internal.handler.Timerange;
  */
 @NonNullByDefault
 public record AwattarPrice(double netPrice, double grossPrice, double netTotal, double grossTotal,
-        Timerange timerange) implements Comparable<AwattarPrice> {
+        TimeRange timerange) implements Comparable<AwattarPrice> {
 
     @Override
     public String toString() {

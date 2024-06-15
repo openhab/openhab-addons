@@ -77,7 +77,7 @@ public class AwattarPriceHandler extends BaseThingHandler {
 
     /**
      * Initialize the binding and start the refresh job.
-     * The refresh job runs once after initialization and afterwards every hour.
+     * The refresh job runs once after initialization and afterward every hour.
      */
 
     @Override

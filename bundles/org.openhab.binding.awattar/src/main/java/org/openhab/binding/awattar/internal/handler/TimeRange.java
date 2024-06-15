@@ -15,12 +15,12 @@ package org.openhab.binding.awattar.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Timerange} defines a time range (defined by two timestamps)
+ * The {@link TimeRange} defines a time range (defined by two timestamps)
  *
  * @author Jan N. Klug - Initial contribution
  */
 @NonNullByDefault
-public record Timerange(long start, long end) implements Comparable<Timerange> {
+public record TimeRange(long start, long end) implements Comparable<TimeRange> {
     /**
      * Check if a given timestamp is in this time range
      *
@@ -38,7 +38,7 @@ public record Timerange(long start, long end) implements Comparable<Timerange> {
      * @return {@code true} if {@link #start} of this time range is the same or before the other time range's
      *         {@link #start} and this {@link #end} is the same or after the other time range's {@link #end}
      */
-    public boolean contains(Timerange other) {
+    public boolean contains(TimeRange other) {
         return start <= other.start && end >= other.end;
     }
 
@@ -48,7 +48,7 @@ public record Timerange(long start, long end) implements Comparable<Timerange> {
      * @param o the object to be compared
      * @return the result of {@link Long#compare(long, long)} for the {@link #start} timestamps
      */
-    public int compareTo(Timerange o) {
+    public int compareTo(TimeRange o) {
         return Long.compare(start, o.start);
     }
 }
