@@ -110,8 +110,8 @@
 		</parameter>
 		<parameter name="vadStep" type="integer" groupName="vad">
 			<label>Voice Activity Detector Step</label>
-			<description>Audio ms passed to the voice activity detector. Defines how much times the voice activity detector is
-				executed per audio step.</description>
+			<description>Audio milliseconds passed to the voice activity detector. Defines how much times the voice activity
+				detector is executed per audio step.</description>
 			<default>20</default>
 			<options>
 				<option value="10">10ms</option>
@@ -122,12 +122,12 @@
 		</parameter>
 		<parameter name="threads" type="integer" groupName="whisper">
 			<label>Threads</label>
-			<description>Number of threads used by whisper. (0 for default)</description>
+			<description>Number of threads used by whisper. (0 to use host max threads)</description>
 			<default>0</default>
 		</parameter>
 		<parameter name="audioContext" type="integer" groupName="whisper" min="0">
 			<label>Audio Context</label>
-			<description>Overwrite the audio context size. (0 for default)</description>
+			<description>Overwrite the audio context size. (0 to use whisper default context size)</description>
 			<default>0</default>
 			<advanced>true</advanced>
 		</parameter>
@@ -178,20 +178,20 @@
 			<default>true</default>
 			<advanced>true</advanced>
 		</parameter>
-		<parameter name="grammarLines" type="text" groupName="grammar" multiple="true">
-			<label>Grammar</label>
-			<description>Grammar to use in GBNF format. (BNF variant used by whisper.cpp).</description>
-			<default></default>
-		</parameter>
-		<parameter name="useGrammar" type="boolean" groupName="whisper">
+		<parameter name="useGrammar" type="boolean" groupName="grammar">
 			<label>Use Grammar</label>
 			<description>Enables grammar usage.</description>
 			<default>false</default>
 		</parameter>
-		<parameter name="grammarPenalty" type="decimal" groupName="whisper" min="0" max="100" step="0.1">
-			<label>grammarPenalty</label>
+		<parameter name="grammarPenalty" type="decimal" groupName="grammar" min="0" max="100" step="0.1">
+			<label>Grammar Penalty</label>
 			<description>Penalty for non grammar tokens when using grammar.</description>
 			<default>100</default>
+		</parameter>
+		<parameter name="grammarLines" type="text" groupName="grammar" multiple="true">
+			<label>Grammar</label>
+			<description>Grammar to use in GBNF format. (BNF variant used by whisper.cpp).</description>
+			<default></default>
 		</parameter>
 		<parameter name="errorMessage" type="text" groupName="messages">
 			<label>Error Message</label>

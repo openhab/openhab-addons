@@ -566,7 +566,7 @@ public class WhisperSTTService implements STTService {
         var params = new WhisperFullParams(strategy);
         params.temperature = config.temperature;
         params.nThreads = config.threads;
-        params.audioCtx = config.audioContextSize;
+        params.audioCtx = config.audioContext;
         params.speedUp = config.speedUp;
         params.beamSearchBeamSize = config.beamSize;
         params.greedyBestOf = config.greedyBestOf;

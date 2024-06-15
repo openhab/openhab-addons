@@ -45,7 +45,7 @@ public class WhisperSTTConfiguration {
     /**
      * Max seconds to wait to force stop the transcription.
      */
-    public int maxSeconds = 5;
+    public int maxSeconds = 10;
     /**
      * Voice activity detection mode.
      */
@@ -53,7 +53,7 @@ public class WhisperSTTConfiguration {
     /**
      * Voice activity detection sensitivity.
      */
-    public float vadSensitivity = 0.2f;
+    public float vadSensitivity = 0.3f;
     /**
      * Voice activity detection step in ms (vad dependency only allows 10, 20 or 30 ms steps).
      */
@@ -77,7 +77,7 @@ public class WhisperSTTConfiguration {
     /**
      * Overwrite the audio context size (0 = use default).
      */
-    public int audioContextSize;
+    public int audioContext;
     /**
      * Speed up audio by x2 (reduced accuracy).
      */

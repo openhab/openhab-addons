@@ -40,8 +40,8 @@ import org.osgi.service.component.annotations.Component;
  */
 @Component(service = ConfigOptionProvider.class, configurationPid = SERVICE_PID, property = Constants.SERVICE_PID + "="
         + SERVICE_PID)
-@ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME, description_uri = SERVICE_CATEGORY + ":"
-        + SERVICE_ID)
+@ConfigurableService(category = SERVICE_CATEGORY, label = SERVICE_NAME
+        + " Speech-to-Text", description_uri = SERVICE_CATEGORY + ":" + SERVICE_ID)
 @NonNullByDefault
 public class WhisperConfigOptionProvider implements ConfigOptionProvider {
     @Override
