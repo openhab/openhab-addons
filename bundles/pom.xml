@@ -312,6 +312,7 @@
     <module>org.openhab.binding.orvibo</module>
     <module>org.openhab.binding.panasonicbdp</module>
     <module>org.openhab.binding.paradoxalarm</module>
+    <module>org.openhab.binding.pegelonline</module>
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
     <module>org.openhab.binding.pilight</module>
