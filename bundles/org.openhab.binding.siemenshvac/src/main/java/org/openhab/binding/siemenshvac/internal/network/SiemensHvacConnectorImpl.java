@@ -38,7 +38,6 @@ import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacBridgeThingHa
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadata;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataMenu;
-import org.openhab.binding.siemenshvac.internal.thirdparty.RuntimeTypeAdapterFactory;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.types.Type;
@@ -52,6 +51,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.typeadapters.RuntimeTypeAdapterFactory;
 
 /**
  *

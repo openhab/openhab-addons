@@ -1,15 +1,3 @@
-/**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
- *
- * See the NOTICE file(s) distributed with this work for additional
- * information.
- *
- * This program and the accompanying materials are made available under the
- * terms of the Eclipse Public License 2.0 which is available at
- * http://www.eclipse.org/legal/epl-2.0
- *
- * SPDX-License-Identifier: EPL-2.0
- */
 /*
  * Copyright (C) 2011 Google Inc.
  *
@@ -33,7 +21,7 @@
  * com.google.gson.internal.{Streams,TypeAdapters,LazilyParsedNumber}
  * to avoid using the internal package.
  */
-package org.openhab.binding.siemenshvac.internal.thirdparty;
+package com.google.gson.typeadapters;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -73,7 +61,7 @@ import com.google.gson.stream.MalformedJsonException;
  *         int x;
  *         int y;
  *     }
- *     class Circle extends Shape {
+ *     class Circle extends Shape { 
  *         int radius;
  *     }
  *     class Rectangle extends Shape {
