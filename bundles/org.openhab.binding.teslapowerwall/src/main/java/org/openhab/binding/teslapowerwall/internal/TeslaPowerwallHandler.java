@@ -124,6 +124,7 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
         } catch (TeslaPowerwallCommunicationException e) {
             logger.debug("Unexpected error connecting to Tesla Powerwall", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            return;
         }
 
         updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_MODE, new StringType(operations.mode));
