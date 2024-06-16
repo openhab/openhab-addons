@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.sunsynk.internal.classes.Inverter;
 
 /**
  * The {@link Details} is the internal class for Account detail information of the sunsynk Account.

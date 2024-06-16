@@ -22,10 +22,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class Client {
-    private int code;
+    private int code; // 102 username or password probloem
     private String msg = "";
     private boolean success;
     private APIdata data = new APIdata();
+    private int status;
+    private String error = ""; // "{"timestamp":"2024-06-16T11:21:17.690+00:00","status":404,"error":"Not
+                               // Found","path":"/oauth/toke"}"
+    private String path = "";
+    private String timestamp = "";
 
     public Client() {
     }
@@ -36,6 +41,26 @@ public class Client {
 
     public int getCode() {
         return this.code;
+    }
+
+    public int getStatus() {
+        return this.status;
+    }
+
+    public String getError() {
+        return this.error;
+    }
+
+    public String getPath() {
+        return this.path;
+    }
+
+    public String getTimeStamp() {
+        return this.timestamp;
+    }
+
+    public String getMsg() {
+        return this.msg;
     }
 
     public void setAccessTokenString(String token) {

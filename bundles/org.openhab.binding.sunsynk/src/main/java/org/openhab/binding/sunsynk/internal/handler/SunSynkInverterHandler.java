@@ -21,13 +21,16 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.sunsynk.internal.SunSynkInverter;
+import org.openhab.binding.sunsynk.internal.api.DeviceController;
 import org.openhab.binding.sunsynk.internal.api.dto.Battery;
 import org.openhab.binding.sunsynk.internal.api.dto.Daytemps;
 import org.openhab.binding.sunsynk.internal.api.dto.Daytempsreturn;
 import org.openhab.binding.sunsynk.internal.api.dto.Grid;
 import org.openhab.binding.sunsynk.internal.api.dto.RealTimeInData;
 import org.openhab.binding.sunsynk.internal.api.dto.Settings;
+import org.openhab.binding.sunsynk.internal.api.exception.SunSynkAuthenticateException;
+import org.openhab.binding.sunsynk.internal.api.exception.SunSynkGetStatusException;
+import org.openhab.binding.sunsynk.internal.api.exception.SunSynkSendCommandException;
 import org.openhab.binding.sunsynk.internal.config.SunSynkInverterConfig;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -56,11 +59,12 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SunSynkInverterHandler.class);
     private @Nullable ZonedDateTime lockoutTimer = null;
-    private SunSynkInverter inverter = new SunSynkInverter();
+    private DeviceController inverter = new DeviceController();
     private int refreshTime = 60;
     private @Nullable ScheduledFuture<?> refreshTask;
     private boolean batterySettingsUpdated = false;
-    private @Nullable Settings tempInverterChargeSettings = new Settings(); // Holds modified battery settings.
+    public @Nullable Settings tempInverterChargeSettings = inverter.tempInverterChargeSettings; // Holds modified
+                                                                                                // battery settings.
 
     public SunSynkInverterHandler(Thing thing) {
         super(thing);
@@ -243,24 +247,18 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         }
     }
 
-    private void sendAPICommandToInverter(@Nullable Settings inverterChargeSettings) {
+    private void sendSettingsCommandToInverter() {
         logger.debug("Ok - will handle command for CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE");
         SunSynkInverterConfig config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
-        String body = inverterChargeSettings.buildBody();
-        String token = inverterChargeSettings.getToken();
-        String response = inverter.sendCommandToSunSynk(body, token);
-
-        if ("Authentication Fail".equals(response)) { // try refreshing log in
+        try {
+            inverter.sendSettings(this.tempInverterChargeSettings);
+        } catch (SunSynkSendCommandException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not send Command to Inverter " + config.getAlias() + ". Authentication Failure !");
+                    "Could not send command to inverter " + config.getAlias() + ". Authentication Failure !");
+            logger.debug("Could not send command to inverter {}.", config.getAlias());
             return;
         }
-        if ("Failed".equals(response)) { // unknown cause
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "Could not send Command to Inverter " + config.getAlias() + ". Communication Failure !");
-            return;
-        }
-        logger.debug("Sent command: {} to inverter {}.", response, config.getAlias());
+        logger.debug("Sent command: to inverter {}.", config.getAlias());
     }
 
     @Override
@@ -289,7 +287,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
             refreshTime = config.getRefresh();
         }
         this.batterySettingsUpdated = false;
-        inverter = new SunSynkInverter(config);
+        inverter = new DeviceController(config);
         startAutomaticRefresh();
     }
 
@@ -318,27 +316,37 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         if (inverter != null) {
             Optional<SunSynkAccountHandler> checkBridge = getSafeBridge();
             if (!checkBridge.isPresent()) {
-                logger.debug("Failed to find associated SunSynk Bridge.");
+                logger.debug("Failed to find associated SunSynk account.");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No SunSynk Account");
                 return;
             }
             SunSynkAccountHandler bridgeHandler = checkBridge.get();
-            bridgeHandler.refreshAccount(); // Check account token
+            try {
+                bridgeHandler.refreshAccount(); // check account token
+            } catch (SunSynkAuthenticateException e) {
+                logger.debug("Sun Synk account refresh failed: Msg = {} Cause = {}.", e.getMessage(), e.getCause());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Sun Synk account refresh failed");
+                bridgeHandler.setBridgeOffline();
+                return;
+            }
             if (this.batterySettingsUpdated) { // have the settings been modified locally
-                sendAPICommandToInverter(this.tempInverterChargeSettings); // update the battery settings
+                sendSettingsCommandToInverter(); // update the battery settings
             }
-            String response = inverter.sendGetState(this.batterySettingsUpdated); // get inverter settings
-            if ("Authentication Fail".equals(response)) {
-                logger.debug("Authentication Failure !");
+            SunSynkInverterConfig config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
+            try {
+                inverter.sendGetState(this.batterySettingsUpdated); // get inverter settings
+            } catch (SunSynkGetStatusException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Could not get state of inverter " + config.getAlias() + ". Authentication Failure !");
+                logger.debug("Could not get state of inverter {}.", config.getAlias());
                 return;
             }
-            if ("Failed".equals(response)) { // unknown cause
-                logger.debug("Communication Failure !");
-                return;
-            }
+            logger.debug("Retrieved state of inverter {}.", config.getAlias());
             this.batterySettingsUpdated = false; // set to get settings from API
             bridgeHandler.setBridgeOnline();
             updateStatus(ThingStatus.ONLINE);
             publishChannels();
+
         }
     }
 

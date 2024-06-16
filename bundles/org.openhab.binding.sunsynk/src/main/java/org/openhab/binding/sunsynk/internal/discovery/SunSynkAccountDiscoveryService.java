@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sunsynk.internal.SunSynkBindingConstants;
-import org.openhab.binding.sunsynk.internal.classes.Inverter;
+import org.openhab.binding.sunsynk.internal.api.dto.Inverter;
 import org.openhab.binding.sunsynk.internal.handler.SunSynkAccountHandler;
 import org.openhab.binding.sunsynk.internal.handler.SunSynkHandlerFactory;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;

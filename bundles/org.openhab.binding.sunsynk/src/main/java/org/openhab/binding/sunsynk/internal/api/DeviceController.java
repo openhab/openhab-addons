@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.sunsynk.internal;
+package org.openhab.binding.sunsynk.internal.api;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -28,6 +28,8 @@ import org.openhab.binding.sunsynk.internal.api.dto.Daytemps;
 import org.openhab.binding.sunsynk.internal.api.dto.Grid;
 import org.openhab.binding.sunsynk.internal.api.dto.RealTimeInData;
 import org.openhab.binding.sunsynk.internal.api.dto.Settings;
+import org.openhab.binding.sunsynk.internal.api.exception.SunSynkGetStatusException;
+import org.openhab.binding.sunsynk.internal.api.exception.SunSynkSendCommandException;
 import org.openhab.binding.sunsynk.internal.config.SunSynkInverterConfig;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
@@ -37,16 +39,16 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link SunSynkInverter} class defines methods that control
+ * The {@link DeviceController} class defines methods that control
  * communication with the inverter.
  *
  * @author Lee Charlton - Initial contribution
  */
 
 @NonNullByDefault
-public class SunSynkInverter {
+public class DeviceController {
 
-    private final Logger logger = LoggerFactory.getLogger(SunSynkInverter.class);
+    private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
     private String sn = "";
     private String alias = "";
     private @Nullable Settings batterySettings = new Settings();
@@ -54,17 +56,19 @@ public class SunSynkInverter {
     private @Nullable Grid grid = new Grid();
     private @Nullable Daytemps inverter_day_temperatures = new Daytemps();
     private @Nullable RealTimeInData realTimeDataIn = new RealTimeInData();
+    public @Nullable Settings tempInverterChargeSettings = new Settings(); // Holds modified battery settings.
 
-    public SunSynkInverter() {
+    public DeviceController() {
     }
 
-    public SunSynkInverter(SunSynkInverterConfig config) {
+    public DeviceController(SunSynkInverterConfig config) {
         this.sn = config.getsn();
         this.alias = config.getAlias();
     }
 
-    public String sendGetState(boolean batterySettingsUpdate) { // Class entry method to update internal
-                                                                // inverter state
+    public void sendGetState(boolean batterySettingsUpdate) throws SunSynkGetStatusException { // Class entry method to
+                                                                                               // update internal
+        // inverter state
         logger.debug("Will get STATE for Inverter {} serial {}", this.alias, this.sn);
         try {
             if (!batterySettingsUpdate) { // normally get settings to track changes made by other UIs
@@ -79,16 +83,15 @@ public class SunSynkInverter {
             getInverterACDCTemperatures(); // get Inverter temperatures
             logger.debug("Trying Real Time Solar");
             getRealTimeIn(); // Used for solar power now
-        } catch (IOException | JsonSyntaxException e) {
-            logger.debug("Failed to get Inverter API information: {} ", e.getMessage());
+        } catch (IOException e) {
+            logger.debug("Failed to send to Inverter API: {} ", e.getMessage());
             int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");
             if (found > -1) {
-                return "Authentication Fail";
+                throw new SunSynkGetStatusException("Authentication token failed", e);
             }
-            return "Failed";
+            throw new SunSynkGetStatusException("Unknown athentication fail", e);
         }
         logger.debug("Successfully got and parsed new data for Inverter {} serial {}", this.alias, this.sn);
-        return "Sucess";
     }
 
     public @Nullable Settings getBatteryChargeSettings() {
@@ -153,17 +156,23 @@ public class SunSynkInverter {
         this.realTimeDataIn.sumPVIV();
     }
 
-    public String sendCommandToSunSynk(String body, String access_token) {
+    public void sendSettings(@Nullable Settings settings) throws SunSynkSendCommandException {
+        String body = settings.buildBody();
+        sendCommandToSunSynk(body);
+    }
+
+    public void sendCommandToSunSynk(String body) throws SunSynkSendCommandException {
         String path = "api/v1/common/setting/" + this.sn + "/set";
+
         try {
-            return apiPostMethod(makeURL(path), body, access_token);
+            apiPostMethod(makeURL(path), body, APIdata.static_access_token);
         } catch (IOException e) {
             logger.debug("Failed to send to Inverter API: {} ", e.getMessage());
             int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");
             if (found > -1) {
-                return "Authentication Fail";
+                throw new SunSynkSendCommandException("Authentication token failed", e);
             }
-            return "Failed";
+            throw new SunSynkSendCommandException("Unknown athentication fail", e);
         }
     }
 
@@ -171,6 +180,7 @@ public class SunSynkInverter {
         Properties headers = new Properties();
         headers.setProperty("Accept", "application/json");
         headers.setProperty("Authorization", "Bearer " + access_token);
+        headers.setProperty("Requester", "www.openhab.org"); // optional
         InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
         return HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
     }
@@ -178,7 +188,7 @@ public class SunSynkInverter {
     private String apiGetMethod(String httpsURL, String access_token) throws IOException {
         Properties headers = new Properties();
         headers.setProperty("Accept", "application/json");
-        headers.setProperty("Content-Type", "application/json"); // may not need this.
+        headers.setProperty("Requester", "www.openhab.org"); // optional
         headers.setProperty("Authorization", "Bearer " + access_token);
         return HttpUtil.executeUrl("GET", httpsURL, headers, null, "application/json", 2000);
     }
