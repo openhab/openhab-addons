@@ -83,54 +83,82 @@ public class SystemInfoThingTypeProvider extends AbstractStorageBasedTypeProvide
      * Create thing type with the provided typeUID and add it to the thing type registry.
      *
      * @param typeUID
+     * @return false if base type UID `systeminfo:computer` cannot be found in the thingTypeRegistry
      */
-    public void createThingType(ThingTypeUID typeUID) {
+    public boolean createThingType(ThingTypeUID typeUID) {
         logger.trace("Creating thing type {}", typeUID);
-        updateThingType(typeUID, getChannelGroupDefinitions(typeUID));
+        return updateThingType(typeUID, getChannelGroupDefinitions(typeUID));
     }
 
     /**
      * Update `ThingType`with `typeUID`, replacing the channel group definitions with `groupDefs`.
      *
      * @param typeUID
-     * @param channelGroupDefinitions
+     * @param groupDefs
+     * @return false if `typeUID` or its base type UID `systeminfo:computer` cannot be found in the thingTypeRegistry
      */
-    public void updateThingType(ThingTypeUID typeUID, List<ChannelGroupDefinition> channelGroupDefinitions) {
+    public boolean updateThingType(ThingTypeUID typeUID, List<ChannelGroupDefinition> groupDefs) {
         ThingType baseType = thingTypeRegistry.getThingType(typeUID);
         if (baseType == null) {
             baseType = thingTypeRegistry.getThingType(THING_TYPE_COMPUTER);
             if (baseType == null) {
                 logger.warn("Could not find base thing type in registry.");
-                return;
+                return false;
             }
         }
+        ThingTypeBuilder builder = createThingTypeBuilder(typeUID, baseType.getUID());
+        if (builder != null) {
+            logger.trace("Adding channel group definitions to thing type");
+            ThingType type = builder.withChannelGroupDefinitions(groupDefs).build();
 
-        final ThingTypeBuilder builder = ThingTypeBuilder.instance(THING_TYPE_COMPUTER_IMPL, baseType.getLabel());
-        builder.withChannelGroupDefinitions(baseType.getChannelGroupDefinitions());
-        builder.withChannelDefinitions(baseType.getChannelDefinitions());
-        builder.withExtensibleChannelTypeIds(baseType.getExtensibleChannelTypeIds());
-        builder.withSupportedBridgeTypeUIDs(baseType.getSupportedBridgeTypeUIDs());
-        builder.withProperties(baseType.getProperties()).isListed(false);
+            putThingType(type);
+            return true;
+        } else {
+            logger.debug("Error adding channel groups");
+            return false;
+        }
+    }
 
-        final String representationProperty = baseType.getRepresentationProperty();
+    /**
+     * Return a {@link ThingTypeBuilder} that can create an exact copy of the `ThingType` with `baseTypeUID`.
+     * Further build steps can be performed on the returned object before recreating the `ThingType` from the builder.
+     *
+     * @param newTypeUID
+     * @param baseTypeUID
+     * @return the ThingTypeBuilder, null if `baseTypeUID` cannot be found in the thingTypeRegistry
+     */
+    private @Nullable ThingTypeBuilder createThingTypeBuilder(ThingTypeUID newTypeUID, ThingTypeUID baseTypeUID) {
+        ThingType type = thingTypeRegistry.getThingType(baseTypeUID);
+
+        if (type == null) {
+            return null;
+        }
+
+        ThingTypeBuilder result = ThingTypeBuilder.instance(newTypeUID, type.getLabel())
+                .withChannelGroupDefinitions(type.getChannelGroupDefinitions())
+                .withChannelDefinitions(type.getChannelDefinitions())
+                .withExtensibleChannelTypeIds(type.getExtensibleChannelTypeIds())
+                .withSupportedBridgeTypeUIDs(type.getSupportedBridgeTypeUIDs()).withProperties(type.getProperties())
+                .isListed(false);
+
+        String representationProperty = type.getRepresentationProperty();
         if (representationProperty != null) {
-            builder.withRepresentationProperty(representationProperty);
+            result = result.withRepresentationProperty(representationProperty);
         }
-        final URI configDescriptionURI = baseType.getConfigDescriptionURI();
+        URI configDescriptionURI = type.getConfigDescriptionURI();
         if (configDescriptionURI != null) {
-            builder.withConfigDescriptionURI(configDescriptionURI);
+            result = result.withConfigDescriptionURI(configDescriptionURI);
         }
-        final String category = baseType.getCategory();
+        String category = type.getCategory();
         if (category != null) {
-            builder.withCategory(category);
+            result = result.withCategory(category);
         }
-        final String description = baseType.getDescription();
+        String description = type.getDescription();
         if (description != null) {
-            builder.withDescription(description);
+            result = result.withDescription(description);
         }
 
-        logger.trace("Adding channel group definitions to thing type");
-        putThingType(builder.withChannelGroupDefinitions(channelGroupDefinitions).build());
+        return result;
     }
 
     /**
@@ -196,19 +224,18 @@ public class SystemInfoThingTypeProvider extends AbstractStorageBasedTypeProvide
                     channelTypeUID != null ? channelTypeUID.getId() : "null");
             return null;
         }
-
+        ThingUID thingUID = thing.getUID();
         String index = String.valueOf(i);
-        ChannelUID channelUID = new ChannelUID(thing.getUID(), channelID + index);
-        ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelTypeUID);
-        builder.withConfiguration(baseChannel.getConfiguration());
+        ChannelUID channelUID = new ChannelUID(thingUID, channelID + index);
+        ChannelBuilder builder = ChannelBuilder.create(channelUID).withType(channelTypeUID)
+                .withConfiguration(baseChannel.getConfiguration());
         builder.withLabel(channelType.getLabel() + " " + index);
         builder.withDefaultTags(channelType.getTags());
-
-        final String description = channelType.getDescription();
+        String description = channelType.getDescription();
         if (description != null) {
             builder.withDescription(description);
         }
-        final String itemType = channelType.getItemType();
+        String itemType = channelType.getItemType();
         if (itemType != null) {
             builder.withAcceptedItemType(itemType);
         }
@@ -225,7 +252,7 @@ public class SystemInfoThingTypeProvider extends AbstractStorageBasedTypeProvide
      */
     public void storeChannelsConfig(Thing thing) {
         Map<String, Configuration> channelsConfig = thing.getChannels().stream()
-                .collect(Collectors.toMap(c -> c.getUID().getId(), Channel::getConfiguration));
+                .collect(Collectors.toMap(c -> c.getUID().getId(), c -> c.getConfiguration()));
         thingChannelsConfig.put(thing.getUID(), channelsConfig);
     }
 
