@@ -312,15 +312,15 @@ Anywhere a native openHAB `Item` is required, the runtime will automatically con
 See [openhab-js : items](https://openhab.github.io/openhab-js/items.html) for full API documentation.
 
 - items : `object`
-  - .NAME ⇒ `Item`
-  - .existsItem(name) ⇒ `boolean`
-  - .getItem(name, nullIfMissing) ⇒ `Item`
-  - .getItems() ⇒ `Array[Item]`
-  - .getItemsByTag(...tagNames) ⇒ `Array[Item]`
-  - .addItem([itemConfig](#itemconfig))
-  - .removeItem(itemOrItemName) ⇒ `boolean`
-  - .replaceItem([itemConfig](#itemconfig))
-  - .safeItemName(s) ⇒ `string`
+   - .NAME ⇒ `Item`
+   - .existsItem(name) ⇒ `boolean`
+   - .getItem(name, nullIfMissing) ⇒ `Item`
+   - .getItems() ⇒ `Array[Item]`
+   - .getItemsByTag(...tagNames) ⇒ `Array[Item]`
+   - .addItem([itemConfig](#itemconfig))
+   - .removeItem(itemOrItemName) ⇒ `boolean`
+   - .replaceItem([itemConfig](#itemconfig))
+   - .safeItemName(s) ⇒ `string`
 
 ```javascript
 var item = items.KitchenLight;
@@ -332,31 +332,31 @@ console.log("Kitchen Light State", item.state);
 Calling `getItem(...)` or `...` returns an `Item` object with the following properties:
 
 - Item : `object`
-  - .rawItem ⇒ `HostItem`
-  - .persistence ⇒ [`ItemPersistence`](#itempersistence)
-  - .semantics ⇒ [`ItemSemantics`](https://openhab.github.io/openhab-js/items.ItemSemantics.html)
-  - .type ⇒ `string`
-  - .name ⇒ `string`
-  - .label ⇒ `string`
-  - .state ⇒ `string`
-  - .numericState ⇒ `number|null`: State as number, if state can be represented as number, or `null` if that's not the case
-  - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible or without unit
-  - .rawState ⇒ `HostState`
-  - .members ⇒ `Array[Item]`
-  - .descendents ⇒ `Array[Item]`
-  - .isUninitialized ⇒ `boolean`
-  - .groupNames ⇒ `Array[string]`
-  - .tags ⇒ `Array[string]`
-  - .getMetadata(namespace) ⇒ `object|null`
-  - .replaceMetadata(namespace, value, configuration) ⇒ `object`
-  - .removeMetadata(namespace) ⇒ `object|null`
-  - .sendCommand(value): `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
-  - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
-  - .postUpdate(value): `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
-  - .addGroups(...groupNamesOrItems)
-  - .removeGroups(...groupNamesOrItems)
-  - .addTags(...tagNames)
-  - .removeTags(...tagNames)
+   - .rawItem ⇒ `HostItem`
+   - .persistence ⇒ [`ItemPersistence`](#itempersistence)
+   - .semantics ⇒ [`ItemSemantics`](https://openhab.github.io/openhab-js/items.ItemSemantics.html)
+   - .type ⇒ `string`
+   - .name ⇒ `string`
+   - .label ⇒ `string`
+   - .state ⇒ `string`
+   - .numericState ⇒ `number|null`: State as number, if state can be represented as number, or `null` if that's not the case
+   - .quantityState ⇒ [`Quantity|null`](#quantity): Item state as Quantity or `null` if state is not Quantity-compatible or without unit
+   - .rawState ⇒ `HostState`
+   - .members ⇒ `Array[Item]`
+   - .descendents ⇒ `Array[Item]`
+   - .isUninitialized ⇒ `boolean`
+   - .groupNames ⇒ `Array[string]`
+   - .tags ⇒ `Array[string]`
+   - .getMetadata(namespace) ⇒ `object|null`
+   - .replaceMetadata(namespace, value, configuration) ⇒ `object`
+   - .removeMetadata(namespace) ⇒ `object|null`
+   - .sendCommand(value): `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
+   - .sendCommandIfDifferent(value) ⇒ `boolean`: `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
+   - .postUpdate(value): `value` can be a string, a [`time.ZonedDateTime`](#time) or a [`Quantity`](#quantity)
+   - .addGroups(...groupNamesOrItems)
+   - .removeGroups(...groupNamesOrItems)
+   - .addTags(...tagNames)
+   - .removeTags(...tagNames)
 
 ```javascript
 // Equivalent to items.KitchenLight
@@ -376,16 +376,16 @@ See [openhab-js : Item](https://openhab.github.io/openhab-js/items.Item.html) fo
 Calling `addItem(itemConfig)` or `replaceItem(itemConfig)` requires the `itemConfig` object with the following properties:
 
 - itemConfig : `object`
-  - .type ⇒ `string`
-  - .name ⇒ `string`
-  - .label ⇒ `string`
-  - .category (icon) ⇒ `string`
-  - .groups ⇒ `Array[string]`
-  - .tags ⇒ `Array[string]`
-  - .channels ⇒ `string | Object { channeluid: { config } }`
-  - .metadata ⇒ `Object { namespace: value } | Object { namespace: { value: value , config: { config } } }`
-  - .giBaseType ⇒ `string`
-  - .groupFunction ⇒ `string`
+   - .type ⇒ `string`
+   - .name ⇒ `string`
+   - .label ⇒ `string`
+   - .category (icon) ⇒ `string`
+   - .groups ⇒ `Array[string]`
+   - .tags ⇒ `Array[string]`
+   - .channels ⇒ `string | Object { channeluid: { config } }`
+   - .metadata ⇒ `Object { namespace: value } | Object { namespace: { value: value , config: { config } } }`
+   - .giBaseType ⇒ `string`
+   - .groupFunction ⇒ `string`
 
 Note: `.type` and `.name` are required.
 Basic UI and the mobile apps need `metadata.stateDescription.config.pattern` to render the state of an Item.
@@ -403,8 +403,8 @@ items.replaceItem({
   tags: ['Lightbulb'],
   channels: {
     'binding:thing:device:hallway#light': {},
-    'binding:thing:device:livingroom#light': { 
-      profile: 'system:follow' 
+    'binding:thing:device:livingroom#light': {
+      profile: 'system:follow'
     }
   },
   metadata: {
@@ -435,55 +435,57 @@ See [openhab-js : ItemConfig](https://openhab.github.io/openhab-js/global.html#I
 
 #### `ItemPersistence`
 
-Calling `Item.history` returns an `ItemPersistence` object with the following functions:
+Calling `Item.persistence` returns an `ItemPersistence` object with the following functions:
 
 - ItemPersistence :`object`
-  - .averageSince(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .averageUntil(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .averageBetween(begin, end, serviceId) ⇒ `PersistedState | null`
-  - .changedSince(timestamp, serviceId) ⇒ `boolean`
-  - .changedUntil(timestamp, serviceId) ⇒ `boolean`
-  - .changedBetween(begin, end, serviceId) ⇒ `boolean`
-  - .countSince(timestamp, serviceId) ⇒ `number`
-  - .countUntil(timestamp, serviceId) ⇒ `number`
-  - .countBetween(begin, end, serviceId) ⇒ `number`
-  - .countStateChangesSince(timestamp, serviceId) ⇒ `number`
-  - .countStateChangesUntil(timestamp, serviceId) ⇒ `number`
-  - .countStateChangesBetween(begin, end, serviceId) ⇒ `number`
-  - .deltaSince(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .deltaUntil(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .deltaBetween(begin, end, serviceId) ⇒ `PersistedState | null`
-  - .deviationSince(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .deviationUntil(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .deviationBetween(begin, end, serviceId) ⇒ `PersistedState | null`
-  - .evolutionRateSince(timestamp, serviceId) ⇒ `number | null`
-  - .evolutionRateUntil(timestamp, serviceId) ⇒ `number | null`
-  - .evolutionRateBetween(begin, end, serviceId) ⇒ `number | null`
-  - .getAllStatesSince(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
-  - .getAllStatesUntil(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
-  - .getAllStatesBetween(begin, end, serviceId)  ⇒ `Array[PersistedItem]`
-  - .lastUpdate(serviceId) ⇒ `ZonedDateTime | null`
-  - .nextUpdate(serviceId)  ⇒ `ZonedDateTime | null`
-  - .maximumSince(timestamp,serviceId) ⇒ `PersistedItem | null`
-  - .maximumUntil(timestamp,serviceId) ⇒ `PersistedItem | null`
-  - .maximumBetween(begin, end, serviceId) ⇒ `PersistedItem | null`
-  - .minimumSince(timestamp, serviceId) ⇒ `PersistedItem | null`
-  - .minimumUntil(timestamp, serviceId) ⇒ `PersistedItem | null`
-  - .minimumBetween(begin, end, serviceId) ⇒ `PersistedItem | null`
-  - .persist(serviceId): Tells the persistence service to store the current Item state, which is then done asynchronously.
-    **Warning:** This has the side effect, that if the Item state changes shortly after `.persist` has been called, the new Item state will be persisted. See [JSDoc](https://openhab.github.io/openhab-js/items.ItemPersistence.html#persist) for a possible work-around.
-  - .persistedState(timestamp, serviceId) ⇒ `PersistedItem | null`
-  - .previousState(skipEqual, serviceId) ⇒ `PersistedItem | null`
-  - .nextState(skipEqual, serviceId) ⇒ `PersistedItem | null`
-  - .sumSince(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .sumUntil(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .sumBetween(begin, end, serviceId) ⇒ `PersistedState | null`
-  - .updatedSince(timestamp, serviceId) ⇒ `boolean`
-  - .updatedUntil(timestamp, serviceId) ⇒ `boolean`
-  - .updatedBetween(begin, end, serviceId) ⇒ `boolean`
-  - .varianceSince(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .varianceUntil(timestamp, serviceId) ⇒ `PersistedState | null`
-  - .varianceBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+   - .averageSince(timestamp, serviceId) ⇒ `PersistedState | null`
+   - .averageUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+   - .averageBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+   - .changedSince(timestamp, serviceId) ⇒ `boolean`
+   - .changedUntil(timestamp, serviceId) ⇒ `boolean`
+   - .changedBetween(begin, end, serviceId) ⇒ `boolean`
+   - .countSince(timestamp, serviceId) ⇒ `number`
+   - .countUntil(timestamp, serviceId) ⇒ `number`
+   - .countBetween(begin, end, serviceId) ⇒ `number`
+   - .countStateChangesSince(timestamp, serviceId) ⇒ `number`
+   - .countStateChangesUntil(timestamp, serviceId) ⇒ `number`
+   - .countStateChangesBetween(begin, end, serviceId) ⇒ `number`
+   - .deltaSince(timestamp, serviceId) ⇒ `PersistedState | null`
+   - .deltaUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+   - .deltaBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+   - .deviationSince(timestamp, serviceId) ⇒ `PersistedState | null`
+   - .deviationUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+   - .deviationBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+   - .evolutionRateSince(timestamp, serviceId) ⇒ `number | null`
+   - .evolutionRateUntil(timestamp, serviceId) ⇒ `number | null`
+   - .evolutionRateBetween(begin, end, serviceId) ⇒ `number | null`
+   - .getAllStatesSince(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
+   - .getAllStatesUntil(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
+   - .getAllStatesBetween(begin, end, serviceId)  ⇒ `Array[PersistedItem]`
+   - .lastUpdate(serviceId) ⇒ `ZonedDateTime | null`
+   - .nextUpdate(serviceId)  ⇒ `ZonedDateTime | null`
+   - .maximumSince(timestamp, serviceId) ⇒ `PersistedItem | null`
+   - .maximumUntil(timestamp, serviceId) ⇒ `PersistedItem | null`
+   - .maximumBetween(begin, end, serviceId) ⇒ `PersistedItem | null`
+   - .minimumSince(timestamp, serviceId) ⇒ `PersistedItem | null`
+   - .minimumUntil(timestamp, serviceId) ⇒ `PersistedItem | null`
+   - .minimumBetween(begin, end, serviceId) ⇒ `PersistedItem | null`
+   - .persist(serviceId): Tells the persistence service to store the current Item state, which is then done asynchronously.
+     **Warning:** This has the side effect, that if the Item state changes shortly after `.persist` has been called, the new Item state will be persisted. See [JSDoc](https://openhab.github.io/openhab-js/items.ItemPersistence.html#persist) for a possible work-around.
+   - .persist(timestamp, state, serviceId): Tells the persistence service to store the given state at the given timestamp, which is then done asynchronously.
+   - .persist(timeSeries, serviceId): Tells the persistence service to store the given [`TimeSeries`](#timeseries), which is then done asynchronously.
+   - .persistedState(timestamp, serviceId) ⇒ `PersistedItem | null`
+   - .previousState(skipEqual, serviceId) ⇒ `PersistedItem | null`
+   - .nextState(skipEqual, serviceId) ⇒ `PersistedItem | null`
+   - .sumSince(timestamp, serviceId) ⇒ `PersistedState | null`
+   - .sumUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+   - .sumBetween(begin, end, serviceId) ⇒ `PersistedState | null`
+   - .updatedSince(timestamp, serviceId) ⇒ `boolean`
+   - .updatedUntil(timestamp, serviceId) ⇒ `boolean`
+   - .updatedBetween(begin, end, serviceId) ⇒ `boolean`
+   - .varianceSince(timestamp, serviceId) ⇒ `PersistedState | null`
+   - .varianceUntil(timestamp, serviceId) ⇒ `PersistedState | null`
+   - .varianceBetween(begin, end, serviceId) ⇒ `PersistedState | null`
 
 Note: `serviceId` is optional, if omitted, the default persistence service will be used.
 
@@ -512,6 +514,35 @@ console.log('KitchenDimmer maximum was ', historic.state, ' at ', historic.times
 
 See [openhab-js : ItemPersistence](https://openhab.github.io/openhab-js/items.ItemPersistence.html) for full API documentation.
 
+#### `TimeSeries`
+
+A `TimeSeries` is used to transport a set of states together with their timestamp.
+It is usually used for persisting historic state or forecasts in a persistence service by using [`ItemPersistence.persist`](#itempersistence).
+
+When creating a new `TimeSeries`, a policy must be chosen - it defines how the `TimeSeries` is persisted in a persistence service:
+
+- `ADD` adds the content to the persistence, well suited for persisting historic data.
+- `REPLACE` first removes all persisted elements in the timespan given by begin and end of the `TimeSeries`, well suited for persisting forecasts.
+
+A `TimeSeries` object has the following properties and methods:
+
+- `policy`: The persistence policy, either `ADD` or `REPLACE`.
+- `begin`: Timestamp of the first element of the `TimeSeries`.
+- `end`: Timestamp of the last element of the `TimeSeries`.
+- `size`: Number of elements in the `TimeSeries`.
+- `states`: States of the `TimeSeries` together with their timestamp and sorted by their timestamps.
+  Be aware that this returns a reference to the internal state array, so changes to the array will affect the `TimeSeries`.
+- `add(timestamp, state)`: Add a given state to the `TimeSeries` at the given timestamp.
+
+The following example shows how to create a `TimeSeries`:
+
+```javascript
+var timeSeries = new items.TimeSeries('ADD'); // Create a new TimeSeries with policy ADD
+timeSeries.add(time.toZDT('2024-01-01T14:53'), Quantity('5 m')).add(time.toZDT().minusMinutes(2), Quantity('0 m')).add(time.toZDT().plusMinutes(5), Quantity('5 m'));
+console.log(ts); // Let's have a look at the TimeSeries
+items.getItem('MyDistanceItem').persistence.persist(timeSeries, 'influxdb'); // Persist the TimeSeries for the Item 'MyDistanceItem' using the InfluxDB persistence service
+```
+
 ### Things
 
 The Things namespace allows to interact with openHAB Things.
@@ -519,26 +550,26 @@ The Things namespace allows to interact with openHAB Things.
 See [openhab-js : things](https://openhab.github.io/openhab-js/things.html) for full API documentation.
 
 - things : <code>object</code>
-  - .getThing(uid) ⇒ <code>Thing|null</code>
-  - .getThings() ⇒ <code>Array[Thing]</code>
+   - .getThing(uid) ⇒ <code>Thing|null</code>
+   - .getThings() ⇒ <code>Array[Thing]</code>
 
 #### `getThing(uid, nullIfMissing)`
 
 Calling `getThing(uid)` returns a `Thing` object with the following properties:
 
 - Thing : <code>object</code>
-  - .bridgeUID ⇒ <code>String</code>
-  - .label ⇒ <code>String</code>
-  - .location ⇒ <code>String</code>
-  - .status ⇒ <code>String</code>
-  - .statusInfo ⇒ <code>String</code>
-  - .thingTypeUID ⇒ <code>String</code>
-  - .uid ⇒ <code>String</code>
-  - .isEnabled ⇒ <code>Boolean</code>
-  - .setLabel(label)
-  - .setLocation(location)
-  - .setProperty(name, value)
-  - .setEnabled(enabled)
+   - .bridgeUID ⇒ <code>String</code>
+   - .label ⇒ <code>String</code>
+   - .location ⇒ <code>String</code>
+   - .status ⇒ <code>String</code>
+   - .statusInfo ⇒ <code>String</code>
+   - .thingTypeUID ⇒ <code>String</code>
+   - .uid ⇒ <code>String</code>
+   - .isEnabled ⇒ <code>Boolean</code>
+   - .setLabel(label)
+   - .setLocation(location)
+   - .setProperty(name, value)
+   - .setEnabled(enabled)
 
 ```javascript
 var thing = things.getThing('astro:moon:home');
@@ -735,16 +766,16 @@ If that key stored a timer, the timer will be cancelled.
 See [openhab-js : cache](https://openhab.github.io/openhab-js/cache.html) for full API documentation.
 
 - cache : <code>object</code>
-  - .private
-    - .get(key, defaultSupplier) ⇒ <code>Object | null</code>
-    - .put(key, value) ⇒ <code>Previous Object | null</code>
-    - .remove(key) ⇒ <code>Previous Object | null</code>
-    - .exists(key) ⇒ <code>boolean</code>
-  - .shared
-    - .get(key, defaultSupplier) ⇒ <code>Object | null</code>
-    - .put(key, value) ⇒ <code>Previous Object | null</code>
-    - .remove(key) ⇒ <code>Previous Object | null</code>
-    - .exists(key) ⇒ <code>boolean</code>
+   - .private
+      - .get(key, defaultSupplier) ⇒ <code>Object | null</code>
+      - .put(key, value) ⇒ <code>Previous Object | null</code>
+      - .remove(key) ⇒ <code>Previous Object | null</code>
+      - .exists(key) ⇒ <code>boolean</code>
+   - .shared
+      - .get(key, defaultSupplier) ⇒ <code>Object | null</code>
+      - .put(key, value) ⇒ <code>Previous Object | null</code>
+      - .remove(key) ⇒ <code>Previous Object | null</code>
+      - .exists(key) ⇒ <code>boolean</code>
 
 The `defaultSupplier` provided function will return a default value if a specified key is not already associated with a value.
 
@@ -1161,46 +1192,46 @@ See [Examples](#rule-builder-examples) for further patterns.
 
 - `when()`
 - `or()`
-  - `.channel(channelName)` Specifies a channel event as a source for the rule to fire.
-    - `.triggered(event)` Trigger on a specific event name
-  - `.cron(cronExpression)` Specifies a cron schedule for the rule to fire.
-  - `.timeOfDay(time)` Specifies a time of day in `HH:mm` for the rule to fire.
-  - `.item(itemName)` Specifies an Item as the source of changes to trigger a rule.
-    - `.for(duration)`
-    - `.from(state)`
-    - `.fromOn()`
-    - `.fromOff()`
-    - `.to(state)`
-    - `.toOn()`
-    - `.toOff()`
-    - `.receivedCommand()`
-    - `.receivedUpdate()`
-    - `.changed()`
-  - `.memberOf(groupName)` Specifies a group Item as the source of changes to trigger the rule.
-    - `.for(duration)`
-    - `.from(state)`
-    - `.fromOn()`
-    - `.fromOff()`
-    - `.to(state)`
-    - `.toOn()`
-    - `.toOff()`
-    - `.receivedCommand()`
-    - `.receivedUpdate()`
-    - `.changed()`
-  - `.system()` Specifies a system event as a source for the rule to fire.
-    - `.ruleEngineStarted()`
-    - `.rulesLoaded()`
-    - `.startupComplete()`
-    - `.thingsInitialized()`
-    - `.userInterfacesStarted()`
-    - `.startLevel(level)`
-  - `.thing(thingName)` Specifies a Thing event as a source for the rule to fire.
-    - `changed()`
-    - `updated()`
-    - `from(state)`
-    - `to(state)`
-  - `.dateTime(itemName)` Specifies a DateTime Item whose (optional) date and time schedule the rule to fire.
-    - `.timeOnly()` Only the time of the Item should be compared, the date should be ignored.
+   - `.channel(channelName)` Specifies a channel event as a source for the rule to fire.
+      - `.triggered(event)` Trigger on a specific event name
+   - `.cron(cronExpression)` Specifies a cron schedule for the rule to fire.
+   - `.timeOfDay(time)` Specifies a time of day in `HH:mm` for the rule to fire.
+   - `.item(itemName)` Specifies an Item as the source of changes to trigger a rule.
+      - `.for(duration)`
+      - `.from(state)`
+      - `.fromOn()`
+      - `.fromOff()`
+      - `.to(state)`
+      - `.toOn()`
+      - `.toOff()`
+      - `.receivedCommand()`
+      - `.receivedUpdate()`
+      - `.changed()`
+   - `.memberOf(groupName)` Specifies a group Item as the source of changes to trigger the rule.
+      - `.for(duration)`
+      - `.from(state)`
+      - `.fromOn()`
+      - `.fromOff()`
+      - `.to(state)`
+      - `.toOn()`
+      - `.toOff()`
+      - `.receivedCommand()`
+      - `.receivedUpdate()`
+      - `.changed()`
+   - `.system()` Specifies a system event as a source for the rule to fire.
+      - `.ruleEngineStarted()`
+      - `.rulesLoaded()`
+      - `.startupComplete()`
+      - `.thingsInitialized()`
+      - `.userInterfacesStarted()`
+      - `.startLevel(level)`
+   - `.thing(thingName)` Specifies a Thing event as a source for the rule to fire.
+      - `changed()`
+      - `updated()`
+      - `from(state)`
+      - `to(state)`
+   - `.dateTime(itemName)` Specifies a DateTime Item whose (optional) date and time schedule the rule to fire.
+      - `.timeOnly()` Only the time of the Item should be compared, the date should be ignored.
 
 Additionally, all the above triggers have the following functions:
 
@@ -1211,24 +1242,24 @@ Additionally, all the above triggers have the following functions:
 #### Rule Builder Conditions
 
 - `if(optionalFunction)`
-  - `.stateOfItem(itemName)`
-    - `is(state)`
-    - `in(state...)`
+   - `.stateOfItem(itemName)`
+      - `is(state)`
+      - `in(state...)`
 
 #### Rule Builder Operations
 
 - `then(optionalFunction)`
-  - `.build(name, description, tags, id)`
-  - `.copyAndSendState()`
-  - `.copyState()`
-  - `.inGroup(groupName)`
-  - `.postIt()`
-  - `.postUpdate(state)`
-  - `.send(command)`
-  - `.sendIt()`
-  - `.sendOff()`
-  - `.sendOn()`
-  - `.sendToggle()`
+   - `.build(name, description, tags, id)`
+   - `.copyAndSendState()`
+   - `.copyState()`
+   - `.inGroup(groupName)`
+   - `.postIt()`
+   - `.postUpdate(state)`
+   - `.send(command)`
+   - `.sendIt()`
+   - `.sendOff()`
+   - `.sendOn()`
+   - `.sendToggle()`
 
 #### Rule Builder Examples
 
@@ -1297,8 +1328,9 @@ This table gives an overview over the `event` object:
 | `triggerType`     | all except `PWMTrigger`, `PIDTrigger`               | Type of trigger that triggered event                                          | N/A                    |
 | `eventClass`      | all                                                 | Java class name of the triggering event                                       | N/A                    |
 | `module`          | all                                                 | (user-defined or auto-generated) name of trigger                              | N/A                    |
+| `raw`             | all                                                 | Original contents of the event including data passed from a calling rule      | N/A                    |
 
-All properties are typeof `string`.
+All properties are typeof `string` except for properties contained by `raw` which are unmodified from the original types.
 
 Please note that when using `GenericEventTrigger`, the available properties depend on the chosen event types.
 It is not possible for the openhab-js library to provide type conversions for all properties of all openHAB events, as those are too many.
@@ -1345,7 +1377,7 @@ Follow these steps to create your own library (it's called a CommonJS module):
    function someFunction () {
      console.log('Hello from your personal library!');
    }
-   
+
    module.exports = {
      someProperty,
      someFunction
