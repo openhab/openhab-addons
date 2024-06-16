@@ -55,7 +55,7 @@ public class AirbaseControlInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseControlInfo info = new AirbaseControlInfo();
-        info.ret = Objects.requireNonNull(Optional.ofNullable(responseMap.get("ret")).orElse(""));
+        info.ret = Objects.requireNonNullElse(responseMap.get("ret"),"");
         info.power = "1".equals(responseMap.get("pow"));
         info.mode = Objects.requireNonNull(
                 Optional.ofNullable(responseMap.get("mode")).flatMap(value -> InfoParser.parseInt(value))

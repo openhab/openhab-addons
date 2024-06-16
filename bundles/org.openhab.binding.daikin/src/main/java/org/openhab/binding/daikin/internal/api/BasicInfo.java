@@ -44,9 +44,9 @@ public class BasicInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         BasicInfo info = new BasicInfo();
-        info.mac = Objects.requireNonNull(Optional.ofNullable(responseMap.get("mac")).orElse(""));
-        info.ret = Objects.requireNonNull(Optional.ofNullable(responseMap.get("ret")).orElse(""));
-        info.ssid = Objects.requireNonNull(Optional.ofNullable(responseMap.get("ssid")).orElse(""));
+        info.mac = Objects.requireNonNullElse(responseMap.get("mac"),"");
+        info.ret = Objects.requireNonNullElse(responseMap.get("ret"),"");
+        info.ssid = Objects.requireNonNullElse(responseMap.get("ssid"),"");
         return info;
     }
 

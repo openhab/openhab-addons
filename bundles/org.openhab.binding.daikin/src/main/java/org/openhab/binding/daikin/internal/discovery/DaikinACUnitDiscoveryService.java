@@ -134,8 +134,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
 
             Map<String, String> parsedData = InfoParser.parse(data);
             Boolean secure = "1".equals(parsedData.get("en_secure"));
-            String thingId = Objects
-                    .requireNonNull(Optional.ofNullable(parsedData.get("ssid")).orElse(host.replace(".", "_")));
+            String thingId = Objects.requireNonNullElse(parsedData.get("ssid"), host.replace(".", "_"));
             String mac = Optional.ofNullable(parsedData.get("mac")).orElse("");
             String uuid = mac.isEmpty() ? UUID.randomUUID().toString()
                     : UUID.nameUUIDFromBytes(mac.getBytes()).toString();

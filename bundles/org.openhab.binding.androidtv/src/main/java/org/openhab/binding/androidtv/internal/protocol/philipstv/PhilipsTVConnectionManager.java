@@ -231,9 +231,9 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             Map<String, String> configMap = OBJECT_MAPPER.readValue(configJson,
                     new TypeReference<HashMap<String, String>>() {
                     });
-            this.username = Objects.requireNonNull(Optional.ofNullable(configMap.get("username")).orElse("")));
-            this.password = Objects.requireNonNull(Optional.ofNullable(configMap.get("password")).orElse(""));
-            this.macAddress = Objects.requireNonNull(Optional.ofNullable(configMap.get("macAddress")).orElse(""));
+            this.username = Objects.requireNonNullElse(configMap.get("username"),"");
+            this.password = Objects.requireNonNullElse(configMap.get("password"),"");
+            this.macAddress = Objects.requireNonNullElse(configMap.get("macAddress"),"");
             logger.debug("Processed configJson as {} {} {}", this.username, this.password, this.macAddress);
         } catch (IOException ex) {
             logger.debug("IOException when reading configJson from file {}", ex.getMessage());

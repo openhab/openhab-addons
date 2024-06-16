@@ -47,8 +47,8 @@ public class AirbaseZoneInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseZoneInfo info = new AirbaseZoneInfo();
-        info.zonenames = Objects.requireNonNull(Optional.ofNullable(responseMap.get("zone_name")).orElse(""));
-        String zoneinfo = Optional.ofNullable(responseMap.get("zone_onoff")).orElse("");
+        info.zonenames = Objects.requireNonNullElse(responseMap.get("zone_name"),"");
+        String zoneinfo = Objects.requireNonNullElse(responseMap.get("zone_onoff"),"");
 
         String[] zones = zoneinfo.split(";");
 
