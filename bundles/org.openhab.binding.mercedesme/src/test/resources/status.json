@@ -1,0 +1,98 @@
+[
+  {
+    "decklidstatus": {
+      "value": "false",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "doorstatusfrontleft": {
+      "value": "false",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "doorstatusfrontright": {
+      "value": "false",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "doorstatusrearleft": {
+      "value": "false",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "doorstatusrearright": {
+      "value": "false",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "interiorLightsFront": {
+      "value": "false",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "interiorLightsRear": {
+      "value": "false",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "lightswitchposition": {
+      "value": "0",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "readingLampFrontLeft": {
+      "value": "false",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "readingLampFrontRight": {
+      "value": "false",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "rooftopstatus": {
+      "value": "0",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "sunroofstatus": {
+      "value": "0",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "windowstatusfrontleft": {
+      "value": "0",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "windowstatusfrontright": {
+      "value": "0",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "windowstatusrearleft": {
+      "value": "0",
+      "timestamp": 1541080800000
+    }
+  },
+  {
+    "windowstatusrearright": {
+      "value": "0",
+      "timestamp": 1541080800000
+    }
+  }
+]

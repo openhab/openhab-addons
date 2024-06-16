@@ -1,0 +1,14 @@
+[
+	{
+		"rangeelectric": {
+			"value": "325",
+			"timestamp": 1655401822000
+		}
+	},
+	{
+		"soc": {
+			"value": "78",
+			"timestamp": 1655399096000
+		}
+	}
+]

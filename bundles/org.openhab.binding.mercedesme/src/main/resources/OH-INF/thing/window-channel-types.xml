@@ -3,9 +3,9 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="front-left-window">
+	<channel-type id="window-driver-front-channel">
 		<item-type>Number</item-type>
-		<label>Window Front Left</label>
+		<label>Driver Window</label>
 		<state readOnly="true">
 			<options>
 				<option value="0">Intermediate</option>
@@ -17,9 +17,9 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="front-right-window">
+	<channel-type id="window-driver-rear-channel">
 		<item-type>Number</item-type>
-		<label>Window Front Right </label>
+		<label>Driver Window Rear</label>
 		<state readOnly="true">
 			<options>
 				<option value="0">Intermediate</option>
@@ -31,9 +31,9 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="rear-left-window">
+	<channel-type id="window-passenger-front-channel">
 		<item-type>Number</item-type>
-		<label>Window Rear Left</label>
+		<label>Passenger Window</label>
 		<state readOnly="true">
 			<options>
 				<option value="0">Intermediate</option>
@@ -45,9 +45,9 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="rear-right-window">
+	<channel-type id="window-passenger-rear-channel">
 		<item-type>Number</item-type>
-		<label>Window Rear Right</label>
+		<label>Passenger Window Rear</label>
 		<state readOnly="true">
 			<options>
 				<option value="0">Intermediate</option>
@@ -59,24 +59,9 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="rear-right-blind">
-		<item-type>Number</item-type>
-		<label>Window Blind Rear Right</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="rear-left-blind">
-		<item-type>Number</item-type>
-		<label>Window Blind Rear Left</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="rear-blind">
-		<item-type>Number</item-type>
-		<label>Window Blind Rear</label>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="flip-window">
-		<item-type>Number</item-type>
-		<label>Flip Window</label>
-		<state readOnly="true"/>
+	<channel-type id="last-windows-update-channel">
+		<item-type>DateTime</item-type>
+		<label>Last Window Update</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

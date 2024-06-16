@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.mercedesme.internal.utils;
 
-import java.util.Optional;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.State;
 
 /**
@@ -28,21 +25,13 @@ public class ChannelStateMap {
     private String channel;
     private String group;
     private State state;
-    private Optional<UOMObserver> uomObserver = Optional.empty();
+    private long timestamp;
 
-    public ChannelStateMap(String ch, String grp, State st) {
+    public ChannelStateMap(String ch, String grp, State st, long ts) {
         channel = ch;
         group = grp;
         state = st;
-    }
-
-    public ChannelStateMap(String ch, String grp, State st, @Nullable UOMObserver uom) {
-        channel = ch;
-        group = grp;
-        state = st;
-        if (uom != null) {
-            uomObserver = Optional.of(uom);
-        }
+        timestamp = ts;
     }
 
     public String getChannel() {
@@ -57,17 +46,13 @@ public class ChannelStateMap {
         return state;
     }
 
-    public boolean hasUomObserver() {
-        return !uomObserver.isEmpty();
-    }
-
-    public UOMObserver getUomObserver() {
-        return uomObserver.get();
+    public long getTimestamp() {
+        return timestamp;
     }
 
     @Override
     public String toString() {
-        return group + "#" + channel + " " + state;
+        return group + ":" + channel + " " + state;
     }
 
     public boolean isValid() {
