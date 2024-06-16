@@ -166,8 +166,12 @@ public class LongPolling {
                 // NOTE: This handler runs inside the HTTP thread, so we schedule the response
                 // handling in a new thread because the HTTP thread is terminated after the
                 // timeout expires.
-                scheduler.execute(() -> longPolling.onLongPollComplete(httpClient, subscriptionId, result,
-                        this.getContentAsString()));
+                scheduler.execute(() -> {
+                    String contentAsString = this.getContentAsString();
+                    if (contentAsString != null) {
+                        longPolling.onLongPollComplete(httpClient, subscriptionId, result, contentAsString);
+                    }
+                });
             }
         });
     }

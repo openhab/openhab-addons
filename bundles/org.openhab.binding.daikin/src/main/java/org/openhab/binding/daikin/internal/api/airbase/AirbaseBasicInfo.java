@@ -14,6 +14,7 @@ package org.openhab.binding.daikin.internal.api.airbase;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,9 +45,9 @@ public class AirbaseBasicInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseBasicInfo info = new AirbaseBasicInfo();
-        info.mac = Optional.ofNullable(responseMap.get("mac")).orElse("");
-        info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
-        info.ssid = Optional.ofNullable(responseMap.get("ssid")).orElse("");
+        info.mac = Objects.requireNonNull(Optional.ofNullable(responseMap.get("mac")).orElse(""));
+        info.ret = Objects.requireNonNull(Optional.ofNullable(responseMap.get("ret")).orElse(""));
+        info.ssid = Objects.requireNonNull(Optional.ofNullable(responseMap.get("ssid")).orElse(""));
         return info;
     }
 

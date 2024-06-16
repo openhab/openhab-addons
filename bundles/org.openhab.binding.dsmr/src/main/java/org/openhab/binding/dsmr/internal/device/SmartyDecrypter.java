@@ -17,6 +17,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.crypto.BadPaddingException;
@@ -227,7 +228,7 @@ public class SmartyDecrypter implements TelegramParser {
                 logger.warn("Exception of failed decryption of telegram: ", e);
             }
             telegramListener.onError(DSMRErrorStatus.INVALID_DECRYPTION_KEY,
-                    Optional.ofNullable(e.getMessage()).orElse(""));
+                    Objects.requireNonNull(Optional.ofNullable(e.getMessage()).orElse("")));
         }
         return null;
     }

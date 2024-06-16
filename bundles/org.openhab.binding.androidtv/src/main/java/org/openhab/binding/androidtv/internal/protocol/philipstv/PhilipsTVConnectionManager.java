@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -230,9 +231,9 @@ public class PhilipsTVConnectionManager implements DiscoveryListener {
             Map<String, String> configMap = OBJECT_MAPPER.readValue(configJson,
                     new TypeReference<HashMap<String, String>>() {
                     });
-            this.username = Optional.ofNullable(configMap.get("username")).orElse("");
-            this.password = Optional.ofNullable(configMap.get("password")).orElse("");
-            this.macAddress = Optional.ofNullable(configMap.get("macAddress")).orElse("");
+            this.username = Objects.requireNonNull(Optional.ofNullable(configMap.get("username")).orElse("")));
+            this.password = Objects.requireNonNull(Optional.ofNullable(configMap.get("password")).orElse(""));
+            this.macAddress = Objects.requireNonNull(Optional.ofNullable(configMap.get("macAddress")).orElse(""));
             logger.debug("Processed configJson as {} {} {}", this.username, this.password, this.macAddress);
         } catch (IOException ex) {
             logger.debug("IOException when reading configJson from file {}", ex.getMessage());

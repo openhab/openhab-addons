@@ -14,6 +14,7 @@ package org.openhab.binding.daikin.internal.api.airbase;
 
 import java.util.EnumSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -48,7 +49,7 @@ public class AirbaseModelInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseModelInfo info = new AirbaseModelInfo();
-        info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
+        info.ret = Objects.requireNonNull(Optional.ofNullable(responseMap.get("ret")).orElse(""));
         info.zonespresent = Optional.ofNullable(responseMap.get("en_zone")).flatMap(value -> InfoParser.parseInt(value))
                 .orElse(0);
         info.commonzone = Optional.ofNullable(responseMap.get("en_common_zone"))

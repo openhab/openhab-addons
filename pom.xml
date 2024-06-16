@@ -69,7 +69,7 @@
     <ohc.version>4.2.0-SNAPSHOT</ohc.version>
     <bnd.version>7.0.0</bnd.version>
     <commons.net.version>3.9.0</commons.net.version>
-    <eea.version>2.2.1</eea.version>
+    <eea.version>2.4.0</eea.version>
     <jackson.version>2.17.1</jackson.version>
     <jna.version>5.14.0</jna.version>
     <karaf.version>4.4.6</karaf.version>
