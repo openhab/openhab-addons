@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -155,8 +156,9 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
         if (refresh) {
             ArgumentCaptor<PDU> pduCaptor = ArgumentCaptor.forClass(PDU.class);
             verify(snmpService, timeout(500).atLeast(1)).send(pduCaptor.capture(), any(), eq(null), eq(thingHandler));
-            List<? extends VariableBinding> variables = pduCaptor.getValue().getVariableBindings();
-            assertTrue(variables.stream().anyMatch(v -> v.getOid().toDottedString().equals(TEST_OID)));
+            Vector<? extends VariableBinding> variables = pduCaptor.getValue().getVariableBindings();
+            assertTrue(variables.stream().filter(v -> v.getOid().toDottedString().equals(TEST_OID)).findFirst()
+                    .isPresent());
         } else {
             verify(snmpService, never()).send(any(), any(), eq(null), eq(thingHandler));
         }
