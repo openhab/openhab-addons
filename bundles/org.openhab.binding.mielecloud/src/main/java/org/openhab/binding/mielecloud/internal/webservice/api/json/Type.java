@@ -42,7 +42,8 @@ public class Type {
     }
 
     public DeviceType getValueRaw() {
-        return Optional.ofNullable(valueRaw).orElse(DeviceType.UNKNOWN);
+        DeviceType valueRaw = this.valueRaw;
+        return valueRaw != null ? valueRaw : DeviceType.UNKNOWN;
     }
 
     public Optional<String> getValueLocalized() {
