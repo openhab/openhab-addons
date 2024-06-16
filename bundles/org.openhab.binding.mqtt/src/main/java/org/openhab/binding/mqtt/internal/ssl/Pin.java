@@ -54,10 +54,6 @@ public class Pin {
         return pinData;
     }
 
-    public @Nullable PinMessageDigest getHashDigest() {
-        return hashDigest;
-    }
-
     public void setLearningMode() {
         this.learning = true;
         this.pinData = null;

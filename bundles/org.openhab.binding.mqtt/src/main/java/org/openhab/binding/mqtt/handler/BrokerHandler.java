@@ -83,12 +83,6 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
             logger.error("Received pins hash is empty!");
             return;
         }
-        PinMessageDigest hashDigest = pin.getHashDigest();
-        if (hashDigest == null) {
-            logger.error("Received pins message digest is not set!");
-            return;
-        }
-
         String configKey = null;
         try {
             switch (pin.getType()) {
@@ -105,7 +99,7 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
         }
 
         Configuration thingConfig = editConfiguration();
-        thingConfig.put(configKey, hashDigest.getMethod() + ":" + HexUtils.bytesToHex(hash));
+        thingConfig.put(configKey, HexUtils.bytesToHex(hash));
         updateConfiguration(thingConfig);
     }
 
