@@ -103,7 +103,7 @@ Information about a HDMI input  connection.
 
 | Channel | Type   | Read/Write | Description                                                                                                                                                                                                                                                                                                                                                                                                            |
 | ------- | ------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| name    | String | R          | <details><summary>Hue Sync operation mode</summary><ul><li>powersave</li><li>passthrough</li><li>video</li><li>game</li><li>music</li><li>unknown (read only)</li></ul></details>                                                                                                                                                                                                                                                                                                                                                                                            |
+| name    | String | R          | <details><summary>Hue Sync operation mode</summary><ul><li>powersave</li><li>passthrough</li><li>video</li><li>game</li><li>music</li></ul></details>                                                                                                                                                                                                                                                                                                                                                                                            |
 
 #### mode
 
@@ -112,7 +112,6 @@ Information about a HDMI input  connection.
 - **game**  <br /> Reacts to the action on your screen, intensifying the in-game atmosphere with bursts of light that correspond to explosions, gunfire, and other gameplay events.\n
 - **passthrough**
 - **powersave**
-- **unknown** <br /> The device reports a mode not known to the binding (e.g. introduced by a new firmware). *NOTE: It is not possible to send this command to the device.*
 
 <!-- 
 ## Full Example

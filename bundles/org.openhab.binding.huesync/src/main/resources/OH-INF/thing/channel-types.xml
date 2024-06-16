@@ -103,12 +103,7 @@
 			with bursts of light that correspond to explosions, gunfire, and other gameplay events.\n
 
 			"passthrough",
-			"powersave",
-			"unknown:"
-			The device reports a mode not known to the binding (e.g. intorduced by a new
-			firmware). NOTE: It
-			is not
-			possible to send this command to the device.
+			"powersave"
 		</description>
 		<command>
 			<options>
@@ -117,7 +112,6 @@
 				<option value="video"></option>
 				<option value="game"></option>
 				<option value="music"></option>
-				<option value="unknown"></option>
 			</options>
 		</command>
 	</channel-type>

@@ -89,9 +89,6 @@ public class HueSyncHandler extends BaseThingHandler {
     @SuppressWarnings("null")
     private Runnable initializeConnection() {
         return () -> {
-            this.connection.updateConfiguration(this.getConfigAs(HueSyncConfiguration.class));
-
-            // TODO: Check if we can get rid of linter warning to avoid the suppress annotation ...
             this.deviceInfo = Optional.ofNullable(this.connection.getDeviceInfo());
             this.deviceInfo.ifPresent(info -> {
                 setProperty(Thing.PROPERTY_SERIAL_NUMBER, info.uniqueId != null ? info.uniqueId : "");
@@ -128,8 +125,9 @@ public class HueSyncHandler extends BaseThingHandler {
     private void startTasks() {
         this.stopTasks();
 
-        Runnable task = null;
+        this.connection.updateConfiguration(this.getConfigAs(HueSyncConfiguration.class));
 
+        Runnable task = null;
         String id = this.connection.isRegistered() ? POLL : REGISTER;
 
         long initialDelay = 0;
@@ -173,21 +171,34 @@ public class HueSyncHandler extends BaseThingHandler {
     }
 
     @SuppressWarnings("null")
-    private void handleUpdate(@Nullable HueSyncUpdateTaskResultDto update) {
-        if (update != null) {
+    private void handleUpdate(@Nullable HueSyncUpdateTaskResultDto dto) {
+        try {
+            HueSyncUpdateTaskResultDto update = Optional.ofNullable(dto).get();
+
             try {
-                // TODO: check if it is possible to avoid using the suppress annotation
-                this.updateFirmwareInformation(Optional.ofNullable(update.deviceStatus).orElseThrow());
-                this.updateHdmiInformation(Optional.ofNullable(update.hdmiStatus).orElseThrow());
-                this.updateExecutionInformation(Optional.ofNullable(update.execution).orElseThrow());
+                this.updateFirmwareInformation(Optional.ofNullable(update.deviceStatus).get());
             } catch (NoSuchElementException e) {
-                this.logger.error("Communication problem during update task: {}", e.getMessage());
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-                this.startTasks();
+                this.logMissingUpdateInformation("device");
             }
-        } else {
+
+            try {
+                this.updateHdmiInformation(Optional.ofNullable(update.hdmiStatus).get());
+            } catch (NoSuchElementException e) {
+                this.logMissingUpdateInformation("hdmi");
+            }
+
+            try {
+                this.updateExecutionInformation(Optional.ofNullable(update.execution).get());
+            } catch (NoSuchElementException e) {
+                this.logMissingUpdateInformation("execution");
+            }
+        } catch (NoSuchElementException e) {
             this.startTasks();
         }
+    }
+
+    private void logMissingUpdateInformation(String api) {
+        this.logger.warn("⚠️ Device information - {} status missing ⚠️", api);
     }
 
     @SuppressWarnings("null")
@@ -324,7 +335,7 @@ public class HueSyncHandler extends BaseThingHandler {
         }
 
         if (RefreshType.REFRESH.equals(command)) {
-            this.logger.debug("Channel UID: {} - Command: {}", channelUID.getAsString(), command.toFullString());
+            this.logger.trace("Channel UID: {} - Command: {}", channelUID.getAsString(), command.toFullString());
             return;
         }
         String commandId = channel.getUID().getId();

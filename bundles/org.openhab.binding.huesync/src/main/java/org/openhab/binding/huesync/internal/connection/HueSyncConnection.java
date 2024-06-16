@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.HttpResponseException;
+import org.eclipse.jetty.client.api.AuthenticationStore;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
@@ -41,6 +42,7 @@ import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -49,7 +51,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @NonNullByDefault
 public class HueSyncConnection {
-    public static final ObjectMapper ObjectMapper = new ObjectMapper();
+    public static final ObjectMapper ObjectMapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     /**
      * Request format: The Sync Box API can be accessed locally via HTTPS on root level (port 443,
      * /api/v1), resource level /api/v1/<resource> and in some cases sub-resource level
@@ -240,11 +243,12 @@ public class HueSyncConnection {
     }
 
     private void removeAuthentication() {
+        AuthenticationStore store = this.httpClient.getAuthenticationStore();
+        store.clearAuthenticationResults();
+        this.httpClient.setAuthenticationStore(store);
+
         this.registrationId = "";
-        if (this.authentication.isPresent()) {
-            this.httpClient.getAuthenticationStore().removeAuthenticationResult(this.authentication.get());
-            this.authentication = Optional.empty();
-        }
+        this.authentication = Optional.empty();
     }
 
     // #endregion

@@ -70,9 +70,7 @@ public class HueSyncDeviceConnection {
     }
 
     public @Nullable HueSyncDeviceDto getDeviceInfo() {
-        return this.connection.isRegistered()
-                ? this.connection.executeRequest(HttpMethod.GET, ENDPOINTS.DEVICE, "", HueSyncDeviceDtoDetailed.class)
-                : this.connection.executeGetRequest(ENDPOINTS.DEVICE, HueSyncDeviceDto.class);
+        return this.connection.executeGetRequest(ENDPOINTS.DEVICE, HueSyncDeviceDto.class);
     }
 
     public @Nullable HueSyncDeviceDtoDetailed getDetailedDeviceInfo() {
@@ -129,6 +127,9 @@ public class HueSyncDeviceConnection {
     }
 
     public void updateConfiguration(HueSyncConfiguration config) {
+        this.logger.debug("🔧 Connection configuration update for device {}:{} - Registration Id [{}]", config.host,
+                config.port, config.registrationId);
+
         this.connection.updateAuthentication(config.registrationId, config.apiAccessToken);
     }
 }
