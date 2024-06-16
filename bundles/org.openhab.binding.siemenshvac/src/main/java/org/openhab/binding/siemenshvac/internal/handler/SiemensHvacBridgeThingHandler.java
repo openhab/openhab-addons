@@ -15,9 +15,11 @@ package org.openhab.binding.siemenshvac.internal.handler;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -27,6 +29,7 @@ import org.openhab.binding.siemenshvac.internal.discovery.SiemensHvacDeviceDisco
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
 import org.openhab.binding.siemenshvac.internal.network.SiemensHvacConnector;
 import org.openhab.binding.siemenshvac.internal.type.SiemensHvacException;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -36,6 +39,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,13 +58,16 @@ public class SiemensHvacBridgeThingHandler extends BaseBridgeHandler {
     private final @Nullable HttpClientFactory httpClientFactory;
     private final SiemensHvacMetadataRegistry metaDataRegistry;
     private @Nullable SiemensHvacBridgeConfig config;
+    private final TranslationProvider translationProvider;
 
     public SiemensHvacBridgeThingHandler(Bridge bridge, @Nullable NetworkAddressService networkAddressService,
-            @Nullable HttpClientFactory httpClientFactory, SiemensHvacMetadataRegistry metaDataRegistry) {
+            @Nullable HttpClientFactory httpClientFactory, SiemensHvacMetadataRegistry metaDataRegistry,
+            TranslationProvider translationProvider) {
         super(bridge);
         SiemensHvacConnector lcConnector = null;
         this.httpClientFactory = httpClientFactory;
         this.metaDataRegistry = metaDataRegistry;
+        this.translationProvider = translationProvider;
 
         lcConnector = this.metaDataRegistry.getSiemensHvacConnector();
         if (lcConnector != null) {
@@ -154,8 +162,13 @@ public class SiemensHvacBridgeThingHandler extends BaseBridgeHandler {
             metaDataRegistry.readMeta();
             updateStatus(ThingStatus.ONLINE);
         } catch (SiemensHvacException ex) {
+            Locale local = metaDataRegistry.getUserLocale();
+            BundleContext bundleContext = FrameworkUtil.getBundle(this.getClass()).getBundleContext();
+            String text = translationProvider.getText(bundleContext.getBundle(), "offline.error-gateway-init",
+                    "DefaultValue", local);
+
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.error-gateway-init[\"" + ex.getMessage() + "\"]");
+                    MessageFormat.format(text, ex.getMessage()));
         }
     }
 

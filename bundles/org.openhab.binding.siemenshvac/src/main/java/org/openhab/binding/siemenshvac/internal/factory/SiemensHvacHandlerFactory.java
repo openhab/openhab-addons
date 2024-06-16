@@ -21,6 +21,7 @@ import org.openhab.binding.siemenshvac.internal.handler.SiemensHvacHandlerImpl;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataRegistry;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
@@ -49,17 +50,20 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
     private final HttpClientFactory httpClientFactory;
     private final SiemensHvacMetadataRegistry metaDataRegistry;
     private final ChannelTypeRegistry channelTypeRegistry;
+    private final TranslationProvider translationProvider;
 
     @Activate
     public SiemensHvacHandlerFactory(final @Reference HttpClientFactory httpClientFactory,
             final @Reference SiemensHvacMetadataRegistry metaDataRegistry,
             final @Reference NetworkAddressService networkAddressService,
             final @Reference ChannelTypeRegistry channelTypeRegistry,
-            final @Reference TimeZoneProvider timeZoneProvider) {
+            final @Reference TimeZoneProvider timeZoneProvider,
+            final @Reference TranslationProvider translationProvider) {
         this.httpClientFactory = httpClientFactory;
         this.metaDataRegistry = metaDataRegistry;
         this.networkAddressService = networkAddressService;
         this.channelTypeRegistry = channelTypeRegistry;
+        this.translationProvider = translationProvider;
 
         ConverterFactory.registerConverter(timeZoneProvider);
     }
@@ -86,7 +90,7 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (thing.getThingTypeUID().equals(SiemensHvacBindingConstants.THING_TYPE_OZW)) {
             return new SiemensHvacBridgeThingHandler((Bridge) thing, networkAddressService, httpClientFactory,
-                    metaDataRegistry);
+                    metaDataRegistry, translationProvider);
         } else if (SiemensHvacBindingConstants.BINDING_ID.equals(thing.getThingTypeUID().getBindingId())) {
             SiemensHvacHandlerImpl handler = new SiemensHvacHandlerImpl(thing,
                     metaDataRegistry.getSiemensHvacConnector(), metaDataRegistry, channelTypeRegistry);

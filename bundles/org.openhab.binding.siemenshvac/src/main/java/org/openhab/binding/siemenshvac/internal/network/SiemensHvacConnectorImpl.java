@@ -373,7 +373,6 @@ public class SiemensHvacConnectorImpl implements SiemensHvacConnector {
                                 throw new SiemensHvacException(
                                         "Session request auth was unsuccessful in _doAuth(), please verify login parameters");
                             }
-
                         }
 
                     }
