@@ -63,7 +63,6 @@ public class SiemenesHvacDiscoveryParticipant implements UpnpDiscoveryParticipan
         if (uid != null) {
             Map<String, Object> properties = new HashMap<>();
             String ipAddress = device.getDetails().getPresentationURI().getHost();
-            properties.put(SiemensHvacBindingConstants.IP_ADDRESS, ipAddress);
             properties.put(SiemensHvacBindingConstants.BASE_URL, "https://" + ipAddress + "/");
 
             String label = "";

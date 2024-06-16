@@ -23,6 +23,11 @@ With this binding, you will be able to:
 - Consult the different parameters of your system, like temperature, current heating mode, water temperature, and many more.
 - Modify the functioning mode of your device: temperature set point, heating mode, and others.
 
+OZW672 gateway support many different languages (about 16).
+The binding should work ok with all language choice, but is currently test more thoroughly for French and English language.
+If you use other language, and find some issues, you can report them on the OpenHab forum.
+
+
 ## Supported Things
 
 Support many different things as the thing type is handle by autodiscovery.
@@ -61,22 +66,12 @@ Channels are auto-discovered, you will find them on the RVS things.
 They are organized the same way as the LCD screen of your PAC device, by top level menu functionality, and sub-functionalities.
 Each channel is strongly typed, so for example, for heating mode, openHAB will provide you with a list of choices supported by the device.
 
-Channel                | Description                                              | Type          | Unit     | Security Access Level   |  ReadOnly | Advanced
------------------------|----------------------------------------------------------|---------------|----------|-------------------------|-----------|-------------------
-control-boiler-approval  | Set Boiler Approval (`AUTO`, `OFF`, `ON`)                | String        |          |                         |  R/W      | true
-control-program         | Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`)     | String        |          |                         |  R/W      | true
+Channel                 | Description                                                   | Type          | Unit     | Security Access Level   |  ReadOnly | Advanced   
+------------------------|---------------------------------------------------------------|---------------|----------|-------------------------|-----------|----------
+control-boiler-approval | Set Boiler Approval (`AUTO`, `OFF`, `ON`)                 | String        |          |                         |  R/W      | true
+control-program         | Set Program (`OFF`, `NORMAL`, `WARMWATER`, `MANUAL`) | String        |          |                         |  R/W      | true
 
-Channel Type ID        | Item Type                                | Description
------------------------|------------------------------------------|----------------------------------------------
-Numeric                | Number                                   | Handle basic numeric value
-String                 | String                                   | a String
-TimeOfDay              | TimeOfDay                                |
-Datetime               | Datetime                                 |
-RadioButton            | RadioButton                              |
-Scheduler              | Scheduler                                |
-Temperature            | Number                                   | Use to handle reading of  temperatur
-Setpoint               | Number                                   | Handle the setting of a temperature
-Regime                 | Number                                   | Enumeration for handling mode change
+
    
 ## Full Example
 
@@ -93,14 +88,13 @@ Bridge siemenshvac:ozw672:local "Ozw672" [ baseUrl="https://192.168.254.42/", us
 Items file `.items`
 
 ```java
-String              Boiler_State_Pump_HWS       "HWS Pump State [%s]"                   { channel = "siemenshvac:RVS41_813_327:local:local:2237#2259_PpeChargeECS"              }       
-Number              Boiler_State_HWS            "HWS State [%s]"                        { channel = "siemenshvac:RVS41_813_327:local:local:2032#2035_Etat_ECS"                  }
-Number:Temperature  Flow_Temperature_Real       "Flow Temparature Real [%.1f °C]"       { channel = "siemenshvac:RVS41_813_327:local:local:2237#2248_ValReelleTempDep_CC1"      }   
-Number:Temperature  Flow_Temperature_Setpoint   "Flow Temperature Setpoint [%.1f °C]"   { channel = "siemenshvac:RVS41_813_327:local:local:2237#2249_ConsTDepResultCC1"         }   
-Number              Hour_fct_HWS                "HWS Hour function"                     { channel = "siemenshvac:RVS41_813_327:local:local:2237#2263_HeuresFoncPompeECS"        }   
-Number              Nb_Start_HWS                "HWS Number of start [%.1f]"            { channel = "siemenshvac:RVS41_813_327:local:local:2237#2266_ComptDemarResEl_ECS"       }
-Number:Temperature  Thermostat_Temperature      "Thermostat tempeature [%.1f °C]"       { channel = "siemenshvac:RVS41_813_327:local:local:2237#2246_TAmbAct_CC1"               }
-Number:Temperature  Thermostat_Setpoint         "Thermostat setpoint [%.1f °C]"         { channel = "siemenshvac:RVS41_813_327:local:local:1724#1726_ConsConfort_TA_CC1"        }
-Number              Heat_Mode                   "Heat mode [%s]"                        { channel = "siemenshvac:RVS41_813_327:local:local:1724#1725_Regime_CC1"                }
+String              Boiler_State_Pump_HWS       "HWS Pump State [%s]"                   { channel = "siemenshvac:rvs41-813-327:ozw672:rvs41-813-327:2237#2259-ppechargeecs"              }       
+Number              Boiler_State_HWS            "HWS State [%s]"                        { channel = "siemenshvac:rvs41-813-327:ozw672:rvs41-813-327:2032#2035-etat-ecs"                  }
+Number:Temperature  Flow_Temperature_Real       "Flow Temparature Real [%.1f °C]"       { channel = "siemenshvac:rvs41-813-327:ozw672:rvs41-813-327:2237#2248-valreelletempdep-cc1"      }   
+Number:Temperature  Flow_Temperature_Setpoint   "Flow Temperature Setpoint [%.1f °C]"   { channel = "siemenshvac:rvs41-813-327:ozw672:rvs41-813-327:2237#2249-constdepresultcc1"         }   
+Number              Hour_fct_HWS                "HWS Hour function"                     { channel = "siemenshvac:rvs41-813-327:ozw672:rvs41-813-327:2237#2263-heuresfoncpompeecs"        }   
+Number              Nb_Start_HWS                "HWS Number of start [%.1f]"            { channel = "siemenshvac:rvs41-813-327:ozw672:rvs41-813-327:2237#2266-comptdemarresel-ecs"       }
+Number:Temperature  Thermostat_Temperature      "Thermostat tempeature [%.1f °C]"       { channel = "siemenshvac:rvs41-813-327:ozw672:rvs41-813-327:2237#2246-tambact-cc1"               }
+Number:Temperature  Thermostat_Setpoint         "Thermostat setpoint [%.1f °C]"         { channel = "siemenshvac:rvs41-813-327:ozw672:rvs41-813-327:1724#1726-consconfort-ta-cc1"        }
+Number              Heat_Mode                   "Heat mode [%s]"                        { channel = "siemenshvac:rvs41-813-327:ozw672:rvs41-813-327:1724#1725-regime-cc1"                }
 ``` 
-
