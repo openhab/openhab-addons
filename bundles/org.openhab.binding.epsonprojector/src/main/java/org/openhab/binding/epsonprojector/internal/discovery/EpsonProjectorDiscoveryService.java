@@ -78,7 +78,7 @@ public class EpsonProjectorDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return Set.of(THING_TYPE_PROJECTOR_TCP);
+        return SUPPORTED_THING_TYPES_UIDS;
     }
 
     @Override

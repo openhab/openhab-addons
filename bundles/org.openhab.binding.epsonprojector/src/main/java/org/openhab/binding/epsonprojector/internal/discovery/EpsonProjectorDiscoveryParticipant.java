@@ -49,7 +49,7 @@ public class EpsonProjectorDiscoveryParticipant implements SddpDiscoveryParticip
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Set.of(THING_TYPE_PROJECTOR_TCP);
+        return SUPPORTED_THING_TYPES_UIDS;
     }
 
     @Override
@@ -76,10 +76,9 @@ public class EpsonProjectorDiscoveryParticipant implements SddpDiscoveryParticip
     @Override
     public @Nullable ThingUID getThingUID(SddpDevice device) {
         if (device.manufacturer.toUpperCase(Locale.ENGLISH).contains(EPSON)
-                && device.type.toUpperCase(Locale.ENGLISH).contains(TYPE_PROJECTOR) && !device.macAddress.isBlank()
-                && !device.ipAddress.isBlank()) {
-            logger.debug("Epson projector with mac {} found at {}", device.macAddress, device.ipAddress);
+                && device.type.toUpperCase(Locale.ENGLISH).contains(TYPE_PROJECTOR) && !device.macAddress.isBlank()) {
 
+            logger.debug("Epson projector with mac {} found at {}", device.macAddress, device.ipAddress);
             return new ThingUID(THING_TYPE_PROJECTOR_TCP,
                     device.macAddress.replaceAll("-", "").toUpperCase(Locale.ENGLISH));
         }
