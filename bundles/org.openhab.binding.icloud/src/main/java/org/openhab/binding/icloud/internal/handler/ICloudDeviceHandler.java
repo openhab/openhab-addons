@@ -62,8 +62,6 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
 
     private @Nullable String deviceId;
 
-    private @Nullable ICloudDeviceInformation deviceInformationRecord;
-
     public ICloudDeviceHandler(Thing thing) {
         super(thing);
     }
@@ -72,7 +70,6 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     public void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList) {
         ICloudDeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
         if (deviceInformationRecord != null) {
-            this.deviceInformationRecord = deviceInformationRecord;
             if (deviceInformationRecord.getDeviceStatus() == 200) {
                 updateStatus(ONLINE);
             } else {
@@ -140,18 +137,12 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         if (channelId.equals(FIND_MY_PHONE)) {
             if (command == OnOffType.ON) {
                 try {
-
-                    if (deviceInformationRecord == null) {
-                        this.logger
-                                .debug("Can't send Find My Device request, because deviceInformationRecord is null!");
+                    final String deviceId = this.deviceId;
+                    if (deviceId == null) {
+                        this.logger.debug("Can't send Find My Device request, because deviceId is null!");
                         return;
                     }
-                    if (deviceInformationRecord.getId() == null) {
-                        this.logger.debug(
-                                "Can't send Find My Device request, because deviceInformationRecord.getId() is null!");
-                        return;
-                    }
-                    bridgeHandler.findMyDevice(deviceInformationRecord.getId());
+                    bridgeHandler.findMyDevice(deviceId);
                 } catch (IOException | InterruptedException e) {
                     this.logger.warn("Unable to execute find my device request", e);
                 }
@@ -192,6 +183,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     private @Nullable ICloudDeviceInformation getDeviceInformationRecord(
             List<ICloudDeviceInformation> deviceInformationList) {
         this.logger.debug("Device: [{}]", this.deviceId);
+
         for (ICloudDeviceInformation deviceInformationRecord : deviceInformationList) {
             String currentId = deviceInformationRecord.getDeviceDiscoveryId();
             if (currentId == null || currentId.isBlank()) {
