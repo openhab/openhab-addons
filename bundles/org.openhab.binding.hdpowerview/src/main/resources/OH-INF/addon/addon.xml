@@ -32,7 +32,7 @@
 			<match-properties>
 				<match-property>
 					<name>type</name>
-					<regex>hunterdouglas.*</regex>
+					<regex>hunterdouglas:hub:powerview.*</regex>
 				</match-property>
 			</match-properties>
 		</discovery-method>
