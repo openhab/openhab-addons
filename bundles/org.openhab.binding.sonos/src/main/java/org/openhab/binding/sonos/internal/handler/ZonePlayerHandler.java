@@ -1689,12 +1689,11 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
      */
     protected void saveState() {
         synchronized (stateLock) {
-            SonosZonePlayerState savedState = new SonosZonePlayerState();
+            savedState = new SonosZonePlayerState();
+            String currentURI = getCurrentURI();
+
             savedState.transportState = getTransportState();
             savedState.volume = getVolume();
-            this.savedState = savedState;
-
-            String currentURI = getCurrentURI();
 
             if (currentURI != null) {
                 if (isPlayingStreamOrRadio(currentURI)) {
@@ -2524,6 +2523,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
         }
     }
 
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public boolean publicAddress(LineInType lineInType) {
         // check if sourcePlayer has a line-in connected
         if ((lineInType != LineInType.DIGITAL && isAnalogLineInConnected())
@@ -2536,7 +2536,7 @@ public class ZonePlayerHandler extends BaseThingHandler implements UpnpIOPartici
                 for (String player : group.getMembers()) {
                     try {
                         ZonePlayerHandler somePlayer = getHandlerByName(player);
-                        if (!somePlayer.equals(this)) {
+                        if (somePlayer != this) {
                             somePlayer.becomeStandAlonePlayer();
                             somePlayer.stop();
                             addMember(StringType.valueOf(somePlayer.getUDN()));
