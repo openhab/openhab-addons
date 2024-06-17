@@ -308,8 +308,8 @@ public class EnedisHttpApi {
         return getMeasures(handler, apiBridgeHandler.getMaxPowerUrl(), prmId, from, to);
     }
 
-    public String getTempoData(LinkyHandler handler) throws LinkyException {
-        String url = String.format(apiBridgeHandler.getTempoUrl(), "2024-01-01", "2024-01-31");
+    public TempoResponse getTempoData(LinkyHandler handler) throws LinkyException {
+        String url = String.format(apiBridgeHandler.getTempoUrl(), "2024-01-01", "2024-06-30");
         if (!connected) {
             initialize();
         }
@@ -325,8 +325,7 @@ public class EnedisHttpApi {
                 throw new LinkyException("No report data received");
             }
 
-            return "{\"2024-01-20\":\"WHITE\",\"2024-01-21\":\"RED\",\"array\":[\"2024-01-20\",\"2024-01-21\"]}";
-            // return tempResponse.tempoDayInfo;
+            return tempResponse;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching ConsumptionReport.class: {}", data);
             throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);

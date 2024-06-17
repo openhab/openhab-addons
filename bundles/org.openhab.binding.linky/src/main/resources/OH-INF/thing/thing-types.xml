@@ -54,10 +54,12 @@
 
 		<channel-groups>
 			<channel-group typeId="main" id="main"/>
+			<channel-group typeId="tempo" id="tempo"/>
 			<channel-group typeId="daily" id="daily"/>
 			<channel-group typeId="weekly" id="weekly"/>
 			<channel-group typeId="monthly" id="monthly"/>
 			<channel-group typeId="yearly" id="yearly"/>
+			<channel-group typeId="timeseries" id="timeseries"/>
 
 		</channel-groups>
 
@@ -79,6 +81,15 @@
 
 	</thing-type>
 
+	<channel-group-type id="timeseries">
+		<label>Timeseries channel</label>
+		<channels>
+			<channel id="consumption" typeId="consumption">
+				<label>Consumption</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
 	<channel-group-type id="daily">
 		<label>Daily consumption</label>
 		<channels>
@@ -91,16 +102,19 @@
 			<channel id="day-3" typeId="consumption">
 				<label>Yesterday Consumption</label>
 			</channel>
+
 			<channel id="power" typeId="power"/>
 			<channel id="timestamp" typeId="timestamp">
 				<label>Peak Timestamp</label>
 				<description>Maximum power usage timestamp</description>
 			</channel>
+
 			<channel id="power-2" typeId="power"/>
 			<channel id="timestamp-2" typeId="timestamp">
 				<label>Peak Timestamp</label>
 				<description>Maximum power usage timestamp</description>
 			</channel>
+
 			<channel id="power-3" typeId="power"/>
 			<channel id="timestamp-3" typeId="timestamp">
 				<label>Peak Timestamp</label>
@@ -154,14 +168,17 @@
 		</channels>
 	</channel-group-type>
 
-    <channel-group-type id="temp">
-        <label>Tempo</label>
-        <channels>
-            <channel id="linkyTestSelect" typeId="info">
-                <label>linkyTestSelect</label>
-            </channel>
-        </channels>
-    </channel-group-type>
+	<channel-group-type id="tempo">
+		<label>Tempo</label>
+		<channels>
+			<channel id="tempoInfo" typeId="info">
+				<label>Tempo day information</label>
+			</channel>
+			<channel id="tempoInfoTimeSeries" typeId="info">
+				<label>Tempo day information</label>
+			</channel>
+		</channels>
+	</channel-group-type>
 
 	<channel-group-type id="main">
 		<label>Main</label>
@@ -240,13 +257,15 @@
 		</channels>
 	</channel-group-type>
 
-    <channel-type id="info" advanced="false">
-        <item-type>String</item-type>
-        <label>Status of Sensors</label>
-        <state readOnly="true"></state>
-    </channel-type>
+	<channel-type id="info" advanced="false">
+		<item-type>String</item-type>
+		<label>Information</label>
+		<description>an information</description>
+		<category>energy</category>
+		<state readOnly="true"></state>
+	</channel-type>
 
-	
+
 
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>

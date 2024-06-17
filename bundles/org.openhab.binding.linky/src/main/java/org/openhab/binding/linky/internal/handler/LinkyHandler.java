@@ -14,12 +14,17 @@ package org.openhab.binding.linky.internal.handler;
 
 import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
@@ -34,9 +39,11 @@ import org.openhab.binding.linky.internal.api.ExpiringDayCache;
 import org.openhab.binding.linky.internal.dto.IntervalReading;
 import org.openhab.binding.linky.internal.dto.MeterReading;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
+import org.openhab.binding.linky.internal.dto.TempoResponse;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -48,6 +55,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.TimeSeries;
+import org.openhab.core.types.TimeSeries.Policy;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -218,24 +227,60 @@ public class LinkyHandler extends BaseThingHandler {
     private synchronized void updateData() {
         boolean connectedBefore = isConnected();
 
-        updateEnergyData();
-        updatePowerData();
+        // updateEnergyData();
+        // updatePowerData();
 
-        // String tempoData = getTempoData();
+        TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
+        TempoResponse tempoData = getTempoData();
 
-        // LinkedTreeMap<String, String> obj = gson.fromJson(tempoData, LinkedTreeMap.class);
+        tempoData.forEach((k, v) -> {
+            try {
+                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                Date date = df.parse(k);
+                long epoch = date.getTime();
+                Instant timestamp = Instant.ofEpochMilli(epoch);
 
-        /*
-         *
-         *
-         * ArrayList<Object> list = new ArrayList<Object>();
-         * for (Object key : obj.keySet()) {
-         * Object val = obj.get(key);
-         *
-         * Pair<String, String> keyValue = new ImmutablePair(key, val);
-         * list.add(keyValue);
-         * }
-         */
+                int val = 0;
+                if (v.equals("WHITE")) {
+                    val = 0;
+                }
+                if (v.equals("BLUE")) {
+                    val = 1;
+                }
+                if (v.equals("RED")) {
+                    val = 2;
+                }
+                timeSeries.add(timestamp, new DecimalType(val));
+            } catch (ParseException ex) {
+
+            }
+
+        });
+
+        sendTimeSeries(TEMPO_TEMPO_INFO_TIME_SERIES, timeSeries);
+        updateState(TEMPO_TEMPO_INFO_TIME_SERIES, new DecimalType(1));
+
+        TimeSeries timeSeries2 = new TimeSeries(Policy.REPLACE);
+
+        LocalDate today = LocalDate.now();
+        MeterReading meterReading = getConsumptionData(today.minusDays(1095), today);
+        meterReading = getMeterReadingAfterChecks(meterReading);
+        if (meterReading != null) {
+
+            IntervalReading[] iv = meterReading.dayValue;
+
+            for (int i = 0; i < iv.length; i++) {
+
+                // iv[i].value
+
+                Instant timestamp = iv[i].date.toInstant(ZoneOffset.UTC);
+                timeSeries2.add(timestamp, new DecimalType(iv[i].value));
+
+            }
+        }
+
+        sendTimeSeries(CONSUMPTION, timeSeries2);
+        updateState(CONSUMPTION, new DecimalType(0));
 
         if (!connectedBefore && isConnected()) {
             disconnect();
@@ -423,24 +468,22 @@ public class LinkyHandler extends BaseThingHandler {
         return null;
     }
 
-    /*
-     * private @Nullable String getTempoData() {
-     * logger.debug("getTempoData from");
-     *
-     * EnedisHttpApi api = this.enedisApi;
-     * if (api != null) {
-     * try {
-     * String result = api.getTempoData();
-     * updateStatus(ThingStatus.ONLINE);
-     * return result;
-     * } catch (LinkyException e) {
-     * logger.debug("Exception when getting power data: {}", e.getMessage(), e);
-     * updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-     * }
-     * }
-     * return null;
-     * }
-     */
+    private @Nullable TempoResponse getTempoData() {
+        logger.debug("getTempoData from");
+
+        EnedisHttpApi api = this.enedisApi;
+        if (api != null) {
+            try {
+                TempoResponse result = api.getTempoData(this);
+                updateStatus(ThingStatus.ONLINE);
+                return result;
+            } catch (LinkyException e) {
+                logger.debug("Exception when getting power data: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
+            }
+        }
+        return null;
+    }
 
     private boolean isConnected() {
         EnedisHttpApi api = this.enedisApi;
