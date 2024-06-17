@@ -190,7 +190,7 @@ The binding automatically installs a script on the Shelly Device (oh-blu-scanner
 
 Follow these steps to add the Shelly BLU Device to openHAB
 
-- Make sure a Shelly is near by the BLU device, enable Bluetooh on this device (the Bluetooth Gateway mode is not required)
+- Make sure a Shelly is near by the BLU device, enable Bluetooh on this device (**disabling** the 'Bluetooth Gateway' mode in the Shelly app/UI is recommended)
 - Add this thing to openHAB, make sure thing gets online
 - Enable "BLU Gateway Support" in the thing configuration of the Shelly device acting as gateway.
 - Now press the button on your BLU device, this wakes up the device and the script forwards this event to the binding
