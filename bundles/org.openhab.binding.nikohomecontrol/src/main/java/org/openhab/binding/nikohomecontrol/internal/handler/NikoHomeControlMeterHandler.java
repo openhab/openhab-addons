@@ -196,15 +196,13 @@ public class NikoHomeControlMeterHandler extends NikoHomeControlBaseHandler impl
     private void updateProperties(NhcMeter nhcMeter) {
         Map<String, String> properties = new HashMap<>();
 
-        if (nhcMeter instanceof NhcMeter1) {
-            NhcMeter1 meter = (NhcMeter1) nhcMeter;
+        if (nhcMeter instanceof NhcMeter1 meter) {
             properties.put("type", meter.getMeterType());
             LocalDateTime referenceDate = meter.getReferenceDate();
             if (referenceDate != null) {
                 properties.put("startdateUTC", referenceDate.format(DATE_TIME_FORMAT));
             }
-        } else if (nhcMeter instanceof NhcMeter2) {
-            NhcMeter2 meter = (NhcMeter2) nhcMeter;
+        } else if (nhcMeter instanceof NhcMeter2 meter) {
             properties.put(PROPERTY_DEVICE_TYPE, meter.getDeviceType());
             properties.put(PROPERTY_DEVICE_TECHNOLOGY, meter.getDeviceTechnology());
             properties.put(PROPERTY_DEVICE_MODEL, meter.getDeviceModel());
