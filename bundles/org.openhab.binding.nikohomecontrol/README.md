@@ -275,7 +275,7 @@ String ThermostatDemand   {channel="nikohomecontrol:thermostat:nhc1:5:heatingdem
 Number:Power CurPower   "[%.0f W]"  {channel="nikohomecontrol:energyMeterLive:nhc1:6:power"} # Get current power consumption
 Number:Energy MyMeter          "[%.0f kWh]"   {channel="nikohomecontrol:energyMeter:nhc1:7:energy         # Get energy meter reading
 Number:Energy MyMeterDay       "[%.0f kWh]"   {channel="nikohomecontrol:energyMeter:nhc1:7:energyday      # Get energy meter day reading
-Switch Alarm            {channel="nikohomecontrol:onOff:nhc2:7:targetstate"}       # Switch to arm/disarm alarm with option values (ARMED/DISARMED)
+Switch AlarmControl     {channel="nikohomecontrol:onOff:nhc2:7:arm"}               # Switch to arm/disarm alarm
 Switch AlarmSwitch      {channel="nikohomecontrol:onOff:nhc2:7:armed"}             # Switch to arm/disarm alarm, on state delayed until after pre-arm phase
 String AlarmState       {channel="nikohomecontrol:onOff:nhc2:7:state"}             # State of the alarm system
 ```
