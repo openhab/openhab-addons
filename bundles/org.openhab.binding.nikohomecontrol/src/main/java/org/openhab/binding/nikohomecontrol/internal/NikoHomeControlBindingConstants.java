@@ -99,9 +99,8 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_RING_AND_COME_IN = "ringandcomein";
     public static final String CHANNEL_LOCK = "lock";
 
-    public static final String CHANNEL_CONTROL = "control";
+    public static final String CHANNEL_ARM = "arm";
     public static final String CHANNEL_ARMED = "armed";
-    public static final String CHANNEL_TARGET_STATE = "targetstate";
     public static final String CHANNEL_STATE = "state";
 
     public static final String CHANNEL_ALARM = "alarm";

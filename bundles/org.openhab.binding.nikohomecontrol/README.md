@@ -213,12 +213,12 @@ Thing nikohomecontrol:alarm:mybridge:myalarm [ alarmId="abcdef01-dcba-1234-ab98-
 | bellbutton      | RW |          | Switch             | access, accessRingAndComeIn | bell button connected to access device, including buttons on video phone devices linked to an access device. The bell can also be triggered by an `ON` command, `autoupdate="false"` by default |
 | ringandcomein   | RW |          | Switch             | accessRingAndComeIn | provide state and turn automatic door unlocking at bell ring on/off                         |
 | lock            | RW |          | Switch             | access, accessRingAndComeIn | provide doorlock state and unlock the door by sending an `OFF` command. `autoupdate="false"` by default |
-| control         | RW |          | Switch             | alarm       | arm/disarm alarm                                                                                     |
-| armed           | RW |          | Switch             | alarm       | state of the alarm system (on/off), will only turn on after pre-armed period when arming             |
-| targetstate     | RW |          | String             | alarm       | target state of the alarm system (ARMED/DISARMED), will change state immediately                     |
-| state           | R  |          | String             | alarm       | state of the alarm system (DISARMED, PREARMED, ARMED, PREALARM, ALARM, DETECTOR PROBLEM)             |
-| alarm           |    |          |                    | bridge, alarm | trigger channel with alarm event message, can be used in rules                                       |
-| notice          |    |          |                    | bridge      | trigger channel with notice event message, can be used in rules                                      |
+| arm             | RW |          | Switch             | alarm       | arm/disarm alarm, will change state (on/off) immediately. Note some integrations (Homekit, Google Home, ...) may require String states for an alarm system (ARMED/DISARMED). This can be achieved using an extra item and a rule updated by/commanding an item linked to this channel |
+| armed           | RW |          | Switch             | alarm       | state of the alarm system (on/off), will only turn on after pre-armed period when arming            |
+| state           | R  |          | String             | alarm       | state of the alarm system (DISARMED, PREARMED, ARMED, PREALARM, ALARM, DETECTOR PROBLEM)            |
+| alarm           |    |          |                    | bridge, alarm | trigger channel with alarm event message, can be used in rules                                    |
+| notice          |    |          |                    | bridge      | trigger channel with notice event message, can be used in rules                                     |
+
 
 ## Limitations
 

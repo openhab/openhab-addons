@@ -343,9 +343,8 @@
 		<label>@text/alarmLabel</label>
 		<description>@text/alarmDescription</description>
 		<channels>
-			<channel id="control" typeId="system.power"/>
+			<channel id="arm" typeId="system.power"/>
 			<channel id="armed" typeId="armed"/>
-			<channel id="targetstate" typeId="alarmtargetstate"/>
 			<channel id="state" typeId="alarmstate"/>
 			<channel id="alarm" typeId="alarm"/>
 		</channels>
@@ -534,18 +533,6 @@
 		<description>@text/channelAlarmArmedDescription</description>
 		<category>Alarm</category>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
-	</channel-type>
-	<channel-type id="alarmtargetstate">
-		<item-type>String</item-type>
-		<label>@text/channelAlarmTargetStateLabel</label>
-		<description>@text/channelAlarmTargetStateDescription</description>
-		<category>Switch</category>
-		<command>
-			<options>
-				<option value="DISARMED">@text/channelOptionAlarmStateDisarmed</option>
-				<option value="ARMED">@text/channelOptionAlarmStateArmed</option>
-			</options>
-		</command>
 	</channel-type>
 	<channel-type id="alarmstate">
 		<item-type>String</item-type>

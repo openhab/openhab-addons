@@ -68,18 +68,11 @@ public class NikoHomeControlAlarmHandler extends NikoHomeControlBaseHandler impl
             return;
         }
 
-        if ((CHANNEL_CONTROL.equals(channelUID.getId()) || CHANNEL_ARMED.equals(channelUID.getId()))
+        if ((CHANNEL_ARM.equals(channelUID.getId()) || CHANNEL_ARMED.equals(channelUID.getId()))
                 && command instanceof OnOffType s) {
             if (OnOffType.ON.equals(s)) {
                 nhcAlarm.executeArm();
             } else {
-                nhcAlarm.executeDisarm();
-            }
-        } else if (CHANNEL_TARGET_STATE.equals(channelUID.getId()) && command instanceof StringType s) {
-            String alarmState = s.toString();
-            if (alarmState.equals(ALARMSTATES.get(NHCARMED))) {
-                nhcAlarm.executeArm();
-            } else if (alarmState.equals(ALARMSTATES.get(NHCOFF))) {
                 nhcAlarm.executeDisarm();
             }
         } else {
@@ -188,15 +181,12 @@ public class NikoHomeControlAlarmHandler extends NikoHomeControlBaseHandler impl
             return;
         }
 
-        updateState(CHANNEL_CONTROL,
+        updateState(CHANNEL_ARM,
                 NHCOFF.equals(state) || NHCDETECTORPROBLEM.equals(state) ? OnOffType.OFF : OnOffType.ON);
         updateState(CHANNEL_ARMED,
                 NHCOFF.equals(state) || NHCPREARMED.equals(state) || NHCDETECTORPROBLEM.equals(state) ? OnOffType.OFF
                         : OnOffType.ON);
         updateState(CHANNEL_STATE, StringType.valueOf(ALARMSTATES.get(state)));
-        updateState(CHANNEL_TARGET_STATE,
-                NHCOFF.equals(state) || NHCDETECTORPROBLEM.equals(state) ? StringType.valueOf(ALARMSTATES.get(NHCOFF))
-                        : StringType.valueOf(ALARMSTATES.get(NHCARMED)));
         updateStatus(ThingStatus.ONLINE);
     }
 
