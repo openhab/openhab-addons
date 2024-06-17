@@ -35,6 +35,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAccess;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAction;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NhcAlarm;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcControllerEvent;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcMeter;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcThermostat;
@@ -381,6 +382,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             addVideoDevice(device);
         } else if ("accesscontrol".equals(device.model) || "bellbutton".equals(device.model)) {
             addAccessDevice(device, location);
+        } else if ("alarms".equals(device.model)) {
+            addAlarmDevice(device, location);
         } else if ("action".equals(device.type) || "virtual".equals(device.type)) {
             addActionDevice(device, location);
         } else if ("thermostat".equals(device.type)) {
@@ -400,7 +403,6 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             case "pir":
             case "simulation":
             case "comfort":
-            case "alarms":
             case "alloff":
             case "overallcomfort":
             case "garagedoor":
@@ -564,12 +566,26 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         videoDevices.put(device.uuid, nhcVideo);
     }
 
+    private void addAlarmDevice(NhcDevice2 device, @Nullable String location) {
+        NhcAlarm nhcAlarm = alarmDevices.get(device.uuid);
+        if (nhcAlarm != null) {
+            nhcAlarm.setName(device.name);
+            nhcAlarm.setLocation(location);
+        } else {
+            logger.debug("adding alarm device {} model {}, {}", device.uuid, device.model, device.name);
+            nhcAlarm = new NhcAlarm2(device.uuid, device.name, device.type, device.technology, device.model, location,
+                    this);
+        }
+        alarmDevices.put(device.uuid, nhcAlarm);
+    }
+
     private void removeDevice(NhcDevice2 device) {
         NhcAction action = actions.get(device.uuid);
         NhcThermostat thermostat = thermostats.get(device.uuid);
         NhcMeter meter = meters.get(device.uuid);
         NhcAccess access = accessDevices.get(device.uuid);
         NhcVideo video = videoDevices.get(device.uuid);
+        NhcAlarm alarm = alarmDevices.get(device.uuid);
         if (action != null) {
             action.actionRemoved();
             actions.remove(device.uuid);
@@ -585,6 +601,9 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         } else if (video != null) {
             video.videoDeviceRemoved();
             videoDevices.remove(device.uuid);
+        } else if (alarm != null) {
+            alarm.alarmDeviceRemoved();
+            alarmDevices.remove(device.uuid);
         }
     }
 
@@ -600,6 +619,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMeter meter = meters.get(device.uuid);
         NhcAccess accessDevice = accessDevices.get(device.uuid);
         NhcVideo videoDevice = videoDevices.get(device.uuid);
+        NhcAlarm alarm = alarmDevices.get(device.uuid);
 
         if (action != null) {
             updateActionState((NhcAction2) action, deviceProperties);
@@ -611,6 +631,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
             updateAccessState((NhcAccess2) accessDevice, deviceProperties);
         } else if (videoDevice != null) {
             updateVideoState((NhcVideo2) videoDevice, deviceProperties);
+        } else if (alarm != null) {
+            updateAlarmState((NhcAlarm2) alarm, deviceProperties);
         } else {
             logger.trace("No known device for {}", device.uuid);
         }
@@ -807,21 +829,36 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         videoDevice.updateState(callStatus01, callStatus02, callStatus03, callStatus04);
     }
 
+    private void updateAlarmState(NhcAlarm2 alarmDevice, List<NhcProperty> deviceProperties) {
+        String state = deviceProperties.stream().map(p -> p.internalState).filter(Objects::nonNull).findFirst()
+                .orElse(null);
+        if (state != null) {
+            logger.debug("setting alarm device {} state to {}", alarmDevice.getId(), state);
+            alarmDevice.setState(state);
+        }
+        String triggered = deviceProperties.stream().map(p -> p.alarmTriggered).filter(Objects::nonNull).findFirst()
+                .orElse(null);
+        if (Boolean.valueOf(triggered)) {
+            logger.debug("triggering alarm device {}", alarmDevice.getId());
+            alarmDevice.triggerAlarm();
+        }
+    }
+
     @Override
     public void executeAction(String actionId, String value) {
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        ArrayList<NhcMessageParam> params = new ArrayList<>();
+        List<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
-        ArrayList<NhcDevice2> devices = new ArrayList<>();
+        List<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
         devices.add(device);
         param.devices = devices;
         device.uuid = actionId;
-        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
+        List<NhcProperty> deviceProperties = new ArrayList<>();
         NhcProperty property = new NhcProperty();
         deviceProperties.add(property);
         device.properties = deviceProperties;
@@ -888,16 +925,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        ArrayList<NhcMessageParam> params = new ArrayList<>();
+        List<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
-        ArrayList<NhcDevice2> devices = new ArrayList<>();
+        List<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
         devices.add(device);
         param.devices = devices;
         device.uuid = thermostatId;
-        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
+        List<NhcProperty> deviceProperties = new ArrayList<>();
 
         NhcProperty overruleActiveProp = new NhcProperty();
         deviceProperties.add(overruleActiveProp);
@@ -919,16 +956,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        ArrayList<NhcMessageParam> params = new ArrayList<>();
+        List<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
-        ArrayList<NhcDevice2> devices = new ArrayList<>();
+        List<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
         devices.add(device);
         param.devices = devices;
         device.uuid = thermostatId;
-        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
+        List<NhcProperty> deviceProperties = new ArrayList<>();
 
         if (overruleTime > 0) {
             NhcProperty overruleActiveProp = new NhcProperty();
@@ -956,7 +993,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     @Override
     public void executeMeter(String meterId) {
-        // Nothing to do, meter readings not supported in NHC II at this point in time
+        // Nothing to do, individual meter readings not supported in NHC II at this point in time
     }
 
     @Override
@@ -964,16 +1001,16 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMessage2 message = new NhcMessage2();
 
         message.method = "devices.control";
-        ArrayList<NhcMessageParam> params = new ArrayList<>();
+        List<NhcMessageParam> params = new ArrayList<>();
         NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
-        ArrayList<NhcDevice2> devices = new ArrayList<>();
+        List<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
         devices.add(device);
         param.devices = devices;
         device.uuid = meterId;
-        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
+        List<NhcProperty> deviceProperties = new ArrayList<>();
 
         NhcProperty reportInstantUsageProp = new NhcProperty();
         deviceProperties.add(reportInstantUsageProp);
@@ -1091,12 +1128,12 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         NhcMessageParam param = new NhcMessageParam();
         params.add(param);
         message.params = params;
-        ArrayList<NhcDevice2> devices = new ArrayList<>();
+        List<NhcDevice2> devices = new ArrayList<>();
         NhcDevice2 device = new NhcDevice2();
         devices.add(device);
         param.devices = devices;
         device.uuid = accessId;
-        ArrayList<NhcProperty> deviceProperties = new ArrayList<>();
+        List<NhcProperty> deviceProperties = new ArrayList<>();
         NhcProperty property = new NhcProperty();
         deviceProperties.add(property);
         device.properties = deviceProperties;
@@ -1107,6 +1144,46 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
         }
 
         property.doorlock = NHCOPEN;
+
+        String topic = profile + "/control/devices/cmd";
+        String gsonMessage = gson.toJson(message);
+        sendDeviceMessage(topic, gsonMessage);
+    }
+
+    @Override
+    public void executeArm(String alarmId) {
+        executeAlarm(alarmId, NHCARM);
+    }
+
+    @Override
+    public void executeDisarm(String alarmId) {
+        executeAlarm(alarmId, NHCDISARM);
+    }
+
+    private void executeAlarm(String alarmId, String state) {
+        NhcMessage2 message = new NhcMessage2();
+
+        message.method = "devices.control";
+        List<NhcMessageParam> params = new ArrayList<>();
+        NhcMessageParam param = new NhcMessageParam();
+        params.add(param);
+        message.params = params;
+        List<NhcDevice2> devices = new ArrayList<>();
+        NhcDevice2 device = new NhcDevice2();
+        devices.add(device);
+        param.devices = devices;
+        device.uuid = alarmId;
+        List<NhcProperty> deviceProperties = new ArrayList<>();
+        NhcProperty property = new NhcProperty();
+        deviceProperties.add(property);
+        device.properties = deviceProperties;
+
+        NhcAlarm2 alarmDevice = (NhcAlarm2) alarmDevices.get(alarmId);
+        if (alarmDevice == null) {
+            return;
+        }
+
+        property.control = state;
 
         String topic = profile + "/control/devices/cmd";
         String gsonMessage = gson.toJson(message);
