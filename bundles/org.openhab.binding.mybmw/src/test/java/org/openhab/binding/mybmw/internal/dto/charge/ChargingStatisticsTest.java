@@ -119,6 +119,7 @@ public class ChargingStatisticsTest {
             Method updateChargeStatisticsMethod = VehicleHandler.class.getDeclaredMethod("updateChargingStatistics",
                     ChargingStatisticsContainer.class, String.class);
             updateChargeStatisticsMethod.setAccessible(true);
+            assertNotNull(vehicleHandler);
             updateChargeStatisticsMethod.invoke(Objects.requireNonNull(vehicleHandler),
                     JsonStringDeserializer.getChargingStatistics(statusContent), null);
         } catch (Exception e) {

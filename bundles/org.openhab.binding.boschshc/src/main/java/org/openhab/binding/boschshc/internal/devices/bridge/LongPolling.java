@@ -167,10 +167,7 @@ public class LongPolling {
                 // handling in a new thread because the HTTP thread is terminated after the
                 // timeout expires.
                 scheduler.execute(() -> {
-                    String contentAsString = this.getContentAsString();
-                    if (contentAsString != null) {
-                        longPolling.onLongPollComplete(httpClient, subscriptionId, result, contentAsString);
-                    }
+                    longPolling.onLongPollComplete(httpClient, subscriptionId, result, this.getContentAsString());
                 });
             }
         });
@@ -185,7 +182,7 @@ public class LongPolling {
      * @param content Content of the response
      */
     private void onLongPollComplete(BoschHttpClient httpClient, String subscriptionId, @Nullable Result result,
-            String content) {
+            @Nullable String content) {
         // Check if thing is still online
         if (this.aborted) {
             logger.debug("Canceling long polling for subscription id {} because it was aborted", subscriptionId);
@@ -215,7 +212,7 @@ public class LongPolling {
      * @param subscriptionId Id of subscription the response is for
      * @param content Content of the response
      */
-    private void handleLongPollResponse(BoschHttpClient httpClient, String subscriptionId, String content) {
+    private void handleLongPollResponse(BoschHttpClient httpClient, String subscriptionId, @Nullable String content) {
         logger.debug("Long poll response: {}", content);
 
         try {
