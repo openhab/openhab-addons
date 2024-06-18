@@ -68,7 +68,7 @@ public class AirthingsWaveRadonHandler extends AbstractAirthingsHandler {
                         new QuantityType<>(radonLongTermAvg, Units.BECQUEREL_PER_CUBIC_METRE));
             }
         } catch (AirthingsParserException e) {
-            logger.error("Failed to parse data received from Airthings sensor: {}", e.getMessage());
+            logger.warn("Failed to parse data received from Airthings sensor: {}", e.getMessage());
         }
     }
 
