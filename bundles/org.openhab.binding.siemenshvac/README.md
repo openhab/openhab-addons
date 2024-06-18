@@ -68,7 +68,7 @@ Each channel is strongly typed, so for example, for heating mode, openHAB will p
 
 Channel                         | Description                                                                                       | Type                          | Unit     | Security Access Level   |  ReadOnly | Advanced   
 --------------------------------|---------------------------------------------------------------------------------------------------|-------------------------------|----------|-------------------------|-----------|----------
-1724#1725-optgmode-hc1          | Set Operating mode heat circuit 1 (`Automatic`, `Comfort`, `Reduced`, `Protection`)   | operating-mode-hc             |          |                         |  R/W      | true
+1724#1725-optgmode-hc1          | Set Operating mode heat circuit 1 (`Automatic`, `Comfort`, `Reduced`, `Protection`)               | operating-mode-hc             |          |                         |  R/W      | true
 1724#1726-roomtemp-comfsetp-hc1 | Romm temperature comfort setpoint HC1                                                             | room-temp-comfort-setpoint-hc |          |                         |  R/W      | true
    
 ## Full Example
