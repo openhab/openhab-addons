@@ -74,7 +74,7 @@ public class LinkyBindingConstants {
     public static final String YEAR_MINUS_1 = "yearly#lastYear";
     public static final String YEAR_MINUS_2 = "yearly#year-2";
 
-    public static final String MAIN_IDENTITY = "main#Identity";
+    public static final String MAIN_IDENTITY = "main#identity";
 
     public static final String TEMPO_TEMPO_INFO = "tempo#tempoInfo";
     public static final String TEMPO_TEMPO_INFO_TIME_SERIES = "tempo#tempoInfoTimeSeries";
@@ -110,9 +110,6 @@ public class LinkyBindingConstants {
      */
     public static final String LINKY_SCOPES = Stream.of("am_application_scope", "default")
             .collect(Collectors.joining(" "));
-    // "r:devices:*", "w:devices:*", "x:devices:*", "r:hubs:*",
-    // "r:locations:*", "w:locations:*", "x:locations:*", "r:scenes:*", "x:scenes:*", "r:rules:*", "w:rules:*",
-    // "r:installedapps", "w:installedapps"
 
     public static final String ENEDIS_ACCOUNT_URL_PROD = "https://mon-compte-particulier.enedis.fr/";
     public static final String ENEDIS_AUTHORIZE_URL_PROD = ENEDIS_ACCOUNT_URL_PROD + "dataconnect/v1/oauth2/authorize";
