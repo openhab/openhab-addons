@@ -17,14 +17,29 @@
 					<value>ipBroadcast</value>
 				</discovery-parameter>
 				<discovery-parameter>
+					<name>requestPlain</name>
+					<value>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;&lt;emotivaPing
+						protocol=&quot;3.0&quot;/&gt;</value>
+				</discovery-parameter>
+				<discovery-parameter>
 					<name>destPort</name>
-					<value>7001</value>
+					<value>7000</value>
 				</discovery-parameter>
 				<discovery-parameter>
 					<name>timeoutMs</name>
 					<value>1000</value>
 				</discovery-parameter>
+				<discovery-parameter>
+					<name>listenPort</name>
+					<value>7001</value>
+				</discovery-parameter>
 			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>response</name>
+					<regex>.*</regex>
+				</match-property>
+			</match-properties>
 		</discovery-method>
 	</discovery-methods>
 
