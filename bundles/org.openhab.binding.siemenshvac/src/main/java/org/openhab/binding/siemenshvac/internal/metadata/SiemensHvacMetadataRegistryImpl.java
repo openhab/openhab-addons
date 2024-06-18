@@ -469,6 +469,7 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                             channelType = lcChannelTypeProvider.getInternalChannelType(channelTypeUID);
                             if (channelType == null) {
                                 channelType = createChannelType(metadataDataPoint, channelTypeUID);
+                                logger.debug("channelType:" + channelTypeUID);
                                 lcChannelTypeProvider.addChannelType(channelType);
                             }
                         }
