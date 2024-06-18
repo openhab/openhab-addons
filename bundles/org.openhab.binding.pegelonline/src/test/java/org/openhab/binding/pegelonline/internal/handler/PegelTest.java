@@ -247,11 +247,20 @@ class PegelTest {
 
         tsi = callback.getThingStatus();
         assertNotNull(tsi);
-        assertEquals(ThingStatus.UNKNOWN, tsi.getStatus(), "Status");
-        assertEquals(ThingStatusDetail.NONE, tsi.getStatusDetail(), "Detail");
-        description = tsi.getDescription();
-        assertNotNull(description);
-        assertEquals("@text/pegelonline.handler.status.wait-feedback", description, "Description");
+        // In function initialize scheduler is started.
+        // If schedule took place status is ONLINE else UNKNOWN
+        switch (tsi.getStatus()) {
+            case UNKNOWN:
+                assertEquals(ThingStatusDetail.NONE, tsi.getStatusDetail(), "Detail");
+                description = tsi.getDescription();
+                assertNotNull(description);
+                assertEquals("@text/pegelonline.handler.status.wait-feedback", description, "Description");
+                break;
+            case ONLINE:
+                break;
+            default:
+                fail();
+        }
 
         handler.dispose();
         config = new Configuration();
