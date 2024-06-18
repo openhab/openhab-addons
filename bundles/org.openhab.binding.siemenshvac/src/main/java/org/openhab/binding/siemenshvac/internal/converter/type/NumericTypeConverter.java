@@ -23,7 +23,6 @@ import javax.measure.quantity.Time;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.siemenshvac.internal.converter.ConverterException;
-import org.openhab.binding.siemenshvac.internal.converter.type.SiemensUnit.SIEUnits.TemperatureChangeRate;
 import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataDataPoint;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
@@ -87,22 +86,6 @@ public class NumericTypeConverter extends AbstractTypeConverter {
                         targetUnit = SIUnits.CELSIUS;
                     } else if ("°F".equals(unit)) {
                         targetUnit = ImperialUnits.FAHRENHEIT;
-                    }
-
-                    if (targetUnit != null) {
-                        return new QuantityType<>(dValue, targetUnit);
-                    }
-                } else if ("Number:TemperatureChangeRate".equals(itemType)) {
-                    Unit<TemperatureChangeRate> targetUnit = null;
-
-                    if ("°C*min".equals(unit)) {
-                        targetUnit = SiemensUnit.SIEUnits.CELSIUS_PER_MINUTE;
-                    } else if ("°Cmin".equals(unit)) {
-                        targetUnit = SiemensUnit.SIEUnits.CELSIUS_PER_MINUTE;
-                    } else if ("°Cdak".equals(unit)) {
-                        targetUnit = SiemensUnit.SIEUnits.CELSIUS_PER_MINUTE;
-                    } else if ("°F*min".equals(unit)) {
-                        targetUnit = SiemensUnit.SIEUnits.FAHRENHEIT_PER_MINUTE;
                     }
 
                     if (targetUnit != null) {
@@ -199,7 +182,6 @@ public class NumericTypeConverter extends AbstractTypeConverter {
     @Override
     public String getItemType(SiemensHvacMetadataDataPoint dpt) {
         String unit = dpt.getDptUnit();
-        Unit<TemperatureChangeRate> unit2 = SiemensUnit.SIEUnits.CELSIUS_PER_MINUTE;
 
         if (unit == null) {
             return CoreItemFactory.NUMBER;
@@ -217,7 +199,7 @@ public class NumericTypeConverter extends AbstractTypeConverter {
             case "°C*min":
             case "°Cmin":
             case "°Cdak":
-                return CoreItemFactory.NUMBER + ":TemperatureChangeRate";
+                return CoreItemFactory.NUMBER;
             case "V":
                 return CoreItemFactory.NUMBER + ":ElectricPotential";
             case "%":
