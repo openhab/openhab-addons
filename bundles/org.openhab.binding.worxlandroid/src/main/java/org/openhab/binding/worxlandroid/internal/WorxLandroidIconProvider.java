@@ -80,7 +80,7 @@ public class WorxLandroidIconProvider implements IconProvider {
 
     @Override
     public @Nullable Integer hasIcon(String category, String iconSetId, Format format) {
-        return /* ICONS.contains(category) && */ iconSetId.equals(BINDING_ID) && format == Format.SVG ? 0 : null;
+        return iconSetId.equals(BINDING_ID) && format == Format.SVG ? 0 : null;
     }
 
     public @Nullable InputStream getIcon(String category, String state) {

@@ -90,12 +90,6 @@ public class Mower {
         return timeExtension;
     }
 
-    public Double getFirmwareVersionAsDouble() {
-        // Most of the time it is xx.y but also seen xx.y.z+1 we'll keep only the beginning
-        String[] versionParts = getFirmwareVersion().split("\\.");
-        return Double.valueOf("%s.%s".formatted(versionParts[0], versionParts[1]));
-    }
-
     public String getFirmwareVersion() {
         return product.firmwareVersion;
     }
