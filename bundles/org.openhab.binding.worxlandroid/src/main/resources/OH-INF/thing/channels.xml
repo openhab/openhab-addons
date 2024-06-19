@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="worxlandroid"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Last device update</description>
+		<category>Time</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="battery-temp-type" advanced="true">
+		<item-type>Number:Temperature</item-type>
+		<label>Battery Temperature</label>
+		<description>Current temperature of the battery</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="voltage-type">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Battery Voltage</label>
+		<description>Battery voltage reported by the mower</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+
+	<channel-type id="axis-type">
+		<item-type>Number:Angle</item-type>
+		<label>Axis</label>
+		<category>Incline</category>
+		<state pattern="%.2f %unit%" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="distance-type">
+		<item-type>Number:Length</item-type>
+		<label>Total Distance</label>
+		<category>oh:worxlandroid:distance</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="metrics-duration">
+		<item-type>Number:Time</item-type>
+		<label>Time</label>
+		<category>time</category>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="status-type">
+		<item-type>String</item-type>
+		<label>Status Code</label>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="UNKNOWN">Unknown</option>
+				<option value="IDLE">Idle</option>
+				<option value="HOME">Home</option>
+				<option value="START_SEQUENCE">Start sequence</option>
+				<option value="LEAVING_HOME">Leaving home</option>
+				<option value="FOLLOW_WIRE">Follow wire</option>
+				<option value="SEARCHING_HOME">Searching home</option>
+				<option value="SEARCHING_WIRE">Searching wire</option>
+				<option value="MOWING">Mowing</option>
+				<option value="LIFTED">Lifted</option>
+				<option value="TRAPPED">Trapped</option>
+				<option value="BLADE_BLOCKED">Blade blocked</option>
+				<option value="DEBUG">Debug</option>
+				<option value="REMOTE_CONTROL">Remote control</option>
+				<option value="ESCAPE_FROM_OLM">Escape from OLM</option>
+				<option value="GOING_HOME">Going home</option>
+				<option value="ZONE_TRAINING">Zone training</option>
+				<option value="BORDER_CUT">Border cut</option>
+				<option value="SEARCHING_ZONE">Searching zone</option>
+				<option value="PAUSE">Pause</option>
+				<option value="MANUAL_STOP">Manual stop</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="error-type">
+		<item-type>String</item-type>
+		<label>Error Code</label>
+		<category>Error</category>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="UNKNOWN">Unknown</option>
+				<option value="NO_ERR">No error</option>
+				<option value="TRAPPED">Trapped</option>
+				<option value="LIFTED">Lifted</option>
+				<option value="WIRE_MISSING">Wire missing</option>
+				<option value="OUTSIDE_WIRE">Outside wire</option>
+				<option value="RAINING">Raining</option>
+				<option value="CLOSE_DOOR_TO_MOW">Close door to mow</option>
+				<option value="CLOSE_DOOR_TO_GO_HOME">Close door to go home</option>
+				<option value="BLADE_MOTOR_BLOCKED">Blade motor blocked</option>
+				<option value="WHEEL_MOTOR_BLOKED">Wheel motor blocked</option>
+				<option value="TRAPPED_TIMEOUT">Trapped timeout</option>
+				<option value="UPSIDE_DOWN">Upside down</option>
+				<option value="BATTERY_LOW">Battery low</option>
+				<option value="REVERSE_WIRE">Reverse wire</option>
+				<option value="CHARGE_ERROR">Charge error</option>
+				<option value="TIMEOUT_FINDING_HOME">Timeout finding home</option>
+				<option value="MOWER_LOCKED">Mower locked</option>
+				<option value="BATTERY_OVER_TEMPERATURE">Battery over temperature</option>
+				<option value="MOWER_OUTSIDE_WIRE">Mower outside wire</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="time-extension-type">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Schedule Time Extension</label>
+
+		<state readOnly="false" min="-100" max="100" step="10" pattern="%d %%"/>
+	</channel-type>
+
+	<channel-type id="schedule-mode-type">
+		<item-type>String</item-type>
+		<label>Schedule Mode</label>
+		<description>Sets Normal or Party mode</description>
+
+		<state readOnly="false">
+			<options>
+				<option value="NORMAL">Normal</option>
+				<option value="PARTY">Party</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="schedule-duration-type">
+		<item-type>Number:Time</item-type>
+		<label>Duration</label>
+		<state readOnly="false" min="0" max="1425" step="15" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="zone-meter-type">
+		<item-type>Number:Length</item-type>
+		<label>Length of the zone</label>
+		<category>oh:worxlandroid:distance</category>
+		<state readOnly="false" min="0" step="1" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="zone-type">
+		<item-type>Number</item-type>
+		<label>Zone Number</label>
+		<category>oh:worxlandroid:zones</category>
+		<state readOnly="false">
+			<options>
+				<option value="0">Zone 1</option>
+				<option value="1">Zone 2</option>
+				<option value="2">Zone 3</option>
+				<option value="3">Zone 4</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="action-type">
+		<item-type>String</item-type>
+		<label>Action</label>
+		<description>Action channel for your mower</description>
+		<state>
+			<options>
+				<option value="START">Start</option>
+				<option value="STOP">Stop</option>
+				<option value="HOME">Home</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="switch-rw">
+		<item-type>Switch</item-type>
+		<label>Read Write Switch</label>
+	</channel-type>
+
+	<channel-type id="switch-ro">
+		<item-type>Switch</item-type>
+		<label>Read Only Switch</label>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="charging-type">
+		<item-type>Switch</item-type>
+		<label>Battery Charging</label>
+		<category>oh:worxlandroid:charging</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="lock-type">
+		<item-type>Switch</item-type>
+		<label>Lock mower</label>
+		<description>Lock or unlock your mower.</description>
+		<category>oh:worxlandroid:lock</category>
+	</channel-type>
+
+	<channel-type id="number-ro">
+		<item-type>Number</item-type>
+		<label>A Number</label>
+		<category>oh:worxlandroid:counter</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="schedule-time">
+		<item-type>DateTime</item-type>
+		<label>Start Time</label>
+		<description>Start time of the mowing on this day</description>
+		<category>Time</category>
+		<state readOnly="false" pattern="%1$tH:%1$tM"/>
+	</channel-type>
+
+	<channel-type id="rain-delay-type">
+		<item-type>Number:Time</item-type>
+		<label>Delay</label>
+		<category>Time</category>
+		<state min="0" max="750" step="30" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="rain-counter">
+		<item-type>Number:Time</item-type>
+		<label>Rain Counter</label>
+		<category>Time</category>
+		<state min="0" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="rain-state-type">
+		<item-type>Switch</item-type>
+		<label>State</label>
+		<category>oh:worxlandroid:rain</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="rssi" advanced="true">
+		<item-type>Number:Power</item-type>
+		<label>RSSI</label>
+		<description>Received signal strength indicator</description>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%.0f dBm"/>
+	</channel-type>
+
+</thing:thing-descriptions>

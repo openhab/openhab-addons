@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="worxlandroid"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="mower">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Landroid Mower</label>
+		<description>Represents a Landroid Worx Mower</description>
+
+		<channel-groups>
+			<channel-group id="common" typeId="common-group-type"/>
+			<channel-group id="config" typeId="config-group-type"/>
+			<channel-group id="multi-zones" typeId="multi-zones-group-type"/>
+			<channel-group id="schedule" typeId="sched-group-type"/>
+			<channel-group id="aws" typeId="aws-group-type"/>
+			<channel-group id="sunday" typeId="day-sched-group-type">
+				<label>Sunday Schedule</label>
+			</channel-group>
+			<channel-group id="sunday2" typeId="day-sched-group-type">
+				<label>Sunday Slot 2 Schedule</label>
+			</channel-group>
+			<channel-group id="monday" typeId="day-sched-group-type">
+				<label>Monday Schedule</label>
+			</channel-group>
+			<channel-group id="monday2" typeId="day-sched-group-type">
+				<label>Monday Slot 2 Schedule</label>
+			</channel-group>
+			<channel-group id="tuesday" typeId="day-sched-group-type">
+				<label>Tuesday Schedule</label>
+			</channel-group>
+			<channel-group id="tuesday2" typeId="day-sched-group-type">
+				<label>Tuesday Slot 2 Schedule</label>
+			</channel-group>
+			<channel-group id="wednesday" typeId="day-sched-group-type">
+				<label>Wednesday Schedule</label>
+			</channel-group>
+			<channel-group id="wednesday2" typeId="day-sched-group-type">
+				<label>Wednesday Slot 2 Schedule</label>
+			</channel-group>
+			<channel-group id="thursday" typeId="day-sched-group-type">
+				<label>Thursday Schedule</label>
+			</channel-group>
+			<channel-group id="thursday2" typeId="day-sched-group-type">
+				<label>Thursday Slot 2 Schedule</label>
+			</channel-group>
+			<channel-group id="friday" typeId="day-sched-group-type">
+				<label>Friday Schedule</label>
+			</channel-group>
+			<channel-group id="friday2" typeId="day-sched-group-type">
+				<label>Friday Slot 2 Schedule</label>
+			</channel-group>
+			<channel-group id="saturday" typeId="day-sched-group-type">
+				<label>Saturday Schedule</label>
+			</channel-group>
+			<channel-group id="saturday2" typeId="day-sched-group-type">
+				<label>Saturday Slot 2 Schedule</label>
+			</channel-group>
+			<channel-group id="one-time" typeId="ot-sched-group-type"/>
+			<channel-group id="battery" typeId="battery-group-type"/>
+			<channel-group id="orientation" typeId="orientation-group-type"/>
+			<channel-group id="metrics" typeId="metrics-group-type"/>
+			<channel-group id="rain" typeId="rain-group-type"/>
+			<channel-group id="wifi" typeId="wifi-group-type"/>
+		</channel-groups>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="serialNumber" type="text">
+				<label>Serial Number</label>
+				<description>Serial number of the mower</description>
+				<required>true</required>
+			</parameter>
+
+			<parameter name="refreshStatusInterval" unit="s" type="integer" min="0">
+				<label>Refresh Status Interval</label>
+				<description>Interval for refreshing mower status in seconds</description>
+				<default>3600</default>
+				<required>true</required>
+			</parameter>
+
+			<parameter name="pollingInterval" unit="s" type="integer" min="0" max="7200">
+				<label>Polling Interval</label>
+				<description>Interval for polling in seconds</description>
+				<default>0</default>
+				<required>true</required>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+</thing:thing-descriptions>
