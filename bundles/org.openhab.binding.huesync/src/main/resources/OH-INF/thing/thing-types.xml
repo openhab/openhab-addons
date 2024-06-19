@@ -73,6 +73,7 @@
 			commands allow you to influence how the lights react to your entertainment.</description>
 		<channels>
 			<channel id="mode" typeId="execution-mode"></channel>
+			<channel id="syncActive" typeId="execution-syncActive"></channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

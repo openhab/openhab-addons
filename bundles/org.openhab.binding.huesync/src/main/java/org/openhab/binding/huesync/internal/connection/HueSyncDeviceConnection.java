@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -34,7 +35,9 @@ import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistra
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequestDto;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,23 +53,68 @@ public class HueSyncDeviceConnection {
 
     private HueSyncConnection connection;
 
-    public Map<String, Consumer<Command>> DeviceCommandsExecutors = new HashMap<>();
+    private Map<String, Consumer<Command>> DeviceCommandExecutors = new HashMap<>();
 
     public HueSyncDeviceConnection(HttpClient httpClient, HueSyncConfiguration configuration)
             throws CertificateException, IOException, URISyntaxException {
 
         this.connection = new HueSyncConnection(httpClient, configuration.host, configuration.port);
 
-        // TODO: POC - create real implementation to handle simple commands ...
-        this.DeviceCommandsExecutors.put(COMMANDS.MODE, command -> {
-            this.logger.info("Command executor: {}", command);
+        registerCommandHandlers();
+    }
 
-            if (!this.connection.isRegistered())
-                return;
+    // #region private
 
-            String json = String.format("{\"mode\": \"%s\"}", command.toFullString());
-            this.connection.executeRequest(HttpMethod.PUT, ENDPOINTS.EXECUTION, json, null);
+    private void registerCommandHandlers() {
+        this.DeviceCommandExecutors.put(COMMANDS.MODE, command -> {
+            execute("mode", "\"" + command.toFullString() + "\"", command);
         });
+        this.DeviceCommandExecutors.put(COMMANDS.SYNC, command -> {
+            String commandValue = command.toFullString().toUpperCase();
+
+            switch (commandValue) {
+                case "ON":
+                    execute("syncActive", "true", command);
+                    break;
+                case "OFF":
+                    execute("syncActive", "false", command);
+                    break;
+                default:
+                    logger.warn("Unable to translate command value: {}", commandValue);
+            }
+        });
+    }
+
+    private void execute(String key, String value, Command command) {
+        this.logger.info("Command executor: {}", command);
+
+        if (!this.connection.isRegistered()) {
+            this.logger.warn("Device is not registered - ignoring command: {}", command);
+            return;
+        }
+
+        String json = String.format("{ \"%s\": %s }", key, value);
+        this.connection.executeRequest(HttpMethod.PUT, ENDPOINTS.EXECUTION, json, null);
+    }
+
+    // #endregion
+
+    public void executeCommand(Channel channel, Command command) {
+        String uid = channel.getUID().getAsString();
+        String commandId = channel.getUID().getId();
+
+        this.logger.trace("Channel UID: {} - Command: {}", uid, command.toFullString());
+
+        if (RefreshType.REFRESH.equals(command)) {
+            return;
+        }
+
+        if (this.DeviceCommandExecutors.containsKey(commandId)) {
+            ((@NonNull Consumer<Command>) this.DeviceCommandExecutors.get(commandId)).accept(command);
+            ;
+        } else {
+            this.logger.error("No executor registered for command {} - please report this as an issue", commandId);
+        }
     }
 
     public @Nullable HueSyncDeviceDto getDeviceInfo() {

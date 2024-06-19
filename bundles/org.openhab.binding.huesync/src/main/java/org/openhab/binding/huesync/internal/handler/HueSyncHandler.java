@@ -40,6 +40,7 @@ import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTaskResul
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -48,7 +49,6 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;
 
@@ -120,8 +120,6 @@ public class HueSyncHandler extends BaseThingHandler {
         return scheduler.scheduleWithFixedDelay(task, initialDelay, interval, TimeUnit.SECONDS);
     }
 
-    // TODO: Life cycle handling for connection should resolve complex null problem (➡️ mode
-    // constructor)
     private void startTasks() {
         this.stopTasks();
 
@@ -246,6 +244,8 @@ public class HueSyncHandler extends BaseThingHandler {
 
     private void updateExecutionInformation(HueSyncExecutionDto executionStatus) {
         this.updateState(HueSyncConstants.CHANNELS.COMMANDS.MODE, new StringType(executionStatus.getMode()));
+        this.updateState(HueSyncConstants.CHANNELS.COMMANDS.SYNC,
+                executionStatus.syncActive ? OnOffType.ON : OnOffType.OFF);
     }
 
     private void handleRegistration(HueSyncRegistrationDto registration) {
@@ -316,11 +316,8 @@ public class HueSyncHandler extends BaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        this.logger.trace("Channel UID: {} - Command: {}", channelUID.getAsString(), command.toFullString());
-
         if (thing.getStatus() != ThingStatus.ONLINE) {
             this.logger.warn("Device status: {} ➡️ Command {} for chanel {} will be ignored",
                     thing.getStatus().toString(), command.toFullString(), channelUID.toString());
@@ -334,18 +331,7 @@ public class HueSyncHandler extends BaseThingHandler {
             return;
         }
 
-        if (RefreshType.REFRESH.equals(command)) {
-            this.logger.trace("Channel UID: {} - Command: {}", channelUID.getAsString(), command.toFullString());
-            return;
-        }
-        String commandId = channel.getUID().getId();
-
-        // TODO: Consider to move this code to the connection (do not expose command executors ...)
-        if (this.connection.DeviceCommandsExecutors.containsKey(commandId)) {
-            this.connection.DeviceCommandsExecutors.get(commandId).accept(command);
-        } else {
-            this.logger.error("No executor registered for command {} - please report this as an issue", commandId);
-        }
+        this.connection.executeCommand(channel, command);
     }
 
     @Override

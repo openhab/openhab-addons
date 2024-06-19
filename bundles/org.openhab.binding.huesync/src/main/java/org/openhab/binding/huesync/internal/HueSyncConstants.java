@@ -40,6 +40,7 @@ public class HueSyncConstants {
 
         public static class COMMANDS {
             public static final String MODE = "device-commands#mode";
+            public static final String SYNC = "device-commands#syncActive";
         }
 
         public static class HDMI {
