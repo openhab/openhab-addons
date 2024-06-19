@@ -23,6 +23,7 @@ import static org.openhab.binding.awattar.internal.AwattarUtil.getMillisToNextMi
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -55,7 +56,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class AwattarPriceHandler extends BaseThingHandler {
-
+    private static final int THING_REFRESH_INTERVAL = 60;
     private final Logger logger = LoggerFactory.getLogger(AwattarPriceHandler.class);
 
     private final TimeZoneProvider timeZoneProvider;
@@ -89,9 +90,8 @@ public class AwattarPriceHandler extends BaseThingHandler {
                  * The scheduler is required to run exactly at minute borders, hence we can't use scheduleWithFixedDelay
                  * here
                  */
-                int thingRefreshInterval = 60;
                 thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels,
-                        getMillisToNextMinute(1, timeZoneProvider), thingRefreshInterval * 1000, TimeUnit.MILLISECONDS);
+                        getMillisToNextMinute(1, timeZoneProvider), THING_REFRESH_INTERVAL, TimeUnit.SECONDS);
             }
         }
         updateStatus(ThingStatus.UNKNOWN);
