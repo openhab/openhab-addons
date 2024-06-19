@@ -23,7 +23,6 @@ import static org.openhab.binding.awattar.internal.AwattarUtil.getMillisToNextMi
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
