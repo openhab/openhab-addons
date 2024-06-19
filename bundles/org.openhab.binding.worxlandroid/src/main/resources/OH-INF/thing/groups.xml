@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="worxlandroid"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="common-group-type">
+		<label>Common</label>
+		<description>Common channels of the mower</description>
+		<channels>
+			<channel id="status" typeId="status-type"/>
+			<channel id="error" typeId="error-type"/>
+			<channel id="online" typeId="switch-ro">
+				<label>Online</label>
+				<description>Online status of the mower</description>
+			</channel>
+			<channel id="online-timestamp" typeId="timestamp">
+				<label>Online Status Timestamp</label>
+			</channel>
+			<channel id="action" typeId="action-type"/>
+			<channel id="enable" typeId="switch-rw">
+				<label>Mowing enabled</label>
+			</channel>
+			<channel id="lock" typeId="lock-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="aws-group-type">
+		<label>Aws</label>
+		<description>MQTT connexion to AWS</description>
+		<channels>
+			<channel id="poll" typeId="switch-rw">
+				<label>Poll AWS</label>
+				<description>Enables or disables polling Worx AWS</description>
+			</channel>
+			<channel id="connected" typeId="switch-ro">
+				<label>Connected</label>
+				<description>Connection to AWS is alive</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="config-group-type">
+		<label>Configuration</label>
+		<description>Configuration channels of your mower</description>
+		<channels>
+			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="command" typeId="number-ro">
+				<label>Command</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="multi-zones-group-type">
+		<label>Multi-Zone</label>
+		<description>Multi-Zones configuration of your mower</description>
+		<channels>
+			<channel id="enable" typeId="switch-rw">
+				<label>Multizone Enabled</label>
+			</channel>
+			<channel id="last-zone" typeId="zone-type">
+				<label>Last Zone</label>
+			</channel>
+			<channel id="zone-1" typeId="zone-meter-type">
+				<label>Meters Zone 1</label>
+			</channel>
+			<channel id="zone-2" typeId="zone-meter-type">
+				<label>Meters Zone 2</label>
+			</channel>
+			<channel id="zone-3" typeId="zone-meter-type">
+				<label>Meters Zone 3</label>
+			</channel>
+			<channel id="zone-4" typeId="zone-meter-type">
+				<label>Meters Zone 4</label>
+			</channel>
+			<channel id="allocation-0" typeId="zone-type">
+				<label>Zone Allocation 1</label>
+			</channel>
+			<channel id="allocation-1" typeId="zone-type">
+				<label>Zone Allocation 2</label>
+			</channel>
+			<channel id="allocation-2" typeId="zone-type">
+				<label>Zone Allocation 3</label>
+			</channel>
+			<channel id="allocation-3" typeId="zone-type">
+				<label>Zone Allocation 4</label>
+			</channel>
+			<channel id="allocation-4" typeId="zone-type">
+				<label>Zone Allocation 5</label>
+			</channel>
+			<channel id="allocation-5" typeId="zone-type">
+				<label>Zone Allocation 6</label>
+			</channel>
+			<channel id="allocation-6" typeId="zone-type">
+				<label>Zone Allocation 7</label>
+			</channel>
+			<channel id="allocation-7" typeId="zone-type">
+				<label>Zone Allocation 8</label>
+			</channel>
+			<channel id="allocation-8" typeId="zone-type">
+				<label>Zone Allocation 9</label>
+			</channel>
+			<channel id="allocation-9" typeId="zone-type">
+				<label>Zone Allocation 10</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="battery-group-type">
+		<label>Battery</label>
+		<description>Battery channels of your mower</description>
+		<channels>
+			<channel id="temperature" typeId="battery-temp-type"/>
+			<channel id="voltage" typeId="voltage-type"/>
+			<channel id="level" typeId="system.battery-level"/>
+			<channel id="charge-cycles" typeId="number-ro">
+				<label>Charge Cycles</label>
+			</channel>
+			<channel id="charge-cycles-total" typeId="number-ro">
+				<label>Total Charge Cycles</label>
+			</channel>
+			<channel id="charging" typeId="charging-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="orientation-group-type">
+		<label>Orientation</label>
+		<description>Orientation of your mower</description>
+		<channels>
+			<channel id="pitch" typeId="axis-type">
+				<label>Pitch</label>
+			</channel>
+			<channel id="roll" typeId="axis-type">
+				<label>Roll</label>
+			</channel>
+			<channel id="yaw" typeId="axis-type">
+				<label>Yaw</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="metrics-group-type">
+		<label>Metrics</label>
+		<description>Stat channels of your mower</description>
+		<channels>
+			<channel id="blade-time" typeId="metrics-duration">
+				<label>Current Blade Time</label>
+			</channel>
+			<channel id="blade-time-total" typeId="metrics-duration">
+				<label>Total Blade Time</label>
+			</channel>
+			<channel id="distance" typeId="distance-type"/>
+			<channel id="total-time" typeId="metrics-duration">
+				<label>Total Time</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="sched-group-type">
+		<label>Schedule</label>
+		<description>Schedule channels configuration of your mower</description>
+		<channels>
+			<channel id="mode" typeId="schedule-mode-type"/>
+			<channel id="time-extension" typeId="time-extension-type"/>
+			<channel id="next-start" typeId="timestamp">
+				<label>Next Start</label>
+				<description>Next mowing start based on schedule</description>
+			</channel>
+			<channel id="next-stop" typeId="timestamp">
+				<label>Next Stop</label>
+				<description>Next mowing stop based on schedule</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ot-sched-group-type">
+		<label>One-Time Schedule</label>
+		<description>One time schedule configuration of your mower</description>
+		<channels>
+			<channel id="edgecut" typeId="switch-rw">
+				<label>Schedule Edgecut</label>
+			</channel>
+			<channel id="duration" typeId="schedule-duration-type"/>
+		</channels>
+	</channel-group-type>
+
+
+	<channel-group-type id="day-sched-group-type">
+		<label>Daily Schedule</label>
+		<description>Configuration schedule channels for each day</description>
+		<channels>
+			<channel id="enable" typeId="switch-rw">
+				<label>Active</label>
+				<description>Defines if this day schedule is active or not</description>
+			</channel>
+			<channel id="time" typeId="schedule-time"/>
+			<channel id="duration" typeId="schedule-duration-type"/>
+			<channel id="edgecut" typeId="switch-rw">
+				<label>Edgecut</label>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="rain-group-type">
+		<label>Rain</label>
+		<description>Data rain channels of your mower</description>
+		<channels>
+			<channel id="state" typeId="rain-state-type"/>
+			<channel id="counter" typeId="rain-counter"/>
+			<channel id="delay" typeId="rain-delay-type"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="wifi-group-type">
+		<label>Wifi Information</label>
+		<channels>
+			<channel id="rssi" typeId="rssi"/>
+			<channel id="wifi-quality" typeId="system.signal-strength"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>

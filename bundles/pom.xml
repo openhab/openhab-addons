@@ -475,6 +475,7 @@
     <module>org.openhab.binding.wlanthermo</module>
     <module>org.openhab.binding.wled</module>
     <module>org.openhab.binding.wolfsmartset</module>
+    <module>org.openhab.binding.worxlandroid</module>
     <module>org.openhab.binding.wundergroundupdatereceiver</module>
     <module>org.openhab.binding.x</module>
     <module>org.openhab.binding.xmltv</module>

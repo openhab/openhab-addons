@@ -442,6 +442,7 @@
 /bundles/org.openhab.binding.wlanthermo/ @CSchlipp
 /bundles/org.openhab.binding.wled/ @Skinah
 /bundles/org.openhab.binding.wolfsmartset/ @BoBiene
+/bundles/org.openhab.binding.worxlandroid/ @clinique
 /bundles/org.openhab.binding.wundergroundupdatereceiver/ @danieldemus
 /bundles/org.openhab.binding.x/ @computergeek1507
 /bundles/org.openhab.binding.xmltv/ @clinique
