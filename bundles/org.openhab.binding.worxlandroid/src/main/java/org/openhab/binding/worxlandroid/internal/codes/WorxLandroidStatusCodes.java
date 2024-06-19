@@ -63,9 +63,6 @@ public enum WorxLandroidStatusCodes {
     SEARCHING_ZONE,
     @SerializedName("34")
     PAUSE,
-    // Issue #91
-    // @SerializedName("97")
-    // ZONE_TRAINING,
     @SerializedName("99")
     MANUEL_STOP;
 }

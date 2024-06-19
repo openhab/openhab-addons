@@ -105,7 +105,6 @@ public class WorxLandroidBindingConstants {
     public static final String CHANNEL_RAIN_STATE = "state";
     public static final String CHANNEL_RAIN_COUNTER = "counter";
 
-    //
     public static final String CHANNEL_PREFIX_ALLOCATION = "allocation-%d";
     public static final String CHANNEL_PREFIX_ZONE = "zone-%d";
 }
