@@ -173,7 +173,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
                     Thing.PROPERTY_FIRMWARE_VERSION, result.getFwVersion(), //
                     Thing.PROPERTY_SERIAL_NUMBER, result.getSerialNumber());
         } catch (JsonParseException e) {
-            throw new HubProcessingException("getFirmwareVersions(): JsonParseException");
+            throw new HubProcessingException("getInformation(): JsonParseException");
         }
     }
 
