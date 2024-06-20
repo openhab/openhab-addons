@@ -8,24 +8,4 @@
 	<description>This is the binding for devices from the Emotiva Audio Corporation.</description>
 	<connection>local</connection>
 
-	<discovery-methods>
-		<discovery-method>
-			<service-type>ip</service-type>
-			<discovery-parameters>
-				<discovery-parameter>
-					<name>type</name>
-					<value>ipBroadcast</value>
-				</discovery-parameter>
-				<discovery-parameter>
-					<name>destPort</name>
-					<value>7001</value>
-				</discovery-parameter>
-				<discovery-parameter>
-					<name>timeoutMs</name>
-					<value>1000</value>
-				</discovery-parameter>
-			</discovery-parameters>
-		</discovery-method>
-	</discovery-methods>
-
 </addon:addon>
