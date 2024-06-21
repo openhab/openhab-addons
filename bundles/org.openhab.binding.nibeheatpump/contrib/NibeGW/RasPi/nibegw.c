@@ -57,7 +57,7 @@
  *	20.2.2017   v1.22   Separated read and write token support.
  *	7.2.2021    v1.23   Fixed compile error in RasPi.
  *	19.11.2022  v1.30   Support 16-bit addressing.
- *	26.12.2022	v1.31	Fixed serial settings (for rpi Zero 2W + Waveshare RS485 CAN hat)
+ *	26.12.2022  v1.31   Fixed serial settings (for RPi Zero 2 W + Waveshare RS485 CAN hat)
  */
 
 #include <signal.h>
