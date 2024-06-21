@@ -22,6 +22,7 @@ import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService;
 import org.openhab.binding.meteoalerte.internal.deserialization.MeteoAlerteDeserializer;
 import org.openhab.binding.meteoalerte.internal.handler.MeteoAlerteBridgeHandler;
 import org.openhab.binding.meteoalerte.internal.handler.MeteoAlerteHandler;
+import org.openhab.binding.meteoalerte.internal.handler.RainForecastHandler;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
@@ -43,8 +44,6 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
     private final MeteoAlertIconProvider iconProvider;
-    private final LocationProvider locationProvider;
-    private final DepartmentDbService dbService;
     private final MeteoAlerteDeserializer deserializer;
     private final ZoneId zoneId;
 
@@ -54,9 +53,7 @@ public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
             final @Reference MeteoAlertIconProvider iconProvider,
             final @Reference MeteoAlerteDeserializer deserializer) {
         this.iconProvider = iconProvider;
-        this.locationProvider = locationProvider;
         this.deserializer = deserializer;
-        this.dbService = dbService;
         this.zoneId = timeZoneProvider.getTimeZone();
     }
 
@@ -69,9 +66,9 @@ public class MeteoAlerteHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        return BRIDGE_TYPE_API.equals(thingTypeUID)
-                ? new MeteoAlerteBridgeHandler((Bridge) thing, deserializer, locationProvider, dbService)
+        return BRIDGE_TYPE_API.equals(thingTypeUID) ? new MeteoAlerteBridgeHandler((Bridge) thing, deserializer)
                 : THING_TYPE_DEPARTEMENT.equals(thingTypeUID) ? new MeteoAlerteHandler(thing, zoneId, iconProvider)
-                        : null;
+                        : THING_TYPE_RAIN_FORECAST.equals(thingTypeUID) ? new RainForecastHandler(thing, deserializer)
+                                : null;
     }
 }

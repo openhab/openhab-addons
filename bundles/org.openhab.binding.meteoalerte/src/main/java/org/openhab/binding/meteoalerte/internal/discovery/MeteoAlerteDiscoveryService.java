@@ -12,26 +12,26 @@
  */
 package org.openhab.binding.meteoalerte.internal.discovery;
 
-import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.THING_TYPE_DEPARTEMENT;
+import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
+import static org.openhab.binding.meteoalerte.internal.config.ForecastConfiguration.LOCATION;
 
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meteoalerte.internal.config.DepartmentConfiguration;
 import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService;
 import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService.Department;
 import org.openhab.binding.meteoalerte.internal.handler.MeteoAlerteBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
-import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,22 +42,35 @@ import org.slf4j.LoggerFactory;
  */
 @Component(service = ThingHandlerService.class)
 @NonNullByDefault
-public class MeteoAlerteDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class MeteoAlerteDiscoveryService extends AbstractThingHandlerDiscoveryService<MeteoAlerteBridgeHandler> {
     private static final int DISCOVER_TIMEOUT_SECONDS = 2;
+    private @NonNullByDefault({}) LocationProvider locationProvider;
+    private @NonNullByDefault({}) DepartmentDbService dbService;
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteDiscoveryService.class);
-    private @Nullable LocationProvider locationProvider;
-    private @Nullable DepartmentDbService dbService;
-    private @Nullable MeteoAlerteBridgeHandler bridgeHandler;
 
-    @Activate
     public MeteoAlerteDiscoveryService() {
-        super(Set.of(THING_TYPE_DEPARTEMENT), DISCOVER_TIMEOUT_SECONDS);
+        super(MeteoAlerteBridgeHandler.class, DISCOVERABLE_THING_TYPES_UIDS, DISCOVER_TIMEOUT_SECONDS);
     }
 
-    @Override
-    public void deactivate() {
-        super.deactivate();
+    @Reference(unbind = "-")
+    public void bindTranslationProvider(TranslationProvider translationProvider) {
+        this.i18nProvider = translationProvider;
+    }
+
+    @Reference(unbind = "-")
+    public void bindLocaleProvider(LocaleProvider localeProvider) {
+        this.localeProvider = localeProvider;
+    }
+
+    @Reference(unbind = "-")
+    public void bindLocationProvider(LocationProvider locationProvider) {
+        this.locationProvider = locationProvider;
+    }
+
+    @Reference(unbind = "-")
+    public void bindDepartmentDbService(DepartmentDbService dbService) {
+        this.dbService = dbService;
     }
 
     @Override
@@ -71,24 +84,19 @@ public class MeteoAlerteDiscoveryService extends AbstractDiscoveryService implem
             return;
         }
 
-        MeteoAlerteBridgeHandler handler = bridgeHandler;
-        ThingUID bridgeUID = handler != null ? handler.getThing().getUID() : null;
-        if (bridgeUID == null) {
-            logger.debug("No valid UID for Meteo Alerte bridge -> Will not provide any discovery results");
-            return;
-        }
-
-        DepartmentDbService localDbService = dbService;
-        if (localDbService != null) {
-            createResults(location, localDbService, bridgeUID);
-        } else {
-            logger.debug("No department database available -> Will not provide any discovery results");
-        }
+        createDepartmentResults(location);
+        createForecastResults(location);
     }
 
-    private void createResults(PointType serverLocation, DepartmentDbService db, ThingUID bridgeUID) {
-        List<Department> candidates = db.getBounding(serverLocation);
+    private void createForecastResults(PointType location) {
+        thingDiscovered(DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_RAIN_FORECAST, LOCAL))
+                .withLabel("@text/discovery.meteoalerte.rain-forecast.local.label")
+                .withProperty(LOCATION, location.toString()).withRepresentationProperty(LOCATION).build());
+    }
 
+    private void createDepartmentResults(PointType serverLocation) {
+        List<Department> candidates = dbService.getBounding(serverLocation);
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
         if (!candidates.isEmpty()) {
             candidates.forEach(dep -> thingDiscovered(
                     DiscoveryResultBuilder.create(new ThingUID(THING_TYPE_DEPARTEMENT, bridgeUID, dep.id()))//
@@ -99,19 +107,5 @@ public class MeteoAlerteDiscoveryService extends AbstractDiscoveryService implem
         } else {
             logger.info("No department could be discovered matching server location");
         }
-    }
-
-    @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof MeteoAlerteBridgeHandler bridgeHandler) {
-            this.bridgeHandler = bridgeHandler;
-            this.locationProvider = bridgeHandler.getLocationProvider();
-            this.dbService = bridgeHandler.getDbService();
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
     }
 }

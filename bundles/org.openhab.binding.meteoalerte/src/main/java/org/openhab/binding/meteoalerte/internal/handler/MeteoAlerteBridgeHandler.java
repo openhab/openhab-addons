@@ -12,11 +12,11 @@
  */
 package org.openhab.binding.meteoalerte.internal.handler;
 
+import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.REQUEST_TIMEOUT_MS;
+
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.HttpMethod;
@@ -25,27 +25,23 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meteoalerte.internal.MeteoAlerteException;
 import org.openhab.binding.meteoalerte.internal.config.BridgeConfiguration;
-import org.openhab.binding.meteoalerte.internal.db.DepartmentDbService;
 import org.openhab.binding.meteoalerte.internal.deserialization.MeteoAlerteDeserializer;
-import org.openhab.binding.meteoalerte.internal.discovery.MeteoAlerteDiscoveryService;
 import org.openhab.binding.meteoalerte.internal.dto.Domain;
 import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance;
+import org.openhab.binding.meteoalerte.internal.dto.Term;
 import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.DomainId;
 import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.Meta;
 import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.Period;
 import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.Product;
 import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.TextBlocItem;
 import org.openhab.binding.meteoalerte.internal.dto.MeteoFrance.VigilanceEnCours;
-import org.openhab.binding.meteoalerte.internal.dto.Term;
 import org.openhab.core.cache.ExpiringCache;
-import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,23 +58,17 @@ public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
     private static final String PORTAIL_API_BASE_URL = "https://public-api.meteofrance.fr/public/DPVigilance/v1/%s/encours";
     private static final String TEXTE_VIGILANCE_URL = PORTAIL_API_BASE_URL.formatted("textesvigilance");
     private static final String CARTE_VIGILANCE_URL = PORTAIL_API_BASE_URL.formatted("cartevigilance");
-    private static final int REQUEST_TIMEOUT_MS = (int) TimeUnit.SECONDS.toMillis(45);
     private static final long CACHE_EXPIRY = TimeUnit.MINUTES.toMillis(10);
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlerteBridgeHandler.class);
     private final Properties header = new Properties();
-    private final LocationProvider locationProvider;
-    private final DepartmentDbService dbService;
     private final MeteoAlerteDeserializer deserializer;
 
     private final ExpiringCache<VigilanceEnCours> vigilanceText;
     private final ExpiringCache<VigilanceEnCours> vigilanceMap;
 
-    public MeteoAlerteBridgeHandler(Bridge bridge, MeteoAlerteDeserializer deserializer,
-            LocationProvider locationProvider, DepartmentDbService dbService) {
+    public MeteoAlerteBridgeHandler(Bridge bridge, MeteoAlerteDeserializer deserializer) {
         super(bridge);
-        this.locationProvider = locationProvider;
-        this.dbService = dbService;
         this.deserializer = deserializer;
 
         vigilanceText = new ExpiringCache<>(CACHE_EXPIRY, () -> this.getVigilanceEnCours(TEXTE_VIGILANCE_URL));
@@ -164,18 +154,5 @@ public class MeteoAlerteBridgeHandler extends BaseBridgeHandler {
     public Optional<Meta> getMeta() {
         VigilanceEnCours local = vigilanceText.getValue();
         return Optional.ofNullable(local != null ? local.meta() : null);
-    }
-
-    @Override
-    public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Set.of(MeteoAlerteDiscoveryService.class);
-    }
-
-    public LocationProvider getLocationProvider() {
-        return locationProvider;
-    }
-
-    public DepartmentDbService getDbService() {
-        return dbService;
     }
 }

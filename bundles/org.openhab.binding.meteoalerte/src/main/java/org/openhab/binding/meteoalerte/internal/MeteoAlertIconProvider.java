@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.meteoalerte.internal;
 
-import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.BINDING_ID;
+import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstants.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -50,8 +50,9 @@ public class MeteoAlertIconProvider implements IconProvider {
     private static final String NEUTRAL_COLOR = "#3d3c3c";
     private static final String DEFAULT_LABEL = "Vigilance Météo Icons";
     private static final String DEFAULT_DESCRIPTION = "Icons illustrating weather alerts provided by Météo France";
-    private static final List<String> ICONS = Stream
-            .concat(Stream.of("meteo_france"), Hazard.AS_SET.stream().filter(Hazard::isChannel).map(h -> h.channelName))
+    private static final List<String> HAZARD_ICONS = Hazard.AS_SET.stream().filter(Hazard::isChannel)
+            .map(h -> h.channelName).toList();
+    private static final List<String> ICONS = Stream.concat(Stream.of("meteo_france", INTENSITY), HAZARD_ICONS.stream())
             .toList();
 
     private final Logger logger = LoggerFactory.getLogger(MeteoAlertIconProvider.class);
@@ -97,12 +98,21 @@ public class MeteoAlertIconProvider implements IconProvider {
 
     @Override
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
-        String icon = getResource(category);
+        String iconName = category;
+        if (INTENSITY.equals(category) && state != null) {
+            String localState = state.equalsIgnoreCase("on") ? "3" : state.equalsIgnoreCase("off") ? "0" : state;
+            try {
+                iconName = "%s-%d".formatted(category, Double.valueOf(localState).intValue());
+            } catch (NumberFormatException e) {
+                logger.debug("Unable to parse {} to a numeric value", state);
+            }
+        }
+        String icon = getResource(iconName);
         if (icon.isEmpty()) {
             return null;
         }
 
-        if (state != null) {
+        if (state != null && HAZARD_ICONS.contains(category)) {
             try {
                 int ordinal = Integer.valueOf(state);
                 Risk alertLevel = ordinal < Risk.values().length ? Risk.values()[ordinal] : Risk.UNKNOWN;
