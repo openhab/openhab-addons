@@ -167,7 +167,7 @@ public class VehicleHandler extends BaseThingHandler {
 
     private boolean supports(final String propertyName) {
         String supported = thing.getProperties().get(propertyName);
-        return Boolean.FALSE.toString().equals(supported);
+        return Boolean.TRUE.toString().equals(supported);
     }
 
     private ClientMessage createCM(CommandRequest cr) {
@@ -416,19 +416,21 @@ public class VehicleHandler extends BaseThingHandler {
                 switch (channelUID.getIdWithoutGroup()) {
                     case OH_CHANNEL_PROGRAM:
                         selectedChargeProgram = ((DecimalType) command).intValue();
-                        if (!chargeGroupValueStorage.has(Integer.toString(selectedChargeProgram))) {
+                        if (chargeGroupValueStorage.has(Integer.toString(selectedChargeProgram))) {
+                            maxSocToSelect = chargeGroupValueStorage
+                                    .getJSONObject(Integer.toString(selectedChargeProgram))
+                                    .getInt(Constants.MAX_SOC_KEY);
+                            autoUnlockToSelect = chargeGroupValueStorage
+                                    .getJSONObject(Integer.toString(selectedChargeProgram))
+                                    .getBoolean(Constants.AUTO_UNLOCK_KEY);
+                            updateChannel(new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
+                                    QuantityType.valueOf(maxSocToSelect, Units.PERCENT)));
+                            updateChannel(new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
+                                    OnOffType.from(autoUnlockToSelect)));
+                            sendCommand = true;
+                        } else {
                             logger.trace("No charge program found for {}", selectedChargeProgram);
                         }
-                        maxSocToSelect = chargeGroupValueStorage.getJSONObject(Integer.toString(selectedChargeProgram))
-                                .getInt(Constants.MAX_SOC_KEY);
-                        autoUnlockToSelect = chargeGroupValueStorage
-                                .getJSONObject(Integer.toString(selectedChargeProgram))
-                                .getBoolean(Constants.AUTO_UNLOCK_KEY);
-                        updateChannel(new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
-                                QuantityType.valueOf(maxSocToSelect, Units.PERCENT)));
-                        updateChannel(new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
-                                OnOffType.from(autoUnlockToSelect)));
-                        sendCommand = true;
                         break;
                     case OH_CHANNEL_AUTO_UNLOCK:
                         autoUnlockToSelect = OnOffType.ON.equals(command);

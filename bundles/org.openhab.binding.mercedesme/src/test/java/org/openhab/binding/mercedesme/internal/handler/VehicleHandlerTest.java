@@ -14,7 +14,9 @@ package org.openhab.binding.mercedesme.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.mercedesme.internal.Constants.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -407,6 +409,7 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        when(thingMock.getProperties()).thenReturn(Map.of(MB_KEY_COMMAND_ZEV_PRECONDITION_CONFIGURE, "true"));
         AccountHandlerMock ahm = new AccountHandlerMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
@@ -435,6 +438,7 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        when(thingMock.getProperties()).thenReturn(Map.of(MB_KEY_COMMAND_CHARGE_PROGRAM_CONFIGURE, "true"));
         AccountHandlerMock ahm = new AccountHandlerMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
