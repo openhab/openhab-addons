@@ -155,7 +155,8 @@ public class CoronaStatsWorldHandler extends BaseBridgeHandler {
                         f.completeExceptionally(new CoronaStatsPollingException("Request failed", e));
                     }
                 } else if (response.getStatus() != 200) {
-                    f.completeExceptionally(new CoronaStatsPollingException(Objects.requireNonNull(getContentAsString())));
+                    f.completeExceptionally(
+                            new CoronaStatsPollingException(Objects.requireNonNull(getContentAsString())));
                 } else {
                     try {
                         CoronaStats coronaStatsJSON = gson.fromJson(getContentAsString(), CoronaStats.class);
