@@ -117,7 +117,6 @@ public class RainForecastHandler extends BaseThingHandler {
         } catch (MeteoAlerteException e) {
             logger.warn("Exception deserializing API answer: {}", e.getMessage());
         }
-
     }
 
     private void setProperties(@Nullable Properties forecastProps) {

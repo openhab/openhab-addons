@@ -52,7 +52,6 @@ public class RainForecast {
         public String timezone = "";
         public int confidence;
         public List<Forecast> forecast = List.of();
-
     }
 
     public @Nullable ZonedDateTime updateTime;
