@@ -379,7 +379,7 @@ public class JRubyScriptEngineConfiguration {
         private final String defaultValue;
         private final Optional<String> mappedTo;
         private final Type type;
-        private @Nullable String value = null;
+        private @Nullable String value;
 
         private OptionalConfigurationElement(String defaultValue) {
             this(Type.OTHER, defaultValue, null);

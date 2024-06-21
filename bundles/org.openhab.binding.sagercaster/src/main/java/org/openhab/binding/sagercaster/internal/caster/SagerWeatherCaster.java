@@ -90,7 +90,7 @@ public class SagerWeatherCaster {
     private final Logger logger = LoggerFactory.getLogger(SagerWeatherCaster.class);
     private final Properties forecaster = new Properties();
 
-    private @Nullable SagerPrediction prevision = null;
+    private @Nullable SagerPrediction prevision;
     private String[] usedDirections = NTZDIRECTIONS; // Defaulted to Northern Zone
 
     private int currentBearing = -1;
@@ -324,8 +324,7 @@ public class SagerWeatherCaster {
     }
 
     public String getForecast() {
-        SagerPrediction prevision = this.prevision;
-        return prevision != null ? prevision.getForecast() : UNDEF;
+        return Objects.requireNonNullElse(this.prevision.getForecast(), UNDEF);
     }
 
     public String getWindVelocity() {

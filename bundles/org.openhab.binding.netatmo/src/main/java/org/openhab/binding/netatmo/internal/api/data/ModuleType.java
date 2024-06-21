@@ -18,6 +18,7 @@ import static org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.*;
 import java.net.URI;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -218,8 +219,7 @@ public enum ModuleType {
     }
 
     public ModuleType getBridge() {
-        ModuleType bridgeType = this.bridgeType;
-        return bridgeType != null ? bridgeType : UNKNOWN;
+        return Objects.requireNonNullElse(this.bridgeType, UNKNOWN);
     }
 
     public int getDepth() {
