@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
@@ -135,7 +134,7 @@ public class DaikinACUnitDiscoveryService extends AbstractDiscoveryService {
             Map<String, String> parsedData = InfoParser.parse(data);
             Boolean secure = "1".equals(parsedData.get("en_secure"));
             String thingId = Objects.requireNonNullElse(parsedData.get("ssid"), host.replace(".", "_"));
-            String mac = Optional.ofNullable(parsedData.get("mac")).orElse("");
+            String mac = parsedData.getOrDefault("mac", "");
             String uuid = mac.isEmpty() ? UUID.randomUUID().toString()
                     : UUID.nameUUIDFromBytes(mac.getBytes()).toString();
 

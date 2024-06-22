@@ -60,7 +60,7 @@ public class ControlInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         ControlInfo info = new ControlInfo();
-        info.ret = Objects.requireNonNull(Optional.ofNullable(responseMap.get("ret")).orElse(""));
+        info.ret = responseMap.getOrDefault("ret", "");
         info.power = "1".equals(responseMap.get("pow"));
         info.mode = Objects.requireNonNull(Optional.ofNullable(responseMap.get("mode"))
                 .flatMap(value -> InfoParser.parseInt(value)).map(value -> Mode.fromValue(value)).orElse(Mode.AUTO));
@@ -69,8 +69,7 @@ public class ControlInfo {
             info.autoModeValue = info.mode.getValue();
             info.mode = Mode.AUTO;
         }
-        info.temp = Objects.requireNonNull(
-                Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value)));
+        info.temp = Optional.ofNullable(responseMap.get("stemp")).flatMap(value -> InfoParser.parseDouble(value));
         info.fanSpeed = Objects.requireNonNull(Optional.ofNullable(responseMap.get("f_rate"))
                 .map(value -> FanSpeed.fromValue(value)).orElse(FanSpeed.AUTO));
         // determine if device has combined direction (f_dir) or separated directions (f_dir_ud/f_dir_lr)
