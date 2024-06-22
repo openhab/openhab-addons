@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2024 Contributors to the openHAB project
+ * Copyright (c) 2010-2023 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,6 +31,5 @@ public class NetworkHandlerConfiguration {
     public Integer retry = 1;
     public Integer refreshInterval = 60000;
     public Integer timeout = 5000;
-    public boolean useIOSWakeUp = true;
     public Set<String> networkInterfaceNames = Set.of();
 }
