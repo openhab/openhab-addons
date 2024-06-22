@@ -117,7 +117,8 @@ public class WLedSegmentHandler extends BaseThingHandler {
                             localApi.setMasterOn(false, config.segmentIndex);
                             return;
                         }
-                        localApi.setGlobalOn(true);
+                        // do not turn the globalOn in order to allow for configuring this segment for effects that
+                        // start later
                         localApi.setMasterBrightness(percentCommand, config.segmentIndex);
                     }
                     break;
