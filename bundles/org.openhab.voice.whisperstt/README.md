@@ -81,8 +81,8 @@ Note: You need to restart openHAB to reload the library.
 
 The whisper.cpp library allows to define a grammar to alter the transcription results without fine-tuning the model.
 
-Internally whisper works by inferring a matrix of possible tokens from the audio a then resolving the final transcription from it using the Greedy or Bean Search algorithms,
-the grammar feature allows you to modify the probabilities of the tokens inferred adding a penalty to the tokens outside the grammar so the transcription gets resolved on a different way.
+Internally whisper works by inferring a matrix of possible tokens from the audio and then resolving the final transcription from it using either the Greedy or Bean Search algorithm.
+The grammar feature allows you to modify the probabilities of the inferred tokens by adding a penalty to the tokens outside the grammar so that the transcription gets resolved in a different way.
 
 It's a way to get the smallest models to perform better over a limited grammar.
 
