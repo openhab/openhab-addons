@@ -71,11 +71,11 @@ public class WhisperSTTConfiguration {
      */
     public boolean removeSilence = true;
     /**
-     * Number of threads used by whisper.
+     * Number of threads used by whisper. (0 to use host max threads)
      */
     public int threads;
     /**
-     * Overwrite the audio context size (0 = use default).
+     * Overwrite the audio context size. (0 to use whisper default context size).
      */
     public int audioContext;
     /**

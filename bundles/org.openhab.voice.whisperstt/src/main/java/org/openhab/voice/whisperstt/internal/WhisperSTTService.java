@@ -191,7 +191,7 @@ public class WhisperSTTService implements STTService {
         }
         if (this.config.preloadModel) {
             try {
-                var ignored = loadContext();
+                loadContext();
             } catch (IOException e) {
                 logger.warn("IOException loading model: {}", e.getMessage());
             } catch (UnsatisfiedLinkError e) {
@@ -493,7 +493,7 @@ public class WhisperSTTService implements STTService {
                                 System.currentTimeMillis() - execStartTime, result);
                         // process result
                         if (result != 0) {
-                            sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
+                            emitSpeechRecognitionError(sttListener);
                             break;
                         }
                         int nSegments = whisper.fullNSegmentsFromState(state);
@@ -518,7 +518,7 @@ public class WhisperSTTService implements STTService {
                             break;
                         } else if (nSegments > 1) {
                             // non reachable
-                            logger.error("Whisper should be configured in single segment mode {}", nSegments);
+                            logger.warn("Whisper should be configured in single segment mode {}", nSegments);
                             break;
                         }
                         // reset state to start with next segment
@@ -540,7 +540,7 @@ public class WhisperSTTService implements STTService {
                     if (!transcription.isBlank()) {
                         sttListener.sttEventReceived(new SpeechRecognitionEvent(transcription.trim(), 1));
                     } else {
-                        sttListener.sttEventReceived(new SpeechRecognitionEvent(" ", 1));
+                        emitSpeechRecognitionError(sttListener);
                     }
                 }
             } catch (IOException e) {
@@ -548,14 +548,14 @@ public class WhisperSTTService implements STTService {
                 if (config.errorMessage.isBlank()) {
                     sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Error"));
                 } else {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
+                    emitSpeechRecognitionError(sttListener);
                 }
             } catch (UnsatisfiedLinkError e) {
                 logger.warn("Missing native dependency: {}", e.getMessage());
                 if (config.errorMessage.isBlank()) {
                     sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Error"));
                 } else {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
+                    emitSpeechRecognitionError(sttListener);
                 }
             }
         });
@@ -592,6 +592,11 @@ public class WhisperSTTService implements STTService {
         params.singleSegment = true;
         params.noContext = true;
         return params;
+    }
+
+    private void emitSpeechRecognitionError(STTListener sttListener) {
+        String errorMessage = !config.errorMessage.isBlank() ? config.errorMessage : "Sorry, something went wrong";
+        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(errorMessage));
     }
 
     private void createSamplesDir() {

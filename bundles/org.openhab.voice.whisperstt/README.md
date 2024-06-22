@@ -26,13 +26,16 @@ The following platforms are supported:
 * Debian GLIBC x86_64/arm64 (min GLIBC version 2.31 / min Debian version Focal)
 * macOS x86_64/arm64 (min version v11.0)
 
-The native binaries for those platforms are included in the distributed jar.
+The native binaries for those platforms are included in this add-on provided with the openHAB distribution.
 
 ## CPU compatibility
 
+To use these binding it's recommended to use a device at least as powerful as the RaspberryPI 5 with a modern CPU.
+The execution times on Raspberry PI 4 are x2, so just the tiny model can be run on under 5 seconds.
+
 If you are going to use the binding in a `x86_64` host the CPU should support the flags: `avx2`, `fma`, `f16c`, `avx`.
 You can check those flags on linux using the terminal with `lscpu`.
-You can check those flags on Windows using a program like CPU-Z.
+You can check those flags on Windows using a program like `CPU-Z`.
 
 If you are going to use the binding in a `arm64` host the CPU should support the flags: `fphp`.
 You can check those flags on linux using the terminal with `lscpu`.
@@ -68,11 +71,34 @@ It's possible to use your own build of the whisper.cpp shared library with this 
 
 On `Linux/macOs` you need to place the `libwhisper.so/libwhisper.dydib` at `/usr/local/lib/`.
 
-On `Windows` the `whisper.dll` file can be placed at in any directory listed at the variable `$env:PATH`, for example `X:\\Windows\System32\`.
+On `Windows` the `whisper.dll` file needs to be placed in any directory listed at the variable `$env:PATH`, for example `X:\\Windows\System32\`.
 
 In the [Whisper.cpp](https://github.com/ggerganov/whisper.cpp) README you can find information about the required flags to enable different acceleration methods on the cmake build and other relevant information.
 
-Note: You need to restart OpenHAB to reload the library.
+Note: You need to restart openHAB to reload the library.
+
+## Grammar
+
+The whisper.cpp library allows to define a grammar to alter the transcription results without fine-tuning the model.
+
+Internally whisper works by inferring a matrix of possible tokens from the audio a then resolving the final transcription from it using the Greedy or Bean Search algorithms,
+the grammar feature allows you to modify the probabilities of the tokens inferred adding a penalty to the tokens outside the grammar so the transcription gets resolved on a different way.
+
+It's a way to get the smallest models to perform better over a limited grammar.
+
+The grammar should be defined using [BNF](https://en.wikipedia.org/wiki/Backus–Naur_form), and the root variable should resolve the full grammar.
+It allows using regex and optional parts to make it more dynamic.
+
+This is a basic grammar example:
+
+```BNF
+root ::= (light_switch | light_state | tv_channel) "."
+light_switch ::= "turn the light " ("on" | "off")
+light_state ::= "set light to " ("high" | "low")
+tv_channel ::= ("set ")? "tv channel to " [0-9]+
+```
+
+You can provide the grammar and enable its usage using the binding configuration.
 
 ## Configuration
 
@@ -85,6 +111,7 @@ General options.
 * **Model Name** - Model name. The 'ggml-' prefix and '.bin' extension are optional here but required on the filename. (ex: tiny.en -> ggml-tiny.en.bin)
 * **Preload Model** - Keep whisper model loaded.
 * **Single Utterance Mode** - When enabled recognition stops listening after a single utterance.
+* **Min Transcription Seconds** - Forces min audio duration passed to whisper, in seconds.
 * **Max Transcription Seconds** - Max seconds for force trigger the transcription, without wait for detect silence.
 * **Initial Silence Seconds** - Max seconds without any voice activity to abort the transcription.
 * **Max Silence Seconds** - Max consecutive silence seconds to trigger the transcription.
@@ -103,14 +130,16 @@ Configure VAD options.
 
 Configure whisper options.
 
-* **Threads** - Number of threads used by whisper. (0 for default)
+* **Threads** - Number of threads used by whisper. (0 to use host max threads)
 * **Sampling Strategy** - Sampling strategy used.
 * **Beam Size** - Beam Size configuration for sampling strategy Bean Search.
 * **Greedy Best Of** - Best Of configuration for sampling strategy Greedy.
 * **Speed Up** - Speed up audio by x2. (Reduced accuracy)
-* **Audio Context** - Overwrite the audio context size. (0 for default)
+* **Audio Context** - Overwrite the audio context size. (0 to use whisper default context size)
 * **Temperature** - Temperature threshold.
 * **Initial Prompt** - Initial prompt for whisper.
+* **OpenVINO Device** - Initialize OpenVINO encoder. (built-in binaries do not support OpenVINO, this has no effect)
+* **Use GPU** - Enables GPU usage. (built-in binaries do not support GPU usage, this has no effect)
 
 ### Grammar Configuration
 
@@ -120,7 +149,7 @@ Configure the grammar options.
 * **Use Grammar** - Enable grammar usage.
 * **Grammar penalty** - Penalty for non grammar tokens.
 
-#### Simple Grammar Example:
+#### Grammar Example:
 
 
 ```gbnf
@@ -160,6 +189,7 @@ timer ::= [0-9]+
 
 * **Create WAV Record** - Create wav audio file on each whisper execution, also creates a '.prop' file containing the transcription.
 * **Record Sample Format** - Change the record sample format. (allows i16 or f32)
+* **Enable Whisper Log** - Print whisper.cpp library logs as binding debug logs.
 
 You can find [here](https://github.com/givimad/whisper-finetune-oh) information on how to fine-tune a model using the generated records.
 
@@ -183,7 +213,6 @@ org.openhab.voice.whisperstt:threads=0
 org.openhab.voice.whisperstt:audioContext=0
 org.openhab.voice.whisperstt:samplingStrategy=GREEDY
 org.openhab.voice.whisperstt:temperature=0
-org.openhab.voice.whisperstt:singleUtteranceMode=true
 org.openhab.voice.whisperstt:errorMessage="Sorry, something went wrong"
 org.openhab.voice.whisperstt:createWAVRecord=false
 org.openhab.voice.whisperstt:recordSampleFormat=i16

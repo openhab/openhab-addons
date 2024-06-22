@@ -162,7 +162,7 @@
 		</parameter>
 		<parameter name="openvinoDevice" type="text" groupName="whisper">
 			<label>OpenVINO Device</label>
-			<description>Initialize OpenVINO encoder.</description>
+			<description>Initialize OpenVINO encoder. (built-in binaries do not support OpenVINO, this has no effect)</description>
 			<advanced>true</advanced>
 			<default>CPU</default>
 		</parameter>
