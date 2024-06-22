@@ -15,7 +15,6 @@ package org.openhab.binding.daikin.internal.api;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.slf4j.Logger;
@@ -44,9 +43,9 @@ public class BasicInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         BasicInfo info = new BasicInfo();
-        info.mac = Objects.requireNonNullElse(responseMap.get("mac"),"");
-        info.ret = Objects.requireNonNullElse(responseMap.get("ret"),"");
-        info.ssid = Objects.requireNonNullElse(responseMap.get("ssid"),"");
+        info.mac = Objects.requireNonNullElse(responseMap.get("mac"), "");
+        info.ret = Objects.requireNonNullElse(responseMap.get("ret"), "");
+        info.ssid = Objects.requireNonNullElse(responseMap.get("ssid"), "");
         return info;
     }
 
