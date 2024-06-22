@@ -24,17 +24,17 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class Daytempsreturn {
-    private String status = "";
+    private boolean status;
     public double dc;
     public double ac;
 
-    public Daytempsreturn(String status, double dc, double ac) {
+    public Daytempsreturn(boolean status, double dc, double ac) {
         this.status = status;
         this.dc = dc;
         this.ac = ac;
     }
 
-    public String getStatus() {
+    public boolean getStatus() {
         return this.status;
     }
 

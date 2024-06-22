@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link Daytemps} is the internal class for Inverter temperature history information
@@ -31,17 +32,27 @@ public class Daytemps {
     private String msg = "";
     private boolean success;
     private Data data = new Data();
-    private String response_status = "okay";
+    private boolean response_status = true;
     private double dc_temperature;
     private double ac_temperature;
 
     class Data {
-        private List<Infos> infos = new ArrayList<Infos>();
+        private @Nullable List<Infos> infos = new ArrayList<Infos>();
+
+        private boolean isNotNull() { // sometimes after midnight Sun Synk responds with an empty array
+            if (infos == null) {
+                return false;
+            } else if (infos.get(0).records == null) {
+                return false;
+            } else {
+                return true;
+            }
+        }
     }
 
     class Infos {
         private String unit = "";
-        List<Record> records = new ArrayList<Record>();
+        private @Nullable List<Record> records = new ArrayList<Record>();
         private String id = "";
         private String label = "";
     }
@@ -53,16 +64,15 @@ public class Daytemps {
     }
 
     public void getLastValue() {
-        try {
+
+        if (this.data.isNotNull()) {
             Infos dc_record = this.data.infos.get(0);
             Infos ac_record = this.data.infos.get(1);
             this.dc_temperature = dc_record.records.get(dc_record.records.size() - 1).value;
             this.ac_temperature = ac_record.records.get(ac_record.records.size() - 1).value;
-        } catch (NullPointerException e) {
-            this.response_status = "Inverter temperature array empty"; // sometimes after midnight Sun Synk respond with
-                                                                       // an empty array.
-            // do nothing leave dc_ and ac_ temperature values as they are.
         }
+        this.response_status = false;
+        // do nothing leave dc_ and ac_ temperature values as they are.
     }
 
     public String toString() {

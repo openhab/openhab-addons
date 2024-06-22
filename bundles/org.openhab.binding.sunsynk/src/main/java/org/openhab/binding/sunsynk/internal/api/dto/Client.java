@@ -13,6 +13,7 @@
 package org.openhab.binding.sunsynk.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link Client} is the internal class for Client information from the sunsynk Account.
@@ -25,7 +26,7 @@ public class Client {
     private int code; // 102 username or password probloem
     private String msg = "";
     private boolean success;
-    private APIdata data = new APIdata();
+    private @Nullable APIdata data = new APIdata();
     private int status;
     private String error = ""; // "{"timestamp":"2024-06-16T11:21:17.690+00:00","status":404,"error":"Not
                                // Found","path":"/oauth/toke"}"
@@ -83,8 +84,16 @@ public class Client {
         data.setIssuedAt(issued_at);
     }
 
-    public APIdata getData() {
+    public @Nullable APIdata getData() {
         return this.data;
+    }
+
+    public boolean dataIsNotNull() {
+        if (this.data == null) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     @Override

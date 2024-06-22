@@ -324,7 +324,8 @@ public class SunSynkInverterHandler extends BaseThingHandler {
             try {
                 bridgeHandler.refreshAccount(); // check account token
             } catch (SunSynkAuthenticateException e) {
-                logger.debug("Sun Synk account refresh failed: Msg = {} Cause = {}.", e.getMessage(), e.getCause());
+                logger.debug("Sun Synk account refresh failed: Msg = {} Cause = {}.", e.getMessage().toString(),
+                        e.getCause().toString());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Sun Synk account refresh failed");
                 bridgeHandler.setBridgeOffline();
                 return;
@@ -358,8 +359,17 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     private void publishChannels() {
         logger.debug("Updating Channels");
+        updateSettings();
+        updateGrid();
+        updateBattery();
+        updateTemperature();
+        updateSolar();
+    }
+
+    private void updateSettings() {
         Settings inverterChargeSettings = inverter.getBatteryChargeSettings();
         if (inverterChargeSettings == null) {
+            logger.debug("Failed to get battery charge settings");
             return;
         }
         updateState(CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE,
@@ -419,17 +429,23 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         updateState(CHANNEL_INVERTER_CONTROL_TIMER, new DecimalType(inverterChargeSettings.getPeakAndValley()));
         updateState(CHANNEL_INVERTER_CONTROL_ENERGY_PATTERN, new StringType(inverterChargeSettings.getEnergyMode()));
         updateState(CHANNEL_INVERTER_CONTROL_WORK_MODE, new StringType(inverterChargeSettings.getSysWorkMode()));
+    }
 
+    private void updateGrid() {
         Grid inverterGrid = inverter.getRealTimeGridStatus();
         if (inverterGrid == null) {
+            logger.debug("Failed to get grid status");
             return;
         }
         updateState(CHANNEL_INVERTER_GRID_POWER, new DecimalType(inverterGrid.getGridPower()));
         updateState(CHANNEL_INVERTER_GRID_VOLTAGE, new DecimalType(inverterGrid.getGridVoltage()));
         updateState(CHANNEL_INVERTER_GRID_CURRENT, new DecimalType(inverterGrid.getGridCurrent()));
+    }
 
+    private void updateBattery() {
         Battery batteryState = inverter.getRealTimeBatteryState();
         if (batteryState == null) {
+            logger.debug("Failed to get battery status");
             return;
         }
         updateState(CHANNEL_BATTERY_VOLTAGE, new DecimalType(batteryState.getBatteryVoltage()));
@@ -437,17 +453,23 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         updateState(CHANNEL_BATTERY_POWER, new DecimalType(batteryState.getBatteryPower()));
         updateState(CHANNEL_BATTERY_SOC, new DecimalType(batteryState.getBatterySOC()));
         updateState(CHANNEL_BATTERY_TEMPERATURE, new DecimalType(batteryState.getBatteryTemperature()));
+    }
 
+    private void updateTemperature() {
         Daytemps batteryTempHist = inverter.getInverterTemperatureHistory();
         Daytempsreturn batteryTemps = batteryTempHist.inverterTemperatures();
-        if (!"okay".equals(batteryTemps.getStatus())) {
+        if (!batteryTemps.getStatus()) {
+            logger.debug("Failed to get inverter and battery temperatures");
             return;
         }
         updateState(CHANNEL_INVERTER_AC_TEMPERATURE, new DecimalType(batteryTemps.getDCTemperature()));
         updateState(CHANNEL_INVERTER_DC_TEMPERATURE, new DecimalType(batteryTemps.getACTemperature()));
+    }
 
+    private void updateSolar() {
         RealTimeInData solar = inverter.getRealtimeSolarStatus();
         if (solar == null) {
+            logger.debug("Failed solar status");
             return;
         }
         updateState(CHANNEL_INVERTER_SOLAR_ENERGY_TODAY, new DecimalType(solar.getetoday()));

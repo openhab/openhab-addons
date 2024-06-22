@@ -60,7 +60,10 @@ public class AccountController {
     }
 
     public void refreshAccount(String username) throws SunSynkAuthenticateException, SunSynkTokenException {
-        if ((sunAccount == null) | (sunAccount.getData() == null)) {
+        if (sunAccount == null) {
+            throw new SunSynkAuthenticateException(
+                    "Sun Synk Account could not be authenticated: Try re-enabling account");
+        } else if (!sunAccount.dataIsNotNull()) {
             throw new SunSynkAuthenticateException(
                     "Sun Synk Account could not be authenticated: Try re-enabling account");
         }
@@ -128,8 +131,8 @@ public class AccountController {
             response = HttpUtil.executeUrl("GET", httpsURL, headers, null, "application/json", 2000);
             output = gson.fromJson(response, Details.class);
         } catch (IOException | JsonSyntaxException e) {
-            logger.debug("Error attempting to find inverters registered to account: Msg = {} Cause = {}.",
-                    e.getMessage(), e.getCause());
+            logger.debug("Error attempting to find inverters registered to account: Msg = {}. Cause = {}.",
+                    e.getMessage().toString(), e.getCause().toString());
             throw new SunSynkInverterDiscoveryException("Failed to discover Inverters", e);
         }
         inverters = output.getInverters(APIdata.static_access_token);

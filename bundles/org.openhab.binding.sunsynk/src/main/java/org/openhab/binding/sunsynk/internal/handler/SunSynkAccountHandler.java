@@ -110,7 +110,8 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         try {
             this.sunAccount.authenticate(accountConfig.getEmail(), accountConfig.getPassword());
         } catch (SunSynkAuthenticateException | SunSynkTokenException e) {
-            logger.debug("Error attempting to autheticate account Msg = {} Cause = {}", e.getMessage(), e.getCause());
+            logger.debug("Error attempting to autheticate account Msg = {} Cause = {}", e.getMessage().toString(),
+                    e.getCause().toString());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to authenticate account");
             return;
