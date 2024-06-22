@@ -30,7 +30,7 @@ The native binaries for those platforms are included in this add-on provided wit
 
 ## CPU compatibility
 
-To use these binding it's recommended to use a device at least as powerful as the RaspberryPI 5 with a modern CPU.
+To use this binding it's recommended to use a device at least as powerful as the RaspberryPI 5 with a modern CPU.
 The execution times on Raspberry PI 4 are x2, so just the tiny model can be run on under 5 seconds.
 
 If you are going to use the binding in a `x86_64` host the CPU should support the flags: `avx2`, `fma`, `f16c`, `avx`.
@@ -201,11 +201,14 @@ Its contents should look similar to:
 
 ```
 org.openhab.voice.whisperstt:modelName=tiny
-org.openhab.voice.whisperstt:step=0.5
+org.openhab.voice.whisperstt:initSilenceSeconds=0.3
+org.openhab.voice.whisperstt:removeSilence=true 
+org.openhab.voice.whisperstt:stepSeconds=0.3
+org.openhab.voice.whisperstt:vadStep=0.5
 org.openhab.voice.whisperstt:singleUtteranceMode=true
 org.openhab.voice.whisperstt:preloadModel=false
 org.openhab.voice.whisperstt:vadMode=LOW_BITRATE
-org.openhab.voice.whisperstt:vadSentivity=0.1
+org.openhab.voice.whisperstt:vadSensitivity=0.1
 org.openhab.voice.whisperstt:maxSilenceSeconds=2
 org.openhab.voice.whisperstt:minSeconds=2
 org.openhab.voice.whisperstt:maxSeconds=10
@@ -221,10 +224,7 @@ org.openhab.voice.whisperstt:beamSize=4
 org.openhab.voice.whisperstt:enableWhisperLog=false
 org.openhab.voice.whisperstt:greedyBestOf=4
 org.openhab.voice.whisperstt:initialPrompt=
-org.openhab.voice.whisperstt:maxSeconds=5
 org.openhab.voice.whisperstt:openvinoDevice=""
-org.openhab.voice.whisperstt:temperature=0.1
-org.openhab.voice.whisperstt:threads=4
 org.openhab.voice.whisperstt:useGPU=false
 org.openhab.voice.whisperstt:useGrammar=false
 org.openhab.voice.whisperstt:grammarPenalty=80.0

@@ -545,18 +545,10 @@ public class WhisperSTTService implements STTService {
                 }
             } catch (IOException e) {
                 logger.warn("Error running speech to text: {}", e.getMessage());
-                if (config.errorMessage.isBlank()) {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Error"));
-                } else {
-                    emitSpeechRecognitionError(sttListener);
-                }
+                emitSpeechRecognitionError(sttListener);
             } catch (UnsatisfiedLinkError e) {
                 logger.warn("Missing native dependency: {}", e.getMessage());
-                if (config.errorMessage.isBlank()) {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("Error"));
-                } else {
-                    emitSpeechRecognitionError(sttListener);
-                }
+                emitSpeechRecognitionError(sttListener);
             }
         });
     }
