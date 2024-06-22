@@ -645,6 +645,7 @@ public class WhisperSTTService implements STTService {
             logger.debug("Saving audio file: {}", audioPath);
             FileOutputStream audioFileOutputStream = new FileOutputStream(audioPath.toFile());
             AudioSystem.write(audioInputStreamTemp, AudioFileFormat.Type.WAVE, audioFileOutputStream);
+            audioFileOutputStream.close();
             String properties = "transcription=" + transcription + "\nlanguage=" + language + "\n";
             logger.debug("Saving properties file: {}", propertiesPath);
             FileOutputStream propertiesFileOutputStream = new FileOutputStream(propertiesPath.toFile());

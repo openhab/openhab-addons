@@ -189,7 +189,7 @@ timer ::= [0-9]+
 
 * **Create WAV Record** - Create wav audio file on each whisper execution, also creates a '.prop' file containing the transcription.
 * **Record Sample Format** - Change the record sample format. (allows i16 or f32)
-* **Enable Whisper Log** - Print whisper.cpp library logs as binding debug logs.
+* **Enable Whisper Log** - Emit whisper.cpp library logs as add-on debug logs.
 
 You can find [here](https://github.com/givimad/whisper-finetune-oh) information on how to fine-tune a model using the generated records.
 
@@ -216,6 +216,19 @@ org.openhab.voice.whisperstt:temperature=0
 org.openhab.voice.whisperstt:errorMessage="Sorry, something went wrong"
 org.openhab.voice.whisperstt:createWAVRecord=false
 org.openhab.voice.whisperstt:recordSampleFormat=i16
+org.openhab.voice.whisperstt:speedUp=false
+org.openhab.voice.whisperstt:beamSize=4
+org.openhab.voice.whisperstt:enableWhisperLog=false
+org.openhab.voice.whisperstt:greedyBestOf=4
+org.openhab.voice.whisperstt:initialPrompt=
+org.openhab.voice.whisperstt:maxSeconds=5
+org.openhab.voice.whisperstt:openvinoDevice=""
+org.openhab.voice.whisperstt:temperature=0.1
+org.openhab.voice.whisperstt:threads=4
+org.openhab.voice.whisperstt:useGPU=false
+org.openhab.voice.whisperstt:useGrammar=false
+org.openhab.voice.whisperstt:grammarPenalty=80.0
+org.openhab.voice.whisperstt:grammarLines=
 ```
 
 ### Default Speech-to-Text Configuration
