@@ -321,7 +321,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             }
             return new StringType(def);
         });
-        updateState(CHANNEL_ID_CLEANING_SPOT_DEFINITION, Objects.requireNonNullElse(areaDefState, UnDefType.UNDEF));
+        updateState(CHANNEL_ID_CLEANING_SPOT_DEFINITION, Objects.requireNonNull(areaDefState.orElse(UnDefType.UNDEF)));
         if (newMode == CleanMode.RETURNING) {
             scheduleNextPoll(30);
         } else if (newMode.isIdle()) {
