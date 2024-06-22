@@ -13,11 +13,11 @@
 package org.openhab.binding.onecta.internal.service;
 
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 import org.openhab.binding.onecta.internal.api.Enums;
 import org.openhab.binding.onecta.internal.api.OnectaConnectionClient;
-import org.openhab.binding.onecta.internal.api.dto.units.ManagementPoint;
-import org.openhab.binding.onecta.internal.api.dto.units.Unit;
+import org.openhab.binding.onecta.internal.api.dto.units.*;
 
 import com.google.gson.JsonObject;
 
@@ -95,56 +95,38 @@ public class DataTransportService {
     }
 
     public Enums.FanMovementHor getCurrentFanDirectionHor() {
-        try {
-            String fanMode = getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getFanControl().getValue()
-                    .getOperationModes().getFanOperationMode(getCurrentOperationMode()).getFanDirection()
-                    .getHorizontal().getCurrentMode().getValue();
-            return Enums.FanMovementHor.fromValue(fanMode);
-        } catch (NullPointerException e) {
-            return Enums.FanMovementHor.NOTAVAILABLE;
-        }
+        String fanMode = Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))
+                .map(ManagementPoint::getFanControl)
+                .map(FanControl::getValue)
+                .map(FanControlValue::getOperationModes)
+                .map(om -> om.getFanOperationMode(getCurrentOperationMode()))
+                .map(FanOnlyClass::getFanDirection)
+                .map(FanDirection::getHorizontal).map(FanMovement::getCurrentMode).map(FanCurrentMode::getValue)
+                .orElse(null);
+        return Enums.FanMovementHor.fromValue(fanMode);
     }
 
     public Enums.FanMovementVer getCurrentFanDirectionVer() {
-        try {
-            String fanMode = getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getFanControl().getValue()
-                    .getOperationModes().getFanOperationMode(getCurrentOperationMode()).getFanDirection().getVertical()
-                    .getCurrentMode().getValue();
-            return Enums.FanMovementVer.fromValue(fanMode);
-        } catch (NullPointerException e) {
-            return Enums.FanMovementVer.NOTAVAILABLE;
-        }
+        String fanMode = Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))
+                .map(ManagementPoint::getFanControl).map(FanControl::getValue).map(FanControlValue::getOperationModes)
+                .map(om -> om.getFanOperationMode(getCurrentOperationMode())).map(FanOnlyClass::getFanDirection)
+                .map(FanDirection::getVertical).map(FanMovement::getCurrentMode).map(FanCurrentMode::getValue)
+                .orElse(null);
+        return Enums.FanMovementVer.fromValue(fanMode);
     }
 
     public Enums.FanMovement getCurrentFanDirection() {
-        try {
-            String setting = String.format("%s_%s", getCurrentFanDirectionHor().toString(),
-                    getCurrentFanDirectionVer().toString());
-            switch (setting) {
-                case "STOPPED_STOPPED":
-                    return Enums.FanMovement.STOPPED;
-                case "NOTAVAILABLE_STOPPED":
-                    return Enums.FanMovement.STOPPED;
-                case "SWING_STOPPED":
-                    return Enums.FanMovement.HORIZONTAL;
-                case "STOPPED_SWING":
-                    return Enums.FanMovement.VERTICAL;
-                case "NOTAVAILABLE_SWING":
-                    return Enums.FanMovement.VERTICAL;
-                case "SWING_SWING":
-                    return Enums.FanMovement.VERTICAL_AND_HORIZONTAL;
-                case "STOPPED_WINDNICE":
-                    return Enums.FanMovement.VERTICAL_EXTRA;
-                case "NOTAVAILABLE_WINDNICE":
-                    return Enums.FanMovement.VERTICAL_EXTRA;
-                case "SWING_WINDNICE":
-                    return Enums.FanMovement.VERTICAL_AND_HORIZONTAL_EXTRA;
-                default:
-                    throw new IllegalArgumentException("Invalid fan direc" + "tion: ");
-            }
-        } catch (NullPointerException e) {
-            return Enums.FanMovement.UNKNOWN;
-        }
+        String setting = String.format("%s_%s", getCurrentFanDirectionHor().toString(),
+                getCurrentFanDirectionVer().toString());
+        return switch (setting) {
+            case "STOPPED_STOPPED", "NOTAVAILABLE_STOPPED" -> Enums.FanMovement.STOPPED;
+            case "SWING_STOPPED" -> Enums.FanMovement.HORIZONTAL;
+            case "STOPPED_SWING", "NOTAVAILABLE_SWING" -> Enums.FanMovement.VERTICAL;
+            case "SWING_SWING" -> Enums.FanMovement.VERTICAL_AND_HORIZONTAL;
+            case "STOPPED_WINDNICE", "NOTAVAILABLE_WINDNICE" -> Enums.FanMovement.VERTICAL_EXTRA;
+            case "SWING_WINDNICE" -> Enums.FanMovement.VERTICAL_AND_HORIZONTAL_EXTRA;
+            default -> throw new IllegalArgumentException("Invalid fan direction: ");
+        };
     }
 
     public void setCurrentFanDirection(Enums.FanMovement value) {
@@ -160,12 +142,10 @@ public class DataTransportService {
     }
 
     public String getPowerOnOff() {
-        if (getManagementPoint(managementPointType) != null
-                && getManagementPoint(managementPointType).getOnOffMode() != null) {
-            return getManagementPoint(managementPointType).getOnOffMode().getValue();
-        } else {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(managementPointType)) // .
+                .map(ManagementPoint::getOnOffMode) // .
+                .map(GatwaySubValueString::getValue) // .
+                .orElse(null);
     }
 
     public String getPowerFulModeOnOff() {
@@ -375,11 +355,8 @@ public class DataTransportService {
     }
 
     public Number getTargetTemperatur() {
-        try {
-            return getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL).getTargetTemperature().getValue();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))
+                .map(ManagementPoint::getTargetTemperature).map(IconID::getValue).orElse(null);
     }
 
     public void setTargetTemperatur(float value) {
