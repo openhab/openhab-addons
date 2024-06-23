@@ -21,11 +21,10 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AwattarBestpriceConfiguration {
-
-    public int rangeStart;
-    public int rangeDuration;
-    public int length;
-    public boolean consecutive;
+    public int rangeStart = 0;
+    public int rangeDuration = 24;
+    public int length = 1;
+    public boolean consecutive = true;
 
     @Override
     public String toString() {
