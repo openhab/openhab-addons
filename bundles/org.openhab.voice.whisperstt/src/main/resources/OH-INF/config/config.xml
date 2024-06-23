@@ -193,6 +193,11 @@
 			<description>Grammar to use in GBNF format. (BNF variant used by whisper.cpp).</description>
 			<default></default>
 		</parameter>
+		<parameter name="noResultsMessage" type="text" groupName="messages">
+			<label>No Results Message</label>
+			<description>Message to be told when no results. (Empty for disabled)</description>
+			<default>Sorry, I didn't understand you</default>
+		</parameter>
 		<parameter name="errorMessage" type="text" groupName="messages">
 			<label>Error Message</label>
 			<description>Message to be told when an error has happened. (Empty for disabled)</description>

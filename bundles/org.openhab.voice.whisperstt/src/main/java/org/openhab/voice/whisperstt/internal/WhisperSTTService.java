@@ -294,7 +294,7 @@ public class WhisperSTTService implements STTService {
     private synchronized WhisperContext loadContext() throws IOException {
         unloadContext();
         String modelFilename = this.config.modelName;
-        if (this.config.modelName.isBlank()) {
+        if (modelFilename.isBlank()) {
             throw new IOException("The modelName configuration is missing");
         }
         String modelPrefix = "ggml-";
@@ -317,7 +317,7 @@ public class WhisperSTTService implements STTService {
             this.context = context;
         }
         if (!config.openvinoDevice.isBlank()) {
-            // has no effect is OpenVINO is not enabled in whisper library.
+            // has no effect if OpenVINO is not enabled in whisper.cpp library.
             logger.debug("Init OpenVINO device");
             whisper.initOpenVINO(context, config.openvinoDevice);
         }
@@ -540,7 +540,7 @@ public class WhisperSTTService implements STTService {
                     if (!transcription.isBlank()) {
                         sttListener.sttEventReceived(new SpeechRecognitionEvent(transcription.trim(), 1));
                     } else {
-                        emitSpeechRecognitionError(sttListener);
+                        emitSpeechRecognitionNoResultsError(sttListener);
                     }
                 }
             } catch (IOException e) {
@@ -586,9 +586,12 @@ public class WhisperSTTService implements STTService {
         return params;
     }
 
+    private void emitSpeechRecognitionNoResultsError(STTListener sttListener) {
+        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
+    }
+
     private void emitSpeechRecognitionError(STTListener sttListener) {
-        String errorMessage = !config.errorMessage.isBlank() ? config.errorMessage : "Sorry, something went wrong";
-        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(errorMessage));
+        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
     }
 
     private void createSamplesDir() {

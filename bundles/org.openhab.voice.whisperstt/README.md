@@ -183,6 +183,7 @@ timer ::= [0-9]+
 
 ### Messages Configuration
 
+* **No Results Message** - Message to be told on no results.
 * **Error Message** - Message to be told on exception.
 
 ### Developer Configuration
@@ -216,6 +217,7 @@ org.openhab.voice.whisperstt:threads=0
 org.openhab.voice.whisperstt:audioContext=0
 org.openhab.voice.whisperstt:samplingStrategy=GREEDY
 org.openhab.voice.whisperstt:temperature=0
+org.openhab.voice.whisperstt:noResultsMessage="Sorry, I didn't understand you"
 org.openhab.voice.whisperstt:errorMessage="Sorry, something went wrong"
 org.openhab.voice.whisperstt:createWAVRecord=false
 org.openhab.voice.whisperstt:recordSampleFormat=i16
