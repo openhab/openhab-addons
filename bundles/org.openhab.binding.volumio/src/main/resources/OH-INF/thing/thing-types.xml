@@ -5,8 +5,8 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="player">
-		<label>Volumio Player</label>
-		<description>A Volumio player</description>
+		<label>Volumio Device</label>
+		<description>A Volumio device</description>
 
 		<channels>
 			<channel id="title" typeId="title"/>
