@@ -103,6 +103,15 @@ class NhcDevice2 {
         String callStatus03;
         @Nullable
         String callStatus04;
+        // fields for alarms
+        @Nullable
+        String internalState;
+        @Nullable
+        String alarmActive;
+        @Nullable
+        String alarmTriggered;
+        @Nullable
+        String control;
     }
 
     static class NhcTrait {

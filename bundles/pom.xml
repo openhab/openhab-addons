@@ -32,6 +32,7 @@
     <module>org.openhab.io.neeo</module>
     <module>org.openhab.io.openhabcloud</module>
     <!-- transformations -->
+    <module>org.openhab.transform.basicprofiles</module>
     <module>org.openhab.transform.bin2json</module>
     <module>org.openhab.transform.exec</module>
     <module>org.openhab.transform.jinja</module>
@@ -54,6 +55,7 @@
     <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.amazonechocontrol</module>
+    <module>org.openhab.binding.amberelectric</module>
     <module>org.openhab.binding.ambientweather</module>
     <module>org.openhab.binding.amplipi</module>
     <module>org.openhab.binding.androiddebugbridge</module>
@@ -128,6 +130,7 @@
     <module>org.openhab.binding.electroluxair</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.elroconnects</module>
+    <module>org.openhab.binding.emotiva</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.energidataservice</module>
     <module>org.openhab.binding.enigma2</module>
@@ -197,6 +200,7 @@
     <module>org.openhab.binding.ipcamera</module>
     <module>org.openhab.binding.ipobserver</module>
     <module>org.openhab.binding.intesis</module>
+    <module>org.openhab.binding.iotawatt</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.irobot</module>
     <module>org.openhab.binding.irtrans</module>
@@ -242,6 +246,7 @@
     <module>org.openhab.binding.meteoalerte</module>
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.meteostick</module>
+    <module>org.openhab.binding.mffan</module>
     <module>org.openhab.binding.miele</module>
     <module>org.openhab.binding.mielecloud</module>
     <module>org.openhab.binding.mihome</module>
@@ -307,6 +312,7 @@
     <module>org.openhab.binding.orvibo</module>
     <module>org.openhab.binding.panasonicbdp</module>
     <module>org.openhab.binding.paradoxalarm</module>
+    <module>org.openhab.binding.pegelonline</module>
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
     <module>org.openhab.binding.pilight</module>
@@ -465,6 +471,7 @@
     <module>org.openhab.voice.voicerss</module>
     <module>org.openhab.voice.voskstt</module>
     <module>org.openhab.voice.watsonstt</module>
+    <module>org.openhab.voice.whisperstt</module>
   </modules>
 
   <properties>

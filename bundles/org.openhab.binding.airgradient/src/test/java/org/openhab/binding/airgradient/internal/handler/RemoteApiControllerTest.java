@@ -49,6 +49,10 @@ public class RemoteApiControllerTest {
         }
     };
 
+    private static final String SINGLE_CONFIG = """
+             {"country":"NO","pmStandard":"ugm3","ledBarMode":"off","abcDays":8,"tvocLearningOffset":12,"noxLearningOffset":12,"mqttBrokerUrl":"https://192.168.1.1/mqtt","temperatureUnit":"c","configurationControl":"both","postDataToAirGradient":true,"ledBarBrightness":100,"displayBrightness":100,"offlineMode":false,"model":"I-9PSL"}
+            """;
+
     private static final String SINGLE_CONTENT = """
              {"locationId":4321,"locationName":"Some other name","pm01":1,"pm02":2,"pm10":2,"pm003Count":536,"atmp":20.45,"rhum":16.61,"rco2":456,"tvoc":51.644928,"wifi":-54,"timestamp":"2024-01-07T13:00:20.000Z","ledMode":"co2","ledCo2Threshold1":1000,"ledCo2Threshold2":2000,"ledCo2ThresholdEnd":4000,"serialno":"serial","firmwareVersion":null,"tvocIndex":null,"noxIndex":null}
             """;
@@ -258,5 +262,30 @@ public class RemoteApiControllerTest {
         assertThat(res.get(0).tvoc, closeTo(220, 0.1));
         assertThat(res.get(0).noxIndex, closeTo(1, 0.1));
         assertThat(res.get(0).serialno, is("4XXXXXXXXXXc"));
+    }
+
+    @Test
+    public void testGetConfig() throws Exception {
+        ContentResponse response = Mockito.mock(ContentResponse.class);
+        Mockito.when(httpClientMock.newRequest(anyString())).thenReturn(requestMock);
+        Mockito.when(requestMock.send()).thenReturn(response);
+        Mockito.when(response.getStatus()).thenReturn(200);
+        Mockito.when(response.getMediaType()).thenReturn("application/json");
+        Mockito.when(response.getContentAsString()).thenReturn(SINGLE_CONFIG);
+
+        var res = sut.getConfig();
+        assertThat(res.abcDays, is(8L));
+        assertThat(res.configurationControl, is("both"));
+        assertThat(res.country, is("NO"));
+        assertThat(res.displayBrightness, is(100L));
+        assertThat(res.ledBarBrightness, is(100L));
+        assertThat(res.ledBarMode, is("off"));
+        assertThat(res.model, is("I-9PSL"));
+        assertThat(res.mqttBrokerUrl, is("https://192.168.1.1/mqtt"));
+        assertThat(res.noxLearningOffset, is(12L));
+        assertThat(res.pmStandard, is("ugm3"));
+        assertThat(res.postDataToAirGradient, is(true));
+        assertThat(res.temperatureUnit, is("c"));
+        assertThat(res.tvocLearningOffset, is(12L));
     }
 }

@@ -58,6 +58,8 @@ It will not impact channels, see [Electricity Tax](#electricity-tax) for further
 | co2-emission-prognosis   | Number:EmissionIntensity | Estimated prognosis for CO₂ emission following the day-ahead market in g/kWh           |
 | co2-emission-realtime    | Number:EmissionIntensity | Near up-to-date history for CO₂ emission from electricity consumed in Denmark in g/kWh |
 
+#### Total Price
+
 _Please note:_ There is no channel providing the total price.
 Instead, create a group item with `SUM` as aggregate function and add the individual price items as children.
 This has the following advantages:
@@ -68,6 +70,41 @@ This has the following advantages:
 
 If you want electricity tax included in your total price, please add either `electricity-tax` or `reduced-electricity-tax` to the group - depending on which one applies.
 See [Electricity Tax](#electricity-tax) for further information.
+
+##### Time Series
+
+Group items with aggregate functions are not automatically recalculated into the future when the time series for child items are updated.
+Therefore, the `SUM` function mentioned above will only work for the current price.
+Calculation of future total prices can be achieved with a rule (in this example file-based using Rule Builder):
+
+:::: tabs
+
+::: tab JavaScript
+
+```javascript
+rules.when()
+    .channel('energidataservice:service:energidataservice:electricity#event').triggered('DAY_AHEAD_AVAILABLE')
+    .then(event => {
+        var timeSeries = new items.TimeSeries('REPLACE');
+        var start = time.LocalDate.now().atStartOfDay().atZone(time.ZoneId.systemDefault());
+        var spotPrices = items.SpotPrice.persistence.getAllStatesBetween(start, start.plusDays(2));
+        for (var spotPrice of spotPrices) {
+            var totalPrice = spotPrice.quantityState
+                .add(items.GridTariff.persistence.persistedState(spotPrice.timestamp).quantityState)
+                .add(items.SystemTariff.persistence.persistedState(spotPrice.timestamp).quantityState)
+                .add(items.TransmissionGridTariff.persistence.persistedState(spotPrice.timestamp).quantityState)
+                .add(items.ElectricityTax.persistence.persistedState(spotPrice.timestamp).quantityState);
+
+            timeSeries.add(spotPrice.timestamp, totalPrice);
+        }
+        items.TotalPrice.persistence.persist(timeSeries);
+    })
+    .build("Calculate total price");
+```
+
+:::
+
+::::
 
 #### Currencies
 
@@ -379,12 +416,12 @@ Thing energidataservice:service:energidataservice "Energi Data Service" [ priceA
 ### Item Configuration
 
 ```java
-Group:Number:SUM TotalPrice "Current Total Price" <price>
-Number SpotPrice "Current Spot Price" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#spot-price" [profile="transform:VAT"] }
-Number GridTariff "Current Grid Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#grid-tariff" [profile="transform:VAT"] }
-Number SystemTariff "Current System Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#system-tariff" [profile="transform:VAT"] }
-Number TransmissionGridTariff "Current Transmission Grid Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#transmission-grid-tariff" [profile="transform:VAT"] }
-Number ElectricityTax "Current Electricity Tax" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#electricity-tax" [profile="transform:VAT"] }
+Group:Number:EnergyPrice:SUM TotalPrice "Total Price" <price>
+Number:EnergyPrice SpotPrice "Spot Price" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#spot-price" [profile="transform:VAT"] }
+Number:EnergyPrice GridTariff "Grid Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#grid-tariff" [profile="transform:VAT"] }
+Number:EnergyPrice SystemTariff "System Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#system-tariff" [profile="transform:VAT"] }
+Number:EnergyPrice TransmissionGridTariff "Transmission Grid Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#transmission-grid-tariff" [profile="transform:VAT"] }
+Number:EnergyPrice ElectricityTax "Electricity Tax" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#electricity-tax" [profile="transform:VAT"] }
 ```
 
 ### Persistence Configuration
