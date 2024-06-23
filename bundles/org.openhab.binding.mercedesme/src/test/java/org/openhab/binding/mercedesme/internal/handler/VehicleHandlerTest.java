@@ -384,6 +384,8 @@ class VehicleHandlerTest {
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
+        AccountHandlerMock ahm = new AccountHandlerMock();
+        vh.accountHandler = Optional.of(ahm);
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
 

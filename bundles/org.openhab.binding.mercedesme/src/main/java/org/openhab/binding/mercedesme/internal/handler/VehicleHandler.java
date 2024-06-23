@@ -186,7 +186,6 @@ public class VehicleHandler extends BaseThingHandler {
          * Commands shall be not that frequent so trace level for identifying problems should be feasible
          */
         logger.trace("Received command {} {} for {}", command.getClass(), command, channelUID);
-        var crBuilder = CommandRequest.newBuilder().setVin(config.get().vin).setRequestId(UUID.randomUUID().toString());
 
         if (command instanceof RefreshType) {
             if (MB_KEY_FEATURE_CAPABILITIES.equals(channelUID.getIdWithoutGroup())
@@ -203,19 +202,24 @@ public class VehicleHandler extends BaseThingHandler {
             }
             // ensure unit update
             unitStorage.remove(channelUID.getIdWithoutGroup());
-        } else if (Constants.GROUP_VEHICLE.equals(channelUID.getGroupId())) {
-            /**
-             * Commands for Vehicle
-             */
-            if (OH_CHANNEL_IGNITION.equals(channelUID.getIdWithoutGroup())) {
-                String pin = accountHandler.get().config.get().pin;
-                switch (channelUID.getIdWithoutGroup()) {
+            return;
+        }
+        var crBuilder = CommandRequest.newBuilder().setVin(config.get().vin).setRequestId(UUID.randomUUID().toString());
+        String group = channelUID.getGroupId();
+        String channel = channelUID.getIdWithoutGroup();
+        String pin = accountHandler.get().config.get().pin;
+        if (group == null) {
+            logger.trace("No command {} found for {}", command, channel);
+            return;
+        }
+        switch (group) {
+            case GROUP_VEHICLE:
+                switch (channel) {
                     case OH_CHANNEL_IGNITION:
                         if (!supports(MB_KEY_COMMAND_ENGINE_START)) {
                             logger.trace("Engine Start/Stop not supported");
                             return;
                         }
-
                         int commandValue = ((DecimalType) command).intValue();
                         if (commandValue == 4) {
                             if (Constants.NOT_SET.equals(pin)) {
@@ -292,205 +296,218 @@ public class VehicleHandler extends BaseThingHandler {
                         }
                         break;
                     default:
-                        logger.trace("Unknown {} command {}", Constants.GROUP_VEHICLE, command);
+                        logger.trace("No command {} found for {}#{}", command, group, channel);
                         break;
                 }
-            }
-        } else if (Constants.GROUP_HVAC.equals(channelUID.getGroupId())) {
-            /**
-             * Commands for HVAC
-             */
-            switch (channelUID.getIdWithoutGroup()) {
-                case OH_CHANNEL_TEMPERATURE:
-                    if (!supports(MB_KEY_COMMAND_ZEV_PRECONDITION_CONFIGURE)) {
-                        logger.trace("Air Conditioning Temperature Setting not supported");
-                        return;
-                    }
-                    if (command instanceof QuantityType<?> quantityTypeCommand) {
-                        QuantityType<?> targetTempCelsius = quantityTypeCommand.toInvertibleUnit(SIUnits.CELSIUS);
-                        TemperatureConfigure tc = TemperatureConfigure.newBuilder()
-                                .addTemperaturePoints(TemperaturePoint.newBuilder().setZoneValue(activeTemperaturePoint)
-                                        .setTemperatureInCelsius(targetTempCelsius.intValue()).build())
-                                .build();
-                        CommandRequest cr = crBuilder.setTemperatureConfigure(tc).build();
-                        accountHandler.get().sendCommand(createCM(cr));
-                    }
-                    break;
-                case OH_CHANNEL_ACTIVE:
-                    if (!supports(MB_KEY_COMMAND_ZEV_PRECONDITIONING_START)) {
-                        logger.trace("Air Conditioning not supported");
-                        return;
-                    }
-                    if (OnOffType.ON.equals(command)) {
-                        ZEVPreconditioningStart precondStart = ZEVPreconditioningStart.newBuilder()
-                                .setType(ZEVPreconditioningType.NOW).build();
-                        CommandRequest cr = crBuilder.setZevPreconditioningStart(precondStart).build();
-                        accountHandler.get().sendCommand(createCM(cr));
-                    } else {
-                        ZEVPreconditioningStop precondStop = ZEVPreconditioningStop.newBuilder()
-                                .setType(ZEVPreconditioningType.NOW).build();
-                        CommandRequest cr = crBuilder.setZevPreconditioningStop(precondStop).build();
-                        accountHandler.get().sendCommand(createCM(cr));
-                    }
-                    break;
-                case OH_CHANNEL_FRONT_LEFT:
-                case OH_CHANNEL_FRONT_RIGHT:
-                case OH_CHANNEL_REAR_LEFT:
-                case OH_CHANNEL_REAR_RIGHT:
-                    configureSeats(channelUID, (State) command);
-                    break;
-                case OH_CHANNEL_AUX_HEAT:
-                    if (!supports(MB_KEY_FEATURE_AUX_HEAT)) {
-                        logger.trace("Auxiliary Heating not supported");
-                        return;
-                    }
-                    if (OnOffType.ON.equals(command)) {
-                        AuxheatStart auxHeatStart = AuxheatStart.newBuilder().build();
-                        CommandRequest cr = crBuilder.setAuxheatStart(auxHeatStart).build();
-                        accountHandler.get().sendCommand(createCM(cr));
-                    } else {
-                        AuxheatStop auxHeatStop = AuxheatStop.newBuilder().build();
-                        CommandRequest cr = crBuilder.setAuxheatStop(auxHeatStop).build();
-                        accountHandler.get().sendCommand(createCM(cr));
-                    }
-                    break;
-                case OH_CHANNEL_ZONE:
-                    int zone = ((DecimalType) command).intValue();
-                    if (!temperaturePointsStorage.containsKey(zone)) {
-                        logger.trace("No Temperature Zone found for {}", command);
-                        return;
-                    }
-                    ChannelStateMap zoneMap = new ChannelStateMap(OH_CHANNEL_ZONE, GROUP_HVAC, (DecimalType) command);
-                    updateChannel(zoneMap);
-                    QuantityType<Temperature> selectedTemp = temperaturePointsStorage.get(zone);
-                    if (selectedTemp != null) {
-                        ChannelStateMap tempCSM = new ChannelStateMap(OH_CHANNEL_TEMPERATURE, GROUP_HVAC, selectedTemp);
-                        updateChannel(tempCSM);
-                    }
-
-            }
-        } else if (Constants.GROUP_POSITION.equals(channelUID.getGroupId())) {
-            /**
-             * Commands for Positioning
-             */
-            switch (channelUID.getIdWithoutGroup()) {
-                case OH_CHANNEL_SIGNAL:
-                    if (!supports(MB_KEY_COMMAND_SIGPOS_START)) {
-                        logger.trace("Signal Position not supported");
-                        return;
-                    }
-                    SigPosStart sps;
-                    CommandRequest cr;
-                    switch (((DecimalType) command).intValue()) {
-                        case 0: // light
-                            sps = SigPosStart.newBuilder().setSigposType(SigposType.LIGHT_ONLY)
-                                    .setLightType(LightType.DIPPED_HEAD_LIGHT).setSigposDuration(10).build();
-                            cr = crBuilder.setSigposStart(sps).build();
-                            accountHandler.get().sendCommand(createCM(cr));
-                            break;
-                        case 1: // horn
-                            sps = SigPosStart.newBuilder().setSigposType(SigposType.HORN_ONLY).setHornRepeat(3)
-                                    .setHornType(HornType.HORN_LOW_VOLUME).build();
-                            cr = CommandRequest.newBuilder().setVin(config.get().vin)
-                                    .setRequestId(UUID.randomUUID().toString()).setSigposStart(sps).build();
-                            accountHandler.get().sendCommand(createCM(cr));
-                            break;
-                        default:
-                            logger.trace("No Positioning known for {}", command);
-                    }
-                    break;
-            }
-        } else if (Constants.GROUP_CHARGE.equals(channelUID.getGroupId())) {
-            /**
-             * Commands for Charging
-             */
-            if (!supports(MB_KEY_COMMAND_CHARGE_PROGRAM_CONFIGURE)) {
-                logger.trace("Charge Program Configure not supported");
-                return;
-            }
-            int maxSocToSelect = 80;
-            boolean autoUnlockToSelect = false;
-            boolean sendCommand = false;
-
-            synchronized (chargeGroupValueStorage) {
-                switch (channelUID.getIdWithoutGroup()) {
-                    case OH_CHANNEL_PROGRAM:
-                        selectedChargeProgram = ((DecimalType) command).intValue();
-                        if (chargeGroupValueStorage.has(Integer.toString(selectedChargeProgram))) {
-                            maxSocToSelect = chargeGroupValueStorage
-                                    .getJSONObject(Integer.toString(selectedChargeProgram))
-                                    .getInt(Constants.MAX_SOC_KEY);
-                            autoUnlockToSelect = chargeGroupValueStorage
-                                    .getJSONObject(Integer.toString(selectedChargeProgram))
-                                    .getBoolean(Constants.AUTO_UNLOCK_KEY);
-                            updateChannel(new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
-                                    QuantityType.valueOf(maxSocToSelect, Units.PERCENT)));
-                            updateChannel(new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
-                                    OnOffType.from(autoUnlockToSelect)));
-                            sendCommand = true;
-                        } else {
-                            logger.trace("No charge program found for {}", selectedChargeProgram);
-                        }
-                        break;
-                    case OH_CHANNEL_AUTO_UNLOCK:
-                        autoUnlockToSelect = OnOffType.ON.equals(command);
-                        sendCommand = true;
-                        break;
-                    case OH_CHANNEL_MAX_SOC:
-                        maxSocToSelect = ((QuantityType<?>) command).intValue();
-                        sendCommand = true;
-                        break;
-                }
-                if (sendCommand) {
-                    Int32Value maxSocValue = Int32Value.newBuilder().setValue(maxSocToSelect).build();
-                    BoolValue autoUnlockValue = BoolValue.newBuilder().setValue(autoUnlockToSelect).build();
-                    ChargeProgramConfigure cpc = ChargeProgramConfigure.newBuilder()
-                            .setChargeProgramValue(selectedChargeProgram).setMaxSoc(maxSocValue)
-                            .setAutoUnlock(autoUnlockValue).build();
-                    CommandRequest cr = crBuilder.setChargeProgramConfigure(cpc).build();
-                    accountHandler.get().sendCommand(createCM(cr));
-                }
-            }
-        } else if (Constants.GROUP_DOORS.equals(channelUID.getGroupId())) {
-            /**
-             * Commands for Doors
-             */
-            if (OH_CHANNEL_SUNROOF.equals(channelUID.getIdWithoutGroup())) {
-                if (!supports(MB_KEY_COMMAND_SUNROOF_OPEN)) {
-                    logger.trace("Sunroof control not supported");
-                    return;
-                }
-                String pin = accountHandler.get().config.get().pin;
-                CommandRequest cr;
-                switch (((DecimalType) command).intValue()) {
-                    case 0:
-                        SunroofClose sc = SunroofClose.newBuilder().build();
-                        cr = crBuilder.setSunroofClose(sc).build();
-                        accountHandler.get().sendCommand(createCM(cr));
-                        break;
-                    case 1:
-                        if (Constants.NOT_SET.equals(pin)) {
-                            logger.trace("Security PIN missing in Account bridge");
+                break; // vehicle group
+            case GROUP_HVAC:
+                switch (channel) {
+                    case OH_CHANNEL_TEMPERATURE:
+                        if (!supports(MB_KEY_COMMAND_ZEV_PRECONDITION_CONFIGURE)) {
+                            logger.trace("Air Conditioning Temperature Setting not supported");
                             return;
                         }
-                        SunroofOpen so = SunroofOpen.newBuilder().setPin(pin).build();
-                        cr = crBuilder.setSunroofOpen(so).build();
-                        accountHandler.get().sendCommand(createCM(cr));
-                        break;
-                    case 2:
-                        if (Constants.NOT_SET.equals(pin)) {
-                            logger.trace("Security PIN missing in Account bridge");
+                        if (command instanceof QuantityType<?> quantityTypeCommand) {
+                            QuantityType<?> targetTempCelsius = quantityTypeCommand.toInvertibleUnit(SIUnits.CELSIUS);
+                            if (targetTempCelsius == null) {
+                                logger.trace("Cannot handle temperature command {}", quantityTypeCommand);
+                                return;
+                            }
+                            TemperatureConfigure tc = TemperatureConfigure.newBuilder()
+                                    .addTemperaturePoints(
+                                            TemperaturePoint.newBuilder().setZoneValue(activeTemperaturePoint)
+                                                    .setTemperatureInCelsius(targetTempCelsius.intValue()).build())
+                                    .build();
+                            CommandRequest cr = crBuilder.setTemperatureConfigure(tc).build();
+                            accountHandler.get().sendCommand(createCM(cr));
+                        } else {
+                            logger.trace("Temperature {} shall be QuantityType with degree Celsius or Fahrenheit",
+                                    command);
                         }
-                        SunroofLift sl = SunroofLift.newBuilder().setPin(pin).build();
-                        cr = crBuilder.setSunroofLift(sl).build();
-                        accountHandler.get().sendCommand(createCM(cr));
+                        break;
+                    case OH_CHANNEL_ACTIVE:
+                        if (!supports(MB_KEY_COMMAND_ZEV_PRECONDITIONING_START)) {
+                            logger.trace("Air Conditioning not supported");
+                            return;
+                        }
+                        if (OnOffType.ON.equals(command)) {
+                            ZEVPreconditioningStart precondStart = ZEVPreconditioningStart.newBuilder()
+                                    .setType(ZEVPreconditioningType.NOW).build();
+                            CommandRequest cr = crBuilder.setZevPreconditioningStart(precondStart).build();
+                            accountHandler.get().sendCommand(createCM(cr));
+                        } else {
+                            ZEVPreconditioningStop precondStop = ZEVPreconditioningStop.newBuilder()
+                                    .setType(ZEVPreconditioningType.NOW).build();
+                            CommandRequest cr = crBuilder.setZevPreconditioningStop(precondStop).build();
+                            accountHandler.get().sendCommand(createCM(cr));
+                        }
+                        break;
+                    case OH_CHANNEL_FRONT_LEFT:
+                    case OH_CHANNEL_FRONT_RIGHT:
+                    case OH_CHANNEL_REAR_LEFT:
+                    case OH_CHANNEL_REAR_RIGHT:
+                        configureSeats(channelUID, (State) command);
+                        break;
+                    case OH_CHANNEL_AUX_HEAT:
+                        if (!supports(MB_KEY_FEATURE_AUX_HEAT)) {
+                            logger.trace("Auxiliary Heating not supported");
+                            return;
+                        }
+                        if (OnOffType.ON.equals(command)) {
+                            AuxheatStart auxHeatStart = AuxheatStart.newBuilder().build();
+                            CommandRequest cr = crBuilder.setAuxheatStart(auxHeatStart).build();
+                            accountHandler.get().sendCommand(createCM(cr));
+                        } else {
+                            AuxheatStop auxHeatStop = AuxheatStop.newBuilder().build();
+                            CommandRequest cr = crBuilder.setAuxheatStop(auxHeatStop).build();
+                            accountHandler.get().sendCommand(createCM(cr));
+                        }
+                        break;
+                    case OH_CHANNEL_ZONE:
+                        int zone = ((DecimalType) command).intValue();
+                        if (!temperaturePointsStorage.containsKey(zone)) {
+                            logger.trace("No Temperature Zone found for {}", command);
+                            return;
+                        }
+                        ChannelStateMap zoneMap = new ChannelStateMap(OH_CHANNEL_ZONE, GROUP_HVAC,
+                                (DecimalType) command);
+                        updateChannel(zoneMap);
+                        QuantityType<Temperature> selectedTemp = temperaturePointsStorage.get(zone);
+                        if (selectedTemp != null) {
+                            ChannelStateMap tempCSM = new ChannelStateMap(OH_CHANNEL_TEMPERATURE, GROUP_HVAC,
+                                    selectedTemp);
+                            updateChannel(tempCSM);
+                        }
+                    default:
+                        logger.trace("No command {} found for {}#{}", command, group, channel);
+                        break;
+                }
+                break; // hvac group
+            case GROUP_POSITION:
+                switch (channel) {
+                    case OH_CHANNEL_SIGNAL:
+                        if (!supports(MB_KEY_COMMAND_SIGPOS_START)) {
+                            logger.trace("Signal Position not supported");
+                            return;
+                        }
+                        SigPosStart sps;
+                        CommandRequest cr;
+                        switch (((DecimalType) command).intValue()) {
+                            case 0: // light
+                                sps = SigPosStart.newBuilder().setSigposType(SigposType.LIGHT_ONLY)
+                                        .setLightType(LightType.DIPPED_HEAD_LIGHT).setSigposDuration(10).build();
+                                cr = crBuilder.setSigposStart(sps).build();
+                                accountHandler.get().sendCommand(createCM(cr));
+                                break;
+                            case 1: // horn
+                                sps = SigPosStart.newBuilder().setSigposType(SigposType.HORN_ONLY).setHornRepeat(3)
+                                        .setHornType(HornType.HORN_LOW_VOLUME).build();
+                                cr = crBuilder.setSigposStart(sps).build();
+                                accountHandler.get().sendCommand(createCM(cr));
+                                break;
+                            default:
+                                logger.trace("No Positioning known for {}", command);
+                        }
                         break;
                     default:
-                        logger.trace("No Sunroof movement known for {}", command);
+                        logger.trace("No command {} found for {}#{}", command, group, channel);
+                        break;
                 }
-            }
-        } else {
-            logger.trace("{} Account not properly configured", this.getThing().getLabel());
+                break; // position group
+            case GROUP_CHARGE:
+                if (!supports(MB_KEY_COMMAND_CHARGE_PROGRAM_CONFIGURE)) {
+                    logger.trace("Charge Program Configure not supported");
+                    return;
+                }
+                int maxSocToSelect = 80;
+                boolean autoUnlockToSelect = false;
+                boolean sendCommand = false;
+
+                synchronized (chargeGroupValueStorage) {
+                    switch (channel) {
+                        case OH_CHANNEL_PROGRAM:
+                            selectedChargeProgram = ((DecimalType) command).intValue();
+                            if (chargeGroupValueStorage.has(Integer.toString(selectedChargeProgram))) {
+                                maxSocToSelect = chargeGroupValueStorage
+                                        .getJSONObject(Integer.toString(selectedChargeProgram))
+                                        .getInt(Constants.MAX_SOC_KEY);
+                                autoUnlockToSelect = chargeGroupValueStorage
+                                        .getJSONObject(Integer.toString(selectedChargeProgram))
+                                        .getBoolean(Constants.AUTO_UNLOCK_KEY);
+                                updateChannel(new ChannelStateMap(OH_CHANNEL_MAX_SOC, GROUP_CHARGE,
+                                        QuantityType.valueOf(maxSocToSelect, Units.PERCENT)));
+                                updateChannel(new ChannelStateMap(OH_CHANNEL_AUTO_UNLOCK, GROUP_CHARGE,
+                                        OnOffType.from(autoUnlockToSelect)));
+                                sendCommand = true;
+                            } else {
+                                logger.trace("No charge program found for {}", selectedChargeProgram);
+                            }
+                            break;
+                        case OH_CHANNEL_AUTO_UNLOCK:
+                            autoUnlockToSelect = OnOffType.ON.equals(command);
+                            sendCommand = true;
+                            break;
+                        case OH_CHANNEL_MAX_SOC:
+                            maxSocToSelect = ((QuantityType<?>) command).intValue();
+                            sendCommand = true;
+                            break;
+                        default:
+                            logger.trace("No command {} found for {}#{}", command, group, channel);
+                            break;
+                    }
+                    if (sendCommand) {
+                        Int32Value maxSocValue = Int32Value.newBuilder().setValue(maxSocToSelect).build();
+                        BoolValue autoUnlockValue = BoolValue.newBuilder().setValue(autoUnlockToSelect).build();
+                        ChargeProgramConfigure cpc = ChargeProgramConfigure.newBuilder()
+                                .setChargeProgramValue(selectedChargeProgram).setMaxSoc(maxSocValue)
+                                .setAutoUnlock(autoUnlockValue).build();
+                        CommandRequest cr = crBuilder.setChargeProgramConfigure(cpc).build();
+                        accountHandler.get().sendCommand(createCM(cr));
+                    }
+                }
+                break; // charge group
+            case GROUP_DOORS:
+                switch (channel) {
+                    case OH_CHANNEL_SUNROOF:
+                        if (!supports(MB_KEY_COMMAND_SUNROOF_OPEN)) {
+                            logger.trace("Sunroof control not supported");
+                            return;
+                        }
+                        CommandRequest cr;
+                        switch (((DecimalType) command).intValue()) {
+                            case 0:
+                                SunroofClose sc = SunroofClose.newBuilder().build();
+                                cr = crBuilder.setSunroofClose(sc).build();
+                                accountHandler.get().sendCommand(createCM(cr));
+                                break;
+                            case 1:
+                                if (Constants.NOT_SET.equals(pin)) {
+                                    logger.trace("Security PIN missing in Account bridge");
+                                    return;
+                                }
+                                SunroofOpen so = SunroofOpen.newBuilder().setPin(pin).build();
+                                cr = crBuilder.setSunroofOpen(so).build();
+                                accountHandler.get().sendCommand(createCM(cr));
+                                break;
+                            case 2:
+                                if (Constants.NOT_SET.equals(pin)) {
+                                    logger.trace("Security PIN missing in Account bridge");
+                                }
+                                SunroofLift sl = SunroofLift.newBuilder().setPin(pin).build();
+                                cr = crBuilder.setSunroofLift(sl).build();
+                                accountHandler.get().sendCommand(createCM(cr));
+                                break;
+                            default:
+                                logger.trace("No Sunroof movement known for {}", command);
+                        }
+                    default:
+                        logger.trace("No command {} found for {}#{}", command, group, channel);
+                        break;
+                }
+                break; // doors group
+            default: // no group matching
+                logger.trace("No command {} found for {}#{}", command, group, channel);
+                break;
         }
     }
 
