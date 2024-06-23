@@ -168,9 +168,10 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         } catch (IOException e) {
             this.handleError("Error reading variable definition file", ThingStatusDetail.CONFIGURATION_ERROR);
         }
+        Map<String, HeliosVariable> variableMap = this.variableMap;
         if (variableMap != null) {
             // add the name to the variable itself
-            for (Map.Entry<String, HeliosVariable> entry : this.variableMap.entrySet()) {
+            for (Map.Entry<String, HeliosVariable> entry : variableMap.entrySet()) {
                 entry.getValue().setName(entry.getKey()); // workaround to set the variable name inside the
                                                           // HeliosVariable object
                 if (!entry.getValue().isOk()) {
@@ -250,8 +251,9 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         this.config = getConfigAs(HeliosEasyControlsConfiguration.class);
         this.readVariableDefinition();
         this.connectEndpoint();
-        if ((this.comms != null) && (this.variableMap != null) && (this.config != null)) {
-            this.transactionLocks.putIfAbsent(this.comms.getEndpoint(), new Semaphore(1, true));
+        ModbusCommunicationInterface comms = this.comms;
+        if (comms != null && this.variableMap != null && this.config != null) {
+            this.transactionLocks.putIfAbsent(comms.getEndpoint(), new Semaphore(1, true));
             updateStatus(ThingStatus.UNKNOWN);
 
             // background initialization
@@ -293,8 +295,10 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        if (this.pollingJob != null) {
-            this.pollingJob.cancel(true);
+        ScheduledFuture<?> pollingJob = this.pollingJob;
+        if (pollingJob != null) {
+            pollingJob.cancel(true);
+            this.pollingJob = null;
         }
         this.comms = null;
     }
@@ -382,6 +386,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
                 scheduler.submit(() -> {
                     try {
                         writeValue(channelId, v);
+                        Map<String, HeliosVariable> variableMap = this.variableMap;
                         if (variableMap != null) {
                             HeliosVariable variable = variableMap.get(channelId);
                             if (variable != null) {
