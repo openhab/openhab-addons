@@ -66,7 +66,7 @@ public class WatsonSTTConfiguration {
     public String noResultsMessage = "Sorry, I didn't understand you";
 
     /**
-     * Message to be told when no results
+     * Message to be told when an error has happened
      */
     public String errorMessage = "Sorry, something went wrong";
 
