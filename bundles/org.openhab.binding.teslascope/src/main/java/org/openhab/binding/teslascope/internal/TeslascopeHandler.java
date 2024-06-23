@@ -227,7 +227,7 @@ public class TeslascopeHandler extends BaseThingHandler {
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGERVOLTAGE,
                     new QuantityType<>(detailedInformation.charger_voltage, Units.VOLT));
             updateState(TeslascopeBindingConstants.CHANNEL_TIMETOFULLCHARGE,
-                    new DecimalType(detailedInformation.time_to_full_charge));
+                    new QuantityType<>(detailedInformation.time_to_full_charge, Units.HOUR));
             updateState(TeslascopeBindingConstants.CHANNEL_CHARGINGSTATE,
                     new StringType(detailedInformation.chargingstate));
             updateState(TeslascopeBindingConstants.CHANNEL_SCHEDULEDCHARGINGPENDING,
