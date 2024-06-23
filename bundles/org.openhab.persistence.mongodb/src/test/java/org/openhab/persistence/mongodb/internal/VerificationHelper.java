@@ -202,4 +202,10 @@ public class VerificationHelper {
         Object value = doc.get(MongoDBFields.FIELD_VALUE);
         return Pair.of(expectedDoc, value != null ? value : new Object());
     }
+
+    public record Pair<L, R> (L left, R right) {
+        public static <L, R> Pair<L, R> of(final L left, final R right) {
+            return left != null || right != null ? new Pair<>(left, right) : new Pair<>(null, null);
+        }
+    }
 }
