@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(configurationPid = "binding.awattar", service = ThingHandlerFactory.class)
 public class AwattarHandlerFactory extends BaseThingHandlerFactory {
-    private Logger logger = LoggerFactory.getLogger(AwattarHandlerFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(AwattarHandlerFactory.class);
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PRICE, THING_TYPE_BESTPRICE,
             THING_TYPE_BRIDGE);
@@ -69,11 +69,9 @@ public class AwattarHandlerFactory extends BaseThingHandlerFactory {
 
         if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
             return new AwattarBridgeHandler((Bridge) thing, httpClient, timeZoneProvider);
-        }
-        if (THING_TYPE_PRICE.equals(thingTypeUID)) {
+        } else if (THING_TYPE_PRICE.equals(thingTypeUID)) {
             return new AwattarPriceHandler(thing, timeZoneProvider);
-        }
-        if (THING_TYPE_BESTPRICE.equals(thingTypeUID)) {
+        } else if (THING_TYPE_BESTPRICE.equals(thingTypeUID)) {
             return new AwattarBestpriceHandler(thing, timeZoneProvider);
         }
 
