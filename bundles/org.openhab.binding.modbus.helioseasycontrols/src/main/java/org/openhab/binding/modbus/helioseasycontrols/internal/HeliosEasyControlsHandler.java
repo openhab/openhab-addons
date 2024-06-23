@@ -226,7 +226,6 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
 
         ModbusEndpointThingHandler slaveEndpointThingHandler = getEndpointThingHandler();
         if (slaveEndpointThingHandler == null) {
-            @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' is offline", label));
@@ -237,7 +236,6 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
         comms = slaveEndpointThingHandler.getCommunicationInterface();
 
         if (comms == null) {
-            @SuppressWarnings("null")
             String label = Optional.ofNullable(getBridge()).map(b -> b.getLabel()).orElse("<null>");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE,
                     String.format("Bridge '%s' not completely initialized", label));
@@ -266,6 +264,7 @@ public class HeliosEasyControlsHandler extends BaseThingHandler {
             HeliosEasyControlsConfiguration config = this.config;
             if (config != null) {
                 this.pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                    Map<String, HeliosVariable> variableMap = this.variableMap;
                     if (variableMap != null) {
                         for (Map.Entry<String, HeliosVariable> entry : variableMap.entrySet()) {
                             if (this.isProperty(entry.getKey()) || isLinked(entry.getValue().getGroupAndName())
