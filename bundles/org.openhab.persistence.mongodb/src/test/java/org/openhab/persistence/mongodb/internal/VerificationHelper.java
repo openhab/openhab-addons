@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.bson.Document;
 import org.bson.json.JsonWriterSettings;
 import org.bson.types.Binary;
@@ -102,7 +101,7 @@ public class VerificationHelper {
         Pair<Object, Object> values = handler.apply(expectedValue, document);
 
         JsonWriterSettings jsonWriterSettings = JsonWriterSettings.builder().indent(true).build();
-        assertEquals(values.getLeft(), values.getRight(),
+        assertEquals(values.left, values.right,
                 "Document: (" + expectedValue.getClass().getSimpleName() + ") " + document.toJson(jsonWriterSettings));
 
         assertNotNull(document.get("_id"));
