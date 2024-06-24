@@ -227,7 +227,7 @@ public class AccountHandler extends BaseBridgeHandler implements AccessTokenRefr
             // all failed - start manual authorization
             String textKey = Constants.STATUS_TEXT_PREFIX + thing.getThingTypeUID().getId()
                     + Constants.STATUS_AUTH_NEEDED;
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     textKey + " [\"" + thing.getProperties().get("callbackUrl") + "\"]");
         }
     }
