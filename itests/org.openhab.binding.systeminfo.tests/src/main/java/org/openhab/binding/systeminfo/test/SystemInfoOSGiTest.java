@@ -55,7 +55,7 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.config.discovery.inbox.Inbox;
 import org.openhab.core.config.discovery.inbox.InboxPredicates;
 import org.openhab.core.i18n.UnitProvider;
-import org.openhab.core.items.GenericItem;
+import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
 import org.openhab.core.library.dimension.DataAmount;
@@ -122,8 +122,8 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
      */
     private static final int DEFAULT_TEST_INTERVAL_MEDIUM = 3;
 
+    private @Nullable Item testItem;
     private @Nullable Thing systeminfoThing;
-    private @Nullable GenericItem testItem;
 
     private @Mock @NonNullByDefault({}) OSHISystemInfo mockedSystemInfo;
     private @NonNullByDefault({}) SystemInfoHandlerFactory systeminfoHandlerFactory;
@@ -157,8 +157,9 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
 
         registerService(mockedSystemInfo);
 
-        final SystemInfoHandlerFactory factory = getService(ThingHandlerFactory.class, SystemInfoHandlerFactory.class);
         waitForAssert(() -> {
+            final SystemInfoHandlerFactory factory = getService(ThingHandlerFactory.class,
+                    SystemInfoHandlerFactory.class);
             assertThat(factory, is(notNullValue()));
             systeminfoHandlerFactory = factory;
         });
@@ -210,7 +211,7 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
             Thing removedThing = thingRegistry.forceRemove(thing.getUID());
             assertThat("The systeminfo thing cannot be deleted", removedThing, is(notNullValue()));
             waitForAssert(() -> {
-                ThingHandler systemInfoHandler = thing.getHandler();
+                final ThingHandler systemInfoHandler = thing.getHandler();
                 assertThat(systemInfoHandler, is(nullValue()));
             });
             managedThingProvider.remove(thing.getUID());
@@ -225,7 +226,7 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
     }
 
     private void initializeThingWithChannelAndPID(String channelID, String acceptedItemType, int pid) {
-        Configuration thingConfig = new Configuration();
+        final Configuration thingConfig = new Configuration();
         thingConfig.put(SystemInfoBindingConstants.HIGH_PRIORITY_REFRESH_TIME,
                 new BigDecimal(DEFAULT_TEST_INTERVAL_HIGH));
         thingConfig.put(SystemInfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME,
@@ -235,7 +236,7 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
     }
 
     private void initializeThingWithChannelAndPriority(String channelID, String acceptedItemType, String priority) {
-        Configuration thingConfig = new Configuration();
+        final Configuration thingConfig = new Configuration();
         thingConfig.put(SystemInfoBindingConstants.HIGH_PRIORITY_REFRESH_TIME,
                 new BigDecimal(DEFAULT_TEST_INTERVAL_HIGH));
         thingConfig.put(SystemInfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME,
@@ -248,14 +249,13 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
     private void initializeThingWithConfiguration(Configuration config) {
         String priority = DEFAULT_CHANNEL_TEST_PRIORITY;
         String channelID = DEFAULT_TEST_CHANNEL_ID;
-        String acceptedItemType = "String";
         int pid = DEFAULT_CHANNEL_PID;
 
-        initializeThing(config, channelID, acceptedItemType, priority, pid);
+        initializeThing(config, channelID, "String", priority, pid);
     }
 
     private void initializeThingWithChannel(String channelID, String acceptedItemType) {
-        Configuration thingConfig = new Configuration();
+        final Configuration thingConfig = new Configuration();
         thingConfig.put(SystemInfoBindingConstants.HIGH_PRIORITY_REFRESH_TIME,
                 new BigDecimal(DEFAULT_TEST_INTERVAL_HIGH));
         thingConfig.put(SystemInfoBindingConstants.MEDIUM_PRIORITY_REFRESH_TIME,
@@ -288,13 +288,11 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
         // Make sure the thingTypeVersion matches the highest version in the update instructions of the binding to avoid
         // new channels being added and the thing not initializing
         thingBuilder = thingBuilder.withProperties(Map.of("thingTypeVersion", "1"));
-        Thing thing = thingBuilder.build();
-        systeminfoThing = thing;
-
+        final Thing thing = thingBuilder.build();
         managedThingProvider.add(thing);
 
         waitForAssert(() -> {
-            SystemInfoHandler handler = (SystemInfoHandler) thing.getHandler();
+            final ThingHandler handler = thing.getHandler();
             assertThat(handler, is(notNullValue()));
         });
 
@@ -302,21 +300,21 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
             assertThat("Thing is not initialized, before an Item is created", thing.getStatus(),
                     anyOf(equalTo(ThingStatus.OFFLINE), equalTo(ThingStatus.ONLINE)));
         });
+        systeminfoThing = thing;
 
         intializeItem(channelUID, DEFAULT_TEST_ITEM_NAME, acceptedItemType);
     }
 
     private void assertItemState(String itemName, String priority, State expectedState) {
-        Thing thing = systeminfoThing;
+        final Thing thing = systeminfoThing;
         if (thing == null) {
             throw new AssertionError("Thing is null");
         }
-        waitForAssert(() -> {
-            ThingStatusDetail thingStatusDetail = thing.getStatusInfo().getStatusDetail();
-            String description = thing.getStatusInfo().getDescription();
-            assertThat("Thing status detail is " + thingStatusDetail + " with description " + description,
-                    thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
-        });
+
+        final ThingStatusInfo statusInfo = thing.getStatusInfo();
+        assertThat(String.format("Thing status detail is %s with description %s", statusInfo.getStatusDetail(),
+                statusInfo.getDescription()), thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
+
         // The binding starts all refresh tasks in SystemInfoHandler.scheduleUpdates() after this delay !
         try {
             sleep(SystemInfoHandler.WAIT_TIME_CHANNEL_ITEM_LINK_INIT * 1000);
@@ -324,9 +322,9 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
             throw new AssertionError("Interrupted while sleeping");
         }
 
-        GenericItem item;
+        final Item item;
         try {
-            item = (GenericItem) itemRegistry.getItem(itemName);
+            item = itemRegistry.getItem(itemName);
         } catch (ItemNotFoundException e) {
             throw new AssertionError("Item not found in registry");
         }
@@ -347,7 +345,7 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
     }
 
     private void intializeItem(ChannelUID channelUID, String itemName, String acceptedItemType) {
-        GenericItem item = null;
+        Item item = null;
         if (acceptedItemType.startsWith("Number")) {
             item = new NumberItem(acceptedItemType, itemName, unitProvider);
         } else if ("String".equals(acceptedItemType)) {
@@ -380,7 +378,9 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
 
     private void testInvalidConfiguration() {
         final Thing thing = systeminfoThing;
-        assertThat(thing, is(notNullValue()));
+        if (thing == null) {
+            throw new AssertionError("Thing is null");
+        }
         assertThat("Invalid configuration is used !", thing.getStatus(), is(equalTo(ThingStatus.OFFLINE)));
 
         waitForAssert(() -> {
@@ -941,15 +941,16 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
     }
 
     private void testDiscoveryService(String expectedHostname, String hostname) {
-        SystemInfoDiscoveryService discoveryService = getService(DiscoveryService.class,
+        final SystemInfoDiscoveryService discoveryService = getService(DiscoveryService.class,
                 SystemInfoDiscoveryService.class);
         waitForAssert(() -> {
             assertThat(discoveryService, is(notNullValue()));
         });
-        SystemInfoDiscoveryServiceMock discoveryServiceMock = new SystemInfoDiscoveryServiceMock(hostname);
         if (discoveryService != null) {
             unregisterService(DiscoveryService.class);
         }
+
+        final SystemInfoDiscoveryServiceMock discoveryServiceMock = new SystemInfoDiscoveryServiceMock(hostname);
         registerService(discoveryServiceMock, DiscoveryService.class.getName(), new Hashtable<>());
 
         ThingTypeUID computerType = SystemInfoBindingConstants.THING_TYPE_COMPUTER;
@@ -957,20 +958,22 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
 
         discoveryServiceMock.startScan();
 
-        final Inbox inbox = getService(Inbox.class);
         waitForAssert(() -> {
-            assertThat(inbox, is(notNullValue()));
+            final Inbox inbox = getService(Inbox.class);
+            if (inbox == null) {
+                throw new AssertionError("Inbox is null");
+            }
             List<DiscoveryResult> results = inbox.stream().filter(InboxPredicates.forThingUID(computerUID)).toList();
             assertFalse(results.isEmpty(), "No Thing with UID " + computerUID.getAsString() + " in inbox");
             inbox.approve(computerUID, SystemInfoDiscoveryService.DEFAULT_THING_LABEL, null);
         });
 
         final Thing thing = thingRegistry.get(computerUID);
-        waitForAssert(() -> {
-            assertThat(thing, is(notNullValue()));
-            assertThat("Thing is not initialized.", thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
-        });
+        if (thing == null) {
+            throw new AssertionError("Thing is null");
+        }
 
+        assertThat("Thing is not initialized.", thing.getStatus(), is(equalTo(ThingStatus.ONLINE)));
         systeminfoThing = thing;
     }
 
@@ -1049,11 +1052,12 @@ public class SystemInfoOSGiTest extends JavaOSGiTest {
         String acceptedItemType = "Number";
         initializeThingWithChannel(DEFAULT_TEST_CHANNEL_ID, acceptedItemType);
 
-        Thing thing = systeminfoThing;
+        final Thing thing = systeminfoThing;
         if (thing == null) {
             throw new AssertionError("Thing is null");
         }
-        Channel channel = thing.getChannel(DEFAULT_TEST_CHANNEL_ID);
+
+        final Channel channel = thing.getChannel(DEFAULT_TEST_CHANNEL_ID);
         if (channel == null) {
             throw new AssertionError("Channel '" + DEFAULT_TEST_CHANNEL_ID + "' is null");
         }
