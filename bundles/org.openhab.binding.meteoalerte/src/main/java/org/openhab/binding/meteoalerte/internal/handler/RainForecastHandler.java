@@ -16,7 +16,6 @@ import static org.openhab.binding.meteoalerte.internal.MeteoAlerteBindingConstan
 import static org.openhab.core.types.TimeSeries.Policy.REPLACE;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -65,12 +64,14 @@ public class RainForecastHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RainForecastHandler.class);
     private final MeteoAlerteDeserializer deserializer;
+    private final ChannelUID intensityUID;
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
 
     public RainForecastHandler(Thing thing, MeteoAlerteDeserializer deserializer) {
         super(thing);
         this.deserializer = deserializer;
+        this.intensityUID = new ChannelUID(getThing().getUID(), INTENSITY);
     }
 
     @Override
@@ -137,17 +138,17 @@ public class RainForecastHandler extends BaseThingHandler {
 
     private void setForecast(List<Forecast> forecast) {
         TimeSeries timeSeries = new TimeSeries(REPLACE);
+
         forecast.forEach(prevision -> {
             State state = prevision.rainIntensity() != RainIntensity.UNKNOWN
                     ? new DecimalType(prevision.rainIntensity().ordinal())
                     : UnDefType.UNDEF;
-            Instant timestamp = prevision.time().toInstant();
-            timeSeries.add(timestamp, state);
+            timeSeries.add(prevision.time().toInstant(), state);
         });
-        sendTimeSeries(new ChannelUID(getThing().getUID(), INTENSITY), timeSeries);
+        sendTimeSeries(intensityUID, timeSeries);
 
-        ZonedDateTime now = ZonedDateTime.now();
-        long until = now.until(forecast.get(0).time(), ChronoUnit.SECONDS);
+        Forecast current = forecast.get(0);
+        long until = ZonedDateTime.now().until(current.time(), ChronoUnit.SECONDS);
         logger.debug("Refresh rain intensity forecast in : {}s", until);
         refreshJob = Optional.of(scheduler.schedule(this::updateAndPublish, until, TimeUnit.SECONDS));
     }
