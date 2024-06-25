@@ -249,9 +249,9 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
                     updateState(updateKey, state);
                 }
             } catch (ConverterTypeException ex) {
-                logger.warn("{}, please check the item type and the commands in your scripts", ex.getMessage());
+                logger.warn("{}, for uid : {}, please check the item type", ex.getMessage(), uid);
             } catch (ConverterException ex) {
-                logger.warn("{}, please check the item type and the commands in your scripts", ex.getMessage());
+                logger.warn("{}, for uid: {}, please check the item type", ex.getMessage(), uid);
             }
 
         }

@@ -12,12 +12,11 @@
  */
 package org.openhab.binding.siemenshvac.internal.converter.type;
 
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoField;
 import java.util.Locale;
+
+import javax.measure.Unit;
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -26,6 +25,8 @@ import org.openhab.binding.siemenshvac.internal.metadata.SiemensHvacMetadataData
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.Type;
@@ -72,43 +73,46 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
         if ("----".equals(value.getAsString())) {
             return new DateTimeType(ZonedDateTime.now(this.timeZoneProvider.getTimeZone()));
         } else {
-            String[] formats = { "HH:mm" };
 
-            for (int i = 0; i < formats.length; i++) {
-                try {
-                    DateTimeFormatterBuilder formatterBuilder = new DateTimeFormatterBuilder().parseCaseInsensitive()
-                            .appendPattern(formats[i]).parseDefaulting(ChronoField.HOUR_OF_DAY, 0)
-                            .parseDefaulting(ChronoField.MINUTE_OF_HOUR, 0)
-                            .parseDefaulting(ChronoField.SECOND_OF_MINUTE, 0)
-                            .parseDefaulting(ChronoField.DAY_OF_MONTH, 1).parseDefaulting(ChronoField.MONTH_OF_YEAR, 1)
-                            .parseDefaulting(ChronoField.YEAR,
-                                    ZonedDateTime.now(this.timeZoneProvider.getTimeZone()).getYear());
+            if (unit.equals("h:m")) {
+                String st = value.getAsString();
+                String[] parts = st.split(":");
+                int h = Integer.parseInt(parts[0]);
+                int m = Integer.parseInt(parts[1]);
 
-                    LocalDateTime parsedDate = LocalDateTime.parse(value.getAsString(),
-                            formatterBuilder.toFormatter(locale));
+                Unit<Time> targetUnit = Units.MINUTE;
+                return new QuantityType<>(h * 60 + m, targetUnit);
 
-                    ZonedDateTime zdt = parsedDate.atZone(this.timeZoneProvider.getTimeZone());
+            } else if (unit.equals("m:s")) {
+                String st = value.getAsString();
+                String[] parts = st.split(":");
+                int m = Integer.parseInt(parts[0]);
+                int s = Integer.parseInt(parts[1]);
 
-                    return new DateTimeType(zdt);
-                } catch (DateTimeParseException ex) {
-                    if (i == formats.length - 1) {
-                        throw new ConverterException("Can't parse the date for:" + value);
-                    }
-                }
+                Unit<Time> targetUnit = Units.SECOND;
+                return new QuantityType<>(m * 60 + s, targetUnit);
+
+            } else if (unit.equals("h")) {
+                int val = Integer.parseInt(value.getAsString());
+
+                Unit<Time> targetUnit = Units.HOUR;
+                return new QuantityType<>(val, targetUnit);
+
+            } else {
+                throw new ConverterException("unsupported unit type:" + unit);
             }
         }
-
-        return new DateTimeType(ZonedDateTime.now(this.timeZoneProvider.getTimeZone()));
     }
 
     @Override
     public String getChannelType(SiemensHvacMetadataDataPoint dpt) {
-        return "datetime";
+        return "number";
     }
 
     @Override
     public String getItemType(SiemensHvacMetadataDataPoint dpt) {
-        return CoreItemFactory.DATETIME;
+        return CoreItemFactory.NUMBER + ":Time";
+        // return CoreItemFactory.NUMBER + ":Duration";
     }
 
     @Override
