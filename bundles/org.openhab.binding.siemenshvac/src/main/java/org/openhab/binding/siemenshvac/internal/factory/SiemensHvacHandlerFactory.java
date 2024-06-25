@@ -97,5 +97,4 @@ public class SiemensHvacHandlerFactory extends BaseThingHandlerFactory {
         }
         return null;
     }
-
 }
