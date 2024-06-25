@@ -71,7 +71,7 @@ public class DebugDetails {
         private String toDebugString(int padding) {
             String result = "0x";
             String hexString = Utils.toHexString(Arrays.copyOfRange(data, start, start + length), length, "");
-            result += StringUtils.rightPad(hexString, padding, " ");
+            result += StringUtils.padRight(hexString, padding, " ");
             result += ": " + description;
             return result;
         }
