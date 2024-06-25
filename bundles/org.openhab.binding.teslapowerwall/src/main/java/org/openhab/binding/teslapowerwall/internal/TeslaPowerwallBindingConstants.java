@@ -33,23 +33,23 @@ public class TeslaPowerwallBindingConstants {
     public static final ThingTypeUID TESLAPOWERWALL_THING = new ThingTypeUID(BINDING_ID, "tesla-powerwall");
 
     // List of all Channel ids
-    public static final String CHANNEL_TESLAPOWERWALL_GRIDSTATUS = "grid-status";
+    public static final String CHANNEL_TESLAPOWERWALL_GRID_STATUS = "grid-status";
     public static final String CHANNEL_TESLAPOWERWALL_GRIDSERVICES = "gridservices";
-    public static final String CHANNEL_TESLAPOWERWALL_BATTERYSOE = "battery-soe";
+    public static final String CHANNEL_TESLAPOWERWALL_BATTERY_SOE = "battery-soe";
     public static final String CHANNEL_TESLAPOWERWALL_MODE = "mode";
     public static final String CHANNEL_TESLAPOWERWALL_RESERVE = "reserve";
-    public static final String CHANNEL_TESLAPOWERWALL_GRID_INSTPOWER = "grid-inst-power";
-    public static final String CHANNEL_TESLAPOWERWALL_GRID_ENERGYEXPORTED = "grid-energy-exported";
-    public static final String CHANNEL_TESLAPOWERWALL_GRID_ENERGYIMPORTED = "grid-energy-imported";
-    public static final String CHANNEL_TESLAPOWERWALL_BATTERY_INSTPOWER = "battery-inst-power";
-    public static final String CHANNEL_TESLAPOWERWALL_BATTERY_ENERGYIMPORTED = "battery-energy-imported";
-    public static final String CHANNEL_TESLAPOWERWALL_BATTERY_ENERGYEXPORTED = "battery-energy-exported";
-    public static final String CHANNEL_TESLAPOWERWALL_HOME_INSTPOWER = "home-inst-power";
-    public static final String CHANNEL_TESLAPOWERWALL_HOME_ENERGYEXPORTED = "home-energy-exported";
-    public static final String CHANNEL_TESLAPOWERWALL_HOME_ENERGYIMPORTED = "home-energy-imported";
-    public static final String CHANNEL_TESLAPOWERWALL_SOLAR_INSTPOWER = "solar-inst-power";
-    public static final String CHANNEL_TESLAPOWERWALL_SOLAR_ENERGYEXPORTED = "solar-energy-exported";
-    public static final String CHANNEL_TESLAPOWERWALL_SOLAR_ENERGYIMPORTED = "solar-energy-imported";
+    public static final String CHANNEL_TESLAPOWERWALL_GRID_INST_POWER = "grid-inst-power";
+    public static final String CHANNEL_TESLAPOWERWALL_GRID_ENERGY_EXPORTED = "grid-energy-exported";
+    public static final String CHANNEL_TESLAPOWERWALL_GRID_ENERGY_IMPORTED = "grid-energy-imported";
+    public static final String CHANNEL_TESLAPOWERWALL_BATTERY_INST_POWER = "battery-inst-power";
+    public static final String CHANNEL_TESLAPOWERWALL_BATTERY_ENERGY_IMPORTED = "battery-energy-imported";
+    public static final String CHANNEL_TESLAPOWERWALL_BATTERY_ENERGY_EXPORTED = "battery-energy-exported";
+    public static final String CHANNEL_TESLAPOWERWALL_HOME_INST_POWER = "home-inst-power";
+    public static final String CHANNEL_TESLAPOWERWALL_HOME_ENERGY_EXPORTED = "home-energy-exported";
+    public static final String CHANNEL_TESLAPOWERWALL_HOME_ENERGY_IMPORTED = "home-energy-imported";
+    public static final String CHANNEL_TESLAPOWERWALL_SOLAR_INST_POWER = "solar-inst-power";
+    public static final String CHANNEL_TESLAPOWERWALL_SOLAR_ENERGY_EXPORTED = "solar-energy-exported";
+    public static final String CHANNEL_TESLAPOWERWALL_SOLAR_ENERGY_IMPORTED = "solar-energy-imported";
     public static final String CHANNEL_TESLAPOWERWALL_FULL_PACK_ENERGY = "full-pack-energy";
     public static final String CHANNEL_TESLAPOWERWALL_DEGRADATION = "degradation";
 

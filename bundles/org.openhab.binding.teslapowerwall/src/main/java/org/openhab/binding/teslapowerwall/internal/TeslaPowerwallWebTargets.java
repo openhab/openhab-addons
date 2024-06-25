@@ -111,16 +111,16 @@ public class TeslaPowerwallWebTargets {
         return invoke(uri, "GET", "Authorization", "Bearer " + token, "");
     }
 
-    private String invoke(String uri, String request, String contenttype, String contenttypeparam, String params)
+    private String invoke(String uri, String request, String headerKey, String headerValue, String params)
             throws TeslaPowerwallCommunicationException {
         logger.debug("Calling url: {}", uri);
         Properties headers = new Properties();
-        headers.setProperty(contenttype, contenttypeparam);
+        headers.setProperty(headerKey, headerValue);
         ByteArrayInputStream input = new ByteArrayInputStream(params.getBytes(StandardCharsets.UTF_8));
         String response;
         synchronized (this) {
             try {
-                response = HttpUtil.executeUrl(request, uri, headers, input, contenttype, TIMEOUT_MS);
+                response = HttpUtil.executeUrl(request, uri, headers, input, headerKey, TIMEOUT_MS);
             } catch (IOException ex) {
                 logger.debug("{}", ex.getLocalizedMessage(), ex);
                 // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
