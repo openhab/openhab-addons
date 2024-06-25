@@ -25,11 +25,11 @@
               <goal>add-source</goal>
             </goals>
             <phase>generate-sources</phase>
-            <configuration> 
+            <configuration>
               <sources>
                 <source>src/3rdparty/java</source>
               </sources>
-            </configuration> 
+            </configuration>
           </execution>
         </executions>
       </plugin>
