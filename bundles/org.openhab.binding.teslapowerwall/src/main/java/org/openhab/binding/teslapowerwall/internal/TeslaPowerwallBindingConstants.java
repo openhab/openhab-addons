@@ -34,7 +34,7 @@ public class TeslaPowerwallBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_TESLAPOWERWALL_GRID_STATUS = "grid-status";
-    public static final String CHANNEL_TESLAPOWERWALL_GRIDSERVICES = "gridservices";
+    public static final String CHANNEL_TESLAPOWERWALL_GRID_SERVICES = "grid-services";
     public static final String CHANNEL_TESLAPOWERWALL_BATTERY_SOE = "battery-soe";
     public static final String CHANNEL_TESLAPOWERWALL_MODE = "mode";
     public static final String CHANNEL_TESLAPOWERWALL_RESERVE = "reserve";

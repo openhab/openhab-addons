@@ -10,7 +10,7 @@
 
 		<channels>
 			<channel id="grid-status" typeId="grid-status"/>
-			<channel id="gridservices" typeId="gridservices"/>
+			<channel id="grid-services" typeId="grid-services"/>
 			<channel id="battery-soe" typeId="battery-soe"/>
 			<channel id="mode" typeId="mode"/>
 			<channel id="reserve" typeId="reserve"/>
@@ -59,7 +59,7 @@
 		<description>Current status of the Power Grid</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="gridservices">
+	<channel-type id="grid-services">
 		<item-type>Switch</item-type>
 		<label>Grid Services</label>
 		<description>Grid Services Activation Status</description>

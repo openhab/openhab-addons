@@ -54,6 +54,7 @@ teslapowerwall:teslapowerwall:TeslaPowerwall [ hostname="192.168.0.5" ]
 
 ```java
 String TeslaPowerwall_grid-status { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:grid-status" }
+Switch TeslaPowerwall_grid-services { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:grid-services" }
 Number:Percent TeslaPowerwall_battery-soe { channel="tesla-powerwall:teslapowerwall:TeslaPowerwall:battery-soe" }
 String TeslaPowerwall_mode { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:mode" }
 Number:Percent TeslaPowerwall_reserve { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:reserve" }
@@ -76,8 +77,8 @@ Number:Energy TeslaPowerwall_full-pack-energy { channel="teslapowerwall:tesla-po
 ### `teslapowerwall.sitemap`:
 
 ```perl
-Text item=OpenGarage_StatusText label="Status"
 Text item=TeslaPowerwall_grid-status label="Grid Status [%s]"
+Text item=TeslaPowerwall_grid-services label="Grid Services Status [%s]"
 Text item=TeslaPowerwall_battery-soe label="Battery Charge"
 Text item=TeslaPowerwall_mode label="Battery Mode"
 Text item=TeslaPowerwall_reserve label="Battery Reserve"

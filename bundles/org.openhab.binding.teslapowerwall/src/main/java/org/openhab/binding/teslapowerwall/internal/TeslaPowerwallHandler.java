@@ -134,7 +134,7 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
                 new QuantityType<>(((batterySOE.soe / 0.95) - (5 / 0.95)), Units.PERCENT));
         updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_STATUS,
                 new StringType(gridStatus.grid_status));
-        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRIDSERVICES,
+        updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_GRID_SERVICES,
                 (gridStatus.grid_services ? OnOffType.ON : OnOffType.OFF));
         updateState(TeslaPowerwallBindingConstants.CHANNEL_TESLAPOWERWALL_FULL_PACK_ENERGY,
                 new QuantityType<>(systemStatus.full_pack_energy, Units.WATT_HOUR));
