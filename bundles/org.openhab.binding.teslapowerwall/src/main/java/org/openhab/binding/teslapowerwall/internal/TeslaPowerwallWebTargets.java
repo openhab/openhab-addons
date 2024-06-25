@@ -18,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.teslapowerwall.internal.api.BatterySOE;
 import org.openhab.binding.teslapowerwall.internal.api.GridStatus;
 import org.openhab.binding.teslapowerwall.internal.api.MeterAggregates;
@@ -97,7 +98,8 @@ public class TeslaPowerwallWebTargets {
         jsonObject.addProperty("email", email);
         jsonObject.addProperty("force_sm_off", false);
         logger.debug("logonjson = {}", jsonObject.toString());
-        String response = invoke(getTokenUri, "POST", "Content-Type", "application/json", jsonObject.toString());
+        String response = invoke(getTokenUri, HttpMethod.POST.asString(), "Content-Type", "application/json",
+                jsonObject.toString());
         JsonObject jsonResponse = JsonParser.parseString(response).getAsJsonObject();
         String token = jsonResponse.get("token").getAsString();
         logger.debug("Token: {}", token);
@@ -108,7 +110,7 @@ public class TeslaPowerwallWebTargets {
         if (token.isEmpty()) {
             token = getToken(email, password);
         }
-        return invoke(uri, "GET", "Authorization", "Bearer " + token, "");
+        return invoke(uri, HttpMethod.GET.asString(), "Authorization", "Bearer " + token, "");
     }
 
     private String invoke(String uri, String request, String headerKey, String headerValue, String params)
