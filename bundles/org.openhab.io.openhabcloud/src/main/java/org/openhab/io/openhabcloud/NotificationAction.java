@@ -58,10 +58,7 @@ public class NotificationAction {
     @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
     public static void sendNotification(String userId, String message, @Nullable String icon,
             @Nullable String severity) {
-        logger.debug("sending notification '{}' to user {}", message, userId);
-        if (cloudService != null) {
-            cloudService.sendNotification(userId, message, icon, severity, null, null, null, null, null);
-        }
+        sendNotification(userId, message, icon, severity, null, null, null, null, null);
     }
 
     /**
@@ -141,10 +138,7 @@ public class NotificationAction {
      */
     @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
     public static void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity) {
-        logger.debug("sending broadcast notification '{}' to all users", message);
-        if (cloudService != null) {
-            cloudService.sendBroadcastNotification(message, icon, severity, null, null, null, null, null);
-        }
+        sendBroadcastNotification(message, icon, severity, null, null, null, null, null);
     }
 
     /**
