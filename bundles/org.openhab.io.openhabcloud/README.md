@@ -8,8 +8,8 @@ openHAB Cloud service hosted by the [openHAB Foundation](https://www.openhabfoun
 The openHAB Cloud service (and thus the connector to it) is useful for different use cases:
 
 * It allows remote access to local openHAB instances without having to expose ports to the Internet or to require a complex VPN setup.
-* It serves as a connector to Google Cloud Messaging (GCM) and Apple Push Notifications (APN) for pushing notifications to mobile phone apps.
-* It provides integrations with 3rd party services that require OAuth2 authentication, such as Amazon Alexa or Google Home applications 
+* It serves as a connector to Firebase Cloud Messaging (FCM) for pushing notifications to mobile phone apps.
+* It provides integrations with 3rd party services that require OAuth2 authentication, such as Amazon Alexa or Google Home applications.
 
 ## Installation via UI
 
@@ -78,3 +78,177 @@ Alternatively, you can configure the settings in the file `conf/services/openhab
 ```
 
 Note: The optionally exposed items will show up after they receive an update to their state.
+
+## Cloud Notification Actions
+
+The openHAB Cloud Connector allows to send push notifications to apps on mobile devices registered with an [openHAB Cloud instance](https://github.com/openhab/openhab-cloud) such as [myopenHAB.org](https://www.myopenhab.org).
+
+To send push notifications, the notification actions have to be used in rules.
+
+### Basic Usage
+
+Three different actions are available:
+
+- `sendNotification(emailAddress, message)`: Send a notification to a _specific_ openHAB Cloud user.
+- `sendBroadcastNotification(message)`: Send a broadcast notification to _all_ devices of _all_ users.
+- `sendLogNotification(message)`: Send a log notification to the notifications list. Log notifications do not trigger a notification on the device.
+
+For each of the three actions, there's another variant accepting an icon name and a severity:
+
+- `sendNotification(emailAddress, message, icon, severity)`
+- `sendBroadcastNotification(message, icon, severity)`
+- `sendLogNotification(message, icon, severity)`
+
+Icon and severity can potentially be used by cloud instance clients (such as the openHAB apps for Android or iOS) to be displayed in the notification itself and the list of notifications.
+
+The parameters for these actions have the following meaning:
+
+- `emailAddress`: String containing the email address the target user is registered with in the cloud instance.
+- `message`: String containing the notification message text.
+- `icon`: String containing the icon name (as described in [Items]({{base}}/configuration/items.html#icons)).
+- `severity`: String containing a description of the severity of the incident.
+
+`null` may be used to skip the `icon` or `severity` parameter.
+
+### Title, Media Attachments & Actions
+
+The `sendNotification` and `sendBroadcastNotification` actions additionally support setting a title, media attachments and actions.
+
+The title is displayed as the notification title on the device and defaults to "openHAB" for the Android and iOS apps.
+Media attachments are displayed together with the notification on the device and can be used to display images, e.g. a camera snapshot.
+Actions allow the user to interact with the notification, e.g. to open a specific page in the app or to send a command to an Item.
+
+There are four different actions available:
+
+- click action: Is performed when the user clicks on the notification.
+- action button 1, 2 or 3: Is performed when the user clicks on the first, second or third action button.
+
+To specify media attachments and actions, there is another variant of the `sendNotification` and `sendBroadcastNotification` actions:
+
+- `sendNotification(emailAddress, message, icon, severity, title, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
+- `sendBroadcastNotification(message, icon, severity, title, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
+
+The additional parameter for these variants have the following meaning:
+
+- `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
+- `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
+- `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This URL must be reachable by the push notification client.
+- `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Titel=$action`, where `$action` follow the [action syntax](#action-syntax).
+- `actionButton2`: The action to be performed when the user clicks on the second action button. Specified as `Titel=$action`, where `$action` follow the [action syntax](#action-syntax).
+- `actionButton3`: The action to be performed when the user clicks on the third action button. Specified as `Titel=$action`, where `$action` follow the [action syntax](#action-syntax).
+
+These parameters may be skipped by setting them to `null`.
+
+#### Action Syntax
+
+The action syntax is a string containing the action type and the action payload seperated by a colon.
+
+There are two types of actions available:
+
+- `command`: Sends a command to an Item by using the following syntax: `command:$itemName:$commandString` where `$itemName` is the name of the Item and `$commandString` is the command to be sent.
+- `ui`: Controls the UI in two possible ways:
+  - `ui:$path` where `$path` is either `/basicui/app?...` for navigating sitemaps (using the native renderer) or `/some/absolute/path` for navigating (using the web view).
+  - `ui:$commandItemSyntax` where `$commandItemSyntax` is the same syntax as used for the [UI Command Item]({{base}}/mainui/about.html#ui-command-item).
+
+Examples:
+
+- `command:KitchenLights:ON`
+- `command:KitchenBlinds:50`
+- `ui:/basicui/app?w=0000&sitemap=main` (use Basic UI to get sitemap URL locations)
+- `ui:/some/absolute/path`: Navigates to the absolut path `/some/absolute/path`.
+- `ui:navigate:/page/my_floorplan_page`: Navigates Main UI to the page with the ID `my_floorplan_page`.
+- `ui:popup:oh-clock-card`: Opens a popup with `oh-clock-card`.
+
+### Examples
+
+Notify the openHAB Cloud user with email address _me@email.com_ that the front door was opened:
+
+:::: tabs
+
+::: tab DSL
+
+```java 
+rule "Front Door Notification"
+when
+  Item Apartment_FrontDoor changed to OPEN
+then
+  sendNotification("me@email.com", "Front door was opened!")
+end
+```
+:::
+
+::: tab JS
+
+```javascript
+rules.when().item('Apartment_FrontDoor').changed().to('OPEN').then(() => {
+  actions.notificationBuilder('Front door was opened!').addUserId('me@email.com').send();
+}).build('Front Door Notification');
+```
+
+:::
+
+::::
+
+Notify all openHAB Cloud users that the window was opened:
+
+:::: tabs
+
+::: tab DSL
+
+```java
+rule "Open Window Notification"
+when
+  Item Apartment_Window changed to OPEN
+then
+  sendBroadcastNotification("Apartment window was opened!", "window", "HIGH")
+end
+```
+
+:::
+
+::: tab JS
+
+```javascript
+rules.when().item('Apartment_Window').changed().to('OPEN').then(() => {
+  actions.notificationBuilder('Apartment window was opened!').withIcon('window').withSeverity('HIGH').send();
+}).build('Open Window Notification');
+```
+
+:::
+
+::::
+
+Notify all openHAB Cloud users that motion was detected, attach a camera snapshot and add action button to turn on the light:
+
+:::: tabs
+
+::: tab DSL
+
+```java
+rule "Motion Detected Notification"
+when
+  Item Apartment_MotionSensor changed to ON
+then
+  sendBroadcastNotification("Motion detected in the apartment!", "motion", "MEDIUM", "Motion Detected", null, "https://apartment.my/camera-snapshot.jpg", "command:Apartment_Light:ON", null, null)
+end
+```
+
+:::
+
+::: tab JS
+
+```javascript
+rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
+  actions.notificationBuilder('Motion detected in the apartment!')
+    .withIcon('motion')
+    .withSeverity('MEDIUM')
+    .withTitle('Motion Detected')
+    .withMediaAttachment('https://apartment.my/camera-snapshot.jpg')
+    .addActionButton('Turn on the light=command:Apartment_Light:ON')
+    .send();
+}).build('Motion Detected Notification');
+```
+
+:::
+
+::::
