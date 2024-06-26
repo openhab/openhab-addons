@@ -53,7 +53,7 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
     private static final ModuleType SEND_EXTENDED2_NOTIFICATION_ACTION = new ActionType(
             SendNotificationActionHandler.EXTENDED2_TYPE_ID, getNotificationConfig(ConfigType.EXTENDED2, true, null),
             "send a notification with icon, severity, title, click action, media attachment and action buttons",
-            "Sends a notification to a specific cloud user. Optionally add an icon, severity, title,  on click action, media to attach, and up to 3 action buttons with a format of \"Title=Action\".",
+            "Sends a notification to a specific cloud user. Optionally add an icon, severity, title, on click action, media to attach, and up to 3 action buttons with a format of \"Title=Action\".",
             null, Visibility.VISIBLE, null, null);
 
     private static final ModuleType SEND_BROADCAST_NOTIFICATION_ACTION = new ActionType(
