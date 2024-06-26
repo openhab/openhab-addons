@@ -33,7 +33,7 @@ import org.osgi.service.component.annotations.Reference;
  * openHAB Cloud.
  *
  * @author Christoph Weitkamp - Initial contribution
- * @author Dan Cunningham - Extended Notification Enhancements
+ * @author Dan Cunningham - Extended notification enhancements
  */
 @NonNullByDefault
 @Component(service = ModuleHandlerFactory.class)

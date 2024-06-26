@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to ESH APIs
- * @author Dan Cunningham - Extended Notification Enhancements
+ * @author Dan Cunningham - Extended notification enhancements
  */
 @NonNullByDefault
 public class NotificationAction {

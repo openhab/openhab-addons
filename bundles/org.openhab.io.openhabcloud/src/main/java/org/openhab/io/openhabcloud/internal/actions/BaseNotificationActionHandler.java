@@ -17,13 +17,14 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.automation.Action;
 import org.openhab.core.automation.handler.BaseActionModuleHandler;
 import org.openhab.core.automation.handler.ModuleHandler;
+import org.openhab.core.config.core.ConfigParser;
 import org.openhab.io.openhabcloud.internal.CloudService;
 
 /**
  * This is a base {@link ModuleHandler} implementation for {@link Action}s to send a notifications via openHAB Cloud.
  *
  * @author Christoph Weitkamp - Initial contribution
- * @author Dan Cunningham - Extended Notification Enhancements
+ * @author Dan Cunningham - Extended notification enhancements
  */
 @NonNullByDefault
 public abstract class BaseNotificationActionHandler extends BaseActionModuleHandler {
@@ -59,25 +60,16 @@ public abstract class BaseNotificationActionHandler extends BaseActionModuleHand
             throw new IllegalArgumentException(String.format("Param '%s' should be of type String.", PARAM_MESSAGE));
         }
 
-        Object iconParam = module.getConfiguration().get(PARAM_ICON);
-        this.icon = iconParam instanceof String ? iconParam.toString() : null;
+        this.icon = stringConfig(PARAM_ICON);
+        this.severity = stringConfig(PARAM_SEVERITY);
+        this.onClickAction = stringConfig(PARAM_ON_CLICK_ACTION);
+        this.mediaAttachmentUrl = stringConfig(PARAM_MEDIA_ATTACHMENT_URL);
+        this.actionButton1 = stringConfig(PARAM_ACTION_BUTTON_1);
+        this.actionButton2 = stringConfig(PARAM_ACTION_BUTTON_2);
+        this.actionButton3 = stringConfig(PARAM_ACTION_BUTTON_3);
+    }
 
-        Object severityParam = module.getConfiguration().get(PARAM_SEVERITY);
-        this.severity = severityParam instanceof String ? severityParam.toString() : null;
-
-        Object onClickActionParam = module.getConfiguration().get(PARAM_ON_CLICK_ACTION);
-        this.onClickAction = onClickActionParam instanceof String ? onClickActionParam.toString() : null;
-
-        Object mediaAttachmentUrlParam = module.getConfiguration().get(PARAM_MEDIA_ATTACHMENT_URL);
-        this.mediaAttachmentUrl = mediaAttachmentUrlParam instanceof String ? mediaAttachmentUrlParam.toString() : null;
-
-        Object actionButton1Param = module.getConfiguration().get(PARAM_ACTION_BUTTON_1);
-        this.actionButton1 = actionButton1Param instanceof String ? actionButton1Param.toString() : null;
-
-        Object actionButton2Param = module.getConfiguration().get(PARAM_ACTION_BUTTON_2);
-        this.actionButton2 = actionButton2Param instanceof String ? actionButton2Param.toString() : null;
-
-        Object actionButton3Param = module.getConfiguration().get(PARAM_ACTION_BUTTON_3);
-        this.actionButton3 = actionButton3Param instanceof String ? actionButton3Param.toString() : null;
+    private @Nullable String stringConfig(String key) {
+        return ConfigParser.valueAs(module.getConfiguration().get(key), String.class);
     }
 }

@@ -25,7 +25,7 @@ import org.openhab.io.openhabcloud.internal.CloudService;
  * cloud users.
  *
  * @author Christoph Weitkamp - Initial contribution
- * @author Dan Cunningham - Extended Notification Enhancements
+ * @author Dan Cunningham - Extended notification enhancements
  */
 @NonNullByDefault
 public class SendBroadcastNotificationActionHandler extends BaseNotificationActionHandler {

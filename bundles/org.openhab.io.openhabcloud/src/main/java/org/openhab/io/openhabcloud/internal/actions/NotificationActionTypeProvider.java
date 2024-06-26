@@ -34,7 +34,7 @@ import org.osgi.service.component.annotations.Component;
  * openHAB Cloud.
  *
  * @author Christoph Weitkamp - Initial contribution
- * @author Dan Cunningham - Extend2 additions
+ * @author Dan Cunningham - Extended notification enhancements
  */
 @NonNullByDefault
 @Component(service = ModuleTypeProvider.class)
@@ -52,7 +52,7 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
 
     private static final ModuleType SEND_EXTENDED2_NOTIFICATION_ACTION = new ActionType(
             SendNotificationActionHandler.EXTENDED2_TYPE_ID, getNotificationConfig(ConfigType.EXTENDED2, true, null),
-            "send a notification with icon, severity, on click, media attachment, action button 1, action button 2, action button 3",
+            "send a notification with icon, severity, click action, media attachment and action buttons",
             "Sends a notification to a specific cloud user. Optionally add an icon, severity, on click action, media to attach, and up to 3 action buttons with a format of \"Title=Action\".",
             null, Visibility.VISIBLE, null, null);
 
@@ -70,8 +70,8 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
     private static final ModuleType SEND_EXTENDED2_BROADCAST_NOTIFICATION_ACTION = new ActionType(
             SendBroadcastNotificationActionHandler.EXTENDED2_TYPE_ID,
             getNotificationConfig(ConfigType.EXTENDED2, false, null),
-            "broadcast a notification with with icon, severity, on click, media attachment, action button 1, action button 2, action button 3",
-            "Sends a notification to all devices of all users. Optionally add an icon, severity, on click action, media to attach, and up to 3 action buttons with a format of \"Title=Action\".",
+            "broadcast a notification with with icon, severity, on click action, media attachment and action buttons",
+            "Sends a notification to all devices of all users. Optionally add an icon, severity, click action, media to attach, and up to 3 action buttons with a format of \"Title=Action\".",
             null, Visibility.VISIBLE, null, null);
 
     private static final ModuleType SEND_LOG_NOTIFICATION_ACTION = new ActionType(

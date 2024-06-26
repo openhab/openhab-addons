@@ -63,7 +63,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
- * @author Dan Cunningham - Extended Notification Enhancements
+ * @author Dan Cunningham - Extended notification enhancements
  */
 @Component(service = { CloudService.class, EventSubscriber.class,
         ActionService.class }, configurationPid = "org.openhab.openhabcloud", property = Constants.SERVICE_PID

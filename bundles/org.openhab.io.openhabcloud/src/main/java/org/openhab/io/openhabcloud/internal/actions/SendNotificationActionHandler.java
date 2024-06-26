@@ -24,7 +24,7 @@ import org.openhab.io.openhabcloud.internal.CloudService;
  * This is a {@link ModuleHandler} implementation for {@link Action}s to send a notification to a specific cloud user.
  *
  * @author Christoph Weitkamp - Initial contribution
- * @author Dan Cunningham - Extended Notification Enhancements
+ * @author Dan Cunningham - Extended notification enhancements
  */
 @NonNullByDefault
 public class SendNotificationActionHandler extends BaseNotificationActionHandler {

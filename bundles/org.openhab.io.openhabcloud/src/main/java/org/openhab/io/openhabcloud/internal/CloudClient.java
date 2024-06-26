@@ -71,7 +71,7 @@ import okhttp3.logging.HttpLoggingInterceptor.Level;
  *
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
- * @author Dan Cunningham - Reconnection logic and Extended Notification Enhancements
+ * @author Dan Cunningham - Extended notification enhancements
  */
 public class CloudClient {
 
