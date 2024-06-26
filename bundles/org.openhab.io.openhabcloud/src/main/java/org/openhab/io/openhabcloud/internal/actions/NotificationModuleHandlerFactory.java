@@ -33,14 +33,16 @@ import org.osgi.service.component.annotations.Reference;
  * openHAB Cloud.
  *
  * @author Christoph Weitkamp - Initial contribution
+ * @author Dan Cunningham - Extended notification enhancements
  */
 @NonNullByDefault
 @Component(service = ModuleHandlerFactory.class)
 public class NotificationModuleHandlerFactory extends BaseModuleHandlerFactory {
 
     private static final Collection<String> TYPES = List.of(SendNotificationActionHandler.TYPE_ID,
-            SendNotificationActionHandler.EXTENDED_TYPE_ID, SendBroadcastNotificationActionHandler.TYPE_ID,
-            SendBroadcastNotificationActionHandler.EXTENDED_TYPE_ID, SendLogNotificationActionHandler.TYPE_ID,
+            SendNotificationActionHandler.EXTENDED_TYPE_ID, SendNotificationActionHandler.EXTENDED2_TYPE_ID,
+            SendBroadcastNotificationActionHandler.TYPE_ID, SendBroadcastNotificationActionHandler.EXTENDED_TYPE_ID,
+            SendBroadcastNotificationActionHandler.EXTENDED2_TYPE_ID, SendLogNotificationActionHandler.TYPE_ID,
             SendLogNotificationActionHandler.EXTENDED_TYPE_ID);
     private final CloudService cloudService;
 
@@ -66,9 +68,11 @@ public class NotificationModuleHandlerFactory extends BaseModuleHandlerFactory {
             switch (module.getTypeUID()) {
                 case SendNotificationActionHandler.TYPE_ID:
                 case SendNotificationActionHandler.EXTENDED_TYPE_ID:
+                case SendNotificationActionHandler.EXTENDED2_TYPE_ID:
                     return new SendNotificationActionHandler(action, cloudService);
                 case SendBroadcastNotificationActionHandler.TYPE_ID:
                 case SendBroadcastNotificationActionHandler.EXTENDED_TYPE_ID:
+                case SendBroadcastNotificationActionHandler.EXTENDED2_TYPE_ID:
                     return new SendBroadcastNotificationActionHandler(action, cloudService);
                 case SendLogNotificationActionHandler.TYPE_ID:
                 case SendLogNotificationActionHandler.EXTENDED_TYPE_ID:

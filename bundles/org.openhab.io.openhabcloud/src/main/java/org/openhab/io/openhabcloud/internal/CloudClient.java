@@ -40,6 +40,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.URIUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.core.OpenHAB;
@@ -70,6 +71,7 @@ import okhttp3.logging.HttpLoggingInterceptor.Level;
  *
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
+ * @author Dan Cunningham - Extended notification enhancements
  */
 public class CloudClient {
 
@@ -587,16 +589,67 @@ public class CloudClient {
      * @param message notification message text
      * @param icon name of the icon for this notification
      * @param severity severity name for this notification
+     * @param title for the notification
+     * @param onClickAction the action to perform when clicked
+     * @param mediaAttachmentUrl the media to attach to a notification
+     * @param actionButton1 an action button in the format "Title=Action"
+     * @param actionButton2 an action button in the format "Title=Action"
+     * @param actionButton3 an action button in the format "Title=Action"
      */
-    public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String severity) {
+    public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String severity,
+            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
+            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
+        sendNotificationInternal(userId, message, icon, severity, title, onClickAction, mediaAttachmentUrl,
+                actionButton1, actionButton2, actionButton3);
+    }
+
+    /**
+     * This method sends broadcast notification to the openHAB Cloud
+     *
+     * @param message notification message text
+     * @param icon name of the icon for this notification
+     * @param severity severity name for this notification
+     * @param title for this notification
+     * @param onClickAction the action to perform when clicked
+     * @param mediaAttachmentUrl the media to attach to a notification
+     * @param actionButton1 an action button in the format "Title=Action"
+     * @param actionButton2 an action button in the format "Title=Action"
+     * @param actionButton3 an action button in the format "Title=Action"
+     */
+    public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity,
+            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
+            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
+        sendNotificationInternal(null, message, icon, severity, title, onClickAction, mediaAttachmentUrl, actionButton1,
+                actionButton2, actionButton3);
+    }
+
+    private void sendNotificationInternal(@Nullable String userId, String message, @Nullable String icon,
+            @Nullable String severity, @Nullable String title, @Nullable String onClickAction,
+            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
+            @Nullable String actionButton3) {
         if (isConnected()) {
             JSONObject notificationMessage = new JSONObject();
             try {
-                notificationMessage.put("userId", userId);
+                if (userId != null) {
+                    notificationMessage.put("userId", userId);
+                }
                 notificationMessage.put("message", message);
                 notificationMessage.put("icon", icon);
                 notificationMessage.put("severity", severity);
-                socket.emit("notification", notificationMessage);
+                if (title != null) {
+                    notificationMessage.put("title", title);
+                }
+                if (onClickAction != null) {
+                    notificationMessage.put("on-click", onClickAction);
+                }
+                if (mediaAttachmentUrl != null) {
+                    notificationMessage.put("media-attachment-url", mediaAttachmentUrl);
+                }
+                JSONArray actionArray = createActionArray(actionButton1, actionButton2, actionButton3);
+                if (!actionArray.isEmpty()) {
+                    notificationMessage.put("actions", actionArray);
+                }
+                socket.emit(userId == null ? "broadcastnotification" : "notification", notificationMessage);
             } catch (JSONException e) {
                 logger.debug("{}", e.getMessage());
             }
@@ -620,29 +673,6 @@ public class CloudClient {
                 notificationMessage.put("icon", icon);
                 notificationMessage.put("severity", severity);
                 socket.emit("lognotification", notificationMessage);
-            } catch (JSONException e) {
-                logger.debug("{}", e.getMessage());
-            }
-        } else {
-            logger.debug("No connection, notification is not sent");
-        }
-    }
-
-    /**
-     * This method sends broadcast notification to the openHAB Cloud
-     *
-     * @param message notification message text
-     * @param icon name of the icon for this notification
-     * @param severity severity name for this notification
-     */
-    public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity) {
-        if (isConnected()) {
-            JSONObject notificationMessage = new JSONObject();
-            try {
-                notificationMessage.put("message", message);
-                notificationMessage.put("icon", icon);
-                notificationMessage.put("severity", severity);
-                socket.emit("broadcastnotification", notificationMessage);
             } catch (JSONException e) {
                 logger.debug("{}", e.getMessage());
             }
@@ -713,6 +743,23 @@ public class CloudClient {
             logger.warn("Error forming response headers: {}", e.getMessage());
         }
         return headersJSON;
+    }
+
+    private JSONArray createActionArray(@Nullable String... actionStrings) {
+        JSONArray actionArray = new JSONArray();
+        for (String actionString : actionStrings) {
+            if (actionString == null) {
+                continue;
+            }
+            String[] parts = actionString.split("=", 2);
+            if (parts.length == 2) {
+                JSONObject action = new JSONObject();
+                action.put("title", parts[0]);
+                action.put("action", parts[1]);
+                actionArray.put(action);
+            }
+        }
+        return actionArray;
     }
 
     private static String censored(String secret) {
