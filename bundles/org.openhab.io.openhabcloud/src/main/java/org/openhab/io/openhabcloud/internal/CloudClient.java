@@ -589,6 +589,7 @@ public class CloudClient {
      * @param message notification message text
      * @param icon name of the icon for this notification
      * @param severity severity name for this notification
+     * @param title for the notification
      * @param onClickAction the action to perform when clicked
      * @param mediaAttachmentUrl the media to attach to a notification
      * @param actionButton1 an action button in the format "Title=Action"
@@ -596,10 +597,10 @@ public class CloudClient {
      * @param actionButton3 an action button in the format "Title=Action"
      */
     public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String severity,
-            @Nullable String onClickAction, @Nullable String mediaAttachmentUrl, @Nullable String actionButton1,
-            @Nullable String actionButton2, @Nullable String actionButton3) {
-        sendNotificationInternal(userId, message, icon, severity, onClickAction, mediaAttachmentUrl, actionButton1,
-                actionButton2, actionButton3);
+            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
+            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
+        sendNotificationInternal(userId, message, icon, severity, title, onClickAction, mediaAttachmentUrl,
+                actionButton1, actionButton2, actionButton3);
     }
 
     /**
@@ -608,6 +609,7 @@ public class CloudClient {
      * @param message notification message text
      * @param icon name of the icon for this notification
      * @param severity severity name for this notification
+     * @param title for this notification
      * @param onClickAction the action to perform when clicked
      * @param mediaAttachmentUrl the media to attach to a notification
      * @param actionButton1 an action button in the format "Title=Action"
@@ -615,15 +617,16 @@ public class CloudClient {
      * @param actionButton3 an action button in the format "Title=Action"
      */
     public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity,
-            @Nullable String onClickAction, @Nullable String mediaAttachmentUrl, @Nullable String actionButton1,
-            @Nullable String actionButton2, @Nullable String actionButton3) {
-        sendNotificationInternal(null, message, icon, severity, onClickAction, mediaAttachmentUrl, actionButton1,
+            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
+            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
+        sendNotificationInternal(null, message, icon, severity, title, onClickAction, mediaAttachmentUrl, actionButton1,
                 actionButton2, actionButton3);
     }
 
     private void sendNotificationInternal(@Nullable String userId, String message, @Nullable String icon,
-            @Nullable String severity, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
-            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
+            @Nullable String severity, @Nullable String title, @Nullable String onClickAction,
+            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
+            @Nullable String actionButton3) {
         if (isConnected()) {
             JSONObject notificationMessage = new JSONObject();
             try {
@@ -633,6 +636,9 @@ public class CloudClient {
                 notificationMessage.put("message", message);
                 notificationMessage.put("icon", icon);
                 notificationMessage.put("severity", severity);
+                if (title != null) {
+                    notificationMessage.put("title", title);
+                }
                 if (onClickAction != null) {
                     notificationMessage.put("on-click", onClickAction);
                 }

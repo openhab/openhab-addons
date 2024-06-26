@@ -40,7 +40,7 @@ public class SendBroadcastNotificationActionHandler extends BaseNotificationActi
 
     @Override
     public @Nullable Map<String, Object> execute(Map<String, Object> context) {
-        cloudService.sendBroadcastNotification(message, icon, severity, onClickAction, mediaAttachmentUrl,
+        cloudService.sendBroadcastNotification(message, icon, severity, title, onClickAction, mediaAttachmentUrl,
                 actionButton1, actionButton2, actionButton3);
         return null;
     }

@@ -115,6 +115,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * @param message the {@link String} containing a message to send to specified user id
      * @param icon the {@link String} containing a name of the icon to be used with this notification
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification
+     * @param title the {@link String} containing the title to be used with this notification
      * @param onClickAction the {@link String} containing the action to perform when clicked
      * @param mediaAttachmentUrl the {@link String} containing the media to attach to a notification
      * @param actionButton1 the {@link String} containing the action button in the format "Title=Action"
@@ -122,11 +123,11 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * @param actionButton3 the {@link String} containing the action button in the format "Title=Action"
      */
     public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String severity,
-            @Nullable String onClickAction, @Nullable String mediaAttachmentUrl, @Nullable String actionButton1,
-            @Nullable String actionButton2, @Nullable String actionButton3) {
+            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
+            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
         logger.debug("Sending message '{}' to user id {}", message, userId);
-        cloudClient.sendNotification(userId, message, icon, severity, onClickAction, mediaAttachmentUrl, actionButton1,
-                actionButton2, actionButton3);
+        cloudClient.sendNotification(userId, message, icon, severity, title, onClickAction, mediaAttachmentUrl,
+                actionButton1, actionButton2, actionButton3);
     }
 
     /**
@@ -149,6 +150,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * @param message the {@link String} containing a message to send to specified user id
      * @param icon the {@link String} containing a name of the icon to be used with this notification
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification
+     * @param title the {@link String} containing the title to be used with this notification
      * @param onClickAction the {@link String} containing the action to perform when clicked
      * @param mediaAttachmentUrl the {@link String} containing the media to attach to a notification
      * @param actionButton1 the {@link String} containing the action button in the format "Title=Action"
@@ -156,11 +158,11 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * @param actionButton3 the {@link String} containing the action button in the format "Title=Action"
      */
     public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity,
-            @Nullable String onClickAction, @Nullable String mediaAttachmentUrl, @Nullable String actionButton1,
-            @Nullable String actionButton2, @Nullable String actionButton3) {
+            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
+            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
         logger.debug("Sending broadcast message '{}' to all users", message);
-        cloudClient.sendBroadcastNotification(message, icon, severity, onClickAction, mediaAttachmentUrl, actionButton1,
-                actionButton2, actionButton3);
+        cloudClient.sendBroadcastNotification(message, icon, severity, title, onClickAction, mediaAttachmentUrl,
+                actionButton1, actionButton2, actionButton3);
     }
 
     private String substringBefore(String str, String separator) {

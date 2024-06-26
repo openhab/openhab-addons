@@ -52,8 +52,8 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
 
     private static final ModuleType SEND_EXTENDED2_NOTIFICATION_ACTION = new ActionType(
             SendNotificationActionHandler.EXTENDED2_TYPE_ID, getNotificationConfig(ConfigType.EXTENDED2, true, null),
-            "send a notification with icon, severity, click action, media attachment and action buttons",
-            "Sends a notification to a specific cloud user. Optionally add an icon, severity, on click action, media to attach, and up to 3 action buttons with a format of \"Title=Action\".",
+            "send a notification with icon, severity, title, click action, media attachment and action buttons",
+            "Sends a notification to a specific cloud user. Optionally add an icon, severity, title,  on click action, media to attach, and up to 3 action buttons with a format of \"Title=Action\".",
             null, Visibility.VISIBLE, null, null);
 
     private static final ModuleType SEND_BROADCAST_NOTIFICATION_ACTION = new ActionType(
@@ -70,8 +70,8 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
     private static final ModuleType SEND_EXTENDED2_BROADCAST_NOTIFICATION_ACTION = new ActionType(
             SendBroadcastNotificationActionHandler.EXTENDED2_TYPE_ID,
             getNotificationConfig(ConfigType.EXTENDED2, false, null),
-            "broadcast a notification with with icon, severity, on click action, media attachment and action buttons",
-            "Sends a notification to all devices of all users. Optionally add an icon, severity, click action, media to attach, and up to 3 action buttons with a format of \"Title=Action\".",
+            "broadcast a notification with with icon, severity, title, on click action, media attachment and action buttons",
+            "Sends a notification to all devices of all users. Optionally add an icon, severity, title, click action, media to attach, and up to 3 action buttons with a format of \"Title=Action\".",
             null, Visibility.VISIBLE, null, null);
 
     private static final ModuleType SEND_LOG_NOTIFICATION_ACTION = new ActionType(
@@ -142,6 +142,7 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
             params.add(getSeverityConfigParameter(locale));
         }
         if (type == ConfigType.EXTENDED2) {
+            params.add(getTitleConfigParameter(locale));
             params.add(getonClickActionConfigParameter(locale));
             params.add(getMediaAttachmentUrlConfigParameter(locale));
             params.add(getActionButton1ConfigParameter(locale));
@@ -165,6 +166,11 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
     private static ConfigDescriptionParameter getSeverityConfigParameter(@Nullable Locale locale) {
         return ConfigDescriptionParameterBuilder.create(BaseNotificationActionHandler.PARAM_SEVERITY, Type.TEXT)
                 .withLabel("Severity").withDescription("The severity of the notification.").build();
+    }
+
+    private static ConfigDescriptionParameter getTitleConfigParameter(@Nullable Locale locale) {
+        return ConfigDescriptionParameterBuilder.create(BaseNotificationActionHandler.PARAM_TITLE, Type.TEXT)
+                .withLabel("Title").withDescription("The title of the notification.").build();
     }
 
     private static ConfigDescriptionParameter getonClickActionConfigParameter(@Nullable Locale locale) {
