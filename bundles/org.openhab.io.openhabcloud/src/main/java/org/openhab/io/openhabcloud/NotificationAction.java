@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to ESH APIs
+ * @author Dan Cunningham - Extended notification enhancements
  */
 @NonNullByDefault
 public class NotificationAction {
@@ -57,9 +58,32 @@ public class NotificationAction {
     @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
     public static void sendNotification(String userId, String message, @Nullable String icon,
             @Nullable String severity) {
+        sendNotification(userId, message, icon, severity, null, null, null, null, null, null);
+    }
+
+    /**
+     * Sends an advanced push notification to mobile devices of user
+     *
+     * @param userId the cloud user id of the recipient
+     * @param message the body of the notification
+     * @param icon name for the notification
+     * @param severity category for the notification
+     * @param title for the notification
+     * @param onClickAction the action to perform when clicked
+     * @param mediaAttachmentUrl the media to attach to a notification
+     * @param actionButton1 an action button in the format "Title=Action"
+     * @param actionButton2 an action button in the format "Title=Action"
+     * @param actionButton3 an action button in the format "Title=Action"
+     *
+     */
+    @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
+    public static void sendNotification(String userId, String message, @Nullable String icon, @Nullable String severity,
+            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
+            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
         logger.debug("sending notification '{}' to user {}", message, userId);
         if (cloudService != null) {
-            cloudService.sendNotification(userId, message, icon, severity);
+            cloudService.sendNotification(userId, message, icon, severity, title, onClickAction, mediaAttachmentUrl,
+                    actionButton1, actionButton2, actionButton3);
         }
     }
 
@@ -115,9 +139,32 @@ public class NotificationAction {
      */
     @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
     public static void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity) {
+        sendBroadcastNotification(message, icon, severity, null, null, null, null, null, null);
+    }
+
+    /**
+     * Sends an advanced broadcast notification. Broadcast notifications are pushed to all
+     * mobile devices of all users of the account
+     *
+     * @param message the body of the notification
+     * @param icon name for the notification
+     * @param severity category for the notification
+     * @param title for the notification
+     * @param onClickAction the action to perform when clicked
+     * @param mediaAttachmentUrl the media to attach to a notification
+     * @param actionButton1 an action button in the format "Title=Action"
+     * @param actionButton2 an action button in the format "Title=Action"
+     * @param actionButton3 an action button in the format "Title=Action"
+     *
+     */
+    @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
+    public static void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity,
+            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
+            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
         logger.debug("sending broadcast notification '{}' to all users", message);
         if (cloudService != null) {
-            cloudService.sendBroadcastNotification(message, icon, severity);
+            cloudService.sendBroadcastNotification(message, icon, severity, title, onClickAction, mediaAttachmentUrl,
+                    actionButton1, actionButton2, actionButton3);
         }
     }
 }
