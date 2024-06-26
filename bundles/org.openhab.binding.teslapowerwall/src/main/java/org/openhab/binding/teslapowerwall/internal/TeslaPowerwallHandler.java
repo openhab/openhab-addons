@@ -67,7 +67,7 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
         config = getConfigAs(TeslaPowerwallConfiguration.class);
         logger.debug("config.hostname = {}, refresh = {}", config.hostname, config.refresh);
         if (config.hostname.isBlank() || config.email.isBlank() || config.password.isBlank()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Hostname/IP address must be set");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/offline.conf-error.missing-config-key");
             return;
         } else {
             webTargets = new TeslaPowerwallWebTargets(config.hostname);

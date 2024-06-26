@@ -47,7 +47,7 @@ As a minimum, the hostname is needed:
 ### `teslapowerwall.things`:
 
 ```java
-teslapowerwall:teslapowerwall:TeslaPowerwall [ hostname="192.168.0.5" ]
+teslapowerwall:tesla-powerwall:TeslaPowerwall [ hostname="192.168.0.5" ]
 ```
 
 ### `teslapowerwall.item`s:
