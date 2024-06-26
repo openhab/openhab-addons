@@ -158,3 +158,97 @@ Examples:
 - `ui:/some/absolute/path`: Navigates to the absolut path `/some/absolute/path`.
 - `ui:navigate:/page/my_floorplan_page`: Navigates Main UI to the page with the ID `my_floorplan_page`.
 - `ui:popup:oh-clock-card`: Opens a popup with `oh-clock-card`.
+
+### Examples
+
+Notify the openHAB Cloud user with email address _me@email.com_ that the front door was opened:
+
+:::: tabs
+
+::: tab DSL
+
+```java 
+rule "Front Door Notification"
+when
+  Item Apartment_FrontDoor changed to OPEN
+then
+  sendNotification("me@email.com", "Front door was opened!")
+end
+```
+:::
+
+::: tab JS
+
+```javascript
+rules.when().item('Apartment_FrontDoor').changed().to('OPEN').then(() => {
+  actions.notificationBuilder('Front door was opened!').addUserId('me@email.com').send();
+}).build('Front Door Notification');
+```
+
+:::
+
+::::
+
+Notify all openHAB Cloud users that the window was opened:
+
+:::: tabs
+
+::: tab DSL
+
+```java
+rule "Open Window Notification"
+when
+  Item Apartment_Window changed to OPEN
+then
+  sendBroadcastNotification("Apartment window was opened!", "window", "HIGH")
+end
+```
+
+:::
+
+::: tab JS
+
+```javascript
+rules.when().item('Apartment_Window').changed().to('OPEN').then(() => {
+  actions.notificationBuilder('Apartment window was opened!').withIcon('window').withSeverity('HIGH').send();
+}).build('Open Window Notification');
+```
+
+:::
+
+::::
+
+Notify all openHAB Cloud users that motion was detected, attach a camera snapshot and add action button to turn on the light:
+
+:::: tabs
+
+::: tab DSL
+
+```java
+rule "Motion Detected Notification"
+when
+  Item Apartment_MotionSensor changed to ON
+then
+  sendBroadcastNotification("Motion detected in the apartment!", "motion", "MEDIUM", "Motion Detected", null, "https://apartment.my/camera-snapshot.jpg", "command:Apartment_Light:ON", null, null)
+end
+```
+
+:::
+
+::: tab JS
+
+```javascript
+rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
+  actions.notificationBuilder('Motion detected in the apartment!')
+    .withIcon('motion')
+    .withSeverity('MEDIUM')
+    .withTitle('Motion Detected')
+    .withMediaAttachment('https://apartment.my/camera-snapshot.jpg')
+    .addActionButton('Turn on the light=command:Apartment_Light:ON')
+    .send();
+}).build('Motion Detected Notification');
+```
+
+:::
+
+::::
