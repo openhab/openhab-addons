@@ -146,15 +146,12 @@ public class TeslaPowerwallWebTargets {
                 if (status == HttpStatus.UNAUTHORIZED_401) {
                     throw new TeslaPowerwallAuthenticationException("Unauthorized");
                 }
-                if (status == HttpStatus.GATEWAY_TIMEOUT_504) {
-                    throw new TeslaPowerwallCommunicationException("Gateway timeout");
-                }
                 if (!HttpStatus.isSuccess(status)) {
                     throw new TeslaPowerwallCommunicationException(
-                            String.format("Tesla Powerwall returned error while invoking %s", uri));
+                            String.format("Tesla Powerwall returned error <%d> while invoking %s", status, uri));
                 }
             } catch (TimeoutException | ExecutionException | InterruptedException ex) {
-                logger.debug("{}", ex.getLocalizedMessage(), ex);
+                throw new TeslaPowerwallCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
             }
         }
 
