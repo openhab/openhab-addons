@@ -140,6 +140,30 @@
 		<category>Alarm</category>
 	</channel-type>
 
+	<!-- SirenActuator Channel (Alarm) -->
+	<channel-type id="sirenAlarmActuator">
+		<item-type>Switch</item-type>
+		<label>Alarm</label>
+		<description>Switches the alarm of the siren on/off</description>
+		<category>Siren</category>
+	</channel-type>
+
+	<!-- SirenActuator Channel (Notification) -->
+	<channel-type id="sirenNotificationActuator">
+		<item-type>Switch</item-type>
+		<label>Notification</label>
+		<description>Switches the notification sound of the siren on/off</description>
+		<category>Siren</category>
+	</channel-type>
+
+	<!-- SirenActuator Channel (Feedback) -->
+	<channel-type id="sirenFeedbackActuator">
+		<item-type>Switch</item-type>
+		<label>Feedback</label>
+		<description>Switches the feedback sound of the siren on/off</description>
+		<category>Siren</category>
+	</channel-type>
+
 	<!-- MotionDetectionSensor Channel -->
 	<channel-type id="motionDetectionSensor">
 		<item-type>Number</item-type>

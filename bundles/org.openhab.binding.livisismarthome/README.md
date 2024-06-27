@@ -41,6 +41,7 @@ The channels are described in detail in the next chapter.
 | WSC2   | Wall Mounted Smart Controller                                            | button1, button2, button1Count, button2Count, batteryLow                                                                     |
 | WSD    | Wall Mounted Smoke Detector, old version                                 | smoke, alarm, batteryLow                                                                                                     |
 | WSD2   | Wall Mounted Smoke Detector, new version                                 | smoke, alarm, batteryLow                                                                                                     |
+| SIR    | Wall Mounted Siren, indoor                                               | siren, batteryLow                                                                                                            |
 
 Powermeter devices
 
@@ -94,6 +95,7 @@ However, only devices will appear that are added in the LIVISI SmartHome app bef
 | operationMode         | String        | The mode of a thermostat (auto/manual)                                    | RST, RST2, WRT                                              |
 | rollershutter         | Rollershutter | Controls a roller shutter                                                 | ISR2                                                        |
 | targetTemperature     | Number        | Sets the target temperature in °C (min 6 °C, max 30 °C)                   | RST, RST2, WRT                                              |
+| siren                 | Switch        | Switches the siren (ON/OFF)                                               | SIR                                                         |
 | smoke                 | Switch        | Indicates, if smoke was detected (ON/OFF)                                 | WSD, WSD2                                                   |
 | status                | String        | Status of the SHC (ACTIVE/NORMAL, INITIALIZING/REBOOTING or SHUTTINGDOWN) | SHC (bridge)                                                |
 | switch                | Switch        | A switch to turn the device or variable on/off (ON/OFF)                   | ISS2, PSS, PSSO, VariableActuator                           |
