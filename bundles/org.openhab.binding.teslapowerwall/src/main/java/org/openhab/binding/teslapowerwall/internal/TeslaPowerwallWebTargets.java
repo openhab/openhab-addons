@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -53,7 +52,7 @@ public class TeslaPowerwallWebTargets {
     private String getOperationUri;
     private String token = "";
     private final Logger logger = LoggerFactory.getLogger(TeslaPowerwallWebTargets.class);
-    private @Nullable HttpClient httpClient;
+    private HttpClient httpClient;
 
     public TeslaPowerwallWebTargets(String hostname, HttpClient httpClient) {
         this.httpClient = httpClient;
