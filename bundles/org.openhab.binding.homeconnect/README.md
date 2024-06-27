@@ -161,15 +161,60 @@ The channel parameter uses the following syntax: `homeconnect:<thing type id>:<b
 
 ```java
 // dishwasher
-Switch                 Dishwasher_PowerState                  "Power State"                       {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:power_state"}
-Contact                Dishwasher_DoorState                   "Door State"                        {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:door_state"}
-String                 Dishwasher_OperationState              "Operation State"                   {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:operation_state"}
-Switch                 Dishwasher_RemoteStartAllowanceState   "Remote Start Allowance State"      {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remote_start_allowance_state"}
-Switch                 Dishwasher_RemoteControlActiveState    "Remote Control Activation State"   {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remote_control_active_state"}
-String                 Dishwasher_SelectedProgramState        "Selected Program"                  {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:selected_program_state"}
-String                 Dishwasher_ActiveProgramState          "Active Program"                    {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:active_program_state"}
-Number:Time            Dishwasher_RemainingProgramTimeState   "Remaining program time"            {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remaining_program_time_state"}
-Number:Dimensionless   Dishwasher_ProgramProgressState        "Progress State"                    {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:program_progress_state"}
+Switch                 Dishwasher_PowerState                              "Power State"                        {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:power_state"}
+Contact                Dishwasher_DoorState                               "Door State"                         {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:door_state"}
+String                 Dishwasher_OperationState                          "Operation State"                    {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:operation_state"}
+Switch                 Dishwasher_RemoteStartAllowanceState               "Remote Start Allowance State"       {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remote_start_allowance_state"}
+Switch                 Dishwasher_RemoteControlActiveState                "Remote Control Activation State"    {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remote_control_active_state"}
+String                 Dishwasher_SelectedProgramState                    "Selected Program"                   {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:selected_program_state"}
+String                 Dishwasher_ActiveProgramState                      "Active Program"                     {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:active_program_state"}
+Number:Time            Dishwasher_RemainingProgramTimeState               "Remaining program time"             {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remaining_program_time_state"}
+Number:Dimensionless   Dishwasher_ProgramProgressState                    "Progress State"                     {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:program_progress_state"}
+String                 Dishwasher_basic_actions_state                     "Basic control"                      {channel="homeconnect:dishwasher:api_bridge_at_home:sgeschirrspuelmaschine:basic_actions_state"}
+
+// oven
+Switch                 Oven_PowerState                                    "Power State"                        {channel="homeconnect:oven:api_bridge_at_home:oven1:power_state"}
+Contact                Oven_DoorState                                     "Door State"                         {channel="homeconnect:oven:api_bridge_at_home:oven1:door_state"}
+String                 Oven_OperationState                                "Operation State"                    {channel="homeconnect:oven:api_bridge_at_home:oven1:operation_state"}
+Switch                 Oven_RemoteStartAllowanceState                     "Remote Start Allowance State"       {channel="homeconnect:oven:api_bridge_at_home:oven1:remote_start_allowance_state"}
+Switch                 Oven_RemoteControlActiveState                      "Remote Control Activation State"    {channel="homeconnect:oven:api_bridge_at_home:oven1:remote_control_active_state"}
+String                 Oven_SelectedProgramState                          "Selected Program"                   {channel="homeconnect:oven:api_bridge_at_home:oven1:selected_program_state"}
+String                 Oven_ActiveProgramState                            "Active Program"                     {channel="homeconnect:oven:api_bridge_at_home:oven1:active_program_state"}
+Number:Time            Oven_RemainingProgramTimeState                     "Remaining program time"             {channel="homeconnect:oven:api_bridge_at_home:oven1:remaining_program_time_state"}
+Number:Dimensionless   Oven_ProgramProgressState                          "Progress State"                     {channel="homeconnect:oven:api_bridge_at_home:oven1:program_progress_state"}
+Number:Time            Oven_elapsed_program_time                          "Elapsed program time"               {channel="homeconnect:oven:api_bridge_at_home:oven1:elapsed_program_time"}
+Number:Time            Oven_duration                                      "Program duration"                   {channel="homeconnect:oven:api_bridge_at_home:oven1:duration"}
+Number:Temperature     Oven_oven_current_cavity_temperature               "Current temperature"                {channel="homeconnect:oven:api_bridge_at_home:oven1:oven_current_cavity_temperature"}
+Number:Temperature     Oven_setpoint_temperature                          "Set temperature"                    {channel="homeconnect:oven:api_bridge_at_home:oven1:setpoint_temperature"}
+String                 Oven_basic_actions_state                           "Basic control"                      {channel="homeconnect:oven:api_bridge_at_home:oven1_:basic_actions_state"}
+
+// washer
+Switch                 Washer_PowerState                                  "Power State"                        {channel="homeconnect:washer:api_bridge_at_home:washer1:power_state"}
+Contact                Washer_DoorState                                   "Door State"                         {channel="homeconnect:washer:api_bridge_at_home:washer1:door_state"}
+String                 Washer_OperationState                              "Operation State"                    {channel="homeconnect:washer:api_bridge_at_home:washer1:operation_state"}
+Switch                 Washer_RemoteStartAllowanceState                   "Remote Start Allowance State"       {channel="homeconnect:washer:api_bridge_at_home:washer1:remote_start_allowance_state"}
+Switch                 Washer_RemoteControlActiveState                    "Remote Control Activation State"    {channel="homeconnect:washer:api_bridge_at_home:washer1:remote_control_active_state"}
+String                 Washer_SelectedProgramState                        "Selected Program"                   {channel="homeconnect:washer:api_bridge_at_home:washer1:selected_program_state"}
+String                 Washer_ActiveProgramState                          "Active Program"                     {channel="homeconnect:washer:api_bridge_at_home:washer1:active_program_state"}
+Number:Time            Washer_RemainingProgramTimeState                   "Remaining program time"             {channel="homeconnect:washer:api_bridge_at_home:washer1:remaining_program_time_state"}
+Number:Dimensionless   Washer_ProgramProgressState                        "Progress State"                     {channel="homeconnect:washer:api_bridge_at_home:washer1:program_progress_state"}
+String                 Washer_laundry_care_washer_temperature             "Temperature"                        {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_temperature"}
+String                 Washer_laundry_care_washer_spin_speed              "Spin speed"                         {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_spin_speed"}
+String                 Washer_laundry_care_washer_idos1_level             "i-Dos 1 Level"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos1_level"}
+String                 Washer_laundry_care_washer_idos2_level             "i-Dos 2 Level"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos2_level"}
+Switch                 Washer_laundry_care_washer_idos1                   "i-Dos 1 state"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos1"}
+Switch                 Washer_laundry_care_washer_idos2                   "i-Dos 2 state"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos2"}
+Switch                 Washer_laundry_care_washer_vario_perfect           "Vario Perfect state"                {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_vario_perfect"}
+Switch                 Washer_laundry_care_washer_less_ironing            "Ironing state"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_less_ironing"}
+Switch                 Washer_laundry_care_washer_pre_wash                "Prewash state"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_pre_wash"}
+Switch                 Washer_laundry_care_washer_rinse_plus              "Amount additional rinses"           {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_rinse_plus"}
+Switch                 Washer_laundry_care_washer_rinse_hold              "Spin hold"                          {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_rinse_hold"}
+Switch                 Washer_laundry_care_washer_soak                    "Soaking state"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_soak"}
+Number:Mass            Washer_laundry_care_washer_load_recommendation     "Load recommendation"                {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_load_recommendation"}
+Number:Dimensionless   Washer_program_energy                              "Estimated energy consumption"       {channel="homeconnect:washer:api_bridge_at_home:washer1:program_energy"}
+Number:Dimensionless   Washer_program_water                               "Estimated water consumption"        {channel="homeconnect:washer:api_bridge_at_home:washer1:program_water"}
+String                 Washer_basic_actions_state                         "Basic control"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:basic_actions_state"}
+
 ```
 
 ## Home Connect Console
