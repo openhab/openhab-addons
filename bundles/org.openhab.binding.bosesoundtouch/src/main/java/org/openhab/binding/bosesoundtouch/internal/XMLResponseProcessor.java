@@ -123,6 +123,7 @@ public class XMLResponseProcessor {
         nowPlayingMap.put("artist", XMLHandlerState.NowPlayingArtist);
         nowPlayingMap.put("ContentItem", XMLHandlerState.ContentItem);
         nowPlayingMap.put("description", XMLHandlerState.NowPlayingDescription);
+        nowPlayingMap.put("genre", XMLHandlerState.NowPlayingGenre);
         nowPlayingMap.put("playStatus", XMLHandlerState.NowPlayingPlayStatus);
         nowPlayingMap.put("rateEnabled", XMLHandlerState.NowPlayingRateEnabled);
         nowPlayingMap.put("skipEnabled", XMLHandlerState.NowPlayingSkipEnabled);
