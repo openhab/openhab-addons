@@ -12,19 +12,23 @@
  */
 package org.openhab.binding.teslapowerwall.internal;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.teslapowerwall.internal.api.BatterySOE;
 import org.openhab.binding.teslapowerwall.internal.api.GridStatus;
 import org.openhab.binding.teslapowerwall.internal.api.MeterAggregates;
 import org.openhab.binding.teslapowerwall.internal.api.Operations;
 import org.openhab.binding.teslapowerwall.internal.api.SystemStatus;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,9 +53,11 @@ public class TeslaPowerwallWebTargets {
     private String getOperationUri;
     private String token = "";
     private final Logger logger = LoggerFactory.getLogger(TeslaPowerwallWebTargets.class);
+    private @Nullable HttpClient httpClient;
 
-    public TeslaPowerwallWebTargets(String ipAddress) {
-        String baseUri = "https://" + ipAddress + "/";
+    public TeslaPowerwallWebTargets(String hostname, HttpClient httpClient) {
+        this.httpClient = httpClient;
+        String baseUri = "https://" + hostname + "/";
         getBatterySOEUri = baseUri + "api/system_status/soe";
         getGridStatusUri = baseUri + "api/system_status/grid_status";
         getSystemStatusUri = baseUri + "api/system_status";
@@ -60,38 +66,43 @@ public class TeslaPowerwallWebTargets {
         getOperationUri = baseUri + "api/operation";
     }
 
-    public BatterySOE getBatterySOE(String email, String password) throws TeslaPowerwallCommunicationException {
+    public BatterySOE getBatterySOE(String email, String password)
+            throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         String response = invoke(getBatterySOEUri, email, password);
         logger.trace("getBatterySOE response = {}", response);
         return BatterySOE.parse(response);
     }
 
-    public GridStatus getGridStatus(String email, String password) throws TeslaPowerwallCommunicationException {
+    public GridStatus getGridStatus(String email, String password)
+            throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         String response = invoke(getGridStatusUri, email, password);
         logger.trace("getGridStatus response = {}", response);
         return GridStatus.parse(response);
     }
 
-    public SystemStatus getSystemStatus(String email, String password) throws TeslaPowerwallCommunicationException {
+    public SystemStatus getSystemStatus(String email, String password)
+            throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         String response = invoke(getSystemStatusUri, email, password);
         logger.trace("getSystemStatus response = {}", response);
         return SystemStatus.parse(response);
     }
 
     public MeterAggregates getMeterAggregates(String email, String password)
-            throws TeslaPowerwallCommunicationException {
+            throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         String response = invoke(getMeterAggregatesUri, email, password);
         logger.trace("getMeterAggregates response = {}", response);
         return MeterAggregates.parse(response);
     }
 
-    public Operations getOperations(String email, String password) throws TeslaPowerwallCommunicationException {
+    public Operations getOperations(String email, String password)
+            throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         String response = invoke(getOperationUri, email, password);
         logger.trace("getOperations response = {}", response);
         return Operations.parse(response);
     }
 
-    public String getToken(String email, String password) throws TeslaPowerwallCommunicationException {
+    public String getToken(String email, String password)
+            throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("username", "customer");
         jsonObject.addProperty("password", password);
@@ -106,35 +117,48 @@ public class TeslaPowerwallWebTargets {
         return token;
     }
 
-    private String invoke(String uri, String email, String password) throws TeslaPowerwallCommunicationException {
+    private String invoke(String uri, String email, String password)
+            throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         if (token.isEmpty()) {
             token = getToken(email, password);
         }
         return invoke(uri, HttpMethod.GET.asString(), "Authorization", "Bearer " + token, "");
     }
 
-    private String invoke(String uri, String request, String headerKey, String headerValue, String params)
-            throws TeslaPowerwallCommunicationException {
+    private String invoke(String uri, String method, String headerKey, String headerValue, String params)
+            throws TeslaPowerwallCommunicationException, TeslaPowerwallAuthenticationException {
         logger.debug("Calling url: {}", uri);
-        Properties headers = new Properties();
-        headers.setProperty(headerKey, headerValue);
-        ByteArrayInputStream input = new ByteArrayInputStream(params.getBytes(StandardCharsets.UTF_8));
-        String response;
+        int status = 0;
+        String jsonResponse = "";
         synchronized (this) {
             try {
-                response = HttpUtil.executeUrl(request, uri, headers, input, headerKey, TIMEOUT_MS);
-            } catch (IOException ex) {
+                Request request = httpClient.newRequest(uri).method(method).header(headerKey, headerValue)
+                        .timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS)
+                        .content(new StringContentProvider(params), "application/json");
+                if (logger.isTraceEnabled()) {
+                    logger.trace("{} request for {}", method, uri);
+                }
+                ContentResponse response = request.send();
+                status = response.getStatus();
+                jsonResponse = response.getContentAsString();
+                if (!jsonResponse.isEmpty()) {
+                    logger.trace("JSON response: '{}'", jsonResponse);
+                }
+                if (status == HttpStatus.UNAUTHORIZED_401) {
+                    throw new TeslaPowerwallAuthenticationException("Unauthorized");
+                }
+                if (status == HttpStatus.GATEWAY_TIMEOUT_504) {
+                    throw new TeslaPowerwallCommunicationException("Gateway timeout");
+                }
+                if (!HttpStatus.isSuccess(status)) {
+                    throw new TeslaPowerwallCommunicationException(
+                            String.format("Tesla Powerwall returned error while invoking %s", uri));
+                }
+            } catch (TimeoutException | ExecutionException | InterruptedException ex) {
                 logger.debug("{}", ex.getLocalizedMessage(), ex);
-                // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
-                // error check below consistent.
-                response = null;
             }
         }
 
-        if (response == null) {
-            throw new TeslaPowerwallCommunicationException(
-                    String.format("Tesla Powerwall returned error while invoking %s", uri));
-        }
-        return response;
+        return jsonResponse;
     }
 }

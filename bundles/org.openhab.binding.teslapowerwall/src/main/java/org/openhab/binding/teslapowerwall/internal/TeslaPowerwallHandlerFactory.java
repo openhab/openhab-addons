@@ -14,12 +14,17 @@ package org.openhab.binding.teslapowerwall.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link TeslaPowerwallHandlerFactory} is responsible for creating things and thing
@@ -31,6 +36,15 @@ import org.osgi.service.component.annotations.Component;
 @NonNullByDefault
 public class TeslaPowerwallHandlerFactory extends BaseThingHandlerFactory {
 
+    private final HttpClient httpClient;
+
+    @Activate
+    public TeslaPowerwallHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            ComponentContext componentContext) {
+        super.activate(componentContext);
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return TeslaPowerwallBindingConstants.SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -41,7 +55,7 @@ public class TeslaPowerwallHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (thingTypeUID.equals(TeslaPowerwallBindingConstants.TESLAPOWERWALL_THING)) {
-            return new TeslaPowerwallHandler(thing);
+            return new TeslaPowerwallHandler(thing, httpClient);
         }
 
         return null;

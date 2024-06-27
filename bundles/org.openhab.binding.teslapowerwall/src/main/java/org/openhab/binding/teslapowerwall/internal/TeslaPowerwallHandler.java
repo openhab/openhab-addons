@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.teslapowerwall.internal.api.BatterySOE;
 import org.openhab.binding.teslapowerwall.internal.api.GridStatus;
 import org.openhab.binding.teslapowerwall.internal.api.MeterAggregates;
@@ -53,8 +54,10 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
     private @NonNullByDefault({}) TeslaPowerwallWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
 
-    public TeslaPowerwallHandler(Thing thing) {
+    public TeslaPowerwallHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        config = getConfigAs(TeslaPowerwallConfiguration.class);
+        webTargets = new TeslaPowerwallWebTargets(config.hostname, httpClient);
     }
 
     @Override
@@ -71,7 +74,6 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
                     "@text/offline.conf-error.missing-config-key");
             return;
         } else {
-            webTargets = new TeslaPowerwallWebTargets(config.hostname);
             updateStatus(ThingStatus.UNKNOWN);
             schedulePoll();
         }
@@ -122,6 +124,10 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
             systemStatus = webTargets.getSystemStatus(config.email, config.password);
             meterAggregates = webTargets.getMeterAggregates(config.email, config.password);
             updateStatus(ThingStatus.ONLINE);
+        } catch (TeslaPowerwallAuthenticationException e) {
+            logger.debug("Unexpected authentication error connecting to Tesla Powerwall", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
         } catch (TeslaPowerwallCommunicationException e) {
             logger.debug("Unexpected error connecting to Tesla Powerwall", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
