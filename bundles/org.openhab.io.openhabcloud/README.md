@@ -13,29 +13,31 @@ The openHAB Cloud service (and thus the connector to it) is useful for different
 
 ## Installation via UI
 
-* Open the openHAB web portal and login as an administrator.
-* Click on Add-on Store, followed by Other
-* Using the Install button you can install the openHAB Cloud Connector
-* Register your session (https://myopenhab.org/) using UUID and Secret identity
+* Open the openHAB web UI and login as an administrator.
+* Click on Add-on Store, followed by System Integrations.
+* Use the Install button to install the openHAB Cloud Connector.
+* Register your session (https://myopenhab.org/) using UUID and Secret.
 
 ## UUID and Secret
 
-To authenticate with the openHAB Cloud service the add-on generates two values when the add-on is installed.
+To authenticate with the openHAB Cloud service, the add-on generates two values when the add-on is installed.
 These values need to be entered in your account settings of the openHAB Cloud service.
+
 The first one is a unique identifier, which allows to identify your runtime.
 One can think of it as something similar like a username for the cloud authentication.
 The second one is a random secret key which serves as a password.
 Both values are written to the local file system.
+
 If you loose these files for some reason, openHAB will automatically generate new ones.
 You will then have to reconfigure UUID and secret in the openHAB Cloud service under the _My account_ section.
 You will need these values to register on the website before connection is accepted.
 
 Location of UUID and Secret:
 
-| File   | Regular Installation         | APT Installation                      |
-|--------|------------------------------|---------------------------------------|
-| UUID   | userdata/uuid                | /var/lib/openhab/uuid                 |
-| Secret | userdata/openhabcloud/secret | /var/lib/openhab/openhabcloud/secret  |
+| File   | Regular Installation                  | APT & RPM Installation               |
+|--------|---------------------------------------|--------------------------------------|
+| UUID   | $OPENHAB_USERDATA/uuid                | /var/lib/openhab/uuid                |
+| Secret | $OPENHAB_USERDATA/openhabcloud/secret | /var/lib/openhab/openhabcloud/secret |
 
 ## Configuration
 
@@ -43,7 +45,7 @@ After installing this add-on, you will find configuration options in the openHAB
 
 ![Configuration](doc/configuration.png)
 
-By default both remote access and push notifications are enabled.  
+By default, both remote access and push notifications are enabled.  
 
 ### Advanced Configuration
 
@@ -105,7 +107,7 @@ The parameters for these actions have the following meaning:
 
 - `emailAddress`: String containing the email address the target user is registered with in the cloud instance.
 - `message`: String containing the notification message text.
-- `icon`: String containing the icon name (as described in [Items]({{base}}/configuration/items.html#icons)).
+- `icon`: String containing the icon name (as described in [Items: Icons]({{base}}/configuration/items.html#icons)).
 - `severity`: String containing a description of the severity of the incident.
 
 `null` may be used to skip the `icon` or `severity` parameter.
@@ -133,9 +135,9 @@ The additional parameter for these variants have the following meaning:
 - `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
 - `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
 - `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This URL must be reachable by the push notification client.
-- `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Titel=$action`, where `$action` follow the [action syntax](#action-syntax).
-- `actionButton2`: The action to be performed when the user clicks on the second action button. Specified as `Titel=$action`, where `$action` follow the [action syntax](#action-syntax).
-- `actionButton3`: The action to be performed when the user clicks on the third action button. Specified as `Titel=$action`, where `$action` follow the [action syntax](#action-syntax).
+- `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Titel=$action`, where `$action` follows the [action syntax](#action-syntax).
+- `actionButton2`: The action to be performed when the user clicks on the second action button. Specified as `Titel=$action`, where `$action` follows the [action syntax](#action-syntax).
+- `actionButton3`: The action to be performed when the user clicks on the third action button. Specified as `Titel=$action`, where `$action` follows the [action syntax](#action-syntax).
 
 These parameters may be skipped by setting them to `null`.
 
@@ -181,7 +183,9 @@ end
 
 ```javascript
 rules.when().item('Apartment_FrontDoor').changed().to('OPEN').then(() => {
-  actions.notificationBuilder('Front door was opened!').addUserId('me@email.com').send();
+  actions.notificationBuilder('Front door was opened!')
+          .addUserId('me@email.com')
+          .send();
 }).build('Front Door Notification');
 ```
 
@@ -210,7 +214,10 @@ end
 
 ```javascript
 rules.when().item('Apartment_Window').changed().to('OPEN').then(() => {
-  actions.notificationBuilder('Apartment window was opened!').withIcon('window').withSeverity('HIGH').send();
+  actions.notificationBuilder('Apartment window was opened!')
+          .withIcon('window')
+          .withSeverity('HIGH')
+          .send();
 }).build('Open Window Notification');
 ```
 
@@ -218,7 +225,7 @@ rules.when().item('Apartment_Window').changed().to('OPEN').then(() => {
 
 ::::
 
-Notify all openHAB Cloud users that motion was detected, attach a camera snapshot and add action button to turn on the light:
+Notify all openHAB Cloud users that motion was detected, attach a camera snapshot and add an action button to turn on the light:
 
 :::: tabs
 
@@ -229,7 +236,9 @@ rule "Motion Detected Notification"
 when
   Item Apartment_MotionSensor changed to ON
 then
-  sendBroadcastNotification("Motion detected in the apartment!", "motion", "MEDIUM", "Motion Detected", null, "https://apartment.my/camera-snapshot.jpg", "command:Apartment_Light:ON", null, null)
+  sendBroadcastNotification("Motion detected in the apartment!", "motion", "MEDIUM",
+                                    "Motion Detected", null, "https://apartment.my/camera-snapshot.jpg",
+                                    "command:Apartment_Light:ON", null, null)
 end
 ```
 
@@ -240,12 +249,12 @@ end
 ```javascript
 rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
   actions.notificationBuilder('Motion detected in the apartment!')
-    .withIcon('motion')
-    .withSeverity('MEDIUM')
-    .withTitle('Motion Detected')
-    .withMediaAttachment('https://apartment.my/camera-snapshot.jpg')
-    .addActionButton('Turn on the light=command:Apartment_Light:ON')
-    .send();
+          .withIcon('motion')
+          .withSeverity('MEDIUM')
+          .withTitle('Motion Detected')
+          .withMediaAttachment('https://apartment.my/camera-snapshot.jpg')
+          .addActionButton('Turn on the light=command:Apartment_Light:ON')
+          .send();
 }).build('Motion Detected Notification');
 ```
 
