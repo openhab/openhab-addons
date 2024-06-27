@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.teslapowerwall.internal;
 
-import java.io.IOException;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -91,16 +90,7 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
             pollFuture.cancel(false);
         }
         logger.debug("Scheduling poll for 1 second out, then every {} s", config.refresh);
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::poll, 1, config.refresh, TimeUnit.SECONDS);
-    }
-
-    private void poll() {
-        try {
-            logger.debug("Polling for state");
-            pollStatus();
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-        }
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 1, config.refresh, TimeUnit.SECONDS);
     }
 
     private void stopPoll() {
@@ -111,7 +101,7 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
         }
     }
 
-    private void pollStatus() throws IOException {
+    private void pollStatus() {
         Operations operations = null;
         BatterySOE batterySOE = null;
         GridStatus gridStatus = null;
