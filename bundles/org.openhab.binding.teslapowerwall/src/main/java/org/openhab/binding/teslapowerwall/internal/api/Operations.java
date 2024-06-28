@@ -13,8 +13,6 @@
 package org.openhab.binding.teslapowerwall.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -27,7 +25,6 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class Operations {
-    private static Logger LOGGER = LoggerFactory.getLogger(Operations.class);
 
     public String mode = "";
     public double reserve;
@@ -36,7 +33,6 @@ public class Operations {
     }
 
     public static Operations parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
         /* parse json string */
         JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         Operations info = new Operations();

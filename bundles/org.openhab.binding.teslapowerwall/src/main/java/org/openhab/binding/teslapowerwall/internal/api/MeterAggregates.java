@@ -13,8 +13,6 @@
 package org.openhab.binding.teslapowerwall.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -27,49 +25,46 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class MeterAggregates {
-    private static Logger LOGGER = LoggerFactory.getLogger(MeterAggregates.class);
-
-    public double grid_instpower;
-    public double battery_instpower;
-    public double home_instpower;
-    public double solar_instpower;
-    public double grid_energyexported;
-    public double battery_energyexported;
-    public double home_energyexported;
-    public double solar_energyexported;
-    public double grid_energyimported;
-    public double battery_energyimported;
-    public double home_energyimported;
-    public double solar_energyimported;
+    public double gridInstpower;
+    public double batteryInstpower;
+    public double homeInstpower;
+    public double solarInstpower;
+    public double gridEnergyexported;
+    public double batteryEnergyexported;
+    public double homeEnergyexported;
+    public double solarEnergyexported;
+    public double gridEnergyimported;
+    public double batteryEnergyimported;
+    public double homeEnergyimported;
+    public double solarEnergyimported;
 
     private MeterAggregates() {
     }
 
     public static MeterAggregates parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
         /* parse json string */
         JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         MeterAggregates info = new MeterAggregates();
 
         JsonObject sitejson = jsonObject.get("site").getAsJsonObject();
-        info.grid_instpower = sitejson.get("instant_power").getAsDouble() / 1000;
-        info.grid_energyexported = sitejson.get("energy_exported").getAsDouble() / 1000;
-        info.grid_energyimported = sitejson.get("energy_imported").getAsDouble() / 1000;
+        info.gridInstpower = sitejson.get("instant_power").getAsDouble() / 1000;
+        info.gridEnergyexported = sitejson.get("energy_exported").getAsDouble() / 1000;
+        info.gridEnergyimported = sitejson.get("energy_imported").getAsDouble() / 1000;
 
         JsonObject batteryjson = jsonObject.get("battery").getAsJsonObject();
-        info.battery_instpower = batteryjson.get("instant_power").getAsDouble() / 1000;
-        info.battery_energyexported = batteryjson.get("energy_exported").getAsDouble() / 1000;
-        info.battery_energyimported = batteryjson.get("energy_imported").getAsDouble() / 1000;
+        info.batteryInstpower = batteryjson.get("instant_power").getAsDouble() / 1000;
+        info.batteryEnergyexported = batteryjson.get("energy_exported").getAsDouble() / 1000;
+        info.batteryEnergyimported = batteryjson.get("energy_imported").getAsDouble() / 1000;
 
         JsonObject loadjson = jsonObject.get("load").getAsJsonObject();
-        info.home_instpower = loadjson.get("instant_power").getAsDouble() / 1000;
-        info.home_energyexported = loadjson.get("energy_exported").getAsDouble() / 1000;
-        info.home_energyimported = loadjson.get("energy_imported").getAsDouble() / 1000;
+        info.homeInstpower = loadjson.get("instant_power").getAsDouble() / 1000;
+        info.homeEnergyexported = loadjson.get("energy_exported").getAsDouble() / 1000;
+        info.homeEnergyimported = loadjson.get("energy_imported").getAsDouble() / 1000;
 
         JsonObject solarjson = jsonObject.get("solar").getAsJsonObject();
-        info.solar_instpower = solarjson.get("instant_power").getAsDouble() / 1000;
-        info.solar_energyexported = solarjson.get("energy_exported").getAsDouble() / 1000;
-        info.solar_energyimported = solarjson.get("energy_imported").getAsDouble() / 1000;
+        info.solarInstpower = solarjson.get("instant_power").getAsDouble() / 1000;
+        info.solarEnergyexported = solarjson.get("energy_exported").getAsDouble() / 1000;
+        info.solarEnergyimported = solarjson.get("energy_imported").getAsDouble() / 1000;
 
         return info;
     }

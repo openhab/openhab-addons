@@ -13,8 +13,6 @@
 package org.openhab.binding.teslapowerwall.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -27,21 +25,19 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class GridStatus {
-    private static Logger LOGGER = LoggerFactory.getLogger(GridStatus.class);
 
-    public String grid_status = "";
-    public Boolean grid_services = false;
+    public String gridStatus = "";
+    public Boolean gridServices = false;
 
     private GridStatus() {
     }
 
     public static GridStatus parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
         /* parse json string */
         JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         GridStatus info = new GridStatus();
-        info.grid_status = jsonObject.get("grid_status").getAsString();
-        info.grid_services = jsonObject.get("grid_services_active").getAsString().equalsIgnoreCase("true");
+        info.gridStatus = jsonObject.get("grid_status").getAsString();
+        info.gridServices = jsonObject.get("grid_services_active").getAsString().equalsIgnoreCase("true");
         return info;
     }
 }

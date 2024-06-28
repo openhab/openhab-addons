@@ -13,8 +13,6 @@
 package org.openhab.binding.teslapowerwall.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -27,19 +25,16 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class SystemStatus {
-    private static Logger LOGGER = LoggerFactory.getLogger(SystemStatus.class);
-
-    public double full_pack_energy;
+    public double fullPackEnergy;
 
     private SystemStatus() {
     }
 
     public static SystemStatus parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
         /* parse json string */
         JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         SystemStatus info = new SystemStatus();
-        info.full_pack_energy = jsonObject.get("nominal_full_pack_energy").getAsDouble();
+        info.fullPackEnergy = jsonObject.get("nominal_full_pack_energy").getAsDouble();
         return info;
     }
 }

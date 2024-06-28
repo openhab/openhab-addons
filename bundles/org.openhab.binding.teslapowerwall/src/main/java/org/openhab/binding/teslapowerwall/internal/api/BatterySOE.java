@@ -13,8 +13,6 @@
 package org.openhab.binding.teslapowerwall.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -27,15 +25,12 @@ import com.google.gson.JsonParser;
  */
 @NonNullByDefault
 public class BatterySOE {
-    private static Logger LOGGER = LoggerFactory.getLogger(BatterySOE.class);
-
     public double soe;
 
     private BatterySOE() {
     }
 
     public static BatterySOE parse(String response) {
-        LOGGER.trace("Parsing string: \"{}\"", response);
         /* parse json string */
         JsonObject jsonObject = JsonParser.parseString(response).getAsJsonObject();
         BatterySOE info = new BatterySOE();
