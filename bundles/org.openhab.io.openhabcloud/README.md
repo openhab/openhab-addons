@@ -35,7 +35,7 @@ You will need these values to register on the website before connection is accep
 Location of UUID and Secret:
 
 | File   | Regular Installation                  | APT & RPM Installation               |
-| ------ | ------------------------------------- | ------------------------------------ |
+|--------|---------------------------------------|--------------------------------------|
 | UUID   | $OPENHAB_USERDATA/uuid                | /var/lib/openhab/uuid                |
 | Secret | $OPENHAB_USERDATA/openhabcloud/secret | /var/lib/openhab/openhabcloud/secret |
 
