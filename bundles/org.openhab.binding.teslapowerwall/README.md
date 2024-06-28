@@ -39,7 +39,7 @@ As a minimum, the hostname is needed:
 | battery-energy-imported   | Number:Energy        | Total Battery Energy Imported                                |
 | home-energy-imported      | Number:Energy        | Total Home Energy Imported                                   |
 | solar-energy-imported     | Number:Energy        | Total Solar Energy Imported                                  |
-| degradation               | Number:Percent       | Current battery degradation % (Based on single battery)      |
+| degradation               | Number:Dimensionless | Current battery degradation % (Based on single battery)      |
 | full-pack-energy          | Number:Energy        | Reported battery capacity at full                            |
 
 ## Full Example
