@@ -26,6 +26,7 @@ public class GreeBindResponseDTO {
     public int uid = 0;
     public String cid = null;
     public String tcid = null;
+    public String tag = null;
     public String pack = null;
 
     public transient String decryptedPack = null;

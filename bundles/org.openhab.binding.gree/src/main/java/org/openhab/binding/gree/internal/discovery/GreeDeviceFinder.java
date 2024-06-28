@@ -102,9 +102,18 @@ public class GreeDeviceFinder {
                         continue;
                     }
 
+                    String decryptedMsg;
                     // Decrypt message - a GreeException is thrown when something went wrong
-                    String decryptedMsg = scanResponseGson.decryptedPack = GreeCryptoUtil
-                            .decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), scanResponseGson.pack);
+                    // If there is a tag property in the responce then use GCM decryption
+                    if (scanResponseGson.tag != null) {
+                        decryptedMsg = scanResponseGson.decryptedPack = GreeCryptoUtil.decryptGCMPack(
+                                GreeCryptoUtil.getGCMGeneralKeyByteArray(), scanResponseGson.pack,
+                                scanResponseGson.tag);
+                    } else {
+                        decryptedMsg = scanResponseGson.decryptedPack = GreeCryptoUtil
+                                .decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), scanResponseGson.pack);
+                    }
+
                     logger.debug("Response received from address {}: {}", remoteAddress.getHostAddress(), decryptedMsg);
 
                     // Create the JSON to hold the response values

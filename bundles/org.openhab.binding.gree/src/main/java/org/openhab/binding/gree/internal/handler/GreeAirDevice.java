@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gree.internal.GreeCryptoUtil;
 import org.openhab.binding.gree.internal.GreeException;
 import org.openhab.binding.gree.internal.gson.GreeBindRequestPackDTO;
@@ -68,6 +69,13 @@ public class GreeAirDevice {
     private Optional<GreeStatusResponseDTO> statusResponseGson = Optional.empty();
     private Optional<GreeStatusResponsePackDTO> prevStatusResponsePackGson = Optional.empty();
 
+    enum EncryptionTypes {
+        ECB,
+        GCM
+    };
+
+    private EncryptionTypes encryptionType = EncryptionTypes.ECB;
+
     public GreeAirDevice() {
         ipAddress = InetAddress.getLoopbackAddress();
     }
@@ -76,6 +84,9 @@ public class GreeAirDevice {
         this.ipAddress = ipAddress;
         this.port = port;
         this.scanResponseGson = Optional.of(scanResponse);
+        if (scanResponse.tag != null) {
+            this.encryptionType = EncryptionTypes.GCM;
+        }
     }
 
     public void getDeviceStatus(DatagramSocket clientSocket) throws GreeException {
@@ -117,9 +128,18 @@ public class GreeAirDevice {
             String reqStatusPackStr = GSON.toJson(reqStatusPackGson);
 
             // Encrypt and send the Status Request pack
-            String encryptedStatusReqPacket = GreeCryptoUtil.encryptPack(getKey(), reqStatusPackStr);
+            String encryptedStatusReqPacket;
+            String encryptedStatusReqTag = null;
+            if (encryptionType == EncryptionTypes.GCM) {
+                String[] encryptedStatusReq = GreeCryptoUtil.encryptGCMPack(getKey(), reqStatusPackStr);
+                encryptedStatusReqTag = encryptedStatusReq[0];
+                encryptedStatusReqPacket = encryptedStatusReq[1];
+            } else {
+                encryptedStatusReqPacket = GreeCryptoUtil.encryptPack(getKey(), reqStatusPackStr);
+            }
+
             DatagramPacket sendPacket = createPackRequest(0,
-                    new String(encryptedStatusReqPacket.getBytes(), StandardCharsets.UTF_8));
+                    new String(encryptedStatusReqPacket.getBytes(), StandardCharsets.UTF_8), encryptedStatusReqTag);
             clientSocket.send(sendPacket);
 
             // Keep a copy of the old response to be used to check if values have changed
@@ -131,7 +151,12 @@ public class GreeAirDevice {
 
             // Read the response, create the JSON to hold the response values
             GreeStatusResponseDTO resp = receiveResponse(clientSocket, GreeStatusResponseDTO.class);
-            resp.decryptedPack = GreeCryptoUtil.decryptPack(getKey(), resp.pack);
+            if (encryptionType == EncryptionTypes.GCM) {
+                resp.decryptedPack = GreeCryptoUtil.decryptGCMPack(getKey(), resp.pack, resp.tag);
+            } else {
+                resp.decryptedPack = GreeCryptoUtil.decryptPack(getKey(), resp.pack);
+            }
+
             logger.debug("Response from device: {}", resp.decryptedPack);
             resp.packJson = GSON.fromJson(resp.decryptedPack, GreeStatusResponsePackDTO.class);
 
@@ -157,14 +182,28 @@ public class GreeAirDevice {
             String bindReqPackStr = GSON.toJson(bindReqPackGson);
 
             // Encrypt and send the Binding Request pack
-            String encryptedBindReqPacket = GreeCryptoUtil.encryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(),
-                    bindReqPackStr);
-            DatagramPacket sendPacket = createPackRequest(1, encryptedBindReqPacket);
+            String encryptedBindReqPacket;
+            String encryptedBindReqTag = null;
+            if (encryptionType == EncryptionTypes.GCM) {
+                String[] encryptedBindReq = GreeCryptoUtil.encryptGCMPack(GreeCryptoUtil.getGCMGeneralKeyByteArray(),
+                        bindReqPackStr);
+                encryptedBindReqTag = encryptedBindReq[0];
+                encryptedBindReqPacket = encryptedBindReq[1];
+            } else {
+                encryptedBindReqPacket = GreeCryptoUtil.encryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(),
+                        bindReqPackStr);
+            }
+            DatagramPacket sendPacket = createPackRequest(1, encryptedBindReqPacket, encryptedBindReqTag);
             clientSocket.send(sendPacket);
 
             // Recieve a response, create the JSON to hold the response values
             GreeBindResponseDTO resp = receiveResponse(clientSocket, GreeBindResponseDTO.class);
-            resp.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), resp.pack);
+            if (encryptionType == EncryptionTypes.GCM) {
+                resp.decryptedPack = GreeCryptoUtil.decryptGCMPack(GreeCryptoUtil.getGCMGeneralKeyByteArray(),
+                        resp.pack, resp.tag);
+            } else {
+                resp.decryptedPack = GreeCryptoUtil.decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), resp.pack);
+            }
             resp.packJson = GSON.fromJson(resp.decryptedPack, GreeBindResponsePackDTO.class);
 
             // Now set the key and flag to indicate the bind was successful
@@ -424,13 +463,26 @@ public class GreeAirDevice {
             String execCmdPackStr = GSON.toJson(execCmdPackGson);
 
             // Now encrypt and send the Command Request pack
-            String encryptedCommandReqPacket = GreeCryptoUtil.encryptPack(getKey(), execCmdPackStr);
-            DatagramPacket sendPacket = createPackRequest(0, encryptedCommandReqPacket);
+            String encryptedCommandReqPacket;
+            String encryptedCommandReqTag = null;
+            if (encryptionType == EncryptionTypes.GCM) {
+                String[] encryptedCommandReq = GreeCryptoUtil.encryptGCMPack(getKey(), execCmdPackStr);
+                encryptedCommandReqTag = encryptedCommandReq[0];
+                encryptedCommandReqPacket = encryptedCommandReq[1];
+            } else {
+                encryptedCommandReqPacket = GreeCryptoUtil.encryptPack(getKey(), execCmdPackStr);
+            }
+            DatagramPacket sendPacket = createPackRequest(0, encryptedCommandReqPacket, encryptedCommandReqTag);
             clientSocket.send(sendPacket);
 
             // Receive and decode result
             GreeExecResponseDTO execResponseGson = receiveResponse(clientSocket, GreeExecResponseDTO.class);
-            execResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(getKey(), execResponseGson.pack);
+            if (encryptionType == EncryptionTypes.GCM) {
+                execResponseGson.decryptedPack = GreeCryptoUtil.decryptGCMPack(getKey(), execResponseGson.pack,
+                        execResponseGson.tag);
+            } else {
+                execResponseGson.decryptedPack = GreeCryptoUtil.decryptPack(getKey(), execResponseGson.pack);
+            }
 
             // Create the JSON to hold the response values
             execResponseGson.packJson = GSON.fromJson(execResponseGson.decryptedPack, GreeExecResponsePackDTO.class);
@@ -451,7 +503,7 @@ public class GreeAirDevice {
         executeCommand(clientSocket, Map.of(command, value));
     }
 
-    private DatagramPacket createPackRequest(int i, String pack) {
+    private DatagramPacket createPackRequest(int i, String pack, @Nullable String tag) {
         GreeRequestDTO request = new GreeRequestDTO();
         request.cid = GREE_CID;
         request.i = i;
@@ -459,6 +511,9 @@ public class GreeAirDevice {
         request.uid = 0;
         request.tcid = getId();
         request.pack = pack;
+        if (encryptionType == EncryptionTypes.GCM) {
+            request.tag = tag;
+        }
         byte[] sendData = GSON.toJson(request).getBytes(StandardCharsets.UTF_8);
         return new DatagramPacket(sendData, sendData.length, ipAddress, port);
     }

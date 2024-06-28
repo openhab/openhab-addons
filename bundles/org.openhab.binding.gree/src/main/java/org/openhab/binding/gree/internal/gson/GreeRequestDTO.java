@@ -24,6 +24,7 @@ public class GreeRequestDTO {
     public int uid = 0;
     public String t = null;
     public int i = 0;
+    public String tag = null;
     public String pack = null;
     public String cid = null;
     public String tcid = null;

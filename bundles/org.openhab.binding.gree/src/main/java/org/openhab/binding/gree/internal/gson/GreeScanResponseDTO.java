@@ -26,6 +26,7 @@ public class GreeScanResponseDTO {
     public String cid = null;
     public String tcid = null;
     public String pack = null;
+    public String tag = null;
     public transient String decryptedPack = null;
     public transient GreeScanReponsePackDTO packJson = null;
 }

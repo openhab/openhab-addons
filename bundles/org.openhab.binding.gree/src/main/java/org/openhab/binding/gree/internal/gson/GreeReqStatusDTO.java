@@ -25,6 +25,7 @@ public class GreeReqStatusDTO {
     public int i = 0;
     public String t = null;
     public int uid = 0;
+    public String tag = null;
     public String pack = null;
     public String tcid = null;
 }
