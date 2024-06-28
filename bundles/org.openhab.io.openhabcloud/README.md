@@ -135,9 +135,9 @@ The additional parameter for these variants have the following meaning:
 - `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
 - `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
 - `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This URL must be reachable by the push notification client.
-- `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Titel=$action`, where `$action` follows the [action syntax](#action-syntax).
-- `actionButton2`: The action to be performed when the user clicks on the second action button. Specified as `Titel=$action`, where `$action` follows the [action syntax](#action-syntax).
-- `actionButton3`: The action to be performed when the user clicks on the third action button. Specified as `Titel=$action`, where `$action` follows the [action syntax](#action-syntax).
+- `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
+- `actionButton2`: The action to be performed when the user clicks on the second action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
+- `actionButton3`: The action to be performed when the user clicks on the third action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
 
 These parameters may be skipped by setting them to `null`.
 
@@ -184,8 +184,8 @@ end
 ```javascript
 rules.when().item('Apartment_FrontDoor').changed().to('OPEN').then(() => {
   actions.notificationBuilder('Front door was opened!')
-          .addUserId('me@email.com')
-          .send();
+    .addUserId('me@email.com')
+    .send();
 }).build('Front Door Notification');
 ```
 
@@ -215,9 +215,9 @@ end
 ```javascript
 rules.when().item('Apartment_Window').changed().to('OPEN').then(() => {
   actions.notificationBuilder('Apartment window was opened!')
-          .withIcon('window')
-          .withSeverity('HIGH')
-          .send();
+    .withIcon('window')
+    .withSeverity('HIGH')
+    .send();
 }).build('Open Window Notification');
 ```
 
@@ -237,8 +237,8 @@ when
   Item Apartment_MotionSensor changed to ON
 then
   sendBroadcastNotification("Motion detected in the apartment!", "motion", "MEDIUM",
-                                    "Motion Detected", null, "https://apartment.my/camera-snapshot.jpg",
-                                    "command:Apartment_Light:ON", null, null)
+                            "Motion Detected", null, "https://apartment.my/camera-snapshot.jpg",
+                            "command:Apartment_Light:ON", null, null)
 end
 ```
 
@@ -249,12 +249,12 @@ end
 ```javascript
 rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
   actions.notificationBuilder('Motion detected in the apartment!')
-          .withIcon('motion')
-          .withSeverity('MEDIUM')
-          .withTitle('Motion Detected')
-          .withMediaAttachment('https://apartment.my/camera-snapshot.jpg')
-          .addActionButton('Turn on the light=command:Apartment_Light:ON')
-          .send();
+    .withIcon('motion')
+    .withSeverity('MEDIUM')
+    .withTitle('Motion Detected')
+    .withMediaAttachment('https://apartment.my/camera-snapshot.jpg')
+    .addActionButton('Turn on the light=command:Apartment_Light:ON')
+    .send();
 }).build('Motion Detected Notification');
 ```
 
