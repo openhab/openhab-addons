@@ -611,16 +611,16 @@ var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant
 ::: tab JRuby
 
 ```ruby
-energi = things["energidataservice:service:energidataservice"]
+eds = things["energidataservice:service:energidataservice"]
 
-price_map = energi.get_prices
+price_map = eds.get_prices
 hour_start = Instant.now.truncated_to(ChronoUnit::HOURS)
 logger.info "Current total price excl. VAT: #{price_map[hour_start]}"
 
-price_map = energi.get_prices("SpotPrice,GridTariff")
+price_map = eds.get_prices("SpotPrice,GridTariff")
 logger.info "Current spot price + grid tariff excl. VAT: #{price_map[hour_start]}"
 
-price = energi.calculate_price(Instant.now, 1.hour.from_now.to_instant, 150 | "W")
+price = eds.calculate_price(Instant.now, 1.hour.from_now.to_instant, 150 | "W")
 logger.info "Total price for using 150 W for the next hour: #{price}" if price
 
 duration_phases = [
@@ -645,7 +645,7 @@ consumption_phases = [
   0 | "W"
 ],
 
-result = energi.calculate_cheapest_period(ZonedDateTime.now.to_instant, 
+result = eds.calculate_cheapest_period(ZonedDateTime.now.to_instant, 
                                           24.hours.from_now.to_instant,
                                           duration_phases,
                                           consumption_phases)
@@ -662,7 +662,7 @@ logger.info "Most expensive start #{result["MostExpensiveStart"]}"
 # The `#minutes` method on an Integer object returns a corresponding Duration object. 
 duration_phases = [37, 8, 4, 2, 4, 36, 41].map { |i| i.minutes }
 
-result = energi.calculate_cheapest_period(ZonedDateTime.now.to_instant,
+result = eds.calculate_cheapest_period(ZonedDateTime.now.to_instant,
                                           24.hours.from_now.to_instant,
                                           236.minutes,
                                           duration_phases,
