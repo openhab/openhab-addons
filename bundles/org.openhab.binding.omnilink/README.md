@@ -186,7 +186,7 @@ Once this action instance is retrieved, you can invoke the `synchronizeControlle
 
 ::: tab DSL
 
-```php
+```java
 omnilinkActions.synchronizeControllerTime("America/Denver")
 ```
 
