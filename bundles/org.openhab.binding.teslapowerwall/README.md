@@ -50,14 +50,14 @@ As a minimum, the hostname is needed:
 teslapowerwall:tesla-powerwall:TeslaPowerwall [ hostname="192.168.0.5" ]
 ```
 
-### `teslapowerwall.item`s:
+### `teslapowerwall.items`:
 
 ```java
 String TeslaPowerwall_grid-status { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:grid-status" }
 Switch TeslaPowerwall_grid-services { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:grid-services" }
-Number:Percent TeslaPowerwall_battery-soe { channel="tesla-powerwall:teslapowerwall:TeslaPowerwall:battery-soe" }
+Number:Dimensionless TeslaPowerwall_battery-soe { channel="tesla-powerwall:teslapowerwall:TeslaPowerwall:battery-soe", unit="%" }
 String TeslaPowerwall_mode { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:mode" }
-Number:Percent TeslaPowerwall_reserve { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:reserve" }
+Number:Dimensionless TeslaPowerwall_reserve { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:reserve", unit="%" }
 Number:Power TeslaPowerwall_grid-inst-power { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:grid-inst-power" }
 Number:Power TeslaPowerwall_battery-inst-power { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:battery-inst-power" }
 Number:Power TeslaPowerwall_home-inst-power { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:home-inst-power" }
@@ -70,7 +70,7 @@ Number:Energy TeslaPowerwall_home-energy-exported { channel="teslapowerwall:tesl
 Number:Energy TeslaPowerwall_home-energy-imported { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:home-energy-imported" }
 Number:Energy TeslaPowerwall_solar-energy-exported { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:solar-energy-exported" }
 Number:Energy TeslaPowerwall_solar-energy-imported { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:solar-energy-imported" }
-Number:Percent TeslaPowerwall_degradation { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:degradation" }
+Number:Dimensionless TeslaPowerwall_degradation { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:degradation", unit="%" }
 Number:Energy TeslaPowerwall_full-pack-energy { channel="teslapowerwall:tesla-powerwall:TeslaPowerwall:full-pack-energy" }
 ```
 

@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.teslapowerwall.internal;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,5 +54,5 @@ public class TeslaPowerwallBindingConstants {
 
     public static final int TESLA_POWERWALL_CAPACITY = 13500;
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(TESLAPOWERWALL_THING);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(TESLAPOWERWALL_THING);
 }
