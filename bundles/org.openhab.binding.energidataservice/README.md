@@ -700,8 +700,8 @@ console.log("Spot price two hours from now: " + price);
 ::: tab JRuby
 
 ```ruby
-two_hours_from_now = 2.hours.from_now.truncated_to(ChronoUnit::HOURS)
-price = SpotPrice.persisted_state(two_hours_from_now)
+hour_start = 2.hours.from_now.truncated_to(ChronoUnit::HOURS)
+price = SpotPrice.persisted_state(hour_start)
 logger.info "Spot price two hours from now: #{price}"
 ```
 
