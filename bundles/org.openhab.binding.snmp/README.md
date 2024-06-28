@@ -77,13 +77,8 @@ The default is `v1`.
 
 ### `target3`
 
-The `target3` thing has additional mandatory parameters: `engineId` and `user`.
-
-The `engineId` must be given in hexadecimal notation (case-insensitive) without separators (e.g. `80000009035c710dbcd9e6`).
-The allowed length is 11 to 32 bytes (22 to 64 hex characters).
-If you encounter problems, please check if your agent prefixes the set engine id (e.g. Mikrotik uses `80003a8c04` and appends the set value to that).
-
-The `user` parameter is named "securityName" or "userName" in most agents.
+The `target3` thing has an additional mandatory parameter: `user`.
+This value of this parameter is named "securityName" or "userName" in most agents.
 
 Optional configuration parameters are: `securityModel`, `authProtocol`, `authPassphrase`, `privProtocol` and `privPassphrase`.
 
@@ -99,7 +94,7 @@ If authentication encryption is required, at least `authPassphrase` needs to be 
 Other possible values for `authProtocol` are `SHA`, `HMAC128SHA224`, `HMAC192SHA256`, `HMAC256SHA384` and `HMAC384SHA512`.
 
 If encryption of transmitted data (privacy encryption) is required, at least `privPassphrase` needs to be set, while `privProtocol` defaults to `DES`.
-Other possible values for `privProtocol` are `AES128`, `AES192` and `AES256`.
+Other possible values for `privProtocol` are `DES3`, `AES128`, `AES192` and `AES256`.
 
 ## Channels
 

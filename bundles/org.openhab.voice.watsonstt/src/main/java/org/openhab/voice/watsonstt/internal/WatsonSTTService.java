@@ -208,6 +208,10 @@ public class WatsonSTTService implements STTService {
         Long frequency = format.getFrequency();
         Integer bitDepth = format.getBitDepth();
         switch (container) {
+            case AudioFormat.CONTAINER_NONE:
+                if (AudioFormat.CODEC_MP3.equals(codec)) {
+                    return "audio/mp3";
+                }
             case AudioFormat.CONTAINER_WAVE:
                 if (AudioFormat.CODEC_PCM_SIGNED.equals(codec)) {
                     if (bitDepth == null || bitDepth != 16) {
@@ -237,11 +241,6 @@ public class WatsonSTTService implements STTService {
                         return "audio/ogg;codecs=vorbis";
                     case "OPUS":
                         return "audio/ogg;codecs=opus";
-                }
-                break;
-            case AudioFormat.CONTAINER_NONE:
-                if (AudioFormat.CODEC_MP3.equals(codec)) {
-                    return "audio/mp3";
                 }
                 break;
         }
@@ -312,8 +311,7 @@ public class WatsonSTTService implements STTService {
             }
             logger.warn("TranscriptionError: {}", errorMessage);
             if (!aborted.getAndSet(true)) {
-                sttListener.sttEventReceived(
-                        new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
+                sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
             }
         }
 
@@ -328,11 +326,7 @@ public class WatsonSTTService implements STTService {
                 if (!transcript.isBlank()) {
                     sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, averageConfidence));
                 } else {
-                    if (!config.noResultsMessage.isBlank()) {
-                        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
-                    } else {
-                        sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
-                    }
+                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
                 }
             }
         }

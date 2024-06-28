@@ -243,7 +243,7 @@ public class GoogleSTTService implements STTService {
         // Gather stream info and send config
         AudioFormat streamFormat = audioStream.getFormat();
         RecognitionConfig.AudioEncoding streamEncoding;
-        if (AudioFormat.WAV.isCompatible(streamFormat)) {
+        if (AudioFormat.PCM_SIGNED.isCompatible(streamFormat) || AudioFormat.WAV.isCompatible(streamFormat)) {
             streamEncoding = RecognitionConfig.AudioEncoding.LINEAR16;
         } else {
             logger.debug("Unsupported format {}", streamFormat);
@@ -405,10 +405,8 @@ public class GoogleSTTService implements STTService {
                 String transcript = transcriptBuilder.toString();
                 if (!transcript.isBlank()) {
                     sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, averageConfidence));
-                } else if (!config.noResultsMessage.isBlank()) {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
                 } else {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
+                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
                 }
             }
         }
@@ -418,13 +416,7 @@ public class GoogleSTTService implements STTService {
             logger.warn("Recognition error: ", t);
             if (!aborted.getAndSet(true)) {
                 sttListener.sttEventReceived(new RecognitionStopEvent());
-                if (!config.errorMessage.isBlank()) {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
-                } else {
-                    String errorMessage = t.getMessage();
-                    sttListener.sttEventReceived(
-                            new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
-                }
+                sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
             }
         }
 

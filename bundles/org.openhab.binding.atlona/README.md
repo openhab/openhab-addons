@@ -17,9 +17,9 @@ This binding supports the following thing types:
 
 ## Discovery
 
-The Atlona AT-UHD-PRO3 switch can be discovered by starting a discovery scan in the UI and then logging into your switch and pressing the "SDDP" button on the "Network" tab.
-The "SDDP" (simple device discovery protocol) button will initiate the discovery process.
-If "Telnet Login" is enabled ("Network" tab from the switch configuration UI), you will need to set the username and password in the configuration of the newly discovered thing before a connection can be made.
+Supported things should be discovered automatically upon receipt of periodic SDDP announcements from the switch. 
+If the thing is not discovered automatically, login to the switch configuration UI and press the "SDDP" button on the "Network" tab to force the switch to send the SDDP announcement.
+If "Telnet Login" is enabled in the switch configuration, you will need to set the username and password in the newly discovered thing before a connection can be made.
 
 ## Thing Configuration
 

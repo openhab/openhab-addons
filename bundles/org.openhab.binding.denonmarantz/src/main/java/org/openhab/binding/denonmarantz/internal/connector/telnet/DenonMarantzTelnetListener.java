@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.denonmarantz.internal.connector.telnet;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Listener interface used to notify the
  * {@link org.openhab.binding.denonmarantz.internal.connector.DenonMarantzConnector} about received messages over Telnet
@@ -19,6 +21,7 @@ package org.openhab.binding.denonmarantz.internal.connector.telnet;
  * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
+@NonNullByDefault
 public interface DenonMarantzTelnetListener {
     /**
      * The telnet client has received a line.

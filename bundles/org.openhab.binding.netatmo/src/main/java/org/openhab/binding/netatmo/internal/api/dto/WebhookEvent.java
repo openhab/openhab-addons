@@ -63,7 +63,7 @@ public class WebhookEvent extends Event {
 
     @Override
     public @Nullable String getPersonId() {
-        return persons.size() > 0 ? persons.keySet().iterator().next() : null;
+        return persons.isEmpty() ? null : persons.keySet().iterator().next();
     }
 
     @Override

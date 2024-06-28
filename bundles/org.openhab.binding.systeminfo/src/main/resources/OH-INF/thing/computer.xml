@@ -26,6 +26,7 @@
 		</channel-groups>
 
 		<properties>
+			<property name="thingTypeVersion">1</property>
 			<property name="CPU Logical Cores">Not available</property>
 			<property name="CPU Physical Cores">Not available</property>
 			<property name="OS Manufacturer">Not available</property>

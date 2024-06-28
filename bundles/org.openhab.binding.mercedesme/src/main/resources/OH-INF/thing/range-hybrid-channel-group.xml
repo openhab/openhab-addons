@@ -4,23 +4,23 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="range-hybrid-values">
-		<label>Range, Charge / Fuel Data</label>
+		<label>Range, Battery and Fuel Data</label>
 		<description>Provides mileage, remaining fuel and range data for hybrid vehicles</description>
 		<channels>
-			<channel id="mileage" typeId="mileage-channel"/>
-			<channel id="range-electric" typeId="range-electric-channel"/>
-			<channel id="radius-electric" typeId="radius-electric-channel"/>
-			<channel id="soc" typeId="soc-channel"/>
-			<channel id="charged" typeId="charged-channel"/>
-			<channel id="uncharged" typeId="uncharged-channel"/>
-			<channel id="range-fuel" typeId="range-fuel-channel"/>
-			<channel id="radius-fuel" typeId="radius-fuel-channel"/>
-			<channel id="fuel-level" typeId="fuel-level-channel"/>
-			<channel id="fuel-remain" typeId="fuel-remain-channel"/>
-			<channel id="fuel-open" typeId="fuel-open-channel"/>
-			<channel id="range-hybrid" typeId="range-hybrid-channel"/>
-			<channel id="radius-hybrid" typeId="radius-fuel-channel"/>
-			<channel id="last-update" typeId="last-range-update-channel"/>
+			<channel id="mileage" typeId="mileage"/>
+			<channel id="range-electric" typeId="range-electric"/>
+			<channel id="radius-electric" typeId="radius-electric"/>
+			<channel id="home-distance" typeId="home-distance"/>
+			<channel id="soc" typeId="soc"/>
+			<channel id="charged" typeId="charged"/>
+			<channel id="uncharged" typeId="uncharged"/>
+			<channel id="range-fuel" typeId="range-fuel"/>
+			<channel id="radius-fuel" typeId="radius-fuel"/>
+			<channel id="fuel-level" typeId="fuel-level"/>
+			<channel id="fuel-remain" typeId="fuel-remain"/>
+			<channel id="fuel-open" typeId="fuel-open"/>
+			<channel id="range-hybrid" typeId="range-hybrid"/>
+			<channel id="radius-hybrid" typeId="radius-fuel"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

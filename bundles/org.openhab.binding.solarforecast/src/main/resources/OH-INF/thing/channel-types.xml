@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solarforecast"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="power-actual">
+		<item-type>Number:Power</item-type>
+		<label>Actual Power</label>
+		<description>Power prediction for this moment</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="power-estimate">
+		<item-type>Number:Power</item-type>
+		<label>Power Forecast</label>
+		<description>Power forecast for next hours/days</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energy-actual">
+		<item-type>Number:Energy</item-type>
+		<label>Actual Energy Forecast</label>
+		<description>Today's forecast till now</description>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energy-remain">
+		<item-type>Number:Energy</item-type>
+		<label>Remaining Energy Forecast</label>
+		<description>Today's remaining forecast till sunset</description>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energy-today">
+		<item-type>Number:Energy</item-type>
+		<label>Todays Energy Forecast</label>
+		<description>Today's total energy forecast</description>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="energy-estimate">
+		<item-type>Number:Energy</item-type>
+		<label>Energy Forecast</label>
+		<description>Energy forecast for next hours/days</description>
+		<state pattern="%.3f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="json" advanced="true">
+		<item-type>String</item-type>
+		<label>Raw JSON Response</label>
+		<description>Plain JSON response without conversions</description>
+	</channel-type>
+</thing:thing-descriptions>

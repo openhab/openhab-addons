@@ -77,18 +77,18 @@ Once authentication process has been done, current refreshToken is stored in `/O
 | Thing Type      | Type   | Netatmo Object | Description                                                                                           | Thing Parameters                                                          |
 | --------------- | ------ | -------------- | ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | account         | Bridge | N/A            | This bridge represents an account, gateway to Netatmo API.                                            | clientId, clientSecret, username, password, webHookUrl, reconnectInterval |
-| home            | Bridge | NAHome         | A home hosting Security or Energy devices and modules.                                                | id, refreshInterval                                                       |
+| home            | Bridge | NAHome         | A home hosting Security or Energy devices and modules.                                                | id, refreshInterval, energyId, securityId                                 |
 | person          | Thing  | NAPerson       | A person known by your Netatmo system.                                                                | id                                                                        |
-| welcome         | Thing  | NACamera       | The Netatmo Smart Indoor Camera (Welcome).                                                            | id                                                                        |
-| presence        | Thing  | NOC            | The Netatmo Smart Outdoor Camera (Presence) camera with or without siren.                             | id                                                                        |
+| welcome         | Thing  | NACamera       | The Netatmo Smart Indoor Camera (Welcome).                                                            | id, ipAddress                                                             |
+| presence        | Thing  | NOC            | The Netatmo Smart Outdoor Camera (Presence) camera with or without siren.                             | id, ipAddress                                                             |
 | siren           | Thing  | NIS            | The Netatmo Smart Indoor Siren.                                                                       | id                                                                        |
-| doorbell        | Thing  | NDB            | The Netatmo Smart Video Doorbell device.                                                              | id                                                                        |
-| weather-station | Bridge | NAMain         | Main indoor module reporting temperature, humidity, pressure, air quality and sound level.            | id                                                                        |
+| doorbell        | Thing  | NDB            | The Netatmo Smart Video Doorbell device.                                                              | id, ipAddress                                                             |
+| weather-station | Bridge | NAMain         | Main indoor module reporting temperature, humidity, pressure, air quality and sound level.            | id, refreshInterval                                                       |
 | outdoor         | Thing  | NAModule1      | Outdoor module reporting temperature and humidity.                                                    | id                                                                        |
 | wind            | Thing  | NAModule2      | Wind sensor reporting wind angle and strength.                                                        | id                                                                        |
 | rain            | Thing  | NAModule3      | Rain Gauge measuring precipitation.                                                                   | id                                                                        |
 | indoor          | Thing  | NAModule4      | Additional indoor module reporting temperature, humidity and CO2 level.                               | id                                                                        |
-| home-coach      | Thing  | NHC            | Healthy home coach reporting health-index, temperature, humidity, pressure, air quality, sound level. | id                                                                        |
+| home-coach      | Thing  | NHC            | Healthy home coach reporting health-index, temperature, humidity, pressure, air quality, sound level. | id, refreshInterval                                                       |
 | plug            | Thing  | NAPlug         | The relay connected to the boiler controlling a Thermostat and zero or more valves.                   | id                                                                        |
 | thermostat      | Thing  | NATherm1       | The Thermostat device placed in a given room.                                                         | id                                                                        |
 | room            | Thing  | NARoom         | A room in your house.                                                                                 | id                                                                        |
@@ -161,8 +161,8 @@ If you did not manually create things in the *.things file, the Netatmo Binding 
 
 ### Weather Station Main Indoor Device
 
-Weather station does not need any refreshInterval setting.
-Based on a standard update period of 10mn by Netatmo systems - it will auto adapt to stick closest as possible to last data availability.
+Weather station uses a default `refreshInterval` of 10 minutes (can be adjusted), based on a standard update period of Netatmo systems.
+It will auto-adapt to stick as closely as possible to the last data availability.
 
 **Supported channels for the main indoor module:**
 
@@ -330,6 +330,9 @@ All these channels are read only.
 
 ### Healthy Home Coach Device
 
+Home Coach uses a default `refreshInterval` of 10 minutes (can be adjusted), based on a standard update period of Netatmo systems.
+It will auto-adapt to stick as closely as possible to the last data availability.
+
 **Supported channels for the healthy home coach device:**
 
 | Channel Group | Channel Id          | Item Type            | Description                                      |
@@ -453,11 +456,12 @@ Depending on the way it is configured the behaviour will be adapted and availabl
 
 The Home thing has the following configuration elements:
 
-| Parameter  | Type   | Required | Description                                                                         |
-| ---------- | ------ | -------- | ----------------------------------------------------------------------------------- |
-| id (1)     | String | No       | If you have a single type of equipment, this id is to be used for the home          |
-| energyId   | String | No       | Id of a home holding energy control devices                                         |
-| securityId | String | No       | Id of a home holding security monitoring devices                                    |
+| Parameter       | Type    | Required | Description                                                                         |
+| --------------- | ------- | -------- | ----------------------------------------------------------------------------------- |
+| id (1)          | String  | No       | If you have a single type of equipment, this id is to be used for the home          |
+| energyId        | String  | No       | Id of a home holding energy control devices                                         |
+| securityId      | String  | No       | Id of a home holding security monitoring devices                                    |
+| refreshInterval | Integer | No       | Refresh interval for refreshing the data in seconds. Default 180.                   |
 
 At least one of these parameter must be filled - at most two : 
 
@@ -465,7 +469,7 @@ At least one of these parameter must be filled - at most two :
 * id or energyId
 * securityId and energyId
 
-(1) this parameter is only kept for backward compatibility.
+(1) this parameter is kept for backward compatibility.
 
 All channels are read only.
 
@@ -524,7 +528,7 @@ Warnings:
 | status         | monitoring           | Switch       | Read-write | State of the camera (video surveillance on/off)                                                                                             |
 | status         | sd-card              | String       | Read-only  | State of the SD card                                                                                                                        |
 | status         | alim                 | String       | Read-only  | State of the power connector                                                                                                                |
-| live           | picture              | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
+| live           | picture (**)         | Image        | Read-only  | Camera Live Snapshot                                                                                                                        |
 | live           | local-picture-url    | String       | Read-only  | Local Url of the live snapshot for this camera                                                                                              |
 | live           | vpn-picture-url      | String       | Read-only  | Url of the live snapshot for this camera through Netatmo VPN.                                                                               |
 | live           | local-stream-url (*) | String       | Read-only  | Local Url of the live stream for this camera (accessible if openhab server and camera are located on the same lan.                          |
@@ -543,6 +547,7 @@ Warnings:
 | last-event     | person-id            | String       | Read-only  | Id of the person the event is about (if any)                                                                                                |
 
 (*) This channel is configurable : low, poor, high.
+(**) This channel handles the REFRESH command for on demand update.
 
 **Supported channels for the Presence Camera thing:**
 
