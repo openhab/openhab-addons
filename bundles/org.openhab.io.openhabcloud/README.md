@@ -35,7 +35,7 @@ You will need these values to register on the website before connection is accep
 Location of UUID and Secret:
 
 | File   | Regular Installation                  | APT & RPM Installation               |
-|--------|---------------------------------------|--------------------------------------|
+| ------ | ------------------------------------- | ------------------------------------ |
 | UUID   | $OPENHAB_USERDATA/uuid                | /var/lib/openhab/uuid                |
 | Secret | $OPENHAB_USERDATA/openhabcloud/secret | /var/lib/openhab/openhabcloud/secret |
 
@@ -143,7 +143,7 @@ These parameters may be skipped by setting them to `null`.
 
 #### Action Syntax
 
-The action syntax is a string containing the action type and the action payload seperated by a colon.
+The action syntax is a string containing the action type and the action payload separated by a colon.
 
 There are two types of actions available:
 
@@ -169,7 +169,7 @@ Notify the openHAB Cloud user with email address _me@email.com_ that the front d
 
 ::: tab DSL
 
-```java 
+```java
 rule "Front Door Notification"
 when
   Item Apartment_FrontDoor changed to OPEN
@@ -188,6 +188,21 @@ rules.when().item('Apartment_FrontDoor').changed().to('OPEN').then(() => {
     .send();
 }).build('Front Door Notification');
 ```
+
+:::
+
+::: tab JRuby
+
+```ruby
+rule "Front Door Notification" do
+  changed Apartment_FrontDoor, to: OPEN
+  run do
+    notify("Front door was opened!", email: "me@email.com")
+  end
+end
+```
+
+See [notify](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Actions.html#notify-class_method)
 
 :::
 
@@ -223,6 +238,21 @@ rules.when().item('Apartment_Window').changed().to('OPEN').then(() => {
 
 :::
 
+::: tab JRuby
+
+Broadcast notification is performed by calling [notify](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Actions.html#notify-class_method) without providing an email address.
+
+```ruby
+rule "Open Window Notification" do
+  changed Apartment_Window, to: OPEN
+  run do
+    notify("Apartment window was opened!", icon: "window", severity: "HIGH")
+  end
+end
+```
+
+:::
+
 ::::
 
 Notify all openHAB Cloud users that motion was detected, attach a camera snapshot and add an action button to turn on the light:
@@ -237,8 +267,8 @@ when
   Item Apartment_MotionSensor changed to ON
 then
   sendBroadcastNotification("Motion detected in the apartment!", "motion", "MEDIUM",
-                            "Motion Detected", null, "https://apartment.my/camera-snapshot.jpg",
-                            "command:Apartment_Light:ON", null, null)
+                                    "Motion Detected", null, "https://apartment.my/camera-snapshot.jpg",
+                                    "Turn on the light=command:Apartment_Light:ON", null, null)
 end
 ```
 
@@ -256,6 +286,24 @@ rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
     .addActionButton('Turn on the light=command:Apartment_Light:ON')
     .send();
 }).build('Motion Detected Notification');
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+rule "Motion Detected Notification" do
+  changed Apartment_MotionSensor, to: ON
+  run do
+    notify "Motion detected in the apartment!",
+           icon: "motion",
+           severity: "MEDIUM",
+           title: "Motion Detected",
+           attachment: "https://apartment.my/camera-snapshot.jpg",
+           buttons: { "Turn on the light" => "command:Apartment_Light:ON" }
+  end
+end
 ```
 
 :::
