@@ -585,7 +585,7 @@ var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant
 energi = things["energidataservice:service:energidataservice"]
 
 price_map = energi.get_prices
-hour_start = ZonedDateTime.now.to_instant.truncated_to(ChronoUnit::HOURS)
+hour_start = Instant.now.truncated_to(ChronoUnit::HOURS)
 logger.info "Current total price excl. VAT: #{price_map[hour_start]}"
 
 price_map = energi.get_prices("SpotPrice,GridTariff")
