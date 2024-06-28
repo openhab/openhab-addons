@@ -696,7 +696,7 @@ In scripts:
 
 ::: tab DSL
 
-```php
+```java
 Var_1.sendCommand(REFRESH)
 ```
 

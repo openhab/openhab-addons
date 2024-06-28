@@ -19,7 +19,7 @@ Add Danish VAT to price:
 
 ::: tab DSL
 
-```javascript
+```java
 var Number price = 499
 logInfo("Price", "Price incl. VAT: " + transform("VAT", "DK", price.toString))
 ```

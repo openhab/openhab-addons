@@ -216,14 +216,14 @@ There is a separate instance for each bridge, which can be retrieved e.g. throug
 
 ::: tab DSL
 
-```php
+```java
 val dmxActions = getActions("dmx","dmx:sacn-bridge:mydmxbridge")
 ```
 
 where the first parameter always has to be `dmx` and the second is the full Thing UID of the bridge that should be used.
 Once this action instance is retrieved, you can invoke the `sendFade(String channels, String fade, Boolean resumeAfter)` method on it:
 
-```php
+```java
 dmxActions.sendFade("1:41/3","10000:255,255,255:-1", false)
 ```
 

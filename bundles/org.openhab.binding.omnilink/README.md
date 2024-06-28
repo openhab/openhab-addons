@@ -153,7 +153,7 @@ There is a separate instance for each contoller, which can be retrieved through:
 
 ::: tab DSL
 
-```php
+```java
 val omnilinkActions = getActions("omnilink", "omnilink:controller:home")
 ```
 

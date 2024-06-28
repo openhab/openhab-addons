@@ -448,7 +448,7 @@ In case persistence is only needed for charts and/or accessing prices from rules
 
 ::: tab DSL
 
-```javascript
+```java
 import java.time.Duration
 import java.util.ArrayList
 import java.util.Map
@@ -650,7 +650,7 @@ result = energi.calculate_cheapest_period(ZonedDateTime.now.to_instant,
 
 ::: tab DSL
 
-```javascript
+```java
 var hourStart = now.plusHours(2).truncatedTo(ChronoUnit.HOURS)
 var price = SpotPrice.historicState(hourStart).state
 logInfo("Spot price two hours from now", price.toString)
@@ -686,7 +686,7 @@ logger.info "Spot price two hours from now: #{price}"
 
 ::: tab DSL
 
-```javascript
+```java
 rule "Day-ahead event"
 when
     Channel 'energidataservice:service:energidataservice:electricity#event' triggered 'DAY_AHEAD_AVAILABLE'
