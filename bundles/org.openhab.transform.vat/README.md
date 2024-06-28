@@ -35,6 +35,18 @@ console.log("Price incl. VAT: " + actions.Transformation.transform("VAT", "DK", 
 
 :::
 
+::: tab JRuby
+
+```ruby
+price = 499
+# The currency name can be either a Symbol or a String
+# The input value doesn't need to be converted to string, however, the return value is a String
+price_incl_vat = transform(:vat, :DK, price)
+logger.info "Price incl. VAT: #{price_incl_vat}"
+```
+
+:::
+
 ::::
 
 ## Usage as a Profile
