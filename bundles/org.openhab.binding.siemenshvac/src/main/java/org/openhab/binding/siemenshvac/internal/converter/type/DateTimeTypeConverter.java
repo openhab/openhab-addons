@@ -94,14 +94,12 @@ public class DateTimeTypeConverter extends AbstractTypeConverter {
 
                     return new DateTimeType(zdt);
                 } catch (DateTimeParseException ex) {
-                    if (i == formats.length - 1) {
-                        throw new ConverterException("Can't parse the date for:" + value);
-                    }
+                    // Silently ignore, we are proceeding to next format.
                 }
             }
         }
 
-        return new DateTimeType(ZonedDateTime.now(this.timeZoneProvider.getTimeZone()));
+        throw new ConverterException("Can't parse the date for:" + value);
     }
 
     @Override

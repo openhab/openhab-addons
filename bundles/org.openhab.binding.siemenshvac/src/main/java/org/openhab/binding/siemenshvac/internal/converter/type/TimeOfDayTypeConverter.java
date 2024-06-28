@@ -112,7 +112,6 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
     @Override
     public String getItemType(SiemensHvacMetadataDataPoint dpt) {
         return CoreItemFactory.NUMBER + ":Time";
-        // return CoreItemFactory.NUMBER + ":Duration";
     }
 
     @Override

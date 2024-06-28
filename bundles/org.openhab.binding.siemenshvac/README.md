@@ -27,19 +27,6 @@ OZW672 gateway support many different languages (about 16).
 The binding should work ok with all language choice, but is currently test more thoroughly for French and English language.
 If you use other language, and find some issues, you can report them on the OpenHab forum.
 
-
-## Supported Things
-
-Support many different things as the thing type is handle by autodiscovery.
-
-Mainly, it will first discover the gateway.
-Currently test was done with the OZW672.x series.
-No test was conducted using the OZW772.x series, the code will currently not handle initialization of an OZW772 gateway.
-You can request support in the community forum, if you have the gateway model and want it to be supported.
-
-After, it will discover thing inside your PAC, mainly main controller of type RVS...
-Only test in real condition with RVS41.813/327 but should work with all other type as the access interface is standard.
-
 ## Discovery
 
 Discovery of Gateway can be done using UPnP.
@@ -48,9 +35,15 @@ The gateway should appear in the Inbox a few minutes after.
 Be aware what you will have to modify the password in Gateway parameters just after the discovery to make it work properly.
 Be also aware that first initialization is a little long because the binding needs to read all the metadata from the device.
 
-Discovery of HVAC device have to be done through the Scan button inside the binding.
+Currently test was done with the OZW672.x series.
+No test was conducted using the OZW772.x series, the code will currently not handle initialization of an OZW772 gateway.
+You can request support in the community forum, if you have the gateway model and want it to be supported.
+
+Discovery of HVAC device inside your PAC (controller of type RVS...) have to be done through the Scan button inside the binding.
 Go to the Thing page, click on the "+" button, select the SiemensHVAC binding, and then click Scan.
 Your device should appear on the page after a few seconds.
+Only test in real condition with RVS41.813/327 have beend done, but it should work with all other type as the api interface is standard.
+
 
 ## Bridge Configuration
 
