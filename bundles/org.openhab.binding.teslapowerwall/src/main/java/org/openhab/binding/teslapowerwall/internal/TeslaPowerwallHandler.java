@@ -89,8 +89,8 @@ public class TeslaPowerwallHandler extends BaseThingHandler {
         if (pollFuture != null) {
             pollFuture.cancel(false);
         }
-        logger.debug("Scheduling poll for 1 second out, then every {} s", config.refresh);
-        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 1, config.refresh, TimeUnit.SECONDS);
+        logger.debug("Scheduling poll for every {} s", config.refresh);
+        this.pollFuture = scheduler.scheduleWithFixedDelay(this::pollStatus, 0, config.refresh, TimeUnit.SECONDS);
     }
 
     private void stopPoll() {
