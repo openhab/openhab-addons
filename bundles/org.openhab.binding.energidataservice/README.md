@@ -104,6 +104,35 @@ rules.when()
 
 :::
 
+::: tab JRuby
+
+```ruby
+rule "Calculate total price" do
+  channel "energidataservice:service:energidataservice:electricity#event", triggered: "DAY_AHEAD_AVAILABLE"
+  run do
+    # Persistence methods will call LocalDate#to_zoned_date_time which converts it
+    # to a ZonedDateTime in the default system zone, with 00:00 as its time portion
+    start = LocalDate.now
+    spot_prices = SpotPrice.all_states_between(start, start + 2.days)
+
+    next unless spot_prices # don't proceed if the persistence result is nil
+
+    time_series = TimeSeries.new # the default policy is replace
+    spot_prices.each do |spot_price|
+      total_price = spot_price.state +
+                    GridTariff.persisted_state(spot_price.timestamp).state +
+                    SystemTariff.persisted_state(spot_price.timestamp).state +
+                    TransmissionGridTariff.persisted_state(spot_price.timestamp).state +
+                    ElectricityTax.persisted_state(spot_price.timestamp).state
+      time_series.add(spot_price.timestamp, total_price)
+    end
+    TotalPrice.persist(time_series)
+  end
+end
+```
+
+:::
+
 ::::
 
 #### Currencies
