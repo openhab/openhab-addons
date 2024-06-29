@@ -31,8 +31,8 @@ public class ArgoClimaBindingConstants {
     /////////////
     // List of all Thing Type UIDs
     /////////////
-    public static final ThingTypeUID THING_TYPE_ARGOCLIMA_LOCAL = new ThingTypeUID(BINDING_ID, "argoclima-local");
-    public static final ThingTypeUID THING_TYPE_ARGOCLIMA_REMOTE = new ThingTypeUID(BINDING_ID, "argoclima-remote");
+    public static final ThingTypeUID THING_TYPE_ARGOCLIMA_LOCAL = new ThingTypeUID(BINDING_ID, "local");
+    public static final ThingTypeUID THING_TYPE_ARGOCLIMA_REMOTE = new ThingTypeUID(BINDING_ID, "remote");
 
     /////////////
     // Thing configuration parameters

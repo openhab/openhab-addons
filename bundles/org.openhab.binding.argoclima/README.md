@@ -16,8 +16,8 @@ See also [Argo protocol details](#argo-protocol-details) to find out more about 
 
 ## Supported Things
 
-- `argoclima-remote`: Represents a HVAC device which is controlled remotely - through vendor's web application
-- `argoclima-local`: Represents a locally available device, which openHAB interacts with directly *(or indirectly, through a stub server)*. Refer to [Connection Modes](#connection-modes) for more details.
+- `remote`: Represents a HVAC device which is controlled remotely - through vendor's web application
+- `local`: Represents a locally available device, which openHAB interacts with directly *(or indirectly, through a stub server)*. Refer to [Connection Modes](#connection-modes) for more details.
 
 The binding has been primarily developed and tested using [Ulisse 13 DCI ECO Wi-Fi](https://argoclima.com/en/prodotti/argo-ulisse-eco/) device.
 
@@ -29,7 +29,7 @@ The binding does not support device auto-discovery (as the devices don't announc
 
 ## Thing Configuration
 
-### `argoclima-remote` Thing Configuration
+### `remote` Thing Configuration
 
 | Name             | Type    | Description                                                   | Default       | Required | Advanced |
 |------------------|---------|---------------------------------------------------------------|---------------|----------|----------|
@@ -39,7 +39,7 @@ The binding does not support device auto-discovery (as the devices don't announc
 | oemServerAddress | text    | The Argo server's IP or hostname, used for communications.    | 31.14.128.210 | no       | yes      |
 | oemServerPort    | integer | The Argo server's port.                                       | 80            | no       | yes      |
 
-### `argoclima-local` Thing Configuration
+### `local` Thing Configuration
 
 | Name                                      | Type           | Description                                                                                                                                                                        | Default          | Required | Advanced |
 |-------------------------------------------|----------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|----------|----------|
@@ -60,7 +60,7 @@ The binding does not support device auto-discovery (as the devices don't announc
 ### General Device Configuration (dynamic)
 
 These parameters are modeled as thing configuration, but are actually configuring behavior of the HVAC device itself (when in certain modes).
-The same values apply to **both** `argoclima-remote`  and `argoclima-local`.
+The same values apply to **both** `remote`  and `local`.
 
 | Name                   | Type            | Description                                                                                                                                                                                                                                                     | Default                              | Required | Advanced |
 |------------------------|-----------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------|----------|----------|
@@ -110,17 +110,17 @@ Both thing types are functionally equivalent and support the same channels.
 
     ```java
     //BASIC MODES examples
-    Thing argoclima:argoclima-remote:argoHvacRemote "Argo HVAC (via Argo remote API)" @ "Living Room" [
+    Thing argoclima:remote:argoHvacRemote "Argo HVAC (via Argo remote API)" @ "Living Room" [
         username="<yourArgoLogin>",
         password="<yourArgoPassword>"
     ]
 
 
-    Thing argoclima:argoclima-local:argoHvacLocalDirect "Argo HVAC (connected locally)" @ "Living Room" [
+    Thing argoclima:local:argoHvacLocalDirect "Argo HVAC (connected locally)" @ "Living Room" [
         hostname="192.168.0.3"
     ]
     
-    Thing argoclima:argoclima-local:argoHvacLocalDirectEx "Argo HVAC (connected locally) - extended example (with explicit options)" [
+    Thing argoclima:local:argoHvacLocalDirectEx "Argo HVAC (connected locally) - extended example (with explicit options)" [
         hostname="192.168.0.3",
         connectionMode="LOCAL_CONNECTION",
         refreshInterval=30,    
@@ -143,14 +143,14 @@ Both thing types are functionally equivalent and support the same channels.
     ]
 
     //ADVANCED MODES examples
-    Thing argoclima:argoclima-local:argoHvacLocalWithPassthroughIndirect "Argo HVAC (accessible only indirectly, via pass-through mode)" [
+    Thing argoclima:local:argoHvacLocalWithPassthroughIndirect "Argo HVAC (accessible only indirectly, via pass-through mode)" [
         hostname="192.168.4.2", // Doesn't have to be reachable!
         connectionMode="REMOTE_API_PROXY",
         useLocalConnection=false
     ]
 
 
-    Thing argoclima:argoclima-local:argoHvacLocalWithPassthroughPlusDirectEx "Argo HVAC (accessible both indirectly and directly, via pass-through mode, with explicit options)" [
+    Thing argoclima:local:argoHvacLocalWithPassthroughPlusDirectEx "Argo HVAC (accessible both indirectly and directly, via pass-through mode, with explicit options)" [
         hostname="192.168.0.3",             // Direct address of the device (reachable from openHAB)
         connectionMode="REMOTE_API_PROXY",
             
@@ -172,7 +172,7 @@ Both thing types are functionally equivalent and support the same channels.
     ]
 
 
-    Thing argoclima:argoclima-local:argoHvacLocalWithStub "Argo HVAC (accessible both indirectly and directly with a stub) - **RECOMMENDED MODE**" [
+    Thing argoclima:local:argoHvacLocalWithStub "Argo HVAC (accessible both indirectly and directly with a stub) - **RECOMMENDED MODE**" [
         hostname="192.168.0.3",           // Has to be reachable, since useLocalConnection is true (default)
         connectionMode="REMOTE_API_STUB",    
         localDeviceIP="192.168.4.2"       // Or use matchAnyIncomingDeviceIp=true
@@ -185,15 +185,15 @@ Both thing types are functionally equivalent and support the same channels.
     Group GArgoClimaHVACRemote "Ulisse 13 DCI ECO - remote mode" ["HVAC"]
 
     Switch  ArgoClimaHVACRemote_Power   "Power" <switch>   (GArgoClimaHVACRemote)  {
-        channel="argoclima:argoclima-remote:argoHvacRemote:ac-controls#power"    
+        channel="argoclima:remote:argoHvacRemote:ac-controls#power"    
     }
 
     String  ArgoClimaHVACRemote_Mode    "Mode"  <climate>  (GArgoClimaHVACRemote)  ["Control"] {
-        channel="argoclima:argoclima-remote:argoHvacRemote:ac-controls#mode"    
+        channel="argoclima:remote:argoHvacRemote:ac-controls#mode"    
     }
 
     Number:Temperature  ArgoClimaHVACRemote_SetTemperature  "Set Temperature"  <temperature> (GArgoClimaHVACRemote)  ["Temperature", "Setpoint"] {
-        channel="argoclima:argoclima-remote:argoHvacRemote:ac-controls#set-temperature",
+        channel="argoclima:remote:argoHvacRemote:ac-controls#set-temperature",
         unit="°C",
         stateDescription="" [ pattern="%.1f °C", readOnly=false, min=10.0, max=36.0, step=0.5],
         widget="oh-stepper-card" [ min=10, max=36, step=0.5, autorepeat=true],
@@ -201,31 +201,31 @@ Both thing types are functionally equivalent and support the same channels.
     }
 
     Number:Temperature  ArgoClimaHVACRemote_CurrentTemperature  "Current Temperature" <temperature>   (GArgoClimaHVACRemote) ["Temperature", "Measurement"] {
-        channel="argoclima:argoclima-remote:argoHvacRemote:ac-controls#current-temperature"    
+        channel="argoclima:remote:argoHvacRemote:ac-controls#current-temperature"    
     }
 
     String  ArgoClimaHVACRemote_FanSpeed    "Fan Speed" <fan> (GArgoClimaHVACRemote) {
-        channel="argoclima:argoclima-remote:argoHvacRemote:ac-controls#fan-speed"    
+        channel="argoclima:remote:argoHvacRemote:ac-controls#fan-speed"    
     }
 
     Switch  ArgoClimaHVACRemote_EcoMode "Eco Mode"   <vacation> (GArgoClimaHVACRemote) {
-        channel="argoclima:argoclima-remote:argoHvacRemote:modes#eco-mode"    
+        channel="argoclima:remote:argoHvacRemote:modes#eco-mode"    
     }
 
     Switch  ArgoClimaHVACRemote_TurboMode   "Turbo Mode"  <party> (GArgoClimaHVACRemote) {
-        channel="argoclima:argoclima-remote:argoHvacRemote:modes#turbo-mode"    
+        channel="argoclima:remote:argoHvacRemote:modes#turbo-mode"    
     }
 
     Switch  ArgoClimaHVACRemote_NightMode       "Night Mode"  <moon> (GArgoClimaHVACRemote) {
-        channel="argoclima:argoclima-remote:argoHvacRemote:modes#night-mode"    
+        channel="argoclima:remote:argoHvacRemote:modes#night-mode"    
     }
 
     String  ArgoClimaHVACRemote_ActiveTimer "Active timer"  <calendar> (GArgoClimaHVACRemote) {
-        channel="argoclima:argoclima-remote:argoHvacRemote:timers#active-timer"    
+        channel="argoclima:remote:argoHvacRemote:timers#active-timer"    
     }
 
     Number:Time ArgoClimaHVACRemote_DelayTimer  "Delay timer value"  <time> (GArgoClimaHVACRemote) ["Setpoint"] {
-        channel="argoclima:argoclima-remote:argoHvacRemote:timers#delay-timer",
+        channel="argoclima:remote:argoHvacRemote:timers#delay-timer",
         unit="min",
         stateDescription="" [ pattern="%d min", readOnly=false, min=10, max=1190, step=10 ],
         widget="oh-stepper-card" [ min=10, max=1190, step=10, autorepeat=true],
@@ -233,21 +233,21 @@ Both thing types are functionally equivalent and support the same channels.
     }
 
     Switch  ArgoClimaHVACRemote_IFeelEnabled    "Use iFeel Temperature"  <network>  (GArgoClimaHVACRemote) {
-        channel="argoclima:argoclima-remote:argoHvacRemote:settings#ifeel-enabled"    
+        channel="argoclima:remote:argoHvacRemote:settings#ifeel-enabled"    
     }
 
     Switch  ArgoClimaHVACRemote_DeviceLights    "Device Lights" <light> (GArgoClimaHVACRemote) {
-        channel="argoclima:argoclima-remote:argoHvacRemote:settings#device-lights"    
+        channel="argoclima:remote:argoHvacRemote:settings#device-lights"    
     }
 
     String  ArgoClimaHVACRemote_TemperatureDisplayUnit  "Temperature Display Unit []"   <settings>  (GArgoClimaHVACRemote) {
         stateDescription="" [ options="SCALE_CELSIUS=°C,SCALE_FAHRENHEIT=°F" ],
         commandDescription="" [ options="SCALE_CELSIUS=°C,SCALE_FAHRENHEIT=°F" ],
-        channel="argoclima:argoclima-remote:argoHvacRemote:settings#temperature-display-unit"    
+        channel="argoclima:remote:argoHvacRemote:settings#temperature-display-unit"    
     }
 
     Number:Dimensionless    ArgoClimaHVACRemote_EcoPowerLimit    "Power limit in eco mode"  <price>   (GArgoClimaHVACRemote) ["Setpoint"] {
-        channel="argoclima:argoclima-remote:argoHvacRemote:settings#eco-power-limit",
+        channel="argoclima:remote:argoHvacRemote:settings#eco-power-limit",
         unit="%",
         stateDescription=" " [ pattern="%d %%", readOnly=false, min=30, max=99, step=1 ],
         widget="oh-stepper-card" [ min=30, max=99, step=1, autorepeat=true],
@@ -255,15 +255,15 @@ Both thing types are functionally equivalent and support the same channels.
     }
 
     String  ArgoClimaHVACRemote_ModeEx  "Extended Mode"   <heating>  (GArgoClimaHVACRemote) {
-        channel="argoclima:argoclima-remote:argoHvacRemote:unsupported#mode-ex"    
+        channel="argoclima:remote:argoHvacRemote:unsupported#mode-ex"    
     }
 
     String  ArgoClimaHVACRemote_SwingMode   "Airflow Direction"   <flow>  (GArgoClimaHVACRemote) {
-        channel="argoclima:argoclima-remote:argoHvacRemote:unsupported#swing-mode"    
+        channel="argoclima:remote:argoHvacRemote:unsupported#swing-mode"    
     }
 
     Switch  ArgoClimaHVACRemote_FilterMode  "Filter Mode"    <switch> (GArgoClimaHVACRemote) {
-        channel="argoclima:argoclima-remote:argoHvacRemote:unsupported#filter-mode"    
+        channel="argoclima:remote:argoHvacRemote:unsupported#filter-mode"    
     }
     ```
 
@@ -422,3 +422,8 @@ The author would like to thank the following individuals:
 While most of the learnings come from analyzing the JavaScript code in Argo's own application and network captures, the HA integration has proven **invaluable** as a secondary/confirmed source and allowed to validate a few concepts early on!
   - In case you're experiencing issues, make sure to read the HomeAssistant binding's [README](https://github.com/nyffchanium/argoclima-integration/blob/master/readme.md) as well, for useful troubleshooting info!
 - [@lallinger](https://github.com/lallinger) for a [dummy server](https://github.com/nyffchanium/argoclima-integration/tree/master/dummy-server) which was the idea that served as the cornerstone of the stub server built into this binding (which later got extended to do something useful, instead of just keeping the device happy).
+
+## Disclaimer
+
+This project is not affiliated with, funded, or in any way associated with Argoclima S.p.A.
+All third-party product, company names, logos and trademarks™ or registered® trademarks remain the property of their respective holders.

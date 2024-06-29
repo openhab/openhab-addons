@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="argoclima-local">
+	<thing-type id="local">
 		<label>ArgoClima A/C - Local</label>
 		<description><![CDATA[ArgoClima Ulisse Eco 13-compatible Air Conditioner <i>(local LAN connection)</i>
 		<br/>
@@ -176,7 +176,7 @@
 		</config-description>
 	</thing-type>
 
-	<thing-type id="argoclima-remote">
+	<thing-type id="remote">
 		<label>ArgoClima A/C - Remote</label>
 		<description><![CDATA[ArgoClima Ulisse Eco 13-compatible Air Conditioner <i>(remote connection via Argo servers)</i>
 		<br/><i>Requires Internet connectivity for <b>both</b> openHAB and the HVAC device separately.</i>
@@ -253,23 +253,23 @@
 		<category>HVAC</category>
 		<channels>
 			<channel id="power" typeId="system.power"/>
-			<channel id="mode" typeId="mode-basic-channel"/>
-			<channel id="set-temperature" typeId="set-temperature-channel"/>
+			<channel id="mode" typeId="mode-basic"/>
+			<channel id="set-temperature" typeId="set-temperature"/>
 			<channel id="current-temperature" typeId="system.indoor-temperature"/>
-			<channel id="fan-speed" typeId="fan-speed-channel"/>
+			<channel id="fan-speed" typeId="fan-speed"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="modes-group">
 		<label>Operation Modes</label>
 		<channels>
-			<channel id="eco-mode" typeId="eco-mode-modifier-channel">
+			<channel id="eco-mode" typeId="eco-mode-modifier">
 				<label>Eco Mode</label>
 			</channel>
-			<channel id="turbo-mode" typeId="turbo-mode-modifier-channel">
+			<channel id="turbo-mode" typeId="turbo-mode-modifier">
 				<label>Turbo Mode</label>
 			</channel>
-			<channel id="night-mode" typeId="night-mode-modifier-channel">
+			<channel id="night-mode" typeId="night-mode-modifier">
 				<label>Night Mode</label>
 			</channel>
 		</channels>
@@ -279,8 +279,8 @@
 		<label>Timers</label>
 		<category>Time</category>
 		<channels>
-			<channel id="active-timer" typeId="active-timer-channel"/>
-			<channel id="delay-timer" typeId="delay-timer-channel"/>
+			<channel id="active-timer" typeId="active-timer"/>
+			<channel id="delay-timer" typeId="delay-timer"/>
 		</channels>
 	</channel-group-type>
 
@@ -288,9 +288,9 @@
 		<label>Unsupported Modes</label>
 		<description><![CDATA[These channels are available on the original Argo remote (and app), but the Ulisse DCI device does not support it.]]></description>
 		<channels>
-			<channel id="mode-ex" typeId="mode-extended-channel"/>
-			<channel id="swing-mode" typeId="swing-mode-channel"/>
-			<channel id="filter-mode" typeId="filter-mode-modifier-channel">
+			<channel id="mode-ex" typeId="mode-extended"/>
+			<channel id="swing-mode" typeId="swing-mode"/>
+			<channel id="filter-mode" typeId="filter-mode-modifier">
 				<label>Filter Mode</label>
 			</channel>
 		</channels>
@@ -299,10 +299,10 @@
 	<channel-group-type id="settings-group">
 		<label>Settings</label>
 		<channels>
-			<channel id="ifeel-enabled" typeId="ifeel-channel"/>
-			<channel id="device-lights" typeId="device-lights-channel"/>
-			<channel id="temperature-display-unit" typeId="temperature-display-unit-channel"/>
-			<channel id="eco-power-limit" typeId="eco-power-limit-channel"/>
+			<channel id="ifeel-enabled" typeId="ifeel"/>
+			<channel id="device-lights" typeId="device-lights"/>
+			<channel id="temperature-display-unit" typeId="temperature-display-unit"/>
+			<channel id="eco-power-limit" typeId="eco-power-limit"/>
 		</channels>
 	</channel-group-type>
 
@@ -310,7 +310,7 @@
 	<!--
 		*** CHANNELS ***
 	-->
-	<channel-type id="mode-basic-channel">
+	<channel-type id="mode-basic">
 		<item-type>String</item-type>
 		<label>Mode</label>
 		<category>Climate</category>
@@ -328,7 +328,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="set-temperature-channel">
+	<channel-type id="set-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Set Temperature</label>
 		<description>The device's target temperature</description>
@@ -340,7 +340,7 @@
 		<state min="10" max="36" step="0.5" pattern="%.1f %unit%" readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="current-temperature-channel">
+	<channel-type id="current-temperature">
 		<item-type>Number:Temperature</item-type>
 		<label>Actual Temperature</label>
 		<category>Temperature</category>
@@ -351,7 +351,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="fan-speed-channel">
+	<channel-type id="fan-speed">
 		<item-type>String</item-type>
 		<label>Fan Speed</label>
 		<category>Fan</category>
@@ -369,35 +369,35 @@
 	</channel-type>
 
 
-	<channel-type id="eco-mode-modifier-channel">
+	<channel-type id="eco-mode-modifier">
 		<item-type>Switch</item-type>
 		<label>Eco Mode</label>
 		<category>Vacation</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="turbo-mode-modifier-channel">
+	<channel-type id="turbo-mode-modifier">
 		<item-type>Switch</item-type>
 		<label>Turbo Mode</label>
 		<category>Party</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="filter-mode-modifier-channel" advanced="true">
+	<channel-type id="filter-mode-modifier" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Filter Mode</label>
 		<category>Switch</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="night-mode-modifier-channel">
+	<channel-type id="night-mode-modifier">
 		<item-type>Switch</item-type>
 		<label>Night Mode</label>
 		<category>Moon</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="active-timer-channel" advanced="true">
+	<channel-type id="active-timer" advanced="true">
 		<item-type>String</item-type>
 		<label>Active Timer</label>
 		<category>Calendar</category>
@@ -412,7 +412,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="delay-timer-channel" advanced="true">
+	<channel-type id="delay-timer" advanced="true">
 		<item-type>Number:Time</item-type> <!-- Number:Time -->
 		<label>Delay Timer Value</label>
 		<category>Time</category>
@@ -428,7 +428,7 @@
 
 
 
-	<channel-type id="mode-extended-channel" advanced="true">
+	<channel-type id="mode-extended" advanced="true">
 		<item-type>String</item-type>
 		<label>Extended Mode</label>
 		<category>Heating</category>
@@ -443,7 +443,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="swing-mode-channel" advanced="true">
+	<channel-type id="swing-mode" advanced="true">
 		<item-type>String</item-type>
 		<label>Airflow Direction</label>
 		<category>Flow</category>
@@ -461,21 +461,21 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="ifeel-channel">
+	<channel-type id="ifeel">
 		<item-type>Switch</item-type>
 		<label>Use iFeel Temperature</label>
 		<category>Network</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="device-lights-channel">
+	<channel-type id="device-lights">
 		<item-type>Switch</item-type>
 		<label>Device Lights</label>
 		<category>Light</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="temperature-display-unit-channel" advanced="true">
+	<channel-type id="temperature-display-unit" advanced="true">
 		<item-type>String</item-type>
 		<label>Temperature Display Unit</label>
 		<category>Settings</category>
@@ -487,15 +487,15 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="eco-power-limit-channel" advanced="true">
-		<item-type>Number:Dimensionless</item-type>
+	<channel-type id="eco-power-limit" advanced="true">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Power Limit In Eco Mode</label>
 		<category>Price</category>
 		<tags>
 			<tag>Setpoint</tag>
 			<tag>Level</tag>
 		</tags>
-		<state readOnly="false" min="30" max="99" step="1" pattern="%.0f %%"/>
+		<state readOnly="false" min="30" max="99" step="1" pattern="%.0f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>
