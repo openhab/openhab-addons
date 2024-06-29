@@ -739,7 +739,7 @@ logInfo("Spot price two hours from now", price.toString)
 
 ```javascript
 var hourStart = time.toZDT().plusHours(2).truncatedTo(time.ChronoUnit.HOURS);
-var price = items.SpotPrice.history.historicState(hourStart).quantityState;
+var price = items.SpotPrice.persistence.persistedState(hourStart).quantityState;
 console.log("Spot price two hours from now: " + price);
 ```
 
