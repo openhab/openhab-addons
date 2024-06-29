@@ -371,6 +371,7 @@
 /bundles/org.openhab.binding.tellstick/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.teslapowerwall/ @psmedley
+/bundles/org.openhab.binding.teslascope/ @psmedley
 /bundles/org.openhab.binding.tibber/ @kjoglum
 /bundles/org.openhab.binding.tivo/ @mlobstein
 /bundles/org.openhab.binding.touchwand/ @roieg
