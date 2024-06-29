@@ -39,11 +39,14 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.RefreshType;
 
 import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
+import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus;
+import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
 
 /**
  * {@link VehicleHandlerTest} check state updates and command sending of vehicles
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Additional test for https://github.com/openhab/openhab-addons/issues/16932
  */
 @NonNullByDefault
 class VehicleHandlerTest {
@@ -467,5 +470,25 @@ class VehicleHandlerTest {
         assertEquals(3, Utils.getChargeProgramNumber(ahm.getCommand().get("charge_program").toString()),
                 "Charge Program Command");
         assertEquals(100, ahm.getCommand().getInt("max_soc"), "Charge Program SOC Setting");
+    }
+
+    @Test
+    /**
+     * Testing UNRECOGNIZED (-1) values in CommandStatus which throws Exception
+     */
+    public void testCommandDistribution() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
+        AppTwinCommandStatus command = AppTwinCommandStatus.newBuilder().setStateValue(-1).setTypeValue(-1).build();
+        AppTwinCommandStatusUpdatesByPID commandPid = AppTwinCommandStatusUpdatesByPID.newBuilder()
+                .putUpdatesByPid(Long.MIN_VALUE, command).build();
+        try {
+            vh.distributeCommandStatus(commandPid);
+        } catch (IllegalArgumentException iae) {
+            fail();
+        }
     }
 }
