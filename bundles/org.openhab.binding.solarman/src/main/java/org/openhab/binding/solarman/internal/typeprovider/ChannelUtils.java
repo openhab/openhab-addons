@@ -27,7 +27,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.SolarmanBindingConstants;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
 import org.openhab.binding.solarman.internal.util.ClassUtils;
-import org.openhab.binding.solarman.internal.util.StringUtils;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
@@ -35,10 +34,21 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
+ * The {@link ChannelUtils} class provides utility functions for handling channel types and units in the Solarman
+ * binding.
+ * It includes methods for determining item types, units of measure, and channel type IDs.
+ *
  * @author Catalin Sanda - Initial contribution
  */
 @NonNullByDefault
 public class ChannelUtils {
+
+    /**
+     * Determines the item type for a given parameter item.
+     *
+     * @param item The parameter item to determine the type for
+     * @return The item type as a string
+     */
     public static String getItemType(ParameterItem item) {
         @Nullable
         Integer rule = item.getRule();
@@ -58,6 +68,12 @@ public class ChannelUtils {
         };
     }
 
+    /**
+     * Computes the number type based on the unit of measure (UOM).
+     *
+     * @param uom The unit of measure as a string
+     * @return The number type as a string
+     */
     private static String computeNumberType(String uom) {
         return switch (uom.toUpperCase()) {
             case "A" -> CoreItemFactory.NUMBER + ":" + ClassUtils.getShortClassName(ElectricCurrent.class);
@@ -73,6 +89,12 @@ public class ChannelUtils {
         };
     }
 
+    /**
+     * Retrieves the unit of measure (UOM) from a string definition.
+     *
+     * @param uom The unit of measure as a string
+     * @return The corresponding {@link Unit}, or null if not found
+     */
     public static @Nullable Unit<?> getUnitFromDefinition(String uom) {
         return switch (uom.toUpperCase()) {
             case "A" -> Units.AMPERE;
@@ -93,11 +115,28 @@ public class ChannelUtils {
         };
     }
 
+    /**
+     * Escapes a name string by replacing specific characters with hyphens and converting to lowercase.
+     *
+     * @param name The name to escape
+     * @return The escaped name
+     */
     public static String escapeName(String name) {
+        name = name.trim();
         name = name.replace("+", "plus");
-        return StringUtils.replaceChars(StringUtils.lowerCase(name), " .()/\\&_", "-");
+        name = name.toLowerCase();
+        name = name.replaceAll("[ .()/\\\\&_]", "-");
+        return name;
     }
 
+    /**
+     * Computes a channel type ID based on the inverter definition ID, group, and name.
+     *
+     * @param inverterDefinitionId The inverter definition ID
+     * @param group The group
+     * @param name The name
+     * @return The computed {@link ChannelTypeUID}
+     */
     public static ChannelTypeUID computeChannelTypeId(String inverterDefinitionId, String group, String name) {
         return new ChannelTypeUID(SolarmanBindingConstants.SOLARMAN_BINDING_ID,
                 String.format("%s-%s-%s", escapeName(inverterDefinitionId), escapeName(group), escapeName(name)));

@@ -26,8 +26,8 @@ public class SolarmanLoggerConnector {
         this.solarmanLoggerConfiguration = solarmanLoggerConfiguration;
     }
 
-    public SolarmanLoggerConnection createConnection(boolean allowLogging) {
+    public SolarmanLoggerConnection createConnection() {
         return new SolarmanLoggerConnection(solarmanLoggerConfiguration.getHostname(),
-                solarmanLoggerConfiguration.getPort(), allowLogging);
+                solarmanLoggerConfiguration.getPort());
     }
 }

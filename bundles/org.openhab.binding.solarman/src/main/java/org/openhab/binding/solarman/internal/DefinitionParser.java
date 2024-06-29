@@ -46,7 +46,7 @@ public class DefinitionParser {
         String definitionFileName = String.format("definitions/%s.yaml", definitionId);
         try (InputStream is = cl.getResourceAsStream(definitionFileName)) {
             if (is == null) {
-                logger.error("Unable to read definition file {}", definitionFileName);
+                logger.warn("Unable to read definition file {}", definitionFileName);
                 return null;
             }
 
@@ -55,7 +55,7 @@ public class DefinitionParser {
 
             return inverterDefinition;
         } catch (IOException e) {
-            logger.error("Error parsing definition with ID: {}", definitionId, e);
+            logger.warn("Error parsing definition with ID: {}", definitionId, e);
             return null;
         }
     }

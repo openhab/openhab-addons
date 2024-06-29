@@ -26,10 +26,24 @@ import java.util.stream.StreamSupport;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Utility class for Stream operations.
+ *
  * @author Catalin Sanda - Initial contribution
  */
 @NonNullByDefault
 public class StreamUtils {
+
+    /**
+     * Zips two streams into one by applying a zipper function to each pair of elements.
+     *
+     * @param <A> The type of the first stream elements
+     * @param <B> The type of the second stream elements
+     * @param <C> The type of the resulting stream elements
+     * @param a The first stream to be zipped
+     * @param b The second stream to be zipped
+     * @param zipper The function to apply to each pair of elements
+     * @return A stream of zipped elements
+     */
     public static <A, B, C> Stream<C> zip(Stream<? extends A> a, Stream<? extends B> b,
             BiFunction<? super A, ? super B, ? extends C> zipper) {
         Objects.requireNonNull(zipper);
@@ -63,6 +77,12 @@ public class StreamUtils {
                 : StreamSupport.stream(split, false);
     }
 
+    /**
+     * Reverses a list of integers.
+     *
+     * @param list The list to be reversed
+     * @return A collection containing the elements of the list in reverse order
+     */
     public static Collection<Object> reverse(List<Integer> list) {
         return list.stream().reduce(new ArrayList<>(), (l, i) -> {
             l.add(0, i);
@@ -73,6 +93,12 @@ public class StreamUtils {
         });
     }
 
+    /**
+     * A tuple class to hold two related objects.
+     *
+     * @param <A> The type of the first object
+     * @param <B> The type of the second object
+     */
     public record Tuple<A, B> (A a, B b) {
     }
 }

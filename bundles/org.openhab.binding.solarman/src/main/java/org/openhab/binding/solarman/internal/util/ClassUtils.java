@@ -16,12 +16,22 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * The {@link StringUtils} common class utility functions
+ * The {@link ClassUtils} class provides utility functions for working with class names.
+ * It includes methods for getting the short class name from a {@link Class} object or a fully qualified class name.
+ * This utility class helps simplify common class name manipulations.
  *
  * @author Catalin Sanda - Initial contribution
  */
 @NonNullByDefault
 public class ClassUtils {
+
+    /**
+     * Gets the short class name from a {@link Class} object.
+     * If the class is an array type, it returns a formatted string representing the array type.
+     *
+     * @param cls The class to get the short name from, may be null
+     * @return The short class name, or an empty string if the class is null or has no name
+     */
     public static String getShortClassName(@Nullable Class<?> cls) {
         if (cls == null) {
             return "";

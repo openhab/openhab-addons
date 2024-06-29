@@ -22,12 +22,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import javax.measure.Unit;
 import javax.measure.format.MeasurementParseException;
@@ -36,14 +35,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
 import org.openhab.binding.solarman.internal.defmodel.Request;
-import org.openhab.binding.solarman.internal.defmodel.Validation;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnection;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnector;
 import org.openhab.binding.solarman.internal.modbus.SolarmanV5Protocol;
-import org.openhab.binding.solarman.internal.state.LoggerState;
+import org.openhab.binding.solarman.internal.modbus.exception.SolarmanConnectionException;
+import org.openhab.binding.solarman.internal.modbus.exception.SolarmanException;
 import org.openhab.binding.solarman.internal.typeprovider.ChannelUtils;
 import org.openhab.binding.solarman.internal.util.StreamUtils;
-import org.openhab.binding.solarman.internal.util.StringUtils;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -65,27 +63,32 @@ public class SolarmanChannelUpdater {
         this.stateUpdater = stateUpdater;
     }
 
-    public boolean fetchDataFromLogger(List<Request> requests, SolarmanLoggerConnector solarmanLoggerConnector,
-            SolarmanV5Protocol solarmanV5Protocol, Map<ParameterItem, ChannelUID> paramToChannelMapping,
-            LoggerState loggerState) {
-        try (SolarmanLoggerConnection solarmanLoggerConnection = solarmanLoggerConnector
-                .createConnection(!loggerState.isOffline())) {
+    public SolarmanProcessResult fetchDataFromLogger(List<Request> requests,
+            SolarmanLoggerConnector solarmanLoggerConnector, SolarmanV5Protocol solarmanV5Protocol,
+            Map<ParameterItem, ChannelUID> paramToChannelMapping) {
+        try (SolarmanLoggerConnection solarmanLoggerConnection = solarmanLoggerConnector.createConnection()) {
             logger.debug("Fetching data from logger");
 
-            Map<Integer, byte[]> readRegistersMap = requests.stream()
-                    .map(request -> solarmanV5Protocol.readRegisters(solarmanLoggerConnection,
-                            (byte) request.getMbFunctioncode().intValue(), request.getStart(), request.getEnd(),
-                            !loggerState.isOffline()))
-                    .reduce(new HashMap<>(), this::mergeMaps);
-
-            if (!readRegistersMap.isEmpty()) {
-                updateChannelsForReadRegisters(paramToChannelMapping, readRegistersMap);
+            if (!solarmanLoggerConnection.isConnected()) {
+                return SolarmanProcessResult.ofException(Request.NONE,
+                        new SolarmanConnectionException("Unable to connect to logger"));
             }
 
-            return !readRegistersMap.isEmpty();
-        } catch (Exception e) {
-            logger.error("Error invoking handler", e);
-            return false;
+            SolarmanProcessResult solarmanProcessResult = requests.stream().map(request -> {
+                try {
+                    return SolarmanProcessResult.ofValue(request,
+                            solarmanV5Protocol.readRegisters(solarmanLoggerConnection,
+                                    (byte) request.getMbFunctioncode().intValue(), request.getStart(),
+                                    request.getEnd()));
+                } catch (SolarmanException e) {
+                    return SolarmanProcessResult.ofException(request, e);
+                }
+            }).reduce(new SolarmanProcessResult(), SolarmanProcessResult::merge);
+
+            if (solarmanProcessResult.hasSuccessfulResponses()) {
+                updateChannelsForReadRegisters(paramToChannelMapping, solarmanProcessResult.getReadRegistersMap());
+            }
+            return solarmanProcessResult;
         }
     }
 
@@ -106,7 +109,7 @@ public class SolarmanChannelUpdater {
                     case 9 -> updateChannelWithTime(channelUID, registers, readRegistersMap);
                 }
             } else {
-                logger.error("Unable to update channel {} because its registers were not read", channelUID.getId());
+                logger.warn("Unable to update channel {} because its registers were not read", channelUID.getId());
             }
         });
     }
@@ -142,7 +145,7 @@ public class SolarmanChannelUpdater {
 
             stateUpdater.updateState(channelUID, new DateTimeType(dateTime.atZone(ZoneId.systemDefault())));
         } catch (DateTimeParseException e) {
-            logger.error("Unable to parse string date {} to a DateTime object", stringValue);
+            logger.debug("Unable to parse string date {} to a DateTime object", stringValue);
         }
     }
 
@@ -170,33 +173,25 @@ public class SolarmanChannelUpdater {
             List<Integer> registers, Map<Integer, byte[]> readRegistersMap, ValueType valueType) {
         BigInteger value = extractNumericValue(registers, readRegistersMap, valueType);
         BigDecimal convertedValue = convertNumericValue(value, parameterItem.getOffset(), parameterItem.getScale());
-        if (validateNumericValue(convertedValue, parameterItem.getValidation())) {
-            State state;
+        String uom = Objects.requireNonNullElse(parameterItem.getUom(), "");
 
-            @Nullable
-            String uom = parameterItem.getUom();
-            if (uom == null) {
-                uom = "";
-            }
-
-            if (StringUtils.isNotEmpty(uom)) {
-                try {
-                    @Nullable
-                    Unit<?> unitFromDefinition = ChannelUtils.getUnitFromDefinition(uom);
-                    if (unitFromDefinition != null) {
-                        state = new QuantityType<>(convertedValue, unitFromDefinition);
-                    } else {
-                        logger.debug("Unable to parse unit: {}", uom);
-                        state = new DecimalType(convertedValue);
-                    }
-                } catch (MeasurementParseException e) {
+        State state;
+        if (!uom.isBlank()) {
+            try {
+                Unit<?> unitFromDefinition = ChannelUtils.getUnitFromDefinition(uom);
+                if (unitFromDefinition != null) {
+                    state = new QuantityType<>(convertedValue, unitFromDefinition);
+                } else {
+                    logger.debug("Unable to parse unit: {}", uom);
                     state = new DecimalType(convertedValue);
                 }
-            } else {
+            } catch (MeasurementParseException e) {
                 state = new DecimalType(convertedValue);
             }
-            stateUpdater.updateState(channelUID, state);
+        } else {
+            state = new DecimalType(convertedValue);
         }
+        stateUpdater.updateState(channelUID, state);
     }
 
     private void updateChannelWithRawValue(ParameterItem parameterItem, ChannelUID channelUID, List<Integer> registers,
@@ -207,10 +202,6 @@ public class SolarmanChannelUpdater {
                         .collect(Collectors.joining(",")));
 
         stateUpdater.updateState(channelUID, new StringType(hexString));
-    }
-
-    private boolean validateNumericValue(@Nullable BigDecimal convertedValue, @Nullable Validation validation) {
-        return true;
     }
 
     private BigDecimal convertNumericValue(BigInteger value, @Nullable BigDecimal offset, @Nullable BigDecimal scale) {
@@ -227,11 +218,6 @@ public class SolarmanChannelUpdater {
                                         .add(BigInteger.valueOf(ByteBuffer.wrap(val).getShort()
                                                 & (valueType == ValueType.UNSIGNED ? 0xFFFF : 0xFFFFFFFF))),
                         BigInteger::add);
-    }
-
-    private <K, V> Map<K, V> mergeMaps(Map<K, V> map1, Map<K, V> map2) {
-        return Stream.concat(map1.entrySet().stream(), map2.entrySet().stream())
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (v1, v2) -> v1));
     }
 
     private enum ValueType {

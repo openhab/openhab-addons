@@ -35,7 +35,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.DefinitionParser;
 import org.openhab.binding.solarman.internal.defmodel.InverterDefinition;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
-import org.openhab.binding.solarman.internal.util.StringUtils;
 import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeProvider;
@@ -114,7 +113,6 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
     private String computePatternForItem(ParameterItem item) {
         long decimalPoints = 0;
 
-        @Nullable
         BigDecimal scale = item.getScale();
         if (scale == null) {
             scale = BigDecimal.ONE;
@@ -125,14 +123,14 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
         }
 
         String pattern = null;
-
         if (decimalPoints > 0) {
             pattern = "%." + decimalPoints + "f";
         } else {
             pattern = "%d";
         }
 
-        return pattern + (StringUtils.isNotEmpty(item.getUom()) ? " %unit%" : "");
+        String uom = item.getUom();
+        return pattern + (uom != null && !uom.isBlank() ? " %unit%" : "");
     }
 
     private String buildRegisterDescription(ParameterItem item) {

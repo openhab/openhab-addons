@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.defmodel.InverterDefinition;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
 import org.openhab.binding.solarman.internal.typeprovider.ChannelUtils;
@@ -71,13 +70,11 @@ public class SolarmanChannelManager {
 
         BaseChannelConfig baseChannelConfig = new BaseChannelConfig();
 
-        @Nullable
         BigDecimal offset = item.getOffset();
         if (offset != null) {
             baseChannelConfig.offset = offset;
         }
 
-        @Nullable
         BigDecimal scale = item.getScale();
         if (scale != null) {
             baseChannelConfig.scale = scale;

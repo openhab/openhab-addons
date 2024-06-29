@@ -15,22 +15,22 @@ package org.openhab.binding.solarman.internal.modbus;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.SolarmanLoggerConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openhab.binding.solarman.internal.modbus.exception.SolarmanAuthenticationException;
+import org.openhab.binding.solarman.internal.modbus.exception.SolarmanConnectionException;
+import org.openhab.binding.solarman.internal.modbus.exception.SolarmanException;
+import org.openhab.binding.solarman.internal.modbus.exception.SolarmanProtocolException;
 
 /**
  * @author Catalin Sanda - Initial contribution
  */
 @NonNullByDefault
 public class SolarmanV5Protocol {
-    private final Logger logger = LoggerFactory.getLogger(SolarmanV5Protocol.class);
     private final SolarmanLoggerConfiguration solarmanLoggerConfiguration;
 
     public SolarmanV5Protocol(SolarmanLoggerConfiguration solarmanLoggerConfiguration) {
@@ -38,14 +38,14 @@ public class SolarmanV5Protocol {
     }
 
     public Map<Integer, byte[]> readRegisters(SolarmanLoggerConnection solarmanLoggerConnection, byte mbFunctionCode,
-            int firstReg, int lastReg, Boolean allowLogging) {
+            int firstReg, int lastReg) throws SolarmanException {
         byte[] solarmanV5Frame = buildSolarmanV5Frame(mbFunctionCode, firstReg, lastReg);
         byte[] respFrame = solarmanLoggerConnection.sendRequest(solarmanV5Frame);
         if (respFrame.length > 0) {
-            byte[] modbusRespFrame = extractModbusResponseFrame(respFrame, solarmanV5Frame, allowLogging);
-            return parseModbusReadHoldingRegistersResponse(modbusRespFrame, firstReg, lastReg, allowLogging);
+            byte[] modbusRespFrame = extractModbusResponseFrame(respFrame, solarmanV5Frame);
+            return parseModbusReadHoldingRegistersResponse(modbusRespFrame, firstReg, lastReg);
         } else {
-            return Collections.emptyMap();
+            throw new SolarmanConnectionException("Response frame was empty");
         }
     }
 
@@ -169,16 +169,12 @@ public class SolarmanV5Protocol {
     }
 
     protected Map<Integer, byte[]> parseModbusReadHoldingRegistersResponse(byte @Nullable [] frame, int firstReg,
-            int lastReg, Boolean allowLogging) {
+            int lastReg) throws SolarmanProtocolException {
         int regCount = lastReg - firstReg + 1;
         Map<Integer, byte[]> registers = new HashMap<>();
         int expectedFrameDataLen = 2 + 1 + regCount * 2;
         if (frame == null || frame.length < expectedFrameDataLen + 2) {
-            if (allowLogging) {
-                logger.error("Modbus frame is too short or empty");
-            }
-
-            return registers;
+            throw new SolarmanProtocolException("Modbus frame is too short or empty");
         }
 
         int actualCrc = ByteBuffer.wrap(frame, expectedFrameDataLen, 2).order(ByteOrder.LITTLE_ENDIAN).getShort()
@@ -186,12 +182,8 @@ public class SolarmanV5Protocol {
         int expectedCrc = CRC16Modbus.calculate(Arrays.copyOfRange(frame, 0, expectedFrameDataLen));
 
         if (actualCrc != expectedCrc) {
-            if (allowLogging) {
-                logger.error("Modbus frame crc is not valid. Expected {}, got {}", String.format("%04x", expectedCrc),
-                        String.format("%04x", actualCrc));
-            }
-
-            return registers;
+            throw new SolarmanProtocolException(
+                    String.format("Modbus frame crc is not valid. Expected %04x, got %04x", expectedCrc, actualCrc));
         }
 
         for (int i = 0; i < regCount; i++) {
@@ -204,62 +196,52 @@ public class SolarmanV5Protocol {
         return registers;
     }
 
-    protected byte @Nullable [] extractModbusResponseFrame(byte @Nullable [] responseFrame, byte[] requestFrame,
-            Boolean allowLogging) {
+    protected byte[] extractModbusResponseFrame(byte @Nullable [] responseFrame, byte[] requestFrame)
+            throws SolarmanException {
         if (responseFrame == null || responseFrame.length == 0) {
-            if (allowLogging) {
-                logger.error("No response frame");
-            }
-
-            return null;
+            throw new SolarmanProtocolException("No response frame");
         } else if (responseFrame.length == 29) {
             parseResponseErrorCode(responseFrame, requestFrame);
-            return null;
+            throw new IllegalStateException("This should never be reached as previous method should always throw");
         } else if (responseFrame.length < (29 + 4)) {
-            if (allowLogging) {
-                logger.error("Response frame is too short");
-            }
-            return null;
+            throw new SolarmanProtocolException("Response frame is too short");
         } else if (responseFrame[0] != (byte) 0xA5) {
-            if (allowLogging) {
-                logger.error("Response frame has invalid starting byte");
-            }
-            return null;
+            throw new SolarmanProtocolException("Response frame has invalid starting byte");
         } else if (responseFrame[responseFrame.length - 1] != (byte) 0x15) {
-            if (allowLogging) {
-                logger.error("Response frame has invalid ending byte");
-            }
-            return null;
+            throw new SolarmanProtocolException("Response frame has invalid ending byte");
         }
 
         return Arrays.copyOfRange(responseFrame, 25, responseFrame.length - 2);
     }
 
-    protected void parseResponseErrorCode(byte[] responseFrame, byte[] requestFrame) {
+    protected void parseResponseErrorCode(byte[] responseFrame, byte[] requestFrame) throws SolarmanException {
         if (responseFrame[0] == (byte) 0xA5 && responseFrame[1] == (byte) 0x10
                 && !Arrays.equals(Arrays.copyOfRange(responseFrame, 7, 11), Arrays.copyOfRange(requestFrame, 7, 11))) {
             String requestInverterId = parseInverterId(requestFrame);
             String responseInverterId = parseInverterId(responseFrame);
 
-            logger.error("There was a mismatch between the request logger ID: {} and the response logger ID: {}. "
-                    + "Make sure you are using the logger ID and not the inverter ID. "
-                    + "If in doubt, try the one in the response", requestInverterId, responseInverterId);
-            return;
+            String message = String
+                    .format("There was a mismatch between the request logger ID: %s and the response logger ID: %s. "
+                            + "Make sure you are using the logger ID and not the inverter ID. "
+                            + "If in doubt, try the one in the response", requestInverterId, responseInverterId);
+
+            throw new SolarmanAuthenticationException(message, requestInverterId, responseInverterId);
         }
 
         if (responseFrame[1] != (byte) 0x10 || responseFrame[2] != (byte) 0x45) {
-            logger.error("Unexpected control code in error response frame");
-            return;
+            throw new SolarmanProtocolException("Unexpected control code in error response frame");
         }
 
         int errorCode = responseFrame[25];
-        switch (errorCode) {
-            case 0x01 -> logger.error("Error response frame: Illegal Function");
-            case 0x02 -> logger.error("Error response frame: Illegal Data Address");
-            case 0x03 -> logger.error("Error response frame: Illegal Data Value");
-            case 0x04 -> logger.error("Error response frame: Slave Device Failure");
-            default -> logger.error("Error response frame: Unknown error code {}", String.format("%02x", errorCode));
-        }
+
+        String message = switch (errorCode) {
+            case 0x01 -> "Error response frame: Illegal Function";
+            case 0x02 -> "Error response frame: Illegal Data Address";
+            case 0x03 -> "Error response frame: Illegal Data Value";
+            case 0x04 -> "Error response frame: Slave Device Failure";
+            default -> String.format("Error response frame: Unknown error code %02x", errorCode);
+        };
+        throw new SolarmanProtocolException(message);
     }
 
     private static String parseInverterId(byte[] requestFrame) {

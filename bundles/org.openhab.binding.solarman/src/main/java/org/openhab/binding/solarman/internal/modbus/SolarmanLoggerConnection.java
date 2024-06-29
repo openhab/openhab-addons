@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.solarman.internal.modbus.exception.SolarmanConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,45 +33,33 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SolarmanLoggerConnection implements AutoCloseable {
     private final Logger logger = LoggerFactory.getLogger(SolarmanLoggerConnection.class);
-    private boolean allowLogging;
     @Nullable
     private Socket socket;
 
-    public SolarmanLoggerConnection(String hostName, int port, boolean allowLogging) {
+    public SolarmanLoggerConnection(String hostName, int port) {
         SocketAddress sockaddr = new InetSocketAddress(hostName, port);
         Socket localSocket = connectSocket(sockaddr);
 
         if (localSocket == null) {
-            if (allowLogging) {
-                logger.error("Error creating socket");
-            }
+            logger.debug("Error creating socket");
         } else {
             socket = localSocket;
         }
-
-        this.allowLogging = allowLogging;
     }
 
-    public byte[] sendRequest(byte[] reqFrame) {
+    public byte[] sendRequest(byte[] reqFrame) throws SolarmanConnectionException {
         // Will not be used by multiple threads, so not bothering making it thread safe for now
         Socket localSocket = socket;
 
         if (localSocket == null) {
-            if (allowLogging) {
-                logger.error("Socket is null, not reading data this time");
-            }
-
-            return new byte[0];
+            throw new SolarmanConnectionException("Socket is null, not reading data this time");
         }
 
         try {
-            logger.debug("Request frame: {}", bytesToHex(reqFrame));
+            logger.trace("Request frame: {}", bytesToHex(reqFrame));
             localSocket.getOutputStream().write(reqFrame);
         } catch (IOException e) {
-            if (allowLogging) {
-                logger.info("Unable to send frame to logger", e);
-            }
-
+            logger.debug("Unable to send frame to logger");
             return new byte[0];
         }
 
@@ -82,25 +71,21 @@ public class SolarmanLoggerConnection implements AutoCloseable {
             try {
                 int bytesRead = localSocket.getInputStream().read(buffer);
                 if (bytesRead < 0) {
-                    if (allowLogging) {
-                        logger.info("No data received");
-                    }
+                    throw new SolarmanConnectionException("No data received");
                 } else {
                     byte[] data = Arrays.copyOfRange(buffer, 0, bytesRead);
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Response frame: {}", bytesToHex(data));
+                        logger.trace("Response frame: {}", bytesToHex(data));
                     }
                     return data;
                 }
             } catch (SocketTimeoutException e) {
                 logger.debug("Connection timeout", e);
-                if (attempts == 0 && allowLogging) {
-                    logger.info("Too many connection timeouts");
+                if (attempts == 0) {
+                    throw new SolarmanConnectionException("Too many socket timeouts", e);
                 }
             } catch (IOException e) {
-                if (allowLogging) {
-                    logger.info("Connection error", e);
-                }
+                throw new SolarmanConnectionException("Error reading data from ", e);
             }
         }
 
@@ -121,20 +106,26 @@ public class SolarmanLoggerConnection implements AutoCloseable {
 
             return clientSocket;
         } catch (IOException e) {
-            if (allowLogging) {
-                logger.error("Could not open socket on IP {}", socketAddress, e);
-            }
-
+            logger.debug("Could not open socket on IP {}", socketAddress, e);
             return null;
         }
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         Socket localSocket = socket;
-
         if (localSocket != null && !localSocket.isClosed()) {
-            localSocket.close();
+            try {
+                localSocket.close();
+            } catch (IOException e) {
+                logger.debug("Unable to close connection");
+            }
         }
+        socket = null;
+    }
+
+    public boolean isConnected() {
+        Socket localSocket = socket;
+        return localSocket != null && localSocket.isConnected();
     }
 }

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NonNullByDefault
 public class Request {
+    public static final Request NONE = new Request(-1, 0, 0);
     private Integer start = 0;
     private Integer end = 0;
     @JsonProperty("mb_functioncode")
@@ -59,5 +60,15 @@ public class Request {
 
     public void setMbFunctioncode(Integer mbFunctioncode) {
         this.mbFunctioncode = mbFunctioncode;
+    }
+
+    @Override
+    public String toString() {
+        if (this == NONE) {
+            return "N/A";
+        } else {
+            return "Request{" + "start=0x" + Integer.toHexString(start) + ", end=0x" + Integer.toHexString(end)
+                    + ", mbFunctioncode=0x" + Integer.toHexString(mbFunctioncode) + '}';
+        }
     }
 }

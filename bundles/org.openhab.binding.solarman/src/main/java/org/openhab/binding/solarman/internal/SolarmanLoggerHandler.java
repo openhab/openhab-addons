@@ -35,9 +35,8 @@ import org.openhab.binding.solarman.internal.defmodel.Request;
 import org.openhab.binding.solarman.internal.defmodel.Validation;
 import org.openhab.binding.solarman.internal.modbus.SolarmanLoggerConnector;
 import org.openhab.binding.solarman.internal.modbus.SolarmanV5Protocol;
-import org.openhab.binding.solarman.internal.state.LoggerState;
 import org.openhab.binding.solarman.internal.updater.SolarmanChannelUpdater;
-import org.openhab.binding.solarman.internal.util.StringUtils;
+import org.openhab.binding.solarman.internal.updater.SolarmanProcessResult;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -61,7 +60,6 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
 
     private final DefinitionParser definitionParser;
     private final SolarmanChannelManager solarmanChannelManager;
-    private final LoggerState loggerState;
     @Nullable
     private volatile ScheduledFuture<?> scheduledFuture;
 
@@ -69,7 +67,6 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
         super(thing);
         this.definitionParser = new DefinitionParser();
         this.solarmanChannelManager = new SolarmanChannelManager();
-        this.loggerState = new LoggerState();
     }
 
     @Override
@@ -89,7 +86,6 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
         InverterDefinition inverterDefinition = definitionParser.parseDefinition(config.inverterType);
 
         if (inverterDefinition == null) {
-            logger.error("Unable to find a definition for the provided inverter type");
             updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Unable to find a definition for the provided inverter type");
             return;
@@ -100,10 +96,9 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
         }
         SolarmanV5Protocol solarmanV5Protocol = new SolarmanV5Protocol(config);
 
-        String localAdditionalRequests = config.getAdditionalRequests();
-        String additionalRequests = localAdditionalRequests != null ? localAdditionalRequests : "";
+        String additionalRequests = Objects.requireNonNullElse(config.getAdditionalRequests(), "");
 
-        List<Request> mergedRequests = StringUtils.isNotEmpty(additionalRequests)
+        List<Request> mergedRequests = !additionalRequests.isBlank()
                 ? mergeRequests(inverterDefinition.getRequests(), extractAdditionalRequests(additionalRequests))
                 : inverterDefinition.getRequests();
 
@@ -113,24 +108,30 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
 
         SolarmanChannelUpdater solarmanChannelUpdater = new SolarmanChannelUpdater(this::updateState);
 
-        scheduledFuture = scheduler.scheduleWithFixedDelay(() -> {
-            boolean fetchSuccessful = solarmanChannelUpdater.fetchDataFromLogger(mergedRequests,
-                    solarmanLoggerConnector, solarmanV5Protocol, paramToChannelMapping, loggerState);
+        scheduledFuture = scheduler
+                .scheduleWithFixedDelay(
+                        () -> queryLoggerAndUpdateState(solarmanLoggerConnector, solarmanV5Protocol, mergedRequests,
+                                paramToChannelMapping, solarmanChannelUpdater),
+                        0, config.refreshInterval, TimeUnit.SECONDS);
+    }
 
-            if (fetchSuccessful) {
-                updateStatus(ThingStatus.ONLINE);
-                loggerState.setOnline();
+    private void queryLoggerAndUpdateState(SolarmanLoggerConnector solarmanLoggerConnector,
+            SolarmanV5Protocol solarmanV5Protocol, List<Request> mergedRequests,
+            Map<ParameterItem, ChannelUID> paramToChannelMapping, SolarmanChannelUpdater solarmanChannelUpdater) {
+        try {
+            SolarmanProcessResult solarmanProcessResult = solarmanChannelUpdater.fetchDataFromLogger(mergedRequests,
+                    solarmanLoggerConnector, solarmanV5Protocol, paramToChannelMapping);
+
+            if (solarmanProcessResult.hasSuccessfulResponses()) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.ONLINE.NONE, solarmanProcessResult.toString());
             } else {
-                updateStatus(ThingStatus.OFFLINE);
-                loggerState.setPossiblyOffline();
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        solarmanProcessResult.toString());
             }
-
-            if (loggerState.isJustBecameOffline()) {
-                logger.info(
-                        "Assuming logger is OFFLINE after {} failed requests. Disabling connection error logging until it becomes available again",
-                        LoggerState.NO_FAILED_REQUESTS);
-            }
-        }, 0, config.refreshInterval, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            logger.debug("Error processing requests: {}", e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.getMessage());
+        }
     }
 
     private <K, V> Map<K, V> mergeMaps(Map<K, V> map1, Map<K, V> map2) {
@@ -178,7 +179,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                 int end = parseNumber(matcher.group(3));
                 return new Request(functionCode, start, end);
             } catch (NumberFormatException e) {
-                logger.error("Invalid number format in token: {} , ignoring additional requests", matcher.group(), e);
+                logger.debug("Invalid number format in token: {} , ignoring additional requests", matcher.group(), e);
                 return new Request(-1, 0, 0);
             }
         }).filter(request -> request.getMbFunctioncode() > 0).collect(Collectors.toList());
@@ -216,8 +217,10 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
     public void dispose() {
         super.dispose();
 
+        ScheduledFuture<?> scheduledFuture = this.scheduledFuture;
         if (scheduledFuture != null) {
-            Objects.requireNonNull(scheduledFuture).cancel(false);
+            scheduledFuture.cancel(false);
+            this.scheduledFuture = null;
         }
     }
 }
