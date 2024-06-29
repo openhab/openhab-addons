@@ -18,12 +18,17 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.ComponentContext;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link TeslascopeHandlerFactory} is responsible for creating things and thing
@@ -37,6 +42,14 @@ public class TeslascopeHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(TESLASCOPE_THING);
 
+    private final HttpClient httpClient;
+
+    @Activate
+    public TeslascopeHandlerFactory(@Reference HttpClientFactory httpClientFactory, ComponentContext componentContext) {
+        super.activate(componentContext);
+        this.httpClient = httpClientFactory.getCommonHttpClient();
+    }
+
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
@@ -47,7 +60,7 @@ public class TeslascopeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (TESLASCOPE_THING.equals(thingTypeUID)) {
-            return new TeslascopeHandler(thing);
+            return new TeslascopeHandler(thing, httpClient);
         }
 
         return null;

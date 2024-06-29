@@ -12,13 +12,17 @@
  */
 package org.openhab.binding.teslascope.internal;
 
-import java.io.IOException;
-import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.teslascope.internal.api.DetailedInformation;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,48 +37,55 @@ public class TeslascopeWebTargets {
     private static final int TIMEOUT_MS = 30000;
     private static final String BASE_URI = "https://teslascope.com/api/vehicle/";
     private final Logger logger = LoggerFactory.getLogger(TeslascopeWebTargets.class);
+    private HttpClient httpClient;
 
-    public TeslascopeWebTargets() {
+    public TeslascopeWebTargets(HttpClient httpClient) {
+        this.httpClient = httpClient;
     }
 
     public DetailedInformation getDetailedInformation(String publicID, String apiKey)
-            throws TeslascopeCommunicationException {
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         String getDetailedInformationUri = BASE_URI + publicID + "/detailed?api_key=" + apiKey;
         String response = invoke(getDetailedInformationUri);
         logger.trace("Received response: \"{}\"", response);
         return DetailedInformation.parse(response);
     }
 
-    public void sendCommand(String publicID, String apiKey, String command) throws TeslascopeCommunicationException {
+    public void sendCommand(String publicID, String apiKey, String command)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         String sendCommandUri = BASE_URI + publicID + "/command/" + command + "?api_key=" + apiKey;
         String response = invoke(sendCommandUri);
         logger.trace("Received response: \"{}\"", response);
         return;
     }
 
-    protected Properties getHttpHeaders() {
-        Properties httpHeaders = new Properties();
-        httpHeaders.put("Content-Type", "application/json");
-        return httpHeaders;
-    }
-
-    private String invoke(String uri) throws TeslascopeCommunicationException {
+    private String invoke(String uri) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         logger.debug("Calling url: {}", uri);
-        @Nullable
-        String response;
+        String jsonResponse = "";
+        int status = 0;
         try {
-            response = HttpUtil.executeUrl("GET", uri, getHttpHeaders(), null, null, TIMEOUT_MS);
-        } catch (IOException ex) {
-            logger.debug("{}", ex.getLocalizedMessage(), ex);
-            // Response will also be set to null if parsing in executeUrl fails so we use null here to make the
-            // error check below consistent.
-            response = null;
+            Request request = httpClient.newRequest(uri).method(HttpMethod.GET)
+                    .header("Content-Type", "application/json").timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            if (logger.isTraceEnabled()) {
+                logger.trace("{} request for {}", HttpMethod.GET, uri);
+            }
+            ContentResponse response = request.send();
+            status = response.getStatus();
+            jsonResponse = response.getContentAsString();
+            if (!jsonResponse.isEmpty()) {
+                logger.trace("JSON response: '{}'", jsonResponse);
+            }
+            if (status == HttpStatus.UNAUTHORIZED_401) {
+                throw new TeslascopeAuthenticationException("Unauthorized");
+            }
+            if (!HttpStatus.isSuccess(status)) {
+                throw new TeslascopeCommunicationException(
+                        String.format("Teslascope returned error <%d> while invoking %s", status, uri));
+            }
+        } catch (TimeoutException | ExecutionException | InterruptedException ex) {
+            throw new TeslascopeCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
         }
 
-        if (response == null) {
-            throw new TeslascopeCommunicationException(
-                    String.format("Teslascope returned no response while invoking %s, check config", uri));
-        }
-        return response;
+        return jsonResponse;
     }
 }
