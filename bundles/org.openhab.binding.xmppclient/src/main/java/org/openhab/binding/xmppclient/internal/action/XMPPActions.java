@@ -14,7 +14,7 @@ package org.openhab.binding.xmppclient.internal.action;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.xmppclient.internal.XMPPClient;
+import org.openhab.binding.xmppclient.internal.client.XMPPClient;
 import org.openhab.binding.xmppclient.internal.handler.XMPPClientHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;

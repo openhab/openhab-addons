@@ -30,6 +30,19 @@
 			<parameter name="port" type="integer">
 				<label>XMPP Server Port</label>
 				<description>The default port is 5222.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="securityMode" type="text" required="true">
+				<label>Security Mode</label>
+				<description>An enumeration for TLS security modes that are available when making a connection to the XMPP server.</description>
+				<limitToOptions>true</limitToOptions>
+				<options>
+					<option value="required">Required</option>
+					<option value="ifpossible">Optional</option>
+					<option value="disabled">Disabled</option>
+				</options>
+				<default>required</default>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 	</bridge-type>

@@ -13,7 +13,7 @@
 package org.openhab.binding.xmppclient.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.xmppclient.internal.XMPPClient;
+import org.openhab.binding.xmppclient.internal.client.XMPPClient;
 import org.openhab.core.thing.ChannelUID;
 
 /**
