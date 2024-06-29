@@ -73,7 +73,7 @@ public class TeslascopeWebTargets {
 
         if (response == null) {
             throw new TeslascopeCommunicationException(
-                    String.format("Teslascope returned no response while invoking %s", uri));
+                    String.format("Teslascope returned no response while invoking %s, check config", uri));
         }
         return response;
     }
