@@ -294,9 +294,9 @@ public class TeslascopeHandler extends BaseThingHandler {
         updateState(TeslascopeBindingConstants.CHANNEL_SENTRY_MODE, OnOffType.from(detailedInformation.sentryMode));
         updateState(TeslascopeBindingConstants.CHANNEL_VALET_MODE, OnOffType.from(detailedInformation.valetMode));
         if (detailedInformation.softwareUpdateStatus.equals("")) {
-            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE, OnOffType.OFF);
+            updateState(TeslascopeBindingConstants.CHANNEL_SOFTWARE_UPDATE_AVAILABLE, OnOffType.OFF);
         } else {
-            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE, OnOffType.ON);
+            updateState(TeslascopeBindingConstants.CHANNEL_SOFTWARE_UPDATE_AVAILABLE, OnOffType.ON);
         }
         updateState(TeslascopeBindingConstants.CHANNEL_SOFTWARE_UPDATE_STATUS,
                 new StringType(detailedInformation.softwareUpdateStatus));

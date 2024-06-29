@@ -46,16 +46,16 @@
 			<channel id="min-available-temp" typeId="min-available-temp"/>
 			<channel id="max-available-temp" typeId="max-available-temp"/>
 			<channel id="outside-temp" typeId="outside-temp"/>
-			<channel id="passenger-frontdoor" typeId="passenger-front-door"/>
-			<channel id="passenger-reardoor" typeId="passenger-rear-door"/>
+			<channel id="passenger-front-door" typeId="passenger-front-door"/>
+			<channel id="passenger-rear-door" typeId="passenger-rear-door"/>
 			<channel id="passenger-temp" typeId="passenger-temp"/>
 			<channel id="power" typeId="power"/>
 			<channel id="preconditioning" typeId="preconditioning"/>
 			<channel id="rear-defroster" typeId="rear-defroster"/>
-			<channel id="rear-trunk" typeId="reartrunk"/>
+			<channel id="rear-trunk" typeId="rear-trunk"/>
 			<channel id="right-rear-seat-heater" typeId="right-rear-seat-heater"/>
 			<channel id="right-seat-heater" typeId="right-seat-heater"/>
-			<channel id="right-temp-direction" typeId="right-tempd-irection"/>
+			<channel id="right-temp-direction" typeId="right-temp-direction"/>
 			<channel id="scheduled-charging-pending" typeId="scheduled-charging-pending"/>
 			<channel id="scheduled-charging-start" typeId="scheduled-charging-start"/>
 			<channel id="sentry-mode" typeId="sentry-mode"/>
@@ -71,9 +71,9 @@
 			<channel id="sunroof-state" typeId="sunroof-state"/>
 			<channel id="time-to-full-charge" typeId="time-to-full-charge"/>
 			<channel id="tpms-pressure-fl" typeId="tpms-pressure-fl"/>
-			<channel id="tpms-pressure_fr" typeId="tpms-pressure-fr"/>
+			<channel id="tpms-pressure-fr" typeId="tpms-pressure-fr"/>
 			<channel id="tpms-pressure-rl" typeId="tpms-pressure-rl"/>
-			<channel id="tpms-pressure-rr" typeId="tpms-pressurerr"/>
+			<channel id="tpms-pressure-rr" typeId="tpms-pressure-rr"/>
 			<channel id="tpms-soft-warning-fl" typeId="tpms-soft-warning-fl"/>
 			<channel id="tpms-soft-warning-fr" typeId="tpms-soft-warning-fr"/>
 			<channel id="tpms-soft-warning-rl" typeId="tpms-soft-warning-rl"/>

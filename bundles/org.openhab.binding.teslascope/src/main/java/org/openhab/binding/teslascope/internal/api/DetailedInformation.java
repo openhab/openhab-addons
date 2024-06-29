@@ -225,7 +225,7 @@ public class DetailedInformation {
         }
         detailedInformation.homelinkNearby = "1".equals(vehicleStateJsonObject.get("homelink_nearby").getAsString());
         detailedInformation.tpmsPressureFL = vehicleStateJsonObject.get("tpms_pressure_fl").getAsDouble();
-        detailedInformation.tpmsPressureRR = vehicleStateJsonObject.get("tpms_pressure_fr").getAsDouble();
+        detailedInformation.tpmsPressureFR = vehicleStateJsonObject.get("tpms_pressure_fr").getAsDouble();
         detailedInformation.tpmsPressureRL = vehicleStateJsonObject.get("tpms_pressure_rl").getAsDouble();
         detailedInformation.tpmsPressureRR = vehicleStateJsonObject.get("tpms_pressure_rr").getAsDouble();
         detailedInformation.tpmsSoftWarningFL = "1"
