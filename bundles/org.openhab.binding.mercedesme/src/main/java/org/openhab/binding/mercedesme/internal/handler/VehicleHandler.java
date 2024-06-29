@@ -110,6 +110,7 @@ import com.google.protobuf.Int32Value;
  * {@link VehicleHandler} transform data into state updates and handling of vehicle commands
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Bugfix https://github.com/openhab/openhab-addons/issues/16932
  */
 @NonNullByDefault
 public class VehicleHandler extends BaseThingHandler {
@@ -552,24 +553,33 @@ public class VehicleHandler extends BaseThingHandler {
     public void distributeCommandStatus(AppTwinCommandStatusUpdatesByPID cmdUpdates) {
         Map<Long, AppTwinCommandStatus> updates = cmdUpdates.getUpdatesByPidMap();
         updates.forEach((key, value) -> {
-            // Command name
-            ChannelStateMap csmCommand = new ChannelStateMap(OH_CHANNEL_CMD_NAME, GROUP_COMMAND,
-                    new DecimalType(value.getType().getNumber()));
-            updateChannel(csmCommand);
-            // Command State
-            ChannelStateMap csmState = new ChannelStateMap(OH_CHANNEL_CMD_STATE, GROUP_COMMAND,
-                    new DecimalType(value.getState().getNumber()));
-            updateChannel(csmState);
-            // Command Time
-            DateTimeType dtt = Utils.getDateTimeType(value.getTimestampInMs());
-            UOMObserver observer = null;
-            if (Locale.US.getCountry().equals(Utils.getCountry())) {
-                observer = new UOMObserver(UOMObserver.TIME_US);
-            } else {
-                observer = new UOMObserver(UOMObserver.TIME_ROW);
+            try {
+                // getting type and state may throw Exception
+                int commandType = value.getType().getNumber();
+                int commandState = value.getState().getNumber();
+                // Command name
+                ChannelStateMap csmCommand = new ChannelStateMap(OH_CHANNEL_CMD_NAME, GROUP_COMMAND,
+                        new DecimalType(commandType));
+                updateChannel(csmCommand);
+                // Command State
+                ChannelStateMap csmState = new ChannelStateMap(OH_CHANNEL_CMD_STATE, GROUP_COMMAND,
+                        new DecimalType(commandState));
+                updateChannel(csmState);
+                // Command Time
+                DateTimeType dtt = Utils.getDateTimeType(value.getTimestampInMs());
+                UOMObserver observer = null;
+                if (Locale.US.getCountry().equals(Utils.getCountry())) {
+                    observer = new UOMObserver(UOMObserver.TIME_US);
+                } else {
+                    observer = new UOMObserver(UOMObserver.TIME_ROW);
+                }
+                ChannelStateMap csmUpdated = new ChannelStateMap(OH_CHANNEL_CMD_LAST_UPDATE, GROUP_COMMAND, dtt,
+                        observer);
+                updateChannel(csmUpdated);
+            } catch (IllegalArgumentException iae) {
+                logger.trace("Cannot decode command {} {}", value.getAllFields().toString(), iae.getMessage());
+                // silent ignore update
             }
-            ChannelStateMap csmUpdated = new ChannelStateMap(OH_CHANNEL_CMD_LAST_UPDATE, GROUP_COMMAND, dtt, observer);
-            updateChannel(csmUpdated);
         });
     }
 
