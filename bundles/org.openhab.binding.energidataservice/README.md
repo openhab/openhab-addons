@@ -119,11 +119,11 @@ rule "Calculate total price" do
 
     time_series = TimeSeries.new # the default policy is replace
     spot_prices.each do |spot_price|
-      total_price = spot_price.state +
-                    GridTariff.persisted_state(spot_price.timestamp).state +
-                    SystemTariff.persisted_state(spot_price.timestamp).state +
-                    TransmissionGridTariff.persisted_state(spot_price.timestamp).state +
-                    ElectricityTax.persisted_state(spot_price.timestamp).state
+      total_price = spot_price +
+                    GridTariff.persisted_state(spot_price.timestamp) +
+                    SystemTariff.persisted_state(spot_price.timestamp) +
+                    TransmissionGridTariff.persisted_state(spot_price.timestamp) +
+                    ElectricityTax.persisted_state(spot_price.timestamp)
       time_series.add(spot_price.timestamp, total_price)
     end
     TotalPrice.persist(time_series)
