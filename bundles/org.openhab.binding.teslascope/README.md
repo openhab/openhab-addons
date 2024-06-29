@@ -6,11 +6,11 @@ The integration happens through the [Teslascope](https://www.teslascope.com) API
 
 ## Supported Things
 
-All current Tesla vehicles are supported.
+All Tesla vehicles supported by Teslascope are supported..
 
 ## Discovery
 
-Auto-discover is not currently supported.
+Auto-discovery is not currently supported.
 
 ## Thing Configuration
 
