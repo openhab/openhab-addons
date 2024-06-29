@@ -28,8 +28,6 @@ public class SiemensHvacBindingConstants {
 
     public static final String BINDING_ID = "siemenshvac";
 
-    public static final String CONFIG_DESCRIPTION_URI_CHANNEL = "channel-type:siemenshvac:config";
-
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_OZW = new ThingTypeUID(BINDING_ID, "ozw");
 

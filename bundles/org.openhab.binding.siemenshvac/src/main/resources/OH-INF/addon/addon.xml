@@ -11,6 +11,10 @@
 			<service-type>upnp</service-type>
 			<match-properties>
 				<match-property>
+					<name>manufacturer</name>
+					<regex>Siemens.*</regex>
+				</match-property>
+				<match-property>
 					<name>modelName</name>
 					<regex>Web Server OZW.*</regex>
 				</match-property>

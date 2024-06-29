@@ -23,9 +23,9 @@ With this binding, you will be able to:
 - Consult the different parameters of your system, like temperature, current heating mode, water temperature, and many more.
 - Modify the functioning mode of your device: temperature set point, heating mode, and others.
 
-OZW672 gateway support many different languages (about 16).
-The binding should work ok with all language choice, but is currently test more thoroughly for French and English language.
-If you use other language, and find some issues, you can report them on the OpenHab forum.
+The OZW672 gateway supports many different languages (about 16).
+The binding should work with all language choices, but is currently tested more thoroughly with French and English as configured language.  
+If you use another language, and find some issues, you can report them on the openHAB forum.
 
 ## Discovery
 
@@ -42,8 +42,7 @@ You can request support in the community forum, if you have the gateway model an
 Discovery of HVAC device inside your PAC (controller of type RVS...) have to be done through the Scan button inside the binding.
 Go to the Thing page, click on the "+" button, select the SiemensHVAC binding, and then click Scan.
 Your device should appear on the page after a few seconds.
-Only test in real condition with RVS41.813/327 have beend done, but it should work with all other type as the api interface is standard.
-
+Only test in real conditions with RVS41.813/327 have been done, but it should work with all other types as the API interface is standard.
 
 ## Bridge Configuration
 
