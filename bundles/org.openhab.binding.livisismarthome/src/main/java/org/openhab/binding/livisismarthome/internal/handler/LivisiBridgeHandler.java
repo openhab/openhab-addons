@@ -199,6 +199,9 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 scheduleBridgeRefreshJob(bridgeDevice);
 
                 startWebSocket(bridgeDevice);
+
+                // Update the restart channel to OFF to enable a (new) restart command.
+                updateState(CHANNEL_RESTART, OnOffType.OFF);
             } else {
                 logger.debug("Failed to get bridge device, re-scheduling startClient.");
                 scheduleRestartClient(true);
@@ -455,9 +458,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 deviceState.setId(bridgeDevice.getId());
                 deviceState.setState(client.getDeviceStateByDeviceId(bridgeDevice.getId(), isSHCClassic()));
                 bridgeDevice.setDeviceState(deviceState);
-
-                // Update the restart channel to OFF to enable a (new) restart command.
-                updateState(CHANNEL_RESTART, OnOffType.OFF);
             } catch (IOException e) {
                 logger.debug("Exception occurred on reloading bridge", e);
             }
