@@ -25,6 +25,8 @@ import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterc
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
+
 /**
  * Wraps ScriptEngines provided by Graal to provide error messages and stack traces for scripts.
  *
@@ -34,7 +36,6 @@ import org.slf4j.LoggerFactory;
 class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable>
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T> {
 
-    private static final String SCRIPT_TRANSFORMATION_ENGINE_IDENTIFIER = "openhab-transformation-script-";
     private static final int STACK_TRACE_LENGTH = 5;
 
     private @Nullable Logger logger;
@@ -91,8 +92,8 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
         } else if (ruleUID != null) {
             identifier = ruleUID.toString();
         } else if (ohEngineIdentifier != null) {
-            if (ohEngineIdentifier.toString().startsWith(SCRIPT_TRANSFORMATION_ENGINE_IDENTIFIER)) {
-                identifier = ohEngineIdentifier.toString().replaceAll(SCRIPT_TRANSFORMATION_ENGINE_IDENTIFIER,
+            if (ohEngineIdentifier.toString().startsWith(OPENHAB_TRANSFORMATION_SCRIPT)) {
+                identifier = ohEngineIdentifier.toString().replaceAll(OPENHAB_TRANSFORMATION_SCRIPT,
                         "transformation.");
             }
         }
