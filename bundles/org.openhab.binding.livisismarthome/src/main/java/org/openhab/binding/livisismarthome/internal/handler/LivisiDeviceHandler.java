@@ -130,6 +130,8 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             commandSwitchSiren(command, SIREN_NOTIFICATION, bridgeHandler);
         } else if (CHANNEL_SIREN_FEEDBACK.equals(channelUID.getId())) {
             commandSwitchSiren(command, SIREN_FEEDBACK, bridgeHandler);
+        } else if (CHANNEL_RESTART.equals(channelUID.getId())) {
+            commandRestart(command, bridgeHandler);
         } else {
             logger.debug("UNSUPPORTED channel {} for device {}.", channelUID.getId(), deviceId);
         }
@@ -229,6 +231,12 @@ public class LivisiDeviceHandler extends BaseThingHandler implements DeviceStatu
             bridgeHandler.commandSwitchSiren(deviceId, notificationSound);
         } else {
             bridgeHandler.commandSwitchSiren(deviceId, SIREN_NONE);
+        }
+    }
+
+    private void commandRestart(Command command, LivisiBridgeHandler bridgeHandler) {
+        if (command instanceof OnOffType && OnOffType.ON.equals(command)) {
+            bridgeHandler.commandRestart();
         }
     }
 

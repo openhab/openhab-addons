@@ -389,4 +389,12 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<!-- RebootAction -->
+	<channel-type id="restart">
+		<item-type>Switch</item-type>
+		<label>Restart</label>
+		<description>Restarts the device</description>
+		<category>Switch</category>
+	</channel-type>
+
 </thing:thing-descriptions>
