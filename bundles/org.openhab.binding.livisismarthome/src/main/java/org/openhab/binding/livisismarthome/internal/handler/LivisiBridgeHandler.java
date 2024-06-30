@@ -19,11 +19,7 @@ import java.net.SocketTimeoutException;
 import java.net.URI;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
@@ -133,7 +129,17 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
 
     @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
-        // not needed
+        if (CHANNEL_RESTART.equals(channelUID.getId())) {
+            commandRestart(command);
+        } else {
+            logger.debug("UNSUPPORTED channel {} for bridge {}.", channelUID.getId(), bridgeId);
+        }
+    }
+
+    private void commandRestart(Command command) {
+        if (command instanceof OnOffType && OnOffType.ON.equals(command)) {
+            commandRestart();
+        }
     }
 
     @Override
