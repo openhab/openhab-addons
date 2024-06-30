@@ -16,6 +16,8 @@ import java.io.Reader;
 import java.lang.reflect.UndeclaredThrowableException;
 
 import javax.script.Bindings;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -28,7 +30,7 @@ import javax.script.ScriptException;
  * @param <T> The delegate class
  * @author Jonathan Gilbert - Initial contribution
  */
-public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T extends ScriptEngine & Invocable & AutoCloseable>
+public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T extends ScriptEngine & Invocable & AutoCloseable & Compilable>
         extends DelegatingScriptEngineWithInvocableAndAutocloseable<T> {
 
     public InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable(T delegate) {
@@ -151,6 +153,30 @@ public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoClos
             throw (NoSuchMethodException) afterThrowsInvocation(e);
         } catch (NullPointerException e) {
             throw (NullPointerException) afterThrowsInvocation(e);
+        } catch (Exception e) {
+            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
+        }
+    }
+
+    @Override
+    public CompiledScript compile(String s) throws ScriptException {
+        try {
+            beforeInvocation();
+            return (CompiledScript) afterInvocation(super.compile(s));
+        } catch (ScriptException se) {
+            throw (ScriptException) afterThrowsInvocation(se);
+        } catch (Exception e) {
+            throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
+        }
+    }
+
+    @Override
+    public CompiledScript compile(Reader reader) throws ScriptException {
+        try {
+            beforeInvocation();
+            return (CompiledScript) afterInvocation(super.compile(reader));
+        } catch (ScriptException se) {
+            throw (ScriptException) afterThrowsInvocation(se);
         } catch (Exception e) {
             throw new UndeclaredThrowableException(afterThrowsInvocation(e)); // Wrap and rethrow other exceptions
         }

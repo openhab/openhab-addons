@@ -12,9 +12,12 @@
  */
 package org.openhab.automation.jsscripting.internal;
 
+import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
+
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import javax.script.Compilable;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -25,15 +28,13 @@ import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterc
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
-
 /**
  * Wraps ScriptEngines provided by Graal to provide error messages and stack traces for scripts.
  *
  * @author Jonathan Gilbert - Initial contribution
  * @author Florian Hotze - Improve logger name, Fix memory leak caused by exception logging
  */
-class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable>
+class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable>
         extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T> {
 
     private static final int STACK_TRACE_LENGTH = 5;
@@ -93,8 +94,7 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
             identifier = ruleUID.toString();
         } else if (ohEngineIdentifier != null) {
             if (ohEngineIdentifier.toString().startsWith(OPENHAB_TRANSFORMATION_SCRIPT)) {
-                identifier = ohEngineIdentifier.toString().replaceAll(OPENHAB_TRANSFORMATION_SCRIPT,
-                        "transformation.");
+                identifier = ohEngineIdentifier.toString().replaceAll(OPENHAB_TRANSFORMATION_SCRIPT, "transformation.");
             }
         }
 
