@@ -22,9 +22,15 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.link.LinkD
 public class RestartActionDTO extends ActionDTO {
 
     private static final String ACTION_TYPE_RESTART = "Restart";
+    private static final String CONSTANT = "Constant";
+    private static final String DEFAULT_RESTART_REASON = "The OpenHAB binding requested to restart the smart home controller.";
 
     public RestartActionDTO(String deviceId) {
         setType(ACTION_TYPE_RESTART);
         setTarget(LinkDTO.LINK_TYPE_DEVICE + deviceId);
+
+        final ActionParamsDTO params = new ActionParamsDTO();
+        params.setReason(new StringActionParamDTO(CONSTANT, DEFAULT_RESTART_REASON));
+        setParams(params);
     }
 }
