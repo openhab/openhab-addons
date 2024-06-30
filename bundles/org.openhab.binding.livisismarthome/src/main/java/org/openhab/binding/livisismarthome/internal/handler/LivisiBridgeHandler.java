@@ -455,6 +455,9 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 deviceState.setId(bridgeDevice.getId());
                 deviceState.setState(client.getDeviceStateByDeviceId(bridgeDevice.getId(), isSHCClassic()));
                 bridgeDevice.setDeviceState(deviceState);
+
+                // Update the restart channel to OFF to enable a (new) restart command.
+                updateState(CHANNEL_RESTART, OnOffType.OFF);
             } catch (IOException e) {
                 logger.debug("Exception occurred on reloading bridge", e);
             }
@@ -504,9 +507,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                     logger.debug("-> Operation status: {}", operationStatus);
                     updateState(CHANNEL_OPERATION_STATUS, new StringType(operationStatus.toUpperCase()));
                 }
-
-                // Update the restart channel to OFF to enable a (new) restart command.
-                updateState(CHANNEL_RESTART, OnOffType.OFF);
             }
         }
     }
@@ -837,6 +837,8 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     public void commandRestart() {
         try {
             client.setRestartAction(bridgeId);
+
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Restarting ...");
         } catch (IOException e) {
             handleClientException(e);
         }
