@@ -88,7 +88,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                 |
 | shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                 |
 | shellyplusplug       | Shelly Plug-US                                           | SNPL-00116US                 |
-| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X                   |
+| shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X, S3SN-0024X       |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                   |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
 | shellyhtg3           | Shelly Plus HT Gen 3 with temperature + humidity sensor  | S3SN-0U12A                   |
