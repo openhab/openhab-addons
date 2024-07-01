@@ -328,6 +328,6 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
             }
             macAddress = macAddress + String.format("%02x", macByte);
         }
-        return macAddress.toLowerCase();
+        return macAddress;
     }
 }
