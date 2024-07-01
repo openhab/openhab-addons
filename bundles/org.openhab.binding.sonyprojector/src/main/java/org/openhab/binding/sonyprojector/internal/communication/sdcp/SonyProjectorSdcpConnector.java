@@ -326,8 +326,8 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
             if (!macAddress.isEmpty()) {
                 macAddress = macAddress + "-";
             }
-            macAddress = macAddress + Integer.toHexString(macByte);
+            macAddress = macAddress + String.format("%02x", macByte);
         }
-        return macAddress.toLowerCase();
+        return macAddress;
     }
 }
