@@ -43,7 +43,10 @@ public class NotificationModuleHandlerFactory extends BaseModuleHandlerFactory {
             SendNotificationActionHandler.EXTENDED_TYPE_ID, SendNotificationActionHandler.EXTENDED2_TYPE_ID,
             SendBroadcastNotificationActionHandler.TYPE_ID, SendBroadcastNotificationActionHandler.EXTENDED_TYPE_ID,
             SendBroadcastNotificationActionHandler.EXTENDED2_TYPE_ID, SendLogNotificationActionHandler.TYPE_ID,
-            SendLogNotificationActionHandler.EXTENDED_TYPE_ID);
+            SendLogNotificationActionHandler.EXTENDED_TYPE_ID,
+            HideBroadcastNotificationByReferenceIdActionHandler.TYPE_ID,
+            HideBroadcastNotificationBySeverityActionHandler.TYPE_ID,
+            HideNotificationByReferenceIdActionHandler.TYPE_ID, HideNotificationBySeverityActionHandler.TYPE_ID);
     private final CloudService cloudService;
 
     @Activate
@@ -77,6 +80,14 @@ public class NotificationModuleHandlerFactory extends BaseModuleHandlerFactory {
                 case SendLogNotificationActionHandler.TYPE_ID:
                 case SendLogNotificationActionHandler.EXTENDED_TYPE_ID:
                     return new SendLogNotificationActionHandler(action, cloudService);
+                case HideBroadcastNotificationByReferenceIdActionHandler.TYPE_ID:
+                    return new HideBroadcastNotificationByReferenceIdActionHandler(action, cloudService);
+                case HideNotificationByReferenceIdActionHandler.TYPE_ID:
+                    return new HideNotificationByReferenceIdActionHandler(action, cloudService);
+                case HideBroadcastNotificationBySeverityActionHandler.TYPE_ID:
+                    return new HideBroadcastNotificationBySeverityActionHandler(action, cloudService);
+                case HideNotificationBySeverityActionHandler.TYPE_ID:
+                    return new HideNotificationBySeverityActionHandler(action, cloudService);
                 default:
                     break;
             }

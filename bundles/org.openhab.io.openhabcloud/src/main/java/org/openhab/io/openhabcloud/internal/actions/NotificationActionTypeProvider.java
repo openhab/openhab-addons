@@ -52,8 +52,8 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
 
     private static final ModuleType SEND_EXTENDED2_NOTIFICATION_ACTION = new ActionType(
             SendNotificationActionHandler.EXTENDED2_TYPE_ID, getNotificationConfig(ConfigType.EXTENDED2, true, null),
-            "send a notification with icon, severity, title, click action, media attachment and action buttons",
-            "Sends a notification to a specific cloud user. Optionally add an icon, severity, title, on click action, media to attach, and up to 3 action buttons with a format of \"Title=Action\".",
+            "send a notification with icon, severity, title, reference id, click action, media attachment and action buttons",
+            "Sends a notification to a specific cloud user. Optionally add an icon, severity, title, reference id, on click action, media to attach, and up to 3 action buttons with a format of \"Title=Action\".",
             null, Visibility.VISIBLE, null, null);
 
     private static final ModuleType SEND_BROADCAST_NOTIFICATION_ACTION = new ActionType(
@@ -70,8 +70,8 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
     private static final ModuleType SEND_EXTENDED2_BROADCAST_NOTIFICATION_ACTION = new ActionType(
             SendBroadcastNotificationActionHandler.EXTENDED2_TYPE_ID,
             getNotificationConfig(ConfigType.EXTENDED2, false, null),
-            "broadcast a notification with with icon, severity, title, on click action, media attachment and action buttons",
-            "Sends a notification to all devices of all users. Optionally add an icon, severity, title, click action, media to attach, and up to 3 action buttons with a format of \"Title=Action\".",
+            "broadcast a notification with with icon, severity, title, reference id, on click action, media attachment and action buttons",
+            "Sends a notification to all devices of all users. Optionally add an icon, severity, title, reference id, click action, media to attach, and up to 3 action buttons with a format of \"Title=Action\".",
             null, Visibility.VISIBLE, null, null);
 
     private static final ModuleType SEND_LOG_NOTIFICATION_ACTION = new ActionType(
@@ -86,10 +86,37 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
             "Sends a log notification to the openHAB Cloud instance. Optionally add an icon or the severity. Notifications are NOT sent to any registered devices.",
             null, Visibility.VISIBLE, null, null);
 
+    private static final ModuleType HIDE_NOTIFICATION_BY_REFERENCE_ID_ACTION = new ActionType(
+            HideNotificationByReferenceIdActionHandler.TYPE_ID,
+            getNotificationConfig(ConfigType.HIDE_BY_REF, true, null),
+            "hide notifications by reference id for all devices of a specific user",
+            "Hide notifications by reference id for all devices of a specific user.", null, Visibility.VISIBLE, null,
+            null);
+
+    private static final ModuleType HIDE_BROADCAST_NOTIFICATION_BY_REFERENCE_ID_ACTION = new ActionType(
+            HideBroadcastNotificationByReferenceIdActionHandler.TYPE_ID,
+            getNotificationConfig(ConfigType.HIDE_BY_REF, false, null),
+            "hide notifications by reference id for all users and devices",
+            "Hide notifications by reference id for all users and devices.", null, Visibility.VISIBLE, null, null);
+
+    private static final ModuleType HIDE_NOTIFICATION_BY_SEVERITY_ACTION = new ActionType(
+            HideNotificationBySeverityActionHandler.TYPE_ID, getNotificationConfig(ConfigType.HIDE_BY_SEV, true, null),
+            "hide notifications by severity for all devices of a specific user",
+            "Hide notifications by severity id for all devices of a specific user.", null, Visibility.VISIBLE, null,
+            null);
+
+    private static final ModuleType HIDE_BROADCAST_NOTIFICATION_BY_SEVERITY_ACTION = new ActionType(
+            HideBroadcastNotificationBySeverityActionHandler.TYPE_ID,
+            getNotificationConfig(ConfigType.HIDE_BY_SEV, false, null),
+            "hide notifications by severity id for all users and devices",
+            "Hide notifications by severity id for all users and devices.", null, Visibility.VISIBLE, null, null);
+
     private static final List<ModuleType> MODULE_TYPES = List.of(SEND_NOTIFICATION_ACTION,
             SEND_EXTENDED_NOTIFICATION_ACTION, SEND_EXTENDED2_NOTIFICATION_ACTION, SEND_BROADCAST_NOTIFICATION_ACTION,
             SEND_EXTENDED_BROADCAST_NOTIFICATION_ACTION, SEND_EXTENDED2_BROADCAST_NOTIFICATION_ACTION,
-            SEND_LOG_NOTIFICATION_ACTION, SEND_EXTENDED_LOG_NOTIFICATION_ACTION);
+            SEND_LOG_NOTIFICATION_ACTION, SEND_EXTENDED_LOG_NOTIFICATION_ACTION,
+            HIDE_BROADCAST_NOTIFICATION_BY_REFERENCE_ID_ACTION, HIDE_BROADCAST_NOTIFICATION_BY_SEVERITY_ACTION,
+            HIDE_NOTIFICATION_BY_REFERENCE_ID_ACTION, HIDE_NOTIFICATION_BY_SEVERITY_ACTION);
 
     @SuppressWarnings("unchecked")
     @Override
@@ -111,6 +138,14 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
                 return SEND_LOG_NOTIFICATION_ACTION;
             case SendLogNotificationActionHandler.EXTENDED_TYPE_ID:
                 return SEND_EXTENDED_LOG_NOTIFICATION_ACTION;
+            case HideNotificationBySeverityActionHandler.TYPE_ID:
+                return HIDE_NOTIFICATION_BY_SEVERITY_ACTION;
+            case HideBroadcastNotificationBySeverityActionHandler.TYPE_ID:
+                return HIDE_BROADCAST_NOTIFICATION_BY_SEVERITY_ACTION;
+            case HideNotificationByReferenceIdActionHandler.TYPE_ID:
+                return HIDE_NOTIFICATION_BY_REFERENCE_ID_ACTION;
+            case HideBroadcastNotificationByReferenceIdActionHandler.TYPE_ID:
+                return HIDE_BROADCAST_NOTIFICATION_BY_REFERENCE_ID_ACTION;
             default:
                 return null;
         }
@@ -143,6 +178,7 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
         }
         if (type == ConfigType.EXTENDED2) {
             params.add(getTitleConfigParameter(locale));
+            params.add(getReferenceIdConfigParameter(locale));
             params.add(getonClickActionConfigParameter(locale));
             params.add(getMediaAttachmentUrlConfigParameter(locale));
             params.add(getActionButton1ConfigParameter(locale));
@@ -150,6 +186,13 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
             params.add(getActionButton3ConfigParameter(locale));
         }
 
+        if (type == ConfigType.HIDE_BY_SEV) {
+            params.add(getSeverityConfigParameter(locale));
+        }
+
+        if (type == ConfigType.HIDE_BY_REF) {
+            params.add(getReferenceIdConfigParameter(locale));
+        }
         return params;
     }
 
@@ -171,6 +214,11 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
     private static ConfigDescriptionParameter getTitleConfigParameter(@Nullable Locale locale) {
         return ConfigDescriptionParameterBuilder.create(BaseNotificationActionHandler.PARAM_TITLE, Type.TEXT)
                 .withLabel("Title").withDescription("The title of the notification.").build();
+    }
+
+    private static ConfigDescriptionParameter getReferenceIdConfigParameter(@Nullable Locale locale) {
+        return ConfigDescriptionParameterBuilder.create(BaseNotificationActionHandler.PARAM_REFERENCE_ID, Type.TEXT)
+                .withLabel("Reference Id").withDescription("A reference Id for the notification.").build();
     }
 
     private static ConfigDescriptionParameter getonClickActionConfigParameter(@Nullable Locale locale) {
@@ -215,6 +263,8 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
     private enum ConfigType {
         NOT_EXTENDED,
         EXTENDED,
-        EXTENDED2;
+        EXTENDED2,
+        HIDE_BY_SEV,
+        HIDE_BY_REF;
     }
 }
