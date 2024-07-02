@@ -108,19 +108,21 @@ The parameters for these actions have the following meaning:
 - `emailAddress`: String containing the email address the target user is registered with in the cloud instance.
 - `message`: String containing the notification message text.
 - `icon`: String containing the icon name (as described in [Items: Icons]({{base}}/configuration/items.html#icons)).
-- `severity`: String containing a description of the severity of the incident.
+- `severity`: String containing a description of the severity (tag) of the incident.
 
 `null` may be used to skip the `icon` or `severity` parameter.
 
-### Title, Reference ID, Media Attachments & Actions
+### Title, Tag, Reference Id, Media Attachments & Actions
 
 The `sendNotification` and `sendBroadcastNotification` actions additionally support setting a title, reference id, media attachments and actions.
 
-The title is displayed as the notification title on the device and defaults to "openHAB" for the Android and iOS apps.
-The reference id is a user supplied identifier that when set will replace messages with the same id on the user's device (so only the last version exists). 
-The reference id can also be used later with `hideNotificationByReferenceId` and  `hideBroadcastNotificationByReferenceId` methods to remove notifications with this id.
-Media attachments are displayed together with the notification on the device and can be used to display images, e.g. a camera snapshot.
-Actions allow the user to interact with the notification, e.g. to open a specific page in the app or to send a command to an Item.
+- The tag is used for tagging messages for grouping when displaying in the app and to hide/remove groups of messages from a user's device.
+Tag was previously referred to as "severity".   
+- The title is displayed as the notification title on the device and defaults to "openHAB" for the Android and iOS apps.
+- The reference id is a user supplied identifier that when set will replace messages with the same id on the user's device (so only the last version exists). 
+The reference id is a user supplied id that can be used to update or remove notifications with this same id.
+- Media attachments are displayed together with the notification on the device and can be used to display images, e.g. a camera snapshot.
+- Actions allow the user to interact with the notification, e.g. to open a specific page in the app or to send a command to an Item.
 
 There are four different actions available:
 
@@ -134,9 +136,9 @@ To specify media attachments and actions, there is another variant of the `sendN
 
 
 The additional parameter for these variants have the following meaning:
-- `tag` : This renames the `severity` parameter, both are functionally identical. 
+- `tag` : A user supplied tag to group messages for removing using the `hideNotificationByTag` action or grouping messages when displayed in the app. This renames the `severity` parameter, both are functionally identical. 
 - `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
-- `referenceId`: A user supplied id to both replace existing messages, and later remove messages with this id.
+- `referenceId`: A user supplied id to both replace existing messages when pushed, and later remove messages with the `hideNotificationReferenceId` actions.
 - `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
 - `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This URL must be reachable by the push notification client.
 - `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
