@@ -17,7 +17,7 @@ Supported devices: dishwasher, washer, washer / dryer combination, dryer, oven, 
 
 #### experimental support
 
-| Home appliance | Thing Type ID    |
+| Home appliance | Thing Type ID |
 | --------------- | ------------ |
 | Dishwasher | dishwasher |
 | Washer | washer |
@@ -109,7 +109,7 @@ After the bridge has been added and authorized, devices are discovered automatic
     - _Redirect URIs_: add your openHAB URL followed by `/homeconnect`  
     for example: `http://192.168.178.34:8080/homeconnect` or `https://myhome.domain.com/homeconnect`
     - _One Time Token Mode_: keep unchecked
-    - _Proof Key for Code Exchange_: keep unchecked   
+    - _Proof Key for Code Exchange_: keep unchecked
 1. After your application has been created, you should see the _Client ID_ and _Client Secret_ of the application. Please save these for later.  
 
 ![Screenshot Home Connect application page](doc/home_connect_application.png "Screenshot Home Connect application page")
