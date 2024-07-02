@@ -26,28 +26,17 @@ import org.openhab.io.openhabcloud.internal.CloudService;
  * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class HideNotificationBySeverityActionHandler extends BaseHideNotificationActionHandler {
+public class HideBroadcastNotificationByTagActionHandler extends BaseHideNotificationActionHandler {
 
-    public static final String TYPE_ID = "notification.HideNotificationBySeverity";
+    public static final String TYPE_ID = "notification.HideBroadcastNotificationByTag";
 
-    public static final String PARAM_USER = "userId";
-
-    private final String userId;
-
-    public HideNotificationBySeverityActionHandler(Action module, CloudService cloudService) {
+    public HideBroadcastNotificationByTagActionHandler(Action module, CloudService cloudService) {
         super(module, cloudService);
-
-        Object userIdParam = module.getConfiguration().get(PARAM_USER);
-        if (userIdParam instanceof String) {
-            this.userId = userIdParam.toString();
-        } else {
-            throw new IllegalArgumentException(String.format("Param '%s' should be of type String.", PARAM_USER));
-        }
     }
 
     @Override
     public @Nullable Map<String, Object> execute(Map<String, Object> context) {
-        cloudService.hideNotificationBySeverity(userId, severity);
+        cloudService.hideBroadcastNotificationByTag(tag);
         return null;
     }
 }

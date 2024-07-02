@@ -50,8 +50,8 @@ public class SendNotificationActionHandler extends BaseNotificationActionHandler
 
     @Override
     public @Nullable Map<String, Object> execute(Map<String, Object> context) {
-        cloudService.sendNotification(userId, message, icon, severity, title, referenceId, onClickAction,
-                mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);
+        cloudService.sendNotification(userId, message, icon, tag == null ? severity : tag, title, referenceId,
+                onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);
         return null;
     }
 }

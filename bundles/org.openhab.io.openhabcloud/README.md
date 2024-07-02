@@ -129,12 +129,12 @@ There are four different actions available:
 
 To specify media attachments and actions, there is another variant of the `sendNotification` and `sendBroadcastNotification` actions:
 
-- `sendNotification(emailAddress, message, icon, severity, title, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
-- `sendBroadcastNotification(message, icon, severity, title, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
+- `sendNotification(emailAddress, message, icon, tag, title, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
+- `sendBroadcastNotification(message, icon, tag, title, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
 
 
 The additional parameter for these variants have the following meaning:
-
+- `tag` : This renames the `severity` parameter, both are functionally identical. 
 - `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
 - `referenceId`: A user supplied id to both replace existing messages, and later remove messages with this id.
 - `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
@@ -147,12 +147,12 @@ These parameters may be skipped by setting them to `null`.
 
 ### Hide Notification Actions
 
-There are also actions to hide existing notifications, either by `referenceId` or `severity`
+There are also actions to hide existing notifications, either by `referenceId` or `tag` (formally severity)
 
 - `hideNotificationByReferenceId(emailAddress, referenceId)`
 - `hideBroadcastNotificationByReferenceId(referenceId)`
-- `hideNotificationBySeverity(emailAddress, severity)`
-- `hideBroadcastNotificationBySeverity(severity)`
+- `hideNotificationByTag(emailAddress, tag)`
+- `hideBroadcastNotificationByTag(tag)`
 
 #### Action Syntax
 
@@ -282,7 +282,7 @@ when
   Item Apartment_MotionSensor changed to ON
 then
   sendBroadcastNotification("Motion detected in the apartment!", "motion", "MEDIUM",
-                                    "Motion Detected", null, null, "https://apartment.my/camera-snapshot.jpg",
+                                    "Motion Detected", "Motion Tag", "motion-id-1234", "https://apartment.my/camera-snapshot.jpg",
                                     "Turn on the light=command:Apartment_Light:ON", null, null)
 end
 ```
@@ -295,7 +295,7 @@ end
 rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
   actions.notificationBuilder('Motion detected in the apartment!')
     .withIcon('motion')
-    .withSeverity('MEDIUM')
+    .withTag('motion-tag')
     .withTitle('Motion Detected')
     .withMediaAttachment('https://apartment.my/camera-snapshot.jpg')
     .addActionButton('Turn on the light=command:Apartment_Light:ON')
@@ -313,7 +313,7 @@ rule "Motion Detected Notification" do
   run do
     notify "Motion detected in the apartment!",
            icon: "motion",
-           severity: "MEDIUM",
+           tag: "motion-tag",
            title: "Motion Detected",
            attachment: "https://apartment.my/camera-snapshot.jpg",
            buttons: { "Turn on the light" => "command:Apartment_Light:ON" }

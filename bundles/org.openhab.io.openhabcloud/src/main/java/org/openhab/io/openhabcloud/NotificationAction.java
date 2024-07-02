@@ -52,13 +52,12 @@ public class NotificationAction {
      * @param userId the cloud user id of the recipient
      * @param message the body of the notification
      * @param icon name for the notification
-     * @param severity category for the notification
+     * @param tag for the notification (formally severity)
      *
      */
     @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
-    public static void sendNotification(String userId, String message, @Nullable String icon,
-            @Nullable String severity) {
-        sendNotification(userId, message, icon, severity, null, null, null, null, null, null, null);
+    public static void sendNotification(String userId, String message, @Nullable String icon, @Nullable String tag) {
+        sendNotification(userId, message, icon, tag, null, null, null, null, null, null, null);
     }
 
     /**
@@ -136,12 +135,12 @@ public class NotificationAction {
      *
      * @param message the body of the notification
      * @param icon name for the notification
-     * @param severity category for the notification
+     * @param tag for the notification (formally severity)
      *
      */
     @ActionDoc(text = "Sends a broadcast notification to all mobile devices of all account users")
-    public static void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity) {
-        sendBroadcastNotification(message, icon, severity, null, null, null, null, null, null, null);
+    public static void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String tag) {
+        sendBroadcastNotification(message, icon, tag, null, null, null, null, null, null, null);
     }
 
     /**
@@ -200,29 +199,29 @@ public class NotificationAction {
     }
 
     /**
-     * Hides notifications that are associated with a severity group to all mobile devices of a single user.
+     * Hides notifications that are associated with a tag to all mobile devices of a single user.
      *
      * @param userId the cloud user id of the recipient
-     * @param severity the severity group
+     * @param tag the tag associated with notifications
      *
      */
-    @ActionDoc(text = "Hides notifications that are associated with a severity group to mobile devices of user with userId")
-    public static void hideNotificationBySeverity(String userId, String severity) {
+    @ActionDoc(text = "Hides notifications that are associated with a tag to mobile devices of user with userId")
+    public static void hideNotificationByTag(String userId, String tag) {
         if (cloudService != null) {
-            cloudService.hideNotificationBySeverity(userId, severity);
+            cloudService.hideNotificationByTag(userId, tag);
         }
     }
 
     /**
-     * Hides notifications that are associated with a severity group to all mobile devices of all users of the account
+     * Hides notifications that are associated with a tag to all mobile devices of all users of the account
      *
-     * @param severity the severity group
+     * @param tag the tag associated with notifications
      *
      */
-    @ActionDoc(text = "Hides notifications that are associated with a severity group to all mobile devices of all account users")
-    public static void hideBroadcastNotificationBySeverity(String severity) {
+    @ActionDoc(text = "Hides notifications that are associated with a tag to all mobile devices of all account users")
+    public static void hideBroadcastNotificationByTag(String tag) {
         if (cloudService != null) {
-            cloudService.hideBroadcastNotificationBySeverity(severity);
+            cloudService.hideBroadcastNotificationByTag(tag);
         }
     }
 }

@@ -28,17 +28,17 @@ import org.openhab.io.openhabcloud.internal.CloudService;
 @NonNullByDefault
 public abstract class BaseHideNotificationActionHandler extends BaseActionModuleHandler {
 
-    public static final String PARAM_SEVERITY = "severity";
+    public static final String PARAM_TAG = "tag";
     public static final String PARAM_REFERENCE_ID = "referenceId";
 
     protected final CloudService cloudService;
-    protected final @Nullable String severity;
+    protected final @Nullable String tag;
     protected final @Nullable String referenceId;
 
     public BaseHideNotificationActionHandler(Action module, CloudService cloudService) {
         super(module);
         this.cloudService = cloudService;
-        this.severity = stringConfig(PARAM_SEVERITY);
+        this.tag = stringConfig(PARAM_TAG);
         this.referenceId = stringConfig(PARAM_REFERENCE_ID);
     }
 

@@ -114,7 +114,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * @param userId the {@link String} containing the openHAB Cloud user id to send message to
      * @param message the {@link String} containing a message to send to specified user id
      * @param icon the {@link String} containing a name of the icon to be used with this notification
-     * @param severity the {@link String} containing severity (good, info, warning, error) of notification
+     * @param tag the {@link String} containing tag of notification (formally severity)
      * @param title the {@link String} containing the title to be used with this notification
      * @param referenceId the {@link String} identifier used to collapse and hide notifications
      * @param onClickAction the {@link String} containing the action to perform when clicked
@@ -123,13 +123,13 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * @param actionButton2 the {@link String} containing the action button in the format "Title=Action"
      * @param actionButton3 the {@link String} containing the action button in the format "Title=Action"
      */
-    public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String severity,
+    public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String tag,
             @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
             @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
             @Nullable String actionButton3) {
         logger.debug("Sending message '{}' to user id {}", message, userId);
-        cloudClient.sendNotification(userId, message, icon, severity, title, referenceId, onClickAction,
-                mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);
+        cloudClient.sendNotification(userId, message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl,
+                actionButton1, actionButton2, actionButton3);
     }
 
     /**
@@ -151,7 +151,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      *
      * @param message the {@link String} containing a message to send to specified user id
      * @param icon the {@link String} containing a name of the icon to be used with this notification
-     * @param severity the {@link String} containing severity (good, info, warning, error) of notification
+     * @param tag the {@link String} containing tag of notification (formally severity)
      * @param title the {@link String} containing the title to be used with this notification
      * @param referenceId the {@link String} identifier used to collapse and hide notifications
      * @param onClickAction the {@link String} containing the action to perform when clicked
@@ -160,37 +160,37 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * @param actionButton2 the {@link String} containing the action button in the format "Title=Action"
      * @param actionButton3 the {@link String} containing the action button in the format "Title=Action"
      */
-    public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity,
+    public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String tag,
             @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
             @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
             @Nullable String actionButton3) {
         logger.debug("Sending broadcast message '{}' to all users", message);
-        cloudClient.sendBroadcastNotification(message, icon, severity, title, referenceId, onClickAction,
-                mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);
+        cloudClient.sendBroadcastNotification(message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl,
+                actionButton1, actionButton2, actionButton3);
     }
 
     /**
-     * This method hides a notification by its severity group through the openHAB Cloud service
+     * This method hides a notification by its tag through the openHAB Cloud service
      *
      * @param userId the {@link String} containing the openHAB Cloud user id to hide messages for
-     * @param severity the {@link String} containing severity group of notification
+     * @param tag the {@link String} containing severity group of notification
      *
      */
-    public void hideNotificationBySeverity(String userId, String severity) {
-        logger.debug("hiding with severity '{}' to user id {}", severity, userId);
-        cloudClient.hideNotificationBySeverity(userId, severity);
+    public void hideNotificationByTag(String userId, String tag) {
+        logger.debug("hiding with tag '{}' to user id {}", tag, userId);
+        cloudClient.hideNotificationByTag(userId, tag);
     }
 
     /**
-     * This method hides a notification by its severity group through the openHAB Cloud service to all
+     * This method hides a notification by its tag through the openHAB Cloud service to all
      * mobile devices of all users of the account
      *
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification
      *
      */
-    public void hideBroadcastNotificationBySeverity(String severity) {
-        logger.debug("hiding broadcast with severity '{}'", severity);
-        cloudClient.hideBroadcastNotificationBySeverity(severity);
+    public void hideBroadcastNotificationByTag(String tag) {
+        logger.debug("hiding broadcast with tag '{}'", tag);
+        cloudClient.hideBroadcastNotificationByTag(tag);
     }
 
     /**
