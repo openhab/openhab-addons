@@ -182,11 +182,11 @@ String                 Oven_SelectedProgramState                          "Selec
 String                 Oven_ActiveProgramState                            "Active Program"                     {channel="homeconnect:oven:api_bridge_at_home:oven1:active_program_state"}
 Number:Time            Oven_RemainingProgramTimeState                     "Remaining program time"             {channel="homeconnect:oven:api_bridge_at_home:oven1:remaining_program_time_state"}
 Number:Dimensionless   Oven_ProgramProgressState                          "Progress State"                     {channel="homeconnect:oven:api_bridge_at_home:oven1:program_progress_state"}
-Number:Time            Oven_elapsed_program_time                          "Elapsed program time"               {channel="homeconnect:oven:api_bridge_at_home:oven1:elapsed_program_time"}
-Number:Time            Oven_duration                                      "Program duration"                   {channel="homeconnect:oven:api_bridge_at_home:oven1:duration"}
-Number:Temperature     Oven_oven_current_cavity_temperature               "Current temperature"                {channel="homeconnect:oven:api_bridge_at_home:oven1:oven_current_cavity_temperature"}
-Number:Temperature     Oven_setpoint_temperature                          "Set temperature"                    {channel="homeconnect:oven:api_bridge_at_home:oven1:setpoint_temperature"}
-String                 Oven_basic_actions_state                           "Basic control"                      {channel="homeconnect:oven:api_bridge_at_home:oven1_:basic_actions_state"}
+Number:Time            Oven_ElapsedProgramTime                          "Elapsed Program Time"               {channel="homeconnect:oven:api_bridge_at_home:oven1:elapsed_program_time"}
+Number:Time            Oven_Duration                                      "Program Duration"                   {channel="homeconnect:oven:api_bridge_at_0home:oven1:duration"}
+Number:Temperature     Oven_CurrentCavityTemperature               "Current Temperature"                {channel="homeconnect:oven:api_bridge_at_home:oven1:oven_current_cavity_temperature"}
+Number:Temperature     Oven_SetpointTemperature                          "Set Temperature"                    {channel="homeconnect:oven:api_bridge_at_home:oven1:setpoint_temperature"}
+String                 Oven_BasicActionsState                           "Basic Control"                      {channel="homeconnect:oven:api_bridge_at_home:oven1_:basic_actions_state"}
 
 // washer
 Switch                 Washer_PowerState                                  "Power State"                        {channel="homeconnect:washer:api_bridge_at_home:washer1:power_state"}
