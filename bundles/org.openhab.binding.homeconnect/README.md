@@ -111,7 +111,7 @@ After the bridge has been added and authorized, devices are discovered automatic
     - _One Time Token Mode_: keep unchecked
     - _Proof Key for Code Exchange_: keep unchecked
       
-       > **NOTE**: You might get an error (`403 - Forbidden`) in case you entered a bare IP of your local openhab instance. In that case, use your instance's hostname instead (e.g. for openhabian `http://openhabian:8080/homeconnect`) and try again.
+       > **NOTE**: You might get an error (`403 - Forbidden`) in case you entered a bare IP of your local openHAB instance. In that case, use your instance's hostname instead (e.g. for openhabian `http://openhabian:8080/homeconnect`) and try again.
     
 1. After your application has been created, you should see the _Client ID_ and _Client Secret_ of the application. Please save these for later.  
 
