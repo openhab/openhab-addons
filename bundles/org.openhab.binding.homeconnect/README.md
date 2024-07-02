@@ -168,7 +168,7 @@ Switch                 Dishwasher_RemoteStartAllowanceState               "Remot
 Switch                 Dishwasher_RemoteControlActiveState                "Remote Control Activation State"    {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remote_control_active_state"}
 String                 Dishwasher_SelectedProgramState                    "Selected Program"                   {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:selected_program_state"}
 String                 Dishwasher_ActiveProgramState                      "Active Program"                     {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:active_program_state"}
-Number:Time            Dishwasher_RemainingProgramTimeState               "Remaining program time"             {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remaining_program_time_state"}
+Number:Time            Dishwasher_RemainingProgramTimeState               "Remaining Program Time"             {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remaining_program_time_state"}
 Number:Dimensionless   Dishwasher_ProgramProgressState                    "Progress State"                     {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:program_progress_state"}
 String                 Dishwasher_BasicActionsState                     "Basic Control"                      {channel="homeconnect:dishwasher:api_bridge_at_home:sgeschirrspuelmaschine:basic_actions_state"}
 
@@ -180,7 +180,7 @@ Switch                 Oven_RemoteStartAllowanceState                     "Remot
 Switch                 Oven_RemoteControlActiveState                      "Remote Control Activation State"    {channel="homeconnect:oven:api_bridge_at_home:oven1:remote_control_active_state"}
 String                 Oven_SelectedProgramState                          "Selected Program"                   {channel="homeconnect:oven:api_bridge_at_home:oven1:selected_program_state"}
 String                 Oven_ActiveProgramState                            "Active Program"                     {channel="homeconnect:oven:api_bridge_at_home:oven1:active_program_state"}
-Number:Time            Oven_RemainingProgramTimeState                     "Remaining program time"             {channel="homeconnect:oven:api_bridge_at_home:oven1:remaining_program_time_state"}
+Number:Time            Oven_RemainingProgramTimeState                     "Remaining Program Time"             {channel="homeconnect:oven:api_bridge_at_home:oven1:remaining_program_time_state"}
 Number:Dimensionless   Oven_ProgramProgressState                          "Progress State"                     {channel="homeconnect:oven:api_bridge_at_home:oven1:program_progress_state"}
 Number:Time            Oven_ElapsedProgramTime                          "Elapsed Program Time"               {channel="homeconnect:oven:api_bridge_at_home:oven1:elapsed_program_time"}
 Number:Time            Oven_Duration                                      "Program Duration"                   {channel="homeconnect:oven:api_bridge_at_0home:oven1:duration"}
@@ -196,24 +196,24 @@ Switch                 Washer_RemoteStartAllowanceState                   "Remot
 Switch                 Washer_RemoteControlActiveState                    "Remote Control Activation State"    {channel="homeconnect:washer:api_bridge_at_home:washer1:remote_control_active_state"}
 String                 Washer_SelectedProgramState                        "Selected Program"                   {channel="homeconnect:washer:api_bridge_at_home:washer1:selected_program_state"}
 String                 Washer_ActiveProgramState                          "Active Program"                     {channel="homeconnect:washer:api_bridge_at_home:washer1:active_program_state"}
-Number:Time            Washer_RemainingProgramTimeState                   "Remaining program time"             {channel="homeconnect:washer:api_bridge_at_home:washer1:remaining_program_time_state"}
+Number:Time            Washer_RemainingProgramTimeState                   "Remaining Program Time"             {channel="homeconnect:washer:api_bridge_at_home:washer1:remaining_program_time_state"}
 Number:Dimensionless   Washer_ProgramProgressState                        "Progress State"                     {channel="homeconnect:washer:api_bridge_at_home:washer1:program_progress_state"}
-String                 Washer_laundry_care_washer_temperature             "Temperature"                        {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_temperature"}
-String                 Washer_laundry_care_washer_spin_speed              "Spin speed"                         {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_spin_speed"}
-String                 Washer_laundry_care_washer_idos1_level             "i-Dos 1 Level"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos1_level"}
-String                 Washer_laundry_care_washer_idos2_level             "i-Dos 2 Level"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos2_level"}
-Switch                 Washer_laundry_care_washer_idos1                   "i-Dos 1 state"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos1"}
-Switch                 Washer_laundry_care_washer_idos2                   "i-Dos 2 state"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos2"}
-Switch                 Washer_laundry_care_washer_vario_perfect           "Vario Perfect state"                {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_vario_perfect"}
-Switch                 Washer_laundry_care_washer_less_ironing            "Ironing state"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_less_ironing"}
-Switch                 Washer_laundry_care_washer_pre_wash                "Prewash state"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_pre_wash"}
-Switch                 Washer_laundry_care_washer_rinse_plus              "Amount additional rinses"           {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_rinse_plus"}
-Switch                 Washer_laundry_care_washer_rinse_hold              "Spin hold"                          {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_rinse_hold"}
-Switch                 Washer_laundry_care_washer_soak                    "Soaking state"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_soak"}
-Number:Mass            Washer_laundry_care_washer_load_recommendation     "Load recommendation"                {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_load_recommendation"}
-Number:Dimensionless   Washer_program_energy                              "Estimated energy consumption"       {channel="homeconnect:washer:api_bridge_at_home:washer1:program_energy"}
-Number:Dimensionless   Washer_program_water                               "Estimated water consumption"        {channel="homeconnect:washer:api_bridge_at_home:washer1:program_water"}
-String                 Washer_basic_actions_state                         "Basic control"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:basic_actions_state"}
+String                 Washer_LaundryCareWasherTemperature             "Temperature"                        {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_temperature"}
+String                 Washer_LaundryCareWasherSpinSpeed              "Spin Speed"                         {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_spin_speed"}
+String                 Washer_LaundryCareWasherIdos1Level             "i-Dos 1 Level"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos1_level"}
+String                 Washer_LaundryCareWasherIdos2Level             "i-Dos 2 Level"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos2_level"}
+Switch                 Washer_LaundryCareWasherIdos1                   "i-Dos 1 State"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos1"}
+Switch                 Washer_LaundryCareWasherIdos2                   "i-Dos 2 State"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_idos2"}
+Switch                 Washer_LaundryCareWasherVarioPerfect           "Vario Perfect State"                {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_vario_perfect"}
+Switch                 Washer_LaundryCareWasherLessIroning            "Ironing State"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_less_ironing"}
+Switch                 Washer_LaundryCareWasherPreWash                "Prewash State"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_pre_wash"}
+Switch                 Washer_LaundryCareWasherRinsePlus              "Amount Aadditional Rinses"           {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_rinse_plus"}
+Switch                 Washer_LaundryCareWasherRinseHold              "Spin Hold"                          {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_rinse_hold"}
+Switch                 Washer_LaundryCareWasherSoak                    "Soaking State"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_soak"}
+Number:Mass            Washer_LaundryCareWasherLoadRecommendation     "Load Recommendation"                {channel="homeconnect:washer:api_bridge_at_home:washer1:laundry_care_washer_load_recommendation"}
+Number:Dimensionless   Washer_ProgramEnergy                              "Estimated Energy Consumption"       {channel="homeconnect:washer:api_bridge_at_home:washer1:program_energy"}
+Number:Dimensionless   Washer_ProgramWater                               "Estimated Water Consumption"        {channel="homeconnect:washer:api_bridge_at_home:washer1:program_water"}
+String                 Washer_BasicActionsState                         "Basic Control"                      {channel="homeconnect:washer:api_bridge_at_home:washer1:basic_actions_state"}
 
 ```
 
