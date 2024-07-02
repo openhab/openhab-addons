@@ -33,6 +33,7 @@ public abstract class BaseNotificationActionHandler extends BaseActionModuleHand
     public static final String PARAM_ICON = "icon";
     public static final String PARAM_SEVERITY = "severity";
     public static final String PARAM_TITLE = "title";
+    public static final String PARAM_REFERENCE_ID = "referenceId";
     public static final String PARAM_ON_CLICK_ACTION = "onClickAction";
     public static final String PARAM_MEDIA_ATTACHMENT_URL = "mediaAttachmentUrl";
     public static final String PARAM_ACTION_BUTTON_1 = "actionButton1";
@@ -45,6 +46,7 @@ public abstract class BaseNotificationActionHandler extends BaseActionModuleHand
     protected final @Nullable String icon;
     protected final @Nullable String severity;
     protected final @Nullable String title;
+    protected final @Nullable String referenceId;
     protected final @Nullable String onClickAction;
     protected final @Nullable String mediaAttachmentUrl;
     protected final @Nullable String actionButton1;
@@ -65,6 +67,7 @@ public abstract class BaseNotificationActionHandler extends BaseActionModuleHand
         this.icon = stringConfig(PARAM_ICON);
         this.severity = stringConfig(PARAM_SEVERITY);
         this.title = stringConfig(PARAM_TITLE);
+        this.referenceId = stringConfig(PARAM_REFERENCE_ID);
         this.onClickAction = stringConfig(PARAM_ON_CLICK_ACTION);
         this.mediaAttachmentUrl = stringConfig(PARAM_MEDIA_ATTACHMENT_URL);
         this.actionButton1 = stringConfig(PARAM_ACTION_BUTTON_1);

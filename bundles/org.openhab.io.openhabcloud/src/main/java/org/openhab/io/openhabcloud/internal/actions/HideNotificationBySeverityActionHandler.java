@@ -21,27 +21,33 @@ import org.openhab.core.automation.handler.ModuleHandler;
 import org.openhab.io.openhabcloud.internal.CloudService;
 
 /**
- * This is a {@link ModuleHandler} implementation for {@link Action}s to send a notification to all devices of all
- * cloud users.
+ * This is a {@link ModuleHandler} implementation for {@link Action}s to hide a notification to a specific cloud user.
  *
- * @author Christoph Weitkamp - Initial contribution
- * @author Dan Cunningham - Extended notification enhancements
+ * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class SendBroadcastNotificationActionHandler extends BaseNotificationActionHandler {
+public class HideNotificationBySeverityActionHandler extends BaseHideNotificationActionHandler {
 
-    public static final String TYPE_ID = "notification.SendBroadcastNotification";
-    public static final String EXTENDED_TYPE_ID = "notification.SendExtendedBroadcastNotification";
-    public static final String EXTENDED2_TYPE_ID = "notification.SendExtended2BroadcastNotification";
+    public static final String TYPE_ID = "notification.HideNotificationBySeverity";
 
-    public SendBroadcastNotificationActionHandler(Action module, CloudService cloudService) {
+    public static final String PARAM_USER = "userId";
+
+    private final String userId;
+
+    public HideNotificationBySeverityActionHandler(Action module, CloudService cloudService) {
         super(module, cloudService);
+
+        Object userIdParam = module.getConfiguration().get(PARAM_USER);
+        if (userIdParam instanceof String) {
+            this.userId = userIdParam.toString();
+        } else {
+            throw new IllegalArgumentException(String.format("Param '%s' should be of type String.", PARAM_USER));
+        }
     }
 
     @Override
     public @Nullable Map<String, Object> execute(Map<String, Object> context) {
-        cloudService.sendBroadcastNotification(message, icon, severity, title, referenceId, onClickAction,
-                mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);
+        cloudService.hideNotificationBySeverity(userId, severity);
         return null;
     }
 }

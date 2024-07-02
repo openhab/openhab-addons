@@ -112,11 +112,13 @@ The parameters for these actions have the following meaning:
 
 `null` may be used to skip the `icon` or `severity` parameter.
 
-### Title, Media Attachments & Actions
+### Title, Reference ID, Media Attachments & Actions
 
-The `sendNotification` and `sendBroadcastNotification` actions additionally support setting a title, media attachments and actions.
+The `sendNotification` and `sendBroadcastNotification` actions additionally support setting a title, reference id, media attachments and actions.
 
 The title is displayed as the notification title on the device and defaults to "openHAB" for the Android and iOS apps.
+The reference id is a user supplied identifier that when set will replace messages with the same id on the user's device (so only the last version exists). 
+The reference id can also be used later with `hideNotificationByReferenceId` and  `hideBroadcastNotificationByReferenceId` methods to remove notifications with this id.
 Media attachments are displayed together with the notification on the device and can be used to display images, e.g. a camera snapshot.
 Actions allow the user to interact with the notification, e.g. to open a specific page in the app or to send a command to an Item.
 
@@ -130,9 +132,11 @@ To specify media attachments and actions, there is another variant of the `sendN
 - `sendNotification(emailAddress, message, icon, severity, title, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
 - `sendBroadcastNotification(message, icon, severity, title, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
 
+
 The additional parameter for these variants have the following meaning:
 
 - `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
+- `referenceId`: A user supplied id to both replace existing messages, and later remove messages with this id.
 - `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
 - `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This URL must be reachable by the push notification client.
 - `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
@@ -140,6 +144,15 @@ The additional parameter for these variants have the following meaning:
 - `actionButton3`: The action to be performed when the user clicks on the third action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
 
 These parameters may be skipped by setting them to `null`.
+
+### Hide Notification Actions
+
+There are also actions to hide existing notifications, either by `referenceId` or `severity`
+
+- `hideNotificationByReferenceId(emailAddress, referenceId)`
+- `hideBroadcastNotificationByReferenceId(referenceId)`
+- `hideNotificationBySeverity(emailAddress, severity)`
+- `hideBroadcastNotificationBySeverity(severity)`
 
 #### Action Syntax
 
@@ -151,6 +164,7 @@ There are two types of actions available:
 - `ui`: Controls the UI in two possible ways:
   - `ui:$path` where `$path` is either `/basicui/app?...` for navigating sitemaps (using the native renderer) or `/some/absolute/path` for navigating (using the web view).
   - `ui:$commandItemSyntax` where `$commandItemSyntax` is the same syntax as used for the [UI Command Item]({{base}}/mainui/about.html#ui-command-item).
+- `http:` or `https:` : Opens the fully qualified URL in an embedded browser on the device
 
 Examples:
 
@@ -160,6 +174,7 @@ Examples:
 - `ui:/some/absolute/path`: Navigates to the absolut path `/some/absolute/path`.
 - `ui:navigate:/page/my_floorplan_page`: Navigates Main UI to the page with the ID `my_floorplan_page`.
 - `ui:popup:oh-clock-card`: Opens a popup with `oh-clock-card`.
+- `https://openhab.org`: Opens an embedded browser to the site `https://openhab.org`
 
 ### Examples
 
@@ -267,7 +282,7 @@ when
   Item Apartment_MotionSensor changed to ON
 then
   sendBroadcastNotification("Motion detected in the apartment!", "motion", "MEDIUM",
-                                    "Motion Detected", null, "https://apartment.my/camera-snapshot.jpg",
+                                    "Motion Detected", null, null, "https://apartment.my/camera-snapshot.jpg",
                                     "Turn on the light=command:Apartment_Light:ON", null, null)
 end
 ```

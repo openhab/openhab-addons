@@ -590,6 +590,7 @@ public class CloudClient {
      * @param icon name of the icon for this notification
      * @param severity severity name for this notification
      * @param title for the notification
+     * @param referenceId an identifier used to collapse and hide notifications
      * @param onClickAction the action to perform when clicked
      * @param mediaAttachmentUrl the media to attach to a notification
      * @param actionButton1 an action button in the format "Title=Action"
@@ -597,9 +598,10 @@ public class CloudClient {
      * @param actionButton3 an action button in the format "Title=Action"
      */
     public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String severity,
-            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
-            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
-        sendNotificationInternal(userId, message, icon, severity, title, onClickAction, mediaAttachmentUrl,
+            @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
+            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
+            @Nullable String actionButton3) {
+        sendNotificationInternal(userId, message, icon, severity, title, referenceId, onClickAction, mediaAttachmentUrl,
                 actionButton1, actionButton2, actionButton3);
     }
 
@@ -610,6 +612,7 @@ public class CloudClient {
      * @param icon name of the icon for this notification
      * @param severity severity name for this notification
      * @param title for this notification
+     * @param referenceId an identifier used to collapse and hide notifications
      * @param onClickAction the action to perform when clicked
      * @param mediaAttachmentUrl the media to attach to a notification
      * @param actionButton1 an action button in the format "Title=Action"
@@ -617,25 +620,31 @@ public class CloudClient {
      * @param actionButton3 an action button in the format "Title=Action"
      */
     public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity,
-            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
-            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
-        sendNotificationInternal(null, message, icon, severity, title, onClickAction, mediaAttachmentUrl, actionButton1,
-                actionButton2, actionButton3);
+            @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
+            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
+            @Nullable String actionButton3) {
+        sendNotificationInternal(null, message, icon, severity, title, referenceId, onClickAction, mediaAttachmentUrl,
+                actionButton1, actionButton2, actionButton3);
     }
 
     private void sendNotificationInternal(@Nullable String userId, String message, @Nullable String icon,
-            @Nullable String severity, @Nullable String title, @Nullable String onClickAction,
-            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
-            @Nullable String actionButton3) {
+            @Nullable String severity, @Nullable String title, @Nullable String referenceId,
+            @Nullable String onClickAction, @Nullable String mediaAttachmentUrl, @Nullable String actionButton1,
+            @Nullable String actionButton2, @Nullable String actionButton3) {
         if (isConnected()) {
             JSONObject notificationMessage = new JSONObject();
             try {
                 if (userId != null) {
                     notificationMessage.put("userId", userId);
                 }
+
+                notificationMessage.put("type", "notification");
                 notificationMessage.put("message", message);
                 notificationMessage.put("icon", icon);
                 notificationMessage.put("severity", severity);
+                if (referenceId != null) {
+                    notificationMessage.put("reference-id", title);
+                }
                 if (title != null) {
                     notificationMessage.put("title", title);
                 }
@@ -673,6 +682,69 @@ public class CloudClient {
                 notificationMessage.put("icon", icon);
                 notificationMessage.put("severity", severity);
                 socket.emit("lognotification", notificationMessage);
+            } catch (JSONException e) {
+                logger.debug("{}", e.getMessage());
+            }
+        } else {
+            logger.debug("No connection, notification is not sent");
+        }
+    }
+
+    /**
+     * This method hides a notification by its reference id to a single user
+     *
+     * @param userId openHAB Cloud user id
+     * @param referenceId the reference id
+     */
+    public void hideNotificationByReferenceId(String userId, String referenceId) {
+        hideNotificationInternal(userId, referenceId, null);
+    }
+
+    /**
+     * This method hides a notification by its reference id to for all users
+     *
+     * @param referenceId the reference id
+     */
+    public void hideBroadcastNotificationByReferenceId(String referenceId) {
+        hideNotificationInternal(null, referenceId, null);
+    }
+
+    /**
+     * This method hides a notification by its severity group to for all users
+     *
+     * @param userId openHAB Cloud user id
+     * @param severity severity name for this notification
+     */
+    public void hideNotificationBySeverity(String userId, String severity) {
+        hideNotificationInternal(userId, null, severity);
+    }
+
+    /**
+     * This method hides a notification by its severity group to for all users
+     *
+     * @param severity severity name for this notification
+     */
+    public void hideBroadcastNotificationBySeverity(String severity) {
+        hideNotificationInternal(null, null, severity);
+    }
+
+    private void hideNotificationInternal(@Nullable String userId, @Nullable String referenceId,
+            @Nullable String severity) {
+        if (isConnected()) {
+            JSONObject notificationMessage = new JSONObject();
+            try {
+                notificationMessage.put("type", "hideNotification");
+
+                if (userId != null) {
+                    notificationMessage.put("userId", userId);
+                }
+                if (referenceId != null) {
+                    notificationMessage.put("referenceId", referenceId);
+                }
+                if (severity != null) {
+                    notificationMessage.put("severity", severity);
+                }
+                socket.emit(userId == null ? "broadcastnotification" : "notification", notificationMessage);
             } catch (JSONException e) {
                 logger.debug("{}", e.getMessage());
             }
