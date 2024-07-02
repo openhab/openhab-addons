@@ -29,6 +29,7 @@ import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.SolarForecastException;
@@ -67,6 +68,14 @@ class ForecastSolarTest {
     public static final String INVALID_RANGE_INDICATOR = "invalid time range";
     public static final String NO_GORECAST_INDICATOR = "No forecast data";
     public static final String DAY_MISSING_INDICATOR = "not available in forecast";
+
+    @BeforeAll
+    static void setFixedTime() {
+        // Instant matching the date of test resources
+        String fixedInstant = "2022-07-17T15:00:00Z";
+        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
+        Utils.setClock(fixedClock);
+    }
 
     @Test
     void testForecastObject() {
@@ -363,10 +372,6 @@ class ForecastSolarTest {
 
     @Test
     void testPowerTimeSeries() {
-        // Instant matching the date of test resources
-        String fixedInstant = "2022-07-17T15:00:00Z";
-        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
-        Utils.setClock(fixedClock);
         ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
                 new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
                 Optional.of(PointType.valueOf("1,2")));
@@ -398,10 +403,6 @@ class ForecastSolarTest {
 
     @Test
     void testCommonForecastStartEnd() {
-        // Instant matching the date of test resources
-        String fixedInstant = "2022-07-17T15:00:00Z";
-        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
-        Utils.setClock(fixedClock);
         ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
                 new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
                 Optional.of(PointType.valueOf("1,2")));
@@ -447,10 +448,6 @@ class ForecastSolarTest {
 
     @Test
     void testActions() {
-        // Instant matching the date of test resources
-        String fixedInstant = "2022-07-17T15:00:00Z";
-        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
-        Utils.setClock(fixedClock);
         ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
                 new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
                 Optional.of(PointType.valueOf("1,2")));
@@ -486,10 +483,6 @@ class ForecastSolarTest {
 
     @Test
     void testEnergyTimeSeries() {
-        // Instant matching the date of test resources
-        String fixedInstant = "2022-07-17T15:00:00Z";
-        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
-        Utils.setClock(fixedClock);
         ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
                 new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
                 Optional.of(PointType.valueOf("1,2")));
@@ -521,10 +514,6 @@ class ForecastSolarTest {
 
     @Test
     void testCalmDown() {
-        // Instant matching the date of test resources
-        String fixedInstant = "2022-07-17T15:00:00Z";
-        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), TEST_ZONE);
-        Utils.setClock(fixedClock);
         ForecastSolarBridgeHandler fsbh = new ForecastSolarBridgeHandler(
                 new BridgeImpl(SolarForecastBindingConstants.FORECAST_SOLAR_SITE, "bridge"),
                 Optional.of(PointType.valueOf("1,2")));
@@ -555,8 +544,8 @@ class ForecastSolarTest {
         assertEquals(ThingStatusDetail.COMMUNICATION_ERROR, cm.getStatus().getStatusDetail(), "Offline");
 
         // forward Clock to get ONLINE again
-        fixedInstant = "2022-07-17T16:15:00Z";
-        fixedClock = Clock.fixed(Instant.parse(fixedInstant), ZoneId.of("UTC"));
+        String fixedInstant = "2022-07-17T16:15:00Z";
+        Clock fixedClock = Clock.fixed(Instant.parse(fixedInstant), ZoneId.of("UTC"));
         Utils.setClock(fixedClock);
         fsbh.handleCommand(
                 new ChannelUID("solarforecast:fs-site:bridge:" + SolarForecastBindingConstants.CHANNEL_ENERGY_ACTUAL),
