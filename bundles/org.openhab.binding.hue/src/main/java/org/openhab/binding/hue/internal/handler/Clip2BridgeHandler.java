@@ -774,7 +774,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
                     case BEHAVIOR_INSTANCE:
                         updateChannels(resourceList);
-                        continue; // do not forward the child things
+                        continue; // do not forward to child things
 
                     default:
                         break;
@@ -824,7 +824,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
             List<Channel> allChannels = thing.getChannels().stream()
                     .filter(channel -> !CHANNEL_TYPE_AUTOMATION.equals(channel.getChannelTypeUID())).toList();
-            allChannels.addAll(behaviors.stream().map(bi -> createAutomationChannel(bi)).toList());
+            allChannels.addAll(behaviors.stream().map(behavior -> createAutomationChannel(behavior)).toList());
 
             updateThing(editThing().withChannels(allChannels).build());
         }
