@@ -286,4 +286,13 @@
 		<category>Siren</category>
 	</channel-type>
 
+	<channel-type id="automation-enabled">
+		<item-type>Switch</item-type>
+		<label>Enable</label>
+	</channel-type>
+
+	<channel-group-type id="automations">
+		<label>Automations</label>
+	</channel-group-type>
+
 </thing:thing-descriptions>

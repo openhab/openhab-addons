@@ -17,6 +17,7 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,6 +28,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,7 +52,11 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.io.net.http.TlsTrustManagerProvider;
+import org.openhab.core.library.CoreItemFactory;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
+import org.openhab.core.thing.Channel;
+import org.openhab.core.thing.ChannelGroupUID;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
@@ -62,8 +68,12 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.ServiceRegistration;
@@ -93,12 +103,14 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final ResourceReference BRIDGE_HOME = new ResourceReference().setType(ResourceType.BRIDGE_HOME);
     private static final ResourceReference SCENE = new ResourceReference().setType(ResourceType.SCENE);
     private static final ResourceReference SMART_SCENE = new ResourceReference().setType(ResourceType.SMART_SCENE);
+    private static final ResourceReference BEHAVIOR = new ResourceReference().setType(ResourceType.BEHAVIOR_INSTANCE);
 
     /**
      * List of resource references that need to be mass down loaded.
      * NOTE: the SCENE resources must be mass down loaded first!
      */
-    private static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES = List.of(SCENE, DEVICE, ROOM, ZONE);
+    private static final List<ResourceReference> MASS_DOWNLOAD_RESOURCE_REFERENCES = List.of(SCENE, DEVICE, ROOM, ZONE,
+            BEHAVIOR);
 
     private final Logger logger = LoggerFactory.getLogger(Clip2BridgeHandler.class);
 
@@ -107,6 +119,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private final Bundle bundle;
     private final LocaleProvider localeProvider;
     private final TranslationProvider translationProvider;
+    private final Set<String> behaviourIds = new HashSet<>();;
 
     private @Nullable Clip2Bridge clip2Bridge;
     private @Nullable ServiceRegistration<?> trustManagerRegistration;
@@ -421,7 +434,23 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (RefreshType.REFRESH.equals(command)) {
             return;
         }
-        logger.warn("Bridge thing '{}' has no channels, only REFRESH command supported.", thing.getUID());
+
+        if (CHANNEL_GROUP_AUTOMATION.equals(channelUID.getGroupId())) {
+            try {
+                Resource resource = new Resource(ResourceType.BEHAVIOR_INSTANCE).setId(channelUID.getId())
+                        .setEnabled(command);
+
+                Resources resources = getClip2Bridge().putResource(resource);
+
+                if (resources.hasErrors()) {
+                    logger.info("handleCommand({}, {}) succeeded with errors: {}", channelUID, command,
+                            String.join("; ", resources.getErrors()));
+                }
+            } catch (ApiException | AssetNotLoadedException e) {
+                logger.warn("handleCommand({}, {}) error {}", channelUID, command, e.getMessage());
+            } catch (InterruptedException e) {
+            }
+        }
     }
 
     @Override
@@ -527,6 +556,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     private void onResourcesEventTask(List<Resource> resources) {
+        onResources(resources);
         int numberOfResources = resources.size();
         logger.debug("onResourcesEventTask() resource count {}", numberOfResources);
         Setters.mergeLightResources(resources);
@@ -742,6 +772,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                         resourceList.addAll(bridge.getResources(SMART_SCENE).getResources());
                         break;
 
+                    case BEHAVIOR_INSTANCE:
+                        updateChannels(resourceList);
+                        continue; // do not forward the child things
+
                     default:
                         break;
                 }
@@ -773,6 +807,53 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (Objects.isNull(task) || task.getDelay(TimeUnit.MILLISECONDS) < 100) {
             cancelTask(scheduledUpdateTask, false);
             scheduledUpdateTask = scheduler.schedule(() -> updateThingsNow(), delayMilliSeconds, TimeUnit.MILLISECONDS);
+        }
+    }
+
+    /**
+     * Create the automation channels
+     */
+    private void updateChannels(List<Resource> resources) {
+        List<Resource> behaviors = resources.stream().filter(r -> ResourceType.BEHAVIOR_INSTANCE == r.getType())
+                .toList();
+
+        if (behaviors.size() != behaviourIds.size()
+                || behaviors.stream().anyMatch(behavior -> !behaviourIds.contains(behavior.getId()))) {
+            behaviourIds.clear();
+            behaviourIds.addAll(behaviors.stream().map(behavior -> behavior.getId()).collect(Collectors.toSet()));
+
+            List<Channel> allChannels = thing.getChannels().stream()
+                    .filter(channel -> !CHANNEL_TYPE_AUTOMATION.equals(channel.getChannelTypeUID())).toList();
+            allChannels.addAll(behaviors.stream().map(bi -> createAutomationChannel(bi)).toList());
+
+            updateThing(editThing().withChannels(allChannels).build());
+        }
+    }
+
+    /**
+     * Create an automation channel from a behaviour instance resource
+     */
+    private Channel createAutomationChannel(Resource behaviourInstance) {
+        return ChannelBuilder
+                .create(new ChannelUID(new ChannelGroupUID(thing.getUID(), CHANNEL_GROUP_AUTOMATION),
+                        behaviourInstance.getId()), CoreItemFactory.SWITCH)
+                .withLabel(behaviourInstance.getName()).withType(CHANNEL_TYPE_AUTOMATION)
+                .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+    }
+
+    /**
+     * Process event resources list and update the automation channels if any
+     */
+    public void onResources(Collection<Resource> resources) {
+        for (Resource resource : resources) {
+            if (resource.getType() == ResourceType.BEHAVIOR_INSTANCE) {
+                Channel channel = thing.getChannel(resource.getId());
+                if (channel != null) {
+                    Boolean enabled = resource.getEnabled();
+                    State state = Objects.nonNull(enabled) ? OnOffType.from(enabled) : UnDefType.UNDEF;
+                    updateState(channel.getUID(), state);
+                }
+            }
         }
     }
 }
