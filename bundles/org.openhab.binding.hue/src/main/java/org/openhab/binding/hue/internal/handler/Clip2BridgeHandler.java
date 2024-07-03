@@ -119,7 +119,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private final Bundle bundle;
     private final LocaleProvider localeProvider;
     private final TranslationProvider translationProvider;
-    private final Set<String> behaviorIds = new HashSet<>();;
+    private final Set<String> automationIds = new HashSet<>();;
     private final ChannelGroupUID automationChannelGroupUID;
 
     private @Nullable Clip2Bridge clip2Bridge;
@@ -815,22 +815,21 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Create the automation channels
      */
     private void updateChannels(List<Resource> resources) {
-        List<Resource> behaviors = resources.stream()
-                .filter(r -> (ResourceType.BEHAVIOR_INSTANCE == r.getType()) && r.isStateNull()).toList();
+        List<Resource> automations = getAutomationsStream(resources).toList();
 
-        if (behaviors.size() != behaviorIds.size()
-                || behaviors.stream().anyMatch(behavior -> !behaviorIds.contains(behavior.getId()))) {
-            behaviorIds.clear();
-            behaviorIds.addAll(behaviors.stream().map(b -> b.getId()).collect(Collectors.toSet()));
+        if (automations.size() != automationIds.size()
+                || automations.stream().anyMatch(a -> !automationIds.contains(a.getId()))) {
+            automationIds.clear();
+            automationIds.addAll(automations.stream().map(a -> a.getId()).collect(Collectors.toSet()));
 
-            Stream<Channel> newChannels = behaviors.stream().map(b -> createAutomationChannel(b));
+            Stream<Channel> newChannels = automations.stream().map(a -> createAutomationChannel(a));
             Stream<Channel> oldchannels = thing.getChannels().stream()
                     .filter(c -> !CHANNEL_TYPE_AUTOMATION.equals(c.getChannelTypeUID()));
 
             updateThing(editThing().withChannels(Stream.concat(oldchannels, newChannels).toList()).build());
-            onResources(behaviors);
+            onResources(automations);
 
-            logger.debug("Bridge created {} automation channels", behaviors.size());
+            logger.debug("Bridge created {} automation channels", automations.size());
         }
     }
 
@@ -847,12 +846,19 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Process event resources list and update the automation channels
      */
     public void onResources(Collection<Resource> resources) {
-        resources.stream().filter(r -> (ResourceType.BEHAVIOR_INSTANCE == r.getType()) && r.isStateNull())
-                .forEach(r -> {
-                    ChannelUID channelUID = new ChannelUID(automationChannelGroupUID, r.getId());
-                    Boolean enabled = r.getEnabled();
-                    State state = Objects.nonNull(enabled) ? OnOffType.from(enabled) : UnDefType.UNDEF;
-                    updateState(channelUID, state);
-                });
+        getAutomationsStream(resources).forEach(a -> {
+            ChannelUID channelUID = new ChannelUID(automationChannelGroupUID, a.getId());
+            Boolean enabled = a.getEnabled();
+            State state = Objects.nonNull(enabled) ? OnOffType.from(enabled) : UnDefType.UNDEF;
+            updateState(channelUID, state);
+        });
+    }
+
+    /**
+     * Create a filtered resource stream that contains only automation resources
+     */
+    private Stream<Resource> getAutomationsStream(Collection<Resource> resources) {
+        // TODO fine tune the filter to exclude tap dial switches
+        return resources.stream().filter(r -> (ResourceType.BEHAVIOR_INSTANCE == r.getType()) && r.isStateNull());
     }
 }
