@@ -23,7 +23,7 @@ public class RestartActionDTO extends ActionDTO {
 
     private static final String ACTION_TYPE_RESTART = "Restart";
     private static final String CONSTANT = "Constant";
-    private static final String DEFAULT_RESTART_REASON = "The OpenHAB binding requested to restart the smart home controller.";
+    private static final String DEFAULT_RESTART_REASON = "The openHAB binding requested to restart the smart home controller.";
 
     public RestartActionDTO(String deviceId) {
         setType(ACTION_TYPE_RESTART);

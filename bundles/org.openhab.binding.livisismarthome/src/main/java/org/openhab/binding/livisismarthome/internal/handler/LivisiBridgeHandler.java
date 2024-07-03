@@ -137,7 +137,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     private void commandRestart(Command command) {
-        if (command instanceof OnOffType && OnOffType.ON.equals(command)) {
+        if (OnOffType.ON.equals(command)) {
             commandRestart();
         }
     }
@@ -838,7 +838,7 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
         try {
             client.setRestartAction(bridgeId);
 
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Restarting ...");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Restarting...");
         } catch (IOException e) {
             handleClientException(e);
         }

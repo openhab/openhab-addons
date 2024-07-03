@@ -390,7 +390,7 @@
 	</channel-type>
 
 	<!-- RebootAction -->
-	<channel-type id="restart">
+	<channel-type id="restart" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Restart</label>
 		<description>Restarts the device</description>
