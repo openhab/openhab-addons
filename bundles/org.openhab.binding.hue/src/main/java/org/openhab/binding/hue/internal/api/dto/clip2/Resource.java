@@ -929,4 +929,8 @@ public class Resource {
         return String.format("id:%s, type:%s", Objects.nonNull(id) ? id : "?" + " ".repeat(35),
                 getType().name().toLowerCase());
     }
+
+    public boolean isStateNull() {
+        return Objects.isNull(state);
+    }
 }

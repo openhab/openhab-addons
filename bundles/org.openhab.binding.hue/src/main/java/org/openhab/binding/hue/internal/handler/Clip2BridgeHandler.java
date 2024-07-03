@@ -816,7 +816,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private void updateChannels(List<Resource> resources) {
         List<Resource> behaviors = resources.stream().filter(r -> ResourceType.BEHAVIOR_INSTANCE == r.getType())
-                .toList();
+                .filter(r -> r.isStateNull()).toList();
 
         if (behaviors.size() != behaviorIds.size()
                 || behaviors.stream().anyMatch(behavior -> !behaviorIds.contains(behavior.getId()))) {
@@ -847,11 +847,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Process event resources list and update the automation channels
      */
     public void onResources(Collection<Resource> resources) {
-        resources.stream().filter(r -> ResourceType.BEHAVIOR_INSTANCE == r.getType()).forEach(r -> {
-            ChannelUID channelUID = new ChannelUID(automationChannelGroupUID, r.getId());
-            Boolean enabled = r.getEnabled();
-            State state = Objects.nonNull(enabled) ? OnOffType.from(enabled) : UnDefType.UNDEF;
-            updateState(channelUID, state);
-        });
+        resources.stream().filter(r -> ResourceType.BEHAVIOR_INSTANCE == r.getType()).filter(r -> r.isStateNull())
+                .forEach(r -> {
+                    ChannelUID channelUID = new ChannelUID(automationChannelGroupUID, r.getId());
+                    Boolean enabled = r.getEnabled();
+                    State state = Objects.nonNull(enabled) ? OnOffType.from(enabled) : UnDefType.UNDEF;
+                    updateState(channelUID, state);
+                });
     }
 }
