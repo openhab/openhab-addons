@@ -114,7 +114,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      * @param userId the {@link String} containing the openHAB Cloud user id to send message to
      * @param message the {@link String} containing a message to send to specified user id
      * @param icon the {@link String} containing a name of the icon to be used with this notification
-     * @param tag the {@link String} containing tag of notification (formally severity)
+     * @param tag the {@link String} containing tag of notification (formerly severity)
      * @param title the {@link String} containing the title to be used with this notification
      * @param referenceId the {@link String} identifier used to collapse and hide notifications
      * @param onClickAction the {@link String} containing the action to perform when clicked
@@ -151,7 +151,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
      *
      * @param message the {@link String} containing a message to send to specified user id
      * @param icon the {@link String} containing a name of the icon to be used with this notification
-     * @param tag the {@link String} containing tag of notification (formally severity)
+     * @param tag the {@link String} containing tag of notification (formerly severity)
      * @param title the {@link String} containing the title to be used with this notification
      * @param referenceId the {@link String} identifier used to collapse and hide notifications
      * @param onClickAction the {@link String} containing the action to perform when clicked

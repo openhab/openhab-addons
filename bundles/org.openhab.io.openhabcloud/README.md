@@ -140,7 +140,7 @@ The additional parameter for these variants have the following meaning:
 - `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
 - `referenceId`: A user supplied id to both replace existing messages when pushed, and later remove messages with the `hideNotificationReferenceId` actions.
 - `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
-- `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This URL must be reachable by the push notification client.
+- `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This can either be a fully qualified URL, prefixed with `http://` or `https://` and reachable by the client device, or an image item with the format `item:MyImageItem`
 - `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
 - `actionButton2`: The action to be performed when the user clicks on the second action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
 - `actionButton3`: The action to be performed when the user clicks on the third action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
@@ -149,7 +149,7 @@ These parameters may be skipped by setting them to `null`.
 
 ### Hide Notification Actions
 
-There are also actions to hide existing notifications, either by `referenceId` or `tag` (formally severity)
+There are also actions to hide existing notifications, either by `referenceId` or `tag` (formerly severity)
 
 - `hideNotificationByReferenceId(emailAddress, referenceId)`
 - `hideBroadcastNotificationByReferenceId(referenceId)`
@@ -283,8 +283,8 @@ rule "Motion Detected Notification"
 when
   Item Apartment_MotionSensor changed to ON
 then
-  sendBroadcastNotification("Motion detected in the apartment!", "motion", "MEDIUM",
-                                    "Motion Detected", "Motion Tag", "motion-id-1234", "https://apartment.my/camera-snapshot.jpg",
+  sendBroadcastNotification("Motion detected in the apartment!", "motion", "Motion Tag",
+                                    "Motion Detected", "motion-id-1234", null, "https://apartment.my/camera-snapshot.jpg",
                                     "Turn on the light=command:Apartment_Light:ON", null, null)
 end
 ```
@@ -299,6 +299,7 @@ rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
     .withIcon('motion')
     .withTag('motion-tag')
     .withTitle('Motion Detected')
+    .withReferenceId('motion-id-1234')
     .withMediaAttachment('https://apartment.my/camera-snapshot.jpg')
     .addActionButton('Turn on the light=command:Apartment_Light:ON')
     .send();

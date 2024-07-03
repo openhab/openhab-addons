@@ -588,7 +588,7 @@ public class CloudClient {
      * @param userId openHAB Cloud user id
      * @param message notification message text
      * @param icon name of the icon for this notification
-     * @param tag name for this notification (formally severity)
+     * @param tag name for this notification (formerly severity)
      * @param title for the notification
      * @param referenceId an identifier used to collapse and hide notifications
      * @param onClickAction the action to perform when clicked
@@ -610,7 +610,7 @@ public class CloudClient {
      *
      * @param message notification message text
      * @param icon name of the icon for this notification
-     * @param tag name for this notification (formally severity)
+     * @param tag name for this notification (formerly severity)
      * @param title for this notification
      * @param referenceId an identifier used to collapse and hide notifications
      * @param onClickAction the action to perform when clicked
@@ -696,7 +696,7 @@ public class CloudClient {
     }
 
     /**
-     * This method hides a notification by its reference id to a single user
+     * This method hides a notification by its reference id for a single user
      *
      * @param userId openHAB Cloud user id
      * @param referenceId the reference id
