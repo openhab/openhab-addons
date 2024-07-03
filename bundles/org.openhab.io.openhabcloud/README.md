@@ -118,7 +118,7 @@ The `sendNotification` and `sendBroadcastNotification` actions additionally supp
 
 - The tag is used for tagging messages for grouping when displaying in the app and to hide/remove groups of messages from a user's device. Tag was previously referred to as "severity".
 - The title is displayed as the notification title on the device and defaults to "openHAB" for the Android and iOS apps.
-- The reference id is a user supplied identifier that when set will replace messages with the same id on the user's device (so only the last version exists).  It can be used to update or remove notifications.
+- The reference id is a user supplied identifier that when set will replace messages with the same id on the user's device (so only the last version exists). It can be used to update or remove notifications.
 - Media attachments are displayed together with the notification on the device and can be used to display images, e.g. a camera snapshot.
 - Actions allow the user to interact with the notification, e.g. to open a specific page in the app or to send a command to an Item.
 
