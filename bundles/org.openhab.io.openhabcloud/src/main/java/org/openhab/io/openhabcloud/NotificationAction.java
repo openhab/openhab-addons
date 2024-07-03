@@ -149,7 +149,7 @@ public class NotificationAction {
      *
      * @param message the body of the notification
      * @param icon name for the notification
-     * @param severity category for the notification
+     * @param tag for the notification
      * @param title for the notification
      * @param referenceId an identifier used to collapse and hide notifications
      * @param onClickAction the action to perform when clicked
@@ -160,13 +160,13 @@ public class NotificationAction {
      *
      */
     @ActionDoc(text = "Sends a broadcast notification to all mobile devices of all account users")
-    public static void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity,
+    public static void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String tag,
             @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
             @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
             @Nullable String actionButton3) {
         logger.debug("sending broadcast notification '{}' to all users", message);
         if (cloudService != null) {
-            cloudService.sendBroadcastNotification(message, icon, severity, title, referenceId, onClickAction,
+            cloudService.sendBroadcastNotification(message, icon, tag, title, referenceId, onClickAction,
                     mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);
         }
     }
