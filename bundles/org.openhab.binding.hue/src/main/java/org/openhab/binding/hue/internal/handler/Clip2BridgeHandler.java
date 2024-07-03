@@ -834,12 +834,12 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Create an automation channel from a behavior instance resource
+     * Create an automation channel from an automation resource
      */
-    private Channel createAutomationChannel(Resource behavior) {
+    private Channel createAutomationChannel(Resource automation) {
         return ChannelBuilder
-                .create(new ChannelUID(automationChannelGroupUID, behavior.getId()), CoreItemFactory.SWITCH)
-                .withLabel(behavior.getName()).withType(CHANNEL_TYPE_AUTOMATION).build();
+                .create(new ChannelUID(automationChannelGroupUID, automation.getId()), CoreItemFactory.SWITCH)
+                .withLabel(automation.getName()).withType(CHANNEL_TYPE_AUTOMATION).build();
     }
 
     /**
