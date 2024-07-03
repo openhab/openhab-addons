@@ -13,6 +13,7 @@
 package org.openhab.io.openhabcloud.internal.actions;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -37,12 +38,8 @@ public class HideNotificationByTagActionHandler extends BaseHideNotificationActi
     public HideNotificationByTagActionHandler(Action module, CloudService cloudService) {
         super(module, cloudService);
 
-        Object userIdParam = module.getConfiguration().get(PARAM_USER);
-        if (userIdParam instanceof String) {
-            this.userId = userIdParam.toString();
-        } else {
-            throw new IllegalArgumentException(String.format("Param '%s' should be of type String.", PARAM_USER));
-        }
+        this.userId = Optional.ofNullable(stringConfig(PARAM_USER)).orElseThrow(
+                () -> new IllegalArgumentException(String.format("Param '%s' should be of type String.", PARAM_USER)));
     }
 
     @Override

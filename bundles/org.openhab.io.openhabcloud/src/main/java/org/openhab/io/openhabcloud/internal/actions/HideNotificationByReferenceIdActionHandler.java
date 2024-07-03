@@ -13,6 +13,7 @@
 package org.openhab.io.openhabcloud.internal.actions;
 
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -23,7 +24,7 @@ import org.openhab.io.openhabcloud.internal.CloudService;
 /**
  * This is a {@link ModuleHandler} implementation for {@link Action}s to hide a notification to a specific cloud user.
  *
- * @author Dan Cunningham - - Initial contribution
+ * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
 public class HideNotificationByReferenceIdActionHandler extends BaseHideNotificationActionHandler {
@@ -37,12 +38,8 @@ public class HideNotificationByReferenceIdActionHandler extends BaseHideNotifica
     public HideNotificationByReferenceIdActionHandler(Action module, CloudService cloudService) {
         super(module, cloudService);
 
-        Object userIdParam = module.getConfiguration().get(PARAM_USER);
-        if (userIdParam instanceof String) {
-            this.userId = userIdParam.toString();
-        } else {
-            throw new IllegalArgumentException(String.format("Param '%s' should be of type String.", PARAM_USER));
-        }
+        this.userId = Optional.ofNullable(stringConfig(PARAM_USER)).orElseThrow(
+                () -> new IllegalArgumentException(String.format("Param '%s' should be of type String.", PARAM_USER)));
     }
 
     @Override

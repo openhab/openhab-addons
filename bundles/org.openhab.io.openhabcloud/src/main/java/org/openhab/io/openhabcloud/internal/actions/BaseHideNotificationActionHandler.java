@@ -42,7 +42,7 @@ public abstract class BaseHideNotificationActionHandler extends BaseActionModule
         this.referenceId = stringConfig(PARAM_REFERENCE_ID);
     }
 
-    private @Nullable String stringConfig(String key) {
+    protected @Nullable String stringConfig(String key) {
         return ConfigParser.valueAs(module.getConfiguration().get(key), String.class);
     }
 }
