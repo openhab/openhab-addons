@@ -107,8 +107,9 @@ public class GenericResponseTransformer {
                             case CHANNEL_TYPE_RW_COMMAND -> new StringType(value);
 
                             default -> channelTypeId.startsWith(CHANNEL_TYPE_ENUM_PRFIX)
-                                    ? new DecimalType(Double.valueOf(value).longValue())
-                                    : UnDefType.NULL;
+                                    || channelTypeId.startsWith(CHANNEL_TYPE_PREFIX_RW + CHANNEL_TYPE_ENUM_PRFIX)
+                                            ? new DecimalType(Double.valueOf(value).longValue())
+                                            : UnDefType.NULL;
                         };
 
                         if (newState == UnDefType.NULL) {
