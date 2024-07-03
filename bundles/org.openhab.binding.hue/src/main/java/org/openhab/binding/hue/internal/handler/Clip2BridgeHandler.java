@@ -447,7 +447,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                             String.join("; ", resources.getErrors()));
                 }
             } catch (ApiException | AssetNotLoadedException e) {
-                logger.warn("handleCommand({}, {}) error {}", channelUID, command, e.getMessage());
+                logger.warn("handleCommand({}, {}) error {}", channelUID, command, e.getMessage(),
+                        logger.isDebugEnabled() ? e : null);
             } catch (InterruptedException e) {
             }
         }
