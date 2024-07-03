@@ -55,6 +55,7 @@ import org.openhab.core.util.ColorUtil.Gamut;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -107,7 +108,7 @@ public class Resource {
     private @Nullable Dynamics dynamics;
     private @Nullable @SerializedName("contact_report") ContactReport contactReport;
     private @Nullable @SerializedName("tamper_reports") List<TamperReport> tamperReports;
-    private @Nullable String state;
+    private @Nullable JsonElement state;
 
     /**
      * Constructor
@@ -661,13 +662,14 @@ public class Resource {
 
     /**
      * Check if the smart scene resource contains a 'state' element. If such an element is present, returns a Boolean
-     * Optional whose value depends on the value of that element, or an empty Optional if it is not.
+     * Optional whose value depends on the value of that element, or an empty Optional if it is not. Note that in some
+     * resource types the 'state' element is not a String primitive.
      *
      * @return true, false, or empty.
      */
     public Optional<Boolean> getSmartSceneActive() {
-        if (ResourceType.SMART_SCENE == getType()) {
-            String state = this.state;
+        if (ResourceType.SMART_SCENE == getType() && (state instanceof JsonPrimitive statePrimitive)) {
+            String state = statePrimitive.getAsString();
             if (Objects.nonNull(state)) {
                 return Optional.of(SmartSceneState.ACTIVE == SmartSceneState.of(state));
             }

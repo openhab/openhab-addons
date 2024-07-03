@@ -1,91 +1,279 @@
 {
-	"errors": [],
-	"data": [
-		{
-			"configuration": {
-				"what": [
-					{
-						"group": {
-							"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
-							"rtype": "room"
-						},
-						"recall": {
-							"rid": "11ac9c82-d031-43a6-a8d5-b6efdee72fe6",
-							"rtype": "scene"
-						}
-					},
-					{
-						"group": {
-							"rid": "8b529073-36dd-409b-8006-80df304048ea",
-							"rtype": "room"
-						},
-						"recall": {
-							"rid": "8b65c749-3ad8-435e-a7ed-94e3cc99e9d7",
-							"rtype": "scene"
-						}
-					}
-				],
-				"when_constrained": {
-					"type": "nighttime"
-				},
-				"where": [
-					{
-						"group": {
-							"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
-							"rtype": "room"
-						}
-					},
-					{
-						"group": {
-							"rid": "8b529073-36dd-409b-8006-80df304048ea",
-							"rtype": "room"
-						}
-					}
-				]
-			},
-			"dependees": [
-				{
-					"level": "critical",
-					"target": {
-						"rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
-						"rtype": "room"
-					},
-					"type": "ResourceDependee"
-				},
-				{
-					"level": "critical",
-					"target": {
-						"rid": "11ac9c82-d031-43a6-a8d5-b6efdee72fe6",
-						"rtype": "scene"
-					},
-					"type": "ResourceDependee"
-				},
-				{
-					"level": "critical",
-					"target": {
-						"rid": "8b529073-36dd-409b-8006-80df304048ea",
-						"rtype": "room"
-					},
-					"type": "ResourceDependee"
-				},
-				{
-					"level": "critical",
-					"target": {
-						"rid": "8b65c749-3ad8-435e-a7ed-94e3cc99e9d7",
-						"rtype": "scene"
-					},
-					"type": "ResourceDependee"
-				}
-			],
-			"enabled": true,
-			"id": "8d0ffbee-e24e-4d3e-b91a-5adc9ef5d49c",
-			"last_error": "",
-			"metadata": {
-				"name": "Coming home"
-			},
-			"script_id": "fd60fcd1-4809-4813-b510-4a18856a595c",
-			"status": "running",
-			"type": "behavior_instance"
-		}
-	]
+    "errors": [
+    ],
+    "data": [
+        {
+            "id": "042284f9-eeae-4f1e-9560-cc73750c7d28",
+            "type": "behavior_instance",
+            "script_id": "67d9395b-4403-42cc-b5f0-740b699d67c6",
+            "enabled": true,
+            "state": {
+                "model_id": "RWL021",
+                "source_type": "device"
+            },
+            "configuration": {
+                "buttons": {
+                    "6615f1f1-f3f1-4a05-b8f7-581097458e34": {
+                        "on_repeat": {
+                            "action": "dim_down"
+                        }
+                    },
+                    "91ba8839-2bac-4175-9f8c-ed192842d549": {
+                        "on_long_press": {
+                            "action": "do_nothing"
+                        },
+                        "on_short_release": {
+                            "time_based_extended": {
+                                "slots": [
+                                    {
+                                        "actions": [
+                                            {
+                                                "action": {
+                                                    "recall": {
+                                                        "rid": "f021deb5-5104-4752-aab3-2849f84da690",
+                                                        "rtype": "scene"
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "start_time": {
+                                            "hour": 7,
+                                            "minute": 0
+                                        }
+                                    },
+                                    {
+                                        "actions": [
+                                            {
+                                                "action": {
+                                                    "recall": {
+                                                        "rid": "4ddd4f8b-428c-4089-a9a1-c27df5259b9a",
+                                                        "rtype": "scene"
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "start_time": {
+                                            "hour": 20,
+                                            "minute": 0
+                                        }
+                                    },
+                                    {
+                                        "actions": [
+                                            {
+                                                "action": {
+                                                    "recall": {
+                                                        "rid": "af0c88c4-9dae-4767-8475-a3cca906390d",
+                                                        "rtype": "scene"
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        "start_time": {
+                                            "hour": 23,
+                                            "minute": 0
+                                        }
+                                    }
+                                ],
+                                "with_off": {
+                                    "enabled": false
+                                }
+                            }
+                        }
+                    },
+                    "b0d5a0af-31fd-4189-9150-c551ff9033d7": {
+                        "on_long_press": {
+                            "action": "do_nothing"
+                        },
+                        "on_short_release": {
+                            "action": "all_off"
+                        }
+                    },
+                    "f95addfc-2f7c-453f-924d-ba496e07e5f9": {
+                        "on_repeat": {
+                            "action": "dim_up"
+                        }
+                    }
+                },
+                "device": {
+                    "rid": "e130feac-3a5c-452e-a97d-5bca470783b3",
+                    "rtype": "device"
+                },
+                "model_id": "RWL021",
+                "where": [
+                    {
+                        "group": {
+                            "rid": "bdc282b3-750d-45dd-b6c4-12a2927d8951",
+                            "rtype": "zone"
+                        }
+                    }
+                ]
+            },
+            "dependees": [
+                {
+                    "target": {
+                        "rid": "e130feac-3a5c-452e-a97d-5bca470783b3",
+                        "rtype": "device"
+                    },
+                    "level": "critical",
+                    "type": "ResourceDependee"
+                },
+                {
+                    "target": {
+                        "rid": "bdc282b3-750d-45dd-b6c4-12a2927d8951",
+                        "rtype": "zone"
+                    },
+                    "level": "critical",
+                    "type": "ResourceDependee"
+                },
+                {
+                    "target": {
+                        "rid": "f021deb5-5104-4752-aab3-2849f84da690",
+                        "rtype": "scene"
+                    },
+                    "level": "critical",
+                    "type": "ResourceDependee"
+                },
+                {
+                    "target": {
+                        "rid": "4ddd4f8b-428c-4089-a9a1-c27df5259b9a",
+                        "rtype": "scene"
+                    },
+                    "level": "critical",
+                    "type": "ResourceDependee"
+                },
+                {
+                    "target": {
+                        "rid": "af0c88c4-9dae-4767-8475-a3cca906390d",
+                        "rtype": "scene"
+                    },
+                    "level": "critical",
+                    "type": "ResourceDependee"
+                },
+                {
+                    "target": {
+                        "rid": "91ba8839-2bac-4175-9f8c-ed192842d549",
+                        "rtype": "button"
+                    },
+                    "level": "critical",
+                    "type": "ResourceDependee"
+                },
+                {
+                    "target": {
+                        "rid": "f95addfc-2f7c-453f-924d-ba496e07e5f9",
+                        "rtype": "button"
+                    },
+                    "level": "critical",
+                    "type": "ResourceDependee"
+                },
+                {
+                    "target": {
+                        "rid": "6615f1f1-f3f1-4a05-b8f7-581097458e34",
+                        "rtype": "button"
+                    },
+                    "level": "critical",
+                    "type": "ResourceDependee"
+                },
+                {
+                    "target": {
+                        "rid": "b0d5a0af-31fd-4189-9150-c551ff9033d7",
+                        "rtype": "button"
+                    },
+                    "level": "critical",
+                    "type": "ResourceDependee"
+                }
+            ],
+            "status": "running",
+            "last_error": "",
+            "metadata": {
+                "name": "Worktops Dimmer Pad Right"
+            },
+            "migrated_from": "/resourcelinks/5338"
+        },
+        {
+            "configuration": {
+                "what": [
+                    {
+                        "group": {
+                            "rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+                            "rtype": "room"
+                        },
+                        "recall": {
+                            "rid": "11ac9c82-d031-43a6-a8d5-b6efdee72fe6",
+                            "rtype": "scene"
+                        }
+                    },
+                    {
+                        "group": {
+                            "rid": "8b529073-36dd-409b-8006-80df304048ea",
+                            "rtype": "room"
+                        },
+                        "recall": {
+                            "rid": "8b65c749-3ad8-435e-a7ed-94e3cc99e9d7",
+                            "rtype": "scene"
+                        }
+                    }
+                ],
+                "when_constrained": {
+                    "type": "nighttime"
+                },
+                "where": [
+                    {
+                        "group": {
+                            "rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+                            "rtype": "room"
+                        }
+                    },
+                    {
+                        "group": {
+                            "rid": "8b529073-36dd-409b-8006-80df304048ea",
+                            "rtype": "room"
+                        }
+                    }
+                ]
+            },
+            "dependees": [
+                {
+                    "level": "critical",
+                    "target": {
+                        "rid": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+                        "rtype": "room"
+                    },
+                    "type": "ResourceDependee"
+                },
+                {
+                    "level": "critical",
+                    "target": {
+                        "rid": "11ac9c82-d031-43a6-a8d5-b6efdee72fe6",
+                        "rtype": "scene"
+                    },
+                    "type": "ResourceDependee"
+                },
+                {
+                    "level": "critical",
+                    "target": {
+                        "rid": "8b529073-36dd-409b-8006-80df304048ea",
+                        "rtype": "room"
+                    },
+                    "type": "ResourceDependee"
+                },
+                {
+                    "level": "critical",
+                    "target": {
+                        "rid": "8b65c749-3ad8-435e-a7ed-94e3cc99e9d7",
+                        "rtype": "scene"
+                    },
+                    "type": "ResourceDependee"
+                }
+            ],
+            "enabled": true,
+            "id": "8d0ffbee-e24e-4d3e-b91a-5adc9ef5d49c",
+            "last_error": "",
+            "metadata": {
+                "name": "Coming home"
+            },
+            "script_id": "fd60fcd1-4809-4813-b510-4a18856a595c",
+            "status": "running",
+            "type": "behavior_instance"
+        }
+    ]
 }
