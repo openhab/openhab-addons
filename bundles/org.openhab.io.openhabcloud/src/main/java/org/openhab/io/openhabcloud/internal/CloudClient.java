@@ -706,7 +706,7 @@ public class CloudClient {
     }
 
     /**
-     * This method hides a notification by its reference id to for all users
+     * This method hides a notification by its reference id for all users
      *
      * @param referenceId the reference id
      */

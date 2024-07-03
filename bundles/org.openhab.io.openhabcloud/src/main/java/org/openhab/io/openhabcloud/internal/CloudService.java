@@ -170,7 +170,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     }
 
     /**
-     * This method hides a notification by its tag through the openHAB Cloud service
+     * This method hides a notification by its tag through the openHAB Cloud service for a specific user
      *
      * @param userId the {@link String} containing the openHAB Cloud user id to hide messages for
      * @param tag the {@link String} containing severity group of notification
@@ -182,7 +182,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     }
 
     /**
-     * This method hides a notification by its tag through the openHAB Cloud service to all
+     * This method hides a notification by its tag through the openHAB Cloud service for all
      * mobile devices of all users of the account
      *
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification
@@ -194,7 +194,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     }
 
     /**
-     * This method hides a notification by its reference id through the openHAB Cloud service
+     * This method hides a notification by its reference id through the openHAB Cloud service for a specific user
      *
      * @param userId the {@link String} containing the openHAB Cloud user id to hide messages for
      * @param severity the {@link String} containing severity group of notification
@@ -206,7 +206,7 @@ public class CloudService implements ActionService, CloudClientListener, EventSu
     }
 
     /**
-     * This method hides a notification by its reference id through the openHAB Cloud service to all
+     * This method hides a notification by its reference id through the openHAB Cloud service for all
      * mobile devices of all users of the account
      *
      * @param severity the {@link String} containing severity (good, info, warning, error) of notification

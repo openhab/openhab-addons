@@ -116,11 +116,9 @@ The parameters for these actions have the following meaning:
 
 The `sendNotification` and `sendBroadcastNotification` actions additionally support setting a title, reference id, media attachments and actions.
 
-- The tag is used for tagging messages for grouping when displaying in the app and to hide/remove groups of messages from a user's device.
-Tag was previously referred to as "severity".   
+- The tag is used for tagging messages for grouping when displaying in the app and to hide/remove groups of messages from a user's device. Tag was previously referred to as "severity".
 - The title is displayed as the notification title on the device and defaults to "openHAB" for the Android and iOS apps.
-- The reference id is a user supplied identifier that when set will replace messages with the same id on the user's device (so only the last version exists). 
-The reference id is a user supplied id that can be used to update or remove notifications with this same id.
+- The reference id is a user supplied identifier that when set will replace messages with the same id on the user's device (so only the last version exists).  It can be used to update or remove notifications.
 - Media attachments are displayed together with the notification on the device and can be used to display images, e.g. a camera snapshot.
 - Actions allow the user to interact with the notification, e.g. to open a specific page in the app or to send a command to an Item.
 
@@ -131,14 +129,14 @@ There are four different actions available:
 
 To specify media attachments and actions, there is another variant of the `sendNotification` and `sendBroadcastNotification` actions:
 
-- `sendNotification(emailAddress, message, icon, tag, title, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
-- `sendBroadcastNotification(message, icon, tag, title, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
+- `sendNotification(emailAddress, message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
+- `sendBroadcastNotification(message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
 
 
 The additional parameter for these variants have the following meaning:
 - `tag` : A user supplied tag to group messages for removing using the `hideNotificationByTag` action or grouping messages when displayed in the app. This renames the `severity` parameter, both are functionally identical. 
 - `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
-- `referenceId`: A user supplied id to both replace existing messages when pushed, and later remove messages with the `hideNotificationReferenceId` actions.
+- `referenceId`: A user supplied id to both replace existing messages when pushed, and later remove messages with the `hideNotificationByReferenceId` actions.
 - `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
 - `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This can either be a fully qualified URL, prefixed with `http://` or `https://` and reachable by the client device, or an image item with the format `item:MyImageItem`
 - `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
@@ -146,15 +144,6 @@ The additional parameter for these variants have the following meaning:
 - `actionButton3`: The action to be performed when the user clicks on the third action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
 
 These parameters may be skipped by setting them to `null`.
-
-### Hide Notification Actions
-
-There are also actions to hide existing notifications, either by `referenceId` or `tag` (formerly severity)
-
-- `hideNotificationByReferenceId(emailAddress, referenceId)`
-- `hideBroadcastNotificationByReferenceId(referenceId)`
-- `hideNotificationByTag(emailAddress, tag)`
-- `hideBroadcastNotificationByTag(tag)`
 
 #### Action Syntax
 
@@ -177,6 +166,15 @@ Examples:
 - `ui:navigate:/page/my_floorplan_page`: Navigates Main UI to the page with the ID `my_floorplan_page`.
 - `ui:popup:oh-clock-card`: Opens a popup with `oh-clock-card`.
 - `https://openhab.org`: Opens an embedded browser to the site `https://openhab.org`
+
+### Hide Notification Actions
+
+There are also actions to hide existing notifications, either by `referenceId` or `tag` (formerly severity):
+
+- `hideNotificationByReferenceId(emailAddress, referenceId)`
+- `hideBroadcastNotificationByReferenceId(referenceId)`
+- `hideNotificationByTag(emailAddress, tag)`
+- `hideBroadcastNotificationByTag(tag)`
 
 ### Examples
 
