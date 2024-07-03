@@ -202,6 +202,6 @@ public class HueBindingConstants {
 
     public static final String ALL_LIGHTS_KEY = "discovery.group.all-lights.label";
 
-    public static final String CHANNEL_GROUP_AUTOMATION = "automations";
-    public static final ChannelTypeUID CHANNEL_TYPE_AUTOMATION = new ChannelTypeUID(BINDING_ID, "automation-enabled");
+    public static final String CHANNEL_GROUP_AUTOMATION = "automation";
+    public static final ChannelTypeUID CHANNEL_TYPE_AUTOMATION = new ChannelTypeUID(BINDING_ID, "automation-enable");
 }

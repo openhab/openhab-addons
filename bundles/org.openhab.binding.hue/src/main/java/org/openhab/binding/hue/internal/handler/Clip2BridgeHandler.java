@@ -29,6 +29,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -69,7 +70,6 @@ import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
-import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -119,7 +119,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private final Bundle bundle;
     private final LocaleProvider localeProvider;
     private final TranslationProvider translationProvider;
-    private final Set<String> behaviourIds = new HashSet<>();;
+    private final Set<String> behaviorIds = new HashSet<>();;
+    private final ChannelGroupUID automationChannelGroupUID;
 
     private @Nullable Clip2Bridge clip2Bridge;
     private @Nullable ServiceRegistration<?> trustManagerRegistration;
@@ -142,6 +143,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         this.bundle = FrameworkUtil.getBundle(getClass());
         this.localeProvider = localeProvider;
         this.translationProvider = translationProvider;
+        this.automationChannelGroupUID = new ChannelGroupUID(thing.getUID(), CHANNEL_GROUP_AUTOMATION);
     }
 
     /**
@@ -437,11 +439,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
         if (CHANNEL_GROUP_AUTOMATION.equals(channelUID.getGroupId())) {
             try {
-                Resource resource = new Resource(ResourceType.BEHAVIOR_INSTANCE).setId(channelUID.getId())
+                Resource resource = new Resource(ResourceType.BEHAVIOR_INSTANCE).setId(channelUID.getIdWithoutGroup())
                         .setEnabled(command);
-
                 Resources resources = getClip2Bridge().putResource(resource);
-
                 if (resources.hasErrors()) {
                     logger.info("handleCommand({}, {}) succeeded with errors: {}", channelUID, command,
                             String.join("; ", resources.getErrors()));
@@ -818,43 +818,40 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         List<Resource> behaviors = resources.stream().filter(r -> ResourceType.BEHAVIOR_INSTANCE == r.getType())
                 .toList();
 
-        if (behaviors.size() != behaviourIds.size()
-                || behaviors.stream().anyMatch(behavior -> !behaviourIds.contains(behavior.getId()))) {
-            behaviourIds.clear();
-            behaviourIds.addAll(behaviors.stream().map(behavior -> behavior.getId()).collect(Collectors.toSet()));
+        if (behaviors.size() != behaviorIds.size()
+                || behaviors.stream().anyMatch(behavior -> !behaviorIds.contains(behavior.getId()))) {
+            behaviorIds.clear();
+            behaviorIds.addAll(behaviors.stream().map(b -> b.getId()).collect(Collectors.toSet()));
 
-            List<Channel> allChannels = thing.getChannels().stream()
-                    .filter(channel -> !CHANNEL_TYPE_AUTOMATION.equals(channel.getChannelTypeUID())).toList();
-            allChannels.addAll(behaviors.stream().map(behavior -> createAutomationChannel(behavior)).toList());
+            Stream<Channel> newChannels = behaviors.stream().map(b -> createAutomationChannel(b));
+            Stream<Channel> oldchannels = thing.getChannels().stream()
+                    .filter(c -> !CHANNEL_TYPE_AUTOMATION.equals(c.getChannelTypeUID()));
 
-            updateThing(editThing().withChannels(allChannels).build());
+            updateThing(editThing().withChannels(Stream.concat(oldchannels, newChannels).toList()).build());
+            onResources(behaviors);
+
+            logger.debug("Bridge created {} automation channels", behaviors.size());
         }
     }
 
     /**
-     * Create an automation channel from a behaviour instance resource
+     * Create an automation channel from a behavior instance resource
      */
-    private Channel createAutomationChannel(Resource behaviourInstance) {
+    private Channel createAutomationChannel(Resource behavior) {
         return ChannelBuilder
-                .create(new ChannelUID(new ChannelGroupUID(thing.getUID(), CHANNEL_GROUP_AUTOMATION),
-                        behaviourInstance.getId()), CoreItemFactory.SWITCH)
-                .withLabel(behaviourInstance.getName()).withType(CHANNEL_TYPE_AUTOMATION)
-                .withAutoUpdatePolicy(AutoUpdatePolicy.VETO).build();
+                .create(new ChannelUID(automationChannelGroupUID, behavior.getId()), CoreItemFactory.SWITCH)
+                .withLabel(behavior.getName()).withType(CHANNEL_TYPE_AUTOMATION).build();
     }
 
     /**
-     * Process event resources list and update the automation channels if any
+     * Process event resources list and update the automation channels
      */
     public void onResources(Collection<Resource> resources) {
-        for (Resource resource : resources) {
-            if (resource.getType() == ResourceType.BEHAVIOR_INSTANCE) {
-                Channel channel = thing.getChannel(resource.getId());
-                if (channel != null) {
-                    Boolean enabled = resource.getEnabled();
-                    State state = Objects.nonNull(enabled) ? OnOffType.from(enabled) : UnDefType.UNDEF;
-                    updateState(channel.getUID(), state);
-                }
-            }
-        }
+        resources.stream().filter(r -> ResourceType.BEHAVIOR_INSTANCE == r.getType()).forEach(r -> {
+            ChannelUID channelUID = new ChannelUID(automationChannelGroupUID, r.getId());
+            Boolean enabled = r.getEnabled();
+            State state = Objects.nonNull(enabled) ? OnOffType.from(enabled) : UnDefType.UNDEF;
+            updateState(channelUID, state);
+        });
     }
 }
