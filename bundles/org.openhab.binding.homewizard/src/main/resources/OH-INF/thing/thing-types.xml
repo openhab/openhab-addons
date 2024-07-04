@@ -10,10 +10,19 @@
 			Wi-Fi P1 Meter.</description>
 
 		<channels>
-			<channel id="total_energy_import_t1" typeId="total_energy_import_t1"/>
-			<channel id="total_energy_import_t2" typeId="total_energy_import_t2"/>
-			<channel id="total_energy_export_t1" typeId="total_energy_export_t1"/>
-			<channel id="total_energy_export_t2" typeId="total_energy_export_t2"/>
+			<channel id="active_current" typeId="system.electric-current">
+				<label>Current</label>
+				<description>The sum of the current for all phases</description>
+			</channel>
+			<channel id="active_current_l1" typeId="system.electric-current">
+				<label>Current L1</label>
+			</channel>
+			<channel id="active_current_l2" typeId="system.electric-current">
+				<label>Current L2</label>
+			</channel>
+			<channel id="active_current_l3" typeId="system.electric-current">
+				<label>Current L3</label>
+			</channel>
 			<channel id="active_power" typeId="active_power"/>
 			<channel id="active_power_l1" typeId="active_power_l1"/>
 			<channel id="active_power_l2" typeId="active_power_l2"/>
@@ -30,19 +39,13 @@
 			<channel id="active_voltage_l3" typeId="system.electric-voltage">
 				<label>Active Voltage L3</label>
 			</channel>
-			<channel id="active_current" typeId="system.electric-current">
-				<label>Current</label>
-				<description>The sum of the current for all phases</description>
-			</channel>
-			<channel id="active_current_l1" typeId="system.electric-current">
-				<label>Current L1</label>
-			</channel>
-			<channel id="active_current_l2" typeId="system.electric-current">
-				<label>Current L2</label>
-			</channel>
-			<channel id="active_current_l3" typeId="system.electric-current">
-				<label>Current L3</label>
-			</channel>
+
+			<channel id="total_energy_import_t1" typeId="total_energy_import_t1"/>
+			<channel id="total_energy_import_t2" typeId="total_energy_import_t2"/>
+			<channel id="total_energy_export_t1" typeId="total_energy_export_t1"/>
+			<channel id="total_energy_export_t2" typeId="total_energy_export_t2"/>
+
+
 			<channel id="total_gas" typeId="total_gas"/>
 			<channel id="gas_timestamp" typeId="gas_timestamp"/>
 		</channels>

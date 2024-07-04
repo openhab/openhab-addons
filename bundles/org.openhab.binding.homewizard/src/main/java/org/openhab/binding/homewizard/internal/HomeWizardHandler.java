@@ -199,7 +199,7 @@ public class HomeWizardHandler extends BaseThingHandler {
         // leaving the value in the payload object at 0.
         long dtv = payload.getGasTimestamp();
         if (dtv > 0) {
-            updateState(HomeWizardBindingConstants.CHANNEL_TOTAL_GAS,
+            updateState(HomeWizardBindingConstants.CHANNEL_GAS_TOTAL,
                     new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
 
             // 210119164000
@@ -224,7 +224,7 @@ public class HomeWizardHandler extends BaseThingHandler {
                 DateTimeType dtt = new DateTimeType(
                         ZonedDateTime.of(year, month, day, hours, minutes, seconds, 0, ZoneId.systemDefault()));
                 updateState(HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP, dtt);
-                updateState(HomeWizardBindingConstants.CHANNEL_TOTAL_GAS,
+                updateState(HomeWizardBindingConstants.CHANNEL_GAS_TOTAL,
                         new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
             } catch (DateTimeException e) {
                 logger.warn("Unable to parse Gas timestamp: {}", payload.getGasTimestamp());
