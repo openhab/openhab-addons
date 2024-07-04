@@ -106,7 +106,6 @@ public class MeaterRestAPI {
                     .method(HttpMethod.POST) //
                     .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS) //
                     .header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE) //
-                    .header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE) //
                     .agent(userAgent) //
                     .content(new StringContentProvider(json), JSON_CONTENT_TYPE);
 
@@ -142,7 +141,6 @@ public class MeaterRestAPI {
                             .method(HttpMethod.GET) //
                             .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS)
                             .header(HttpHeader.AUTHORIZATION, "Bearer " + authToken)
-                            .header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE)
                             .header(HttpHeader.ACCEPT, JSON_CONTENT_TYPE)
                             .header(HttpHeader.ACCEPT_LANGUAGE, localeProvider.getLocale().getLanguage())
                             .agent(userAgent);
