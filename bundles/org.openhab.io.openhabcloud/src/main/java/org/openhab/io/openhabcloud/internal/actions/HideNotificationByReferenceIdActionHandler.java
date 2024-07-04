@@ -22,23 +22,20 @@ import org.openhab.core.automation.handler.ModuleHandler;
 import org.openhab.io.openhabcloud.internal.CloudService;
 
 /**
- * This is a {@link ModuleHandler} implementation for {@link Action}s to send a notification to a specific cloud user.
+ * This is a {@link ModuleHandler} implementation for {@link Action}s to hide a notification to a specific cloud user.
  *
- * @author Christoph Weitkamp - Initial contribution
- * @author Dan Cunningham - Extended notification enhancements
+ * @author Dan Cunningham - Initial contribution
  */
 @NonNullByDefault
-public class SendNotificationActionHandler extends BaseNotificationActionHandler {
+public class HideNotificationByReferenceIdActionHandler extends BaseHideNotificationActionHandler {
 
-    public static final String TYPE_ID = "notification.SendNotification";
-    public static final String EXTENDED_TYPE_ID = "notification.SendExtendedNotification";
-    public static final String EXTENDED2_TYPE_ID = "notification.SendExtended2Notification";
+    public static final String TYPE_ID = "notification.HideNotificationByReferenceId";
 
     public static final String PARAM_USER = "userId";
 
     private final String userId;
 
-    public SendNotificationActionHandler(Action module, CloudService cloudService) {
+    public HideNotificationByReferenceIdActionHandler(Action module, CloudService cloudService) {
         super(module, cloudService);
 
         this.userId = Optional.ofNullable(stringConfig(PARAM_USER)).orElseThrow(
@@ -47,8 +44,7 @@ public class SendNotificationActionHandler extends BaseNotificationActionHandler
 
     @Override
     public @Nullable Map<String, Object> execute(Map<String, Object> context) {
-        cloudService.sendNotification(userId, message, icon, tag == null ? severity : tag, title, referenceId,
-                onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);
+        cloudService.hideNotificationByReferenceId(userId, referenceId);
         return null;
     }
 }

@@ -108,17 +108,19 @@ The parameters for these actions have the following meaning:
 - `emailAddress`: String containing the email address the target user is registered with in the cloud instance.
 - `message`: String containing the notification message text.
 - `icon`: String containing the icon name (as described in [Items: Icons]({{base}}/configuration/items.html#icons)).
-- `severity`: String containing a description of the severity of the incident.
+- `severity`: String containing a description of the severity (tag) of the incident.
 
 `null` may be used to skip the `icon` or `severity` parameter.
 
-### Title, Media Attachments & Actions
+### Title, Tag, Reference Id, Media Attachments & Actions
 
-The `sendNotification` and `sendBroadcastNotification` actions additionally support setting a title, media attachments and actions.
+The `sendNotification` and `sendBroadcastNotification` actions additionally support setting a title, reference id, media attachments and actions.
 
-The title is displayed as the notification title on the device and defaults to "openHAB" for the Android and iOS apps.
-Media attachments are displayed together with the notification on the device and can be used to display images, e.g. a camera snapshot.
-Actions allow the user to interact with the notification, e.g. to open a specific page in the app or to send a command to an Item.
+- The tag is used for tagging messages for grouping when displaying in the app and to hide/remove groups of messages from a user's device. Tag was previously referred to as "severity".
+- The title is displayed as the notification title on the device and defaults to "openHAB" for the Android and iOS apps.
+- The reference id is a user supplied identifier that when set will replace messages with the same id on the user's device (so only the last version exists). It can be used to update or remove notifications.
+- Media attachments are displayed together with the notification on the device and can be used to display images, e.g. a camera snapshot.
+- Actions allow the user to interact with the notification, e.g. to open a specific page in the app or to send a command to an Item.
 
 There are four different actions available:
 
@@ -127,14 +129,16 @@ There are four different actions available:
 
 To specify media attachments and actions, there is another variant of the `sendNotification` and `sendBroadcastNotification` actions:
 
-- `sendNotification(emailAddress, message, icon, severity, title, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
-- `sendBroadcastNotification(message, icon, severity, title, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
+- `sendNotification(emailAddress, message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
+- `sendBroadcastNotification(message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
+
 
 The additional parameter for these variants have the following meaning:
-
+- `tag` : A user supplied tag to group messages for removing using the `hideNotificationByTag` action or grouping messages when displayed in the app. This renames the `severity` parameter, both are functionally identical. 
 - `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
+- `referenceId`: A user supplied id to both replace existing messages when pushed, and later remove messages with the `hideNotificationByReferenceId` actions.
 - `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
-- `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This URL must be reachable by the push notification client.
+- `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This can either be a fully qualified URL, prefixed with `http://` or `https://` and reachable by the client device, or an image item with the format `item:MyImageItem`
 - `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
 - `actionButton2`: The action to be performed when the user clicks on the second action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
 - `actionButton3`: The action to be performed when the user clicks on the third action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
@@ -151,6 +155,7 @@ There are two types of actions available:
 - `ui`: Controls the UI in two possible ways:
   - `ui:$path` where `$path` is either `/basicui/app?...` for navigating sitemaps (using the native renderer) or `/some/absolute/path` for navigating (using the web view).
   - `ui:$commandItemSyntax` where `$commandItemSyntax` is the same syntax as used for the [UI Command Item]({{base}}/mainui/about.html#ui-command-item).
+- `http:` or `https:` : Opens the fully qualified URL in an embedded browser on the device
 
 Examples:
 
@@ -160,6 +165,16 @@ Examples:
 - `ui:/some/absolute/path`: Navigates to the absolut path `/some/absolute/path`.
 - `ui:navigate:/page/my_floorplan_page`: Navigates Main UI to the page with the ID `my_floorplan_page`.
 - `ui:popup:oh-clock-card`: Opens a popup with `oh-clock-card`.
+- `https://openhab.org`: Opens an embedded browser to the site `https://openhab.org`
+
+### Hide Notification Actions
+
+There are also actions to hide existing notifications, either by `referenceId` or `tag` (formerly severity):
+
+- `hideNotificationByReferenceId(emailAddress, referenceId)`
+- `hideBroadcastNotificationByReferenceId(referenceId)`
+- `hideNotificationByTag(emailAddress, tag)`
+- `hideBroadcastNotificationByTag(tag)`
 
 ### Examples
 
@@ -266,8 +281,8 @@ rule "Motion Detected Notification"
 when
   Item Apartment_MotionSensor changed to ON
 then
-  sendBroadcastNotification("Motion detected in the apartment!", "motion", "MEDIUM",
-                                    "Motion Detected", null, "https://apartment.my/camera-snapshot.jpg",
+  sendBroadcastNotification("Motion detected in the apartment!", "motion", "Motion Tag",
+                                    "Motion Detected", "motion-id-1234", null, "https://apartment.my/camera-snapshot.jpg",
                                     "Turn on the light=command:Apartment_Light:ON", null, null)
 end
 ```
@@ -280,8 +295,9 @@ end
 rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
   actions.notificationBuilder('Motion detected in the apartment!')
     .withIcon('motion')
-    .withSeverity('MEDIUM')
+    .withTag('motion-tag')
     .withTitle('Motion Detected')
+    .withReferenceId('motion-id-1234')
     .withMediaAttachment('https://apartment.my/camera-snapshot.jpg')
     .addActionButton('Turn on the light=command:Apartment_Light:ON')
     .send();
@@ -298,7 +314,7 @@ rule "Motion Detected Notification" do
   run do
     notify "Motion detected in the apartment!",
            icon: "motion",
-           severity: "MEDIUM",
+           tag: "motion-tag",
            title: "Motion Detected",
            attachment: "https://apartment.my/camera-snapshot.jpg",
            buttons: { "Turn on the light" => "command:Apartment_Light:ON" }
