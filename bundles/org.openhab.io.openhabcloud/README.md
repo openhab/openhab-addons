@@ -35,7 +35,7 @@ You will need these values to register on the website before connection is accep
 Location of UUID and Secret:
 
 | File   | Regular Installation                  | APT & RPM Installation               |
-|--------|---------------------------------------|--------------------------------------|
+| ------ | ------------------------------------- | ------------------------------------ |
 | UUID   | $OPENHAB_USERDATA/uuid                | /var/lib/openhab/uuid                |
 | Secret | $OPENHAB_USERDATA/openhabcloud/secret | /var/lib/openhab/openhabcloud/secret |
 
@@ -212,12 +212,12 @@ rules.when().item('Apartment_FrontDoor').changed().to('OPEN').then(() => {
 rule "Front Door Notification" do
   changed Apartment_FrontDoor, to: OPEN
   run do
-    notify("Front door was opened!", email: "me@email.com")
+    Notification.send("Front door was opened!", email: "me@email.com")
   end
 end
 ```
 
-See [notify](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Actions.html#notify-class_method)
+See [Notification.send](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Actions/Notification.html#send-class_method)
 
 :::
 
@@ -246,7 +246,7 @@ end
 rules.when().item('Apartment_Window').changed().to('OPEN').then(() => {
   actions.notificationBuilder('Apartment window was opened!')
     .withIcon('window')
-    .withSeverity('HIGH')
+    .withTag('HIGH')
     .send();
 }).build('Open Window Notification');
 ```
@@ -255,13 +255,13 @@ rules.when().item('Apartment_Window').changed().to('OPEN').then(() => {
 
 ::: tab JRuby
 
-Broadcast notification is performed by calling [notify](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Actions.html#notify-class_method) without providing an email address.
+Broadcast notification is performed by calling [Notification.send](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Actions/Notification.html#send-class_method) without providing an email address.
 
 ```ruby
 rule "Open Window Notification" do
   changed Apartment_Window, to: OPEN
   run do
-    notify("Apartment window was opened!", icon: "window", severity: "HIGH")
+    Notification.send("Apartment window was opened!", icon: "window", tag: "HIGH")
   end
 end
 ```
@@ -295,7 +295,7 @@ end
 rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
   actions.notificationBuilder('Motion detected in the apartment!')
     .withIcon('motion')
-    .withTag('motion-tag')
+    .withTag('Motion Tag')
     .withTitle('Motion Detected')
     .withReferenceId('motion-id-1234')
     .withMediaAttachment('https://apartment.my/camera-snapshot.jpg')
@@ -312,12 +312,13 @@ rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
 rule "Motion Detected Notification" do
   changed Apartment_MotionSensor, to: ON
   run do
-    notify "Motion detected in the apartment!",
-           icon: "motion",
-           tag: "motion-tag",
-           title: "Motion Detected",
-           attachment: "https://apartment.my/camera-snapshot.jpg",
-           buttons: { "Turn on the light" => "command:Apartment_Light:ON" }
+    Notification.send "Motion detected in the apartment!",
+                      icon: "motion",
+                      tag: "Motion Tag",
+                      title: "Motion Detected",
+                      id: "motion-id-1234"
+                      attachment: "https://apartment.my/camera-snapshot.jpg",
+                      buttons: { "Turn on the light" => "command:Apartment_Light:ON" }
   end
 end
 ```
