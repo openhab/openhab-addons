@@ -354,7 +354,7 @@ class ForecastSolarTest {
         ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
 
         TimeSeries powerSeries = fo.getPowerTimeSeries(QueryMode.Average);
-        assertEquals(36, powerSeries.size()); // 18 values each day for 2 days
+        assertEquals(23, powerSeries.size());
         powerSeries.getStates().forEachOrdered(entry -> {
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
@@ -362,7 +362,7 @@ class ForecastSolarTest {
         });
 
         TimeSeries energySeries = fo.getEnergyTimeSeries(QueryMode.Average);
-        assertEquals(36, energySeries.size());
+        assertEquals(23, energySeries.size());
         energySeries.getStates().forEachOrdered(entry -> {
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);

@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * The {@link SolcastObject} holds complete data for forecast
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - TimeSeries delivers only future values, otherwise past values are overwritten
  */
 @NonNullByDefault
 public class SolcastObject implements SolarForecast {
