@@ -105,6 +105,9 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final ResourceReference SMART_SCENE = new ResourceReference().setType(ResourceType.SMART_SCENE);
     private static final ResourceReference BEHAVIOR = new ResourceReference().setType(ResourceType.BEHAVIOR_INSTANCE);
 
+    private static final String AUTOMATION_CHANNEL_LABEL_KEY = "dynamic-channel.automation-enable.label";
+    private static final String AUTOMATION_CHANNEL_DESCRIPTION_KEY = "dynamic-channel.automation-enable.description";
+
     /**
      * List of resource references that need to be mass down loaded.
      * NOTE: the SCENE resources must be mass down loaded first!
@@ -837,9 +840,18 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Create an automation channel from an automation resource
      */
     private Channel createAutomationChannel(Resource automation) {
+        String label = Objects.requireNonNullElse(translationProvider.getText(bundle, AUTOMATION_CHANNEL_LABEL_KEY,
+                AUTOMATION_CHANNEL_LABEL_KEY, localeProvider.getLocale(), automation.getName()),
+                AUTOMATION_CHANNEL_LABEL_KEY);
+
+        String description = Objects.requireNonNullElse(
+                translationProvider.getText(bundle, AUTOMATION_CHANNEL_DESCRIPTION_KEY,
+                        AUTOMATION_CHANNEL_DESCRIPTION_KEY, localeProvider.getLocale(), automation.getName()),
+                AUTOMATION_CHANNEL_DESCRIPTION_KEY);
+
         return ChannelBuilder
                 .create(new ChannelUID(automationChannelGroupUID, automation.getId()), CoreItemFactory.SWITCH)
-                .withLabel(automation.getName()).withType(CHANNEL_TYPE_AUTOMATION).build();
+                .withLabel(label).withDescription(description).withType(CHANNEL_TYPE_AUTOMATION).build();
     }
 
     /**
@@ -858,7 +870,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Create a filtered resource stream that contains only automation resources
      */
     private Stream<Resource> getAutomationsStream(Collection<Resource> resources) {
-        // TODO fine tune the filter to exclude tap dial switches
         return resources.stream().filter(r -> (ResourceType.BEHAVIOR_INSTANCE == r.getType()) && r.isStateNull());
     }
 }
