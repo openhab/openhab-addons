@@ -52,13 +52,12 @@ public class NotificationAction {
      * @param userId the cloud user id of the recipient
      * @param message the body of the notification
      * @param icon name for the notification
-     * @param severity category for the notification
+     * @param tag for the notification (formerly severity)
      *
      */
     @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
-    public static void sendNotification(String userId, String message, @Nullable String icon,
-            @Nullable String severity) {
-        sendNotification(userId, message, icon, severity, null, null, null, null, null, null);
+    public static void sendNotification(String userId, String message, @Nullable String icon, @Nullable String tag) {
+        sendNotification(userId, message, icon, tag, null, null, null, null, null, null, null);
     }
 
     /**
@@ -67,8 +66,9 @@ public class NotificationAction {
      * @param userId the cloud user id of the recipient
      * @param message the body of the notification
      * @param icon name for the notification
-     * @param severity category for the notification
+     * @param tag for the notification
      * @param title for the notification
+     * @param referenceId an identifier used to collapse and hide notifications
      * @param onClickAction the action to perform when clicked
      * @param mediaAttachmentUrl the media to attach to a notification
      * @param actionButton1 an action button in the format "Title=Action"
@@ -77,13 +77,14 @@ public class NotificationAction {
      *
      */
     @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
-    public static void sendNotification(String userId, String message, @Nullable String icon, @Nullable String severity,
-            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
-            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
+    public static void sendNotification(String userId, String message, @Nullable String icon, @Nullable String tag,
+            @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
+            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
+            @Nullable String actionButton3) {
         logger.debug("sending notification '{}' to user {}", message, userId);
         if (cloudService != null) {
-            cloudService.sendNotification(userId, message, icon, severity, title, onClickAction, mediaAttachmentUrl,
-                    actionButton1, actionButton2, actionButton3);
+            cloudService.sendNotification(userId, message, icon, tag, title, referenceId, onClickAction,
+                    mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);
         }
     }
 
@@ -105,14 +106,14 @@ public class NotificationAction {
      *
      * @param message the body of the notification
      * @param icon name for the notification
-     * @param severity category for the notification
+     * @param tag for the notification (formerly severity)
      *
      */
     @ActionDoc(text = "Sends a log notification which is shown in notifications log to all account users")
-    public static void sendLogNotification(String message, @Nullable String icon, @Nullable String severity) {
+    public static void sendLogNotification(String message, @Nullable String icon, @Nullable String tag) {
         logger.debug("sending log notification '{}'", message);
         if (cloudService != null) {
-            cloudService.sendLogNotification(message, icon, severity);
+            cloudService.sendLogNotification(message, icon, tag);
         }
     }
 
@@ -134,12 +135,12 @@ public class NotificationAction {
      *
      * @param message the body of the notification
      * @param icon name for the notification
-     * @param severity category for the notification
+     * @param tag for the notification (formerly severity)
      *
      */
-    @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
-    public static void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity) {
-        sendBroadcastNotification(message, icon, severity, null, null, null, null, null, null);
+    @ActionDoc(text = "Sends a broadcast notification to all mobile devices of all account users")
+    public static void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String tag) {
+        sendBroadcastNotification(message, icon, tag, null, null, null, null, null, null, null);
     }
 
     /**
@@ -148,8 +149,9 @@ public class NotificationAction {
      *
      * @param message the body of the notification
      * @param icon name for the notification
-     * @param severity category for the notification
+     * @param tag for the notification
      * @param title for the notification
+     * @param referenceId an identifier used to collapse and hide notifications
      * @param onClickAction the action to perform when clicked
      * @param mediaAttachmentUrl the media to attach to a notification
      * @param actionButton1 an action button in the format "Title=Action"
@@ -157,14 +159,69 @@ public class NotificationAction {
      * @param actionButton3 an action button in the format "Title=Action"
      *
      */
-    @ActionDoc(text = "Sends a push notification to mobile devices of user with userId")
-    public static void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity,
-            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
-            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
+    @ActionDoc(text = "Sends a broadcast notification to all mobile devices of all account users")
+    public static void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String tag,
+            @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
+            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
+            @Nullable String actionButton3) {
         logger.debug("sending broadcast notification '{}' to all users", message);
         if (cloudService != null) {
-            cloudService.sendBroadcastNotification(message, icon, severity, title, onClickAction, mediaAttachmentUrl,
-                    actionButton1, actionButton2, actionButton3);
+            cloudService.sendBroadcastNotification(message, icon, tag, title, referenceId, onClickAction,
+                    mediaAttachmentUrl, actionButton1, actionButton2, actionButton3);
+        }
+    }
+
+    /**
+     * Hides notifications that contains a matching reference id to all mobile devices of a single user.
+     *
+     * @param userId the cloud user id of the recipient
+     * @param referenceId the user reference id
+     *
+     */
+    @ActionDoc(text = "Hides notifications that contain the reference id on mobile devices of user with userId")
+    public static void hideNotificationByReferenceId(String userId, String referenceId) {
+        if (cloudService != null) {
+            cloudService.hideNotificationByReferenceId(userId, referenceId);
+        }
+    }
+
+    /**
+     * Hides notifications that contains a matching reference id to all mobile devices of all users of the account
+     *
+     * @param referenceId the user reference id
+     *
+     */
+    @ActionDoc(text = "Hides notifications that contain the reference id on all mobile devices of all account users")
+    public static void hideBroadcastNotificationByReferenceId(String referenceId) {
+        if (cloudService != null) {
+            cloudService.hideBroadcastNotificationByReferenceId(referenceId);
+        }
+    }
+
+    /**
+     * Hides notifications that are associated with a tag to all mobile devices of a single user.
+     *
+     * @param userId the cloud user id of the recipient
+     * @param tag the tag associated with notifications
+     *
+     */
+    @ActionDoc(text = "Hides notifications that are associated with a tag on mobile devices of user with userId")
+    public static void hideNotificationByTag(String userId, String tag) {
+        if (cloudService != null) {
+            cloudService.hideNotificationByTag(userId, tag);
+        }
+    }
+
+    /**
+     * Hides notifications that are associated with a tag to all mobile devices of all users of the account
+     *
+     * @param tag the tag associated with notifications
+     *
+     */
+    @ActionDoc(text = "Hides notifications that are associated with a tag on all mobile devices of all account users")
+    public static void hideBroadcastNotificationByTag(String tag) {
+        if (cloudService != null) {
+            cloudService.hideBroadcastNotificationByTag(tag);
         }
     }
 }

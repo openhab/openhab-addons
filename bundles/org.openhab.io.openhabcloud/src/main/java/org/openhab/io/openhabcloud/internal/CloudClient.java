@@ -588,18 +588,20 @@ public class CloudClient {
      * @param userId openHAB Cloud user id
      * @param message notification message text
      * @param icon name of the icon for this notification
-     * @param severity severity name for this notification
+     * @param tag name for this notification (formerly severity)
      * @param title for the notification
+     * @param referenceId an identifier used to collapse and hide notifications
      * @param onClickAction the action to perform when clicked
      * @param mediaAttachmentUrl the media to attach to a notification
      * @param actionButton1 an action button in the format "Title=Action"
      * @param actionButton2 an action button in the format "Title=Action"
      * @param actionButton3 an action button in the format "Title=Action"
      */
-    public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String severity,
-            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
-            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
-        sendNotificationInternal(userId, message, icon, severity, title, onClickAction, mediaAttachmentUrl,
+    public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String tag,
+            @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
+            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
+            @Nullable String actionButton3) {
+        sendNotificationInternal(userId, message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl,
                 actionButton1, actionButton2, actionButton3);
     }
 
@@ -608,23 +610,25 @@ public class CloudClient {
      *
      * @param message notification message text
      * @param icon name of the icon for this notification
-     * @param severity severity name for this notification
+     * @param tag name for this notification (formerly severity)
      * @param title for this notification
+     * @param referenceId an identifier used to collapse and hide notifications
      * @param onClickAction the action to perform when clicked
      * @param mediaAttachmentUrl the media to attach to a notification
      * @param actionButton1 an action button in the format "Title=Action"
      * @param actionButton2 an action button in the format "Title=Action"
      * @param actionButton3 an action button in the format "Title=Action"
      */
-    public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity,
-            @Nullable String title, @Nullable String onClickAction, @Nullable String mediaAttachmentUrl,
-            @Nullable String actionButton1, @Nullable String actionButton2, @Nullable String actionButton3) {
-        sendNotificationInternal(null, message, icon, severity, title, onClickAction, mediaAttachmentUrl, actionButton1,
-                actionButton2, actionButton3);
+    public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String tag,
+            @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
+            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
+            @Nullable String actionButton3) {
+        sendNotificationInternal(null, message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl,
+                actionButton1, actionButton2, actionButton3);
     }
 
     private void sendNotificationInternal(@Nullable String userId, String message, @Nullable String icon,
-            @Nullable String severity, @Nullable String title, @Nullable String onClickAction,
+            @Nullable String tag, @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
             @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
             @Nullable String actionButton3) {
         if (isConnected()) {
@@ -633,9 +637,19 @@ public class CloudClient {
                 if (userId != null) {
                     notificationMessage.put("userId", userId);
                 }
+
+                notificationMessage.put("type", "notification");
                 notificationMessage.put("message", message);
-                notificationMessage.put("icon", icon);
-                notificationMessage.put("severity", severity);
+
+                if (icon != null) {
+                    notificationMessage.put("icon", icon);
+                }
+                if (tag != null) {
+                    notificationMessage.put("tag", tag);
+                }
+                if (referenceId != null) {
+                    notificationMessage.put("reference-id", referenceId);
+                }
                 if (title != null) {
                     notificationMessage.put("title", title);
                 }
@@ -673,6 +687,68 @@ public class CloudClient {
                 notificationMessage.put("icon", icon);
                 notificationMessage.put("severity", severity);
                 socket.emit("lognotification", notificationMessage);
+            } catch (JSONException e) {
+                logger.debug("{}", e.getMessage());
+            }
+        } else {
+            logger.debug("No connection, notification is not sent");
+        }
+    }
+
+    /**
+     * This method hides a notification by its reference id for a single user
+     *
+     * @param userId openHAB Cloud user id
+     * @param referenceId the reference id
+     */
+    public void hideNotificationByReferenceId(String userId, String referenceId) {
+        hideNotificationInternal(userId, referenceId, null);
+    }
+
+    /**
+     * This method hides a notification by its reference id for all users
+     *
+     * @param referenceId the reference id
+     */
+    public void hideBroadcastNotificationByReferenceId(String referenceId) {
+        hideNotificationInternal(null, referenceId, null);
+    }
+
+    /**
+     * This method hides a notification by its tag for all users
+     *
+     * @param userId openHAB Cloud user id
+     * @param tag severity name for this notification
+     */
+    public void hideNotificationByTag(String userId, String tag) {
+        hideNotificationInternal(userId, null, tag);
+    }
+
+    /**
+     * This method hides a notification by its tag for all users
+     *
+     * @param tag name for this notification
+     */
+    public void hideBroadcastNotificationByTag(String tag) {
+        hideNotificationInternal(null, null, tag);
+    }
+
+    private void hideNotificationInternal(@Nullable String userId, @Nullable String referenceId, @Nullable String tag) {
+        if (isConnected()) {
+            JSONObject notificationMessage = new JSONObject();
+            try {
+                notificationMessage.put("type", "hideNotification");
+
+                if (userId != null) {
+                    notificationMessage.put("userId", userId);
+                }
+                if (referenceId != null) {
+                    notificationMessage.put("reference-id", referenceId);
+                }
+                if (tag != null) {
+                    notificationMessage.put("tag", tag);
+                }
+                socket.emit(userId == null ? "broadcastnotification" : "notification", notificationMessage);
             } catch (JSONException e) {
                 logger.debug("{}", e.getMessage());
             }
