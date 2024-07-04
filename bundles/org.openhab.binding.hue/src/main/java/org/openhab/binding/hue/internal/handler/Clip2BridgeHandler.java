@@ -436,15 +436,17 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (RefreshType.REFRESH.equals(command)) {
-            return;
-        }
-
         if (CHANNEL_GROUP_AUTOMATION.equals(channelUID.getGroupId())) {
             try {
-                Resource resource = new Resource(ResourceType.BEHAVIOR_INSTANCE).setId(channelUID.getIdWithoutGroup())
-                        .setEnabled(command);
-                Resources resources = getClip2Bridge().putResource(resource);
+                Resources resources;
+                if (RefreshType.REFRESH.equals(command)) {
+                    resources = getClip2Bridge().getResources(new ResourceReference()
+                            .setType(ResourceType.BEHAVIOR_INSTANCE).setId(channelUID.getIdWithoutGroup()));
+                    onResources(resources.getResources());
+                } else {
+                    resources = getClip2Bridge().putResource(new Resource(ResourceType.BEHAVIOR_INSTANCE)
+                            .setId(channelUID.getIdWithoutGroup()).setEnabled(command));
+                }
                 if (resources.hasErrors()) {
                     logger.info("handleCommand({}, {}) succeeded with errors: {}", channelUID, command,
                             String.join("; ", resources.getErrors()));
