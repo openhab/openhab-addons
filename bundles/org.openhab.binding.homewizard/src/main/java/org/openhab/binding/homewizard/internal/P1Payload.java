@@ -45,6 +45,24 @@ public class P1Payload {
     private double totalGasM3;
     private long gasTimestamp = 0;
 
+    @SerializedName("active_voltage_v")
+    private double activeVoltage;
+    @SerializedName("active_voltage_l1_v")
+    private double activeVoltageL1;
+    @SerializedName("active_voltage_l2_v")
+    private double activeVoltageL2;
+    @SerializedName("active_voltage_l3_v")
+    private double activeVoltageL3;
+
+    @SerializedName("active_current_a")
+    private double activeCurrent;
+    @SerializedName("active_current_l1_a")
+    private double activeCurrentL1;
+    @SerializedName("active_current_l2_a")
+    private double activeCurrentL2;
+    @SerializedName("active_current_l3_a")
+    private double activeCurrentL3;
+
     /**
      * Getter for the smart meter version
      *
@@ -223,6 +241,78 @@ public class P1Payload {
      */
     public void setActivePowerL1W(double activePowerL1W) {
         this.activePowerL1W = activePowerL1W;
+    }
+
+    /**
+     * Getter for the active voltage
+     *
+     * @return current active voltage
+     */
+    public double getActiveVoltage() {
+        return activeVoltage;
+    }
+
+    /**
+     * Getter for the active voltage on phase 1
+     *
+     * @return active voltage on phase 1
+     */
+    public double getActiveVoltageL1() {
+        return activeVoltageL1;
+    }
+
+    /**
+     * Getter for the active voltage on phase 2
+     *
+     * @return active voltage on phase 2
+     */
+    public double getActiveVoltageL2() {
+        return activeVoltageL2;
+    }
+
+    /**
+     * Getter for the active voltage on phase 3
+     *
+     * @return active voltage on phase 3
+     */
+    public double getActiveVoltageL3() {
+        return activeVoltageL3;
+    }
+
+    /**
+     * Getter for the active current (sum of all phases)
+     *
+     * @return active current (all phases)
+     */
+    public double getActiveCurrent() {
+        return activeCurrent;
+    }
+
+    /**
+     * Getter for the active current on phase 1
+     *
+     * @return active current on phase 1
+     */
+    public double getActiveCurrentL1() {
+        return activeCurrentL1;
+    }
+
+    /**
+     * Getter for the active current on phase 2
+     *
+     * @return active current on phase 2
+     */
+    public double getActiveCurrentL2() {
+        return activeCurrentL2;
+    }
+
+    /**
+     * Getter for the active current on phase 3
+     *
+     * @return active current on phase 3
+     */
+    public double getActiveCurrentL3() {
+        return activeCurrentL3;
     }
 
     /**

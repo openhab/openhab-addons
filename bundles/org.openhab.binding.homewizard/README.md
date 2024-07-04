@@ -34,18 +34,26 @@ Thing homewizard:p1_wifi_meter:my_meter [ ipAddress="192.178.1.67", refreshDelay
 
 ## Channels
 
-| Channel ID             | Item Type     | Description                                                                                |
-|------------------------|---------------|--------------------------------------------------------------------------------------------|
-| total_energy_import_t1 | Number:Energy | The most recently reported total imported energy in kWh by counter 1.                      |
-| total_energy_import_t2 | Number:Energy | The most recently reported total imported energy in kWh by counter 2.                      |
-| total_energy_export_t1 | Number:Energy | The most recently reported total exported energy in kWh by counter 1.                      |
-| total_energy_export_t2 | Number:Energy | The most recently reported total exported energy in kWh by counter 2.                      |
-| active_power           | Number:Power  | The current net total power in W. It will be below 0 if power is currently being exported. |
-| active_power_l1        | Number:Power  | The current net total power in W for phase 1.                                              |
-| active_power_l2        | Number:Power  | The current net total power in W for phase 2.                                              |
-| active_power_l3        | Number:Power  | The current net total power in W for phase 3.                                              |
-| total_gas              | Number:Volume | The most recently reported total imported gas in m^3.                                      |
-| gas_timestamp          | DateTime      | The time stamp of the total_gas measurement.                                               |
+| Channel ID             | Item Type                | Description                                                                                |
+|------------------------|--------------------------|--------------------------------------------------------------------------------------------|
+| current_voltage        | Number:ElectricPotential | The active voltage in V                                                                    |
+| current_voltage_l1     | Number:ElectricPotential | The active voltage in V for phase 1.                                                       |
+| current_voltage_l2     | Number:ElectricPotential | The active voltage in V for phase 2.                                                       |
+| current_voltage_l3     | Number:ElectricPotential | The active voltage in V for phase 3.                                                       |
+| total_energy_import_t1 | Number:Energy            | The most recently reported total imported energy in kWh by counter 1.                      |
+| total_energy_import_t2 | Number:Energy            | The most recently reported total imported energy in kWh by counter 2.                      |
+| total_energy_export_t1 | Number:Energy            | The most recently reported total exported energy in kWh by counter 1.                      |
+| total_energy_export_t2 | Number:Energy            | The most recently reported total exported energy in kWh by counter 2.                      |
+| active_current         | Number:ElectricCurrent   | The combined current in A vor all phases                                                   |
+| active_current_l1      | Number:ElectricCurrent   | The active current in A for phase 1.                                                       |
+| active_current_l2      | Number:ElectricCurrent   | The active current in A for phase 2.                                                       |
+| active_current_l3      | Number:ElectricCurrent   | The active current in A for phase 3.                                                       |
+| active_power           | Number:Power             | The current net total power in W. It will be below 0 if power is currently being exported. |
+| active_power_l1        | Number:Power             | The current net total power in W for phase 1.                                              |
+| active_power_l2        | Number:Power             | The current net total power in W for phase 2.                                              |
+| active_power_l3        | Number:Power             | The current net total power in W for phase 3.                                              |
+| total_gas              | Number:Volume            | The most recently reported total imported gas in m^3.                                      |
+| gas_timestamp          | DateTime                 | The time stamp of the total_gas measurement.                                               |
 
 Example of configuration through a .items file:
 

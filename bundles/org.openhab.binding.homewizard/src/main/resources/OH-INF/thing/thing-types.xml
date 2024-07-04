@@ -18,12 +18,38 @@
 			<channel id="active_power_l1" typeId="active_power_l1"/>
 			<channel id="active_power_l2" typeId="active_power_l2"/>
 			<channel id="active_power_l3" typeId="active_power_l3"/>
+			<channel id="active_voltage" typeId="system.electric-voltage">
+				<label>Active Voltage</label>
+			</channel>
+			<channel id="active_voltage_l1" typeId="system.electric-voltage">
+				<label>Active Voltage L1</label>
+			</channel>
+			<channel id="active_voltage_l2" typeId="system.electric-voltage">
+				<label>Active Voltage L2</label>
+			</channel>
+			<channel id="active_voltage_l3" typeId="system.electric-voltage">
+				<label>Active Voltage L3</label>
+			</channel>
+			<channel id="active_current" typeId="system.electric-current">
+				<label>Current</label>
+				<description>The sum of the current for all phases</description>
+			</channel>
+			<channel id="active_current_l1" typeId="system.electric-current">
+				<label>Current L1</label>
+			</channel>
+			<channel id="active_current_l2" typeId="system.electric-current">
+				<label>Current L2</label>
+			</channel>
+			<channel id="active_current_l3" typeId="system.electric-current">
+				<label>Current L3</label>
+			</channel>
 			<channel id="total_gas" typeId="total_gas"/>
 			<channel id="gas_timestamp" typeId="gas_timestamp"/>
 		</channels>
 
 		<properties>
 			<property name="meterModel">Unknown</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<config-description>

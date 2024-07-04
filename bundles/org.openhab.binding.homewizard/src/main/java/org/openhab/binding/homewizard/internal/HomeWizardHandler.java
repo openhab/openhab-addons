@@ -177,6 +177,24 @@ public class HomeWizardHandler extends BaseThingHandler {
         updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_POWER_L3,
                 new QuantityType<>(payload.getActivePowerL3W(), Units.WATT));
 
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_CURRENT,
+                new QuantityType<>(payload.getActiveCurrent(), Units.AMPERE));
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_CURRENT_L1,
+                new QuantityType<>(payload.getActiveCurrentL1(), Units.AMPERE));
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_CURRENT_L2,
+                new QuantityType<>(payload.getActiveCurrentL1(), Units.AMPERE));
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_CURRENT_L3,
+                new QuantityType<>(payload.getActiveCurrentL1(), Units.AMPERE));
+
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_VOLTAGE,
+                new QuantityType<>(payload.getActiveVoltage(), Units.VOLT));
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_VOLTAGE_L1,
+                new QuantityType<>(payload.getActiveVoltageL1(), Units.VOLT));
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_VOLTAGE_L2,
+                new QuantityType<>(payload.getActiveVoltageL2(), Units.VOLT));
+        updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_VOLTAGE_L3,
+                new QuantityType<>(payload.getActiveVoltageL3(), Units.VOLT));
+
         // If no data from the gas meter is present, the json value will be null, which means gson ignores it,
         // leaving the value in the payload object at 0.
         long dtv = payload.getGasTimestamp();
