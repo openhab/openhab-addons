@@ -17,7 +17,7 @@ Supported devices: dishwasher, washer, washer / dryer combination, dryer, oven, 
 
 #### experimental support
 
-| Home appliance | Thing Type ID    |
+| Home appliance | Thing Type ID |
 | --------------- | ------------ |
 | Dishwasher | dishwasher |
 | Washer | washer |
@@ -138,7 +138,7 @@ The Home Connect bridge can be configured in the openHAB UI as follows:
 
 ## Examples: File based configuration
 
-If you prefer to configure everything via file instead of openHAB UI, here are some examples.
+If you prefer to configure everything via file instead of openHAB UI, here are some examples. In order to get your `haId` you might use the discover feature in UI, copy the appliance's ID and paste it into your `*.things`.
 
 ### things/homeconnect.things
 
