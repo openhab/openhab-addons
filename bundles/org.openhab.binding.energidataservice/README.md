@@ -303,6 +303,15 @@ var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant
 
 :::
 
+::: tab JRuby
+
+```ruby
+eds = things["energidataservice:service:energidataservice"]
+result = eds.calculate_cheapest_period(Instant.now, 2.hours.from_now.to_instant, 90.minutes)
+```
+
+:::
+
 ::::
 
 #### `calculateCheapestPeriod` from Duration and Power
@@ -333,6 +342,15 @@ var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant()
 
 ```javascript
 var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(12*60*60), time.Duration.ofMinutes(90), Quantity("250 W"));
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+eds = things["energidataservice:service:energidataservice"]
+result = eds.calculate_cheapest_period(Instant.now, 12.hours.from_now.to_instant, 90.minutes, 250 | "W")
 ```
 
 :::
@@ -416,6 +434,27 @@ var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant
 
 :::
 
+::: tabs JRuby
+
+```ruby
+duration_phases = [37, 8, 4, 2, 4, 36, 41, 104].map { |duration| duration.minutes }
+power_phases = [
+  162.162 | "W",
+  750 | "W",
+  1500 | "W",
+  3000 | "W",
+  1500 | "W",
+  166.666 | "W",
+  146.341 | "W",
+  0 | "W"
+]
+
+eds = things["energidataservice:service:energidataservice"]
+result = eds.calculate_cheapest_period(Instant.now, 12.hours.from_now.to_instant, duration_phases, power_phases)
+```
+
+:::
+
 ::::
 
 Please note that the total duration will be calculated automatically as a sum of provided duration phases.
@@ -479,6 +518,17 @@ var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant
 
 :::
 
+::: tabs JRuby
+
+```ruby
+duration_phases = [37, 8, 4, 2, 4, 36, 41].map { |duration| duration.minutes }
+
+eds = things["energidataservice:service:energidataservice"]
+result = eds.calculate_cheapest_period(Instant.now, 12.hours.from_now.to_instant, 236.minutes, duration_phases, 0.1 | "kWh")
+```
+
+:::
+
 ::::
 
 ### `calculatePrice`
@@ -510,6 +560,15 @@ var price = actions.calculatePrice(now.toInstant(), now.plusHours(4).toInstant, 
 
 ```javascript
 var price = edsActions.calculatePrice(time.Instant.now(), time.ZonedDateTime.now().plusHours(4).toInstant(), Quantity("200 W"));
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+eds = things["energidataservice:service:energidataservice"]
+price = eds.calculate_price(Instant.now, 4.hours.from_now.to_instant, 200 | "W")
 ```
 
 :::
@@ -556,6 +615,15 @@ var priceMap = actions.getPrices("SpotPrice,GridTariff")
 
 ```javascript
 var priceMap = utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,GridTariff"));
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+eds = things["energidataservice:service:energidataservice"]
+price_map = eds.get_prices("SpotPrice,GridTariff")
 ```
 
 :::
