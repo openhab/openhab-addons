@@ -290,6 +290,7 @@ Example:
 ::: tab DSL
 
 ```java
+val actions = getActions("energidataservice", "energidataservice:service:energidataservice")
 var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(12).toInstant(), Duration.ofMinutes(90))
 ```
 
@@ -298,6 +299,7 @@ var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant()
 ::: tab JavaScript
 
 ```javascript
+var edsActions = actions.get("energidataservice", "energidataservice:service:energidataservice");
 var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(12*60*60), time.Duration.ofMinutes(90));
 ```
 
@@ -333,6 +335,7 @@ Example:
 ::: tab DSL
 
 ```java
+val actions = getActions("energidataservice", "energidataservice:service:energidataservice")
 var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(12).toInstant(), Duration.ofMinutes(90), 250 | W)
 ```
 
@@ -341,6 +344,7 @@ var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant()
 ::: tab JavaScript
 
 ```javascript
+var edsActions = actions.get("energidataservice", "energidataservice:service:energidataservice");
 var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(12*60*60), time.Duration.ofMinutes(90), Quantity("250 W"));
 ```
 
@@ -399,6 +403,7 @@ powerPhases.add(166.666 | W)
 powerPhases.add(146.341 | W)
 powerPhases.add(0 | W)
 
+val actions = getActions("energidataservice", "energidataservice:service:energidataservice")
 var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(12).toInstant(), durationPhases, powerPhases)
 ```
 
@@ -429,6 +434,7 @@ var powerPhases = [
     Quantity("0 W")
 ];
 
+var edsActions = actions.get("energidataservice", "energidataservice:service:energidataservice");
 var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(12*60*60), durationPhases, powerPhases);
 ```
 
@@ -493,6 +499,8 @@ durationPhases.add(Duration.ofMinutes(4))
 durationPhases.add(Duration.ofMinutes(36))
 durationPhases.add(Duration.ofMinutes(41))
 
+val actions = getActions("energidataservice", "energidataservice:service:energidataservice")
+
 // 0.7 kWh is used in total (number of phases × energy used per phase)
 var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(12).toInstant(), Duration.ofMinutes(236), durationPhases, 0.1 | kWh)
 ```
@@ -503,14 +511,16 @@ var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant()
 
 ```javascript
 var durationPhases = [
-	time.Duration.ofMinutes(37),
-	time.Duration.ofMinutes(8),
-	time.Duration.ofMinutes(4),
-	time.Duration.ofMinutes(2),
-	time.Duration.ofMinutes(4),
-	time.Duration.ofMinutes(36),
-	time.Duration.ofMinutes(41)
+    time.Duration.ofMinutes(37),
+    time.Duration.ofMinutes(8),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(2),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(36),
+    time.Duration.ofMinutes(41)
 ];
+
+var edsActions = actions.get("energidataservice", "energidataservice:service:energidataservice");
 
 // 0.7 kWh is used in total (number of phases × energy used per phase)
 var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(12*60*60), time.Duration.ofMinutes(236), durationPhases, Quantity("0.1 kWh"));
@@ -524,6 +534,8 @@ var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant
 duration_phases = [37, 8, 4, 2, 4, 36, 41].map { |duration| duration.minutes }
 
 eds = things["energidataservice:service:energidataservice"]
+
+# 0.7 kWh is used in total (number of phases × energy used per phase)
 result = eds.calculate_cheapest_period(Instant.now, 12.hours.from_now.to_instant, 236.minutes, duration_phases, 0.1 | "kWh")
 ```
 
@@ -551,6 +563,7 @@ Example:
 ::: tab DSL
 
 ```java
+val actions = getActions("energidataservice", "energidataservice:service:energidataservice")
 var price = actions.calculatePrice(now.toInstant(), now.plusHours(4).toInstant, 200 | W)
 ```
 
@@ -559,6 +572,7 @@ var price = actions.calculatePrice(now.toInstant(), now.plusHours(4).toInstant, 
 ::: tab JavaScript
 
 ```javascript
+var edsActions = actions.get("energidataservice", "energidataservice:service:energidataservice");
 var price = edsActions.calculatePrice(time.Instant.now(), time.ZonedDateTime.now().plusHours(4).toInstant(), Quantity("200 W"));
 ```
 
@@ -606,6 +620,7 @@ Example:
 ::: tab DSL
 
 ```java
+val actions = getActions("energidataservice", "energidataservice:service:energidataservice")
 var priceMap = actions.getPrices("SpotPrice,GridTariff")
 ```
 
@@ -614,6 +629,7 @@ var priceMap = actions.getPrices("SpotPrice,GridTariff")
 ::: tab JavaScript
 
 ```javascript
+var edsActions = actions.get("energidataservice", "energidataservice:service:energidataservice");
 var priceMap = utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,GridTariff"));
 ```
 
