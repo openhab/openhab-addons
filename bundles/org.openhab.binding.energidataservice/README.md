@@ -75,11 +75,13 @@ See [Electricity Tax](#electricity-tax) for further information.
 
 Group items with aggregate functions are not automatically recalculated into the future when the time series for child items are updated.
 Therefore, the `SUM` function mentioned above will only work for the current price.
-Calculation of future total prices can be achieved with a rule (in this example file-based using Rule Builder):
+Calculation of future total prices can be achieved with a rule:
 
 :::: tabs
 
 ::: tab JavaScript
+
+In this example file-based using Rule Builder:
 
 ```javascript
 rules.when()
@@ -293,6 +295,14 @@ var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant()
 
 :::
 
+::: tab JavaScript
+
+```javascript
+var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(12*60*60), time.Duration.ofMinutes(90));
+```
+
+:::
+
 ::::
 
 #### `calculateCheapestPeriod` from Duration and Power
@@ -315,6 +325,14 @@ Example:
 
 ```java
 var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(12).toInstant(), Duration.ofMinutes(90), 250 | W)
+```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(12*60*60), time.Duration.ofMinutes(90), Quantity("250 W"));
 ```
 
 :::
@@ -368,6 +386,36 @@ var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant()
 
 :::
 
+::: tab JavaScript
+
+```javascript
+var durationPhases = [
+    time.Duration.ofMinutes(37),
+    time.Duration.ofMinutes(8),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(2),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(36),
+    time.Duration.ofMinutes(41),
+    time.Duration.ofMinutes(104)
+];
+
+var powerPhases = [
+    Quantity("162.162 W"),
+    Quantity("750 W"),
+    Quantity("1500 W"),
+    Quantity("3000 W"),
+    Quantity("1500 W"),
+    Quantity("166.666 W"),
+    Quantity("146.341 W"),
+    Quantity("0 W")
+];
+
+var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(12*60*60), durationPhases, powerPhases);
+```
+
+:::
+
 ::::
 
 Please note that the total duration will be calculated automatically as a sum of provided duration phases.
@@ -407,7 +455,26 @@ durationPhases.add(Duration.ofMinutes(36))
 durationPhases.add(Duration.ofMinutes(41))
 
 // 0.7 kWh is used in total (number of phases × energy used per phase)
-var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(12).toInstant(), Duration.ofMinutes(236), phases, 0.1 | kWh)
+var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(12).toInstant(), Duration.ofMinutes(236), durationPhases, 0.1 | kWh)
+```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var durationPhases = [
+	time.Duration.ofMinutes(37),
+	time.Duration.ofMinutes(8),
+	time.Duration.ofMinutes(4),
+	time.Duration.ofMinutes(2),
+	time.Duration.ofMinutes(4),
+	time.Duration.ofMinutes(36),
+	time.Duration.ofMinutes(41)
+];
+
+// 0.7 kWh is used in total (number of phases × energy used per phase)
+var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(12*60*60), time.Duration.ofMinutes(236), durationPhases, Quantity("0.1 kWh"));
 ```
 
 :::
@@ -439,6 +506,14 @@ var price = actions.calculatePrice(now.toInstant(), now.plusHours(4).toInstant, 
 
 :::
 
+::: tab JavaScript
+
+```javascript
+var price = edsActions.calculatePrice(time.Instant.now(), time.ZonedDateTime.now().plusHours(4).toInstant(), Quantity("200 W"));
+```
+
+:::
+
 ::::
 
 ### `getPrices`
@@ -463,7 +538,7 @@ These components can be requested:
 
 Using `null` as parameter returns the total prices including all price components.
 If **Reduced Electricity Tax** is set in Thing configuration, `ElectricityTax` will be excluded, otherwise `ReducedElectricityTax`.
-This logic ensures consistent and comparable results not affected by artifical changes in the rate for electricity tax two times per year.
+This logic ensures consistent and comparable results not affected by artificial changes in the rate for electricity tax two times per year.
 
 Example:
 
@@ -473,6 +548,14 @@ Example:
 
 ```java
 var priceMap = actions.getPrices("SpotPrice,GridTariff")
+```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var priceMap = utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,GridTariff"));
 ```
 
 :::
@@ -612,25 +695,27 @@ if (price !== null) {
     console.log("Total price for using 150 W for the next hour: " + price.toString());
 }
 
-var durationPhases = [];
-durationPhases.push(time.Duration.ofMinutes(37));
-durationPhases.push(time.Duration.ofMinutes(8));
-durationPhases.push(time.Duration.ofMinutes(4));
-durationPhases.push(time.Duration.ofMinutes(2));
-durationPhases.push(time.Duration.ofMinutes(4));
-durationPhases.push(time.Duration.ofMinutes(36));
-durationPhases.push(time.Duration.ofMinutes(41));
-durationPhases.push(time.Duration.ofMinutes(104));
+var durationPhases = [
+    time.Duration.ofMinutes(37),
+    time.Duration.ofMinutes(8),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(2),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(36),
+    time.Duration.ofMinutes(41),
+    time.Duration.ofMinutes(104)
+];
 
-var consumptionPhases = [];
-consumptionPhases.push(Quantity("162.162 W"));
-consumptionPhases.push(Quantity("750 W"));
-consumptionPhases.push(Quantity("1500 W"));
-consumptionPhases.push(Quantity("3000 W"));
-consumptionPhases.push(Quantity("1500 W"));
-consumptionPhases.push(Quantity("166.666 W"));
-consumptionPhases.push(Quantity("146.341 W"));
-consumptionPhases.push(Quantity("0 W"));
+var consumptionPhases = [
+    Quantity("162.162 W"),
+    Quantity("750 W"),
+    Quantity("1500 W"),
+    Quantity("3000 W"),
+    Quantity("1500 W"),
+    Quantity("166.666 W"),
+    Quantity("146.341 W"),
+    Quantity("0 W")
+];
 
 var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(24*60*60), durationPhases, consumptionPhases);
 
@@ -642,14 +727,15 @@ console.log("Most expensive start: " + result.get("MostExpensiveStart").toString
 // This is a simpler version taking advantage of the fact that each interval here represents 0.1 kWh of consumed energy.
 // In this example we have to provide the total duration to make sure we fit the latest end. This is because there is no
 // registered consumption in the last phase.
-var durationPhases = [];
-durationPhases.push(time.Duration.ofMinutes(37));
-durationPhases.push(time.Duration.ofMinutes(8));
-durationPhases.push(time.Duration.ofMinutes(4));
-durationPhases.push(time.Duration.ofMinutes(2));
-durationPhases.push(time.Duration.ofMinutes(4));
-durationPhases.push(time.Duration.ofMinutes(36));
-durationPhases.push(time.Duration.ofMinutes(41));
+var durationPhases = [
+    time.Duration.ofMinutes(37),
+    time.Duration.ofMinutes(8),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(2),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(36),
+    time.Duration.ofMinutes(41)
+];
 
 var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(24*60*60), time.Duration.ofMinutes(236), durationPhases, Quantity("0.1 kWh"));
 ```
