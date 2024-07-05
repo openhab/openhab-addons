@@ -49,6 +49,7 @@ If you're new to Ruby, you may want to check out [Ruby Basics](https://openhab.g
     - [Script is Loaded](#script-is-loaded)
     - [openHAB System Started](#openhab-system-started)
     - [Cron Trigger](#cron-trigger)
+    - [DateTimeItem Trigger](#datetimeitem-trigger)
     - [Other Triggers](#other-triggers)
     - [Combining Multiple Triggers](#combining-multiple-triggers)
     - [Combining Multiple Conditions](#combining-multiple-conditions)
@@ -238,7 +239,7 @@ logger.info("Kitchen Light State: #{KitchenLight.state}")
 Sending a notification:
 
 ```ruby
-notify("romeo@montague.org", "Balcony door is open")
+Notification.send("romeo@montague.org", "Balcony door is open")
 ```
 
 Querying the status of a thing:
@@ -1153,7 +1154,7 @@ Time.now.between?("5am".."11pm")
 Time.now.holiday? # => false
 MonthDay.parse("12-25").holiday # => :christmas
 1.day.from_now.next_holiday # => :thanksgiving
-notify("It's #{Ephemeris.holiday_name(Date.today)}!") if Date.today.holiday?
+Notification.send("It's #{Ephemeris.holiday_name(Date.today)}!") if Date.today.holiday?
 
 Date.today.weekend? # => true
 Date.today.in_dayset?(:school) # => false
@@ -1469,7 +1470,7 @@ See [#updated](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/Bu
 rule "Received a command" do
   received_command DoorBell, command: ON
   run do |event|
-    notify "Someone pressed the door bell"
+    Notification.send "Someone pressed the door bell"
     play_sound "doorbell.mp3"
   end
 end
@@ -1560,6 +1561,30 @@ end
 ```
 
 See [#every](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/BuilderDSL.html#every-instance_method)
+
+#### DateTimeItem Trigger
+
+To trigger based on the date and time stored in a DateTime item, use [at ItemName](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/BuilderDSL.html#at-instance_method):
+
+```ruby
+rule "DateTime Trigger" do
+  at My_DateTimeItem
+  run do |event|
+    logger.info "Triggered by #{event.item} at #{event.item.state}"
+  end
+end
+```
+
+To trigger based on only the _time_ part of a DateTime item, use [every :day, at: ItemName](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/BuilderDSL.html#every-instance_method):
+
+```ruby
+rule "TimeOnly Trigger" do
+  every :day, at: My_DateTimeItem
+  run do |event|
+    logger.info "Triggered by #{event.item} at #{event.item.state}"
+  end
+end
+```
 
 #### Other Triggers
 
@@ -1661,7 +1686,7 @@ rule "Check for offline things 15 minutes after openHAB had started" do
   delay 15.minutes
   run do
     offline_things = things.select(&:offline?).map(&:uid).join(", ")
-    notify("Things that are still offline: #{offline_things}")
+    Notification.send("Things that are still offline: #{offline_things}")
   end
 end
 ```
