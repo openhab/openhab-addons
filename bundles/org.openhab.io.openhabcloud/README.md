@@ -35,7 +35,7 @@ You will need these values to register on the website before connection is accep
 Location of UUID and Secret:
 
 | File   | Regular Installation                  | APT & RPM Installation               |
-| ------ | ------------------------------------- | ------------------------------------ |
+|--------|---------------------------------------|--------------------------------------|
 | UUID   | $OPENHAB_USERDATA/uuid                | /var/lib/openhab/uuid                |
 | Secret | $OPENHAB_USERDATA/openhabcloud/secret | /var/lib/openhab/openhabcloud/secret |
 
@@ -234,7 +234,7 @@ rule "Open Window Notification"
 when
   Item Apartment_Window changed to OPEN
 then
-  sendBroadcastNotification("Apartment window was opened!", "window", "HIGH")
+  sendBroadcastNotification("Apartment window was opened!", "window", "Door")
 end
 ```
 
@@ -246,7 +246,7 @@ end
 rules.when().item('Apartment_Window').changed().to('OPEN').then(() => {
   actions.notificationBuilder('Apartment window was opened!')
     .withIcon('window')
-    .withTag('HIGH')
+    .withTag('Door')
     .send();
 }).build('Open Window Notification');
 ```
@@ -261,7 +261,7 @@ Broadcast notification is performed by calling [Notification.send](https://openh
 rule "Open Window Notification" do
   changed Apartment_Window, to: OPEN
   run do
-    Notification.send("Apartment window was opened!", icon: "window", tag: "HIGH")
+    Notification.send("Apartment window was opened!", icon: "window", tag: "Door")
   end
 end
 ```
