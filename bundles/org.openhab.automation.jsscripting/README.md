@@ -778,7 +778,7 @@ actions.notificationBuilder('Hello World!')
 actions.notificationBuilder('Hello World!')
   .withIcon('f7:bell_fill').withTag('important').withTitle('Important Notification')
   .withOnClickAction('ui:navigate:/page/my_floorplan_page').withMediaAttachmentUrl('http://example.com/image.jpg')
-  .addActionButton('Turn Kitchen Light ON=command:KitchenLights:ON').addActionButton('Turn Kitchen Light OFF=command:KitchenLights:OFF').send();
+  .addActionButton('Turn Kitchen Light ON', 'command:KitchenLights:ON').addActionButton('Turn Kitchen Light OFF', 'command:KitchenLights:OFF').send();
 
 // Send a simple standard notification to two specific users
 actions.notificationBuilder('Hello World!').addUserId('florian@example.com').addUserId('florian@example.org').send();
