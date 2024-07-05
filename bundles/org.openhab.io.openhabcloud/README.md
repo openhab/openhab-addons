@@ -299,7 +299,7 @@ rules.when().item('Apartment_MotionSensor').changed().to('ON').then(() => {
     .withTitle('Motion Detected')
     .withReferenceId('motion-id-1234')
     .withMediaAttachment('https://apartment.my/camera-snapshot.jpg')
-    .addActionButton('Turn on the light=command:Apartment_Light:ON')
+    .addActionButton('Turn on the light', 'command:Apartment_Light:ON')  
     .send();
 }).build('Motion Detected Notification');
 ```
