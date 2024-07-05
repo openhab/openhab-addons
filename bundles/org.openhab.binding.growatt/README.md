@@ -180,9 +180,26 @@ The permission for passing 'null' parameters, and the effect of such 'null' para
 | enableAcCharging                   | If 'null' the prior `enableAcCharging` (if any) continues to apply. Shall <u>**not**</u> be 'null' on 'mix' inverter 'Battery First' program. |
 | startTime, stopTime, enableProgram | May be 'null' on 'tlx' inverters whereby the prior `programMode` / `time segment` continues to apply - note all 'null' resp. non-'null'.      |
 
-Example:
+### Example program to charge battery during night-time low tariff time window
+
+The following is an example program to charge the battery during a night-time low tariff period, and depending on the forecast solar energy for the coming day.
 
 ```php
+// solar power constants
+val Integer programMode = 1 // 0 = Load First, 1 = Battery First, 2 = Grid First
+val Integer powerLevel = 23 // percent
+val batteryFull = 6500.0 // Wh
+val batteryMin = 500.0 // Wh
+val daylightConsumption = 10000.0 // Wh
+val offPeakConsumption = 2000.0 // Wh
+val maximumSOC = 100.0 // percent
+val minimumSOC = 10.0 // percent
+val maxChargingPower = 4000.0 // W
+val offPeakEndMinute = 420 // 07:00
+val offPeakStartMinute = 20 // 00:20
+
+..
+
 rule "Setup Solar Battery Charging Program"
 when
     Time cron "0 10 0 ? * * *"
@@ -190,39 +207,138 @@ then
     val growattActions = getActions("growatt", "growatt:inverter:home:ABCD1234") // thing UID
     if (growattActions === null) {
         logWarn("Rules", "growattActions is null")
-    } else {
-
-        // fixed algorithm parameters
-        val Integer programMode = 1 // 0 = Load First, 1 = Battery First, 2 = Grid First
-        val Integer powerLevel = 23 // percent
-        val Boolean enableAcCharging = true
-        val String startTime = "00:20"
-        val String stopTime = "07:00"
-        val Boolean enableProgram = true
-
-        // calculation intermediaries
-        val batteryFull = 6500.0 // Wh
-        val batteryMin = 500.0 // Wh
-        val daylightConsumption = 10000.0 // Wh
-        val maximumSOC = 100.0 // percent
-        val minimumSOC = 20.0 // percent
-
-
-        // calculate stop SOC based on weather forecast
-        val Double solarForecast = (ForecastSolar_PV_Whole_Site_Forecast_Today.state as QuantityType<Energy>).toUnit("Wh").doubleValue()
-        var Double targetSOC = (100.0 * (batteryMin + daylightConsumption - solarForecast)) / batteryFull
-        if (targetSOC > maximumSOC) {
-            targetSOC = maximumSOC
-        } else if (targetSOC < minimumSOC) {
-            targetSOC = minimumSOC
-        }
-
-        // convert to integer
-        val Integer stopSOC = targetSOC.intValue() // percent
-
-        logInfo("Rules", "Setup Charging Program:{solarForecast:" + solarForecast + "Wh, programMode:" + programMode + ", powerLevel:" + powerLevel + "%, stopSOC:" + stopSOC + "%, enableCharging:" + enableAcCharging + ", startTime:" + startTime + ", stopTime:" + stopTime + ", enableProgram:" + enableProgram +"}")
-        growattActions.setupBatteryProgram(programMode, powerLevel, stopSOC, enableAcCharging, startTime, stopTime, enableProgram)
+        return
     }
+
+    // variable algorithm parameters
+    var Integer startMinute = offPeakStartMinute
+    var Boolean enableProgram = true
+    var Boolean enableAcCharging = true
+
+    // calculate required stop SOC based on weather forecast
+    val Double solarForecast = (Solar_Forecast_Energy_Today_Full.state as QuantityType<Energy>).toUnit("Wh").doubleValue()
+    var Double targetSOC = (100.0 * (batteryMin + daylightConsumption - solarForecast)) / batteryFull
+    if (targetSOC > maximumSOC) {
+        targetSOC = maximumSOC
+    }
+
+    // calculate notional SOC at end of off peak period
+    var Double morningSOC = ((Battery_SOC_Level.state as QuantityType<Dimensionless>).toUnit("one").doubleValue() - (offPeakConsumption / batteryFull)) * 100.0
+    if (morningSOC < minimumSOC) {
+        morningSOC = minimumSOC
+    }
+
+    // calculate charging start time (if any)
+    if (targetSOC > morningSOC) {
+        startMinute = (offPeakEndMinute - (60.0 * (targetSOC - morningSOC) * batteryFull / (powerLevel * maxChargingPower))).intValue()
+        if (startMinute < offPeakStartMinute) {
+            startMinute = offPeakStartMinute
+        }
+    } else {
+        enableProgram = false
+        enableAcCharging = false
+        targetSOC = minimumSOC
+    }
+
+    // convert times to strings
+    val String startTime = String.format("%02d:%02d", startMinute / 60, startMinute % 60);
+    val String stopTime = String.format("%02d:%02d", offPeakEndMinute / 60, offPeakEndMinute % 60);
+
+    // convert to integer percent
+    val Integer stopSOC = targetSOC.intValue()
+
+    logInfo("Rules", "Setup Charging Program(morningSOC=" + morningSOC + "%, solarForecast=" + solarForecast + "Wh, programMode=" + programMode + ", powerLevel=" + powerLevel +
+        "%, stopSOC=" + stopSOC + "%, enableCharging=" + enableAcCharging + ", startTime=" + startTime + ", stopTime=" + stopTime + ", enableProgram=" + enableProgram +")")
+    growattActions.setupBatteryProgram(programMode, powerLevel, stopSOC, enableAcCharging, startTime, stopTime, enableProgram)
+end
+```
+
+### Example program to charge battery prior to an extra high tariff window in the day
+
+The following is an example program to charge the battery in preparation to avoid importing energy during a coming extra high tariff time window.
+
+```php
+// solar power constants
+var pauseProgramLastSetupDate
+
+..
+
+rule "Setup Solar Power Pause Program"
+when
+    Time cron "59 0 8-22 ? * * *" or
+    Item Power_Pause_Program_Start changed
+then
+    val programSetupDate = now.toLocalDate()
+    if (programSetupDate.equals(pauseProgramLastSetupDate)) {
+        logInfo("Rules", "Power Pause program already setup for " + programSetupDate)
+        return
+    }
+
+    val pauseStartState = Power_Pause_Program_Start.state
+    if (pauseStartState == NULL || pauseStartState == UNDEF) {
+        logWarn("Rules", "Power_Pause_Program_Start state is null or undefined")
+        return
+    }
+
+    var pauseStartDateTime = (pauseStartState as DateTimeType).getZonedDateTime()
+    if (pauseStartDateTime.getHour() < 8) {
+        logWarn("Rules", "Power Pause program shall not start before 08:00h => " + pauseStartDateTime)
+        return 
+    }
+
+    val programDuration = Duration.between(now, pauseStartDateTime)
+    if (programDuration.isNegative() || programDuration.toDays() > 0) {
+        logInfo("Rules", "Power Pause program date is not today => " + pauseStartDateTime)
+        return
+    }
+    if (programDuration.toHours() < 1) {
+        logWarn("Rules", "Power Pause program lead time is too short => " + pauseStartDateTime)
+        return
+    }
+
+    // setup program to start late and end early in case inverter clock not in synch
+    val delta = 600
+    pauseStartDateTime = pauseStartDateTime.minusSeconds(delta)
+    val chargeStartDateTime = pauseStartDateTime.minusSeconds(programDuration.toSeconds()).plusSeconds(2 * delta)
+    if (chargeStartDateTime.isBefore(now)) {
+        logWarn("Rules", "Power Pause program start time is in the past")
+        return
+    }
+
+    val formatter = DateTimeFormatter.ofPattern("HH:mm");
+    val String stopTime = pauseStartDateTime.format(formatter)
+    val String startTime = chargeStartDateTime.format(formatter)
+
+    val socState = Battery_SOC_Level.state
+    if (socState == NULL || socState == UNDEF) {
+        logWarn("Rules", "Battery_SOC_Level is null or undefined")
+        return
+    }
+    val currentSOC = (socState as Number)
+
+    var targetPowerLevel = ((maximumSOC - currentSOC) * batteryFull) / (maxChargingPower * (programDurationSeconds / 3600.0))
+    if (targetPowerLevel < 23.0) {
+        targetPowerLevel = 23.0
+    } else if (targetPowerLevel > 100.0) {
+        targetPowerLevel = 100.0
+    }
+    val Integer powerLevel = targetPowerLevel.intValue()
+
+    val Integer programMode = 1 // 0 = Load First, 1 = Battery First, 2 = Grid First
+    val Boolean enableAcCharging = true
+    val Boolean enableProgram = true
+    val Integer stopSOC = maximumSOC.intValue()
+
+    val growattActions = getActions("growatt", "growatt:inverter:home:ABCD1234") // thing UID
+    if (growattActions === null) {
+        logWarn("Rules", "growattActions is null")
+        return
+    }
+
+    pauseProgramLastSetupDate = programSetupDate
+    logInfo("Rules", "Setup Solar Power Pause Program(programMode=" + programMode + ", powerLevel=" + powerLevel + "%, stopSOC=" + stopSOC + "%, enableCharging=" +
+        enableAcCharging + ", startTime=" + startTime + ", stopTime=" + stopTime + ", enableProgram=" + enableProgram +")")
+    growattActions.setupBatteryProgram(programMode, powerLevel, stopSOC, enableAcCharging, startTime, stopTime, enableProgram)
 end
 ```
 
