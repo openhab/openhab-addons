@@ -309,7 +309,7 @@ public class DigiplexBridgeHandler extends BaseBridgeHandler implements SerialPo
 
         @Override
         public void run() {
-            logger.debug("Starting Receiver thread");
+            logger.debug("Starting receiver thread");
             while (!interrupted()) {
                 try {
                     Optional<String> message = readLineBlocking();
