@@ -95,22 +95,22 @@ Three different actions are available:
 - `sendBroadcastNotification(message)`: Send a broadcast notification to _all_ devices of _all_ users.
 - `sendLogNotification(message)`: Send a log notification to the notifications list. Log notifications do not trigger a notification on the device.
 
-For each of the three actions, there's another variant accepting an icon name and a severity:
+For each of the three actions, there's another variant accepting an icon name and a tag:
 
-- `sendNotification(emailAddress, message, icon, severity)`
-- `sendBroadcastNotification(message, icon, severity)`
-- `sendLogNotification(message, icon, severity)`
+- `sendNotification(emailAddress, message, icon, tag)`
+- `sendBroadcastNotification(message, icon, tag)`
+- `sendLogNotification(message, icon, tag)`
 
-Icon and severity can potentially be used by cloud instance clients (such as the openHAB apps for Android or iOS) to be displayed in the notification itself and the list of notifications.
+Icon and tag can potentially be used by cloud instance clients (such as the openHAB apps for Android or iOS) to be displayed in the notification itself and the list of notifications.
 
 The parameters for these actions have the following meaning:
 
 - `emailAddress`: String containing the email address the target user is registered with in the cloud instance.
 - `message`: String containing the notification message text.
 - `icon`: String containing the icon name (as described in [Items: Icons]({{base}}/configuration/items.html#icons)).
-- `severity`: String containing a description of the severity (tag) of the incident.
+- `tag`: String containing the tag for the notification.
 
-`null` may be used to skip the `icon` or `severity` parameter.
+`null` may be used to skip the `icon` or `tag` parameter.
 
 ### Title, Tag, Reference Id, Media Attachments & Actions
 
@@ -124,8 +124,8 @@ The `sendNotification` and `sendBroadcastNotification` actions additionally supp
 
 There are four different actions available:
 
-- click action: Is performed when the user clicks on the notification.
-- action button 1, 2 or 3: Is performed when the user clicks on the first, second or third action button.
+- Click action: Is performed when the user clicks on the notification.
+- Action button 1, 2 or 3: Is performed when the user clicks on the first, second or third action button.
 
 To specify media attachments and actions, there is another variant of the `sendNotification` and `sendBroadcastNotification` actions:
 
@@ -155,7 +155,7 @@ There are two types of actions available:
 - `ui`: Controls the UI in two possible ways:
   - `ui:$path` where `$path` is either `/basicui/app?...` for navigating sitemaps (using the native renderer) or `/some/absolute/path` for navigating (using the web view).
   - `ui:$commandItemSyntax` where `$commandItemSyntax` is the same syntax as used for the [UI Command Item]({{base}}/mainui/about.html#ui-command-item).
-- `http:` or `https:` : Opens the fully qualified URL in an embedded browser on the device
+- `http:` or `https:` : Opens the fully qualified URL in an embedded browser on the device.
 
 Examples:
 
