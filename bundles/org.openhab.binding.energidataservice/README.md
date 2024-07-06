@@ -440,7 +440,7 @@ var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant
 
 :::
 
-::: tabs JRuby
+::: tab JRuby
 
 ```ruby
 duration_phases = [37, 8, 4, 2, 4, 36, 41, 104].map { |duration| duration.minutes }
@@ -528,7 +528,7 @@ var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant
 
 :::
 
-::: tabs JRuby
+::: tab JRuby
 
 ```ruby
 duration_phases = [37, 8, 4, 2, 4, 36, 41].map { |duration| duration.minutes }
