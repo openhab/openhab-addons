@@ -31,6 +31,7 @@ import org.openhab.binding.pihole.internal.rest.model.Relative;
 /**
  * @author Martin Grzeslowski - Initial contribution
  */
+@NonNullByDefault
 public class JettyAdminServiceTest {
     String content = """
             {
