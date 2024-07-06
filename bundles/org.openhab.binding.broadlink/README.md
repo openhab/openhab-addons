@@ -37,10 +37,6 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | nameOfCommandToLearn| String  | DEVICE_ON     | The name of the IR or RF command to learn when using the learn command channel    |
 | ignoreFailedUpdates | Boolean | false         | If enabled, failed status requests won't put the device `OFFLINE`                |
 
-
-
-
-
 ## Channels
 
 | Channel           | Supported Devices        | Type                 | Description                                     |
