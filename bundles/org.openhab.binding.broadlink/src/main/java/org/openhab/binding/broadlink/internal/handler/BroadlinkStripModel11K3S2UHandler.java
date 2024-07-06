@@ -41,16 +41,16 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
         }
 
         switch (channelUID.getId()) {
-            case "s1power-on":
+            case "power-on-s1":
                 interpretCommandForSocket(1, command);
                 break;
-            case "s2power-on":
+            case "power-on-s2":
                 interpretCommandForSocket(2, command);
                 break;
-            case "s3power-on":
+            case "power-on-s3":
                 interpretCommandForSocket(3, command);
                 break;
-            case "usbpower-on":
+            case "power-on-usb":
                 interpretCommandForSocket(4, command);
                 break;
             default:
@@ -118,10 +118,10 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
             byte decodedPayload[] = decodeDevicePacket(response);
             final int status = decodedPayload[14];
 
-            this.updateState("s1power-on", (status & 0x01) == 0x01 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("s2power-on", (status & 0x02) == 0x02 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("s3power-on", (status & 0x04) == 0x04 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("usbpower-on", (status & 0x08) == 0x08 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("power-on-s1", (status & 0x01) == 0x01 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("power-on-s2", (status & 0x02) == 0x02 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("power-on-s3", (status & 0x04) == 0x04 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("power-on-usb", (status & 0x08) == 0x08 ? OnOffType.ON : OnOffType.OFF);
         } catch (Exception ex) {
             logger.warn("Exception while getting status from device: {}", ex.getMessage());
             return false;

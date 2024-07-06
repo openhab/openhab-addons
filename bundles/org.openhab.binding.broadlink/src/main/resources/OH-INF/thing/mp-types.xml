@@ -8,16 +8,16 @@
 		<label>Broadlink MP1</label>
 		<description>The Broadlink MP1 Smart Home Wifi Plug Power Strip 4 Ports Individual Wireless Remote Control.</description>
 		<channels>
-			<channel id="s1power-on" typeId="power-on">
+			<channel id="power-on-s1" typeId="power-on">
 				<label>Socket 1 Power</label>
 			</channel>
-			<channel id="s2power-on" typeId="power-on">
+			<channel id="power-on-s2" typeId="power-on">
 				<label>Socket 2 Power</label>
 			</channel>
-			<channel id="s3power-on" typeId="power-on">
+			<channel id="power-on-s3" typeId="power-on">
 				<label>Socket 3 Power</label>
 			</channel>
-			<channel id="s4power-on" typeId="power-on">
+			<channel id="power-on-s4" typeId="power-on">
 				<label>Socket 4 Power</label>
 			</channel>
 		</channels>
@@ -28,16 +28,16 @@
 		<label>Broadlink MP1 1K3S2U</label>
 		<description>The Broadlink MP1 1K3S2U Smart Home Wifi Plug Power Strip 3 AC, 2 USB Individual Wireless Remote Control.</description>
 		<channels>
-			<channel id="s1power-on" typeId="power-on">
+			<channel id="power-on-s1" typeId="power-on">
 				<label>Socket 1 Power</label>
 			</channel>
-			<channel id="s2power-on" typeId="power-on">
+			<channel id="power-on-s2" typeId="power-on">
 				<label>Socket 2 Power</label>
 			</channel>
-			<channel id="s3power-on" typeId="power-on">
+			<channel id="power-on-s3" typeId="power-on">
 				<label>Socket 3 Power</label>
 			</channel>
-			<channel id="usbpower-on" typeId="power-on">
+			<channel id="power-on-usb" typeId="power-on">
 				<label>USB Power</label>
 			</channel>
 		</channels>

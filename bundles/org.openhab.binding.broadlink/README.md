@@ -48,11 +48,11 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 | noise             | A1                       | String               | Noise level: `QUIET`/`NORMAL`/`NOISY`/`EXTREME` |
 | light             | A1                       | String               | Light level: `DARK`/`DIM`/`NORMAL`/`BRIGHT`     |
 | air               | A1                       | String               | Air quality: `PERFECT`/`GOOD`/`NORMAL`/`BAD`    |
-| power-on-s1        | MP1, MP1_1k3s2u          | Switch               | Socket 1 power                                  |
-| power-on-s2        | MP1, MP1_1k3s2u          | Switch               | Socket 2 power                                  |
-| power-on-s3        | MP1, v_1k3s2u            | Switch               | Socket 3 power                                  |
-| power-on-s4        | MP1                      | Switch               | Socket 4 power                                  |
-| usbpower-on       | MP1_1k3s2u               | Switch               | USB power                                       |
+| power-on-s1       | MP1, MP1_1k3s2u          | Switch               | Socket 1 power                                  |
+| power-on-s2       | MP1, MP1_1k3s2u          | Switch               | Socket 2 power                                  |
+| power-on-s3       | MP1, v_1k3s2u            | Switch               | Socket 3 power                                  |
+| power-on-s4       | MP1                      | Switch               | Socket 4 power                                  |
+| power-on-usb      | MP1_1k3s2u               | Switch               | USB power                                       |
 | power-consumption | MP2, SP2s,SP3s           | Number:Power         | Power consumption                               |
 | command           | all RMx                  | String               | IR Command code to transmit                     |
 | learning-control  | all RMx                  | String               | Learn mode command channel (see below)          |
