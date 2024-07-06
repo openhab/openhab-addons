@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<thing-type id="server">
-		<label>PiHole Binding Thing</label>
+		<label>Pi-hole Server</label>
 		<description>Sample thing for PiHole Binding</description>
 
 		<channels>
