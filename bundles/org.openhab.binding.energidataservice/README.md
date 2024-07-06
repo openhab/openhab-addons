@@ -899,7 +899,7 @@ result = eds.calculate_cheapest_period(ZonedDateTime.now.to_instant,
 
 ```java
 var hourStart = now.plusHours(2).truncatedTo(ChronoUnit.HOURS)
-var price = SpotPrice.historicState(hourStart).state
+var price = SpotPrice.persistedState(hourStart).state
 logInfo("Spot price two hours from now", price.toString)
 ```
 
