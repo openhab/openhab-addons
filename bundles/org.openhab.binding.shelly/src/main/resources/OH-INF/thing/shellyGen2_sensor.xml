@@ -14,6 +14,10 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
+		<properties>
+			<property name="deviceGeneration">2</property>
+		</properties>
+
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:battery-gen2"/>
 	</thing-type>
@@ -27,6 +31,10 @@
 			<channel-group id="battery" typeId="batteryStatus"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
+
+		<properties>
+			<property name="deviceGeneration">2</property>
+		</properties>
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:battery-gen2"/>
@@ -42,6 +50,10 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
+		<properties>
+			<property name="deviceGeneration">2</property>
+		</properties>
+
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:battery-gen2"/>
 	</thing-type>
@@ -55,6 +67,10 @@
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
+
+		<properties>
+			<property name="deviceGeneration">2</property>
+		</properties>
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay-gen2"/>

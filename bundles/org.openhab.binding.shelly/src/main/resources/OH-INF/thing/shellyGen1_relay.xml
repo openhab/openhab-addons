@@ -7,11 +7,16 @@
 	<thing-type id="shelly1">
 		<label>Shelly 1</label>
 		<description>@text/thing-type.shelly.shelly1.description</description>
+
 		<channel-groups>
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="sensors" typeId="externalSensors"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
+
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
@@ -27,6 +32,10 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
+
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
@@ -40,6 +49,10 @@
 			<channel-group id="sensors" typeId="externalSensors"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
+
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
@@ -58,6 +71,10 @@
 			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
+
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
@@ -82,6 +99,10 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
+
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
@@ -101,6 +122,10 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
+
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
@@ -114,6 +139,10 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
+
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:roller"/>
@@ -138,6 +167,10 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
+
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
@@ -151,6 +184,10 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
+
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:roller"/>
@@ -188,6 +225,10 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
+
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
@@ -216,6 +257,10 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
+
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
@@ -229,6 +274,10 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
+
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
@@ -249,6 +298,10 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
+
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>
 	</thing-type>
@@ -262,6 +315,10 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
+
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:dimmer"/>
 	</thing-type>
@@ -274,6 +331,10 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
+
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:dimmer"/>
@@ -294,6 +355,10 @@
 			</channel-group>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
+
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:relay"/>

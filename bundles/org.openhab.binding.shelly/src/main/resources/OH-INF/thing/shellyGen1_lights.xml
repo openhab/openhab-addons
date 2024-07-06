@@ -15,6 +15,10 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
+
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:light"/>
 	</thing-type>
@@ -29,6 +33,10 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
+
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:light"/>
@@ -46,6 +54,10 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
+
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:light"/>
 	</thing-type>
@@ -61,6 +73,10 @@
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
+
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:light"/>
 	</thing-type>
@@ -75,6 +91,10 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
+
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:rgbw2"/>
@@ -101,6 +121,10 @@
 			<channel-group id="meter" typeId="meter"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
+
+		<properties>
+			<property name="deviceGeneration">1</property>
+		</properties>
 
 		<representation-property>serviceName</representation-property>
 		<config-description-ref uri="thing-type:shelly:rgbw2"/>
