@@ -1,0 +1,47 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start",
+            "dependsOn": [
+                "Start openHAB"
+            ],
+            "type": "shell",
+            "command": "sleep",
+            "args": [
+                "20"
+            ]
+        },
+        {
+            "label": "Build",
+            "group": "build",
+            "type": "shell",
+            "command": "sh ${workspaceFolder}/.vscode/scripts/build.sh ${workspaceFolder}",
+        },
+        {
+            "label": "Start openHAB",
+            "hide": true,
+            "dependsOn": [
+                "Build"
+            ],
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "container",
+                "start",
+                "openhab-development-server"
+            ]
+        },
+        {
+            "label": "Stop openHAB",
+            "hide": true,
+            "type": "shell",
+            "command": "docker",
+            "args": [
+                "container",
+                "stop",
+                "openhab-development-server"
+            ]
+        },
+    ]
+}
