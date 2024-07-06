@@ -145,7 +145,7 @@ Examples:
 
 ```java
 val mailActions = getActions("mail","mail:smtp:samplesmtp")
-val success = mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
+var success = mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
 success = mailActions.sendMail("mail1@example.com, mail2@example.com", "Test subject", "This is the mail content sent to multiple recipients.")
 
 ```
@@ -166,7 +166,7 @@ mailActions.sendHtmlMailWithAttachments("mail@example.com", "Test subject", "<h1
 
 ```javascript
 val mailActions = actions.get("mail","mail:smtp:samplesmtp")
-val success = mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
+var success = mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
 success = mailActions.sendMail("mail1@example.com, mail2@example.com", "Test subject", "This is the mail content sent to multiple recipients.")
 ```
 

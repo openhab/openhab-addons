@@ -320,6 +320,14 @@ public class SonyProjectorSdcpConnector extends SonyProjectorConnector {
      * @throws SonyProjectorException in case of any problem
      */
     public String getMacAddress() throws SonyProjectorException {
-        return new String(getSetting(SonyProjectorItem.MAC_ADDRESS), StandardCharsets.UTF_8);
+        String macAddress = "";
+        byte[] macBytes = getSetting(SonyProjectorItem.MAC_ADDRESS);
+        for (byte macByte : macBytes) {
+            if (!macAddress.isEmpty()) {
+                macAddress = macAddress + "-";
+            }
+            macAddress = macAddress + String.format("%02x", macByte);
+        }
+        return macAddress;
     }
 }
