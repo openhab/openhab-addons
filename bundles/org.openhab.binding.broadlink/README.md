@@ -60,8 +60,8 @@ Devices in the above list that are set up and working in the Broadlink mobile ap
 
 ## Learning Remote Codes
 
-To obtain the command codes, you can get this binding to put your Broadlink RMx device into 
-"learn mode" and then ask it for the code it learnt. Here are the steps:
+To obtain the command codes, you can get this binding to put your Broadlink RMx device into "learn mode" and then ask it for the code it learnt. 
+Here are the steps:
 
 0. In the openHAB web UI, navigate to your RMx Thing
 1. Set the *Name of IR/RF command to learn* property to the name of the command you want the device to learn
