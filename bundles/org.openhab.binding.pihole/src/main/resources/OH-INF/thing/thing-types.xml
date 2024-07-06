@@ -11,7 +11,7 @@
 		<channels>
 			<channel id="domains-being-blocked" typeId="number-channel">
 				<label>Domains Blocked</label>
-				<description>The total number of domains currently being blocked.</description>
+				<description>This thing represents a Pi-hole server and is used for the PiHole Binding.</description>
 			</channel>
 			<channel id="dns-queries-today" typeId="number-channel">
 				<label>DNS Queries Today</label>
