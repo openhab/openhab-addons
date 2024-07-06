@@ -17,7 +17,7 @@ import org.openhab.binding.livisismarthome.internal.client.api.entity.link.LinkD
 /**
  * Special {@link ActionDTO} to execute a restart.
  *
- * @author Sven Strohschein
+ * @author Sven Strohschein - Initial contribution
  */
 public class RestartActionDTO extends ActionDTO {
 
