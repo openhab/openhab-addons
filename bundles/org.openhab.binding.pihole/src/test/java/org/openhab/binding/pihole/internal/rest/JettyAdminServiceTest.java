@@ -19,6 +19,7 @@ import static org.mockito.Mockito.mock;
 
 import java.net.URI;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
