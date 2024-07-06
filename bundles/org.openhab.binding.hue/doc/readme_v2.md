@@ -57,7 +57,7 @@ The configuration of all things (as described above) is the same regardless of w
 
 ### Channels for Bridges
 
-Bridge things support the following channels:
+Bridge Things support the following channels:
 
 | Channel ID                                      | Item Type          | Description                                 |
 |-------------------------------------------------|--------------------|---------------------------------------------|
