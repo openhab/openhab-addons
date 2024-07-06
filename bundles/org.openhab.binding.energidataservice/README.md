@@ -440,7 +440,7 @@ var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant
 
 :::
 
-::: tabs JRuby
+::: tab JRuby
 
 ```ruby
 duration_phases = [37, 8, 4, 2, 4, 36, 41, 104].map { |duration| duration.minutes }
@@ -528,7 +528,7 @@ var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant
 
 :::
 
-::: tabs JRuby
+::: tab JRuby
 
 ```ruby
 duration_phases = [37, 8, 4, 2, 4, 36, 41].map { |duration| duration.minutes }
@@ -899,7 +899,7 @@ result = eds.calculate_cheapest_period(ZonedDateTime.now.to_instant,
 
 ```java
 var hourStart = now.plusHours(2).truncatedTo(ChronoUnit.HOURS)
-var price = SpotPrice.historicState(hourStart).state
+var price = SpotPrice.persistedState(hourStart).state
 logInfo("Spot price two hours from now", price.toString)
 ```
 
