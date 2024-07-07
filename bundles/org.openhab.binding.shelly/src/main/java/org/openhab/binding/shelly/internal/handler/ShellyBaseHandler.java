@@ -326,6 +326,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         api.setConfig(thingName, config);
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingType, profile.device);
+        tmpPrf.initFromThingType(thingType);
         String mode = getString(tmpPrf.device.mode);
         if (this.getThing().getThingTypeUID().equals(THING_TYPE_SHELLYPROTECTED)) {
             changeThingType(thingName, mode);
