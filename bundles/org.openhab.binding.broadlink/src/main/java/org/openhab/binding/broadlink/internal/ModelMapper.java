@@ -138,11 +138,7 @@ public class ModelMapper {
 
     private static StringType lookup(StringType[] values, byte b) {
         int index = Byte.toUnsignedInt(b);
-        if (index < values.length) {
-            return values[index];
-        } else {
-            return UNKNOWN;
-        }
+        return index < values.length ? values[index] : UNKNOWN;
     }
 
     private static final StringType[] AIR_VALUES = { new StringType("PERFECT"), new StringType("GOOD"),
