@@ -108,7 +108,6 @@ public class NetworkUtils {
     }
 
     public static int randInt(int min, int max) {
-        int randomNum = ThreadLocalRandom.current().nextInt((max - min) + 1) + min;
-        return randomNum;
+        return ThreadLocalRandom.current().nextInt((max - min) + 1) + min;
     }
 }
