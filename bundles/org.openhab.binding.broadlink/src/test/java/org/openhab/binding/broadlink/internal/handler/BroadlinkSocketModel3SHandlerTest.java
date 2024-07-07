@@ -110,7 +110,7 @@ public class BroadlinkSocketModel3SHandlerTest extends AbstractBroadlinkThingHan
 
         assertEquals(OnOffType.ON, states.get(0));
 
-        ChannelUID expectedConsumptionChannel = new ChannelUID(thing.getUID(), CHANNEL_POWER_CONSUMPTION);
+        ChannelUID expectedConsumptionChannel = new ChannelUID(thing.getUID(), POWER_CONSUMPTION_CHANNEL);
         assertEquals(expectedConsumptionChannel, channels.get(1));
 
         QuantityType<Power> expectedPower = new QuantityType<>(382.91,

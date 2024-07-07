@@ -68,9 +68,8 @@ public class BroadlinkHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
-        if (logger.isDebugEnabled()) {
-            logger.debug("Creating Thing handler for '{}'", thingTypeUID.getAsString());
-        }
+        logger.debug("Creating Thing handler for '{}'", thingTypeUID.getAsString());
+
         if (thingTypeUID.equals(BroadlinkBindingConstants.THING_TYPE_RM_PRO)) {
             return new BroadlinkRemoteModelProHandler(thing, commandDescriptionProvider, storageService);
         }

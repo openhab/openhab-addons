@@ -81,9 +81,9 @@ public class BroadlinkBindingConstants {
     public static final String LEARNING_CONTROL_COMMAND_CHECK = "CHECK";
     public static final String LEARNING_CONTROL_COMMAND_MODIFY = "MODIFY";
     public static final String LEARNING_CONTROL_COMMAND_DELETE = "DELETE";
-    public static final String CHANNEL_TEMPERATURE = "temperature";
-    public static final String CHANNEL_HUMIDITY = "humidity";
-    public static final String CHANNEL_POWER_CONSUMPTION = "power-consumption";
+    public static final String TEMPERATURE_CHANNEL = "temperature";
+    public static final String HUMIDITY_CHANNEL = "humidity";
+    public static final String POWER_CONSUMPTION_CHANNEL = "power-consumption";
 
     public static final String COMMAND_POWER_ON = "power-on";
     public static final String COMMAND_NIGHTLIGHT = "night-light";

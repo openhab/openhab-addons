@@ -283,10 +283,10 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     protected void updateTemperature(double temperature) {
-        updateState(CHANNEL_TEMPERATURE, new QuantityType<>(temperature, BROADLINK_TEMPERATURE_UNIT));
+        updateState(TEMPERATURE_CHANNEL, new QuantityType<>(temperature, BROADLINK_TEMPERATURE_UNIT));
     }
 
     protected void updateHumidity(double humidity) {
-        updateState(CHANNEL_HUMIDITY, new QuantityType<>(humidity, BROADLINK_HUMIDITY_UNIT));
+        updateState(HUMIDITY_CHANNEL, new QuantityType<>(humidity, BROADLINK_HUMIDITY_UNIT));
     }
 }

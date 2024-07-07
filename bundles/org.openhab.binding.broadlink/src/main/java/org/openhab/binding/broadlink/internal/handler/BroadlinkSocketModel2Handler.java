@@ -90,7 +90,7 @@ public class BroadlinkSocketModel2Handler extends BroadlinkSocketHandler {
     }
 
     protected void updatePowerConsumption(double consumptionWatts) {
-        updateState(CHANNEL_POWER_CONSUMPTION,
+        updateState(POWER_CONSUMPTION_CHANNEL,
                 new QuantityType<Power>(consumptionWatts, BROADLINK_POWER_CONSUMPTION_UNIT));
     }
 

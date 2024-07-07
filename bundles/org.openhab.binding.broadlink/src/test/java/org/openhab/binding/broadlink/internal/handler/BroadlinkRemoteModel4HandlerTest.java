@@ -187,14 +187,14 @@ public class BroadlinkRemoteModel4HandlerTest extends AbstractBroadlinkThingHand
         List<ChannelUID> channelCaptures = channelCaptor.getAllValues();
         List<State> stateCaptures = stateCaptor.getAllValues();
 
-        ChannelUID expectedTemperatureChannel = new ChannelUID(thing.getUID(), CHANNEL_TEMPERATURE);
+        ChannelUID expectedTemperatureChannel = new ChannelUID(thing.getUID(), TEMPERATURE_CHANNEL);
         assertEquals(expectedTemperatureChannel, channelCaptures.get(0));
 
         QuantityType<Temperature> expectedTemperature = new QuantityType<>(21.22,
                 BroadlinkBindingConstants.BROADLINK_TEMPERATURE_UNIT);
         assertEquals(expectedTemperature, stateCaptures.get(0));
 
-        ChannelUID expectedHumidityChannel = new ChannelUID(thing.getUID(), CHANNEL_HUMIDITY);
+        ChannelUID expectedHumidityChannel = new ChannelUID(thing.getUID(), HUMIDITY_CHANNEL);
         assertEquals(expectedHumidityChannel, channelCaptures.get(1));
 
         QuantityType<Dimensionless> expectedHumidity = new QuantityType<>(39.4,

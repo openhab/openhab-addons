@@ -103,7 +103,16 @@ In order to delete a previously stored code, the procedure is as follows:
 
 *-Remember if you manipulate the code file manually, remember to provide the proper location, and the proper ownership and permissions (Location is `$OPENHAB_USERDATA`, and permissions are `-rw-r--r-- 1 openhab openhab*
 
+## Full Example
+
+Items file example; `sockets.items`:
+
+```
+Switch BroadlinkSP3 "Christmas Lights" [ "Lighting" ] { channel="broadlink:sp3:34-ea-34-22-44-66:power-on" } 
+```
+
 ## Migrating legacy map file
+
 Up to openHAB version 3.3, there was a previous version of this binding that was not part of the openHAB distribution. 
 It stored the IR/RF commands in a different place and a different format. 
 If you want to mirgrate from those versions to this version of the binding, please read this section.
@@ -170,14 +179,6 @@ else:
     print(json.dumps(result,indent=2))
 ```
 
-
-## Full Example
-
-Items file example; `sockets.items`:
-
-```
-Switch BroadlinkSP3 "Christmas Lights" [ "Lighting" ] { channel="broadlink:sp3:34-ea-34-22-44-66:power-on" } 
-```
 
 ## Credits
 

@@ -117,10 +117,10 @@ public class BroadlinkStripModel1Handler extends BroadlinkBaseThingHandler {
             byte decodedPayload[] = decodeDevicePacket(response);
             final int status = decodedPayload[14];
 
-            this.updateState("s1power-on", (status & 1) == 1 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("s2power-on", (status & 2) == 2 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("s3power-on", (status & 4) == 4 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("s4power-on", (status & 8) == 8 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("power-on-s1", (status & 1) == 1 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("power-on-s2", (status & 2) == 2 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("power-on-s3", (status & 4) == 4 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState("power-on-s4", (status & 8) == 8 ? OnOffType.ON : OnOffType.OFF);
         } catch (Exception ex) {
             logger.warn("Exception while getting status from device: {}", ex.getMessage());
             return false;
