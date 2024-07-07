@@ -41,7 +41,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -60,9 +59,9 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(SunSynkInverterHandler.class);
     private @Nullable ZonedDateTime lockoutTimer = null;
     private DeviceController inverter = new DeviceController();
-    private int refreshTime = 60;
     private @Nullable ScheduledFuture<?> refreshTask;
     private boolean batterySettingsUpdated = false;
+    private SunSynkInverterConfig config = new SunSynkInverterConfig();
     public @Nullable Settings tempInverterChargeSettings = inverter.tempInverterChargeSettings; // Holds modified
                                                                                                 // battery settings.
 
@@ -72,6 +71,12 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        Optional<SunSynkAccountHandler> checkBridge = getSafeBridge();
+        if (!checkBridge.isPresent()) {
+            logger.debug("Failed to find associated SunSynk Bridge.");
+            return;
+        }
+
         if (command instanceof RefreshType) {
             refreshStateAndUpdate();
         } else {
@@ -79,89 +84,41 @@ public class SunSynkInverterHandler extends BaseThingHandler {
             switch (channelUID.getIdWithoutGroup()) {
                 // Grid charge
                 case CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE:
-                    if (command.equals(OnOffType.ON)) {
-                        this.tempInverterChargeSettings.setIntervalGridTimerOn(true, 1);
-                    } else {
-                        this.tempInverterChargeSettings.setIntervalGridTimerOn(false, 1);
-                    }
+                    this.tempInverterChargeSettings.setIntervalGridTimerOn(command.equals(OnOffType.ON), 1);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_2_GRID_CHARGE:
-                    if (command.equals(OnOffType.ON)) {
-                        this.tempInverterChargeSettings.setIntervalGridTimerOn(true, 2);
-                    } else {
-                        this.tempInverterChargeSettings.setIntervalGridTimerOn(false, 2);
-                    }
+                    this.tempInverterChargeSettings.setIntervalGridTimerOn(command.equals(OnOffType.ON), 2);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_3_GRID_CHARGE:
-                    if (command.equals(OnOffType.ON)) {
-                        this.tempInverterChargeSettings.setIntervalGridTimerOn(true, 3);
-                    } else {
-                        this.tempInverterChargeSettings.setIntervalGridTimerOn(false, 3);
-                    }
+                    this.tempInverterChargeSettings.setIntervalGridTimerOn(command.equals(OnOffType.ON), 3);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_4_GRID_CHARGE:
-                    if (command.equals(OnOffType.ON)) {
-                        this.tempInverterChargeSettings.setIntervalGridTimerOn(true, 4);
-                    } else {
-                        this.tempInverterChargeSettings.setIntervalGridTimerOn(false, 4);
-                    }
+                    this.tempInverterChargeSettings.setIntervalGridTimerOn(command.equals(OnOffType.ON), 4);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_5_GRID_CHARGE:
-                    if (command.equals(OnOffType.ON)) {
-                        this.tempInverterChargeSettings.setIntervalGridTimerOn(true, 5);
-                    } else {
-                        this.tempInverterChargeSettings.setIntervalGridTimerOn(false, 5);
-                    }
+                    this.tempInverterChargeSettings.setIntervalGridTimerOn(command.equals(OnOffType.ON), 5);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_6_GRID_CHARGE:
-                    if (command.equals(OnOffType.ON)) {
-                        this.tempInverterChargeSettings.setIntervalGridTimerOn(true, 6);
-                    } else {
-                        this.tempInverterChargeSettings.setIntervalGridTimerOn(false, 6);
-                    }
+                    this.tempInverterChargeSettings.setIntervalGridTimerOn(command.equals(OnOffType.ON), 6);
                     break;
                 // Gen charge
                 case CHANNEL_BATTERY_INTERVAL_1_GEN_CHARGE:
-                    if (command.equals(OnOffType.ON)) {
-                        this.tempInverterChargeSettings.setIntervalGenTimerOn(true, 1);
-                    } else {
-                        this.tempInverterChargeSettings.setIntervalGenTimerOn(false, 1);
-                    }
+                    this.tempInverterChargeSettings.setIntervalGenTimerOn(command.equals(OnOffType.ON), 1);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_2_GEN_CHARGE:
-                    if (command.equals(OnOffType.ON)) {
-                        this.tempInverterChargeSettings.setIntervalGenTimerOn(true, 2);
-                    } else {
-                        this.tempInverterChargeSettings.setIntervalGenTimerOn(false, 2);
-                    }
+                    this.tempInverterChargeSettings.setIntervalGenTimerOn(command.equals(OnOffType.ON), 2);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_3_GEN_CHARGE:
-                    if (command.equals(OnOffType.ON)) {
-                        this.tempInverterChargeSettings.setIntervalGenTimerOn(true, 3);
-                    } else {
-                        this.tempInverterChargeSettings.setIntervalGenTimerOn(false, 3);
-                    }
+                    this.tempInverterChargeSettings.setIntervalGenTimerOn(command.equals(OnOffType.ON), 3);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_4_GEN_CHARGE:
-                    if (command.equals(OnOffType.ON)) {
-                        this.tempInverterChargeSettings.setIntervalGenTimerOn(true, 4);
-                    } else {
-                        this.tempInverterChargeSettings.setIntervalGenTimerOn(false, 4);
-                    }
+                    this.tempInverterChargeSettings.setIntervalGenTimerOn(command.equals(OnOffType.ON), 4);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_5_GEN_CHARGE:
-                    if (command.equals(OnOffType.ON)) {
-                        this.tempInverterChargeSettings.setIntervalGenTimerOn(true, 5);
-                    } else {
-                        this.tempInverterChargeSettings.setIntervalGenTimerOn(false, 5);
-                    }
+                    this.tempInverterChargeSettings.setIntervalGenTimerOn(command.equals(OnOffType.ON), 5);
                     break;
                 case CHANNEL_BATTERY_INTERVAL_6_GEN_CHARGE:
-                    if (command.equals(OnOffType.ON)) {
-                        this.tempInverterChargeSettings.setIntervalGenTimerOn(true, 6);
-                    } else {
-                        this.tempInverterChargeSettings.setIntervalGenTimerOn(false, 6);
-                    }
+                    this.tempInverterChargeSettings.setIntervalGenTimerOn(command.equals(OnOffType.ON), 6);
                     break;
                 // Interval time
                 case CHANNEL_BATTERY_INTERVAL_1_TIME:
@@ -238,24 +195,17 @@ public class SunSynkInverterHandler extends BaseThingHandler {
                     break;
             }
 
-            Optional<SunSynkAccountHandler> checkBridge = getSafeBridge();
-            if (!checkBridge.isPresent()) {
-                logger.debug("Failed to find associated SunSynk Bridge.");
-                return;
-            }
             this.batterySettingsUpdated = true; // true = update battery settings from API at next interval
         }
     }
 
     private void sendSettingsCommandToInverter() {
         logger.debug("Ok - will handle command for CHANNEL_BATTERY_INTERVAL_1_GRID_CHARGE");
-        SunSynkInverterConfig config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
         try {
             inverter.sendSettings(this.tempInverterChargeSettings);
         } catch (SunSynkSendCommandException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Could not send command to inverter " + config.getAlias() + ". Authentication Failure !");
-            logger.debug("Could not send command to inverter {}.", config.getAlias());
             return;
         }
         logger.debug("Sent command: to inverter {}.", config.getAlias());
@@ -264,27 +214,24 @@ public class SunSynkInverterHandler extends BaseThingHandler {
     @Override
     public void dispose() {
         logger.debug("Running dispose()");
-        if (this.refreshTask != null) {
-            this.refreshTask.cancel(true);
+        ScheduledFuture<?> refreshTask = this.refreshTask;
+        if (refreshTask != null) {
+            refreshTask.cancel(true);
             this.refreshTask = null;
         }
     }
 
     @Override
     public void initialize() {
-        // config = getConfigAs(Inverter.class);
         updateStatus(ThingStatus.UNKNOWN);
         logger.debug("Will boot up the inverter binding!");
-        SunSynkInverterConfig config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
+        config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
         logger.debug("Inverter Config: {}", config);
 
-        if (config.getRefresh() < refreshTime) {
-            logger.warn(
-                    "Refresh time [{}] is not valid. Refresh time must be at least 60 seconds. Setting to minimum of 60 sec",
-                    config.getRefresh());
-            config.setRefresh(60);
-        } else {
-            refreshTime = config.getRefresh();
+        if (config.getRefresh() < 60) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Refresh time " + config.getRefresh() + " is not valid. Refresh time must be at least 60 seconds.");
+            return;
         }
         this.batterySettingsUpdated = false;
         inverter = new DeviceController(config);
@@ -293,13 +240,7 @@ public class SunSynkInverterHandler extends BaseThingHandler {
 
     private Optional<SunSynkAccountHandler> getSafeBridge() {
         Bridge bridge = getBridge();
-        if (bridge == null) {
-            return Optional.empty();
-        }
-        ThingHandler handler = bridge.getHandler();
-        SunSynkAccountHandler bridgeHandler = null;
-        if (handler instanceof SunSynkAccountHandler) {
-            bridgeHandler = (SunSynkAccountHandler) handler;
+        if (bridge != null && bridge.getHandler() instanceof SunSynkAccountHandler bridgeHandler) {
             return Optional.of(bridgeHandler);
         }
         return Optional.empty();
@@ -316,7 +257,6 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         if (inverter != null) {
             Optional<SunSynkAccountHandler> checkBridge = getSafeBridge();
             if (!checkBridge.isPresent()) {
-                logger.debug("Failed to find associated SunSynk account.");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "No SunSynk Account");
                 return;
             }
@@ -333,13 +273,11 @@ public class SunSynkInverterHandler extends BaseThingHandler {
             if (this.batterySettingsUpdated) { // have the settings been modified locally
                 sendSettingsCommandToInverter(); // update the battery settings
             }
-            SunSynkInverterConfig config = getThing().getConfiguration().as(SunSynkInverterConfig.class);
             try {
                 inverter.sendGetState(this.batterySettingsUpdated); // get inverter settings
             } catch (SunSynkGetStatusException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Could not get state of inverter " + config.getAlias() + ". Authentication Failure !");
-                logger.debug("Could not get state of inverter {}.", config.getAlias());
                 return;
             }
             logger.debug("Retrieved state of inverter {}.", config.getAlias());
@@ -347,14 +285,13 @@ public class SunSynkInverterHandler extends BaseThingHandler {
             bridgeHandler.setBridgeOnline();
             updateStatus(ThingStatus.ONLINE);
             publishChannels();
-
         }
     }
 
     private void startAutomaticRefresh() {
         Runnable refresher = () -> refreshStateAndUpdate();
-        this.refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, refreshTime, TimeUnit.SECONDS);
-        logger.debug("Start automatic refresh at {} seconds", refreshTime);
+        this.refreshTask = scheduler.scheduleWithFixedDelay(refresher, 0, config.getRefresh(), TimeUnit.SECONDS);
+        logger.debug("Start automatic refresh at {} seconds", config.getRefresh());
     }
 
     private void publishChannels() {

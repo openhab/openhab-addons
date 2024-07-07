@@ -77,7 +77,7 @@ public class SunSynkBindingConstants {
     public static final String CHANNEL_BATTERY_VOLTAGE = "battery-grid-voltage";
     public static final String CHANNEL_BATTERY_CURRENT = "battery-grid-current";
     public static final String CHANNEL_BATTERY_POWER = "battery-grid-power";
-    public static final String CHANNEL_BATTERY_SOC = "battery-SOC";
+    public static final String CHANNEL_BATTERY_SOC = "battery-soc";
     public static final String CHANNEL_BATTERY_TEMPERATURE = "battery-temperature";
 
     public static final String CHANNEL_INVERTER_SOLAR_ENERGY_TODAY = "inverter-solar-energy-today";

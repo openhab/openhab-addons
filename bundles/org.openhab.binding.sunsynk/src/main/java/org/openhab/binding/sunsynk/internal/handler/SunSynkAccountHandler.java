@@ -46,6 +46,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(SunSynkAccountHandler.class);
     private AccountController sunAccount = new AccountController();
     private @Nullable ScheduledFuture<?> discoverApiKeyJob;
+    private @Nullable SunSynkAccountConfig accountConfig;
 
     public SunSynkAccountHandler(Bridge bridge) {
         super(bridge);
@@ -57,6 +58,7 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
+        accountConfig = getConfigAs(SunSynkAccountConfig.class);
         updateStatus(ThingStatus.UNKNOWN);
         logger.debug("SunSynk Handler Intialised attempting to retrieve configuration");
         startDiscoverApiKeyJob();
@@ -99,18 +101,22 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     @Override
     public void dispose() {
         logger.debug("Disposing sunsynk bridge handler.");
-        if (discoverApiKeyJob != null && !discoverApiKeyJob.isCancelled()) {
+        ScheduledFuture<?> discoverApiKeyJob = this.discoverApiKeyJob;
+        if (discoverApiKeyJob != null) {
             discoverApiKeyJob.cancel(true);
-            discoverApiKeyJob = null;
+            this.discoverApiKeyJob = null;
         }
     }
 
     public void configAccount() {
-        SunSynkAccountConfig accountConfig = getConfigAs(SunSynkAccountConfig.class);
+        if (accountConfig.getEmail().isBlank() | accountConfig.getPassword().isBlank()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "E-mail address or Password missing in account configuration");
+        }
         try {
             this.sunAccount.authenticate(accountConfig.getEmail(), accountConfig.getPassword());
         } catch (SunSynkAuthenticateException | SunSynkTokenException e) {
-            logger.debug("Error attempting to autheticate account Msg = {} Cause = {}", e.getMessage().toString(),
+            logger.debug("Error attempting to authenticate account Msg = {} Cause = {}", e.getMessage().toString(),
                     e.getCause().toString());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to authenticate account");
@@ -121,7 +127,6 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     }
 
     public boolean refreshAccount() throws SunSynkAuthenticateException {
-        SunSynkAccountConfig accountConfig = getConfigAs(SunSynkAccountConfig.class);
         try {
             this.sunAccount.refreshAccount(accountConfig.getEmail());
         } catch (SunSynkTokenException e) {

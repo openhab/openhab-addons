@@ -23,6 +23,7 @@ import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.sunsynk.internal.api.dto.APIdata;
 import org.openhab.binding.sunsynk.internal.api.dto.Client;
 import org.openhab.binding.sunsynk.internal.api.dto.Details;
@@ -47,7 +48,7 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class AccountController {
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
-
+    private int TimeOut = 4000;
     private @Nullable Client sunAccount = new Client();
 
     public AccountController() {
@@ -84,10 +85,10 @@ public class AccountController {
         String httpsURL = makeLoginURL("oauth/token");
         Properties headers = new Properties();
         headers.setProperty("Accept", "application/json");
-        headers.setProperty("Requester", "www.openhab.org"); // optional
         InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
         try {
-            response = HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
+            response = HttpUtil.executeUrl(HttpMethod.POST.asString(), httpsURL, headers, stream, "application/json",
+                    TimeOut);
             this.sunAccount = gson.fromJson(response, Client.class);
         } catch (IOException | JsonSyntaxException e) {
             throw new SunSynkAuthenticateException("Sun Synk Account could not be authenticated", e);
@@ -96,12 +97,12 @@ public class AccountController {
             throw new SunSynkAuthenticateException("Sun Synk Account failed to get a response.");
         }
         if (this.sunAccount.getCode() == 102) {
-            logger.info("Sun Synk Account could not be authenticated: {}.", this.sunAccount.getMsg());
+            logger.debug("Sun Synk Account could not be authenticated: {}.", this.sunAccount.getMsg());
             throw new SunSynkAuthenticateException(
                     "Sun Synk Accountfailed to authenticate: Check your password or email.");
         }
         if (this.sunAccount.getStatus() == 404) {
-            logger.info("Sun Synk Account could not be authenticated: 404 {} {}.", this.sunAccount.getError(),
+            logger.debug("Sun Synk Account could not be authenticated: 404 {} {}.", this.sunAccount.getError(),
                     this.sunAccount.getPath());
             throw new SunSynkAuthenticateException("Sun Synk Accountfailed to authenticate: 404 Not Found.");
         }
@@ -127,8 +128,8 @@ public class AccountController {
                     "api/v1/inverters?page=1&limit=10&total=0&status=-1&sn=&plantId=&type=-2&softVer=&hmiVer=&agentCompanyId=-1&gsn=");
             headers.setProperty("Accept", "application/json");
             headers.setProperty("Authorization", "Bearer " + APIdata.static_access_token);
-            headers.setProperty("Requester", "www.openhab.org"); // optional
-            response = HttpUtil.executeUrl("GET", httpsURL, headers, null, "application/json", 2000);
+            response = HttpUtil.executeUrl(HttpMethod.GET.asString(), httpsURL, headers, null, "application/json",
+                    TimeOut);
             output = gson.fromJson(response, Details.class);
         } catch (IOException | JsonSyntaxException e) {
             logger.debug("Error attempting to find inverters registered to account: Msg = {}. Cause = {}.",

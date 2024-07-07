@@ -22,6 +22,7 @@ import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.sunsynk.internal.api.dto.APIdata;
 import org.openhab.binding.sunsynk.internal.api.dto.Battery;
 import org.openhab.binding.sunsynk.internal.api.dto.Daytemps;
@@ -56,6 +57,7 @@ public class DeviceController {
     private @Nullable Grid grid = new Grid();
     private @Nullable Daytemps inverter_day_temperatures = new Daytemps();
     private @Nullable RealTimeInData realTimeDataIn = new RealTimeInData();
+    private int TimeOut = 4000;
     public @Nullable Settings tempInverterChargeSettings = new Settings(); // Holds modified battery settings.
 
     public DeviceController() {
@@ -180,17 +182,15 @@ public class DeviceController {
         Properties headers = new Properties();
         headers.setProperty("Accept", "application/json");
         headers.setProperty("Authorization", "Bearer " + access_token);
-        headers.setProperty("Requester", "www.openhab.org"); // optional
         InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
-        return HttpUtil.executeUrl("POST", httpsURL, headers, stream, "application/json", 2000);
+        return HttpUtil.executeUrl(HttpMethod.POST.asString(), httpsURL, headers, stream, "application/json", TimeOut);
     }
 
     private String apiGetMethod(String httpsURL, String access_token) throws IOException {
         Properties headers = new Properties();
         headers.setProperty("Accept", "application/json");
-        headers.setProperty("Requester", "www.openhab.org"); // optional
         headers.setProperty("Authorization", "Bearer " + access_token);
-        return HttpUtil.executeUrl("GET", httpsURL, headers, null, "application/json", 2000);
+        return HttpUtil.executeUrl(HttpMethod.GET.asString(), httpsURL, headers, null, "application/json", TimeOut);
     }
 
     private String makeURL(String path) {

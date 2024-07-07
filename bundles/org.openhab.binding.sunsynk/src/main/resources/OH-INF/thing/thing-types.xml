@@ -63,7 +63,7 @@
 			<channel id="interval-4-gen-charge" typeId="gen-charge"/>
 			<channel id="interval-5-gen-charge" typeId="gen-charge"/>
 			<channel id="interval-6-gen-charge" typeId="gen-charge"/>
-			<channel id="battery-SOC" typeId="system.battery-level"/>
+			<channel id="battery-soc" typeId="system.battery-level"/>
 			<channel id="battery-grid-voltage" typeId="system.electric-voltage"/>
 			<channel id="battery-grid-current" typeId="system.electric-current"/>
 			<channel id="battery-grid-power" typeId="system.electric-power"/>
@@ -84,8 +84,6 @@
 		<properties>
 			<property name="vendor">SunSynk</property>
 		</properties>
-
-		<representation-property>sn</representation-property>
 
 		<config-description>
 			<parameter name="sn" type="text" required="true">
@@ -130,7 +128,7 @@
 	</channel-type>
 
 	<channel-type id="battery-target" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Target Charge Level</label>
 		<description>The desired charge level of the battery (%).</description>
 		<category>Battery</category>
@@ -138,7 +136,7 @@
 	</channel-type>
 
 	<channel-type id="power-charge-limit" advanced="true">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Maximum Charge Rate</label>
 		<description>maximum charge power desired (limited by inverter capability).</description>
 		<category>Inverter</category>
