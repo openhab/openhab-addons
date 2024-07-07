@@ -130,8 +130,6 @@ public class ModelMapper {
                 logger.warn(
                         "Device identifying itself as '{}' (0x{}) is not currently supported. Please report this to the developer!",
                         model, modelAsHexString);
-                logger.warn(
-                        "Join the discussion at https://community.openhab.org/t/broadlink-binding-for-rmx-a1-spx-and-mp-any-interest/22768/616");
                 throw new UnsupportedOperationException("Device identifying itself as '" + model + "' (hex 0x"
                         + modelAsHexString + ") is not currently supported. Please report this to the developer!");
             }
