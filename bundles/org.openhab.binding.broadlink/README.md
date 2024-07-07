@@ -102,7 +102,8 @@ In order to delete a previously stored code, the procedure is as follows:
 
 *-Remember if you manipulate the code file manually, remember to provide the proper location, and the proper ownership and permissions (Location is `$OPENHAB_USERDATA`, and permissions are `-rw-r--r-- 1 openhab openhab*
 
-## Map File
+## Migrating legacy map file
+Up to openHAB version 3.3, there was a previous version of this binding that was not part of the openHAB distribution. It stored the IR/RF commands in a different place and a different format. If you want to mirgrate from those versions to this version of the binding, please read this section.
 
 The Broadlink RM family of devices can transmit IR codes. The pro models add RF codes.
 The map file contains a list of IR/RF command codes to send via the device.
@@ -124,7 +125,7 @@ The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu hea
 To send either code, the string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
 For RF, the `rfcommand` channel is used. 
 
-In this version of the binding, storage of codes is handled by openHAB. The map files are stored in the $OPENHAB_USERDATA/jsondb directory. As an advantage, the files are now backed up by openHAB, which s more practical for migrations, data robustness, etc. having the storage of the codes handled by openHAB also provides uniformity in where the files are stored.
+Storage of codes is handled by openHAB. The map files are stored in the $OPENHAB_USERDATA/jsondb directory. As an advantage, the files are now backed up by openHAB, which s more practical for migrations, data robustness, etc. having the storage of the codes handled by openHAB also provides uniformity in where the files are stored.
 
 With the change of the storage mechanism, the files are also changing format, and codes are now stored in json. As an example, a file with the commands shown in the previous example would look like this:
 
