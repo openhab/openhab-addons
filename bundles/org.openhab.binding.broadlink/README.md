@@ -107,8 +107,7 @@ In order to delete a previously stored code, the procedure is as follows:
 The Broadlink RM family of devices can transmit IR codes. The pro models add RF codes.
 The map file contains a list of IR/RF command codes to send via the device.
 
-In this version of the binding, the IR codes are store in `$OPENHAB_USERDATA/jsondb/broadlink_ir.json` and for the RM Pro series of devices
-the RF codes are store in `$OPENHAB_USERDATA/jsondb/broadlink_rf.json`
+IR codes are store in `$OPENHAB_USERDATA/jsondb/broadlink_ir.json` and for the RM Pro series of devices the RF codes are store in `$OPENHAB_USERDATA/jsondb/broadlink_rf.json`
 
 In previous versions of this binding, the file used the [Java Properties File format](https://en.wikipedia.org/wiki/.properties) and was stored in the `<OPENHAB_CONF>/transform` folder.
 By default, the file name was `broadlink.map` for the IR codes, but could be changed using the `mapFile` setting. In similar fashion, the RM pro models
