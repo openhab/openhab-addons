@@ -23,6 +23,15 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public interface BroadlinkSocketListener {
 
+    /**
+     * Method triggered when the defined socket receives data
+     *
+     * @param remoteAddress the remote address to receive data from
+     * @param remotePort the remote port to receive data from
+     * @param remoteMAC the remote MAC address to receive data from
+     * @param thingTypeUID the defined thing type id to receive data from
+     * @param model the device type of thing to receive data from
+     */
     public abstract void onDataReceived(String remoteAddress, int remotePort, String remoteMAC,
             ThingTypeUID thingTypeUID, int model);
 }

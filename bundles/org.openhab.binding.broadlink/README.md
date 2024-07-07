@@ -85,7 +85,8 @@ The binding is also capable of modifying a previously stored code, and to delete
 
 To modify a previously stored code, the procedure is the same as the one shown above, except that in step 4, the option to choose is *Modify IR command* or *Modify RF Command*
 
-*Please note that the "Learn command" will not modify a previously existent code, and the "Modify" command will not create a new command. This is done to avoid accidentally oeverwriting commands*
+*Please note that the "Learn command" will not modify a previously existent code, and the "Modify" command will not create a new command. 
+This is done to avoid accidentally overwriting commands*
 
 In order to delete a previously stored code, the procedure is as follows:
 
@@ -103,7 +104,9 @@ In order to delete a previously stored code, the procedure is as follows:
 *-Remember if you manipulate the code file manually, remember to provide the proper location, and the proper ownership and permissions (Location is `$OPENHAB_USERDATA`, and permissions are `-rw-r--r-- 1 openhab openhab*
 
 ## Migrating legacy map file
-Up to openHAB version 3.3, there was a previous version of this binding that was not part of the openHAB distribution. It stored the IR/RF commands in a different place and a different format. If you want to mirgrate from those versions to this version of the binding, please read this section.
+Up to openHAB version 3.3, there was a previous version of this binding that was not part of the openHAB distribution. 
+It stored the IR/RF commands in a different place and a different format. 
+If you want to mirgrate from those versions to this version of the binding, please read this section.
 
 The Broadlink RM family of devices can transmit IR codes. The pro models add RF codes.
 The map file contains a list of IR/RF command codes to send via the device.
@@ -111,8 +114,8 @@ The map file contains a list of IR/RF command codes to send via the device.
 IR codes are store in `$OPENHAB_USERDATA/jsondb/broadlink_ir.json` and for the RM Pro series of devices the RF codes are store in `$OPENHAB_USERDATA/jsondb/broadlink_rf.json`
 
 In previous versions of this binding, the file used the [Java Properties File format](https://en.wikipedia.org/wiki/.properties) and was stored in the `<OPENHAB_CONF>/transform` folder.
-By default, the file name was `broadlink.map` for the IR codes, but could be changed using the `mapFile` setting. In similar fashion, the RM pro models
-stored the RF codes in the `broadlinkrf.map` file. 
+By default, the file name was `broadlink.map` for the IR codes, but could be changed using the `mapFile` setting. 
+In similar fashion, the RM pro models stored the RF codes in the `broadlinkrf.map` file. 
 
 Here is a map file example of the previous file format:
 
@@ -125,9 +128,11 @@ The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu hea
 To send either code, the string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
 For RF, the `rfcommand` channel is used. 
 
-Storage of codes is handled by openHAB. The map files are stored in the $OPENHAB_USERDATA/jsondb directory. As an advantage, the files are now backed up by openHAB, which s more practical for migrations, data robustness, etc. having the storage of the codes handled by openHAB also provides uniformity in where the files are stored.
+Storage of codes is handled by openHAB. The map files are stored in the $OPENHAB_USERDATA/jsondb directory. 
+As an advantage, the files are now backed up by openHAB, which is more practical for migrations, data robustness, etc. having the storage of the codes handled by openHAB also provides uniformity in where the files are stored.
 
-With the change of the storage mechanism, the files are also changing format, and codes are now stored in json. As an example, a file with the commands shown in the previous example would look like this:
+With the change of the storage mechanism, the files are also changing format, and codes are now stored in json. 
+As an example, a file with the commands shown in the previous example would look like this:
 
 ```
 {
