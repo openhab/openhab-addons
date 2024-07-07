@@ -90,6 +90,14 @@ public class BroadlinkBindingConstants {
     public static final String IR_MAP_NAME = "broadlink_ir";
     public static final String RF_MAP_NAME = "broadlink_rf";
 
+    /**
+     * Enum type to make a distinction between IR and RF codes being managed by a device
+     */
+    public static enum CodeType {
+        IR,
+        RF
+    };
+
     public static final Unit<Temperature> BROADLINK_TEMPERATURE_UNIT = SIUnits.CELSIUS;
     public static final Unit<Dimensionless> BROADLINK_HUMIDITY_UNIT = Units.PERCENT;
     public static final Unit<Power> BROADLINK_POWER_CONSUMPTION_UNIT = Units.WATT;

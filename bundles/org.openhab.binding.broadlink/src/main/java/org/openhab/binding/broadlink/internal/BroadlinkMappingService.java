@@ -18,6 +18,7 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.CodeType;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.ChannelUID;
@@ -55,8 +56,8 @@ public class BroadlinkMappingService {
         rfStorage = this.storageService.getStorage(BroadlinkBindingConstants.RF_MAP_NAME,
                 String.class.getClassLoader());
         mappingInstances.add(this);
-        notifyAvailableCommands(irStorage.getKeys(), "IR", false);
-        notifyAvailableCommands(rfStorage.getKeys(), "RF", false);
+        notifyAvailableCommands(irStorage.getKeys(), CodeType.IR, false);
+        notifyAvailableCommands(rfStorage.getKeys(), CodeType.RF, false);
         logger.debug("BroadlinkMappingService constructed on behalf of {} and {}", this.irTargetChannelUID,
                 this.rfTargetChannelUID);
     }
@@ -65,13 +66,13 @@ public class BroadlinkMappingService {
         mappingInstances.remove(this);
     }
 
-    public @Nullable String lookupCode(String command, String codeType) {
+    public @Nullable String lookupCode(String command, CodeType codeType) {
         String response;
         switch (codeType) {
-            case "IR":
+            case IR:
                 response = lookupKey(command, irStorage, codeType);
                 break;
-            case "RF":
+            case RF:
                 response = lookupKey(command, rfStorage, codeType);
                 break;
             default:
@@ -80,13 +81,13 @@ public class BroadlinkMappingService {
         return response;
     }
 
-    public @Nullable String storeCode(String command, String code, String codeType) {
+    public @Nullable String storeCode(String command, String code, CodeType codeType) {
         String response;
         switch (codeType) {
-            case "IR":
+            case IR:
                 response = storeKey(command, code, irStorage, codeType, irTargetChannelUID);
                 break;
-            case "RF":
+            case RF:
                 response = storeKey(command, code, rfStorage, codeType, rfTargetChannelUID);
                 break;
             default:
@@ -95,13 +96,13 @@ public class BroadlinkMappingService {
         return response;
     }
 
-    public @Nullable String replaceCode(String command, String code, String codeType) {
+    public @Nullable String replaceCode(String command, String code, CodeType codeType) {
         String response;
         switch (codeType) {
-            case "IR":
+            case IR:
                 response = replaceKey(command, code, irStorage, codeType, irTargetChannelUID);
                 break;
-            case "RF":
+            case RF:
                 response = replaceKey(command, code, rfStorage, codeType, rfTargetChannelUID);
                 break;
             default:
@@ -110,13 +111,13 @@ public class BroadlinkMappingService {
         return response;
     }
 
-    public @Nullable String deleteCode(String command, String codeType) {
+    public @Nullable String deleteCode(String command, CodeType codeType) {
         String response;
         switch (codeType) {
-            case "IR":
+            case IR:
                 response = deleteKey(command, irStorage, codeType, irTargetChannelUID);
                 break;
-            case "RF":
+            case RF:
                 response = deleteKey(command, rfStorage, codeType, rfTargetChannelUID);
                 break;
             default:
@@ -125,7 +126,7 @@ public class BroadlinkMappingService {
         return response;
     }
 
-    public @Nullable String lookupKey(String command, Storage<String> storage, String codeType) {
+    public @Nullable String lookupKey(String command, Storage<String> storage, CodeType codeType) {
         String value = storage.get(command);
         if (value != null) {
             logger.debug("{} Command label found. Key value pair is {},{}", codeType, command, value);
@@ -135,7 +136,7 @@ public class BroadlinkMappingService {
         return value;
     }
 
-    public @Nullable String storeKey(String command, String code, Storage<String> storage, String codeType,
+    public @Nullable String storeKey(String command, String code, Storage<String> storage, CodeType codeType,
             ChannelUID targetChannelUID) {
         if (storage.get(command) == null) {
             logger.debug("{} Command label not found. Proceeding to store key value pair {},{} and reload Command list",
@@ -149,7 +150,7 @@ public class BroadlinkMappingService {
         }
     }
 
-    public @Nullable String replaceKey(String command, String code, Storage<String> storage, String codeType,
+    public @Nullable String replaceKey(String command, String code, Storage<String> storage, CodeType codeType,
             ChannelUID targetChannelUID) {
         if (storage.get(command) != null) {
             logger.debug("{} Command label found. Proceeding to store key value pair {},{} and reload Command list",
@@ -163,7 +164,7 @@ public class BroadlinkMappingService {
         }
     }
 
-    public @Nullable String deleteKey(String command, Storage<String> storage, String codeType,
+    public @Nullable String deleteKey(String command, Storage<String> storage, CodeType codeType,
             ChannelUID targetChannelUID) {
         String value = storage.get(command);
         if (value != null) {
@@ -179,7 +180,7 @@ public class BroadlinkMappingService {
         }
     }
 
-    void notifyAvailableCommands(Collection<String> commandNames, String codeType, boolean refreshAllInstances) {
+    void notifyAvailableCommands(Collection<String> commandNames, CodeType codeType, boolean refreshAllInstances) {
         List<CommandOption> commandOptions = new ArrayList<>();
         commandNames.forEach((c) -> commandOptions.add(new CommandOption(c, null)));
         if (refreshAllInstances) {
@@ -187,9 +188,9 @@ public class BroadlinkMappingService {
                     commandNames.toString());
             for (BroadlinkMappingService w : mappingInstances) {
                 switch (codeType) {
-                    case "IR":
+                    case IR:
                         w.commandDescriptionProvider.setCommandOptions(w.irTargetChannelUID, commandOptions);
-                    case "RF":
+                    case RF:
                         w.commandDescriptionProvider.setCommandOptions(w.rfTargetChannelUID, commandOptions);
                 }
             }
@@ -197,9 +198,9 @@ public class BroadlinkMappingService {
             logger.debug("notifying framework about {} commands: {} for single {} device", commandOptions.size(),
                     commandNames.toString(), codeType);
             switch (codeType) {
-                case "IR":
+                case IR:
                     this.commandDescriptionProvider.setCommandOptions(irTargetChannelUID, commandOptions);
-                case "RF":
+                case RF:
                     this.commandDescriptionProvider.setCommandOptions(rfTargetChannelUID, commandOptions);
             }
         }

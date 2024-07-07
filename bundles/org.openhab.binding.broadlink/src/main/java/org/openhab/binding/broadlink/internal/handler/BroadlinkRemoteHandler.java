@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.CodeType;
 import org.openhab.binding.broadlink.internal.BroadlinkMappingService;
 import org.openhab.binding.broadlink.internal.BroadlinkRemoteDynamicCommandDescriptionProvider;
 import org.openhab.binding.broadlink.internal.Utils;
@@ -150,10 +151,10 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 String hexString = Utils.toHexString(extractResponsePayload(response));
                 String cmdLabel = null;
                 if (replacement) {
-                    cmdLabel = mappingService.replaceCode(irCommand, hexString, "IR");
+                    cmdLabel = mappingService.replaceCode(irCommand, hexString, CodeType.IR);
                     message = "modified";
                 } else {
-                    cmdLabel = mappingService.storeCode(irCommand, hexString, "IR");
+                    cmdLabel = mappingService.storeCode(irCommand, hexString, CodeType.IR);
                     message = "saved";
                 }
                 if (cmdLabel != null) {
@@ -186,7 +187,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                 new StringType(BroadlinkBindingConstants.LEARNING_CONTROL_COMMAND_DELETE));
         updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                 new StringType("Deleting IR command " + irCommand + "..."));
-        String cmdLabel = mappingService.deleteCode(irCommand, "IR");
+        String cmdLabel = mappingService.deleteCode(irCommand, CodeType.IR);
         if (cmdLabel != null) {
             updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                     new StringType("IR command " + irCommand + " deleted"));
@@ -311,7 +312,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     @SuppressWarnings("null")
     private byte @Nullable [] lookupIRCode(Command command, ChannelUID channelUID) {
         byte code[] = null;
-        String value = this.mappingService.lookupCode(command.toString(), "IR");
+        String value = this.mappingService.lookupCode(command.toString(), CodeType.IR);
 
         if (value == null || value.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -328,7 +329,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     @SuppressWarnings("null")
     private byte @Nullable [] lookupRFCode(Command command, ChannelUID channelUID) {
         byte code[] = null;
-        String value = this.mappingService.lookupCode(command.toString(), "RF");
+        String value = this.mappingService.lookupCode(command.toString(), CodeType.RF);
 
         if (value == null || value.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -414,9 +415,10 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
                         String cmdLabel = null;
                         if (replacement) {
                             cmdLabel = mappingService.replaceCode(thingConfig.getNameOfCommandToLearn(), hexString,
-                                    "RF");
+                                    CodeType.RF);
                         } else {
-                            cmdLabel = mappingService.storeCode(thingConfig.getNameOfCommandToLearn(), hexString, "RF");
+                            cmdLabel = mappingService.storeCode(thingConfig.getNameOfCommandToLearn(), hexString,
+                                    CodeType.RF);
                         }
 
                         if (cmdLabel != null) {
@@ -453,7 +455,7 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     private void deleteRFCommand() {
         updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL,
                 new StringType("Deleting RF command " + thingConfig.getNameOfCommandToLearn() + "..."));
-        String cmdLabel = mappingService.deleteCode(thingConfig.getNameOfCommandToLearn(), "RF");
+        String cmdLabel = mappingService.deleteCode(thingConfig.getNameOfCommandToLearn(), CodeType.RF);
         if (cmdLabel != null) {
             updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL,
                     new StringType("RF command " + thingConfig.getNameOfCommandToLearn() + " deleted"));

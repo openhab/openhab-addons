@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.openhab.binding.broadlink.AbstractBroadlinkTest;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants.CodeType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.CommandOption;
 
@@ -42,12 +43,12 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
         BroadlinkMappingService bms = new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2,
                 storageService);
 
-        assertEquals("00112233", bms.lookupCode("IR_TEST_COMMAND_ON", "IR"));
-        assertEquals("33221100", bms.lookupCode("IR_TEST_COMMAND_OFF", "IR"));
-        assertEquals(null, bms.lookupCode("IR_TEST_COMMAND_DUMMY", "IR"));
-        assertEquals("00112233", bms.lookupCode("RF_TEST_COMMAND_ON", "RF"));
-        assertEquals("33221100", bms.lookupCode("RF_TEST_COMMAND_OFF", "RF"));
-        assertEquals(null, bms.lookupCode("RF_TEST_COMMAND_DUMMY", "RF"));
+        assertEquals("00112233", bms.lookupCode("IR_TEST_COMMAND_ON", CodeType.IR));
+        assertEquals("33221100", bms.lookupCode("IR_TEST_COMMAND_OFF", CodeType.IR));
+        assertEquals(null, bms.lookupCode("IR_TEST_COMMAND_DUMMY", CodeType.IR));
+        assertEquals("00112233", bms.lookupCode("RF_TEST_COMMAND_ON", CodeType.RF));
+        assertEquals("33221100", bms.lookupCode("RF_TEST_COMMAND_OFF", CodeType.RF));
+        assertEquals(null, bms.lookupCode("RF_TEST_COMMAND_DUMMY", CodeType.RF));
     }
 
     @Test
@@ -55,11 +56,11 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
         BroadlinkMappingService bms = new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2,
                 storageService);
 
-        assertEquals("IR_TEST_COMMAND_UP", bms.storeCode("IR_TEST_COMMAND_UP", "44556677", "IR"));
-        assertEquals(null, bms.storeCode("IR_TEST_COMMAND_ON", "77665544", "IR"));
+        assertEquals("IR_TEST_COMMAND_UP", bms.storeCode("IR_TEST_COMMAND_UP", "44556677", CodeType.IR));
+        assertEquals(null, bms.storeCode("IR_TEST_COMMAND_ON", "77665544", CodeType.IR));
         assertEquals("44556677", irStorage.get("IR_TEST_COMMAND_UP"));
-        assertEquals("RF_TEST_COMMAND_UP", bms.storeCode("RF_TEST_COMMAND_UP", "44556677", "RF"));
-        assertEquals(null, bms.storeCode("RF_TEST_COMMAND_ON", "77665544", "RF"));
+        assertEquals("RF_TEST_COMMAND_UP", bms.storeCode("RF_TEST_COMMAND_UP", "44556677", CodeType.RF));
+        assertEquals(null, bms.storeCode("RF_TEST_COMMAND_ON", "77665544", CodeType.RF));
         assertEquals("44556677", rfStorage.get("RF_TEST_COMMAND_UP"));
     }
 
@@ -68,11 +69,11 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
         BroadlinkMappingService bms = new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2,
                 storageService);
 
-        assertEquals(null, bms.replaceCode("IR_TEST_COMMAND_UP", "55667788", "IR"));
-        assertEquals("IR_TEST_COMMAND_ON", bms.replaceCode("IR_TEST_COMMAND_ON", "55667788", "IR"));
+        assertEquals(null, bms.replaceCode("IR_TEST_COMMAND_UP", "55667788", CodeType.IR));
+        assertEquals("IR_TEST_COMMAND_ON", bms.replaceCode("IR_TEST_COMMAND_ON", "55667788", CodeType.IR));
         assertEquals("55667788", irStorage.get("IR_TEST_COMMAND_ON"));
-        assertEquals(null, bms.replaceCode("RF_TEST_COMMAND_UP", "55667788", "RF"));
-        assertEquals("RF_TEST_COMMAND_ON", bms.replaceCode("RF_TEST_COMMAND_ON", "55667788", "RF"));
+        assertEquals(null, bms.replaceCode("RF_TEST_COMMAND_UP", "55667788", CodeType.RF));
+        assertEquals("RF_TEST_COMMAND_ON", bms.replaceCode("RF_TEST_COMMAND_ON", "55667788", CodeType.RF));
         assertEquals("55667788", rfStorage.get("RF_TEST_COMMAND_ON"));
     }
 
@@ -81,12 +82,12 @@ public class BroadlinkMappingServiceTest extends AbstractBroadlinkTest {
         BroadlinkMappingService bms = new BroadlinkMappingService(mockProvider, TEST_CHANNEL_UID, TEST_CHANNEL_UID2,
                 storageService);
 
-        assertEquals("IR_TEST_COMMAND_ON", bms.deleteCode("IR_TEST_COMMAND_ON", "IR"));
+        assertEquals("IR_TEST_COMMAND_ON", bms.deleteCode("IR_TEST_COMMAND_ON", CodeType.IR));
         assertEquals(null, irStorage.get("IR_TEST_COMMAND_ON"));
-        assertEquals(null, bms.deleteCode("IR_TEST_COMMAND_DUMMY", "IR"));
-        assertEquals("RF_TEST_COMMAND_ON", bms.deleteCode("RF_TEST_COMMAND_ON", "RF"));
+        assertEquals(null, bms.deleteCode("IR_TEST_COMMAND_DUMMY", CodeType.IR));
+        assertEquals("RF_TEST_COMMAND_ON", bms.deleteCode("RF_TEST_COMMAND_ON", CodeType.RF));
         assertEquals(null, rfStorage.get("RF_TEST_COMMAND_ON"));
-        assertEquals(null, bms.deleteCode("RF_TEST_COMMAND_DUMMY", "RF"));
+        assertEquals(null, bms.deleteCode("RF_TEST_COMMAND_DUMMY", CodeType.RF));
     }
 
     @Test
