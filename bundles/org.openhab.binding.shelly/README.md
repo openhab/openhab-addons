@@ -1564,7 +1564,6 @@ See notes on discovery of Shelly BLU devices above.
 
 There are no additional channels beside the device group.
 
-
 ## Shelly Wall Displays
 
 | Group   | Channel     | Type     | read-only | Description                                                                       |
