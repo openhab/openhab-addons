@@ -1562,7 +1562,7 @@ See notes on discovery of Shelly BLU devices above.
 
 ## Shelly BLU Gateway (thing-type: shellyblugw)
 
-There no no additional channels beside the device group.
+There are no additional channels beside the device group.
 
 
 ## Shelly Wall Displays
