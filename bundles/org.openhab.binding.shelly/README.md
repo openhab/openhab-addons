@@ -134,7 +134,6 @@ The binding provides the same feature set across all devices as good as possible
 | shellydevice      | A password protected Shelly device or an unknown type  |           |
 | shellyunknown     | An unknown Shelly device / model has been detected     |           |
 
-
 ## Binding Configuration
 
 The binding has the following configuration options:
