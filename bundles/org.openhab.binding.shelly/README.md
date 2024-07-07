@@ -127,7 +127,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellyblumotion   | Shelly BLU Motion                                      | SBMO      |
 | shellybluht       | Shelly BLU H&T                                         | SBMO      |
 
-### Special thing types
+### Special Thing Types
 
 | thing-type        | Model                                                  | Vendor ID |
 | ----------------- | ------------------------------------------------------ | --------- |
@@ -1561,9 +1561,6 @@ See notes on discovery of Shelly BLU devices above.
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
 
 ## Shelly BLU Gateway (thing-type: shellyblugw)
-
-| Group   | Channel       | Type     | read-only | Description                                             |
-| ------- | ------------- | -------- | --------- | ------------------------------------------------------- |
 
 There no no additional channels beside the device group.
 
