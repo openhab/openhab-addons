@@ -33,7 +33,6 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class BroadlinkBindingConstants {
-
     public static final ThingTypeUID THING_TYPE_RM_PRO = new ThingTypeUID("broadlink", "rm-pro");
     public static final ThingTypeUID THING_TYPE_RM3 = new ThingTypeUID("broadlink", "rm3");
     public static final ThingTypeUID THING_TYPE_RM3Q = new ThingTypeUID("broadlink", "rm3q");
