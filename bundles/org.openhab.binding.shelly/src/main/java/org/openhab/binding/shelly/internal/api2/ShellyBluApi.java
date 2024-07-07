@@ -165,7 +165,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         }
 
         if (!connected) {
-            // throw new ShellyApiException("BLU Device not yet connected");
+            throw new ShellyApiException("BLU Device not yet connected");
         }
 
         profile.initialized = true;
@@ -175,7 +175,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     @Override
     public ShellySettingsStatus getStatus() throws ShellyApiException {
         if (!connected) {
-            // throw new ShellyApiException("Thing is not yet initialized -> status not available");
+            throw new ShellyApiException("Thing is not yet initialized -> status not available");
         }
         return deviceStatus;
     }
@@ -183,7 +183,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
     @Override
     public ShellyStatusSensor getSensorStatus() throws ShellyApiException {
         if (!connected) {
-            // throw new ShellyApiException("Thing is not yet initialized -> sensor data not available");
+            throw new ShellyApiException("Thing is not yet initialized -> sensor data not available");
         }
 
         return sensorData;

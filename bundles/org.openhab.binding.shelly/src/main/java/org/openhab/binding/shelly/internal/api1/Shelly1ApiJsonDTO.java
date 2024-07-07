@@ -1290,9 +1290,6 @@ public class Shelly1ApiJsonDTO {
      * @return Modified Json
      */
     public static String fixDimmerJson(String json) {
-        if (json == null) {
-            return json;
-        }
         return !json.contains("\"lights\":[") ? json
                 : json.replaceFirst(java.util.regex.Pattern.quote("\"lights\":["), "\"dimmers\":[");
     }
