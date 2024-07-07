@@ -169,8 +169,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             profile.device = getDeviceInfo();
         }
 
-        Shelly2GetConfigResult dc = apiRequest(SHELLYRPC_METHOD_GETCONFIG, null, Shelly2GetConfigResult.class);
         profile.isGen2 = true;
+        Shelly2GetConfigResult dc = apiRequest(SHELLYRPC_METHOD_GETCONFIG, null, Shelly2GetConfigResult.class);
         profile.settingsJson = gson.toJson(dc);
         profile.thingName = thingName;
         profile.settings.name = profile.status.name = dc.sys.device.name;
