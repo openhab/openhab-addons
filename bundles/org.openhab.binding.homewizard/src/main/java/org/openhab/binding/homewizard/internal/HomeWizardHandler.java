@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -177,14 +178,20 @@ public class HomeWizardHandler extends BaseThingHandler {
         updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_POWER_L3,
                 new QuantityType<>(payload.getActivePowerL3W(), Units.WATT));
 
+        updateState(HomeWizardBindingConstants.CHANNEL_ANY_POWER_FAILURES,
+                new DecimalType(payload.getAnyPowerFailCount()));
+
+        updateState(HomeWizardBindingConstants.CHANNEL_LONG_POWER_FAILURES,
+                new DecimalType(payload.getLongPowerFailCount()));
+
         updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_CURRENT,
                 new QuantityType<>(payload.getActiveCurrent(), Units.AMPERE));
         updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_CURRENT_L1,
                 new QuantityType<>(payload.getActiveCurrentL1(), Units.AMPERE));
         updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_CURRENT_L2,
-                new QuantityType<>(payload.getActiveCurrentL1(), Units.AMPERE));
+                new QuantityType<>(payload.getActiveCurrentL2(), Units.AMPERE));
         updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_CURRENT_L3,
-                new QuantityType<>(payload.getActiveCurrentL1(), Units.AMPERE));
+                new QuantityType<>(payload.getActiveCurrentL3(), Units.AMPERE));
 
         updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_VOLTAGE,
                 new QuantityType<>(payload.getActiveVoltage(), Units.VOLT));

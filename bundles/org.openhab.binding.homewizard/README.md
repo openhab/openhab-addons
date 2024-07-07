@@ -54,6 +54,8 @@ Thing homewizard:p1_wifi_meter:my_meter [ ipAddress="192.178.1.67", refreshDelay
 | total_energy_export_t2 | Number:Energy            | The most recently reported total exported energy in kWh by counter 2.                      |
 | total_gas              | Number:Volume            | The most recently reported total imported gas in m^3.                                      |
 | gas_timestamp          | DateTime                 | The time stamp of the total_gas measurement.                                               |
+| any_power_failures     | Number                   | The count of long power failures.                                                          |
+| long_power_failures    | Number                   | the count of any power failures.                                                           |
 
 Example of configuration through a .items file:
 

@@ -45,6 +45,12 @@ public class P1Payload {
     private double totalGasM3;
     private long gasTimestamp = 0;
 
+    @SerializedName("any_power_fail_count")
+    private int anyPowerFailCount;
+
+    @SerializedName("long_power_fail_count")
+    private int longPowerFailCount;
+
     @SerializedName("active_voltage_v")
     private double activeVoltage;
     @SerializedName("active_voltage_l1_v")
@@ -241,6 +247,24 @@ public class P1Payload {
      */
     public void setActivePowerL1W(double activePowerL1W) {
         this.activePowerL1W = activePowerL1W;
+    }
+
+    /**
+     * Getter for the count of any power failures
+     *
+     * @return count of any power failures
+     */
+    public double getAnyPowerFailCount() {
+        return anyPowerFailCount;
+    }
+
+    /**
+     * Getter for the count of long power failures
+     *
+     * @return count of long power failures
+     */
+    public double getLongPowerFailCount() {
+        return longPowerFailCount;
     }
 
     /**
