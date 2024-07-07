@@ -395,6 +395,7 @@
 		<label>Restart</label>
 		<description>Restarts the device</description>
 		<category>Switch</category>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 </thing:thing-descriptions>

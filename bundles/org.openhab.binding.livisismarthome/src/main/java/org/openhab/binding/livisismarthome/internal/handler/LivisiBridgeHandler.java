@@ -203,9 +203,6 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
                 scheduleBridgeRefreshJob(bridgeDevice);
 
                 startWebSocket(bridgeDevice);
-
-                // Update the restart channel to OFF to enable a (new) restart command.
-                updateState(CHANNEL_RESTART, OnOffType.OFF);
             } else {
                 logger.debug("Failed to get bridge device, re-scheduling startClient.");
                 scheduleRestartClient(true);
