@@ -17,7 +17,7 @@ Supported devices: dishwasher, washer, washer / dryer combination, dryer, oven, 
 
 #### experimental support
 
-| Home appliance | Thing Type ID    |
+| Home appliance | Thing Type ID |
 | --------------- | ------------ |
 | Dishwasher | dishwasher |
 | Washer | washer |
@@ -110,6 +110,9 @@ After the bridge has been added and authorized, devices are discovered automatic
     for example: `http://192.168.178.34:8080/homeconnect` or `https://myhome.domain.com/homeconnect`
     - _One Time Token Mode_: keep unchecked
     - _Proof Key for Code Exchange_: keep unchecked
+      
+       > **NOTE**: You might get an error (`403 - Forbidden`) in case you entered a bare IP of your local openHAB instance. In that case, use your instance's hostname instead (e.g. for openhabian `http://openhabian:8080/homeconnect`) and try again.
+    
 1. After your application has been created, you should see the _Client ID_ and _Client Secret_ of the application. Please save these for later.  
 
 ![Screenshot Home Connect application page](doc/home_connect_application.png "Screenshot Home Connect application page")
@@ -135,7 +138,7 @@ The Home Connect bridge can be configured in the openHAB UI as follows:
 
 ## Examples: File based configuration
 
-If you prefer to configure everything via file instead of openHAB UI, here are some examples.
+If you prefer to configure everything via file instead of openHAB UI, here are some examples. In order to get your `haId` you might use the discover feature in UI, copy the appliance's ID and paste it into your `*.things`.
 
 ### things/homeconnect.things
 
