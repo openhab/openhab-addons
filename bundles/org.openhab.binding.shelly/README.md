@@ -86,7 +86,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU                 |
 | shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                 |
 | shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                 |
-| shellyplusplug       | Shelly Plug-US                                           | SNPL-00116US                 |
+| shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                 |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X                   |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                   |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
@@ -94,6 +94,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
+| shellyblugw          | SHelly BLU Gateway                                       | SNGW-BT01                    |
 
 ### Generation 2 Plus Mini series (incl. Gen 3)
 
@@ -130,8 +131,8 @@ The binding provides the same feature set across all devices as good as possible
 
 | thing-type        | Model                                                  | Vendor ID |
 | ----------------- | ------------------------------------------------------ | --------- |
-| shellydevice      | A password protected Shelly device or an unknown type  |                     |
-| shellyunknown     | An unknown Shelly device / model has been detected     |                     |
+| shellydevice      | A password protected Shelly device or an unknown type  |           |
+| shellyunknown     | An unknown Shelly device / model has been detected     |           |
 
 
 ## Binding Configuration
@@ -1564,7 +1565,7 @@ See notes on discovery of Shelly BLU devices above.
 | Group   | Channel       | Type     | read-only | Description                                             |
 | ------- | ------------- | -------- | --------- | ------------------------------------------------------- |
 
-There no no additional channels beside device group.
+There no no additional channels beside the device group.
 
 
 ## Shelly Wall Displays
