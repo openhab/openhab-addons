@@ -54,10 +54,6 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         DiscoveryProtocol.beginAsync(this, 10000L, this, logger);
     }
 
-    @Override
-    public void onDiscoveryFinished() {
-        logger.info("Discovery complete. Found {} Broadlink devices", foundCount);
-    }
 
     @Override
     protected synchronized void stopScan() {
