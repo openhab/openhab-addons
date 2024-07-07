@@ -299,9 +299,9 @@ sitemap main label="Main"
         Frame
         {
             Switch item=TeslaAutoconditioning label="Enable Heat or AC"
-            Setpoint item=TeslaTemperature step=0.5 minValue=65 maxValue=78 label="Auto Conditioning Temperature [%.1f °F]"
-            Text item=TeslaInsideTemperature label="Inside Temperature [%.1f °F]" valuecolor=[<=32="blue",>95="red"]
-            Text item=TeslaOutsideTemperature label="Outside Temperature [%.1f °F]" valuecolor=[<=32="blue",>95="red"]
+            Setpoint item=TeslaTemperature step=0.5 minValue=65 maxValue=78 label="Auto Conditioning Temperature [%.1f %unit%]"
+            Text item=TeslaInsideTemperature label="Inside Temperature [%.1f %unit%]" valuecolor=[<=32="blue",>95="red"]
+            Text item=TeslaOutsideTemperature label="Outside Temperature [%.1f %unit%]" valuecolor=[<=32="blue",>95="red"]
         }
         Frame
         {
@@ -309,9 +309,9 @@ sitemap main label="Main"
             Text item=TeslaUsableBatteryLevel
             Text item=TeslaPower
             Text item=TeslaBatteryCurrent label="Current [%.1f]"
-            Text item=TeslaBatteryRange label="Battery Range [%.1f miles]"
-            Text item=TeslaEstBatteryRange label="Battery Est Range [%.1f miles]"
-            Text item=TeslaIdealBatteryRange label="Battery Ideal Range [%.1f miles]"
+            Text item=TeslaBatteryRange label="Battery Range [%.1f %unit%]"
+            Text item=TeslaEstBatteryRange label="Battery Est Range [%.1f %unit%]"
+            Text item=TeslaIdealBatteryRange label="Battery Ideal Range [%.1f %unit%]"
         }
         Frame
         {
