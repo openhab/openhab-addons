@@ -74,6 +74,7 @@
 		<channels>
 			<channel id="mode" typeId="execution-mode"></channel>
 			<channel id="syncActive" typeId="execution-syncActive"></channel>
+			<channel id="hdmiSource" typeId="execution-hdmiSource"></channel>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

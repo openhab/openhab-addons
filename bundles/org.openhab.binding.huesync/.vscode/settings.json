@@ -31,8 +31,13 @@
     "java.jdt.ls.java.home": "/usr/lib/jvm/java-17-openjdk-amd64",
     "java.compile.nullAnalysis.mode": "automatic",
     "cSpell.words": [
+        "avahi",
+        "devicetype",
+        "huesync",
         "huesyncthing",
-        "powersave"
+        "iconify",
+        "powersave",
+        "uniqueid"
     ],
     "debug.console.wordWrap": false
 }
