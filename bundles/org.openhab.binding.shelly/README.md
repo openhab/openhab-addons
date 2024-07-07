@@ -74,7 +74,6 @@ The binding provides the same feature set across all devices as good as possible
 | shellybutton2     | Shelly Button 2                                        | SHBTN-2             |
 | shellysense       | Shelly Motion and IR Controller                        | SHSEN-1             |
 | shellytrv         | Shelly TRV                                             | SHTRV-01            |
-| shellydevice      | A password protected Shelly device or an unknown type  |                     |
 
 ### Generation 2 Plus series
 
@@ -115,6 +114,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
 | shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU                                  |
+| shellyproem50       | Shelly Pro EM50 with 3 integrated power meters           | SPEM-002CEBEU50                                |
 | shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU, SPSW-104PE16EU                 |
 
 ### Shelly BLU
@@ -125,6 +125,14 @@ The binding provides the same feature set across all devices as good as possible
 | shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
 | shellyblumotion   | Shelly BLU Motion                                      | SBMO      |
 | shellybluht       | Shelly BLU H&T                                         | SBMO      |
+
+### Special thing types
+
+| thing-type        | Model                                                  | Vendor ID |
+| ----------------- | ------------------------------------------------------ | --------- |
+| shellydevice      | A password protected Shelly device or an unknown type  |                     |
+| shellyunknown     | An unknown Shelly device / model has been detected     |                     |
+
 
 ## Binding Configuration
 
@@ -1550,6 +1558,14 @@ See notes on discovery of Shelly BLU devices above.
 |         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
+
+## Shelly BLU Gateway (thing-type: shellyblugw)
+
+| Group   | Channel       | Type     | read-only | Description                                             |
+| ------- | ------------- | -------- | --------- | ------------------------------------------------------- |
+
+There no no additional channels beside device group.
+
 
 ## Shelly Wall Displays
 
