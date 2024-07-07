@@ -146,4 +146,29 @@
 		</description>
 	</channel-type>
 
+	<channel-type id="execution-hdmiSource">
+		<item-type>String</item-type>
+		<label>HDMI input</label>
+		<description>
+			<![CDATA[
+			  <p>
+				<ul>
+				  <li>input1</li>
+				  <li>input2</li>
+				  <li>input3</li>
+				  <li>input4</li>
+				</ul> 
+		      </p>
+			]]> 
+		</description>
+		<command>
+			<options>
+				<option value="input1"></option>
+				<option value="input2"></option>
+				<option value="input3"></option>
+				<option value="input4"></option>
+			</options>
+		</command>
+	</channel-type>
+
 </thing:thing-descriptions>

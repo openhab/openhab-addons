@@ -128,6 +128,8 @@ public class HueSyncHandler extends BaseThingHandler {
         Runnable task = null;
         String id = this.connection.isRegistered() ? POLL : REGISTER;
 
+        this.logger.debug("startTasks - [{}]", id);
+
         long initialDelay = 0;
         long interval = 0;
 

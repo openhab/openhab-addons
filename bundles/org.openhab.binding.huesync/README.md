@@ -1,4 +1,5 @@
 # HueSync Binding
+<!-- markdownlint-disable MD033 -->
 
 This binding integrates the [Play HDMI Sync Box](https://www.philips-hue.com/en-us/p/hue-play-hdmi-sync-box-/046677555221) into openHAB.
 The integration happens directly through the Hue [HDMI Sync Box API](https://developers.meethue.com/develop/hue-entertainment/hue-hdmi-sync-box-api/).
@@ -12,7 +13,6 @@ The integration happens directly through the Hue [HDMI Sync Box API](https://dev
       - [device-firmware](#device-firmware)
       - [device-hdmi-connection-\[in|out\]](#device-hdmi-connection-inout)
       - [device-commands](#device-commands)
-        - [modes](#modes)
   - [Item Configuration](#item-configuration)
 
 <br />
@@ -100,14 +100,18 @@ Information about a HDMI input  connection.
 | ------- | ------ | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | type    | String | R          | <details><summary>Friendly Type</summary><ul><li>generic</li><li>video</li><li>game</li><li>music</li><li>xbox</li><li>playstation</li><li>nintendoswitch</li><li>phone</li><li>desktop</li><li>laptop</li><li>appletv</li><li>roku</li><li>shield</li><li>chromecast</li><li>firetv</li><li>diskplayer</li><li>settopbox</li><li>satellite</li><li>avreceiver</li><li>soundbar</li><li>hdmiswitch</li></ul></details> |
 | status  | String | R          | <details><summary>Device connection status</summary><ul><li>unplugged</li><li>plugged</li><li>linked</li><li>unknown</li></ul></details>                                                                                                                                                                                                                                                                               |
+| name    | String | R          | Friendly Name                                                                                                                                                                                                                                                                                                                                                                                                          |
 | mode    | String | R          | <details><summary>Mode</summary><ul><li>video</li><li>game</li><li>music</li><li>powersave</li><li>passthrough</li></ul></details>                                                                                                                                                                                                                                                                                     |
 
 #### device-commands
 
-| Channel    | Type   | Read/Write | Description                                                                                                                                                                                                                                                                                                                 |
-| ---------- | ------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| mode       | String | R/W        | <details><summary>Hue Sync operation mode</summary><ul><li>video</li><li>game</li><li>music</li><li>powersave</li><li>passthrough</li></ul></details>                                                                                                                                                                       |
-| syncActive | Switch | R/W        | <details><summary>Synchronization</summary><p><b>OFF</b> in case of powersave or passthrough mode, and <b>ON</b> in case of video, game or music mode.</p><p>When changed from OFF to ON, it will start syncing in last used mode for current source. When changed from ON to OFF, will set passthrough mode.</p></details> |
+| Channel    | Type   | Read/Write | Description                                                                                                                                                                                                                                                                                                           |
+| ---------- | ------ | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| mode       | String | R/W        | <details><summary>Hue Sync operation mode</summary><ul><li>video</li><li>game</li><li>music</li><li>powersave</li><li>passthrough</li></ul></details>                                                                                                                                                                 |
+| hdmiSource | Switch | R/W        | <details><summary>Source</summary><ul><li>input1</li><li>input2</li><li>input3</li><li>input4</li></ul></details>                                                                                                                                                                                                     |
+| syncActive | Switch | R/W        | <details><summary>Synchronization</summary><p><b>OFF</b> in case of powersave or passthrough mode, and <b>ON</b> in case of video, game or music mode. When changed from OFF to ON, it will start syncing in last used mode for current source. When changed from ON to OFF, will set passthrough mode.</p></details> |
+
+<!-- 
 
 ##### modes
 
@@ -117,7 +121,6 @@ Information about a HDMI input  connection.
 - **passthrough**
 - **powersave**
 
-<!-- 
 ## Full Example
 
 _Provide a full usage example based on textual configuration files._
@@ -141,29 +144,30 @@ Example thing configuration goes here.
 | Group | HueSyncBox           | "HueSyncBox"     | \<iconify:mdi:tv\>          |                     | ["NetworkAppliance"] |     |
 | Group | HueSyncBox_Execution | "Remote Control" | \<iconify:mdi:remote\>      | (HueSyncBox)        | ["RemoteControl"]    |     |
 | Group | HueSyncBox_Firmware  | "Firmware"       | \<iconify:mdi:information\> | (HueSyncBox)        | ["Point"]            |     |
-| Group | HueSyncBox_Inputs    | "Inputs"         | <receiver>                  | (HueSyncBox)        | ["Receiver"]         |     |
-| Group | HueSyncBox_Input_1   | "Input 1"        | \<iconify:mdi:hdmi-port\>   | (HueSyncBox_Inputs) | ["Equipment"]        |     |
-| Group | HueSyncBox_Input_2   | "Input 2"        | \<iconify:mdi:hdmi-port\>   | (HueSyncBox_Inputs) | ["Equipment"]        |     |
-| Group | HueSyncBox_Input_3   | "Input 3"        | \<iconify:mdi:hdmi-port\>   | (HueSyncBox_Inputs) | ["Equipment"]        |     |
-| Group | HueSyncBox_Input_4   | "Input 4"        | \<iconify:mdi:hdmi-port\>   | (HueSyncBox_Inputs) | ["Equipment"]        |     |
+| Group | HueSyncBox_Inputs    | "Inputs"         | \<receiver\>                | (HueSyncBox)        | ["Receiver"]         |     |
+| Group | HueSyncBox_Input_1   | "Input 1"        | \<iconify:mdi:hdmi-port\>   | (HueSyncBox_Inputs) | ["Receiver"]         |     |
+| Group | HueSyncBox_Input_2   | "Input 2"        | \<iconify:mdi:hdmi-port\>   | (HueSyncBox_Inputs) | ["Receiver"]         |     |
+| Group | HueSyncBox_Input_3   | "Input 3"        | \<iconify:mdi:hdmi-port\>   | (HueSyncBox_Inputs) | ["Receiver"]         |     |
+| Group | HueSyncBox_Input_4   | "Input 4"        | \<iconify:mdi:hdmi-port\>   | (HueSyncBox_Inputs) | ["Receiver"]         |     |
 | Group | HueSyncBox_Output    | "Output"         | \<iconify:mdi:tv\>          | (HueSyncBox)        | ["Screen"]           |     |
 </details>
 
 ---
 
 <details>
-  <summary> Remote Control - Channels</summary>
+  <summary> Remote Control </summary>
 
-|        |                        |        |                            |                        |                                                                          |     |
-| ------ | ---------------------- | ------ | -------------------------- | ---------------------- | ------------------------------------------------------------------------ | --- |
-| String | HueSyncBox_Device_Mode | "Mode" | \<iconify:mdi:multimedia\> | (HueSyncBox_Execution) | { channel="huesync:huesyncthing:HueSyncBox:device-commands#mode" }       |     |
-| Switch | HueSyncBox_Device_Sync | "Sync" | \<iconify:mdi:sync\>       | (HueSyncBox_Execution) | { channel="huesync:huesyncthing:HueSyncBox:device-commands#syncActive" } |     |
+|        |                         |         |                            |                        |                                                                          |                                                                                                                       |
+| ------ | ----------------------- | ------- | -------------------------- | ---------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| String | HueSyncBox_Device_Mode  | "Mode"  | \<iconify:mdi:multimedia\> | (HueSyncBox_Execution) | { channel="huesync:huesyncthing:HueSyncBox:device-commands#mode" }       |                                                                                                                       |
+| String | HueSyncBox_Device_Input | "Input" | \<iconify:mdi:input\>      | (HueSyncBox_Execution) | { channel="huesync:huesyncthing:HueSyncBox:device-commands#hdmiSource" } | <details><summary>HDMI input</summary><ul><li>input1</li><li>input2</li><li>input3</li><li>input4</li></ul></details> |
+| Switch | HueSyncBox_Device_Sync  | "Sync"  | \<iconify:mdi:sync\>       | (HueSyncBox_Execution) | { channel="huesync:huesyncthing:HueSyncBox:device-commands#syncActive" } |                                                                                                                       |
 </details>
 
 ---
 
 <details>
-  <summary> Firmware - Channels</summary>
+  <summary> Firmware </summary>
 
 |        |                                    |                           |                      |                       |              |                                                                                    |
 | ------ | ---------------------------------- | ------------------------- | -------------------- | --------------------- | ------------ | ---------------------------------------------------------------------------------- |
@@ -175,7 +179,7 @@ Example thing configuration goes here.
 ---
 
 <details>
-  <summary> Input 1 - Channels</summary>
+  <summary> Input 1 </summary>
 
 |        |                                   |                    |                            |                      |              |                                                                         |
 | ------ | --------------------------------- | ------------------ | -------------------------- | -------------------- | ------------ | ----------------------------------------------------------------------- |
@@ -187,7 +191,7 @@ Example thing configuration goes here.
 </details>
 
 <details>
-  <summary> Input 2 - Channels</summary>
+  <summary> Input 2 </summary>
 
 |        |                                   |                    |                            |                      |              |                                                                         |
 | ------ | --------------------------------- | ------------------ | -------------------------- | -------------------- | ------------ | ----------------------------------------------------------------------- |
@@ -198,7 +202,7 @@ Example thing configuration goes here.
 </details>
 
 <details>
-  <summary> Input 3 - Channels</summary>
+  <summary> Input 3 </summary>
 
 |        |                                   |                    |                            |                      |              |                                                                         |
 | ------ | --------------------------------- | ------------------ | -------------------------- | -------------------- | ------------ | ----------------------------------------------------------------------- |
@@ -210,7 +214,7 @@ Example thing configuration goes here.
 </details>
 
 <details>
-  <summary> Input 4 - Channels</summary>
+  <summary> Input 4 </summary>
 
 |        |                                   |                    |                            |                      |              |                                                                         |
 | ------ | --------------------------------- | ------------------ | -------------------------- | -------------------- | ------------ | ----------------------------------------------------------------------- |
@@ -224,7 +228,7 @@ Example thing configuration goes here.
 ---
 
 <details>
-  <summary> Output - Channels</summary>
+  <summary> Output </summary>
 
 |        |                                   |                   |                            |                     |              |                                                                        |
 | ------ | --------------------------------- | ----------------- | -------------------------- | ------------------- | ------------ | ---------------------------------------------------------------------- |
@@ -234,6 +238,8 @@ Example thing configuration goes here.
 | String | HueSyncBox_Device_hdmi_out_Mode   | "Mode - Output"   | \<iconify:mdi:multimedia\> | (HueSyncBox_Output) | ["Property"] | `{ channel="huesync:huesyncthing:HueSyncBox:device-hdmi-out#mode" }`   |
 
 </details>
+
+<!-- markdownlint-enable MD033 -->
 
 <!-- 
 ### Sitemap Configuration

@@ -83,6 +83,9 @@ public class HueSyncDeviceConnection {
                     logger.warn("Unable to translate command value: {}", commandValue);
             }
         });
+        this.DeviceCommandExecutors.put(COMMANDS.SOURCE, command -> {
+            execute("hdmiSource", "\"" + command.toFullString() + "\"", command);
+        });
     }
 
     private void execute(String key, String value, Command command) {
