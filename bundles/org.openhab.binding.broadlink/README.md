@@ -79,6 +79,7 @@ Here are the steps:
 12. If succesfull, the channel will change name to the command saved
 13. If no succes, the channel be named "NULL", restart from step 3.
 
+### Modify or Delete Remote Codes
 
 The binding is also capable of modifying a previously stored code, and to delete a previously stored code.
 
