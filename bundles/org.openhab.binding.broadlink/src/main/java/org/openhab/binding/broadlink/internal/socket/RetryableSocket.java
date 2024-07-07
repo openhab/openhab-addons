@@ -106,7 +106,6 @@ public class RetryableSocket {
         return null;
     }
 
-    @SuppressWarnings("null")
     public void close() {
         if (socket != null) {
             socket.close();
