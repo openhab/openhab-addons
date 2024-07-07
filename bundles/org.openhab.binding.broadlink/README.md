@@ -96,9 +96,9 @@ In order to delete a previously stored code, the procedure is as follows:
 4. Click the item, and click the rectangular area that is marked NULL
 5. In the pop-up menu that appears, select *Delete IR command* for IR or *Delete RF command* for RF
 
-*VERY IMPORTANT NOTE: Unlike the previous binding, writing the codes into the files is handled by OpenHAB. While it is possible to create a file externally, copy it in the proper location and use it as a remote codes database (As it is done in the case of Remote codes file migration) IT IS STRONGLY DISCOURAGED to modify the file while the binding is acive. Please make sure the binding is stopped before you modify a remote codes file manually. Also, have the following things in mind:*
+*VERY IMPORTANT NOTE: Unlike the previous binding, writing the codes into the files is handled by openHAB. While it is possible to create a file externally, copy it in the proper location and use it as a remote codes database (As it is done in the case of Remote codes file migration) IT IS STRONGLY DISCOURAGED to modify the file while the binding is acive. Please make sure the binding is stopped before you modify a remote codes file manually. Also, have the following things in mind:*
 
-*-OpenHAB does not interpret a missing code file as empty. It will assume the file is corrupt and try to read from one of the backups, which can lead to confusion. if you want to empty your code file, create an empty file with a set of culry brackets, one per line*
+*-openHAB does not interpret a missing code file as empty. It will assume the file is corrupt and try to read from one of the backups, which can lead to confusion. if you want to empty your code file, create an empty file with a set of culry brackets, one per line*
 
 *-Remember if you manipulate the code file manually, remember to provide the proper location, and the proper ownership and permissions (Location is `$OPENHAB_USERDATA`, and permissions are `-rw-r--r-- 1 openhab openhab*
 
@@ -125,7 +125,7 @@ The above codes are power on/off for Samsung TVs and Power Off for a Fujitsu hea
 To send either code, the string `TV_POWER` or `heatpump_off` must be sent to the `command` channel for the device.
 For RF, the `rfcommand` channel is used. 
 
-In this version of the binding, storage of codes is handled by OpenHAB. The map files are stored in the $OPENHAB_USERDATA/jsondb directory. As an advatage, the files are now backed up by OpenHAB, which s more practical for migrations, data robustness, etc. having the storage of the codes handled by OpenHAB also provides uniformity in where the files are stored.
+In this version of the binding, storage of codes is handled by openHAB. The map files are stored in the $OPENHAB_USERDATA/jsondb directory. As an advantage, the files are now backed up by openHAB, which s more practical for migrations, data robustness, etc. having the storage of the codes handled by openHAB also provides uniformity in where the files are stored.
 
 With the change of the storage mechanism, the files are also changing format, and codes are now stored in json. As an example, a file with the commands shown in the previous example would look like this:
 
