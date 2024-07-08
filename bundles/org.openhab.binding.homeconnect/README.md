@@ -170,7 +170,7 @@ String                 Dishwasher_SelectedProgramState                    "Selec
 String                 Dishwasher_ActiveProgramState                      "Active Program"                     {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:active_program_state"}
 Number:Time            Dishwasher_RemainingProgramTimeState               "Remaining Program Time"             {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:remaining_program_time_state"}
 Number:Dimensionless   Dishwasher_ProgramProgressState                    "Progress State"                     {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:program_progress_state"}
-String                 Dishwasher_BasicActionsState                     "Basic Control"                      {channel="homeconnect:dishwasher:api_bridge_at_home:sgeschirrspuelmaschine:basic_actions_state"}
+String                 Dishwasher_BasicActionsState                       "Basic Control"                      {channel="homeconnect:dishwasher:api_bridge_at_home:dishwasher1:basic_actions_state"}
 
 // oven
 Switch                 Oven_PowerState                                    "Power State"                        {channel="homeconnect:oven:api_bridge_at_home:oven1:power_state"}
