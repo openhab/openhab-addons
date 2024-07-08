@@ -62,7 +62,7 @@ public class PentairIntelliFloHandler extends PentairBaseThingHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         if (command instanceof RefreshType) {
-            logger.debug("Intellflo received refresh command");
+            logger.debug("IntelliFlo received refresh command");
             updateChannel(channelUID.getId(), null);
         }
     }
