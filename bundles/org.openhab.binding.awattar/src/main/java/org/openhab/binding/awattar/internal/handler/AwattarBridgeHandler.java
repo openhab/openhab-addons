@@ -20,8 +20,9 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.Comparator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -53,7 +54,7 @@ import com.google.gson.JsonSyntaxException;
  * The {@link AwattarBridgeHandler} is responsible for retrieving data from the aWATTar API.
  *
  * The API provides hourly prices for the current day and, starting from 14:00, hourly prices for the next day.
- * Check the documentation at https://www.awattar.de/services/api
+ * Check the documentation at <a href="https://www.awattar.de/services/api" />
  *
  *
  *
@@ -61,26 +62,22 @@ import com.google.gson.JsonSyntaxException;
  */
 @NonNullByDefault
 public class AwattarBridgeHandler extends BaseBridgeHandler {
+    private static final int DATA_REFRESH_INTERVAL = 60;
+
     private final Logger logger = LoggerFactory.getLogger(AwattarBridgeHandler.class);
     private final HttpClient httpClient;
-    @Nullable
-    private ScheduledFuture<?> dataRefresher;
+    private @Nullable ScheduledFuture<?> dataRefresher;
 
     private static final String URLDE = "https://api.awattar.de/v1/marketdata";
     private static final String URLAT = "https://api.awattar.at/v1/marketdata";
     private String url;
 
     // This cache stores price data for up to two days
-    @Nullable
-    private SortedMap<Long, AwattarPrice> priceMap;
-    private final int dataRefreshInterval = 60;
+    private @Nullable SortedSet<AwattarPrice> prices;
     private double vatFactor = 0;
-    private long lastUpdated = 0;
     private double basePrice = 0;
-    private long minTimestamp = 0;
-    private long maxTimestamp = 0;
     private ZoneId zone;
-    private TimeZoneProvider timeZoneProvider;
+    private final TimeZoneProvider timeZoneProvider;
 
     public AwattarBridgeHandler(Bridge thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         super(thing);
@@ -110,7 +107,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
                 return;
         }
 
-        dataRefresher = scheduler.scheduleWithFixedDelay(this::refreshIfNeeded, 0, dataRefreshInterval * 1000,
+        dataRefresher = scheduler.scheduleWithFixedDelay(this::refreshIfNeeded, 0, DATA_REFRESH_INTERVAL * 1000,
                 TimeUnit.MILLISECONDS);
     }
 
@@ -121,18 +118,17 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
             localRefresher.cancel(true);
         }
         dataRefresher = null;
-        priceMap = null;
-        lastUpdated = 0;
+        prices = null;
     }
 
-    public void refreshIfNeeded() {
+    void refreshIfNeeded() {
         if (needRefresh()) {
             refresh();
         }
         updateStatus(ThingStatus.ONLINE);
     }
 
-    private void getPrices() {
+    private void refresh() {
         try {
             // we start one day in the past to cover ranges that already started yesterday
             ZonedDateTime zdt = LocalDate.now(zone).atStartOfDay(zone).minusDays(1);
@@ -151,32 +147,26 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
             String content = contentResponse.getContentAsString();
             logger.trace("aWATTar API response: status = {}, content = '{}'", httpStatus, content);
 
-            switch (httpStatus) {
-                case OK_200:
-                    Gson gson = new Gson();
-                    SortedMap<Long, AwattarPrice> result = new TreeMap<>();
-                    minTimestamp = 0;
-                    maxTimestamp = 0;
-                    AwattarApiData apiData = gson.fromJson(content, AwattarApiData.class);
-                    if (apiData != null) {
-                        for (Datum d : apiData.data) {
-                            result.put(d.startTimestamp,
-                                    new AwattarPrice(d.marketprice / 10.0, d.startTimestamp, d.endTimestamp, zone));
-                            updateMin(d.startTimestamp);
-                            updateMax(d.endTimestamp);
-                        }
-                        priceMap = result;
-                        updateStatus(ThingStatus.ONLINE);
-                        lastUpdated = Instant.now().toEpochMilli();
-                    } else {
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "@text/error.invalid.data");
+            if (httpStatus == OK_200) {
+                Gson gson = new Gson();
+                SortedSet<AwattarPrice> result = new TreeSet<>(Comparator.comparing(AwattarPrice::timerange));
+                AwattarApiData apiData = gson.fromJson(content, AwattarApiData.class);
+                if (apiData != null) {
+                    for (Datum d : apiData.data) {
+                        double netPrice = d.marketprice / 10.0;
+                        TimeRange timerange = new TimeRange(d.startTimestamp, d.endTimestamp);
+                        result.add(new AwattarPrice(netPrice, netPrice * vatFactor, netPrice + basePrice,
+                                (netPrice + basePrice) * vatFactor, timerange));
                     }
-                    break;
-
-                default:
+                    prices = result;
+                    updateStatus(ThingStatus.ONLINE);
+                } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/warn.awattar.statuscode");
+                            "@text/error.invalid.data");
+                }
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "@text/warn.awattar.statuscode");
             }
         } catch (JsonSyntaxException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/error.json");
@@ -193,27 +183,9 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             return true;
         }
-        SortedMap<Long, AwattarPrice> localMap = priceMap;
-        if (localMap == null) {
-            return true;
-        }
-        return localMap.lastKey() < Instant.now().toEpochMilli() + 9 * 3600 * 1000;
-    }
-
-    private void refresh() {
-        getPrices();
-    }
-
-    public double getVatFactor() {
-        return vatFactor;
-    }
-
-    public double getBasePrice() {
-        return basePrice;
-    }
-
-    public long getLastUpdated() {
-        return lastUpdated;
+        SortedSet<AwattarPrice> localPrices = prices;
+        return localPrices == null
+                || localPrices.last().timerange().start() < Instant.now().toEpochMilli() + 9 * 3600 * 1000;
     }
 
     public ZoneId getTimeZone() {
@@ -221,32 +193,25 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     }
 
     @Nullable
-    public synchronized SortedMap<Long, AwattarPrice> getPriceMap() {
-        if (priceMap == null) {
+    public synchronized SortedSet<AwattarPrice> getPrices() {
+        if (prices == null) {
             refresh();
         }
-        return priceMap;
+        return prices;
     }
 
-    @Nullable
-    public AwattarPrice getPriceFor(long timestamp) {
-        SortedMap<Long, AwattarPrice> priceMap = getPriceMap();
-        if (priceMap == null) {
+    public @Nullable AwattarPrice getPriceFor(long timestamp) {
+        SortedSet<AwattarPrice> localPrices = getPrices();
+        if (localPrices == null || !containsPriceFor(timestamp)) {
             return null;
         }
-        if (!containsPriceFor(timestamp)) {
-            return null;
-        }
-        for (AwattarPrice price : priceMap.values()) {
-            if (timestamp >= price.getStartTimestamp() && timestamp < price.getEndTimestamp()) {
-                return price;
-            }
-        }
-        return null;
+        return localPrices.stream().filter(e -> e.timerange().contains(timestamp)).findAny().orElse(null);
     }
 
     public boolean containsPriceFor(long timestamp) {
-        return minTimestamp <= timestamp && maxTimestamp >= timestamp;
+        SortedSet<AwattarPrice> localPrices = getPrices();
+        return localPrices != null && localPrices.first().timerange().start() <= timestamp
+                && localPrices.last().timerange().end() > timestamp;
     }
 
     @Override
@@ -256,13 +221,5 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         } else {
             logger.debug("Binding {} only supports refresh command", BINDING_ID);
         }
-    }
-
-    private void updateMin(long ts) {
-        minTimestamp = (minTimestamp == 0) ? ts : Math.min(minTimestamp, ts);
-    }
-
-    private void updateMax(long ts) {
-        maxTimestamp = (maxTimestamp == 0) ? ts : Math.max(ts, maxTimestamp);
     }
 }

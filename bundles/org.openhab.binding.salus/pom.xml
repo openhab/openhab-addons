@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.salus</artifactId>
@@ -34,14 +34,12 @@
       <scope>compile</scope>
     </dependency>
     <!-- END caffeine -->
-    <!-- START AWS -->
     <dependency>
-      <groupId>software.amazon.awssdk.crt</groupId>
-      <artifactId>aws-crt</artifactId>
-      <version>0.29.19</version>
+      <groupId>uk.co.lucasweb</groupId>
+      <artifactId>aws-v4-signer-java</artifactId>
+      <version>1.3</version>
       <scope>compile</scope>
     </dependency>
-    <!-- END AWS -->
 
     <dependency>
       <groupId>ch.qos.logback</groupId>
@@ -59,6 +57,12 @@
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
       <version>5.11.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk.crt</groupId>
+      <artifactId>aws-crt</artifactId>
+      <version>0.29.19</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

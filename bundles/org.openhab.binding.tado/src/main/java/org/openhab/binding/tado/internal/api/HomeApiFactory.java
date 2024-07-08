@@ -13,9 +13,10 @@
 package org.openhab.binding.tado.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.tado.internal.api.auth.Authorizer;
-import org.openhab.binding.tado.internal.api.auth.OAuthAuthorizer;
-import org.openhab.binding.tado.internal.api.client.HomeApi;
+import org.openhab.binding.tado.swagger.codegen.api.GsonBuilderFactory;
+import org.openhab.binding.tado.swagger.codegen.api.auth.Authorizer;
+import org.openhab.binding.tado.swagger.codegen.api.auth.OAuthAuthorizer;
+import org.openhab.binding.tado.swagger.codegen.api.client.HomeApi;
 
 import com.google.gson.Gson;
 

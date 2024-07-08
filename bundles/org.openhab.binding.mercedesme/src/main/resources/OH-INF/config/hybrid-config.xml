@@ -8,11 +8,6 @@
 		<parameter name="vin" type="text" required="true">
 			<label>Vehicle Identification Number</label>
 		</parameter>
-		<parameter name="refreshInterval" type="integer" min="1" unit="min" required="true">
-			<label>Refresh Interval</label>
-			<description>Data refresh rate for vehicle data</description>
-			<default>5</default>
-		</parameter>
 		<parameter name="batteryCapacity" type="decimal">
 			<label>Battery Capacity</label>
 			<description>Battery capacity in kWh of vehicle</description>
@@ -20,42 +15,6 @@
 		<parameter name="fuelCapacity" type="decimal">
 			<label>Fuel Capacity</label>
 			<description>Fuel capacity in liters of vehicle</description>
-		</parameter>
-		<!-- https://developer.mercedes-benz.com/products/vehicle_images/docs#_default_image_settings -->
-		<parameter name="background" type="boolean">
-			<label>Background Image</label>
-			<description>Vehicle images provided with or without background</description>
-			<default>false</default>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="night" type="boolean">
-			<label>Night Image</label>
-			<description>Vehicle images in night conditions</description>
-			<default>false</default>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="cropped" type="boolean">
-			<label>Cropped Image</label>
-			<description>Vehicle images in 4:3 instead of 16:9</description>
-			<default>false</default>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="roofOpen" type="boolean">
-			<label>Cabriolet Open Roof</label>
-			<description>Vehicle images with open roof (only Cabriolet)</description>
-			<default>false</default>
-			<advanced>true</advanced>
-		</parameter>
-		<parameter name="format" type="text">
-			<label>Image Format</label>
-			<description>Preferred Image Format</description>
-			<default>webp</default>
-			<advanced>true</advanced>
-			<options>
-				<option value="webp">webp</option>
-				<option value="png">png</option>
-				<option value="jpeg">jpeg</option>
-			</options>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

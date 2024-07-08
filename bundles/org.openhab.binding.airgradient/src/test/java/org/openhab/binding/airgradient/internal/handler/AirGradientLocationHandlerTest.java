@@ -58,6 +58,19 @@ public class AirGradientLocationHandlerTest {
         }
     };
 
+    private static final Measure TEST_MEASURE_V3_1_1 = new Measure() {
+        {
+            locationId = "12345";
+            locationName = "Location name";
+            timestamp = "2024-01-07T11:28:56.000Z";
+            serialno = "ecda3b1a2a50";
+            firmwareVersion = "3.1.1";
+            atmpCompensated = 24.2;
+            rhumCompensated = 36d;
+            bootCount = 16l;
+        }
+    };
+
     @Nullable
     private AirGradientLocationHandler sut;
 
@@ -101,5 +114,19 @@ public class AirGradientLocationHandlerTest {
                 new QuantityType<>("455 ppm"));
         verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_TVOC),
                 new QuantityType<>("51 ppb"));
+    }
+
+    // Firmware Version 3.1.1 has slight changes in the Json
+    @Test
+    public void testSetMeasureVersion3_1_1() {
+        sut.setCallback(callbackMock);
+        sut.setMeasurment(TEST_MEASURE_V3_1_1);
+
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_ATMP),
+                new QuantityType<>("24.2 °C"));
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_RHUM),
+                new QuantityType<>("36 %"));
+        verify(callbackMock).stateUpdated(new ChannelUID(sut.getThing().getUID(), CHANNEL_UPLOADS_SINCE_BOOT),
+                new QuantityType<>("16"));
     }
 }
