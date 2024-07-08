@@ -216,15 +216,15 @@ DateTime            TeslaEventstamp             {channel="account:model3:myaccou
 String              TeslaState                  {channel="account:model3:myaccount:mycar:state"}
 Number              TeslaSpeed                  {channel="account:model3:myaccount:mycar:speed"}
 String              TeslaShiftState             {channel="account:model3:myaccount:mycar:shiftstate"}
-Number              TeslaOdometer               {channel="account:model3:myaccount:mycar:odometer"}
+Number              TeslaOdometer               {channel="account:model3:myaccount:mycar:odometer", unit="km"}
 Number              TeslaRange                  {channel="account:model3:myaccount:mycar:range"}
 
 Number              TeslaBatteryLevel           {channel="account:model3:myaccount:mycar:batterylevel"}
 Number              TeslaPower                  {channel="account:model3:myaccount:mycar:power"}
 Number              TeslaBatteryCurrent         {channel="account:model3:myaccount:mycar:batterycurrent"}
-Number              TeslaBatteryRange           {channel="account:model3:myaccount:mycar:batteryrange"}
-Number              TeslaEstBatteryRange        {channel="account:model3:myaccount:mycar:estimatedbatteryrange"}
-Number              TeslaIdealBatteryRange      {channel="account:model3:myaccount:mycar:idealbatteryrange"}
+Number              TeslaBatteryRange           {channel="account:model3:myaccount:mycar:batteryrange", unit="km"}
+Number              TeslaEstBatteryRange        {channel="account:model3:myaccount:mycar:estimatedbatteryrange", unit="km"}
+Number              TeslaIdealBatteryRange      {channel="account:model3:myaccount:mycar:idealbatteryrange", unit="km"}
 Number              TeslaUsableBatteryLevel     {channel="account:model3:myaccount:mycar:usablebatterylevel"}
 Switch              TeslaPreconditioning        {channel="account:model3:myaccount:mycar:preconditioning"}
 
@@ -293,7 +293,7 @@ sitemap main label="Main"
             Text item=TeslaSpeed label="Speed [%.1f]"
             Text item=TeslaShiftState label="Shift State [%s]" icon=""
             Text item=nTeslaShiftState 
-            Text item=TeslaOdometer label="Odometer [%.1f miles]"
+            Text item=TeslaOdometer label="Odometer [%.1f %unit%]"
             Text item=TeslaRange 
         }
         Frame
