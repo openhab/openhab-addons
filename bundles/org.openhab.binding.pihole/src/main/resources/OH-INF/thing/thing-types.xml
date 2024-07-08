@@ -6,7 +6,7 @@
 
 	<thing-type id="server">
 		<label>Pi-hole Server</label>
-		<description>Sample thing for PiHole Binding</description>
+		<description>This thing represents a Pi-hole server and is used for the PiHole Binding.</description>
 
 		<channels>
 			<channel id="domains-being-blocked" typeId="number-channel">
