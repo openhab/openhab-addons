@@ -29,6 +29,7 @@
 /bundles/org.openhab.binding.androidtv/ @morph166955
 /bundles/org.openhab.binding.anel/ @paphko
 /bundles/org.openhab.binding.anthem/ @mhilbush
+/bundles/org.openhab.binding.argoclima/ @mbronk
 /bundles/org.openhab.binding.asuswrt/ @wildcs
 /bundles/org.openhab.binding.astro/ @gerrieg
 /bundles/org.openhab.binding.atlona/ @mlobstein
@@ -368,6 +369,7 @@
 /bundles/org.openhab.binding.teleinfo/ @Nokyyz @olivierkeke
 /bundles/org.openhab.binding.tellstick/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.tesla/ @kgoderis
+/bundles/org.openhab.binding.teslapowerwall/ @psmedley
 /bundles/org.openhab.binding.tibber/ @kjoglum
 /bundles/org.openhab.binding.tivo/ @mlobstein
 /bundles/org.openhab.binding.touchwand/ @roieg
@@ -451,6 +453,7 @@
 /bundles/org.openhab.voice.voicerss/ @lolodomo
 /bundles/org.openhab.voice.voskstt/ @GiviMAD
 /bundles/org.openhab.voice.watsonstt/ @GiviMAD
+/bundles/org.openhab.voice.whisperstt/ @GiviMAD
 /itests/org.openhab.automation.groovyscripting.tests/ @wborn
 /itests/org.openhab.automation.jsscriptingnashorn.tests/ @wborn
 /itests/org.openhab.binding.astro.tests/ @gerrieg
