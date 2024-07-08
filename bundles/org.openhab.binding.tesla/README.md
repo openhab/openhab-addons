@@ -222,9 +222,9 @@ Number              TeslaRange                  {channel="account:model3:myaccou
 Number              TeslaBatteryLevel           {channel="account:model3:myaccount:mycar:batterylevel"}
 Number              TeslaPower                  {channel="account:model3:myaccount:mycar:power"}
 Number              TeslaBatteryCurrent         {channel="account:model3:myaccount:mycar:batterycurrent"}
-Number              TeslaBatteryRange           {channel="account:model3:myaccount:mycar:batteryrange", unit="km"}
-Number              TeslaEstBatteryRange        {channel="account:model3:myaccount:mycar:estimatedbatteryrange", unit="km"}
-Number              TeslaIdealBatteryRange      {channel="account:model3:myaccount:mycar:idealbatteryrange", unit="km"}
+Number:Length       TeslaBatteryRange           {channel="account:model3:myaccount:mycar:batteryrange", unit="km"}
+Number:Length       TeslaEstBatteryRange        {channel="account:model3:myaccount:mycar:estimatedbatteryrange", unit="km"}
+Number:Length       TeslaIdealBatteryRange      {channel="account:model3:myaccount:mycar:idealbatteryrange", unit="km"}
 Number              TeslaUsableBatteryLevel     {channel="account:model3:myaccount:mycar:usablebatterylevel"}
 Switch              TeslaPreconditioning        {channel="account:model3:myaccount:mycar:preconditioning"}
 
