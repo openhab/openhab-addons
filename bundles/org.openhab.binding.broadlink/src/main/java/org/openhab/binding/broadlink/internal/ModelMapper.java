@@ -136,29 +136,41 @@ public class ModelMapper {
         }
     }
 
-    private static StringType lookup(StringType[] values, byte b) {
+    private static <T extends Enum<T>> StringType lookup(T[] values, byte b) {
         int index = Byte.toUnsignedInt(b);
-        return index < values.length ? values[index] : UNKNOWN;
+        return index < values.length ? new StringType(values[index].toString()) : UNKNOWN;
     }
 
-    private static final StringType[] AIR_VALUES = { new StringType("PERFECT"), new StringType("GOOD"),
-            new StringType("NORMAL"), new StringType("BAD") };
+    private enum AirValue {
+        PERFECT,
+        GOOD,
+        NORMAL,
+        BAD
+    }
 
     public static StringType getAirValue(byte b) {
-        return lookup(AIR_VALUES, b);
+        return lookup(AirValue.values(), b);
     }
 
-    private static final StringType[] LIGHT_VALUES = { new StringType("DARK"), new StringType("DIM"),
-            new StringType("NORMAL"), new StringType("BRIGHT") };
+    private enum LightValues {
+        DARK,
+        DIM,
+        NORMAL,
+        BRIGHT
+    }
 
     public static StringType getLightValue(byte b) {
-        return lookup(LIGHT_VALUES, b);
+        return lookup(LightValues.values(), b);
     }
 
-    private static final StringType[] NOISE_VALUES = { new StringType("QUIET"), new StringType("NORMAL"),
-            new StringType("NOISY"), new StringType("EXTREME") };
+    private enum NoiseValues {
+        QUIET,
+        NORMAL,
+        NOISY,
+        EXTREME
+    }
 
     public static StringType getNoiseValue(byte b) {
-        return lookup(NOISE_VALUES, b);
+        return lookup(NoiseValues.values(), b);
     }
 }
