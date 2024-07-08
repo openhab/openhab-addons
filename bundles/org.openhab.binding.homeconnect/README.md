@@ -186,7 +186,7 @@ Number:Time            Oven_ElapsedProgramTime                            "Elaps
 Number:Time            Oven_Duration                                      "Program Duration"                   {channel="homeconnect:oven:api_bridge_at_home:oven1:duration"}
 Number:Temperature     Oven_CurrentCavityTemperature                     "Current Temperature"                {channel="homeconnect:oven:api_bridge_at_home:oven1:oven_current_cavity_temperature"}
 Number:Temperature     Oven_SetpointTemperature                          "Set Temperature"                    {channel="homeconnect:oven:api_bridge_at_home:oven1:setpoint_temperature"}
-String                 Oven_BasicActionsState                           "Basic Control"                      {channel="homeconnect:oven:api_bridge_at_home:oven1_:basic_actions_state"}
+String                 Oven_BasicActionsState                            "Basic Control"                      {channel="homeconnect:oven:api_bridge_at_home:oven1:basic_actions_state"}
 
 // washer
 Switch                 Washer_PowerState                                  "Power State"                        {channel="homeconnect:washer:api_bridge_at_home:washer1:power_state"}
