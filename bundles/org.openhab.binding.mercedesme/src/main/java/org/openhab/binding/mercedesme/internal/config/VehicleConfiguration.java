@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mercedesme.internal.Constants;
 
 /**
- * The {@link VehicleConfiguration} class contains fields mapping thing configuration parameters.
+ * {@link VehicleConfiguration} to configure vehicle
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -24,14 +24,6 @@ import org.openhab.binding.mercedesme.internal.Constants;
 public class VehicleConfiguration {
 
     public String vin = Constants.NOT_SET;
-    public int refreshInterval = 5;
     public float batteryCapacity = -1;
     public float fuelCapacity = -1;
-
-    // Advanced
-    public boolean background = false;
-    public boolean night = false;
-    public boolean cropped = false;
-    public boolean roofOpen = false;
-    public String format = "webp";
 }

@@ -48,7 +48,7 @@ public class SystemInfoDiscoveryService extends AbstractDiscoveryService {
 
     private static final int DISCOVERY_TIME_SECONDS = 30;
     private static final String THING_UID_VALID_CHARS = "A-Za-z0-9_-";
-    private static final String HOST_NAME_SEPERATOR = "_";
+    private static final String HOST_NAME_SEPARATOR = "_";
 
     public SystemInfoDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, DISCOVERY_TIME_SECONDS);
@@ -57,15 +57,12 @@ public class SystemInfoDiscoveryService extends AbstractDiscoveryService {
     @Override
     protected void startScan() {
         logger.debug("Starting system information discovery !");
-        String hostname;
 
+        String hostname;
         try {
             hostname = getHostName();
             if (hostname.isEmpty()) {
                 throw new UnknownHostException();
-            }
-            if (!hostname.matches("[" + THING_UID_VALID_CHARS + "]*")) {
-                hostname = hostname.replaceAll("[^" + THING_UID_VALID_CHARS + "]", HOST_NAME_SEPERATOR);
             }
         } catch (UnknownHostException ex) {
             hostname = DEFAULT_THING_ID;
@@ -73,12 +70,18 @@ public class SystemInfoDiscoveryService extends AbstractDiscoveryService {
                     DEFAULT_THING_ID);
         }
 
-        ThingUID computer = new ThingUID(THING_TYPE_COMPUTER, hostname);
-        thingDiscovered(DiscoveryResultBuilder.create(computer).withLabel(DEFAULT_THING_LABEL).build());
+        String thingId = hostname;
+        if (!thingId.matches("[" + THING_UID_VALID_CHARS + "]*")) {
+            thingId = thingId.replaceAll("[^" + THING_UID_VALID_CHARS + "]", HOST_NAME_SEPARATOR);
+        }
+
+        final ThingUID computer = new ThingUID(THING_TYPE_COMPUTER, thingId);
+        final DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(computer);
+        builder.withLabel(DEFAULT_THING_LABEL);
+        thingDiscovered(builder.build());
     }
 
     protected String getHostName() throws UnknownHostException {
-        InetAddress addr = InetAddress.getLocalHost();
-        return addr.getHostName();
+        return InetAddress.getLocalHost().getHostName();
     }
 }

@@ -28,7 +28,7 @@ Here is a list of the supported devices (the ones marked with * have been tested
 - H6065 Glide RGBIC Y Lights
 - H6066 Glide Hexa Pro LED Panel
 - H6067 Glide Triangle Light Panels (*)
-- H6072 RGBICWW Corner Floor Lamp
+- H6072 RGBICWW Corner Floor Lamp (*)
 - H6076 RGBICW Smart Corner Floor Lamp (*)
 - H6073 LED Floor Lamp
 - H6078 Cylinder Floor Lamp
@@ -110,8 +110,7 @@ arp -a | grep "MAC_ADDRESS"
 | Name            | Type    | Description                           | Default | Required | Advanced |
 |-----------------|---------|---------------------------------------|---------|----------|----------|
 | hostname        | text    | Hostname or IP address of the device  | N/A     | yes      | no       |
-| macAddress      | text    | MAC address of the device             | N/A     | yes      | no       |
-| deviceType      | text    | The product number of the device      | N/A     | yes      | no       |
+| macAddress      | text    | MAC address of the device             | N/A     | yes      | no       |   
 | refreshInterval | integer | Interval the device is polled in sec. | 5       | no       | yes      |
 
 ## Channels

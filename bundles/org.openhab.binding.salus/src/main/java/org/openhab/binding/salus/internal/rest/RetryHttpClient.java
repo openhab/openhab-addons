@@ -14,6 +14,7 @@ package org.openhab.binding.salus.internal.rest;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ public class RetryHttpClient implements RestClient {
                 return restClient.get(url, headers);
             } catch (SalusApiException ex) {
                 if (i < maxRetries - 1) {
-                    logger.debug("Error while calling GET {}. Retrying {}/{}...", i + 1, maxRetries, url, ex);
+                    logger.debug("Error while calling GET {}. Retrying {}/{}...", url, i + 1, maxRetries, ex);
                 } else {
                     throw ex;
                 }
@@ -57,7 +58,7 @@ public class RetryHttpClient implements RestClient {
                 return restClient.post(url, content, headers);
             } catch (SalusApiException ex) {
                 if (i < maxRetries - 1) {
-                    logger.debug("Error while calling POST {}. Retrying {}/{}...", i + 1, maxRetries, url, ex);
+                    logger.debug("Error while calling POST {}. Retrying {}/{}...", url, i + 1, maxRetries, ex);
                 } else {
                     throw ex;
                 }

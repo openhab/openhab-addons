@@ -51,12 +51,10 @@ public class SystemInfoHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
         if (supportsThingType(thingTypeUID)) {
-            String extString = "-" + thing.getUID().getId();
-            ThingTypeUID extThingTypeUID = new ThingTypeUID(BINDING_ID, THING_TYPE_COMPUTER_ID + extString);
-            if (thingTypeProvider.getThingType(extThingTypeUID, null) == null) {
-                thingTypeProvider.createThingType(extThingTypeUID);
-                thingTypeProvider.storeChannelsConfig(thing); // Save the current channels configs, will be restored
-                                                              // after thing type change.
+            if (thingTypeProvider.getThingType(THING_TYPE_COMPUTER_IMPL, null) == null) {
+                thingTypeProvider.createThingType(THING_TYPE_COMPUTER_IMPL);
+                // Save the current channels configs, will be restored after thing type change.
+                thingTypeProvider.storeChannelsConfig(thing);
             }
             return new SystemInfoHandler(thing, thingTypeProvider, systeminfo);
         }
