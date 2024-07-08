@@ -196,7 +196,7 @@ Due to the factory reset, the device will also be unpaired from the gateway, eve
 - **useAuthentication**
 Username and password are send to the gateway to authenticate the access to the gateway.
 
-- **username**
+- **userName**
 Username for Authentication to the gateway.
 
 - **password**
