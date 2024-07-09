@@ -24,16 +24,16 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 /**
- * Delegate allowing AOP-style interception of calls, either before Invocation, or upon a {@link ScriptException}.
- * being thrown.
+ * Delegate allowing AOP-style interception of calls, either before Invocation, or upon a {@link ScriptException} being
+ * thrown.
  *
  * @param <T> The delegate class
  * @author Jonathan Gilbert - Initial contribution
  */
-public abstract class InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T extends ScriptEngine & Invocable & AutoCloseable & Compilable>
-        extends DelegatingScriptEngineWithInvocableAndAutocloseable<T> {
+public abstract class InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T extends ScriptEngine & Invocable & Compilable & AutoCloseable>
+        extends DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable<T> {
 
-    public InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable(T delegate) {
+    public InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable(T delegate) {
         super(delegate);
     }
 

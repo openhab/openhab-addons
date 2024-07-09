@@ -31,11 +31,11 @@ import org.eclipse.jdt.annotation.NonNull;
  *
  * @author Jonathan Gilbert - Initial contribution
  */
-public abstract class DelegatingScriptEngineWithInvocableAndAutocloseable<T extends ScriptEngine & Invocable & AutoCloseable & Compilable>
-        implements ScriptEngine, Invocable, AutoCloseable, Compilable {
+public abstract class DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable<T extends ScriptEngine & Invocable & Compilable & AutoCloseable>
+        implements ScriptEngine, Invocable, Compilable, AutoCloseable {
     protected @NonNull T delegate;
 
-    public DelegatingScriptEngineWithInvocableAndAutocloseable(@NonNull T delegate) {
+    public DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable(@NonNull T delegate) {
         this.delegate = delegate;
     }
 

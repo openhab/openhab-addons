@@ -24,7 +24,7 @@ import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.PolyglotException;
-import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable;
+import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
  * @author Florian Hotze - Improve logger name, Fix memory leak caused by exception logging
  */
 class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable>
-        extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T> {
+        extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T> {
 
     private static final int STACK_TRACE_LENGTH = 5;
 
