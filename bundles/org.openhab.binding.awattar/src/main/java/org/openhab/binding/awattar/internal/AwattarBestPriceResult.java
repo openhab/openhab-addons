@@ -21,7 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public abstract class AwattarBestPriceResult {
-
     private long start;
     private long end;
 

@@ -27,6 +27,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 
 import io.github.hapjava.characteristics.Characteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.FirmwareRevisionCharacteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.HardwareRevisionCharacteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.ManufacturerCharacteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.ModelCharacteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.SerialNumberCharacteristic;
 import io.github.hapjava.characteristics.impl.airquality.AirQualityCharacteristic;
 import io.github.hapjava.characteristics.impl.airquality.AirQualityEnum;
 import io.github.hapjava.characteristics.impl.common.ActiveCharacteristic;
@@ -83,11 +88,16 @@ public class HomekitMetadataCharacteristicFactory {
             put(CURRENT_HEATING_COOLING_STATE,
                     HomekitMetadataCharacteristicFactory::createCurrentHeatingCoolingStateCharacteristic);
             put(CURRENT_VISIBILITY, HomekitMetadataCharacteristicFactory::createCurrentVisibilityCharacteristic);
+            put(FIRMWARE_REVISION, HomekitMetadataCharacteristicFactory::createFirmwareRevisionCharacteristic);
+            put(HARDWARE_REVISION, HomekitMetadataCharacteristicFactory::createHardwareRevisionCharacteristic);
             put(IDENTIFIER, HomekitMetadataCharacteristicFactory::createIdentifierCharacteristic);
             put(INPUT_DEVICE_TYPE, HomekitMetadataCharacteristicFactory::createInputDeviceTypeCharacteristic);
             put(INPUT_SOURCE_TYPE, HomekitMetadataCharacteristicFactory::createInputSourceTypeCharacteristic);
+            put(MANUFACTURER, HomekitMetadataCharacteristicFactory::createManufacturerCharacteristic);
+            put(MODEL, HomekitMetadataCharacteristicFactory::createModelCharacteristic);
             put(NAME, HomekitMetadataCharacteristicFactory::createNameCharacteristic);
             put(PICTURE_MODE, HomekitMetadataCharacteristicFactory::createPictureModeCharacteristic);
+            put(SERIAL_NUMBER, HomekitMetadataCharacteristicFactory::createSerialNumberCharacteristic);
             put(SERVICE_INDEX, HomekitMetadataCharacteristicFactory::createServiceIndexCharacteristic);
             put(SLEEP_DISCOVERY_MODE, HomekitMetadataCharacteristicFactory::createSleepDiscoveryModeCharacteristic);
             put(TARGET_HEATER_COOLER_STATE,
@@ -221,6 +231,14 @@ public class HomekitMetadataCharacteristicFactory {
                 });
     }
 
+    private static Characteristic createFirmwareRevisionCharacteristic(Object value) {
+        return new FirmwareRevisionCharacteristic(getString(value));
+    }
+
+    private static Characteristic createHardwareRevisionCharacteristic(Object value) {
+        return new HardwareRevisionCharacteristic(getString(value));
+    }
+
     private static Characteristic createIdentifierCharacteristic(Object value) {
         return new IdentifierCharacteristic(getInteger(value));
     }
@@ -237,6 +255,14 @@ public class HomekitMetadataCharacteristicFactory {
         });
     }
 
+    private static Characteristic createManufacturerCharacteristic(Object value) {
+        return new ManufacturerCharacteristic(getString(value));
+    }
+
+    private static Characteristic createModelCharacteristic(Object value) {
+        return new ModelCharacteristic(getString(value));
+    }
+
     private static Characteristic createNameCharacteristic(Object value) {
         return new NameCharacteristic(getString(value));
     }
@@ -246,6 +272,10 @@ public class HomekitMetadataCharacteristicFactory {
         }, v -> {
         }, () -> {
         });
+    }
+
+    private static Characteristic createSerialNumberCharacteristic(Object value) {
+        return new SerialNumberCharacteristic(getString(value));
     }
 
     private static Characteristic createServiceIndexCharacteristic(Object value) {

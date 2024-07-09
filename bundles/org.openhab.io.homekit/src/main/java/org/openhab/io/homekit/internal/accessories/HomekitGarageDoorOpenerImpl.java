@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
@@ -49,7 +50,11 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
         obstructionReader = createBooleanReader(OBSTRUCTION_STATUS);
         currentDoorStateMapping = createMapping(CURRENT_DOOR_STATE, CurrentDoorStateEnum.class, true);
         targetDoorStateMapping = createMapping(TARGET_DOOR_STATE, TargetDoorStateEnum.class, true);
+    }
 
+    @Override
+    public void init() throws HomekitException {
+        super.init();
         getServices().add(new GarageDoorOpenerService(this));
     }
 

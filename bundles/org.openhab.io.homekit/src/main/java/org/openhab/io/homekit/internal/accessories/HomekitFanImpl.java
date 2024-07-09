@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -37,6 +38,11 @@ class HomekitFanImpl extends AbstractHomekitAccessoryImpl implements FanAccessor
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         activeReader = createBooleanReader(ACTIVE_STATUS);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
         this.getServices().add(new FanService(this));
     }
 

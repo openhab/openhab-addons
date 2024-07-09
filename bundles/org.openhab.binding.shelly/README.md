@@ -74,7 +74,6 @@ The binding provides the same feature set across all devices as good as possible
 | shellybutton2     | Shelly Button 2                                        | SHBTN-2             |
 | shellysense       | Shelly Motion and IR Controller                        | SHSEN-1             |
 | shellytrv         | Shelly TRV                                             | SHTRV-01            |
-| shellydevice      | A password protected Shelly device or an unknown type  |                     |
 
 ### Generation 2 Plus series
 
@@ -87,7 +86,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU                 |
 | shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                 |
 | shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                 |
-| shellyplusplug       | Shelly Plug-US                                           | SNPL-00116US                 |
+| shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                 |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X                   |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                   |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
@@ -95,14 +94,15 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
+| shellyblugw          | SHelly BLU Gateway                                       | SNGW-BT01                    |
 
 ### Generation 2 Plus Mini series (incl. Gen 3)
 
  | thing-type           | Model                                                    | Vendor ID                      |
  | -------------------- | -------------------------------------------------------- | ------------------------------ |
- | shellymini1          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU     |
- | shellymini1pm        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
- | shellyminipm         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
+ | shelly1mini          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU     |
+ | shelly1pmmini        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
+ | shellypmmini         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
 
 ### Generation 2 Pro series
 
@@ -115,6 +115,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
 | shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU                                  |
+| shellyproem50       | Shelly Pro EM50 with 3 integrated power meters           | SPEM-002CEBEU50                                |
 | shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU, SPSW-104PE16EU                 |
 
 ### Shelly BLU
@@ -125,6 +126,13 @@ The binding provides the same feature set across all devices as good as possible
 | shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
 | shellyblumotion   | Shelly BLU Motion                                      | SBMO      |
 | shellybluht       | Shelly BLU H&T                                         | SBMO      |
+
+### Special Thing Types
+
+| thing-type        | Model                                                  | Vendor ID |
+| ----------------- | ------------------------------------------------------ | --------- |
+| shellydevice      | A password protected Shelly device or an unknown type  |           |
+| shellyunknown     | An unknown Shelly device / model has been detected     |           |
 
 ## Binding Configuration
 
@@ -1289,7 +1297,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 
 ## Shelly Plus Mini Series
 
-### Shelly Plus 1 Mini (thing-type: shellymini1)
+### Shelly Plus 1 Mini (thing-type: shelly1mini)
 
 | Group | Channel     | Type    | read-only | Description                                                                       |
 | ----- | ----------- | ------- | --------- | --------------------------------------------------------------------------------- |
@@ -1301,7 +1309,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |       | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 
-### Shelly Plus 1PM Mini (thing-type: shellymini1pm)
+### Shelly Plus 1PM Mini (thing-type: shelly1pmmini)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
@@ -1318,7 +1326,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 
-### Shelly Plus PM Mini (thing-type: shellyminipm)
+### Shelly Plus PM Mini (thing-type: shellypmmini)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
@@ -1550,6 +1558,10 @@ See notes on discovery of Shelly BLU devices above.
 |         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
+
+## Shelly BLU Gateway (thing-type: shellyblugw)
+
+There are no additional channels beside the device group.
 
 ## Shelly Wall Displays
 
