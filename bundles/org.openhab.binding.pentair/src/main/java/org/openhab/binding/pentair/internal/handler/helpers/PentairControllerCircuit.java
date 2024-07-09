@@ -13,6 +13,7 @@
 package org.openhab.binding.pentair.internal.handler.helpers;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -156,8 +157,8 @@ public class PentairControllerCircuit {
         }
 
         public static CircuitName valueOfModeNumber(int number) {
-            return Arrays.stream(values()).filter(value -> (value.getCode() == number)).findFirst()
-                    .orElse(CircuitName.EMPTY);
+            return Objects.requireNonNull(Arrays.stream(values()).filter(value -> (value.getCode() == number))
+                    .findFirst().orElse(CircuitName.EMPTY));
         }
     }
 
@@ -197,8 +198,8 @@ public class PentairControllerCircuit {
         }
 
         public static CircuitFunction valueOfModeNumber(int number) {
-            return Arrays.stream(values()).filter(value -> (value.getCode() == number)).findFirst()
-                    .orElse(CircuitFunction.EMPTY);
+            return Objects.requireNonNull(Arrays.stream(values()).filter(value -> (value.getCode() == number))
+                    .findFirst().orElse(CircuitFunction.EMPTY));
         }
     }
 
