@@ -55,8 +55,6 @@ Fragment-Host: org.openhab.persistence.mapdb
 	org.openhab.core.config.core;version='[4.2.0,4.2.1)',\
 	org.openhab.core.persistence;version='[4.2.0,4.2.1)',\
 	org.openhab.core.test;version='[4.2.0,4.2.1)',\
-	org.openhab.persistence.mapdb;version='[4.2.0,4.2.1)',\
-	org.openhab.persistence.mapdb.tests;version='[4.2.0,4.2.1)',\
 	com.sun.jna;version='[5.14.0,5.14.1)',\
 	org.apache.aries.spifly.dynamic.bundle;version='[1.3.7,1.3.8)',\
 	org.eclipse.jetty.http;version='[9.4.54,9.4.55)',\
@@ -71,4 +69,6 @@ Fragment-Host: org.openhab.persistence.mapdb
 	org.objectweb.asm.tree;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.tree.analysis;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.util;version='[9.6.0,9.6.1)',\
-	org.ops4j.pax.logging.pax-logging-api;version='[2.2.7,2.2.8)'
+	org.ops4j.pax.logging.pax-logging-api;version='[2.2.7,2.2.8)',\
+	org.openhab.persistence.mapdb;version='[4.2.1,4.2.2)',\
+	org.openhab.persistence.mapdb.tests;version='[4.2.1,4.2.2)'
