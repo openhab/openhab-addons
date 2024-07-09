@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -37,6 +38,11 @@ public class HomekitSwitchImpl extends AbstractHomekitAccessoryImpl implements S
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         onReader = createBooleanReader(ON_STATE);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
         getServices().add(new SwitchService(this));
     }
 

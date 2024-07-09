@@ -24,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -56,6 +57,11 @@ public class HomekitBatteryImpl extends AbstractHomekitAccessoryImpl implements 
         if (isChargeable) {
             chargingBatteryReader = createBooleanReader(BATTERY_CHARGING_STATE);
         }
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
         getServices().add(new BatteryService(this));
     }
 

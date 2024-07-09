@@ -33,6 +33,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.RefreshType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
@@ -79,11 +80,16 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         inUseReader = createBooleanReader(INUSE_STATUS);
         activeReader = createBooleanReader(ACTIVE_STATUS);
+        homekitTimer = getAccessoryConfigurationAsBoolean(CONFIG_TIMER, false);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
         ValveService service = new ValveService(this);
         getServices().add(service);
-        homekitTimer = getAccessoryConfigurationAsBoolean(CONFIG_TIMER, false);
         if (homekitTimer) {
-            addRemainingDurationCharacteristic(taggedItem, updater, service);
+            addRemainingDurationCharacteristic(getRootAccessory(), getUpdater(), service);
         }
         String valveTypeConfig = getAccessoryConfiguration(CONFIG_VALVE_TYPE, "GENERIC");
         valveTypeConfig = getAccessoryConfiguration(CONFIG_VALVE_TYPE_DEPRECATED, valveTypeConfig);

@@ -18,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -43,6 +44,11 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
 
         currentStateMapping = createMapping(HomekitCharacteristicType.LOCK_CURRENT_STATE, LockCurrentStateEnum.class);
         targetStateMapping = createMapping(HomekitCharacteristicType.LOCK_TARGET_STATE, LockTargetStateEnum.class);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
         getServices().add(new LockMechanismService(this));
     }
 

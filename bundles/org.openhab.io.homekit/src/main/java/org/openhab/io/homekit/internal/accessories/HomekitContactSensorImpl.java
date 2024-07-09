@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -38,6 +39,11 @@ public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl imple
             HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         mapping = createMapping(CONTACT_SENSOR_STATE, ContactStateEnum.class);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
         getServices().add(new ContactSensorService(this));
     }
 
