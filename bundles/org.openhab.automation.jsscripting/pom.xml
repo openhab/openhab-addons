@@ -27,6 +27,7 @@
 
   <build>
     <plugins>
+      <!-- exclude META-INF/services/com.oracle.truffle.api.TruffleLanguage$Provider when unpacking dependencies -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -42,6 +43,7 @@
           </execution>
         </executions>
       </plugin>
+      <!-- bundle the openhab-js library -->
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
@@ -112,6 +114,7 @@
           </execution>
         </executions>
       </plugin>
+      <!-- run SAT -->
       <plugin>
         <groupId>org.openhab.tools.sat</groupId>
         <artifactId>sat-plugin</artifactId>
@@ -124,31 +127,32 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.graalvm.truffle</groupId>
-      <artifactId>truffle-api</artifactId>
-      <version>${graal.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.graalvm.js</groupId>
-      <artifactId>js-scriptengine</artifactId>
-      <version>${graal.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.graalvm.sdk</groupId>
       <artifactId>graal-sdk</artifactId>
       <version>${graal.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.graalvm.truffle</groupId>
+      <artifactId>truffle-api</artifactId>
+      <version>${graal.version}</version>
+    </dependency>
+    <!-- Graal JavaScript ScriptEngine JSR 223 support -->
+    <dependency>
+      <groupId>org.graalvm.js</groupId>
+      <artifactId>js-scriptengine</artifactId>
+      <version>${graal.version}</version>
+    </dependency>
+    <!-- Graal TRegex engine (internally used by Graal JavaScript engine) -->
+    <dependency>
       <groupId>org.graalvm.regex</groupId>
       <artifactId>regex</artifactId>
       <version>${graal.version}</version>
     </dependency>
-    <dependency> <!-- this must come AFTER the regex lib -->
+    <!-- Graal JavaScript engine (depends on Graal TRegex engine, must be added after it) -->
+    <dependency>
       <groupId>org.graalvm.js</groupId>
       <artifactId>js</artifactId>
       <version>${graal.version}</version>
     </dependency>
-    <!-- GraalJS changelog says that com.ibm.icu/icu4j is not required for GraalJS >= 22.0.0 as it moved to org.graalvm.truffle;
-      but GraalJS >= 22.2.0 requires it, so we'll need to add it when we upgrade -->
   </dependencies>
 </project>
