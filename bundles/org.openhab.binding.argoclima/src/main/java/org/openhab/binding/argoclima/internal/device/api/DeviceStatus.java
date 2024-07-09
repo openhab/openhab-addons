@@ -172,8 +172,9 @@ class DeviceStatus {
             String wifiPassword = this.wifiPassword;
             String localTime = this.localTime;
 
-            result.put(ArgoClimaBindingConstants.PROPERTY_LAST_SEEN, dateTimeToStringLocal(this.lastSeen, timeZoneProvider));
-            
+            result.put(ArgoClimaBindingConstants.PROPERTY_LAST_SEEN,
+                    dateTimeToStringLocal(this.lastSeen, timeZoneProvider));
+
             if (localIP != null) {
                 result.put(ArgoClimaBindingConstants.PROPERTY_LOCAL_IP_ADDRESS, localIP);
             }
