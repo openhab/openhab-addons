@@ -35,7 +35,7 @@ public class NetworkUtils {
 
     public static boolean hostAvailabilityCheck(@Nullable String host, int timeout, Logger logger) {
         if (host == null) {
-            logger.warn("Can't check availability of a null host");
+            logger.debug("Can't check availability of a null host");
             return false;
         }
         try {
