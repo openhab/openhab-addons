@@ -12,16 +12,19 @@
  */
 package org.openhab.automation.jsscripting.internal;
 
+import static org.openhab.core.automation.module.script.ScriptTransformationService.OPENHAB_TRANSFORMATION_SCRIPT;
+
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import javax.script.Compilable;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.graalvm.polyglot.PolyglotException;
-import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable;
+import org.openhab.automation.jsscripting.internal.scriptengine.InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,10 +34,9 @@ import org.slf4j.LoggerFactory;
  * @author Jonathan Gilbert - Initial contribution
  * @author Florian Hotze - Improve logger name, Fix memory leak caused by exception logging
  */
-class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable>
-        extends InvocationInterceptingScriptEngineWithInvocableAndAutoCloseable<T> {
+class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoCloseable & Compilable>
+        extends InvocationInterceptingScriptEngineWithInvocableAndCompilableAndAutoCloseable<T> {
 
-    private static final String SCRIPT_TRANSFORMATION_ENGINE_IDENTIFIER = "openhab-transformation-script-";
     private static final int STACK_TRACE_LENGTH = 5;
 
     private @Nullable Logger logger;
@@ -91,9 +93,8 @@ class DebuggingGraalScriptEngine<T extends ScriptEngine & Invocable & AutoClosea
         } else if (ruleUID != null) {
             identifier = ruleUID.toString();
         } else if (ohEngineIdentifier != null) {
-            if (ohEngineIdentifier.toString().startsWith(SCRIPT_TRANSFORMATION_ENGINE_IDENTIFIER)) {
-                identifier = ohEngineIdentifier.toString().replaceAll(SCRIPT_TRANSFORMATION_ENGINE_IDENTIFIER,
-                        "transformation.");
+            if (ohEngineIdentifier.toString().startsWith(OPENHAB_TRANSFORMATION_SCRIPT)) {
+                identifier = ohEngineIdentifier.toString().replaceAll(OPENHAB_TRANSFORMATION_SCRIPT, "transformation.");
             }
         }
 

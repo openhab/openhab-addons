@@ -15,6 +15,8 @@ package org.openhab.automation.jsscripting.internal.scriptengine;
 import java.io.Reader;
 
 import javax.script.Bindings;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -29,11 +31,11 @@ import org.eclipse.jdt.annotation.NonNull;
  *
  * @author Jonathan Gilbert - Initial contribution
  */
-public abstract class DelegatingScriptEngineWithInvocableAndAutocloseable<T extends ScriptEngine & Invocable & AutoCloseable>
-        implements ScriptEngine, Invocable, AutoCloseable {
+public abstract class DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable<T extends ScriptEngine & Invocable & Compilable & AutoCloseable>
+        implements ScriptEngine, Invocable, Compilable, AutoCloseable {
     protected @NonNull T delegate;
 
-    public DelegatingScriptEngineWithInvocableAndAutocloseable(@NonNull T delegate) {
+    public DelegatingScriptEngineWithInvocableAndCompilableAndAutocloseable(@NonNull T delegate) {
         this.delegate = delegate;
     }
 
@@ -126,6 +128,16 @@ public abstract class DelegatingScriptEngineWithInvocableAndAutocloseable<T exte
     @Override
     public <T> T getInterface(Object o, Class<T> aClass) {
         return delegate.getInterface(o, aClass);
+    }
+
+    @Override
+    public CompiledScript compile(String s) throws ScriptException {
+        return delegate.compile(s);
+    }
+
+    @Override
+    public CompiledScript compile(Reader reader) throws ScriptException {
+        return delegate.compile(reader);
     }
 
     @Override
