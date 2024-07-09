@@ -205,7 +205,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         ShellySettingsDevice device = profile.device;
-        profile.isGen2 = device.gen == 2;
         if (config.serviceName.isEmpty()) {
             config.serviceName = getString(profile.device.hostname);
         }

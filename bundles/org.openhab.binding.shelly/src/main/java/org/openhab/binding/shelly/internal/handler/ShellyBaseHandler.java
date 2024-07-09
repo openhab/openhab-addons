@@ -153,13 +153,17 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         this.config = getConfigAs(ShellyThingConfiguration.class);
         this.httpClient = httpClient;
 
-        Map<String, String> properties = thing.getProperties();
-        String gen = getString(properties.get(PROPERTY_DEV_GEN));
+        // Create thing handler depending on device generation
         String thingType = getThingType();
         blu = ShellyDeviceProfile.isBluSeries(thingType);
-        gen2 = "2".equals(gen) || "3".equals(gen) || blu || ShellyDeviceProfile.isGeneration2(thingType);
-        this.api = !blu ? !gen2 ? new Shelly1HttpApi(thingName, this) : new Shelly2ApiRpc(thingName, thingTable, this)
-                : new ShellyBluApi(thingName, thingTable, this);
+        gen2 = ShellyDeviceProfile.isGeneration2(thingType);
+        if (blu) {
+            this.api = new ShellyBluApi(thingName, thingTable, this);
+        } else if (gen2) {
+            this.api = new Shelly2ApiRpc(thingName, thingTable, this);
+        } else {
+            this.api = new Shelly1HttpApi(thingName, this);
+        }
         if (gen2) {
             config.eventsCoIoT = false;
         }
