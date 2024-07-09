@@ -33,7 +33,7 @@ import org.slf4j.Logger;
 @NonNullByDefault
 public class NetworkUtils {
 
-    public static boolean hostAvailabilityCheck(@Nullable String host, int timeout, Logger logger) {
+    public static boolean hostAvailabilityCheck(@Nullable String host, int timeout, Logger logger) throws IOException {
         if (host == null) {
             logger.debug("Can't check availability of a null host");
             return false;
@@ -41,10 +41,10 @@ public class NetworkUtils {
         try {
             InetAddress address = InetAddress.getByName(host);
             return address.isReachable(timeout);
-        } catch (Exception e) {
+        } catch (IOException e) {
             logger.warn("Exception while trying to determine reachability of {}: {}", host, e.getMessage());
+            throw e;
         }
-        return false;
     }
 
     public static @Nullable InetAddress findNonLoopbackAddress() throws SocketException {

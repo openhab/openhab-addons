@@ -213,33 +213,40 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Neither a host or static IP has been defined.");
         } else {
-            if (NetworkUtils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000, logger)) {
-                if (!Utils.isOnline(getThing())) {
-                    logger.trace("updateItemStatus; device not currently online, resolving");
-                    transitionToOnline();
-                } else {
-                    // Normal operation ...
-                    boolean gotStatusOk = getStatusFromDevice();
-                    if (!gotStatusOk) {
-                        if (thingConfig.isIgnoreFailedUpdates()) {
-                            logger.warn(
-                                    "Problem getting status. Not marking offline because configured to ignore failed updates ...");
-                        } else {
-                            forceOffline(ThingStatusDetail.GONE, "Problem getting status");
+            try {
+
+                if (NetworkUtils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000, logger)) {
+                    if (!Utils.isOnline(getThing())) {
+                        logger.trace("updateItemStatus; device not currently online, resolving");
+                        transitionToOnline();
+                    } else {
+                        // Normal operation ...
+                        boolean gotStatusOk = getStatusFromDevice();
+                        if (!gotStatusOk) {
+                            if (thingConfig.isIgnoreFailedUpdates()) {
+                                logger.warn(
+                                        "Problem getting status. Not marking offline because configured to ignore failed updates ...");
+                            } else {
+                                forceOffline(ThingStatusDetail.GONE, "Problem getting status");
+                            }
                         }
                     }
-                }
-            } else {
-                if (thingConfig.isStaticIp()) {
-                    if (!Utils.isOffline(getThing())) {
-                        forceOffline(ThingStatusDetail.NONE, "Couldn't find statically-IP-addressed device");
-                    }
                 } else {
-                    logger.debug("Dynamic IP device not found at {}, will search...", thingConfig.getIpAddress());
-                    DeviceRediscoveryAgent dra = new DeviceRediscoveryAgent(thingConfig, this);
-                    dra.attemptRediscovery();
-                    logger.debug("Asynchronous dynamic IP device search initiated...");
+                    if (thingConfig.isStaticIp()) {
+                        if (!Utils.isOffline(getThing())) {
+                            forceOffline(ThingStatusDetail.NONE, "Couldn't find statically-IP-addressed device");
+                        }
+                    } else {
+                        logger.debug("Dynamic IP device not found at {}, will search...", thingConfig.getIpAddress());
+                        DeviceRediscoveryAgent dra = new DeviceRediscoveryAgent(thingConfig, this);
+                        dra.attemptRediscovery();
+                        logger.debug("Asynchronous dynamic IP device search initiated...");
+                    }
                 }
+            } catch (IOException e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Cannot establish a communication channel with the device: " + e.getMessage());
+
             }
         }
     }
