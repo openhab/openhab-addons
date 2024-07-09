@@ -15,8 +15,10 @@ package org.openhab.binding.airgradient.internal.communication;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CALIBRATE_CO2_PATH;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CURRENT_MEASURES_PATH;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.LEDS_MODE_PATH;
+import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.LOCAL_CONFIG_PATH;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.REQUEST_TIMEOUT;
 
+import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -42,11 +44,17 @@ public class RESTHelper {
         }
     }
 
+    public static @Nullable String generateConfigUrl(AirGradientAPIConfiguration apiConfig) {
+        URI uri = URI.create(apiConfig.hostname);
+        URI configUri = uri.resolve(LOCAL_CONFIG_PATH);
+        return configUri.toString();
+    }
+
     public static @Nullable String generateCalibrationCo2Url(AirGradientAPIConfiguration apiConfig, String serialNo) {
         if (apiConfig.hasCloudUrl()) {
             return apiConfig.hostname + String.format(CALIBRATE_CO2_PATH, serialNo, apiConfig.token);
         } else {
-            return apiConfig.hostname;
+            return generateConfigUrl(apiConfig);
         }
     }
 
@@ -54,7 +62,7 @@ public class RESTHelper {
         if (apiConfig.hasCloudUrl()) {
             return apiConfig.hostname + String.format(LEDS_MODE_PATH, serialNo, apiConfig.token);
         } else {
-            return apiConfig.hostname;
+            return generateConfigUrl(apiConfig);
         }
     }
 

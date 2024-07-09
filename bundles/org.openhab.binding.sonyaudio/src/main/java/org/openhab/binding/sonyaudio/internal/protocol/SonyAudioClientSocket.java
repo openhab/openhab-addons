@@ -200,7 +200,7 @@ public class SonyAudioClientSocket {
 
     private void sendMessage(String str) throws IOException {
         if (isConnected()) {
-            logger.debug("send message fo {}: {}", uri.toString(), str);
+            logger.debug("send message for {}: {}", uri.toString(), str);
             session.getRemote().sendString(str);
         } else {
             String stack = "";

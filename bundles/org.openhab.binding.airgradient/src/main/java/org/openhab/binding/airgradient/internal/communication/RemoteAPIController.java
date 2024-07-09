@@ -17,6 +17,7 @@ import static org.openhab.binding.airgradient.internal.AirGradientBindingConstan
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.CONTENTTYPE_TEXT;
 import static org.openhab.binding.airgradient.internal.AirGradientBindingConstants.REQUEST_TIMEOUT;
 
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -35,11 +36,13 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.airgradient.internal.config.AirGradientAPIConfiguration;
 import org.openhab.binding.airgradient.internal.model.LedMode;
+import org.openhab.binding.airgradient.internal.model.LocalConfiguration;
 import org.openhab.binding.airgradient.internal.model.Measure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * Helper for doing rest calls to the AirGradient API.
@@ -72,7 +75,7 @@ public class RemoteAPIController {
                 RESTHelper.generateRequest(httpClient, RESTHelper.generateMeasuresUrl(apiConfig)));
         if (response != null) {
             String contentType = response.getMediaType();
-            logger.debug("Got measurements with status {}: {} ({})", response.getStatus(),
+            logger.trace("Got measurements with status {}: {} ({})", response.getStatus(),
                     response.getContentAsString(), contentType);
 
             if (HttpStatus.isSuccess(response.getStatus())) {
@@ -94,6 +97,31 @@ public class RemoteAPIController {
         }
 
         return Collections.emptyList();
+    }
+
+    public @Nullable LocalConfiguration getConfig() throws AirGradientCommunicationException {
+        ContentResponse response = sendRequest(
+                RESTHelper.generateRequest(httpClient, RESTHelper.generateConfigUrl(apiConfig)));
+        if (response == null) {
+            return null;
+        }
+
+        logger.trace("Got configuration with status {}: {}", response.getStatus(), response.getContentAsString());
+
+        Type configType = new TypeToken<LocalConfiguration>() {
+        }.getType();
+        return gson.fromJson(response.getContentAsString(), configType);
+    }
+
+    public void setConfig(LocalConfiguration config) throws AirGradientCommunicationException {
+        Request request = httpClient.newRequest(RESTHelper.generateConfigUrl(apiConfig));
+        request.timeout(REQUEST_TIMEOUT.toMillis(), TimeUnit.MILLISECONDS);
+        request.method(HttpMethod.PUT);
+        request.header(HttpHeader.CONTENT_TYPE, CONTENTTYPE_JSON);
+        String configJson = gson.toJson(config);
+        logger.debug("Setting configuration: {}", configJson);
+        request.content(new StringContentProvider(CONTENTTYPE_JSON, configJson, StandardCharsets.UTF_8));
+        sendRequest(request);
     }
 
     public void setLedMode(String serialNo, String mode) throws AirGradientCommunicationException {
@@ -126,7 +154,8 @@ public class RemoteAPIController {
         try {
             response = request.send();
             if (response != null) {
-                logger.debug("Response from {}: {}", request.getURI(), response.getStatus());
+                logger.trace("Response from {} ({}): {}", request.getURI(), response.getStatus(),
+                        response.getContentAsString());
                 if (!HttpStatus.isSuccess(response.getStatus())) {
                     throw new AirGradientCommunicationException("Returned status code: " + response.getStatus());
                 }

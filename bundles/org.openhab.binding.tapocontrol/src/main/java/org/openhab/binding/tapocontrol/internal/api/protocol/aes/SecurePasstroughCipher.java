@@ -110,7 +110,7 @@ public class SecurePasstroughCipher {
             encodeCipher.init(1, secretKeySpec, ivParameterSpec);
             decodeCipher.init(2, secretKeySpec, ivParameterSpec);
         } catch (Exception e) {
-            logger.warn("initChiper failed: {}", e.getMessage());
+            logger.warn("initCipher failed: {}", e.getMessage());
             encodeCipher = null;
             decodeCipher = null;
         }

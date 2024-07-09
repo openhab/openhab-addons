@@ -7,12 +7,13 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
   <properties>
     <bnd.importpackage>
       !android.*,!com.android.*,!kotlin.internal.jdk7,!kotlin.internal.jdk8,!kotlin.reflect.*,!okhttp3.*,!okio.*
     </bnd.importpackage>
+    <jellyfin.sdk>1.4.7</jellyfin.sdk>
   </properties>
   <artifactId>org.openhab.binding.jellyfin</artifactId>
 
@@ -21,17 +22,17 @@
     <dependency>
       <groupId>org.jellyfin.sdk</groupId>
       <artifactId>jellyfin-core-jvm</artifactId>
-      <version>1.4.6</version>
+      <version>${jellyfin.sdk}</version>
     </dependency>
     <dependency>
       <groupId>org.jellyfin.sdk</groupId>
       <artifactId>jellyfin-api-jvm</artifactId>
-      <version>1.4.6</version>
+      <version>${jellyfin.sdk}</version>
     </dependency>
     <dependency>
       <groupId>org.jellyfin.sdk</groupId>
       <artifactId>jellyfin-model-jvm</artifactId>
-      <version>1.4.6</version>
+      <version>${jellyfin.sdk}</version>
     </dependency>
     <dependency>
       <groupId>io.ktor</groupId>

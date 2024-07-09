@@ -52,6 +52,7 @@ public class NikoHomeControlBindingConstants {
     public static final ThingTypeUID THING_TYPE_ACCESS = new ThingTypeUID(BINDING_ID, "access");
     public static final ThingTypeUID THING_TYPE_ACCESS_RINGANDCOMEIN = new ThingTypeUID(BINDING_ID,
             "accessRingAndComeIn");
+    public static final ThingTypeUID THING_TYPE_ALARM = new ThingTypeUID(BINDING_ID, "alarm");
 
     // thing type sets
     public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(BRIDGEI_THING_TYPE, BRIDGEII_THING_TYPE);
@@ -62,9 +63,12 @@ public class NikoHomeControlBindingConstants {
             THING_TYPE_ENERGYMETER, THING_TYPE_GASMETER, THING_TYPE_WATERMETER);
     public static final Set<ThingTypeUID> ACCESS_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCESS,
             THING_TYPE_ACCESS_RINGANDCOMEIN);
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream.of(BRIDGE_THING_TYPES_UIDS.stream(),
-            ACTION_THING_TYPES_UIDS.stream(), THERMOSTAT_THING_TYPES_UIDS.stream(), METER_THING_TYPES_UIDS.stream(),
-            ACCESS_THING_TYPES_UIDS.stream()).flatMap(i -> i).collect(Collectors.toSet());
+    public static final Set<ThingTypeUID> ALARM_THING_TYPES_UIDS = Set.of(THING_TYPE_ALARM);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(BRIDGE_THING_TYPES_UIDS.stream(), ACTION_THING_TYPES_UIDS.stream(),
+                    THERMOSTAT_THING_TYPES_UIDS.stream(), METER_THING_TYPES_UIDS.stream(),
+                    ACCESS_THING_TYPES_UIDS.stream(), ALARM_THING_TYPES_UIDS.stream())
+            .flatMap(i -> i).collect(Collectors.toSet());
 
     // List of all Channel ids
     public static final String CHANNEL_BUTTON = "button";
@@ -95,6 +99,10 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_RING_AND_COME_IN = "ringandcomein";
     public static final String CHANNEL_LOCK = "lock";
 
+    public static final String CHANNEL_ARM = "arm";
+    public static final String CHANNEL_ARMED = "armed";
+    public static final String CHANNEL_STATE = "state";
+
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_NOTICE = "notice";
 
@@ -117,6 +125,8 @@ public class NikoHomeControlBindingConstants {
     public static final String CONFIG_METER_REFRESH = "refresh";
 
     public static final String CONFIG_ACCESS_ID = "accessId";
+
+    public static final String CONFIG_ALARM_ID = "alarmId";
 
     // Thing properties
     public static final String PROPERTY_DEVICE_TYPE = "deviceType";

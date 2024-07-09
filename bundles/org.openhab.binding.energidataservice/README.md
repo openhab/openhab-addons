@@ -13,7 +13,7 @@ All channels are available for thing type `service`.
 ### `service` Thing Configuration
 
 | Name                  | Type    | Description                                                          | Default       | Required |
-|-----------------------|---------|----------------------------------------------------------------------|---------------|----------|
+| --------------------- | ------- | -------------------------------------------------------------------- | ------------- | -------- |
 | priceArea             | text    | Price area for spot prices (same as bidding zone)                    |               | yes      |
 | currencyCode          | text    | Currency code in which to obtain spot prices                         | DKK           | no       |
 | gridCompanyGLN        | integer | Global Location Number of the Grid Company                           |               | no       |
@@ -48,15 +48,17 @@ It will not impact channels, see [Electricity Tax](#electricity-tax) for further
 ### Channel Group `electricity`
 
 | Channel                  | Type                     | Description                                                                            |
-|--------------------------|--------------------------|----------------------------------------------------------------------------------------|
+| ------------------------ | ------------------------ | -------------------------------------------------------------------------------------- |
 | spot-price               | Number:EnergyPrice       | Spot price in DKK or EUR per kWh                                                       |
 | grid-tariff              | Number:EnergyPrice       | Grid tariff in DKK per kWh. Only available when `gridCompanyGLN` is configured         |
 | system-tariff            | Number:EnergyPrice       | System tariff in DKK per kWh                                                           |
-| transmission-grid-tariff | Number:EnergyPrice       | Transmission grid tariff in DKK per kWh                                                | 
+| transmission-grid-tariff | Number:EnergyPrice       | Transmission grid tariff in DKK per kWh                                                |
 | electricity-tax          | Number:EnergyPrice       | Electricity tax in DKK per kWh                                                         |
 | reduced-electricity-tax  | Number:EnergyPrice       | Reduced electricity tax in DKK per kWh. For electric heating customers only            |
 | co2-emission-prognosis   | Number:EmissionIntensity | Estimated prognosis for CO₂ emission following the day-ahead market in g/kWh           |
 | co2-emission-realtime    | Number:EmissionIntensity | Near up-to-date history for CO₂ emission from electricity consumed in Denmark in g/kWh |
+
+#### Total Price
 
 _Please note:_ There is no channel providing the total price.
 Instead, create a group item with `SUM` as aggregate function and add the individual price items as children.
@@ -68,6 +70,72 @@ This has the following advantages:
 
 If you want electricity tax included in your total price, please add either `electricity-tax` or `reduced-electricity-tax` to the group - depending on which one applies.
 See [Electricity Tax](#electricity-tax) for further information.
+
+##### Time Series
+
+Group items with aggregate functions are not automatically recalculated into the future when the time series for child items are updated.
+Therefore, the `SUM` function mentioned above will only work for the current price.
+Calculation of future total prices can be achieved with a rule:
+
+:::: tabs
+
+::: tab JavaScript
+
+In this example file-based using Rule Builder:
+
+```javascript
+rules.when()
+    .channel('energidataservice:service:energidataservice:electricity#event').triggered('DAY_AHEAD_AVAILABLE')
+    .then(event => {
+        var timeSeries = new items.TimeSeries('REPLACE');
+        var start = time.LocalDate.now().atStartOfDay().atZone(time.ZoneId.systemDefault());
+        var spotPrices = items.SpotPrice.persistence.getAllStatesBetween(start, start.plusDays(2));
+        for (var spotPrice of spotPrices) {
+            var totalPrice = spotPrice.quantityState
+                .add(items.GridTariff.persistence.persistedState(spotPrice.timestamp).quantityState)
+                .add(items.SystemTariff.persistence.persistedState(spotPrice.timestamp).quantityState)
+                .add(items.TransmissionGridTariff.persistence.persistedState(spotPrice.timestamp).quantityState)
+                .add(items.ElectricityTax.persistence.persistedState(spotPrice.timestamp).quantityState);
+
+            timeSeries.add(spotPrice.timestamp, totalPrice);
+        }
+        items.TotalPrice.persistence.persist(timeSeries);
+    })
+    .build("Calculate total price");
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+rule "Calculate total price" do
+  channel "energidataservice:service:energidataservice:electricity#event", triggered: "DAY_AHEAD_AVAILABLE"
+  run do
+    # Persistence methods will call LocalDate#to_zoned_date_time which converts it
+    # to a ZonedDateTime in the default system zone, with 00:00 as its time portion
+    start = LocalDate.now
+    spot_prices = SpotPrice.all_states_between(start, start + 2.days)
+
+    next unless spot_prices # don't proceed if the persistence result is nil
+
+    time_series = TimeSeries.new # the default policy is replace
+    spot_prices.each do |spot_price|
+      total_price = spot_price +
+                    GridTariff.persisted_state(spot_price.timestamp) +
+                    SystemTariff.persisted_state(spot_price.timestamp) +
+                    TransmissionGridTariff.persisted_state(spot_price.timestamp) +
+                    ElectricityTax.persisted_state(spot_price.timestamp)
+      time_series.add(spot_price.timestamp, total_price)
+    end
+    TotalPrice.persist(time_series)
+  end
+end
+```
+
+:::
+
+::::
 
 #### Currencies
 
@@ -111,12 +179,12 @@ The tariffs are downloaded using pre-configured filters for the different [Grid 
 If your company is not in the list, or the filters are not working, they can be manually overridden.
 To override filters, the channel `grid-tariff` has the following configuration parameters:
 
-| Name            | Type    | Description                                                                                                                      | Default | Required | Advanced |
-|-----------------|---------|----------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
-| chargeTypeCodes | text    | Comma-separated list of charge type codes                                                                                        |         | no       | yes      |
-| notes           | text    | Comma-separated list of notes                                                                                                    |         | no       | yes      |
-| start           | text    | Query start date parameter expressed as either YYYY-MM-DD or dynamically as one of `StartOfDay`, `StartOfMonth` or `StartOfYear` |         | no       | yes      |
-| offset          | text    | Query start date offset expressed as an ISO 8601 duration                                                                        |         | no       | yes      |
+| Name            | Type | Description                                                                                                                      | Default | Required | Advanced |
+| --------------- | ---- | -------------------------------------------------------------------------------------------------------------------------------- | ------- | -------- | -------- |
+| chargeTypeCodes | text | Comma-separated list of charge type codes                                                                                        |         | no       | yes      |
+| notes           | text | Comma-separated list of notes                                                                                                    |         | no       | yes      |
+| start           | text | Query start date parameter expressed as either YYYY-MM-DD or dynamically as one of `StartOfDay`, `StartOfMonth` or `StartOfYear` |         | no       | yes      |
+| offset          | text | Query start date offset expressed as an ISO 8601 duration                                                                        |         | no       | yes      |
 
 The parameters `chargeTypeCodes` and `notes` are logically combined with "AND", so if only one parameter is needed for the filter, only provide this parameter and leave the other one empty.
 Using any of these parameters will override the pre-configured filter entirely.
@@ -134,14 +202,14 @@ See also [Datahub Price List](https://www.energidataservice.dk/tso-electricity/D
 ##### Filter Examples
 
 _N1:_
-| Parameter       | Value      |
-|-----------------|------------|
-| chargeTypeCodes | CD,CD R    |
-| notes           |            |
+| Parameter       | Value   |
+| --------------- | ------- |
+| chargeTypeCodes | CD,CD R |
+| notes           |         |
 
 _Nord Energi Net:_
 | Parameter       | Value      |
-|-----------------|------------|
+| --------------- | ---------- |
 | chargeTypeCodes | TAC        |
 | notes           | Nettarif C |
 | start           | StartOfDay |
@@ -174,9 +242,9 @@ These channels will not be updated when the configured price area is not DK1 or 
 
 Advanced channel `event` can trigger the following events:
 
-| Event                | Description                    |
-|----------------------|--------------------------------|
-| DAY_AHEAD_AVAILABLE  | Day-ahead prices are available |
+| Event               | Description                    |
+| ------------------- | ------------------------------ |
+| DAY_AHEAD_AVAILABLE | Day-ahead prices are available |
 
 ## Thing Actions
 
@@ -197,7 +265,7 @@ It comes in four variants with different input parameters.
 The result is a `Map` with the following keys:
 
 | Key                | Type         | Description                                           |
-|--------------------|--------------|-------------------------------------------------------|
+| ------------------ | ------------ | ----------------------------------------------------- |
 | CheapestStart      | `Instant`    | Start time of cheapest calculated period              |
 | LowestPrice        | `BigDecimal` | The total price when starting at cheapest start       |
 | MostExpensiveStart | `Instant`    | Start time of most expensive calculated period        |
@@ -205,11 +273,11 @@ The result is a `Map` with the following keys:
 
 #### `calculateCheapestPeriod` from Duration
 
-| Parameter          | Type                        | Description                                            |
-|--------------------|-----------------------------|--------------------------------------------------------|
-| earliestStart      | `Instant`                   | Earliest start time allowed                            |
-| latestEnd          | `Instant`                   | Latest end time allowed                                |
-| duration           | `Duration`                  | The duration to fit within the timeslot                |
+| Parameter     | Type       | Description                             |
+| ------------- | ---------- | --------------------------------------- |
+| earliestStart | `Instant`  | Earliest start time allowed             |
+| latestEnd     | `Instant`  | Latest end time allowed                 |
+| duration      | `Duration` | The duration to fit within the timeslot |
 
 This is a convenience method that can be used when the power consumption is not known.
 The calculation will assume linear consumption and will find the best timeslot based on that.
@@ -217,36 +285,90 @@ For this reason the resulting `Map` will not contain the keys `LowestPrice` and 
 
 Example:
 
-```javascript
+:::: tabs
+
+::: tab DSL
+
+```java
+val actions = getActions("energidataservice", "energidataservice:service:energidataservice")
 var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(12).toInstant(), Duration.ofMinutes(90))
 ```
 
+:::
+
+::: tab JavaScript
+
+```javascript
+var edsActions = actions.get("energidataservice", "energidataservice:service:energidataservice");
+var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(12*60*60), time.Duration.ofMinutes(90));
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+eds = things["energidataservice:service:energidataservice"]
+result = eds.calculate_cheapest_period(Instant.now, 2.hours.from_now.to_instant, 90.minutes)
+```
+
+:::
+
+::::
+
 #### `calculateCheapestPeriod` from Duration and Power
 
-| Parameter          | Type                        | Description                                            |
-|--------------------|-----------------------------|--------------------------------------------------------|
-| earliestStart      | `Instant`                   | Earliest start time allowed                            |
-| latestEnd          | `Instant`                   | Latest end time allowed                                |
-| duration           | `Duration`                  | The duration to fit within the timeslot                |
-| power              | `QuantityType<Power>`       | Linear power consumption                               |
+| Parameter     | Type                  | Description                             |
+| ------------- | --------------------- | --------------------------------------- |
+| earliestStart | `Instant`             | Earliest start time allowed             |
+| latestEnd     | `Instant`             | Latest end time allowed                 |
+| duration      | `Duration`            | The duration to fit within the timeslot |
+| power         | `QuantityType<Power>` | Linear power consumption                |
 
 This action is identical to the variant above, but with a known linear power consumption.
 As a result the price is also included in the result.
 
 Example:
 
-```javascript
+:::: tabs
+
+::: tab DSL
+
+```java
+val actions = getActions("energidataservice", "energidataservice:service:energidataservice")
 var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(12).toInstant(), Duration.ofMinutes(90), 250 | W)
 ```
 
+:::
+
+::: tab JavaScript
+
+```javascript
+var edsActions = actions.get("energidataservice", "energidataservice:service:energidataservice");
+var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(12*60*60), time.Duration.ofMinutes(90), Quantity("250 W"));
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+eds = things["energidataservice:service:energidataservice"]
+result = eds.calculate_cheapest_period(Instant.now, 12.hours.from_now.to_instant, 90.minutes, 250 | "W")
+```
+
+:::
+
+::::
+
 #### `calculateCheapestPeriod` from Power Phases
 
-| Parameter          | Type                        | Description                                            |
-|--------------------|-----------------------------|--------------------------------------------------------|
-| earliestStart      | `Instant`                   | Earliest start time allowed                            |
-| latestEnd          | `Instant`                   | Latest end time allowed                                |
-| durationPhases     | `List<Duration>`            | List of durations for the phases                       |
-| powerPhases        | `List<QuantityType<Power>>` | List of power consumption for each corresponding phase |
+| Parameter      | Type                        | Description                                            |
+| -------------- | --------------------------- | ------------------------------------------------------ |
+| earliestStart  | `Instant`                   | Earliest start time allowed                            |
+| latestEnd      | `Instant`                   | Latest end time allowed                                |
+| durationPhases | `List<Duration>`            | List of durations for the phases                       |
+| powerPhases    | `List<QuantityType<Power>>` | List of power consumption for each corresponding phase |
 
 This variant is similar to the one above, but is based on a supplied timetable.
 
@@ -256,7 +378,11 @@ This can be considered as different phases of using power, so each list member r
 
 Example:
 
-```javascript
+:::: tabs
+
+::: tab DSL
+
+```java
 val ArrayList<Duration> durationPhases = new ArrayList<Duration>()
 durationPhases.add(Duration.ofMinutes(37))
 durationPhases.add(Duration.ofMinutes(8))
@@ -277,8 +403,65 @@ powerPhases.add(166.666 | W)
 powerPhases.add(146.341 | W)
 powerPhases.add(0 | W)
 
+val actions = getActions("energidataservice", "energidataservice:service:energidataservice")
 var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(12).toInstant(), durationPhases, powerPhases)
 ```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var durationPhases = [
+    time.Duration.ofMinutes(37),
+    time.Duration.ofMinutes(8),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(2),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(36),
+    time.Duration.ofMinutes(41),
+    time.Duration.ofMinutes(104)
+];
+
+var powerPhases = [
+    Quantity("162.162 W"),
+    Quantity("750 W"),
+    Quantity("1500 W"),
+    Quantity("3000 W"),
+    Quantity("1500 W"),
+    Quantity("166.666 W"),
+    Quantity("146.341 W"),
+    Quantity("0 W")
+];
+
+var edsActions = actions.get("energidataservice", "energidataservice:service:energidataservice");
+var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(12*60*60), durationPhases, powerPhases);
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+duration_phases = [37, 8, 4, 2, 4, 36, 41, 104].map { |duration| duration.minutes }
+power_phases = [
+  162.162 | "W",
+  750 | "W",
+  1500 | "W",
+  3000 | "W",
+  1500 | "W",
+  166.666 | "W",
+  146.341 | "W",
+  0 | "W"
+]
+
+eds = things["energidataservice:service:energidataservice"]
+result = eds.calculate_cheapest_period(Instant.now, 12.hours.from_now.to_instant, duration_phases, power_phases)
+```
+
+:::
+
+::::
 
 Please note that the total duration will be calculated automatically as a sum of provided duration phases.
 Therefore, if the total duration is longer than the sum of phase durations, the remaining duration must be provided as last item with a corresponding 0 W power item.
@@ -286,13 +469,13 @@ This is to ensure that the full program will finish before the provided `latestE
 
 #### `calculateCheapestPeriod` from Energy per Phase
 
-| Parameter          | Type                        | Description                                            |
-|--------------------|-----------------------------|--------------------------------------------------------|
-| earliestStart      | `Instant`                   | Earliest start time allowed                            |
-| latestEnd          | `Instant`                   | Latest end time allowed                                |
-| totalDuration      | `Duration`                  | The total duration of all phases                       |
-| durationPhases     | `List<Duration>`            | List of durations for the phases                       |
-| energyUsedPerPhase | `QuantityType<Energy>`      | Fixed amount of energy used per phase                  |
+| Parameter          | Type                   | Description                           |
+| ------------------ | ---------------------- | ------------------------------------- |
+| earliestStart      | `Instant`              | Earliest start time allowed           |
+| latestEnd          | `Instant`              | Latest end time allowed               |
+| totalDuration      | `Duration`             | The total duration of all phases      |
+| durationPhases     | `List<Duration>`       | List of durations for the phases      |
+| energyUsedPerPhase | `QuantityType<Energy>` | Fixed amount of energy used per phase |
 
 This variant will assign the provided amount of energy into each phase.
 The use case for this variant is a simplification of the previous variant.
@@ -302,7 +485,11 @@ Since a last phase may use no significant energy, the total duration must be pro
 
 Example:
 
-```javascript
+:::: tabs
+
+::: tab DSL
+
+```java
 val ArrayList<Duration> durationPhases = new ArrayList<Duration>()
 durationPhases.add(Duration.ofMinutes(37))
 durationPhases.add(Duration.ofMinutes(8))
@@ -312,17 +499,57 @@ durationPhases.add(Duration.ofMinutes(4))
 durationPhases.add(Duration.ofMinutes(36))
 durationPhases.add(Duration.ofMinutes(41))
 
+val actions = getActions("energidataservice", "energidataservice:service:energidataservice")
+
 // 0.7 kWh is used in total (number of phases × energy used per phase)
-var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(12).toInstant(), Duration.ofMinutes(236), phases, 0.1 | kWh)
+var Map<String, Object> result = actions.calculateCheapestPeriod(now.toInstant(), now.plusHours(12).toInstant(), Duration.ofMinutes(236), durationPhases, 0.1 | kWh)
 ```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var durationPhases = [
+    time.Duration.ofMinutes(37),
+    time.Duration.ofMinutes(8),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(2),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(36),
+    time.Duration.ofMinutes(41)
+];
+
+var edsActions = actions.get("energidataservice", "energidataservice:service:energidataservice");
+
+// 0.7 kWh is used in total (number of phases × energy used per phase)
+var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(12*60*60), time.Duration.ofMinutes(236), durationPhases, Quantity("0.1 kWh"));
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+duration_phases = [37, 8, 4, 2, 4, 36, 41].map { |duration| duration.minutes }
+
+eds = things["energidataservice:service:energidataservice"]
+
+# 0.7 kWh is used in total (number of phases × energy used per phase)
+result = eds.calculate_cheapest_period(Instant.now, 12.hours.from_now.to_instant, 236.minutes, duration_phases, 0.1 | "kWh")
+```
+
+:::
+
+::::
 
 ### `calculatePrice`
 
-| Parameter          | Type                        | Description                                            |
-|--------------------|-----------------------------|--------------------------------------------------------|
-| start              | `Instant`                   | Start time                                             |
-| end                | `Instant`                   | End time                                               |
-| power              | `QuantityType<Power>`       | Linear power consumption                               |
+| Parameter | Type                  | Description              |
+| --------- | --------------------- | ------------------------ |
+| start     | `Instant`             | Start time               |
+| end       | `Instant`             | End time                 |
+| power     | `QuantityType<Power>` | Linear power consumption |
 
 **Result:** Price as `BigDecimal`.
 
@@ -331,15 +558,42 @@ Returns `null` if the calculation cannot be performed due to missing price data 
 
 Example:
 
-```javascript
+:::: tabs
+
+::: tab DSL
+
+```java
+val actions = getActions("energidataservice", "energidataservice:service:energidataservice")
 var price = actions.calculatePrice(now.toInstant(), now.plusHours(4).toInstant, 200 | W)
 ```
 
+:::
+
+::: tab JavaScript
+
+```javascript
+var edsActions = actions.get("energidataservice", "energidataservice:service:energidataservice");
+var price = edsActions.calculatePrice(time.Instant.now(), time.ZonedDateTime.now().plusHours(4).toInstant(), Quantity("200 W"));
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+eds = things["energidataservice:service:energidataservice"]
+price = eds.calculate_price(Instant.now, 4.hours.from_now.to_instant, 200 | "W")
+```
+
+:::
+
+::::
+
 ### `getPrices`
 
-| Parameter          | Type                        | Description                                            |
-|--------------------|-----------------------------|--------------------------------------------------------|
-| priceComponents    | `String`                    | Comma-separated list of price components to include    |
+| Parameter       | Type     | Description                                         |
+| --------------- | -------- | --------------------------------------------------- |
+| priceComponents | `String` | Comma-separated list of price components to include |
 
 **Result:** `Map<Instant, BigDecimal>`
 
@@ -347,7 +601,7 @@ The parameter `priceComponents` is a case-insensitive comma-separated list of pr
 These components can be requested:
 
 | Price component        | Description              |
-|------------------------|--------------------------|
+| ---------------------- | ------------------------ |
 | SpotPrice              | Spot price               |
 | GridTariff             | Grid tariff              |
 | SystemTariff           | System tariff            |
@@ -357,13 +611,40 @@ These components can be requested:
 
 Using `null` as parameter returns the total prices including all price components.
 If **Reduced Electricity Tax** is set in Thing configuration, `ElectricityTax` will be excluded, otherwise `ReducedElectricityTax`.
-This logic ensures consistent and comparable results not affected by artifical changes in the rate for electricity tax two times per year.
+This logic ensures consistent and comparable results not affected by artificial changes in the rate for electricity tax two times per year.
 
 Example:
 
-```javascript
+:::: tabs
+
+::: tab DSL
+
+```java
+val actions = getActions("energidataservice", "energidataservice:service:energidataservice")
 var priceMap = actions.getPrices("SpotPrice,GridTariff")
 ```
+
+:::
+
+::: tab JavaScript
+
+```javascript
+var edsActions = actions.get("energidataservice", "energidataservice:service:energidataservice");
+var priceMap = utils.javaMapToJsMap(edsActions.getPrices("SpotPrice,GridTariff"));
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+eds = things["energidataservice:service:energidataservice"]
+price_map = eds.get_prices("SpotPrice,GridTariff")
+```
+
+:::
+
+::::
 
 ## Full Example
 
@@ -379,12 +660,12 @@ Thing energidataservice:service:energidataservice "Energi Data Service" [ priceA
 ### Item Configuration
 
 ```java
-Group:Number:SUM TotalPrice "Current Total Price" <price>
-Number SpotPrice "Current Spot Price" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#spot-price" [profile="transform:VAT"] }
-Number GridTariff "Current Grid Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#grid-tariff" [profile="transform:VAT"] }
-Number SystemTariff "Current System Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#system-tariff" [profile="transform:VAT"] }
-Number TransmissionGridTariff "Current Transmission Grid Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#transmission-grid-tariff" [profile="transform:VAT"] }
-Number ElectricityTax "Current Electricity Tax" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#electricity-tax" [profile="transform:VAT"] }
+Group:Number:EnergyPrice:SUM TotalPrice "Total Price" <price>
+Number:EnergyPrice SpotPrice "Spot Price" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#spot-price" [profile="transform:VAT"] }
+Number:EnergyPrice GridTariff "Grid Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#grid-tariff" [profile="transform:VAT"] }
+Number:EnergyPrice SystemTariff "System Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#system-tariff" [profile="transform:VAT"] }
+Number:EnergyPrice TransmissionGridTariff "Transmission Grid Tariff" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#transmission-grid-tariff" [profile="transform:VAT"] }
+Number:EnergyPrice ElectricityTax "Electricity Tax" <price> (TotalPrice) { channel="energidataservice:service:energidataservice:electricity#electricity-tax" [profile="transform:VAT"] }
 ```
 
 ### Persistence Configuration
@@ -411,7 +692,7 @@ In case persistence is only needed for charts and/or accessing prices from rules
 
 ::: tab DSL
 
-```javascript
+```java
 import java.time.Duration
 import java.util.ArrayList
 import java.util.Map
@@ -498,25 +779,27 @@ if (price !== null) {
     console.log("Total price for using 150 W for the next hour: " + price.toString());
 }
 
-var durationPhases = [];
-durationPhases.push(time.Duration.ofMinutes(37));
-durationPhases.push(time.Duration.ofMinutes(8));
-durationPhases.push(time.Duration.ofMinutes(4));
-durationPhases.push(time.Duration.ofMinutes(2));
-durationPhases.push(time.Duration.ofMinutes(4));
-durationPhases.push(time.Duration.ofMinutes(36));
-durationPhases.push(time.Duration.ofMinutes(41));
-durationPhases.push(time.Duration.ofMinutes(104));
+var durationPhases = [
+    time.Duration.ofMinutes(37),
+    time.Duration.ofMinutes(8),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(2),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(36),
+    time.Duration.ofMinutes(41),
+    time.Duration.ofMinutes(104)
+];
 
-var consumptionPhases = [];
-consumptionPhases.push(Quantity("162.162 W"));
-consumptionPhases.push(Quantity("750 W"));
-consumptionPhases.push(Quantity("1500 W"));
-consumptionPhases.push(Quantity("3000 W"));
-consumptionPhases.push(Quantity("1500 W"));
-consumptionPhases.push(Quantity("166.666 W"));
-consumptionPhases.push(Quantity("146.341 W"));
-consumptionPhases.push(Quantity("0 W"));
+var consumptionPhases = [
+    Quantity("162.162 W"),
+    Quantity("750 W"),
+    Quantity("1500 W"),
+    Quantity("3000 W"),
+    Quantity("1500 W"),
+    Quantity("166.666 W"),
+    Quantity("146.341 W"),
+    Quantity("0 W")
+];
 
 var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(24*60*60), durationPhases, consumptionPhases);
 
@@ -528,16 +811,80 @@ console.log("Most expensive start: " + result.get("MostExpensiveStart").toString
 // This is a simpler version taking advantage of the fact that each interval here represents 0.1 kWh of consumed energy.
 // In this example we have to provide the total duration to make sure we fit the latest end. This is because there is no
 // registered consumption in the last phase.
-var durationPhases = [];
-durationPhases.push(time.Duration.ofMinutes(37));
-durationPhases.push(time.Duration.ofMinutes(8));
-durationPhases.push(time.Duration.ofMinutes(4));
-durationPhases.push(time.Duration.ofMinutes(2));
-durationPhases.push(time.Duration.ofMinutes(4));
-durationPhases.push(time.Duration.ofMinutes(36));
-durationPhases.push(time.Duration.ofMinutes(41));
+var durationPhases = [
+    time.Duration.ofMinutes(37),
+    time.Duration.ofMinutes(8),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(2),
+    time.Duration.ofMinutes(4),
+    time.Duration.ofMinutes(36),
+    time.Duration.ofMinutes(41)
+];
 
 var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant.now().plusSeconds(24*60*60), time.Duration.ofMinutes(236), durationPhases, Quantity("0.1 kWh"));
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+eds = things["energidataservice:service:energidataservice"]
+
+price_map = eds.get_prices
+hour_start = Instant.now.truncated_to(ChronoUnit::HOURS)
+logger.info "Current total price excl. VAT: #{price_map[hour_start]}"
+
+price_map = eds.get_prices("SpotPrice,GridTariff")
+logger.info "Current spot price + grid tariff excl. VAT: #{price_map[hour_start]}"
+
+price = eds.calculate_price(Instant.now, 1.hour.from_now.to_instant, 150 | "W")
+logger.info "Total price for using 150 W for the next hour: #{price}" if price
+
+duration_phases = [
+  37.minutes,
+  8.minutes,
+  4.minutes, 
+  2.minutes,
+  4.minutes,
+  36.minutes,
+  41.minutes,
+  104.minutes
+]
+
+consumption_phases = [
+  162.162 | "W",
+  750 | "W",
+  1500 | "W",
+  3000 | "W",
+  1500 | "W",
+  166.666 | "W",
+  146.341 | "W",
+  0 | "W"
+],
+
+result = eds.calculate_cheapest_period(ZonedDateTime.now.to_instant, 
+                                          24.hours.from_now.to_instant,
+                                          duration_phases,
+                                          consumption_phases)
+
+logger.info "Cheapest start #{result["CheapestStart"]}"
+logger.info "Lowest price #{result["LowestPrice"]}"
+logger.info "Highest price #{result["HighestPrice"]}"
+logger.info "Most expensive start #{result["MostExpensiveStart"]}"
+
+# This is a simpler version taking advantage of the fact that each interval here represents 0.1 kWh of consumed energy.
+# In this example we have to provide the total duration to make sure we fit the latest end. This is because there is no
+# registered consumption in the last phase.
+# Here we are using an alternative way of constructing an array of Durations.
+# The `#minutes` method on an Integer object returns a corresponding Duration object. 
+duration_phases = [37, 8, 4, 2, 4, 36, 41].map { |i| i.minutes }
+
+result = eds.calculate_cheapest_period(ZonedDateTime.now.to_instant,
+                                          24.hours.from_now.to_instant,
+                                          236.minutes,
+                                          duration_phases,
+                                          0.1 | "kWh")
 ```
 
 :::
@@ -550,9 +897,9 @@ var result = edsActions.calculateCheapestPeriod(time.Instant.now(), time.Instant
 
 ::: tab DSL
 
-```javascript
+```java
 var hourStart = now.plusHours(2).truncatedTo(ChronoUnit.HOURS)
-var price = SpotPrice.historicState(hourStart).state
+var price = SpotPrice.persistedState(hourStart).state
 logInfo("Spot price two hours from now", price.toString)
 ```
 
@@ -562,8 +909,18 @@ logInfo("Spot price two hours from now", price.toString)
 
 ```javascript
 var hourStart = time.toZDT().plusHours(2).truncatedTo(time.ChronoUnit.HOURS);
-var price = items.SpotPrice.history.historicState(hourStart).quantityState;
+var price = items.SpotPrice.persistence.persistedState(hourStart).quantityState;
 console.log("Spot price two hours from now: " + price);
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+hour_start = 2.hours.from_now.truncated_to(ChronoUnit::HOURS)
+price = SpotPrice.persisted_state(hour_start)
+logger.info "Spot price two hours from now: #{price}"
 ```
 
 :::
@@ -576,7 +933,7 @@ console.log("Spot price two hours from now: " + price);
 
 ::: tab DSL
 
-```javascript
+```java
 rule "Day-ahead event"
 when
     Channel 'energidataservice:service:energidataservice:electricity#event' triggered 'DAY_AHEAD_AVAILABLE'
@@ -597,6 +954,19 @@ rules.when()
         console.log('Day-ahead prices for the next day are now available');
     })
     .build("Day-ahead event");
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+rule "Day-ahead event" do
+  channel "energidataservice:service:energidataservice:electricity#event", triggered: "DAY_AHEAD_AVAILABLE"
+  run do
+    logger.info "Day-ahead prices for the next day are now available"
+  end
+end
 ```
 
 :::

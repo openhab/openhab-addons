@@ -67,18 +67,40 @@ To add a location, you need to know the location ID. To get the location ID, you
 
 For more information about the data in the channels, please refer to the models in https://api.airgradient.com/public/docs/api/v1/
 
-| Channel     | Type                 | Read/Write | Description                                                                      |
-|-------------|----------------------|------------|----------------------------------------------------------------------------------|
-| pm01        | Number:Density       | Read       | Particulate Matter 1 (0.001mm)                                                   |
-| pm02        | Number:Density       | Read       | Particulate Matter 2 (0.002mm)                                                   |
-| pm10        | Number:Density       | Read       | Particulate Matter 10 (0.01mm)                                                   |
-| pm003-count | Switch               | Read       | The number of particles with a diameter beyond 0.3 microns in 1 deciliter of air |
-| rco2        | Number:Density       | Read       | Carbon dioxide PPM                                                               |
-| tvoc        | Number:Density       | Read       | Total Volatile Organic Compounds                                                 |
-| atmp        | Number:Temperature   | Read       | Ambient Temperature                                                              |
-| rhum        | Number:Dimensionless | Read       | Relative Humidity Percentage                                                     |
-| wifi        | Number               | Read       | Received signal strength indicator                                               |
-| boot        | Number:Dimensionless | Read       | Number of measure uploads since last reboot (boot)                               |
+| Channel            | Type                 | Read/Write | Description                                                                      |
+|--------------------|----------------------|------------|----------------------------------------------------------------------------------|
+| pm01               | Number:Density       | Read       | Particulate Matter 1 (0.001mm)                                                   |
+| pm02               | Number:Density       | Read       | Particulate Matter 2 (0.002mm)                                                   |
+| pm10               | Number:Density       | Read       | Particulate Matter 10 (0.01mm)                                                   |
+| pm003-count        | Number:Dimensionless | Read       | The number of particles with a diameter beyond 0.3 microns in 1 deciliter of air |
+| rco2               | Number:Density       | Read       | Carbon dioxide PPM                                                               |
+| tvoc               | Number:Density       | Read       | Total Volatile Organic Compounds                                                 |
+| atmp               | Number:Temperature   | Read       | Ambient Temperature                                                              |
+| rhum               | Number:Dimensionless | Read       | Relative Humidity Percentage                                                     |
+| wifi               | Number               | Read       | Received signal strength indicator                                               |
+| uploads-since-boot | Number:Dimensionless | Read       | Number of measure uploads since last reboot (boot)                               |
+| leds               | String               | Read/Write | Sets the leds mode (off/co2/pm)                                                  |
+| calibration        | String               | Write      | Triggers co2 calibration on the device                                           |
+
+Some configuration channels are only available for local devices (for cloud devices use the AirGradient dashboard to configure these instead).
+These configuration settings needs AirGradient firmware on the sensor of version 3.1.1 or later.
+
+| Channel               | Type                 | Read/Write | Description                                                                      |
+|-----------------------|----------------------|------------|----------------------------------------------------------------------------------|
+| country-code          | String               | Read/Write | The ALPHA-2 Country code used for the device                                     |
+| pm-standard           | String               | Read/Write | Standard used for Parts per Million measurements (us-aqi or ugm3)                |
+| abc-days              | Number:Days          | Read/Write | Co2 calibration automatic baseline calibration days                              |
+| tvoc-learning-offset  | Number:Dimensionless | Read/Write | Time constant of long-term estimator for offset.                                 |
+| nox-learning-offset   | Number:Dimensionless | Read/Write | Time constant of long-term estimator for offset.                                 |
+| mqtt-broker-url       | String               | Read/Write | MQTT Broker URL                                                                  |
+| temperature-unit      | String               | Read/Write | Temperature unit used on the display                                             |
+| configuration-control | String               | Read/Write | Where the unit is configured from (local/cloud/both)                             |
+| post-to-cloud         | Switch               | Read/Write | Send data to the AirGradient cloud                                               |
+| led-bar-brightness    | Number:Dimensionless | Read/Write | Brightness of the LED bar                                                        |
+| display-brightness    | Number:Dimensionless | Read/Write | Brightness of the display                                                        |
+| model                 | String               | Read/Write | The model of the device (can be changed e.g. if you change sensors)              |
+| led-bar-test          | String               | Write      | Trigger test of LED bar                                                          |
+
 
 ## Full Example
 

@@ -56,6 +56,9 @@ public class PacketListener {
     }
 
     public void addPayloadHandler(PayloadHandler handler) {
+        if (handlers.isEmpty()) {
+            open();
+        }
         handlers.add(handler);
     }
 
@@ -72,18 +75,22 @@ public class PacketListener {
         return socket != null && socket.isConnected();
     }
 
-    public void open(int intervalSec) throws IOException {
+    private void open() {
         if (isOpen()) {
             // no need to bind socket second time
             return;
         }
-        MulticastSocket socket = new MulticastSocket(port);
-        socket.setSoTimeout(5000);
-        InetAddress address = InetAddress.getByName(multicastGroup);
-        socket.joinGroup(address);
+        try {
+            MulticastSocket socket = new MulticastSocket(port);
+            socket.setSoTimeout(5000);
+            InetAddress address = InetAddress.getByName(multicastGroup);
+            socket.joinGroup(address);
 
-        future = registry.addTask(new ReceivingTask(socket, multicastGroup + ":" + port, handlers), intervalSec);
-        this.socket = socket;
+            future = registry.addTask(new ReceivingTask(socket, multicastGroup + ":" + port, handlers));
+            this.socket = socket;
+        } catch (IOException e) {
+            throw new RuntimeException("Could not open socket", e);
+        }
     }
 
     void close() throws IOException {
@@ -122,24 +129,25 @@ public class PacketListener {
         }
 
         public void run() {
-            try {
-                byte[] bytes = new byte[608];
-                DatagramPacket msgPacket = new DatagramPacket(bytes, bytes.length);
-                DatagramSocket socket = this.socket;
-                socket.receive(msgPacket);
+            byte[] bytes = new byte[608];
+            DatagramPacket msgPacket = new DatagramPacket(bytes, bytes.length);
+            DatagramSocket socket = this.socket;
 
-                try {
+            try {
+                do {
+                    // this loop is intended to receive all packets queued on the socket,
+                    // having a receive() call without loop causes packets to get queued over time,
+                    // if more than one meter present because we consume one packet per second
+                    socket.receive(msgPacket);
                     EnergyMeter meter = new EnergyMeter();
                     meter.parse(bytes);
 
                     for (PayloadHandler handler : handlers) {
                         handler.handle(meter);
                     }
-                } catch (IOException e) {
-                    logger.debug("Unexpected payload received for group {}", group, e);
-                }
+                } while (msgPacket.getLength() == 608);
             } catch (IOException e) {
-                logger.warn("Failed to receive data for multicast group {}", group, e);
+                logger.debug("Unexpected payload received for group {}", group, e);
             }
         }
     }

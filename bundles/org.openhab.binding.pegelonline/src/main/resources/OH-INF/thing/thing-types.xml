@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pegelonline"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="station">
+		<label>Measurement Station</label>
+		<description>Station providing water level measurements</description>
+
+		<channels>
+			<channel id="timestamp" typeId="timestamp"/>
+			<channel id="level" typeId="level"/>
+			<channel id="trend" typeId="trend"/>
+			<channel id="warning" typeId="warning"/>
+		</channels>
+
+		<representation-property>uuid</representation-property>
+
+		<config-description>
+			<parameter name="uuid" type="text" required="true">
+				<label>Station Identifier</label>
+				<description>Unique Station Identifier</description>
+			</parameter>
+			<parameter name="warningLevel1" type="integer">
+				<label>Warning Level 1</label>
+				<description>Water level triggering level 1 warning</description>
+			</parameter>
+			<parameter name="warningLevel2" type="integer">
+				<label>Warning Level 2</label>
+				<description>Water level triggering level 2 warning</description>
+			</parameter>
+			<parameter name="warningLevel3" type="integer">
+				<label>Warning Level 3</label>
+				<description>Water level triggering level 3 warning</description>
+			</parameter>
+			<parameter name="hq10" type="integer">
+				<label>Decade Flooding</label>
+				<description>Water level of decade flooding 10-20 years</description>
+			</parameter>
+			<parameter name="hq100" type="integer">
+				<label>Century Flooding</label>
+				<description>Water level of century flooding in ~ 100 years</description>
+			</parameter>
+			<parameter name="hqExtreme" type="integer">
+				<label>Extreme Flooding</label>
+				<description>Water level of extra ordinary flooding > 200 years</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="m" min="1" required="true">
+				<label>Refresh Interval</label>
+				<default>15</default>
+				<description>Interval measurement polling in minutes.</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Last Measurement</label>
+		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+	</channel-type>
+	<channel-type id="level">
+		<item-type>Number:Length</item-type>
+		<label>Water Level</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="trend">
+		<item-type>Number</item-type>
+		<label>Water Level Trend</label>
+		<state readOnly="true">
+			<options>
+				<option value="-1">Lowering</option>
+				<option value="0">Steady</option>
+				<option value="1">Rising</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="warning">
+		<item-type>Number</item-type>
+		<label>Warning Level</label>
+		<state readOnly="true">
+			<options>
+				<option value="0">No warning</option>
+				<option value="1">Warning Level 1</option>
+				<option value="2">Warning Level 2</option>
+				<option value="3">Warning Level 3</option>
+				<option value="4">Decade Flooding</option>
+				<option value="5">Century Flooding</option>
+				<option value="6">Extreme Flooding</option>
+			</options>
+		</state>
+	</channel-type>
+</thing:thing-descriptions>

@@ -23,6 +23,7 @@ import org.openhab.binding.solarforecast.internal.forecastsolar.handler.Forecast
 import org.openhab.binding.solarforecast.internal.forecastsolar.handler.ForecastSolarPlaneHandler;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastBridgeHandler;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastPlaneHandler;
+import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
@@ -55,6 +56,7 @@ public class SolarForecastHandlerFactory extends BaseThingHandlerFactory {
             final @Reference TimeZoneProvider tzp) {
         timeZoneProvider = tzp;
         httpClient = hcf.getCommonHttpClient();
+        Utils.setTimeZoneProvider(tzp);
         PointType pt = lp.getLocation();
         if (pt != null) {
             location = Optional.of(pt);

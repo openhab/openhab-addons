@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
+		https://openhab.org/schemas/config-description-1.0.0.xsd">
+	<config-description uri="voice:whisperstt">
+		<parameter-group name="stt">
+			<label>STT Configuration</label>
+			<description>Configure Speech to Text.</description>
+		</parameter-group>
+		<parameter-group name="vad">
+			<label>Voice Activity Detection</label>
+			<description>Configure the VAD mechanisim used to isolate single phrases to feed whisper with.</description>
+		</parameter-group>
+		<parameter-group name="whisper">
+			<label>Whisper Options</label>
+			<description>Configure the whisper.cpp transcription options.</description>
+		</parameter-group>
+		<parameter-group name="grammar">
+			<label>Grammar</label>
+			<description>Define a grammar to improve transcrptions.</description>
+		</parameter-group>
+		<parameter-group name="messages">
+			<label>Info Messages</label>
+			<description>Configure service information messages.</description>
+		</parameter-group>
+		<parameter-group name="developer">
+			<label>Developer</label>
+			<description>Options added for developers.</description>
+			<advanced>true</advanced>
+		</parameter-group>
+		<parameter name="modelName" type="text" groupName="stt" required="true">
+			<label>Model Name</label>
+			<description>Model name without extension.</description>
+		</parameter>
+		<parameter name="preloadModel" type="boolean" groupName="stt">
+			<label>Preload Model</label>
+			<description>Keep the model loaded. If the parameter is set to true, the model will be reloaded only on
+				configuration
+				updates. If the model is not loaded when needed, the service will try to load it. If the parameter is
+				set to false,
+				the model will be loaded and unloaded on each run.
+			</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="singleUtteranceMode" type="boolean" groupName="stt">
+			<label>Single Utterance Mode</label>
+			<description>When enabled recognition stops listening after a single utterance.</description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="minSeconds" type="decimal" step="0.1" min="1" unit="s" groupName="stt">
+			<label>Min Transcription Seconds</label>
+			<description>Min transcription seconds passed to whisper.</description>
+			<default>2</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="maxSeconds" type="integer" min="2" unit="s" groupName="stt">
+			<label>Max Transcription Seconds</label>
+			<description>Seconds to force transcription before silence detection.</description>
+			<default>10</default>
+		</parameter>
+		<parameter name="initSilenceSeconds" type="decimal" min="0.1" step="0.1" unit="s" groupName="stt">
+			<label>Initial Silence Seconds</label>
+			<description>Max initial seconds of silence to discard transcription.</description>
+			<default>3</default>
+		</parameter>
+		<parameter name="maxSilenceSeconds" type="decimal" min="0.1" step="0.1" unit="s" groupName="stt">
+			<label>Max Silence Seconds</label>
+			<description>Seconds of silence to trigger transcription.</description>
+			<default>0.5</default>
+		</parameter>
+		<parameter name="removeSilence" type="boolean" groupName="stt">
+			<label>Remove Silence</label>
+			<description>Remove silence frames from the beginning and end of the audio.</description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="stepSeconds" type="decimal" groupName="vad">
+			<label>Audio Step</label>
+			<description>Audio step for the voice activity detection.</description>
+			<default>1</default>
+			<options>
+				<option value="0.1">100ms</option>
+				<option value="0.2">200ms</option>
+				<option value="0.3">300ms</option>
+				<option value="0.5">500ms</option>
+				<option value="0.6">600ms</option>
+				<option value="1">1s</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="vadSensitivity" type="decimal" groupName="vad" min="0" max="1" step="0.01">
+			<label>Voice Activity Detection Sensitivity</label>
+			<description>Percentage in range 0-1 of voice activity in each audio step analyzed to consider it as voice.</description>
+			<default>0.3</default>
+		</parameter>
+		<parameter name="vadMode" type="text" groupName="vad">
+			<label>Voice Activity Detection Mode</label>
+			<description>Available VAD modes. Quality is the most likely to detect voice.</description>
+			<default>VERY_AGGRESSIVE</default>
+			<options>
+				<option value="QUALITY">Quality</option>
+				<option value="LOW_BITRATE">Low Bitrate</option>
+				<option value="AGGRESSIVE">Aggressive</option>
+				<option value="VERY_AGGRESSIVE">Very Aggressive</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="vadStep" type="integer" groupName="vad">
+			<label>Voice Activity Detector Step</label>
+			<description>Audio milliseconds passed to the voice activity detector. Defines how much times the voice activity
+				detector is executed per audio step.</description>
+			<default>20</default>
+			<options>
+				<option value="10">10ms</option>
+				<option value="20">20ms</option>
+				<option value="30">30ms</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="threads" type="integer" groupName="whisper">
+			<label>Threads</label>
+			<description>Number of threads used by whisper. (0 to use host max threads)</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="audioContext" type="integer" groupName="whisper" min="0">
+			<label>Audio Context</label>
+			<description>Overwrite the audio context size. (0 to use whisper default context size)</description>
+			<default>0</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="samplingStrategy" type="text" groupName="whisper">
+			<label>Sampling strategy</label>
+			<description>Sampling strategy used.</description>
+			<default>BEAN_SEARCH</default>
+			<options>
+				<option value="GREEDY">Greedy</option>
+				<option value="BEAN_SEARCH">Bean Search</option>
+			</options>
+		</parameter>
+		<parameter name="beamSize" type="integer" groupName="whisper" min="1">
+			<label>Beam Size</label>
+			<description>Beam Size configuration for sampling strategy Bean Search.</description>
+			<default>2</default>
+		</parameter>
+		<parameter name="greedyBestOf" type="integer" groupName="whisper" min="-1">
+			<label>Greedy Best Of</label>
+			<description>Best Of configuration for sampling strategy Greedy. (-1 for unlimited)</description>
+			<default>-1</default>
+		</parameter>
+		<parameter name="temperature" type="decimal" groupName="whisper">
+			<label>Temperature</label>
+			<description>Temperature threshold.</description>
+			<default>0</default>
+		</parameter>
+		<parameter name="initialPrompt" type="text" groupName="whisper">
+			<label>Initial Prompt</label>
+			<description>Initial prompt to feed whisper with.</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="openvinoDevice" type="text" groupName="whisper">
+			<label>OpenVINO Device</label>
+			<description>Initialize OpenVINO encoder. (built-in binaries do not support OpenVINO, this has no effect)</description>
+			<advanced>true</advanced>
+			<default>CPU</default>
+		</parameter>
+		<parameter name="speedUp" type="boolean" groupName="whisper">
+			<label>Speed Up</label>
+			<description>Speed up audio by x2. (reduced accuracy)</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="useGPU" type="boolean" groupName="whisper">
+			<label>Use GPU</label>
+			<description>Enables GPU usage. (built-in binaries do not support GPU usage, this has no effect)</description>
+			<default>true</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="useGrammar" type="boolean" groupName="grammar">
+			<label>Use Grammar</label>
+			<description>Enables grammar usage.</description>
+			<default>false</default>
+		</parameter>
+		<parameter name="grammarPenalty" type="decimal" groupName="grammar" min="0" max="100" step="0.1">
+			<label>Grammar Penalty</label>
+			<description>Penalty for non grammar tokens when using grammar.</description>
+			<default>100</default>
+		</parameter>
+		<parameter name="grammarLines" type="text" groupName="grammar" multiple="true">
+			<label>Grammar</label>
+			<description>Grammar to use in GBNF format. (BNF variant used by whisper.cpp).</description>
+			<default></default>
+		</parameter>
+		<parameter name="noResultsMessage" type="text" groupName="messages">
+			<label>No Results Message</label>
+			<description>Message to be told when no results. (Empty for disabled)</description>
+			<default>Sorry, I didn't understand you</default>
+		</parameter>
+		<parameter name="errorMessage" type="text" groupName="messages">
+			<label>Error Message</label>
+			<description>Message to be told when an error has happened. (Empty for disabled)</description>
+			<default>Sorry, something went wrong</default>
+		</parameter>
+		<parameter name="createWAVRecord" type="boolean" groupName="developer">
+			<label>Create WAV Record</label>
+			<description>Create WAV audio record on each whisper execution.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="recordSampleFormat" type="text" groupName="developer">
+			<label>Record Sample Format</label>
+			<description>Defines the sample type and bit-size used by the created WAV audio record.</description>
+			<default>i16</default>
+			<options>
+				<option value="i16">Integer 16bit</option>
+				<option value="f32">Float 32bit</option>
+			</options>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="enableWhisperLog" type="boolean" groupName="developer">
+			<label>Enable Whisper Log</label>
+			<description>Emit whisper.cpp library logs as add-on debug logs.</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

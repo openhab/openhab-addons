@@ -188,8 +188,8 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
 
     @Override
     public List<PersistenceStrategy> getDefaultStrategies() {
-        // persist nothing by default
-        return List.of();
+        // persist only forecasts by default
+        return List.of(PersistenceStrategy.Globals.FORECAST);
     }
 
     private PersistenceItemInfo toItemInfo(Map.Entry<String, PersistItem> itemEntry) {
@@ -268,7 +268,7 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
         }
     }
 
-    @SuppressWarnings({ "rawType", "unchecked" })
+    @SuppressWarnings("unchecked")
     private boolean applies(PersistEntry entry, FilterCriteria filter) {
         ZonedDateTime beginDate = filter.getBeginDate();
         if (beginDate != null && beginDate.isAfter(entry.timestamp())) {

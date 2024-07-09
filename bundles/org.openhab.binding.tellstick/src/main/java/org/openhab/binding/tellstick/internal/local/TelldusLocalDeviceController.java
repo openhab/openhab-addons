@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -249,7 +250,8 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
         setLastSend(newDevices.getTimestamp());
     }
 
-    <T> T callRestMethod(String uri, Class<T> response) throws TelldusLocalException, InterruptedException {
+    <T> @Nullable T callRestMethod(String uri, Class<T> response) throws TelldusLocalException, InterruptedException {
+        @Nullable
         T resultObj = null;
         try {
             for (int i = 0; i < MAX_RETRIES; i++) {

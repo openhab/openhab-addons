@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.smaenergymeter.internal.SMAEnergyMeterBindingConstants;
 import org.openhab.binding.smaenergymeter.internal.packet.PacketListener.ReceivingTask;
+import org.openhab.core.common.ThreadPoolManager;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
@@ -40,9 +40,8 @@ import org.slf4j.LoggerFactory;
 public class DefaultPacketListenerRegistry implements PacketListenerRegistry {
 
     private final Logger logger = LoggerFactory.getLogger(DefaultPacketListenerRegistry.class);
-    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1,
-            (runnable) -> new Thread(runnable,
-                    "OH-binding-" + SMAEnergyMeterBindingConstants.BINDING_ID + "-listener"));
+    private final ScheduledExecutorService scheduler = ThreadPoolManager
+            .getScheduledPool("OH-binding-" + SMAEnergyMeterBindingConstants.BINDING_ID + "-listener");
     private final Map<String, PacketListener> listeners = new ConcurrentHashMap<>();
 
     @Override
@@ -68,8 +67,8 @@ public class DefaultPacketListenerRegistry implements PacketListenerRegistry {
         scheduler.shutdownNow();
     }
 
-    public ScheduledFuture<?> addTask(Runnable runnable, int intervalSec) {
-        return scheduler.scheduleWithFixedDelay(runnable, 0, intervalSec, TimeUnit.SECONDS);
+    public ScheduledFuture<?> addTask(ReceivingTask runnable) {
+        return scheduler.scheduleWithFixedDelay(runnable, 0, 1000, TimeUnit.MILLISECONDS);
     }
 
     public void execute(ReceivingTask receivingTask) {

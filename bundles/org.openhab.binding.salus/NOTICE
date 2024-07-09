@@ -29,7 +29,7 @@ checker-qual
 * Project: https://checkerframework.org/
 * Source: https://github.com/typetools/checker-framework
 
-aws-crt
+aws-v4-signer-java
 * License: Apache License 2.0
-* Project: https://github.com/awslabs/aws-crt-java
-* Source: https://github.com/awslabs/aws-crt-java
+* Project: https://github.com/lucasweb78/aws-v4-signer-java
+* Source: https://github.com/lucasweb78/aws-v4-signer-java

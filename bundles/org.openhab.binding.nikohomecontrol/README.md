@@ -30,7 +30,7 @@ Niko Home Control alarm and notice messages are retrieved and made available in 
 ## Supported Things
 
 The Niko Home Control Controller is represented as a bridge in the binding.
-Connected to a bridge, the Niko Home Control Binding supports all off actions, on/off actions (e.g. for lights or groups of lights), dimmers, rollershutters or blinds, thermostats, energy meters (Niko Home Control I only) and access control devices (Niko Home Control II only).
+Connected to a bridge, the Niko Home Control Binding supports all off actions, on/off actions (e.g. for lights or groups of lights), dimmers, rollershutters or blinds, thermostats, energy meters, access control devices (Niko Home Control II only) and alarm systems (Niko Home Control II only).
 
 The following thing types are available in the binding:
 
@@ -47,6 +47,7 @@ The following thing types are available in the binding:
 | waterMeter          |   x   |        | water meter, aggregates readings with 10 min intervals                            |
 | access              |       |   x    | door with bell button and lock                                                    |
 | accessRingAndComeIn |       |   x    | door with bell button, lock and ring and come in functionality                    |
+| alarm               |       |   x    | alarm system                                                                      |
 
 ## Binding Configuration
 
@@ -139,6 +140,7 @@ The Thing configurations for **Niko Home Control actions, thermostats, energy me
 | meterId       |   x   |   x    |     x    | energyMeterLive, energyMeter, gasMeter, waterMeter | unique ID for the energy meter in the controller                |
 | refresh       |   x   |   x    |          | energyMeterLive, energyMeter, gasMeter, waterMeter | refresh interval for meter reading in minutes, default 10 minutes. The value should not be lower than 5 minutes to avoid too many meter data retrieval calls |
 | accessId      |       |   x    |     x    | access, accessRingAndComeIn      | unique ID for the access device in the controller                                 |
+| alarmId       |       |   x    |     x    | alarm                            | unique ID for the alarm system in the controller                                  |
 
 For Niko Home Control I, the `actionId`, `thermostatId` or `meterId` parameter are the unique IP Interface Object ID (`ipInterfaceObjectId`) as automatically assigned in the Niko Home Control Controller when programming the Niko Home Control system using the Niko Home Control I programming software.
 It is not directly visible in the Niko Home Control programming or user software, but will be detected and automatically set by openHAB discovery.
@@ -153,7 +155,7 @@ Note down the `actionId` parameter from the thing, remove it before adding it ag
 Alternatively the `actionId` can be retrieved from the configuration file.
 The file contains a SQLLite database.
 The database contains a table `Action` with column `FifthplayId` corresponding to the required `actionId` parameter.
-The same applies applies for `thermostatId`, `meterId` and `accessId`.
+The same applies applies for `thermostatId`, `meterId`, `accessId` and `alarmId`.
 
 An example **action** textual configuration looks like:
 
@@ -179,6 +181,11 @@ For **access devices**:
 Thing nikohomecontrol:accessRingAndComeIn:mybridge:myaccess [ accessId="abcdef01-dcba-1234-ab98-012345abcdef" ]
 ```
 
+For **alarm systems**:
+
+```java
+Thing nikohomecontrol:alarm:mybridge:myalarm [ alarmId="abcdef01-dcba-1234-ab98-012345abcdef" ]
+```
 
 ## Channels
 
@@ -206,10 +213,12 @@ Thing nikohomecontrol:accessRingAndComeIn:mybridge:myaccess [ accessId="abcdef01
 | bellbutton      | RW |          | Switch             | access, accessRingAndComeIn | bell button connected to access device, including buttons on video phone devices linked to an access device. The bell can also be triggered by an `ON` command, `autoupdate="false"` by default |
 | ringandcomein   | RW |          | Switch             | accessRingAndComeIn | provide state and turn automatic door unlocking at bell ring on/off                         |
 | lock            | RW |          | Switch             | access, accessRingAndComeIn | provide doorlock state and unlock the door by sending an `OFF` command. `autoupdate="false"` by default |
+| arm             | RW |          | Switch             | alarm       | arm/disarm alarm, will change state (on/off) immediately. Note some integrations (Homekit, Google Home, ...) may require String states for an alarm system (ARMED/DISARMED). This can be achieved using an extra item and a rule updated by/commanding an item linked to this channel |
+| armed           | RW |          | Switch             | alarm       | state of the alarm system (on/off), will only turn on after pre-armed period when arming            |
+| state           | R  |          | String             | alarm       | state of the alarm system (DISARMED, PREARMED, ARMED, PREALARM, ALARM, DETECTOR PROBLEM)            |
+| alarm           |    |          |                    | bridge, alarm | trigger channel with alarm event message, can be used in rules                                    |
+| notice          |    |          |                    | bridge      | trigger channel with notice event message, can be used in rules                                     |
 
-The bridge has two trigger channels `alarm` and `notice`.
-It can be used as a trigger to rules.
-The event message is the alarm or notice text coming from Niko Home Control.
 
 ## Limitations
 
@@ -240,6 +249,7 @@ Bridge nikohomecontrol:bridge2:nhc2 [ addr="192.168.0.70", port=8884, password="
     blind 4 [ actionId="abcdef01-abcd-1234-ab98-abcdefabcdef" ]
     thermostat 5 [ thermostatId="abcdef01-abcd-1234-ab98-012345abcdef", overruleTime=10 ]
     accessRingAndComeIn 6 [ accessId="abcdef01-abcd-1234-ab98-012345abcdef" ]
+    alarm 7 [ alarmId="abcdef01-abcd-1234-ab98-543210abcdef" ]
 }
 
 Bridge nikohomecontrol:bridge:nhc3 [ addr="192.168.0.110" ] {
@@ -265,6 +275,9 @@ String ThermostatDemand   {channel="nikohomecontrol:thermostat:nhc1:5:heatingdem
 Number:Power CurPower   "[%.0f W]"  {channel="nikohomecontrol:energyMeterLive:nhc1:6:power"} # Get current power consumption
 Number:Energy MyMeter          "[%.0f kWh]"   {channel="nikohomecontrol:energyMeter:nhc1:7:energy         # Get energy meter reading
 Number:Energy MyMeterDay       "[%.0f kWh]"   {channel="nikohomecontrol:energyMeter:nhc1:7:energyday      # Get energy meter day reading
+Switch AlarmControl     {channel="nikohomecontrol:onOff:nhc2:7:arm"}               # Switch to arm/disarm alarm
+Switch AlarmSwitch      {channel="nikohomecontrol:onOff:nhc2:7:armed"}             # Switch to arm/disarm alarm, on state delayed until after pre-arm phase
+String AlarmState       {channel="nikohomecontrol:onOff:nhc2:7:state"}             # State of the alarm system
 ```
 
 .sitemap:

@@ -336,6 +336,25 @@
 			</parameter>
 		</config-description>
 	</thing-type>
+	<thing-type id="alarm">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge2"/>
+		</supported-bridge-type-refs>
+		<label>@text/alarmLabel</label>
+		<description>@text/alarmDescription</description>
+		<channels>
+			<channel id="arm" typeId="system.power"/>
+			<channel id="armed" typeId="armed"/>
+			<channel id="state" typeId="alarmstate"/>
+			<channel id="alarm" typeId="alarm"/>
+		</channels>
+		<config-description>
+			<parameter name="alarmId" type="text" required="true">
+				<label>@text/deviceConfigDeviceIdLabel</label>
+				<description>@text/deviceConfigDeviceIdDescription</description>
+			</parameter>
+		</config-description>
+	</thing-type>
 
 	<channel-type id="button">
 		<item-type>Switch</item-type>
@@ -506,6 +525,30 @@
 		<description>@text/channelLockDescription</description>
 		<category>Switch</category>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+
+	<channel-type id="armed">
+		<item-type>Switch</item-type>
+		<label>@text/channelAlarmArmedLabel</label>
+		<description>@text/channelAlarmArmedDescription</description>
+		<category>Alarm</category>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="alarmstate">
+		<item-type>String</item-type>
+		<label>@text/channelAlarmStateLabel</label>
+		<description>@text/channelAlarmStateDescription</description>
+		<category>Alarm</category>
+		<state readOnly="true">
+			<options>
+				<option value="DISARMED">@text/channelOptionAlarmStateDisarmed</option>
+				<option value="PREARMED">@text/channelOptionAlarmStatePrearmed</option>
+				<option value="DETECTOR PROBLEM">@text/channelOptionAlarmStateDetectorProblem</option>
+				<option value="ARMED">@text/channelOptionAlarmStateArmed</option>
+				<option value="PREALARM">@text/channelOptionAlarmStatePreAlarm</option>
+				<option value="ALARM">@text/channelOptionAlarmStateAlarm</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="alarm">

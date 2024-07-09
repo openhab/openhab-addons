@@ -196,7 +196,7 @@ Due to the factory reset, the device will also be unpaired from the gateway, eve
 - **useAuthentication**
 Username and password are send to the gateway to authenticate the access to the gateway.
 
-- **username**
+- **userName**
 Username for Authentication to the gateway.
 
 - **password**
@@ -694,9 +694,17 @@ In scripts:
 
 :::: tabs
 
+::: tab DSL
+
+```java
+Var_1.sendCommand(REFRESH)
+```
+
+:::
+
 ::: tab JavaScript
 
-``` javascript
+```javascript
 import org.openhab.core.types.RefreshType
 ...
 Var_1.sendCommand(RefreshType.REFRESH)
@@ -704,10 +712,10 @@ Var_1.sendCommand(RefreshType.REFRESH)
 
 :::
 
-::: tab DSL
+::: tab JRuby
 
-``` php
-Var_1.sendCommand(REFRESH)
+```ruby
+Var_1.refresh
 ```
 
 :::
@@ -727,7 +735,7 @@ The problem can be solved by increasing the `bufferSize` value in the bridge con
 openHAB and the CCU are using different values for the same state of a rollershutter.
 Examples: HmIP-BROLL, HmIP-FROLL, HmIP-BBL, HmIP-FBL and HmIP-DRBLI4
 |         | Open | Closed |
-|---------|------|--------|
+| ------- | ---- | ------ |
 | openHAB | 0%   | 100%   |
 | CCU     | 100% | 0%     |
 

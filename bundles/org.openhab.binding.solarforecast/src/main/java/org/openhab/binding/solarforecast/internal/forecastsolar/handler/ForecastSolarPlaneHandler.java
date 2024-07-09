@@ -144,11 +144,12 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                 }
                 try {
                     ContentResponse cr = httpClient.GET(url);
-                    if (cr.getStatus() == 200) {
+                    int responseStatus = cr.getStatus();
+                    if (responseStatus == 200) {
                         try {
                             ForecastSolarObject localForecast = new ForecastSolarObject(thing.getUID().getAsString(),
-                                    cr.getContentAsString(),
-                                    Instant.now().plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
+                                    cr.getContentAsString(), Instant.now(Utils.getClock())
+                                            .plus(configuration.get().refreshInterval, ChronoUnit.MINUTES));
                             updateStatus(ThingStatus.ONLINE);
                             updateState(CHANNEL_JSON, StringType.valueOf(cr.getContentAsString()));
                             setForecast(localForecast);
@@ -156,6 +157,14 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
                             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
                                     "@text/solarforecast.plane.status.json-status [\"" + fse.getMessage() + "\"]");
                         }
+                    } else if (responseStatus == 429) {
+                        // special handling for 429 response: https://doc.forecast.solar/facing429
+                        // bridge shall "calm down" until at least one hour is expired
+                        if (bridgeHandler.isPresent()) {
+                            bridgeHandler.get().calmDown();
+                        }
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "@text/solarforecast.plane.status.http-status [\"" + cr.getStatus() + "\"]");
                     } else {
                         logger.trace("Call {} failed with status {}. Response: {}", url, cr.getStatus(),
                                 cr.getContentAsString());
@@ -179,7 +188,7 @@ public class ForecastSolarPlaneHandler extends BaseThingHandler implements Solar
     }
 
     private void updateChannels(ForecastSolarObject f) {
-        ZonedDateTime now = ZonedDateTime.now(f.getZone());
+        ZonedDateTime now = ZonedDateTime.now(Utils.getClock());
         double energyDay = f.getDayTotal(now.toLocalDate());
         double energyProduced = f.getActualEnergyValue(now);
         updateState(CHANNEL_ENERGY_ACTUAL, Utils.getEnergyState(energyProduced));

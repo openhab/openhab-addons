@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="mffan" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Modern Forms Fan Binding</name>
+	<description>This is the binding for "Modern Forms", and "WAC Lighting" smart ceiling fans.</description>
+	<connection>local</connection>
+	<countries>us</countries>
+	<discovery-methods>
+		<discovery-method>
+			<service-type>manual</service-type>
+		</discovery-method>
+	</discovery-methods>
+</addon:addon>

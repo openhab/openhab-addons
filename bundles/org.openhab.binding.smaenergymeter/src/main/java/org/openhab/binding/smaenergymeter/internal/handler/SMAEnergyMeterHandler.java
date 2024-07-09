@@ -15,12 +15,15 @@ package org.openhab.binding.smaenergymeter.internal.handler;
 import static org.openhab.binding.smaenergymeter.internal.SMAEnergyMeterBindingConstants.*;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smaenergymeter.internal.configuration.EnergyMeterConfig;
+import org.openhab.binding.smaenergymeter.internal.packet.FilteringPayloadHandler;
 import org.openhab.binding.smaenergymeter.internal.packet.PacketListener;
 import org.openhab.binding.smaenergymeter.internal.packet.PacketListenerRegistry;
 import org.openhab.binding.smaenergymeter.internal.packet.PayloadHandler;
+import org.openhab.binding.smaenergymeter.internal.packet.ThrottlingPayloadHandler;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -42,7 +45,8 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
     private final Logger logger = LoggerFactory.getLogger(SMAEnergyMeterHandler.class);
     private final PacketListenerRegistry listenerRegistry;
     private @Nullable PacketListener listener;
-    private @Nullable String serialNumber;
+    private @Nullable PayloadHandler handler;
+    private String serialNumber;
 
     public SMAEnergyMeterHandler(Thing thing, PacketListenerRegistry listenerRegistry) {
         super(thing);
@@ -84,9 +88,13 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
             updateStatus(ThingStatus.UNKNOWN);
             logger.debug("Activated handler for SMA Energy Meter with S/N '{}'", serialNumber);
 
-            listener.addPayloadHandler(this);
-
-            listener.open(config.getPollingPeriod());
+            if (config.getPollingPeriod() <= 1) {
+                listener.addPayloadHandler(handler = new FilteringPayloadHandler(this, serialNumber));
+            } else {
+                listener.addPayloadHandler(handler = new FilteringPayloadHandler(
+                        new ThrottlingPayloadHandler(this, TimeUnit.SECONDS.toMillis(config.getPollingPeriod())),
+                        serialNumber));
+            }
             this.listener = listener;
             logger.debug("Polling job scheduled to run every {} sec. for '{}'", config.getPollingPeriod(),
                     getThing().getUID());
@@ -100,18 +108,15 @@ public class SMAEnergyMeterHandler extends BaseThingHandler implements PayloadHa
     public void dispose() {
         logger.debug("Disposing SMAEnergyMeter handler '{}'", getThing().getUID());
         PacketListener listener = this.listener;
-        if (listener != null) {
-            listener.removePayloadHandler(this);
+        PayloadHandler handler = this.handler;
+        if (listener != null && handler != null) {
+            listener.removePayloadHandler(handler);
             this.listener = null;
         }
     }
 
     @Override
     public void handle(EnergyMeter energyMeter) {
-        String serialNumber = this.serialNumber;
-        if (serialNumber == null || !serialNumber.equals(energyMeter.getSerialNumber())) {
-            return;
-        }
         updateStatus(ThingStatus.ONLINE);
 
         logger.debug("Update SMAEnergyMeter {} data '{}'", serialNumber, getThing().getUID());

@@ -220,7 +220,8 @@ public interface MyBMWConstants {
     static final String REMOTE_SERVICE_HORN = "horn-blow";
     static final String REMOTE_SERVICE_AIR_CONDITIONING_START = "climate-now-start";
     static final String REMOTE_SERVICE_AIR_CONDITIONING_STOP = "climate-now-stop";
-    static final String REMOTE_SERVICE_CHARGE = "charge-now";
+    static final String REMOTE_SERVICE_START_CHARGING = "start-charging";
+    static final String REMOTE_SERVICE_STOP_CHARGING = "stop-charging";
 
     static final String REMOTE_SERVICE_COMMAND = "command";
     static final String REMOTE_STATE = "state";
