@@ -149,7 +149,7 @@ These parameters may be skipped by setting them to `null`.
 
 The action syntax is a string containing the action type and the action payload separated by a colon.
 
-There are two types of actions available:
+There are three types of actions available:
 
 - `command`: Sends a command to an Item by using the following syntax: `command:$itemName:$commandString` where `$itemName` is the name of the Item and `$commandString` is the command to be sent.
 - `ui`: Controls the UI in two possible ways:
