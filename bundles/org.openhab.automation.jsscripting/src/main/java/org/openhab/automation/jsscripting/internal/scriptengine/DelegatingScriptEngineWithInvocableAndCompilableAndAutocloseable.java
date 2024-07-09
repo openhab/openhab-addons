@@ -131,11 +131,6 @@ public abstract class DelegatingScriptEngineWithInvocableAndCompilableAndAutoclo
     }
 
     @Override
-    public void close() throws Exception {
-        delegate.close();
-    }
-
-    @Override
     public CompiledScript compile(String s) throws ScriptException {
         return delegate.compile(s);
     }
@@ -143,5 +138,10 @@ public abstract class DelegatingScriptEngineWithInvocableAndCompilableAndAutoclo
     @Override
     public CompiledScript compile(Reader reader) throws ScriptException {
         return delegate.compile(reader);
+    }
+
+    @Override
+    public void close() throws Exception {
+        delegate.close();
     }
 }
