@@ -7,23 +7,26 @@
 	<thing-type id="intelliflo">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="ip_bridge"/>
-			<bridge-type-ref id="pentair_serial_bridge"/>
+			<bridge-type-ref id="serial_bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>Intelliflo Pump</label>
-		<description>Pentair Intelliflo Pump</description>
+		<label>Pentair Intelliflo</label>
+		<description>A Pentair Intelliflo pump</description>
 
 		<channels>
-			<channel id="run" typeId="runswitch"/>
-			<channel id="mode" typeId="pumpmode"/>
+			<channel id="run" typeId="run"/>
 			<channel id="rpm" typeId="rpm"/>
+			<channel id="gpm" typeId="gpm"/>
 			<channel id="power" typeId="power"/>
-			<channel id="ppc" typeId="ppc"/>
-			<channel id="error" typeId="pumperror"/>
+			<channel id="status1" typeId="pumpStatus1"/>
+			<channel id="status2" typeId='pumpStatus2'/>
+			<channel id="runProgram" typeId="runProgram"/>
 		</channels>
 
+		<representation-property>id</representation-property>
+
 		<config-description>
-			<parameter name="id" type="integer" required="false">
+			<parameter name="id" type="integer">
 				<label>ID</label>
 				<description>The ID of the device (in decimal, not hex)</description>
 				<default>96</default>
@@ -31,14 +34,7 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="pumpmode">
-		<item-type>Number</item-type>
-		<label>Pump Mode</label>
-		<description>Pump mode</description>
-		<state readOnly="true"/>
-	</channel-type>
-
-	<channel-type id="runswitch">
+	<channel-type id="run">
 		<item-type>Switch</item-type>
 		<label>Pump Running</label>
 		<description>Indicator on whether the pump is running or not.</description>
@@ -49,28 +45,42 @@
 		<item-type>Number</item-type>
 		<label>RPM</label>
 		<description>Pump RPM</description>
-		<state readOnly="true"/>
+		<state min="400" max="3450" step="5" readOnly="false"></state>
+	</channel-type>
+
+	<channel-type id="gpm">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>GPM</label>
+		<description>Pump GPM (only valid for VF pumps)</description>
+		<state readOnly="true"></state>
 	</channel-type>
 
 	<channel-type id="power">
-		<item-type>Number</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Power</label>
 		<description>Pump power</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="pumpStatus1">
+		<item-type>Number</item-type>
+		<label>Pump Status 1</label>
+		<description>Pump Status 1</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="ppc">
+	<channel-type id="pumpStatus2">
 		<item-type>Number</item-type>
-		<label>PPC</label>
-		<description>Pump PPC</description>
+		<label>Pump Status 2</label>
+		<description>Pump Status 2</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="pumperror">
+	<channel-type id="runProgram">
 		<item-type>Number</item-type>
-		<label>Pump Error</label>
-		<description>Pump Error</description>
-		<state readOnly="true"/>
+		<label>Run Program</label>
+		<description>Run program (0 to stop, # to run)</description>
+		<state min="0" max="4"/>
 	</channel-type>
 
 </thing:thing-descriptions>

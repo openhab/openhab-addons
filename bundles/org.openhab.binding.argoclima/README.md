@@ -3,7 +3,7 @@
 The binding provides support for [ArgoClima](https://argoclima.com/en/) Wi-Fi-enabled air conditioning devices which use ***Argo Web APP*** for control.
 Refer to [Argo Web APP details](#argo-web-app-details) section for an example.
 
-> ***IMPORTANT:***  The same vendor also manufactures HVAC devices supported by a [phone application](http://smart.argoclima.com/EN/).
+> ***IMPORTANT:***  The same vendor also manufactures HVAC devices supported by a [phone application](https://www.youtube.com/playlist?list=PLQiJByZqkxY-4IjmviF2U-Grg_qYTzpKn).
 >
 > These devices are using a different protocol and are ***not*** supported by this binding.
 > There are good chances these will be supported by the [Gree](https://www.openhab.org/addons/bindings/gree/) binding, though!
@@ -81,25 +81,25 @@ Both thing types are functionally equivalent and support the same channels.
 
 | Channel                  | Type                 | Read/Write | Description                                                                                                                                                                                                            |
 |--------------------------|----------------------|------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| - **A/C Controls**                                                                                                                                                                                                                                                                 ||||
+| - **A/C Controls** (#ac-controls)                                                                                                                                                                                                                                                  ||||
 | power                    | Switch               | RW         | This is the control channel                                                                                                                                                                                            |
 | mode                     | String               | RW         | Operation mode. One of: ```COOL```, ```DRY```, ```FAN```, ```AUTO```                                                                                                                                                   |
 | set-temperature          | Number:Temperature   | RW         | The device's target temperature                                                                                                                                                                                        |
 | current-temperature      | Number:Temperature   | R          | Actual (ambient) temperature. Either from device's built-in sensor or iFeel. Read-only, see also: [Room Temperature Support](#room-temperature-support)                                                                |
 | fan-speed                | String               | RW         | Fan mode. One of: ```AUTO```, ```LEVEL_1```, ```LEVEL_2```, ```LEVEL_3```, ```LEVEL_4```, ```LEVEL_5```, ```LEVEL_6```                                                                                                 |
-| - **Operation Modes**                                                                                                                                                                                                                                                              ||||
+| - **Operation Modes** (#modes)                                                                                                                                                                                                                                                     ||||
 | eco-mode                 | Switch               | RW         | Economy (Energy Saving) Mode (cap device max power to the ```eco-power-limit```)                                                                                                                                       |
 | turbo-mode               | Switch               | RW         | Turbo mode (max power). *While the device API (similarly to original remote) allows enabling ```turbo``` **while** ```night``` and/or ```economy``` modes are **active**, actual effect of such a combo is unknown :)* |
 | night-mode               | Switch               | RW         | Night mode *(lowers device noise by lowering the fan speed and automatically raising the set temperature by 1°C after 60 minutes of enabling this option)*                                                             |
-| - **Timers (advanced)**                                                                                                                                                                                                                                                            ||||
+| - **Timers (advanced)** (#timers)                                                                                                                                                                                                                                                  ||||
 | active-timer             | String               | RW         | Active timer. One of ```NO_TIMER```, ```DELAY_TIMER```, ```SCHEDULE_TIMER_1```, ```SCHEDULE_TIMER_2```, ```SCHEDULE_TIMER_3```. See also [schedule configuration](#general-device-configuration-dynamic)               |
 | delay-timer              | Number:Time          |  W         | Delay timer value. In effect only if ```active-timer``` is in ```DELAY_TIMER``` mode. The delay timer toggles the current ```power``` (ex. OFF->ON) after the configured period elapses                                |
-| - **Settings**                                                                                                                                                                                                                                                                     ||||
+| - **Settings** (#settings)                                                                                                                                                                                                                                                         ||||
 | ifeel-enabled            | Switch               | RW         | Use iFeel Temperature updates for ```current-temperature```                                                                                                                                                            |
 | device-lights            | Switch               | RW         | Device Lights                                                                                                                                                                                                          |
 | temperature-display-unit | String               |  W         | **(advanced)** Unit's display temperature display unit. One of ```SCALE_CELSIUS```, ```SCALE_FARHENHEIT```                                                                                                             |
 | eco-power-limit          | Number:Dimensionless |  W         | **(advanced)** Power limit in eco mode (in %, factory default is 75%),                                                                                                                                                 |
-| - **Advanced (not supported by all devices)**                                                                                                                                                                                                                                      ||||
+| - **Advanced (not supported by all devices)** (#unsupported)                                                                                                                                                                                                                       ||||
 | mode-ex                  | String               | RW         | Extended Operation mode. Same as ```mode```, but also supports ```WARM```                                                                                                                                              |
 | swing-mode               | String               | RW         | Airflow Direction (flap setting). One of ```AUTO```, ```LEVEL_1```, ```LEVEL_2```, ```LEVEL_3```, ```LEVEL_4```, ```LEVEL_5```, ```LEVEL_6```, ```LEVEL_7```                                                           |
 | filter-mode              | Switch               | RW         | Filter Mode                                                                                                                                                                                                            |
@@ -108,199 +108,199 @@ Both thing types are functionally equivalent and support the same channels.
 
 ### argoclima.things
 
-    ```java
-    //BASIC MODES examples
-    Thing argoclima:remote:argoHvacRemote "Argo HVAC (via Argo remote API)" @ "Living Room" [
-        username="<yourArgoLogin>",
-        password="<yourArgoPassword>"
-    ]
+```java
+//BASIC MODES examples
+Thing argoclima:remote:argoHvacRemote "Argo HVAC (via Argo remote API)" @ "Living Room" [
+    username="<yourArgoLogin>",
+    password="<yourArgoPassword>"
+]
 
 
-    Thing argoclima:local:argoHvacLocalDirect "Argo HVAC (connected locally)" @ "Living Room" [
-        hostname="192.168.0.3"
-    ]
+Thing argoclima:local:argoHvacLocalDirect "Argo HVAC (connected locally)" @ "Living Room" [
+    hostname="192.168.0.3"
+]
+
+Thing argoclima:local:argoHvacLocalDirectEx "Argo HVAC (connected locally) - extended example (with explicit options)" [
+    hostname="192.168.0.3",
+    connectionMode="LOCAL_CONNECTION",
+    refreshInterval=30,    
+    hvacListenPort=1001,
+
+    // Schedule options (these are valid for all thing types)
+    schedule1DayOfWeek="[FRI, SAT, SUN, MON]", 
+    schedule1OnTime="7:35", 
+    schedule1OffTime="18:00",
+    schedule2DayOfWeek="[MON, TUE, WED, THU, FRI]", 
+    schedule2OnTime="15:00",
+    schedule2OffTime="22:00",
+    schedule3DayOfWeek="SUN","SAT", //Alternative syntax for the weekdays list
+    schedule3OnTime="11:00", 
+    schedule3OffTime="22:00"   
+    //,resetToFactoryDefaults=true  //This triggers a one-shot command each time the thing
+                                    //  definition is (re)loaded from file.  
+                                    // Use only intermittently - it is not designed with prolonged
+                                    //  usage via Things text file in mind (mostly a MainUI feature!) 
+]
+
+//ADVANCED MODES examples
+Thing argoclima:local:argoHvacLocalWithPassthroughIndirect "Argo HVAC (accessible only indirectly, via pass-through mode)" [
+    hostname="192.168.4.2", // Doesn't have to be reachable!
+    connectionMode="REMOTE_API_PROXY",
+    useLocalConnection=false
+]
+
+
+Thing argoclima:local:argoHvacLocalWithPassthroughPlusDirectEx "Argo HVAC (accessible both indirectly and directly, via pass-through mode, with explicit options)" [
+    hostname="192.168.0.3",             // Direct address of the device (reachable from openHAB)
+    connectionMode="REMOTE_API_PROXY",
+        
+    hvacListenPort=1001,
+    refreshInterval=30,
+    useLocalConnection=true,
     
-    Thing argoclima:local:argoHvacLocalDirectEx "Argo HVAC (connected locally) - extended example (with explicit options)" [
-        hostname="192.168.0.3",
-        connectionMode="LOCAL_CONNECTION",
-        refreshInterval=30,    
-        hvacListenPort=1001,
-
-        // Schedule options (these are valid for all thing types)
-        schedule1DayOfWeek="[FRI, SAT, SUN, MON]", 
-        schedule1OnTime="7:35", 
-        schedule1OffTime="18:00",
-        schedule2DayOfWeek="[MON, TUE, WED, THU, FRI]", 
-        schedule2OnTime="15:00",
-        schedule2OffTime="22:00",
-        schedule3DayOfWeek="SUN","SAT", //Alternative syntax for the weekdays list
-        schedule3OnTime="11:00", 
-        schedule3OffTime="22:00"   
-        //,resetToFactoryDefaults=true  //This triggers a one-shot command each time the thing
-                                        //  definition is (re)loaded from file.  
-                                        // Use only intermittently - it is not designed with prolonged
-                                        //  usage via Things text file in mind (mostly a MainUI feature!) 
-    ]
-
-    //ADVANCED MODES examples
-    Thing argoclima:local:argoHvacLocalWithPassthroughIndirect "Argo HVAC (accessible only indirectly, via pass-through mode)" [
-        hostname="192.168.4.2", // Doesn't have to be reachable!
-        connectionMode="REMOTE_API_PROXY",
-        useLocalConnection=false
-    ]
+    // Stub server-specific
+    stubServerPort=8240, 
+    stubServerListenAddresses="7d47:86bd:0bfe:0413:4688:4523:4284:5936","192.168.0.195",    
+    includeDeviceSidePasswordsInProperties="MASKED", 
+    matchAnyIncomingDeviceIp=false, 
+    deviceCpuId="deadbeefdeadbeef",     // For direct match to a concrete device (optional)
+    localDeviceIP="192.168.4.2",        // Address in local subnet (used for indirect request matching)
+    
+    // Pass-through-specific
+    oemServerAddress="uisetup.ddns.net",
+    oemServerPort=80
+]
 
 
-    Thing argoclima:local:argoHvacLocalWithPassthroughPlusDirectEx "Argo HVAC (accessible both indirectly and directly, via pass-through mode, with explicit options)" [
-        hostname="192.168.0.3",             // Direct address of the device (reachable from openHAB)
-        connectionMode="REMOTE_API_PROXY",
-            
-        hvacListenPort=1001,
-        refreshInterval=30,
-        useLocalConnection=true,
-        
-        // Stub server-specific
-        stubServerPort=8240, 
-        stubServerListenAddresses="7d47:86bd:0bfe:0413:4688:4523:4284:5936","192.168.0.195",    
-        includeDeviceSidePasswordsInProperties="MASKED", 
-        matchAnyIncomingDeviceIp=false, 
-        deviceCpuId="deadbeefdeadbeef",     // For direct match to a concrete device (optional)
-        localDeviceIP="192.168.4.2",        // Address in local subnet (used for indirect request matching)
-        
-        // Pass-through-specific
-        oemServerAddress="uisetup.ddns.net",
-        oemServerPort=80
-    ]
-
-
-    Thing argoclima:local:argoHvacLocalWithStub "Argo HVAC (accessible both indirectly and directly with a stub) - **RECOMMENDED MODE**" [
-        hostname="192.168.0.3",           // Has to be reachable, since useLocalConnection is true (default)
-        connectionMode="REMOTE_API_STUB",    
-        localDeviceIP="192.168.4.2"       // Or use matchAnyIncomingDeviceIp=true
-    ]
-    ```
+Thing argoclima:local:argoHvacLocalWithStub "Argo HVAC (accessible both indirectly and directly with a stub) - **RECOMMENDED MODE**" [
+    hostname="192.168.0.3",           // Has to be reachable, since useLocalConnection is true (default)
+    connectionMode="REMOTE_API_STUB",    
+    localDeviceIP="192.168.4.2"       // Or use matchAnyIncomingDeviceIp=true
+]
+```
 
 ### argoclima.items
 
-    ```java
-    Group GArgoClimaHVACRemote "Ulisse 13 DCI ECO - remote mode" ["HVAC"]
+```java
+Group GArgoClimaHVACRemote "Ulisse 13 DCI ECO - remote mode" ["HVAC"]
 
-    Switch  ArgoClimaHVACRemote_Power   "Power" <switch>   (GArgoClimaHVACRemote)  {
-        channel="argoclima:remote:argoHvacRemote:ac-controls#power"    
-    }
+Switch  ArgoClimaHVACRemote_Power   "Power" <switch>   (GArgoClimaHVACRemote)  {
+    channel="argoclima:remote:argoHvacRemote:ac-controls#power"    
+}
 
-    String  ArgoClimaHVACRemote_Mode    "Mode"  <climate>  (GArgoClimaHVACRemote)  ["Control"] {
-        channel="argoclima:remote:argoHvacRemote:ac-controls#mode"    
-    }
+String  ArgoClimaHVACRemote_Mode    "Mode"  <climate>  (GArgoClimaHVACRemote)  ["Control"] {
+    channel="argoclima:remote:argoHvacRemote:ac-controls#mode"    
+}
 
-    Number:Temperature  ArgoClimaHVACRemote_SetTemperature  "Set Temperature"  <temperature> (GArgoClimaHVACRemote)  ["Temperature", "Setpoint"] {
-        channel="argoclima:remote:argoHvacRemote:ac-controls#set-temperature",
-        unit="°C",
-        stateDescription="" [ pattern="%.1f °C", readOnly=false, min=10.0, max=36.0, step=0.5],
-        widget="oh-stepper-card" [ min=10, max=36, step=0.5, autorepeat=true],
-        listWidget="oh-stepper-item" [min=10, max=36, step=0.5, autorepeat=true]
-    }
+Number:Temperature  ArgoClimaHVACRemote_SetTemperature  "Set Temperature"  <temperature> (GArgoClimaHVACRemote)  ["Temperature", "Setpoint"] {
+    channel="argoclima:remote:argoHvacRemote:ac-controls#set-temperature",
+    unit="°C",
+    stateDescription="" [ pattern="%.1f °C", readOnly=false, min=10.0, max=36.0, step=0.5],
+    widget="oh-stepper-card" [ min=10, max=36, step=0.5, autorepeat=true],
+    listWidget="oh-stepper-item" [min=10, max=36, step=0.5, autorepeat=true]
+}
 
-    Number:Temperature  ArgoClimaHVACRemote_CurrentTemperature  "Current Temperature" <temperature>   (GArgoClimaHVACRemote) ["Temperature", "Measurement"] {
-        channel="argoclima:remote:argoHvacRemote:ac-controls#current-temperature"    
-    }
+Number:Temperature  ArgoClimaHVACRemote_CurrentTemperature  "Current Temperature" <temperature>   (GArgoClimaHVACRemote) ["Temperature", "Measurement"] {
+    channel="argoclima:remote:argoHvacRemote:ac-controls#current-temperature"    
+}
 
-    String  ArgoClimaHVACRemote_FanSpeed    "Fan Speed" <fan> (GArgoClimaHVACRemote) {
-        channel="argoclima:remote:argoHvacRemote:ac-controls#fan-speed"    
-    }
+String  ArgoClimaHVACRemote_FanSpeed    "Fan Speed" <fan> (GArgoClimaHVACRemote) {
+    channel="argoclima:remote:argoHvacRemote:ac-controls#fan-speed"    
+}
 
-    Switch  ArgoClimaHVACRemote_EcoMode "Eco Mode"   <vacation> (GArgoClimaHVACRemote) {
-        channel="argoclima:remote:argoHvacRemote:modes#eco-mode"    
-    }
+Switch  ArgoClimaHVACRemote_EcoMode "Eco Mode"   <vacation> (GArgoClimaHVACRemote) {
+    channel="argoclima:remote:argoHvacRemote:modes#eco-mode"    
+}
 
-    Switch  ArgoClimaHVACRemote_TurboMode   "Turbo Mode"  <party> (GArgoClimaHVACRemote) {
-        channel="argoclima:remote:argoHvacRemote:modes#turbo-mode"    
-    }
+Switch  ArgoClimaHVACRemote_TurboMode   "Turbo Mode"  <party> (GArgoClimaHVACRemote) {
+    channel="argoclima:remote:argoHvacRemote:modes#turbo-mode"    
+}
 
-    Switch  ArgoClimaHVACRemote_NightMode       "Night Mode"  <moon> (GArgoClimaHVACRemote) {
-        channel="argoclima:remote:argoHvacRemote:modes#night-mode"    
-    }
+Switch  ArgoClimaHVACRemote_NightMode       "Night Mode"  <moon> (GArgoClimaHVACRemote) {
+    channel="argoclima:remote:argoHvacRemote:modes#night-mode"    
+}
 
-    String  ArgoClimaHVACRemote_ActiveTimer "Active timer"  <calendar> (GArgoClimaHVACRemote) {
-        channel="argoclima:remote:argoHvacRemote:timers#active-timer"    
-    }
+String  ArgoClimaHVACRemote_ActiveTimer "Active timer"  <calendar> (GArgoClimaHVACRemote) {
+    channel="argoclima:remote:argoHvacRemote:timers#active-timer"    
+}
 
-    Number:Time ArgoClimaHVACRemote_DelayTimer  "Delay timer value"  <time> (GArgoClimaHVACRemote) ["Setpoint"] {
-        channel="argoclima:remote:argoHvacRemote:timers#delay-timer",
-        unit="min",
-        stateDescription="" [ pattern="%d min", readOnly=false, min=10, max=1190, step=10 ],
-        widget="oh-stepper-card" [ min=10, max=1190, step=10, autorepeat=true],
-        listWidget="oh-stepper-item" [min=10, max=1190, step=10, autorepeat=true]
-    }
+Number:Time ArgoClimaHVACRemote_DelayTimer  "Delay timer value"  <time> (GArgoClimaHVACRemote) ["Setpoint"] {
+    channel="argoclima:remote:argoHvacRemote:timers#delay-timer",
+    unit="min",
+    stateDescription="" [ pattern="%d min", readOnly=false, min=10, max=1190, step=10 ],
+    widget="oh-stepper-card" [ min=10, max=1190, step=10, autorepeat=true],
+    listWidget="oh-stepper-item" [min=10, max=1190, step=10, autorepeat=true]
+}
 
-    Switch  ArgoClimaHVACRemote_IFeelEnabled    "Use iFeel Temperature"  <network>  (GArgoClimaHVACRemote) {
-        channel="argoclima:remote:argoHvacRemote:settings#ifeel-enabled"    
-    }
+Switch  ArgoClimaHVACRemote_IFeelEnabled    "Use iFeel Temperature"  <network>  (GArgoClimaHVACRemote) {
+    channel="argoclima:remote:argoHvacRemote:settings#ifeel-enabled"    
+}
 
-    Switch  ArgoClimaHVACRemote_DeviceLights    "Device Lights" <light> (GArgoClimaHVACRemote) {
-        channel="argoclima:remote:argoHvacRemote:settings#device-lights"    
-    }
+Switch  ArgoClimaHVACRemote_DeviceLights    "Device Lights" <light> (GArgoClimaHVACRemote) {
+    channel="argoclima:remote:argoHvacRemote:settings#device-lights"    
+}
 
-    String  ArgoClimaHVACRemote_TemperatureDisplayUnit  "Temperature Display Unit []"   <settings>  (GArgoClimaHVACRemote) {
-        stateDescription="" [ options="SCALE_CELSIUS=°C,SCALE_FAHRENHEIT=°F" ],
-        commandDescription="" [ options="SCALE_CELSIUS=°C,SCALE_FAHRENHEIT=°F" ],
-        channel="argoclima:remote:argoHvacRemote:settings#temperature-display-unit"    
-    }
+String  ArgoClimaHVACRemote_TemperatureDisplayUnit  "Temperature Display Unit []"   <settings>  (GArgoClimaHVACRemote) {
+    stateDescription="" [ options="SCALE_CELSIUS=°C,SCALE_FAHRENHEIT=°F" ],
+    commandDescription="" [ options="SCALE_CELSIUS=°C,SCALE_FAHRENHEIT=°F" ],
+    channel="argoclima:remote:argoHvacRemote:settings#temperature-display-unit"    
+}
 
-    Number:Dimensionless    ArgoClimaHVACRemote_EcoPowerLimit    "Power limit in eco mode"  <price>   (GArgoClimaHVACRemote) ["Setpoint"] {
-        channel="argoclima:remote:argoHvacRemote:settings#eco-power-limit",
-        unit="%",
-        stateDescription=" " [ pattern="%d %%", readOnly=false, min=30, max=99, step=1 ],
-        widget="oh-stepper-card" [ min=30, max=99, step=1, autorepeat=true],
-        listWidget="oh-stepper-item" [min=30, max=99, step=1, autorepeat=true]
-    }
+Number:Dimensionless    ArgoClimaHVACRemote_EcoPowerLimit    "Power limit in eco mode"  <price>   (GArgoClimaHVACRemote) ["Setpoint"] {
+    channel="argoclima:remote:argoHvacRemote:settings#eco-power-limit",
+    unit="%",
+    stateDescription=" " [ pattern="%d %%", readOnly=false, min=30, max=99, step=1 ],
+    widget="oh-stepper-card" [ min=30, max=99, step=1, autorepeat=true],
+    listWidget="oh-stepper-item" [min=30, max=99, step=1, autorepeat=true]
+}
 
-    String  ArgoClimaHVACRemote_ModeEx  "Extended Mode"   <heating>  (GArgoClimaHVACRemote) {
-        channel="argoclima:remote:argoHvacRemote:unsupported#mode-ex"    
-    }
+String  ArgoClimaHVACRemote_ModeEx  "Extended Mode"   <heating>  (GArgoClimaHVACRemote) {
+    channel="argoclima:remote:argoHvacRemote:unsupported#mode-ex"    
+}
 
-    String  ArgoClimaHVACRemote_SwingMode   "Airflow Direction"   <flow>  (GArgoClimaHVACRemote) {
-        channel="argoclima:remote:argoHvacRemote:unsupported#swing-mode"    
-    }
+String  ArgoClimaHVACRemote_SwingMode   "Airflow Direction"   <flow>  (GArgoClimaHVACRemote) {
+    channel="argoclima:remote:argoHvacRemote:unsupported#swing-mode"    
+}
 
-    Switch  ArgoClimaHVACRemote_FilterMode  "Filter Mode"    <switch> (GArgoClimaHVACRemote) {
-        channel="argoclima:remote:argoHvacRemote:unsupported#filter-mode"    
-    }
-    ```
+Switch  ArgoClimaHVACRemote_FilterMode  "Filter Mode"    <switch> (GArgoClimaHVACRemote) {
+    channel="argoclima:remote:argoHvacRemote:unsupported#filter-mode"    
+}
+```
 
 ### argoclima.sitemap
 
-    ```java
-    // All things in all modes expose the same channels
-    Frame label="❄ HVAC Control" {
-        Switch item=ArgoClimaHVACRemote_Power
-        Switch item=ArgoClimaHVACRemote_Mode label="Mode []" mappings=[
-            COOL="Cool", DRY="Dry", FAN="Fan", AUTO="Auto"
-        ]
-        Setpoint item=ArgoClimaHVACRemote_SetTemperature minValue=19 maxValue=36 step=0.5
-        Text item=ArgoClimaHVACRemote_CurrentTemperature
-        Selection item=ArgoClimaHVACRemote_FanSpeed mappings=[
-            LEVEL_1="1", LEVEL_2="2", LEVEL_3="3", LEVEL_4="4", LEVEL_5="5", LEVEL_6="6",AUTO="Auto"
-        ]
-        Default item=GArgoClimaHVACRemote label="All settings"
-    }
-    Frame label="⛄ HVAC Modes"
-    {        
-        Switch item=ArgoClimaHVACRemote_TurboMode
-        Switch item=ArgoClimaHVACRemote_NightMode
-        Switch item=ArgoClimaHVACRemote_EcoMode
-        Slider item=ArgoClimaHVACRemote_EcoPowerLimit minValue=30 maxValue=99 step=1
-        Switch item=ArgoClimaHVACRemote_IFeelEnabled
-        Switch item=ArgoClimaHVACRemote_DeviceLights
-    }
-    Frame label="⏲ HVAC timers" {
-        Selection item=ArgoClimaHVACRemote_ActiveTimer mappings=[
-            NO_TIMER="No Timer", DELAY_TIMER="Delay Timer", 
-            SCHEDULE_TIMER_1="Schedule 1", SCHEDULE_TIMER_2="Schedule 2", SCHEDULE_TIMER_3="Schedule 3"
-        ]
-        Setpoint item=ArgoClimaHVACRemote_DelayTimer minValue=10 maxValue=1190 step=10
-        Slider item=ArgoClimaHVACRemote_DelayTimer label="Delay time [%.1f h]" minValue=0.17 maxValue=19.83 step=0.1
-    }
-    ```
+```java
+// All things in all modes expose the same channels
+Frame label="❄ HVAC Control" {
+    Switch item=ArgoClimaHVACRemote_Power
+    Switch item=ArgoClimaHVACRemote_Mode label="Mode []" mappings=[
+        COOL="Cool", DRY="Dry", FAN="Fan", AUTO="Auto"
+    ]
+    Setpoint item=ArgoClimaHVACRemote_SetTemperature minValue=19 maxValue=36 step=0.5
+    Text item=ArgoClimaHVACRemote_CurrentTemperature
+    Selection item=ArgoClimaHVACRemote_FanSpeed mappings=[
+        LEVEL_1="1", LEVEL_2="2", LEVEL_3="3", LEVEL_4="4", LEVEL_5="5", LEVEL_6="6",AUTO="Auto"
+    ]
+    Default item=GArgoClimaHVACRemote label="All settings"
+}
+Frame label="⛄ HVAC Modes"
+{        
+    Switch item=ArgoClimaHVACRemote_TurboMode
+    Switch item=ArgoClimaHVACRemote_NightMode
+    Switch item=ArgoClimaHVACRemote_EcoMode
+    Slider item=ArgoClimaHVACRemote_EcoPowerLimit minValue=30 maxValue=99 step=1
+    Switch item=ArgoClimaHVACRemote_IFeelEnabled
+    Switch item=ArgoClimaHVACRemote_DeviceLights
+}
+Frame label="⏲ HVAC timers" {
+    Selection item=ArgoClimaHVACRemote_ActiveTimer mappings=[
+        NO_TIMER="No Timer", DELAY_TIMER="Delay Timer", 
+        SCHEDULE_TIMER_1="Schedule 1", SCHEDULE_TIMER_2="Schedule 2", SCHEDULE_TIMER_3="Schedule 3"
+    ]
+    Setpoint item=ArgoClimaHVACRemote_DelayTimer minValue=10 maxValue=1190 step=10
+    Slider item=ArgoClimaHVACRemote_DelayTimer label="Delay time [%.1f h]" minValue=0.17 maxValue=19.83 step=0.1
+}
+```
 
 ## Connection Modes
 
