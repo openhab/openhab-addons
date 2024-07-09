@@ -24,7 +24,6 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import io.github.hapjava.characteristics.impl.common.ActiveCharacteristic;
 import io.github.hapjava.characteristics.impl.common.ActiveIdentifierCharacteristic;
 import io.github.hapjava.characteristics.impl.common.ConfiguredNameCharacteristic;
-import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.BrightnessCharacteristic;
 import io.github.hapjava.characteristics.impl.television.ClosedCaptionsCharacteristic;
 import io.github.hapjava.characteristics.impl.television.CurrentMediaStateCharacteristic;
@@ -82,7 +81,6 @@ public class HomekitTelevisionImpl extends AbstractHomekitAccessoryImpl {
                 activeIdentifierCharacteristic, configuredNameCharacteristic, remoteKeyCharacteristic,
                 sleepDiscoveryModeCharacteristic);
 
-        getCharacteristic(NameCharacteristic.class).ifPresent(c -> service.addOptionalCharacteristic(c));
         getCharacteristic(BrightnessCharacteristic.class).ifPresent(c -> service.addOptionalCharacteristic(c));
         getCharacteristic(PowerModeCharacteristic.class).ifPresent(c -> service.addOptionalCharacteristic(c));
         getCharacteristic(ClosedCaptionsCharacteristic.class).ifPresent(c -> service.addOptionalCharacteristic(c));
