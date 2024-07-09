@@ -29,6 +29,7 @@
 
   <build>
     <plugins>
+      <!-- exclude META-INF/services/com.oracle.truffle.api.TruffleLanguage$Provider when unpacking dependencies -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -149,7 +150,7 @@
       <artifactId>regex</artifactId>
       <version>${graal.version}</version>
     </dependency>
-    <!-- Graal JavaScript engine -->
+    <!-- Graal JavaScript engine (depends on Graal TRegex engine, must be added after it) -->
     <dependency>
       <groupId>org.graalvm.js</groupId>
       <artifactId>js</artifactId>
