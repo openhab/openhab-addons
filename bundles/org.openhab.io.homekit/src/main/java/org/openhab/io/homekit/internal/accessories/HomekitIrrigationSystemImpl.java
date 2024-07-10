@@ -55,7 +55,7 @@ public class HomekitIrrigationSystemImpl extends AbstractHomekitAccessoryImpl im
         inUseMapping = createMapping(HomekitCharacteristicType.INUSE_STATUS, InUseEnum.class);
         programModeMap = HomekitCharacteristicFactory
                 .createMapping(getCharacteristic(HomekitCharacteristicType.PROGRAM_MODE).get(), ProgramModeEnum.class);
-        getServices().add(new IrrigationSystemService(this));
+        addService(new IrrigationSystemService(this));
     }
 
     @Override
