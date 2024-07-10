@@ -54,6 +54,7 @@ public class HomeConnectBindingConstants {
     public static final String SETTING_REFRIGERATOR_SETPOINT_TEMPERATURE = "Refrigeration.FridgeFreezer.Setting.SetpointTemperatureRefrigerator";
     public static final String SETTING_REFRIGERATOR_SUPER_MODE = "Refrigeration.FridgeFreezer.Setting.SuperModeRefrigerator";
     public static final String SETTING_FREEZER_SUPER_MODE = "Refrigeration.FridgeFreezer.Setting.SuperModeFreezer";
+    public static final String SETTING_CHILD_LOCK = "BSH.Common.Setting.ChildLock";
 
     // Status
     public static final String STATUS_DOOR_STATE = "BSH.Common.Status.DoorState";
@@ -101,6 +102,7 @@ public class HomeConnectBindingConstants {
     public static final String EVENT_AMBIENT_LIGHT_BRIGHTNESS_STATE = SETTING_AMBIENT_LIGHT_BRIGHTNESS;
     public static final String EVENT_AMBIENT_LIGHT_COLOR_STATE = SETTING_AMBIENT_LIGHT_COLOR;
     public static final String EVENT_AMBIENT_LIGHT_CUSTOM_COLOR_STATE = SETTING_AMBIENT_LIGHT_CUSTOM_COLOR;
+    public static final String EVENT_CHILD_LOCK = SETTING_CHILD_LOCK;
 
     // Channel IDs
     public static final String CHANNEL_DOOR_STATE = "door_state";
@@ -150,6 +152,7 @@ public class HomeConnectBindingConstants {
     public static final String CHANNEL_AMBIENT_LIGHT_BRIGHTNESS_STATE = "ambient_light_brightness_state";
     public static final String CHANNEL_AMBIENT_LIGHT_COLOR_STATE = "ambient_light_color_state";
     public static final String CHANNEL_AMBIENT_LIGHT_CUSTOM_COLOR_STATE = "ambient_light_custom_color_state";
+    public static final String CHANNEL_CHILD_LOCK = "child_lock";
 
     // List of all supported devices
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(THING_TYPE_API_BRIDGE,
