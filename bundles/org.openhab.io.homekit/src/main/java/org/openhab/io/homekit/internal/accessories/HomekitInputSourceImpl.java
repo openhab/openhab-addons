@@ -28,10 +28,8 @@ import io.github.hapjava.characteristics.impl.common.IsConfiguredCharacteristic;
 import io.github.hapjava.characteristics.impl.common.IsConfiguredEnum;
 import io.github.hapjava.characteristics.impl.inputsource.CurrentVisibilityStateCharacteristic;
 import io.github.hapjava.characteristics.impl.inputsource.CurrentVisibilityStateEnum;
-import io.github.hapjava.characteristics.impl.inputsource.InputDeviceTypeCharacteristic;
 import io.github.hapjava.characteristics.impl.inputsource.InputSourceTypeCharacteristic;
 import io.github.hapjava.characteristics.impl.inputsource.InputSourceTypeEnum;
-import io.github.hapjava.characteristics.impl.inputsource.TargetVisibilityStateCharacteristic;
 import io.github.hapjava.services.impl.InputSourceService;
 
 /**
@@ -78,18 +76,16 @@ public class HomekitInputSourceImpl extends AbstractHomekitAccessoryImpl {
                         () -> CompletableFuture.completedFuture(CurrentVisibilityStateEnum.SHOWN), v -> {
                         }, () -> {
                         }));
-        var identifierCharacteristic = getCharacteristic(IdentifierCharacteristic.class)
-                .orElseGet(() -> new IdentifierCharacteristic(() -> CompletableFuture.completedFuture(1)));
 
         var service = new InputSourceService(configuredNameCharacteristic, inputSourceTypeCharacteristic,
                 isConfiguredCharacteristic, currentVisibilityStateCharacteristic);
 
-        service.addOptionalCharacteristic(identifierCharacteristic);
-        getCharacteristic(InputDeviceTypeCharacteristic.class).ifPresent(c -> service.addOptionalCharacteristic(c));
-        getCharacteristic(TargetVisibilityStateCharacteristic.class)
-                .ifPresent(c -> service.addOptionalCharacteristic(c));
+        var identifierCharacteristic = getCharacteristic(IdentifierCharacteristic.class);
+        if (identifierCharacteristic.isEmpty()) {
+            service.addOptionalCharacteristic(new IdentifierCharacteristic(() -> CompletableFuture.completedFuture(1)));
+        }
 
-        getServices().add(service);
+        addService(service);
     }
 
     @Override
