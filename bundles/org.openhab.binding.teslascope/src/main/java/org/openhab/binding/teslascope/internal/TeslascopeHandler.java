@@ -65,16 +65,13 @@ public class TeslascopeHandler extends BaseThingHandler {
     public void handleCommand(ChannelUID channelUID, Command command) {
         try {
             switch (channelUID.getId()) {
-                case TeslascopeBindingConstants.CHANNEL_HONK_HORN:
+                case TeslascopeBindingConstants.CHANNEL_AUTOCONDITIONING:
                     if (command instanceof OnOffType onOffCommand) {
-                        honkHorn();
-                        return;
-                    }
-                    break;
-                case TeslascopeBindingConstants.CHANNEL_FLASH_LIGHTS:
-                    if (command instanceof OnOffType onOffCommand) {
-                        flashLights();
-                        return;
+                        if (onOffCommand == OnOffType.ON) {
+                            ac(true);
+                        } else {
+                            ac(false);
+                        }
                     }
                     break;
                 case TeslascopeBindingConstants.CHANNEL_CHARGE:
@@ -95,22 +92,19 @@ public class TeslascopeHandler extends BaseThingHandler {
                         }
                     }
                     break;
-                case TeslascopeBindingConstants.CHANNEL_SENTRY_MODE:
+                case TeslascopeBindingConstants.CHANNEL_DOOR_LOCK:
                     if (command instanceof OnOffType onOffCommand) {
                         if (onOffCommand == OnOffType.ON) {
-                            sentry(true);
+                            lock(true);
                         } else {
-                            sentry(false);
+                            lock(false);
                         }
                     }
                     break;
-                case TeslascopeBindingConstants.CHANNEL_AUTOCONDITIONING:
+                case TeslascopeBindingConstants.CHANNEL_FLASH_LIGHTS:
                     if (command instanceof OnOffType onOffCommand) {
-                        if (onOffCommand == OnOffType.ON) {
-                            ac(true);
-                        } else {
-                            ac(false);
-                        }
+                        flashLights();
+                        return;
                     }
                     break;
                 case TeslascopeBindingConstants.CHANNEL_FRONT_TRUNK:
@@ -119,10 +113,25 @@ public class TeslascopeHandler extends BaseThingHandler {
                         return;
                     }
                     break;
+                case TeslascopeBindingConstants.CHANNEL_HONK_HORN:
+                    if (command instanceof OnOffType onOffCommand) {
+                        honkHorn();
+                        return;
+                    }
+                    break;
                 case TeslascopeBindingConstants.CHANNEL_REAR_TRUNK:
                     if (command instanceof OnOffType onOffCommand) {
                         openTrunk();
                         return;
+                    }
+                    break;
+                case TeslascopeBindingConstants.CHANNEL_SENTRY_MODE:
+                    if (command instanceof OnOffType onOffCommand) {
+                        if (onOffCommand == OnOffType.ON) {
+                            sentry(true);
+                        } else {
+                            sentry(false);
+                        }
                     }
                     break;
             }
@@ -352,6 +361,10 @@ public class TeslascopeHandler extends BaseThingHandler {
     protected void honkHorn() throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         webTargets.sendCommand(config.publicID, config.apiKey, "honkHorn");
         updateState(TeslascopeBindingConstants.CHANNEL_HONK_HORN, OnOffType.OFF);
+    }
+
+    protected void lock(boolean b) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+        webTargets.sendCommand(config.publicID, config.apiKey, b ? "lock" : "unlock");
     }
 
     protected void openFrunk() throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
