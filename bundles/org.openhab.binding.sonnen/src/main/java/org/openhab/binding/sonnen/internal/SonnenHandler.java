@@ -79,7 +79,7 @@ public class SonnenHandler extends BaseThingHandler {
                     "Parameter 'refresh Rate' msut be in the range 0-1000!");
             return;
         }
-        if (config.hostIP == null) {
+        if (config.hostIP.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "IP Address must be configured!");
             return;
         }

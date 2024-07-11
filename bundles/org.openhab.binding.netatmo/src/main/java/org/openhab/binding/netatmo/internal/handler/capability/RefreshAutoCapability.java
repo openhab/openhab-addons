@@ -69,7 +69,8 @@ public class RefreshAutoCapability extends RefreshCapability {
     @Override
     protected void updateNAThing(NAThing newData) {
         super.updateNAThing(newData);
-        dataTimeStamp = newData.getLastSeen().map(ZonedDateTime::toInstant).orElse(Instant.MIN);
+        ZonedDateTime lastSeen = newData.getLastSeen();
+        dataTimeStamp = lastSeen != null ? lastSeen.toInstant() : Instant.MIN;
     }
 
     @Override
