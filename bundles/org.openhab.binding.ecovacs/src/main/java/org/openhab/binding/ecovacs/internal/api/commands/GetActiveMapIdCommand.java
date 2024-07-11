@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.ecovacs.internal.api.commands;
 
+import java.util.Objects;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.ecovacs.internal.api.impl.ProtocolVersion;
 import org.openhab.binding.ecovacs.internal.api.impl.dto.response.deviceapi.json.CachedMapInfoReport;
@@ -42,7 +44,8 @@ public class GetActiveMapIdCommand extends IotDeviceCommand<String> {
             throws DataParsingException {
         if (response instanceof PortalIotCommandJsonResponse jsonResponse) {
             CachedMapInfoReport resp = jsonResponse.getResponsePayloadAs(gson, CachedMapInfoReport.class);
-            return resp.mapInfos.stream().filter(i -> i.used != 0).map(i -> i.mapId).findFirst().orElse("");
+            return Objects.requireNonNull(
+                    resp.mapInfos.stream().filter(i -> i.used != 0).map(i -> i.mapId).findFirst().orElse(""));
         } else {
             String payload = ((PortalIotCommandXmlResponse) response).getResponsePayloadXml();
             return XPathUtils.getFirstXPathMatch(payload, "//@i").getNodeValue();

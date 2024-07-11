@@ -16,6 +16,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
@@ -46,8 +47,8 @@ public class AlarmEventCapability extends HomeSecurityThingCapability {
 
         handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
         handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime()));
-        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE,
-                event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL));
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE, Objects.requireNonNull(
+                event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL)));
         final String message = event.getName();
         handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE,
                 message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
@@ -55,7 +56,8 @@ public class AlarmEventCapability extends HomeSecurityThingCapability {
 
     @Override
     public List<NAObject> updateReadings() {
-        return getSecurityCapability().map(cap -> cap.getDeviceLastEvent(handler.getId(), moduleType.apiName))
-                .map(event -> List.of((NAObject) event)).orElse(List.of());
+        return Objects.requireNonNull(
+                getSecurityCapability().map(cap -> cap.getDeviceLastEvent(handler.getId(), moduleType.apiName))
+                        .map(event -> List.of((NAObject) event)).orElse(List.of()));
     }
 }

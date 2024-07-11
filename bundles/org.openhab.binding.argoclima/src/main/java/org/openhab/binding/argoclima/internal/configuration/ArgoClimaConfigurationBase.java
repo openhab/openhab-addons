@@ -373,13 +373,10 @@ public abstract class ArgoClimaConfigurationBase extends Configuration implement
             validateInternal();
             return "";
         } catch (Exception e) {
-            var msg = Optional.ofNullable(e.getLocalizedMessage());
+            var msg = e.getLocalizedMessage();
             var cause = Optional.ofNullable(e.getCause());
-            return msg.orElse("Unknown exception, message is null") // The message theoretically can be null
-                                                                    // (Exception's i-face) but in practice never is, so
-                                                                    // keeping cryptic non-i18nized text instead of
-                                                                    // throwing
-                    .concat(cause.map(c -> "\n\t[" + c.getClass().getSimpleName() + "]").orElse(""));
+            return Objects.requireNonNullElse(msg, "Unknown exception, message is null").concat(
+                    Objects.requireNonNull(cause.map(c -> "\n\t[" + c.getClass().getSimpleName() + "]").orElse("")));
         }
     }
 }

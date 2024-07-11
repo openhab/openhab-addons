@@ -25,6 +25,7 @@ import java.lang.reflect.Method;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -118,7 +119,8 @@ public class ChargingStatisticsTest {
             Method updateChargeStatisticsMethod = VehicleHandler.class.getDeclaredMethod("updateChargingStatistics",
                     ChargingStatisticsContainer.class, String.class);
             updateChargeStatisticsMethod.setAccessible(true);
-            updateChargeStatisticsMethod.invoke(vehicleHandler,
+            assertNotNull(vehicleHandler);
+            updateChargeStatisticsMethod.invoke(Objects.requireNonNull(vehicleHandler),
                     JsonStringDeserializer.getChargingStatistics(statusContent), null);
         } catch (Exception e) {
             logger.error("chargeStatistics could not be set", e);
