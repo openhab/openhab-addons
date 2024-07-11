@@ -17,6 +17,7 @@ import static org.openhab.binding.mielecloud.internal.webservice.api.PowerStatus
 import static org.openhab.binding.mielecloud.internal.webservice.api.ProgramStatus.*;
 import static org.openhab.binding.mielecloud.internal.webservice.api.json.ProcessAction.*;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -88,8 +89,8 @@ public abstract class AbstractMieleThingHandler extends BaseThingHandler {
     }
 
     protected MieleWebservice getWebservice() {
-        return getMieleBridgeHandler().map(MieleBridgeHandler::getWebservice)
-                .orElse(UnavailableMieleWebservice.INSTANCE);
+        return Objects.requireNonNull(getMieleBridgeHandler().map(MieleBridgeHandler::getWebservice)
+                .orElse(UnavailableMieleWebservice.INSTANCE));
     }
 
     @Override

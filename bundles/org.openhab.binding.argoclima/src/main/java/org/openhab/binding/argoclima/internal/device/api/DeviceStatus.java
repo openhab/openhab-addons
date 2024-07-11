@@ -20,11 +20,12 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Collections;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.argoclima.internal.ArgoClimaBindingConstants;
 import org.openhab.binding.argoclima.internal.ArgoClimaTranslationProvider;
 import org.openhab.binding.argoclima.internal.configuration.ArgoClimaConfigurationRemote;
@@ -53,17 +54,29 @@ class DeviceStatus {
      */
     static class DeviceProperties {
         private static final Logger LOGGER = LoggerFactory.getLogger(DeviceProperties.class);
-        private final Optional<String> localIP;
-        private final Optional<OffsetDateTime> lastSeen;
-        private final Optional<URL> vendorUiUrl;
-        private Optional<String> cpuId = Optional.empty();
-        private Optional<String> webUiUsername = Optional.empty();
-        private Optional<String> webUiPassword = Optional.empty();
-        private Optional<String> unitFWVersion = Optional.empty();
-        private Optional<String> wifiFWVersion = Optional.empty();
-        private Optional<String> wifiSSID = Optional.empty();
-        private Optional<String> wifiPassword = Optional.empty();
-        private Optional<String> localTime = Optional.empty();
+
+        private OffsetDateTime lastSeen = OffsetDateTime.MIN;
+
+        @Nullable
+        private final String localIP;
+        @Nullable
+        private final URL vendorUiUrl;
+        @Nullable
+        private String cpuId;
+        @Nullable
+        private String webUiUsername;
+        @Nullable
+        private String webUiPassword;
+        @Nullable
+        private String unitFWVersion;
+        @Nullable
+        private String wifiFWVersion;
+        @Nullable
+        private String wifiSSID;
+        @Nullable
+        private String wifiPassword;
+        @Nullable
+        private String localTime;
 
         /**
          * C-tor (from remote server query response)
@@ -72,8 +85,8 @@ class DeviceStatus {
          * @param lastSeenStr The ISO-8601-formatted date/time of last update (or empty string if N/A)
          * @param vendorUiAddress The optional full URL to vendor's web UI
          */
-        public DeviceProperties(String localIP, String lastSeenStr, Optional<URL> vendorUiAddress) {
-            this.localIP = localIP.isEmpty() ? Optional.empty() : Optional.of(localIP);
+        public DeviceProperties(String localIP, String lastSeenStr, URL vendorUiAddress) {
+            this.localIP = !localIP.isBlank() ? localIP : null;
             this.vendorUiUrl = vendorUiAddress;
             this.lastSeen = dateFromISOString(lastSeenStr, "LastSeen");
         }
@@ -84,9 +97,9 @@ class DeviceStatus {
          * @param lastSeen The date/time of last update (when the response got received)
          */
         public DeviceProperties(OffsetDateTime lastSeen) {
-            this.localIP = Optional.empty();
-            this.lastSeen = Optional.of(lastSeen);
-            this.vendorUiUrl = Optional.empty();
+            this.localIP = null;
+            this.lastSeen = lastSeen;
+            this.vendorUiUrl = null;
         }
 
         /**
@@ -96,31 +109,32 @@ class DeviceStatus {
          * @param properties The intercepted device-side request (most rich with properties)
          */
         public DeviceProperties(OffsetDateTime lastSeen, DeviceSideUpdateDTO properties) {
-            this.localIP = Optional.of(properties.setup.localIP.orElse(properties.deviceIp));
-            this.lastSeen = Optional.of(lastSeen);
-            this.vendorUiUrl = Optional.of(ArgoClimaRemoteDevice.getWebUiUrl(properties.remoteServerId, 80));
-            this.cpuId = Optional.of(properties.cpuId);
-            this.webUiUsername = Optional.of(properties.setup.username.orElse(properties.username));
-            this.webUiPassword = properties.setup.password;
-            this.unitFWVersion = Optional.of(properties.setup.unitVersionInstalled.orElse(properties.unitFirmware));
-            this.wifiFWVersion = Optional.of(properties.setup.wifiVersionInstalled.orElse(properties.wifiFirmware));
-            this.wifiSSID = properties.setup.wifiSSID;
-            this.wifiPassword = properties.setup.wifiPassword;
-            this.localTime = properties.setup.localTime;
+            this.localIP = Objects.requireNonNull(properties.setup.localIP.orElse(properties.deviceIp));
+            this.lastSeen = lastSeen;
+            this.vendorUiUrl = ArgoClimaRemoteDevice.getWebUiUrl(properties.remoteServerId, 80);
+            this.cpuId = properties.cpuId;
+            this.webUiUsername = properties.setup.username.orElse(properties.username);
+            this.webUiPassword = properties.setup.password.get();
+            this.unitFWVersion = Objects
+                    .requireNonNull(properties.setup.unitVersionInstalled.orElse(properties.unitFirmware));
+            this.wifiFWVersion = properties.setup.wifiVersionInstalled.orElse(properties.wifiFirmware);
+            this.wifiSSID = properties.setup.wifiSSID.get();
+            this.wifiPassword = properties.setup.wifiPassword.get();
+            this.localTime = properties.setup.localTime.get();
         }
 
-        private static Optional<OffsetDateTime> dateFromISOString(String isoDateTime, String contextualName) {
+        private static OffsetDateTime dateFromISOString(String isoDateTime, String contextualName) {
             if (isoDateTime.isEmpty()) {
-                return Optional.empty();
+                return OffsetDateTime.MIN;
             }
 
             try {
-                return Optional.of(OffsetDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(isoDateTime)));
+                return OffsetDateTime.from(DateTimeFormatter.ISO_DATE_TIME.parse(isoDateTime));
             } catch (DateTimeException ex) {
                 // Swallowing exception (no need to handle - proceed as if the date was never provided)
                 LOGGER.debug("Failed to parse [{}] timestamp: {}. Exception: {}", contextualName, isoDateTime,
                         ex.getMessage());
-                return Optional.empty();
+                return OffsetDateTime.MIN;
             }
         }
 
@@ -135,7 +149,7 @@ class DeviceStatus {
          * @return Time elapsed since last device-side update
          */
         Duration getLastSeenDelta() {
-            return Duration.between(lastSeen.orElse(OffsetDateTime.MIN).toInstant(), Instant.now());
+            return Duration.between(lastSeen.toInstant(), Instant.now());
         }
 
         /**
@@ -147,18 +161,50 @@ class DeviceStatus {
         SortedMap<String, String> asPropertiesRaw(TimeZoneProvider timeZoneProvider) {
             var result = new TreeMap<String, String>();
 
-            this.lastSeen.map((value) -> result.put(ArgoClimaBindingConstants.PROPERTY_LAST_SEEN,
-                    dateTimeToStringLocal(value, timeZoneProvider)));
-            this.localIP.map(value -> result.put(ArgoClimaBindingConstants.PROPERTY_LOCAL_IP_ADDRESS, value));
-            this.vendorUiUrl.map(value -> result.put(ArgoClimaBindingConstants.PROPERTY_WEB_UI, value.toString()));
-            this.cpuId.map(value -> result.put(ArgoClimaBindingConstants.PROPERTY_CPU_ID, value));
-            this.webUiUsername.map(value -> result.put(ArgoClimaBindingConstants.PROPERTY_WEB_UI_USERNAME, value));
-            this.webUiPassword.map(value -> result.put(ArgoClimaBindingConstants.PROPERTY_WEB_UI_PASSWORD, value));
-            this.unitFWVersion.map(value -> result.put(ArgoClimaBindingConstants.PROPERTY_UNIT_FW, value));
-            this.wifiFWVersion.map(value -> result.put(ArgoClimaBindingConstants.PROPERTY_WIFI_FW, value));
-            this.wifiSSID.map(value -> result.put(ArgoClimaBindingConstants.PROPERTY_WIFI_SSID, value));
-            this.wifiPassword.map(value -> result.put(ArgoClimaBindingConstants.PROPERTY_WIFI_PASSWORD, value));
-            this.localTime.map(value -> result.put(ArgoClimaBindingConstants.PROPERTY_LOCAL_TIME, value));
+            String localIP = this.localIP;
+            String cpuId = this.cpuId;
+            URL vendorUiUrl = this.vendorUiUrl;
+            String webUiUsername = this.webUiUsername;
+            String webUiPassword = this.webUiPassword;
+            String unitFWVersion = this.unitFWVersion;
+            String wifiFWVersion = this.wifiFWVersion;
+            String wifiSSID = this.wifiSSID;
+            String wifiPassword = this.wifiPassword;
+            String localTime = this.localTime;
+
+            result.put(ArgoClimaBindingConstants.PROPERTY_LAST_SEEN,
+                    dateTimeToStringLocal(this.lastSeen, timeZoneProvider));
+
+            if (localIP != null) {
+                result.put(ArgoClimaBindingConstants.PROPERTY_LOCAL_IP_ADDRESS, localIP);
+            }
+            if (cpuId != null) {
+                result.put(ArgoClimaBindingConstants.PROPERTY_CPU_ID, cpuId);
+            }
+            if (vendorUiUrl != null) {
+                result.put(ArgoClimaBindingConstants.PROPERTY_WEB_UI, vendorUiUrl.toString());
+            }
+            if (webUiUsername != null) {
+                result.put(ArgoClimaBindingConstants.PROPERTY_WEB_UI_USERNAME, webUiUsername);
+            }
+            if (webUiPassword != null) {
+                result.put(ArgoClimaBindingConstants.PROPERTY_WEB_UI_PASSWORD, webUiPassword);
+            }
+            if (unitFWVersion != null) {
+                result.put(ArgoClimaBindingConstants.PROPERTY_UNIT_FW, unitFWVersion);
+            }
+            if (wifiFWVersion != null) {
+                result.put(ArgoClimaBindingConstants.PROPERTY_WIFI_FW, wifiFWVersion);
+            }
+            if (wifiSSID != null) {
+                result.put(ArgoClimaBindingConstants.PROPERTY_WIFI_SSID, wifiSSID);
+            }
+            if (wifiPassword != null) {
+                result.put(ArgoClimaBindingConstants.PROPERTY_WIFI_PASSWORD, wifiPassword);
+            }
+            if (localTime != null) {
+                result.put(ArgoClimaBindingConstants.PROPERTY_LOCAL_TIME, localTime);
+            }
             return Collections.unmodifiableSortedMap(result);
         }
     }

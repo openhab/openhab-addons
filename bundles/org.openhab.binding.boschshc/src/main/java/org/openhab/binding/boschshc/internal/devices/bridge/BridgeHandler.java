@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -358,7 +357,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             Type collectionType = new TypeToken<ArrayList<Device>>() {
             }.getType();
             List<Device> nullableDevices = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content, collectionType);
-            return Optional.ofNullable(nullableDevices).orElse(Collections.emptyList());
+            return nullableDevices != null ? nullableDevices : Collections.emptyList();
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Request devices failed because of {}!", e.getMessage(), e);
             return Collections.emptyList();
@@ -391,7 +390,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             }.getType();
             List<UserDefinedState> nullableUserStates = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content,
                     collectionType);
-            return Optional.ofNullable(nullableUserStates).orElse(Collections.emptyList());
+            return nullableUserStates != null ? nullableUserStates : Collections.emptyList();
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Request user-defined states failed because of {}!", e.getMessage(), e);
             return List.of();

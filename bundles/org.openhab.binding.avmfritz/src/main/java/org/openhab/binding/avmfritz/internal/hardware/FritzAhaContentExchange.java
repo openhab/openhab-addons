@@ -64,6 +64,8 @@ public class FritzAhaContentExchange extends BufferingResponseListener
     public void onComplete(@NonNullByDefault({}) Result result) {
         String content = getContentAsString();
         logger.debug("{} response complete: {}", result.getRequest().getMethod(), content);
-        callback.execute(result.getResponse().getStatus(), content);
+        if (content != null) {
+            callback.execute(result.getResponse().getStatus(), content);
+        }
     }
 }

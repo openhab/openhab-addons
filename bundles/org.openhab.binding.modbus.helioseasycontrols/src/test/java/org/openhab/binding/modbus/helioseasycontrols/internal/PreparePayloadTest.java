@@ -39,7 +39,7 @@ public class PreparePayloadTest {
 
     private ModbusRegisterArray preparePayload(String payload) {
         try {
-            return (ModbusRegisterArray) preparePayloadMethod.invoke(null, payload);
+            return (ModbusRegisterArray) preparePayloadMethod.invoke("", payload);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             fail("Reflection failure:" + e.getMessage());
             throw new RuntimeException(); // to make compiler happy

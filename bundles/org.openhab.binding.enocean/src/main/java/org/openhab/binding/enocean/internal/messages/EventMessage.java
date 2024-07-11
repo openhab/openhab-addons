@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.enocean.internal.messages;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -50,7 +51,8 @@ public class EventMessage extends BasePacket {
         }
 
         public static EventMessageType getEventMessageType(byte value) {
-            return Stream.of(EventMessageType.values()).filter(t -> t.value == value).findFirst().orElse(UNKNOWN);
+            return Objects.requireNonNull(
+                    Stream.of(EventMessageType.values()).filter(t -> t.value == value).findFirst().orElse(UNKNOWN));
         }
     }
 

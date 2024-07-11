@@ -125,7 +125,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      * Log request success
      */
     @Override
-    public final void onSuccess(@Nullable Response response) {
+    public final void onSuccess(Response response) {
         super.onSuccess(response);
         if (response != null) {
             communicationStatus.setHttpCode(HttpStatus.getCode(response.getStatus()));
@@ -138,7 +138,9 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      */
     @Override
     public final void onFailure(@Nullable Response response, @Nullable Throwable failure) {
-        super.onFailure(response, failure);
+        if (response != null && failure != null) {
+            super.onFailure(response, failure);
+        }
         if (failure != null) {
             logger.info("Request failed: {}", failure.toString());
             communicationStatus.setError((Exception) failure);
@@ -161,7 +163,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      * just for logging of content
      */
     @Override
-    public void onContent(@Nullable Response response, @Nullable ByteBuffer content) {
+    public void onContent(Response response, ByteBuffer content) {
         super.onContent(response, content);
         logger.debug("received content, length: {}", getContentAsString().length());
     }

@@ -67,8 +67,8 @@ public class NAThing extends NAObject implements NAModule {
         return radioStatus;
     }
 
-    public Optional<ZonedDateTime> getLastSeen() {
-        return Optional.ofNullable(lastSeen);
+    public @Nullable ZonedDateTime getLastSeen() {
+        return lastSeen;
     }
 
     /**

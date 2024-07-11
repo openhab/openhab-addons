@@ -14,6 +14,7 @@ package org.openhab.binding.lcn.internal;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -203,10 +204,10 @@ public class LcnModuleActions implements ThingActions {
                 localCount = 1;
             }
 
-            String filteredTonality = LcnBindingConstants.ALLOWED_BEEP_TONALITIES.stream() //
+            String filteredTonality = Objects.requireNonNull(LcnBindingConstants.ALLOWED_BEEP_TONALITIES.stream() //
                     .filter(t -> t.equals(tonality)) //
                     .findAny() //
-                    .orElse("N");
+                    .orElse("N"));
 
             getHandler().sendPck(PckGenerator.beep(filteredTonality, Math.min(localCount, MAX_BEEP_COUNT)));
         } catch (LcnException e) {

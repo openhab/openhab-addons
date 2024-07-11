@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.daikin.internal.handler;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -205,8 +206,8 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
     }
 
     protected void updateTemperatureChannel(String channel, Optional<Double> maybeTemperature) {
-        updateState(channel,
-                maybeTemperature.<State> map(t -> new QuantityType<>(t, SIUnits.CELSIUS)).orElse(UnDefType.UNDEF));
+        updateState(channel, Objects.requireNonNull(
+                maybeTemperature.<State> map(t -> new QuantityType<>(t, SIUnits.CELSIUS)).orElse(UnDefType.UNDEF)));
     }
 
     /**

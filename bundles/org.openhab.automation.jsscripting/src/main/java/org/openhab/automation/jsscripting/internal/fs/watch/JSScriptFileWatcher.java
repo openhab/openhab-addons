@@ -48,9 +48,10 @@ public class JSScriptFileWatcher extends AbstractScriptFileWatcher {
 
     @Override
     protected Optional<String> getScriptType(Path scriptFilePath) {
-        String scriptType = super.getScriptType(scriptFilePath).orElse(null);
-        if (!scriptFilePath.startsWith(getWatchPath().resolve("node_modules")) && ("js".equals(scriptType))) {
-            return Optional.of(scriptType);
+        Optional<String> scriptType = super.getScriptType(scriptFilePath);
+        if (scriptType.isPresent() && !scriptFilePath.startsWith(getWatchPath().resolve("node_modules"))
+                && ("js".equals(scriptType.get()))) {
+            return scriptType;
         }
         return Optional.empty();
     }

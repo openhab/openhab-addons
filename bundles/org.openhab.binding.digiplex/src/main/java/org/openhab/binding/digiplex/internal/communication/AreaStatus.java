@@ -13,6 +13,7 @@
 package org.openhab.binding.digiplex.internal.communication;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OpenClosedType;
@@ -44,8 +45,8 @@ public enum AreaStatus {
     }
 
     public static AreaStatus fromMessage(char indicator) {
-        return Arrays.stream(AreaStatus.values()).filter(type -> type.indicator == indicator).findFirst()
-                .orElse(UNKNOWN);
+        return Objects.requireNonNull(Arrays.stream(AreaStatus.values()).filter(type -> type.indicator == indicator)
+                .findFirst().orElse(UNKNOWN));
     }
 
     public StringType toStringType() {

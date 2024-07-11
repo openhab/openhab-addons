@@ -18,7 +18,6 @@ import static org.openhab.binding.androidtv.internal.protocol.philipstv.PhilipsT
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -122,7 +121,8 @@ public class TvChannelService implements PhilipsTVService {
     private String getCurrentTvChannel() throws IOException {
         TvChannelDTO tvChannelDTO = OBJECT_MAPPER.readValue(connectionManager.doHttpsGet(TV_CHANNEL_PATH),
                 TvChannelDTO.class);
-        return Optional.ofNullable(tvChannelDTO.getChannel()).map(ChannelDTO::getName).orElse("NA");
+        ChannelDTO channel = tvChannelDTO.getChannel();
+        return channel != null ? channel.getName() : "NA";
     }
 
     private void switchTvChannel(Command command) throws IOException {

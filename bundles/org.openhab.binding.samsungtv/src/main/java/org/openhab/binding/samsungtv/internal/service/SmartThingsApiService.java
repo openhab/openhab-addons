@@ -470,11 +470,12 @@ public class SmartThingsApiService implements SamsungTvService {
         }
     }
 
-    public Number parseTVChannel(String channel) {
+    public Number parseTVChannel(@Nullable String channel) {
         try {
-            return Optional.ofNullable(channel)
-                    .map(a -> a.replaceAll("\\D+", ".").replaceFirst("^\\D*((\\d+\\.\\d+)|(\\d+)).*", "$1"))
-                    .map(Float::parseFloat).orElse(-1f);
+            return channel != null
+                    ? Float.parseFloat(
+                            channel.replaceAll("\\D+", ".").replaceFirst("^\\D*((\\d+\\.\\d+)|(\\d+)).*", "$1"))
+                    : -1f;
         } catch (NumberFormatException ignore) {
         }
         return -1;

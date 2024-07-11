@@ -150,7 +150,8 @@ public class UpnpEntry {
      * @return a URI for this entry. Thumbnail resources are not considered.
      */
     public String getRes() {
-        return resList.stream().filter(res -> !res.isThumbnailRes()).map(UpnpEntryRes::getRes).findAny().orElse("");
+        return Objects.requireNonNull(
+                resList.stream().filter(res -> !res.isThumbnailRes()).map(UpnpEntryRes::getRes).findAny().orElse(""));
     }
 
     public List<String> getProtocolList() {

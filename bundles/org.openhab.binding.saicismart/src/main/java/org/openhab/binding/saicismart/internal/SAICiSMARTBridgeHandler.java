@@ -23,7 +23,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -272,7 +271,8 @@ public class SAICiSMARTBridgeHandler extends BaseBridgeHandler {
     }
 
     public Collection<VinInfo> getVinList() {
-        return Optional.ofNullable(vinList).orElse(Collections.emptyList());
+        Collection<VinInfo> vinList = this.vinList;
+        return vinList != null ? vinList : Collections.emptyList();
     }
 
     public String sendRequest(String request, String endpoint)

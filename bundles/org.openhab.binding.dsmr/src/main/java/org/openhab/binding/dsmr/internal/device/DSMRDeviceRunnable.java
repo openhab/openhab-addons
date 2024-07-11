@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.dsmr.internal.device;
 
-import java.util.Optional;
+import java.util.Objects;
 import java.util.concurrent.Semaphore;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -88,7 +88,7 @@ public class DSMRDeviceRunnable implements Runnable {
         } catch (final RuntimeException e) {
             logger.warn("DSMRDeviceRunnable stopped with a RuntimeException", e);
             portEventListener.onError(DSMRErrorStatus.SERIAL_DATA_READ_ERROR,
-                    Optional.ofNullable(e.getMessage()).orElse(""));
+                    Objects.requireNonNullElse(e.getMessage(), ""));
         } catch (final InterruptedException e) {
             Thread.currentThread().interrupt();
         } finally {

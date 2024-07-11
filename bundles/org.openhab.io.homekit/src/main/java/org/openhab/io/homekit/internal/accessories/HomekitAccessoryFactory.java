@@ -251,8 +251,8 @@ public class HomekitAccessoryFactory {
                     HomekitAccessoryType type = accessoryType.get();
                     if (meta.length > 1) {
                         // it has characteristic as well
-                        accessories.add(new SimpleEntry<>(type,
-                                HomekitCharacteristicType.valueOfTag(meta[1].trim()).orElse(EMPTY)));
+                        accessories.add(new SimpleEntry<>(type, Objects
+                                .requireNonNull(HomekitCharacteristicType.valueOfTag(meta[1].trim()).orElse(EMPTY))));
                     } else {// it has no characteristic
                         accessories.add(new SimpleEntry<>(type, EMPTY));
                     }

@@ -45,7 +45,7 @@ public class AbstractWeatherHandlerTest {
         try {
             method = AbstractWeatherHandler.class.getDeclaredMethod("floorToEvenMinutes", long.class, int.class);
             method.setAccessible(true);
-            Object res = method.invoke(null, epochSeconds, roundMinutes);
+            Object res = method.invoke("", epochSeconds, roundMinutes);
             assertNotNull(res);
             return (long) res;
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
@@ -60,7 +60,7 @@ public class AbstractWeatherHandlerTest {
         try {
             method = AbstractWeatherHandler.class.getDeclaredMethod("ceilToEvenMinutes", long.class, int.class);
             method.setAccessible(true);
-            Object res = method.invoke(null, epochSeconds, roundMinutes);
+            Object res = method.invoke("", epochSeconds, roundMinutes);
             assertNotNull(res);
             return (long) res;
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
@@ -85,7 +85,7 @@ public class AbstractWeatherHandlerTest {
         try {
             method = AbstractWeatherHandler.class.getDeclaredMethod("lastValidIndex", Data.class);
             method.setAccessible(true);
-            Object res = method.invoke(null, data);
+            Object res = method.invoke("", data);
             assertNotNull(res);
             return (int) res;
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException

@@ -13,6 +13,7 @@
 package org.openhab.binding.digiplex.internal.communication;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -37,7 +38,7 @@ public enum ArmDisarmType {
     }
 
     public static ArmDisarmType fromMessage(String indicator) {
-        return Arrays.stream(ArmDisarmType.values()).filter(type -> type.indicator.equals(indicator)).findFirst()
-                .orElse(UNKNOWN);
+        return Objects.requireNonNull(Arrays.stream(ArmDisarmType.values())
+                .filter(type -> type.indicator.equals(indicator)).findFirst().orElse(UNKNOWN));
     }
 }

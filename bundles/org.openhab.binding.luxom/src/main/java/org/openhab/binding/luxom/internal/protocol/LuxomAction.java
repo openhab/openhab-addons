@@ -13,6 +13,7 @@
 package org.openhab.binding.luxom.internal.protocol;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -55,8 +56,8 @@ public enum LuxomAction {
     }
 
     public static LuxomAction of(String command) {
-        return Arrays.stream(LuxomAction.values()).filter(a -> a.getCommand().equals(command)).findFirst()
-                .orElse(INVALID_ACTION);
+        return Objects.requireNonNull(Arrays.stream(LuxomAction.values()).filter(a -> a.getCommand().equals(command))
+                .findFirst().orElse(INVALID_ACTION));
     }
 
     public String getCommand() {

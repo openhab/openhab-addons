@@ -107,7 +107,7 @@ public class InputStreamAudioStream extends AudioStream implements SizeableAudio
     }
 
     @Override
-    public long transferTo(@Nullable OutputStream out) throws IOException {
+    public long transferTo(OutputStream out) throws IOException {
         return innerInputStream.transferTo(out);
     }
 

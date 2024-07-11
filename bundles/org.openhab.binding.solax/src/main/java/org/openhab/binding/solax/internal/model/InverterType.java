@@ -13,6 +13,7 @@
 package org.openhab.binding.solax.internal.model;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -78,7 +79,8 @@ public enum InverterType {
 
     public static InverterType fromIndex(int index) {
         InverterType[] values = InverterType.values();
-        return Stream.of(values).filter(value -> value.typeIndex == index).findFirst().orElse(UNKNOWN);
+        return Objects.requireNonNull(
+                Stream.of(values).filter(value -> value.typeIndex == index).findFirst().orElse(UNKNOWN));
     }
 
     public @Nullable RawDataParser getParser() {

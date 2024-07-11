@@ -14,6 +14,7 @@ package org.openhab.binding.mielecloud.internal.discovery;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,11 +59,11 @@ public final class ThingInformationExtractor {
     }
 
     private static String getSerialNumber(DeviceState deviceState) {
-        return deviceState.getFabNumber().orElse(deviceState.getDeviceIdentifier());
+        return Objects.requireNonNull(deviceState.getFabNumber().orElse(deviceState.getDeviceIdentifier()));
     }
 
     private static String getModelId(DeviceState deviceState) {
-        return getDeviceAndTechType(deviceState).orElse("Unknown");
+        return Objects.requireNonNull(getDeviceAndTechType(deviceState).orElse("Unknown"));
     }
 
     /**

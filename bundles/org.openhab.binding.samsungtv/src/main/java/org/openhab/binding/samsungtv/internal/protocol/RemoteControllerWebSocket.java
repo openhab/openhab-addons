@@ -105,11 +105,11 @@ public class RemoteControllerWebSocket extends RemoteController implements Liste
         }
 
         public String getAppId() {
-            return Optional.ofNullable(appId).orElse("");
+            return appId != null ? appId : "";
         }
 
         public String getName() {
-            return Optional.ofNullable(name).orElse("");
+            return name != null ? name : "";
         }
 
         public void setName(String name) {
