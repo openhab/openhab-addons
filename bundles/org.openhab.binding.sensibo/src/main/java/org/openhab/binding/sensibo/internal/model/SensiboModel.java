@@ -45,8 +45,9 @@ public class SensiboModel {
     }
 
     public Optional<SensiboSky> findSensiboSkyByMacAddress(final String macAddress) {
-        final String macAddressWithoutColons = macAddress.replace(":", "");
-        return pods.stream().filter(pod -> macAddressWithoutColons.equals(pod.getMacAddress())).findFirst();
+        final String macAddressWithoutColons = macAddress.replace(":", "").toUpperCase();
+        return pods.stream().filter(pod -> macAddressWithoutColons.equals(pod.getMacAddress().toUpperCase()))
+                .findFirst();
     }
 
     /**
