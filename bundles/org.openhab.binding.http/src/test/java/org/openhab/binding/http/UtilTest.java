@@ -57,4 +57,10 @@ public class UtilTest {
         String s = "https://foo.bar/zzl.html?str=z n";
         Assertions.assertEquals("https://foo.bar/zzl.html?str=z%20n", Util.uriFromString(s).toString());
     }
+
+    @Test
+    public void uriPlusInQueryEncodeTest() throws MalformedURLException, URISyntaxException {
+        String s = "https://foo.bar/zzl.html?str=z+n";
+        Assertions.assertEquals("https://foo.bar/zzl.html?str=z%2Bn", Util.uriFromString(s).toString());
+    }
 }
