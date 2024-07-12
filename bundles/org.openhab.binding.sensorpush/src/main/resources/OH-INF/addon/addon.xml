@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="sensorpush" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>SensorPush Binding</name>
+	<description>The SensorPush binding interfaces with SensorPush environmental sensors via the G1 WiFi Gateway and the
+		Gateway cloud service.</description>
+	<connection>cloud</connection>
+
+</addon:addon>
