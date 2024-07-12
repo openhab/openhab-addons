@@ -54,6 +54,10 @@ public class RobonectBindingConstants {
     public static final String CHANNEL_HEALTH_TEMP = "health-temperature";
     public static final String CHANNEL_HEALTH_HUM = "health-humidity";
 
+    public static final String CHANNEL_BLADES_QUALITY = "blades-quality";
+    public static final String CHANNEL_BLADES_DAYS = "blades-days";
+    public static final String CHANNEL_BLADES_HOURS = "blades-hours";
+
     public static final String PROPERTY_COMPILED = "compiled";
     public static final String PROPERTY_COMMENT = "comment";
 }
