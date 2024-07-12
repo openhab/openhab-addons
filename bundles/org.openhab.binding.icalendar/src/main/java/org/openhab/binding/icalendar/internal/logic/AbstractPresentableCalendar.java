@@ -27,6 +27,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * @author Michael Wodniok - Initial contribution
  * @author Andrew Fiddian-Green - Methods getJustBegunEvents() and getJustEndedEvents()
  * @author Michael Wodniok - Added getFilteredEventsBetween()
+ * @author Christian Heinemann - Extension for the time-based filtering strategy
  */
 @NonNullByDefault
 public abstract class AbstractPresentableCalendar {
@@ -91,12 +92,28 @@ public abstract class AbstractPresentableCalendar {
     /**
      * Return a filtered List of events with a maximum count, ordered by start.
      *
-     * @param begin The begin of the time range where to search for events
-     * @param end The end of the time range where to search for events
-     * @param filter A filter for contents, if set to null, all events will be returned
+     * @param begin The begin of the time range where to search for events.
+     * @param end The end of the time range where to search for events.
+     * @param eventTimeFilter A filter for deciding whether an event falls into the time range.
+     * @param eventTextFilter A filter for contents, if set to null, all events will be returned.
      * @param maximumCount The maximum of events returned here.
      * @return A list with the filtered results.
      */
-    public abstract List<Event> getFilteredEventsBetween(Instant begin, Instant end, @Nullable EventTextFilter filter,
-            int maximumCount);
+    public abstract List<Event> getFilteredEventsBetween(Instant begin, Instant end, EventTimeFilter eventTimeFilter,
+            @Nullable EventTextFilter eventTextFilter, int maximumCount);
+
+    /**
+     * Return a filtered List of events with a maximum count, ordered by start. Time based filtering is done by each
+     * event's start.
+     *
+     * @param begin The begin of the time range where to search for events.
+     * @param end The end of the time range where to search for events.
+     * @param eventTextFilter A filter for contents, if set to null, all events will be returned.
+     * @param maximumCount The maximum of events returned here.
+     * @return A list with the filtered results.
+     */
+    public List<Event> getFilteredEventsBetween(Instant begin, Instant end, @Nullable EventTextFilter eventTextFilter,
+            int maximumCount) {
+        return getFilteredEventsBetween(begin, end, EventTimeFilter.searchByStart(), eventTextFilter, maximumCount);
+    }
 }
