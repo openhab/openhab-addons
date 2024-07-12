@@ -149,7 +149,7 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
         List<String> channelsToAdd = channelsToBePresent.stream().filter(c -> getThing().getChannel(c) == null)
                 .toList();
         List<Channel> channelsToRemove = channelsToBeAbsent.stream().map(c -> getThing().getChannel(c))
-                .filter(Objects::nonNull).map(c -> Objects.requireNonNull(c)).toList();
+                .filter(Objects::nonNull).map(Objects::requireNonNull).toList();
 
         if (channelsToAdd.isEmpty() && channelsToRemove.isEmpty()) {
             return;
@@ -175,8 +175,21 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
 
     private Channel createChannel(String channelId) {
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
-        ChannelTypeUID channelTypeUID = new ChannelTypeUID(BINDING_ID, channelId);
+        ChannelTypeUID channelTypeUID = getChannelTypeUID(channelId);
         return ChannelBuilder.create(channelUID).withType(channelTypeUID).build();
+    }
+
+    private ChannelTypeUID getChannelTypeUID(String channelId) {
+        switch (channelId) {
+            case CHANNEL_IMPULSE_SWITCH, CHANNEL_IMPULSE_LENGTH, CHANNEL_INSTANT_OF_LAST_IMPULSE:
+                return new ChannelTypeUID(BINDING_ID, channelId);
+            case CHANNEL_POWER_SWITCH:
+                return new ChannelTypeUID("system:power");
+            default:
+                throw new UnsupportedOperationException(
+                        "Cannot determine channel type UID to create channel " + channelId + " dynamically.");
+
+        }
     }
 
     private boolean isRelayInImpulseSwitchMode(Device deviceInfo) {
@@ -209,9 +222,14 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
 
     private void updateChannels(ImpulseSwitchServiceState impulseSwitchServiceState) {
         this.currentImpulseSwitchServiceState = impulseSwitchServiceState;
+
         updateState(CHANNEL_IMPULSE_SWITCH, OnOffType.from(impulseSwitchServiceState.impulseState));
         updateState(CHANNEL_IMPULSE_LENGTH, new DecimalType(impulseSwitchServiceState.impulseLength));
-        updateState(CHANNEL_INSTANT_OF_LAST_IMPULSE, new DateTimeType(impulseSwitchServiceState.instantOfLastImpulse));
+
+        if (impulseSwitchServiceState.instantOfLastImpulse != null) {
+            updateState(CHANNEL_INSTANT_OF_LAST_IMPULSE,
+                    new DateTimeType(impulseSwitchServiceState.instantOfLastImpulse));
+        }
     }
 
     @Override

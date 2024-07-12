@@ -883,6 +883,7 @@
 		<item-type>DateTime</item-type>
 		<label>Instant of Last Impulse</label>
 		<description>Timestamp indicating when the last impulse was triggered.</description>
+		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 

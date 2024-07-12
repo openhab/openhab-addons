@@ -874,13 +874,16 @@ public class BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Sends a state change for a device to the controller
+     * Sends a state change for a device to the controller using a HTTP <code>PUT</code> request.
      *
-     * @param deviceId Id of device to change state for
-     * @param serviceName Name of service of device to change state for
-     * @param state New state data to set for service
+     * @param <T> type of the state object
+     * 
+     * @param deviceId the ID of the device for which the state should be updated
+     * @param serviceName the name of the service for which the state should be updated
+     * @param state object representing the new state data
      *
-     * @return Response of request
+     * @return the HTTP response of the Bosch Smart Home Controller
+     * 
      * @throws InterruptedException
      * @throws ExecutionException
      * @throws TimeoutException
@@ -890,24 +893,27 @@ public class BridgeHandler extends BaseBridgeHandler {
         return sendState(deviceId, serviceName, state, PUT);
     }
 
+    /**
+     * Sends a state change for a device to the controller using a HTTP <code>POST</code> request.
+     * 
+     * @param <T> type of the state object
+     * 
+     * @param deviceId the ID of the device for which the state should be updated
+     * @param serviceName the name of the service for which the state should be updated
+     * @param state object representing the new state data
+     * 
+     * @return the HTTP response of the Bosch Smart Home Controller
+     * 
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
     public <T extends BoschSHCServiceState> @Nullable Response postState(String deviceId, String serviceName, T state)
             throws InterruptedException, TimeoutException, ExecutionException {
         return sendState(deviceId, serviceName, state, POST);
     }
 
-    /**
-     * Sends a state change for a device to the controller
-     *
-     * @param deviceId Id of device to change state for
-     * @param serviceName Name of service of device to change state for
-     * @param state New state data to set for service
-     *
-     * @return Response of request
-     * @throws InterruptedException
-     * @throws ExecutionException
-     * @throws TimeoutException
-     */
-    public <T extends BoschSHCServiceState> @Nullable Response sendState(String deviceId, String serviceName, T state,
+    private <T extends BoschSHCServiceState> @Nullable Response sendState(String deviceId, String serviceName, T state,
             HttpMethod method) throws InterruptedException, TimeoutException, ExecutionException {
         @Nullable
         BoschHttpClient localHttpClient = this.httpClient;

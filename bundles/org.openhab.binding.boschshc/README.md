@@ -229,14 +229,14 @@ The smart switching relay is your universal all-rounder for smart switching.
 
 **Thing Type ID**: `relay`
 
-| Channel Type ID         | Item Type | Writable | Description                                                                        |
-| ----------------------- | ----------| :------: | ---------------------------------------------------------------------------------- |
-| signal-strength         | Number    | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
-| child-protection        | Switch    | &#9745;  | Indicates whether the child protection is active.                                  |
-| power-switch            | Switch    | &#9745;  | Switches the relay on or off. Only available if the relay is in power switch mode. |
-| impulse-switch          | Switch    | &#9745;  | Channel to send impulses by means of `ON` events. After the time specified by impulse-length, the relay will switch off automatically and the state will be reset to `OFF`. Only available if the relay is in impulse switch mode.    |
-| impulse-length          | Number    | &#9745;  | Channel to configure how long the relay will stay on after receiving an impulse switch event. The time is specified in tenth seconds (deciseconds), e.g. 15 means 1.5 seconds. Only available if the relay is in impulse switch mode. |
-| instant-of-last-impulse | DateTime  | &#9744;  | Timestamp indicating when the last impulse was triggered. Only available if the relay is in impulse switch mode. |
+| Channel Type ID         | Item Type   | Writable | Description                                                                        |
+| ----------------------- | ----------- | :------: | ---------------------------------------------------------------------------------- |
+| signal-strength         | Number      | &#9744;  | Communication quality between the device and the Smart Home Controller. Possible values range between 0 (unknown) and 4 (best signal strength). |
+| child-protection        | Switch      | &#9745;  | Indicates whether the child protection is active.                                  |
+| power-switch            | Switch      | &#9745;  | Switches the relay on or off. Only available if the relay is in power switch mode. |
+| impulse-switch          | Switch      | &#9745;  | Channel to send impulses by means of `ON` events. After the time specified by `impulse-length`, the relay will switch off automatically and the state will be reset to `OFF`. Only available if the relay is in impulse switch mode.  |
+| impulse-length          | Number:Time | &#9745;  | Channel to configure how long the relay will stay on after receiving an impulse switch event. The time is specified in tenth seconds (deciseconds), e.g. 15 means 1.5 seconds. Only available if the relay is in impulse switch mode. |
+| instant-of-last-impulse | DateTime    | &#9744;  | Timestamp indicating when the last impulse was triggered. Only available if the relay is in impulse switch mode. |
 
 ### Security Camera 360
 
