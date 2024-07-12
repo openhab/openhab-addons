@@ -239,7 +239,6 @@ Number              TeslaTimeToFullCharge       {channel="account:model3:myaccou
 Number              TeslaMaxCharges             {channel="account:model3:myaccount:mycar:maxcharges"}
 
 Number              TeslaChargerVoltage         {channel="account:model3:myaccount:mycar:chargervoltage"}
-Number              TeslaChargerPower           {channel="account:model3:myaccount:mycar:chargerpower"}
 Number              TeslaChargerCurrent         {channel="account:model3:myaccount:mycar:chargercurrent"}
 
 DateTime            TeslaScheduledChargingStart {channel="account:model3:myaccount:mycar:scheduledchargingstart"}
