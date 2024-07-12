@@ -13,6 +13,7 @@
 package org.openhab.binding.homewizard.internal.dto;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -42,20 +43,20 @@ public class P1PayloadTest {
         assertThat(key.getActiveCurrentL1(), is(-4.0));
         assertThat(key.getActiveCurrentL2(), is(2.0));
         assertThat(key.getActiveCurrentL3(), is(333.0));
-        assertThat(key.getActivePowerW(), is(-543.0));
-        assertThat(key.getActivePowerL1W(), is(-676.0));
-        assertThat(key.getActivePowerL2W(), is(133.0));
-        assertThat(key.getActivePowerL3W(), is(18.0));
-        assertThat(key.getActiveVoltage(), is(220.0));
-        assertThat(key.getActiveVoltageL1(), is(221.0));
-        assertThat(key.getActiveVoltageL2(), is(222.0));
-        assertThat(key.getActiveVoltageL3(), is(223.0));
+        assertThat(key.getActivePowerW(), is(-543));
+        assertThat(key.getActivePowerL1W(), is(-676));
+        assertThat(key.getActivePowerL2W(), is(133));
+        assertThat(key.getActivePowerL3W(), is(18));
+        assertThat(key.getActiveVoltage(), is(220));
+        assertThat(key.getActiveVoltageL1(), is(221));
+        assertThat(key.getActiveVoltageL2(), is(222));
+        assertThat(key.getActiveVoltageL3(), is(223));
         assertThat(key.getTotalEnergyExportT1Kwh(), is(8874.0));
         assertThat(key.getTotalEnergyExportT2Kwh(), is(7788.0));
         assertThat(key.getTotalEnergyImportT1Kwh(), is(10830.511));
         assertThat(key.getTotalEnergyImportT2Kwh(), is(2948.827));
-        assertThat(key.getAnyPowerFailCount(), is(7.0));
-        assertThat(key.getLongPowerFailCount(), is(2.0));
+        assertThat(key.getAnyPowerFailCount(), is(7));
+        assertThat(key.getLongPowerFailCount(), is(2));
         assertThat(key.getGasTimestamp(), is(ZonedDateTime.of(2021, 6, 06, 14, 0, 10, 0, ZoneId.systemDefault())));
         assertThat(key.getTotalGasM3(), is(2569.646));
 
@@ -70,18 +71,29 @@ public class P1PayloadTest {
         P1Payload key = DATA_UTIL.fromJson("response-empty.json", P1Payload.class);
         assertThat(key, is(notNullValue()));
 
-        assertThat(key.getActivePowerL1W(), is(0.0));
-        assertThat(key.getActivePowerL2W(), is(0.0));
-        assertThat(key.getActivePowerL3W(), is(0.0));
-        assertThat(key.getActivePowerW(), is(0.0));
-        assertThat(key.getGasTimestamp(), is(0L));
-        assertThat(key.getMeterModel(), is(""));
-        assertThat(key.getSmrVersion(), is(0));
+        assertThat(key.getActiveCurrent(), is(0.0));
+        assertThat(key.getActiveCurrentL1(), is(0.0));
+        assertThat(key.getActiveCurrentL2(), is(0.0));
+        assertThat(key.getActiveCurrentL3(), is(0.0));
+        assertThat(key.getActivePowerW(), is(0));
+        assertThat(key.getActivePowerL1W(), is(0));
+        assertThat(key.getActivePowerL2W(), is(0));
+        assertThat(key.getActivePowerL3W(), is(0));
+        assertThat(key.getActiveVoltage(), is(0));
+        assertThat(key.getActiveVoltageL1(), is(0));
+        assertThat(key.getActiveVoltageL2(), is(0));
+        assertThat(key.getActiveVoltageL3(), is(0));
+        assertThat(key.getAnyPowerFailCount(), is(0));
+        assertThat(key.getLongPowerFailCount(), is(0));
         assertThat(key.getTotalEnergyExportT1Kwh(), is(0.0));
         assertThat(key.getTotalEnergyExportT2Kwh(), is(0.0));
         assertThat(key.getTotalEnergyImportT1Kwh(), is(0.0));
         assertThat(key.getTotalEnergyImportT2Kwh(), is(0.0));
+        assertThat(key.getGasTimestamp(), is(nullValue()));
         assertThat(key.getTotalGasM3(), is(0.0));
+
+        assertThat(key.getMeterModel(), is(""));
+        assertThat(key.getSmrVersion(), is(0));
         assertThat(key.getWifiSsid(), is(""));
         assertThat(key.getWifiStrength(), is(0));
     }

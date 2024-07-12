@@ -149,29 +149,11 @@ public class P1Payload {
     }
 
     /**
-     * Getter for the current active total power
-     *
-     * @return current active total power
-     */
-    public double getActivePowerW() {
-        return activePowerW;
-    }
-
-    /**
-     * Getter for the current active total power on phase 1
-     *
-     * @return current active total power on phase 1
-     */
-    public double getActivePowerL1W() {
-        return activePowerL1W;
-    }
-
-    /**
      * Getter for the count of any power failures
      *
      * @return count of any power failures
      */
-    public double getAnyPowerFailCount() {
+    public int getAnyPowerFailCount() {
         return anyPowerFailCount;
     }
 
@@ -180,7 +162,7 @@ public class P1Payload {
      *
      * @return count of long power failures
      */
-    public double getLongPowerFailCount() {
+    public int getLongPowerFailCount() {
         return longPowerFailCount;
     }
 
@@ -189,7 +171,7 @@ public class P1Payload {
      *
      * @return current active voltage
      */
-    public double getActiveVoltage() {
+    public int getActiveVoltage() {
         return activeVoltage;
     }
 
@@ -198,7 +180,7 @@ public class P1Payload {
      *
      * @return active voltage on phase 1
      */
-    public double getActiveVoltageL1() {
+    public int getActiveVoltageL1() {
         return activeVoltageL1;
     }
 
@@ -207,7 +189,7 @@ public class P1Payload {
      *
      * @return active voltage on phase 2
      */
-    public double getActiveVoltageL2() {
+    public int getActiveVoltageL2() {
         return activeVoltageL2;
     }
 
@@ -216,7 +198,7 @@ public class P1Payload {
      *
      * @return active voltage on phase 3
      */
-    public double getActiveVoltageL3() {
+    public int getActiveVoltageL3() {
         return activeVoltageL3;
     }
 
@@ -257,11 +239,29 @@ public class P1Payload {
     }
 
     /**
+     * Getter for the current active total power
+     *
+     * @return current active total power
+     */
+    public int getActivePowerW() {
+        return activePowerW;
+    }
+
+    /**
      * Getter for the current active total power on phase 2
      *
      * @return current active total power on phase 2
      */
-    public double getActivePowerL2W() {
+    public int getActivePowerL1W() {
+        return activePowerL1W;
+    }
+
+    /**
+     * Getter for the current active total power on phase 2
+     *
+     * @return current active total power on phase 2
+     */
+    public int getActivePowerL2W() {
         return activePowerL2W;
     }
 
@@ -270,7 +270,7 @@ public class P1Payload {
      *
      * @return current active total power on phase 3
      */
-    public double getActivePowerL3W() {
+    public int getActivePowerL3W() {
         return activePowerL3W;
     }
 
