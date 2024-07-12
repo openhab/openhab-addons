@@ -13,14 +13,14 @@
 package org.openhab.binding.homewizard.internal;
 
 import java.io.IOException;
-import java.time.DateTimeException;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homewizard.internal.dto.P1Payload;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -54,6 +54,7 @@ public class HomeWizardHandler extends BaseThingHandler {
             .create();
 
     private HomeWizardConfiguration config = new HomeWizardConfiguration();
+    private final ScheduledExecutorService executorService;
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private String apiURL = "";
@@ -64,9 +65,11 @@ public class HomeWizardHandler extends BaseThingHandler {
      * Constructor
      *
      * @param thing The thing to handle
+     * @param executorService The executor service to use, falls back to the default scheduler when null
      */
-    public HomeWizardHandler(Thing thing) {
+    public HomeWizardHandler(Thing thing, @Nullable final ScheduledExecutorService executorService) {
         super(thing);
+        this.executorService = executorService == null ? this.scheduler : executorService;
     }
 
     /**
@@ -83,7 +86,8 @@ public class HomeWizardHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(HomeWizardConfiguration.class);
         if (configure()) {
-            pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshDelay, TimeUnit.SECONDS);
+            pollingJob = executorService.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshDelay,
+                    TimeUnit.SECONDS);
         }
     }
 
@@ -117,13 +121,21 @@ public class HomeWizardHandler extends BaseThingHandler {
     }
 
     /**
+     * @return json response from the remote server
+     * @throws IOException
+     */
+    public String getData() throws IOException {
+        return HttpUtil.executeUrl("GET", apiURL, 30000);
+    }
+
+    /**
      * The actual polling loop
      */
     private void pollingCode() {
         final String result;
 
         try {
-            result = HttpUtil.executeUrl("GET", apiURL, 30000);
+            result = getData();
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     String.format("Unable to query P1 Meter: %s", e.getMessage()));
@@ -202,40 +214,11 @@ public class HomeWizardHandler extends BaseThingHandler {
         updateState(HomeWizardBindingConstants.CHANNEL_ACTIVE_VOLTAGE_L3,
                 new QuantityType<>(payload.getActiveVoltageL3(), Units.VOLT));
 
-        // If no data from the gas meter is present, the json value will be null, which means gson ignores it,
-        // leaving the value in the payload object at 0.
-        long dtv = payload.getGasTimestamp();
-        if (dtv > 0) {
+        ZonedDateTime gasTimestamp = payload.getGasTimestamp();
+        if (gasTimestamp != null) {
             updateState(HomeWizardBindingConstants.CHANNEL_GAS_TOTAL,
                     new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
-
-            // 210119164000
-            int seconds = (int) (dtv % 100);
-
-            dtv /= 100;
-            int minutes = (int) (dtv % 100);
-
-            dtv /= 100;
-            int hours = (int) (dtv % 100);
-
-            dtv /= 100;
-            int day = (int) (dtv % 100);
-
-            dtv /= 100;
-            int month = (int) (dtv % 100);
-
-            dtv /= 100;
-            int year = (int) (dtv + 2000);
-
-            try {
-                DateTimeType dtt = new DateTimeType(
-                        ZonedDateTime.of(year, month, day, hours, minutes, seconds, 0, ZoneId.systemDefault()));
-                updateState(HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP, dtt);
-                updateState(HomeWizardBindingConstants.CHANNEL_GAS_TOTAL,
-                        new QuantityType<>(payload.getTotalGasM3(), SIUnits.CUBIC_METRE));
-            } catch (DateTimeException e) {
-                logger.warn("Unable to parse Gas timestamp: {}", payload.getGasTimestamp());
-            }
+            updateState(HomeWizardBindingConstants.CHANNEL_GAS_TIMESTAMP, new DateTimeType(gasTimestamp));
         }
     }
 }

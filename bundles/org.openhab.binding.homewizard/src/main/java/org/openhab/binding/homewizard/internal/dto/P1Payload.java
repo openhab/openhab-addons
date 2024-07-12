@@ -10,9 +10,15 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal;
+package org.openhab.binding.homewizard.internal.dto;
+
+import java.time.DateTimeException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -20,6 +26,7 @@ import com.google.gson.annotations.SerializedName;
  * Class that provides storage for the json object obtained from the P1 meter API
  *
  * @author Daniël van Os - Initial contribution
+ * @author Leo Siepel - Clean-up and additional fields
  *
  */
 @NonNullByDefault
@@ -38,10 +45,10 @@ public class P1Payload {
     @SerializedName("total_power_export_t2_kwh")
     private double totalEnergyExportT2Kwh;
 
-    private double activePowerW;
-    private double activePowerL1W;
-    private double activePowerL2W;
-    private double activePowerL3W;
+    private int activePowerW;
+    private int activePowerL1W;
+    private int activePowerL2W;
+    private int activePowerL3W;
     private double totalGasM3;
     private long gasTimestamp = 0;
 
@@ -52,13 +59,13 @@ public class P1Payload {
     private int longPowerFailCount;
 
     @SerializedName("active_voltage_v")
-    private double activeVoltage;
+    private int activeVoltage;
     @SerializedName("active_voltage_l1_v")
-    private double activeVoltageL1;
+    private int activeVoltageL1;
     @SerializedName("active_voltage_l2_v")
-    private double activeVoltageL2;
+    private int activeVoltageL2;
     @SerializedName("active_voltage_l3_v")
-    private double activeVoltageL3;
+    private int activeVoltageL3;
 
     @SerializedName("active_current_a")
     private double activeCurrent;
@@ -79,30 +86,12 @@ public class P1Payload {
     }
 
     /**
-     * Setter for the smart meter version
-     *
-     * @param smrVersion The smart meter version to set
-     */
-    public void setSmrVersion(int smrVersion) {
-        this.smrVersion = smrVersion;
-    }
-
-    /**
      * Getter for the meter model
      *
      * @return meter model
      */
     public String getMeterModel() {
         return meterModel;
-    }
-
-    /**
-     * Setter for the meter model
-     *
-     * @param meterModel meter model
-     */
-    public void setMeterModel(String meterModel) {
-        this.meterModel = meterModel;
     }
 
     /**
@@ -115,30 +104,12 @@ public class P1Payload {
     }
 
     /**
-     * Setter for the wifi ssid
-     *
-     * @param wifiSsid wifi ssid
-     */
-    public void setWifiSsid(String wifiSsid) {
-        this.wifiSsid = wifiSsid;
-    }
-
-    /**
      * Getter for the wifi rssi
      *
      * @return wifi rssi
      */
     public int getWifiStrength() {
         return wifiStrength;
-    }
-
-    /**
-     * Setter for the wifi rssi
-     *
-     * @param wifiStrength wifi rssi
-     */
-    public void setWifiStrength(int wifiStrength) {
-        this.wifiStrength = wifiStrength;
     }
 
     /**
@@ -151,30 +122,12 @@ public class P1Payload {
     }
 
     /**
-     * Setter for the total imported energy on counter 1
-     *
-     * @param totalEnergyImportT1Kwh total imported energy on counter 1
-     */
-    public void setTotalEnergyImportT1Kwh(double totalEnergyImportT1Kwh) {
-        this.totalEnergyImportT1Kwh = totalEnergyImportT1Kwh;
-    }
-
-    /**
      * Getter for the total imported energy on counter 2
      *
      * @return total imported energy on counter 2
      */
     public double getTotalEnergyImportT2Kwh() {
         return totalEnergyImportT2Kwh;
-    }
-
-    /**
-     * Setter for the total imported energy on counter 2
-     *
-     * @param totalEnergyImportT2Kwh
-     */
-    public void setTotalEnergyImportT2Kwh(double totalEnergyImportT2Kwh) {
-        this.totalEnergyImportT2Kwh = totalEnergyImportT2Kwh;
     }
 
     /**
@@ -187,30 +140,12 @@ public class P1Payload {
     }
 
     /**
-     * Setter for the total exported energy on counter 1
-     *
-     * @param totalEnergyExportT1Kwh
-     */
-    public void setTotalEnergyExportT1Kwh(double totalEnergyExportT1Kwh) {
-        this.totalEnergyExportT1Kwh = totalEnergyExportT1Kwh;
-    }
-
-    /**
      * Getter for the total exported energy on counter 2
      *
      * @return total exported energy on counter 2
      */
     public double getTotalEnergyExportT2Kwh() {
         return totalEnergyExportT2Kwh;
-    }
-
-    /**
-     * Setter for the total exported energy on counter 2
-     *
-     * @param totalEnergyExportT2Kwh
-     */
-    public void setTotalEnergyExportT2Kwh(double totalEnergyExportT2Kwh) {
-        this.totalEnergyExportT2Kwh = totalEnergyExportT2Kwh;
     }
 
     /**
@@ -223,30 +158,12 @@ public class P1Payload {
     }
 
     /**
-     * Setter for the current active total power
-     *
-     * @param activePowerW
-     */
-    public void setActivePowerW(double activePowerW) {
-        this.activePowerW = activePowerW;
-    }
-
-    /**
      * Getter for the current active total power on phase 1
      *
      * @return current active total power on phase 1
      */
     public double getActivePowerL1W() {
         return activePowerL1W;
-    }
-
-    /**
-     * Setter for the current active power on phase 1
-     *
-     * @param activePowerL1W current active total power on phase 1
-     */
-    public void setActivePowerL1W(double activePowerL1W) {
-        this.activePowerL1W = activePowerL1W;
     }
 
     /**
@@ -349,30 +266,12 @@ public class P1Payload {
     }
 
     /**
-     * Setter for the current active power on phase 2
-     *
-     * @param activePowerL2W current active total power on phase 2
-     */
-    public void setActivePowerL2W(double activePowerL2W) {
-        this.activePowerL2W = activePowerL2W;
-    }
-
-    /**
      * Getter for the current active total power on phase 3
      *
      * @return current active total power on phase 3
      */
     public double getActivePowerL3W() {
         return activePowerL3W;
-    }
-
-    /**
-     * Setter for the current active power on phase 3
-     *
-     * @param activePowerL3W current active total power on phase 3
-     */
-    public void setActivePowerL3W(double activePowerL3W) {
-        this.activePowerL3W = activePowerL3W;
     }
 
     /**
@@ -385,30 +284,40 @@ public class P1Payload {
     }
 
     /**
-     * Setter for the total imported gas volume
-     *
-     * @param totalGasM3 total imported gas volume
-     */
-    public void setTotalGasM3(double totalGasM3) {
-        this.totalGasM3 = totalGasM3;
-    }
-
-    /**
      * Getter for the time stamp of the last gas update
      *
-     * @return time stamp of the last gas update
+     * @return time stamp of the last gas update as ZonedDateTime
      */
-    public long getGasTimestamp() {
-        return gasTimestamp;
-    }
+    public @Nullable ZonedDateTime getGasTimestamp() {
+        long dtv = gasTimestamp;
+        if (dtv < 1) {
+            return null;
+        }
 
-    /**
-     * Setter for the time stamp of the last gas update
-     *
-     * @param gasTimestamp time stamp of the last gas update
-     */
-    public void setGasTimestamp(long gasTimestamp) {
-        this.gasTimestamp = gasTimestamp;
+        // 210119164000
+        int seconds = (int) (dtv % 100);
+
+        dtv /= 100;
+        int minutes = (int) (dtv % 100);
+
+        dtv /= 100;
+        int hours = (int) (dtv % 100);
+
+        dtv /= 100;
+        int day = (int) (dtv % 100);
+
+        dtv /= 100;
+        int month = (int) (dtv % 100);
+
+        dtv /= 100;
+        int year = (int) (dtv + 2000);
+
+        try {
+            return ZonedDateTime.of(year, month, day, hours, minutes, seconds, 0, ZoneId.systemDefault());
+        } catch (DateTimeException e) {
+            LoggerFactory.getLogger(P1Payload.class).warn("Unable to parse Gas timestamp: {}", gasTimestamp);
+        }
+        return null;
     }
 
     @Override
