@@ -369,7 +369,7 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
     private void sendHttpValue(String commandUrl, String command, boolean isRetry) {
         try {
             // format URL
-            URI uri = Util.uriFromString(String.format(commandUrl, new Date(), command));
+            URI uri = Util.uriFromString(Util.wrappedStringFormat(commandUrl, new Date(), command));
 
             // build request
             rateLimitedHttpClient.newPriorityRequest(uri, config.commandMethod, command, config.contentType)
