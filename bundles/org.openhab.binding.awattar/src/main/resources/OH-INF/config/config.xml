@@ -47,6 +47,11 @@
 			<description>Do the hours need to be consecutive?</description>
 			<default>true</default>
 		</parameter>
+		<parameter name="inverted" type="boolean">
+			<label>Inverted</label>
+			<description>Should the highest prices be returned?</description>
+			<default>false</default>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

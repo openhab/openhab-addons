@@ -20,11 +20,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * @author Wolfgang Klimt - initial contribution
  */
 @NonNullByDefault
-public class AwattarBestpriceConfiguration {
+public class AwattarBestPriceConfiguration {
     public int rangeStart = 0;
     public int rangeDuration = 24;
     public int length = 1;
     public boolean consecutive = true;
+    public boolean inverted = false;
 
     @Override
     public String toString() {

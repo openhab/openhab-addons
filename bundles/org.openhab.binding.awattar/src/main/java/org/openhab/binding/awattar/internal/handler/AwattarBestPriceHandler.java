@@ -28,6 +28,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
@@ -36,8 +37,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.awattar.internal.AwattarBestPriceConfiguration;
 import org.openhab.binding.awattar.internal.AwattarBestPriceResult;
-import org.openhab.binding.awattar.internal.AwattarBestpriceConfiguration;
 import org.openhab.binding.awattar.internal.AwattarConsecutiveBestPriceResult;
 import org.openhab.binding.awattar.internal.AwattarNonConsecutiveBestPriceResult;
 import org.openhab.binding.awattar.internal.AwattarPrice;
@@ -60,28 +61,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AwattarBestpriceHandler} is responsible for computing the best prices for a given configuration.
+ * The {@link AwattarBestPriceHandler} is responsible for computing the best prices for a given configuration.
  *
  * @author Wolfgang Klimt - Initial contribution
  */
 @NonNullByDefault
-public class AwattarBestpriceHandler extends BaseThingHandler {
+public class AwattarBestPriceHandler extends BaseThingHandler {
     private static final int THING_REFRESH_INTERVAL = 60;
 
-    private final Logger logger = LoggerFactory.getLogger(AwattarBestpriceHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(AwattarBestPriceHandler.class);
 
     private @Nullable ScheduledFuture<?> thingRefresher;
 
     private final TimeZoneProvider timeZoneProvider;
 
-    public AwattarBestpriceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
+    public AwattarBestPriceHandler(Thing thing, TimeZoneProvider timeZoneProvider) {
         super(thing);
         this.timeZoneProvider = timeZoneProvider;
     }
 
     @Override
     public void initialize() {
-        AwattarBestpriceConfiguration config = getConfigAs(AwattarBestpriceConfiguration.class);
+        AwattarBestPriceConfiguration config = getConfigAs(AwattarBestPriceConfiguration.class);
 
         if (config.length >= config.rangeDuration) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.length.value");
@@ -137,7 +138,7 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
             updateState(channelUID, state);
             return;
         }
-        AwattarBestpriceConfiguration config = getConfigAs(AwattarBestpriceConfiguration.class);
+        AwattarBestPriceConfiguration config = getConfigAs(AwattarBestPriceConfiguration.class);
         TimeRange timerange = getRange(config.rangeStart, config.rangeDuration, bridgeHandler.getTimeZone());
         if (!(bridgeHandler.containsPriceFor(timerange.start()) && bridgeHandler.containsPriceFor(timerange.end()))) {
             updateState(channelUID, state);
@@ -162,15 +163,20 @@ public class AwattarBestpriceHandler extends BaseThingHandler {
             result = res;
         } else {
             range.sort(Comparator.naturalOrder());
+
+            // sort in descending order when inverted
+            if (config.inverted) {
+                Collections.reverse(range);
+            }
+
             AwattarNonConsecutiveBestPriceResult res = new AwattarNonConsecutiveBestPriceResult(
                     bridgeHandler.getTimeZone());
-            int ct = 0;
-            for (AwattarPrice price : range) {
-                res.addMember(price);
-                if (++ct >= config.length) {
-                    break;
-                }
+
+            // take up to config.length prices
+            for (int i = 0; i < Math.min(config.length, range.size()); i++) {
+                res.addMember(range.get(i));
             }
+
             result = res;
         }
         String channelId = channelUID.getIdWithoutGroup();
