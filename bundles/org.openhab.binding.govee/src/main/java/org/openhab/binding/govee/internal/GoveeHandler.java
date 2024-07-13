@@ -15,6 +15,7 @@ package org.openhab.binding.govee.internal;
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.*;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -80,6 +81,7 @@ public class GoveeHandler extends BaseThingHandler {
     private static final Gson GSON = new Gson();
 
     private final Logger logger = LoggerFactory.getLogger(GoveeHandler.class);
+    private final ScheduledExecutorService executorService;
 
     @Nullable
     private ScheduledFuture<?> triggerStatusJob; // send device status update job
@@ -110,9 +112,11 @@ public class GoveeHandler extends BaseThingHandler {
         }
     };
 
-    public GoveeHandler(Thing thing, CommunicationManager communicationManager) {
+    public GoveeHandler(Thing thing, CommunicationManager communicationManager,
+            @Nullable ScheduledExecutorService executorService) {
         super(thing);
         this.communicationManager = communicationManager;
+        this.executorService = executorService == null ? this.scheduler : executorService;
     }
 
     public String getHostname() {
@@ -318,8 +322,13 @@ public class GoveeHandler extends BaseThingHandler {
         if (newColorTempInKelvin != lastColorTempInKelvin) {
             logger.trace("Color-Temperature Status: old: {} K {}% vs new: {} K", lastColorTempInKelvin,
                     newColorTempInPercent, newColorTempInKelvin);
-            updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType<>(lastColorTempInKelvin, Units.KELVIN));
-            updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(newColorTempInPercent));
+            try {
+                updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType<>(lastColorTempInKelvin, Units.KELVIN));
+                updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(newColorTempInPercent));
+            } catch (IllegalArgumentException e) {
+                logger.debug(
+                        "Updating the channel state failed due to IllegalArgumentException, probably StatusResponse has a value out of bounds");
+            }
         }
 
         lastOnOff = newOnOff;
