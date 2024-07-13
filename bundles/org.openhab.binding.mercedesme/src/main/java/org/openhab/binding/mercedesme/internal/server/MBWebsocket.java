@@ -45,6 +45,7 @@ import com.daimler.mbcarkit.proto.VehicleEvents.AcknowledgeVEPUpdatesByVIN;
 import com.daimler.mbcarkit.proto.VehicleEvents.PushMessage;
 import com.daimler.mbcarkit.proto.Vehicleapi.AcknowledgeAppTwinCommandStatusUpdatesByVIN;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByVIN;
+import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinPendingCommandsRequest;
 
 /**
  * {@link MBWebsocket} as socket endpoint to communicate with Mercedes
@@ -227,7 +228,10 @@ public class MBWebsocket {
                         .build();
                 sendAcknowledgeMessage(cm);
             } else if (pm.hasApptwinPendingCommandRequest()) {
-                logger.trace("Pending Command {}", pm.getApptwinPendingCommandRequest().getAllFields());
+                AppTwinPendingCommandsRequest pending = pm.getApptwinPendingCommandRequest();
+                if (!pending.getAllFields().isEmpty()) {
+                    logger.trace("Pending Command {}", pending.getAllFields());
+                }
             } else if (pm.hasDebugMessage()) {
                 logger.trace("MB Debug Message: {}", pm.getDebugMessage().getMessage());
             } else {
