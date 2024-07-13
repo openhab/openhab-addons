@@ -55,7 +55,7 @@ public class GoveeHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_LIGHT.equals(thingTypeUID)) {
-            return new GoveeHandler(thing, communicationManager);
+            return new GoveeHandler(thing, communicationManager, null);
         }
 
         return null;
