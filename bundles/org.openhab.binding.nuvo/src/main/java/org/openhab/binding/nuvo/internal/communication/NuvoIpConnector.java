@@ -55,6 +55,15 @@ public class NuvoIpConnector extends NuvoConnector {
         this.uid = uid;
     }
 
+    /**
+     * Default constructor for temporary connector object that gets replaced during initialize()
+     */
+    public NuvoIpConnector() {
+        this.address = "";
+        this.port = -1;
+        this.uid = "";
+    }
+
     @Override
     public synchronized void open() throws NuvoException {
         logger.debug("Opening IP connection on IP {} port {}", this.address, this.port);
