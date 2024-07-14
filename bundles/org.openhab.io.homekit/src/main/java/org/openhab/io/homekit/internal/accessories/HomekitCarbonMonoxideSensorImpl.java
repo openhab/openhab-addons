@@ -24,6 +24,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.CarbonMonoxideSensorAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.carbonmonoxidesensor.CarbonMonoxideDetectedEnum;
 import io.github.hapjava.services.impl.CarbonMonoxideSensorService;
@@ -37,9 +38,9 @@ public class HomekitCarbonMonoxideSensorImpl extends AbstractHomekitAccessoryImp
     private final Map<CarbonMonoxideDetectedEnum, String> mapping;
 
     public HomekitCarbonMonoxideSensorImpl(HomekitTaggedItem taggedItem,
-            List<HomekitTaggedItem> mandatoryCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
-            throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<HomekitTaggedItem> mandatoryCharacteristics, List<Characteristic> mandatoryRawCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         mapping = createMapping(CARBON_MONOXIDE_DETECTED_STATE, CarbonMonoxideDetectedEnum.class);
     }
 

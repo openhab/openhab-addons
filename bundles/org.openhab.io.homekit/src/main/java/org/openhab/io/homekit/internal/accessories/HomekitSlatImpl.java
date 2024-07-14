@@ -24,6 +24,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.SlatAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.slat.CurrentSlatStateEnum;
 import io.github.hapjava.characteristics.impl.slat.SlatTypeEnum;
@@ -39,8 +40,9 @@ public class HomekitSlatImpl extends AbstractHomekitAccessoryImpl implements Sla
     private final SlatTypeEnum slatType;
 
     public HomekitSlatImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         final String slatTypeConfig = getAccessoryConfiguration(CONFIG_TYPE, "horizontal");
         slatType = "horizontal".equalsIgnoreCase(slatTypeConfig) ? SlatTypeEnum.HORIZONTAL : SlatTypeEnum.VERTICAL;
         currentSlatStateMapping = createMapping(CURRENT_SLAT_STATE, CurrentSlatStateEnum.class);
