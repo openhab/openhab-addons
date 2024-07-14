@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -63,7 +62,6 @@ import de.bwaldvogel.mongo.backend.memory.MemoryBackend;
  *
  * @author René Ulbricht - Initial contribution
  */
-@Disabled("Fails on CPUs without AVX support, see: https://github.com/openhab/openhab-addons/issues/17046")
 public class MongoDBPersistenceServiceTest {
 
     /**
