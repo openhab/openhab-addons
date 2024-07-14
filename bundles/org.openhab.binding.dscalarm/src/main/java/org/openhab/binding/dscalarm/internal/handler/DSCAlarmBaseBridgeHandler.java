@@ -380,7 +380,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 }
 
             } else {
-                logger.error("checkThings(): Thing handler not found!");
+                logger.error("checkThings(): Thing handler not found! Thing: {} {}", thing.getUID(), thing);
             }
         }
     }
