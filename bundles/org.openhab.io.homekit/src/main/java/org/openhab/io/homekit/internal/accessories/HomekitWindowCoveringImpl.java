@@ -41,7 +41,7 @@ public class HomekitWindowCoveringImpl extends AbstractHomekitPositionAccessoryI
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new WindowCoveringService(this));
+        addService(new WindowCoveringService(this));
     }
 
     @Override

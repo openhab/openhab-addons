@@ -43,7 +43,7 @@ public class HomekitOutletImpl extends AbstractHomekitAccessoryImpl implements O
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new OutletService(this));
+        addService(new OutletService(this));
     }
 
     @Override

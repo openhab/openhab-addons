@@ -44,7 +44,7 @@ public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl implemen
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new LeakSensorService(this));
+        addService(new LeakSensorService(this));
     }
 
     @Override

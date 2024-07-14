@@ -44,7 +44,7 @@ class HomekitTemperatureSensorImpl extends AbstractHomekitAccessoryImpl implemen
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new TemperatureSensorService(this));
+        addService(new TemperatureSensorService(this));
     }
 
     @Override

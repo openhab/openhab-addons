@@ -49,7 +49,7 @@ public class HomekitSlatImpl extends AbstractHomekitAccessoryImpl implements Sla
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new SlatService(this));
+        addService(new SlatService(this));
     }
 
     @Override

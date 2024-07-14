@@ -45,7 +45,7 @@ class HomekitBasicFanImpl extends AbstractHomekitAccessoryImpl implements BasicF
     @Override
     public void init() throws HomekitException {
         super.init();
-        this.getServices().add(new BasicFanService(this));
+        addService(new BasicFanService(this));
     }
 
     @Override

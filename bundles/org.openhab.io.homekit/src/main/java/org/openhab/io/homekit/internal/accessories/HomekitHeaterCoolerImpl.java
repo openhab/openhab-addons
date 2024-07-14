@@ -73,10 +73,10 @@ public class HomekitHeaterCoolerImpl extends AbstractHomekitAccessoryImpl implem
     public void init() throws HomekitException {
         super.init();
         final HeaterCoolerService service = new HeaterCoolerService(this);
+        addService(service);
         service.addOptionalCharacteristic(new TemperatureDisplayUnitCharacteristic(this::getTemperatureDisplayUnit,
                 this::setTemperatureDisplayUnit, this::subscribeTemperatureDisplayUnit,
                 this::unsubscribeTemperatureDisplayUnit));
-        getServices().add(service);
     }
 
     @Override

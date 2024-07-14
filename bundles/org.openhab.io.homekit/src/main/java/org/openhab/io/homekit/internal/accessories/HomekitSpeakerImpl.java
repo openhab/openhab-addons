@@ -42,7 +42,7 @@ public class HomekitSpeakerImpl extends AbstractHomekitAccessoryImpl implements 
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new SpeakerService(this));
+        addService(new SpeakerService(this));
     }
 
     @Override

@@ -43,7 +43,7 @@ public class HomekitSwitchImpl extends AbstractHomekitAccessoryImpl implements S
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new SwitchService(this));
+        addService(new SwitchService(this));
     }
 
     @Override

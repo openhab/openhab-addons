@@ -41,7 +41,7 @@ public class HomekitDoorImpl extends AbstractHomekitPositionAccessoryImpl implem
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new DoorService(this));
+        addService(new DoorService(this));
     }
 
     @Override

@@ -44,7 +44,7 @@ public class HomekitSmokeSensorImpl extends AbstractHomekitAccessoryImpl impleme
     @Override
     public void init() throws HomekitException {
         super.init();
-        this.getServices().add(new SmokeSensorService(this));
+        addService(new SmokeSensorService(this));
     }
 
     @Override
