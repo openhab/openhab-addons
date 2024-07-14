@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.GarageDoorOpenerAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.garagedoor.CurrentDoorStateEnum;
 import io.github.hapjava.characteristics.impl.garagedoor.TargetDoorStateEnum;
@@ -45,8 +46,9 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
     private final Map<TargetDoorStateEnum, String> targetDoorStateMapping;
 
     public HomekitGarageDoorOpenerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         obstructionReader = createBooleanReader(OBSTRUCTION_STATUS);
         currentDoorStateMapping = createMapping(CURRENT_DOOR_STATE, CurrentDoorStateEnum.class, true);
         targetDoorStateMapping = createMapping(TARGET_DOOR_STATE, TargetDoorStateEnum.class, true);

@@ -39,6 +39,7 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.windowcovering.PositionStateEnum;
 
@@ -58,9 +59,9 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
     protected PositionStateEnum emulatedState = PositionStateEnum.STOPPED;
 
     public AbstractHomekitPositionAccessoryImpl(HomekitTaggedItem taggedItem,
-            List<HomekitTaggedItem> mandatoryCharacteristics, HomekitAccessoryUpdater updater,
-            HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<HomekitTaggedItem> mandatoryCharacteristics, List<Characteristic> mandatoryRawCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         final boolean inverted = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.INVERTED, true);
         emulateState = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.EMULATE_STOP_STATE, false);
         emulateStopSameDirection = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.EMULATE_STOP_SAME_DIRECTION,

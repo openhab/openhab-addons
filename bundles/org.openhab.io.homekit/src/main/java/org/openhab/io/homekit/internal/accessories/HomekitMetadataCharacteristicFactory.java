@@ -65,6 +65,8 @@ import io.github.hapjava.characteristics.impl.thermostat.CurrentHeatingCoolingSt
 import io.github.hapjava.characteristics.impl.thermostat.CurrentHeatingCoolingStateEnum;
 import io.github.hapjava.characteristics.impl.thermostat.TargetHeatingCoolingStateCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.TargetHeatingCoolingStateEnum;
+import io.github.hapjava.characteristics.impl.thermostat.TemperatureDisplayUnitCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.TemperatureDisplayUnitEnum;
 
 /**
  * Creates an optional characteristics from metadata
@@ -104,16 +106,24 @@ public class HomekitMetadataCharacteristicFactory {
                     HomekitMetadataCharacteristicFactory::createTargetHeaterCoolerStateCharacteristic);
             put(TARGET_HEATING_COOLING_STATE,
                     HomekitMetadataCharacteristicFactory::createTargetHeatingCoolingStateCharacteristic);
+            put(TEMPERATURE_UNIT, HomekitMetadataCharacteristicFactory::createTemperatureDisplayUnitCharacteristic);
             put(VOLUME_CONTROL_TYPE, HomekitMetadataCharacteristicFactory::createVolumeControlTypeCharacteristic);
         }
     };
 
     public static Optional<Characteristic> createCharacteristic(String characteristic, Object value) {
         var type = HomekitCharacteristicType.valueOfTag(characteristic);
-        if (type.isEmpty() || !OPTIONAL.containsKey(type.get())) {
+        if (type.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(OPTIONAL.get(type.get()).apply(value));
+        return createCharacteristic(type.get(), value);
+    }
+
+    public static Optional<Characteristic> createCharacteristic(HomekitCharacteristicType type, Object value) {
+        if (!OPTIONAL.containsKey(type)) {
+            return Optional.empty();
+        }
+        return Optional.of(OPTIONAL.get(type).apply(value));
     }
 
     private static Supplier<CompletableFuture<Integer>> getInteger(Object value) {
@@ -319,6 +329,22 @@ public class HomekitMetadataCharacteristicFactory {
                 }, v -> {
                 }, () -> {
                 });
+    }
+
+    private static Characteristic createTemperatureDisplayUnitCharacteristic(Object value) {
+        var enumSupplier = getEnum(value, TemperatureDisplayUnitEnum.class);
+        TemperatureDisplayUnitEnum enumValue;
+        try {
+            enumValue = enumSupplier.get().get();
+        } catch (InterruptedException | ExecutionException e) {
+            enumValue = HomekitCharacteristicFactory.useFahrenheit() ? TemperatureDisplayUnitEnum.FAHRENHEIT
+                    : TemperatureDisplayUnitEnum.CELSIUS;
+        }
+
+        return new TemperatureDisplayUnitCharacteristic(enumSupplier, v -> {
+        }, v -> {
+        }, () -> {
+        });
     }
 
     private static Characteristic createVolumeControlTypeCharacteristic(Object value) {
