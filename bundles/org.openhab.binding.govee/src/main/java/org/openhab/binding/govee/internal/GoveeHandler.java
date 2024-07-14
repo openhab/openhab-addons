@@ -102,9 +102,7 @@ public class GoveeHandler extends BaseThingHandler {
     private final Runnable thingRefreshSender = () -> {
         try {
             triggerDeviceStatusRefresh();
-            if (!thing.getStatus().equals(ThingStatus.ONLINE)) {
-                updateStatus(ThingStatus.ONLINE);
-            }
+            updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname
@@ -138,7 +136,7 @@ public class GoveeHandler extends BaseThingHandler {
         if (triggerStatusJob == null) {
             logger.debug("Starting refresh trigger job for thing {} ", thing.getLabel());
 
-            triggerStatusJob = scheduler.scheduleWithFixedDelay(thingRefreshSender, 100,
+            triggerStatusJob = executorService.scheduleWithFixedDelay(thingRefreshSender, 100,
                     goveeConfiguration.refreshInterval * 1000L, TimeUnit.MILLISECONDS);
         }
     }
@@ -322,17 +320,16 @@ public class GoveeHandler extends BaseThingHandler {
         if (newColorTempInKelvin != lastColorTempInKelvin) {
             logger.trace("Color-Temperature Status: old: {} K {}% vs new: {} K", lastColorTempInKelvin,
                     newColorTempInPercent, newColorTempInKelvin);
-            try {
+            if (lastColorTempInKelvin >= 2000 && lastColorTempInKelvin <= 9000) {
                 updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType<>(lastColorTempInKelvin, Units.KELVIN));
-                updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(newColorTempInPercent));
-            } catch (IllegalArgumentException e) {
-                logger.debug(
-                        "Updating the channel state failed due to IllegalArgumentException, probably StatusResponse has a value out of bounds");
             }
-        }
+            if (newColorTempInPercent >= 0 && newColorTempInPercent <= 100) {
+                updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(newColorTempInPercent));
+            }
 
-        lastOnOff = newOnOff;
-        lastColor = adaptedColor;
-        lastBrightness = newBrightness;
+            lastOnOff = newOnOff;
+            lastColor = adaptedColor;
+            lastBrightness = newBrightness;
+        }
     }
 }

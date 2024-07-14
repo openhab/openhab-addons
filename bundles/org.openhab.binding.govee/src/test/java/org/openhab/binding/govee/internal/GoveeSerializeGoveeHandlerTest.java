@@ -143,7 +143,6 @@ public class GoveeSerializeGoveeHandlerTest {
 
         try {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
-            // verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
 
             verify(callback).stateUpdated(new ChannelUID(thing.getUID(), GoveeBindingConstants.CHANNEL_COLOR),
                     new HSBType(new DecimalType(114), new PercentType(100), new PercentType(0)));

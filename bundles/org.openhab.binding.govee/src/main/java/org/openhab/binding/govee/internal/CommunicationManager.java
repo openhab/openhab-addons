@@ -226,8 +226,8 @@ public class CommunicationManager {
                                 }
                             } catch (JsonParseException e) {
                                 logger.debug(
-                                        "JsonParseException when trying to parse the response, probably a status message");
-                                logger.trace("Response >> {}", response);
+                                        "JsonParseException when trying to parse the response, probably a status message",
+                                        e);
                             }
                         } else {
                             final @Nullable GoveeHandler handler;
