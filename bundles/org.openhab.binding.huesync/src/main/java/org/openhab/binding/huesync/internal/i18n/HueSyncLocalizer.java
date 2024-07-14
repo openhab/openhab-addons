@@ -36,7 +36,7 @@ public class HueSyncLocalizer {
     private static final Bundle bundle = bundleContext.getBundle();
 
     @SuppressWarnings("null")
-public static String getResourceString(String key) {
+    public static String getResourceString(String key) {
         String lookupKey = key.replace("@text/", "");
         String missingKey = "⚠️ Missing Translation ⚠️: " + key;
 
