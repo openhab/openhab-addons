@@ -49,6 +49,7 @@ public abstract class NikoHomeControlCommunication {
     protected final Map<String, NhcMeter> meters = new ConcurrentHashMap<>();
     protected final Map<String, NhcAccess> accessDevices = new ConcurrentHashMap<>();
     protected final Map<String, NhcVideo> videoDevices = new ConcurrentHashMap<>();
+    protected final Map<String, NhcAlarm> alarmDevices = new ConcurrentHashMap<>();
 
     protected final NhcControllerEvent handler;
 
@@ -193,6 +194,15 @@ public abstract class NikoHomeControlCommunication {
     }
 
     /**
+     * Return all alarm devices in the Niko Home Control Controller.
+     *
+     * @return <code>Map&lt;String, {@link NhcAlarm}></code>
+     */
+    public Map<String, NhcAlarm> getAlarmDevices() {
+        return alarmDevices;
+    }
+
+    /**
      * Execute an action command by sending it to Niko Home Control.
      *
      * @param actionId
@@ -326,5 +336,21 @@ public abstract class NikoHomeControlCommunication {
      * @param accessId
      */
     public void executeAccessUnlock(String accessId) {
+    }
+
+    /**
+     * Execute an arm command on an alarm control device by sending it to Niko Home Control.
+     *
+     * @param accessId
+     */
+    public void executeArm(String alarmId) {
+    }
+
+    /**
+     * Execute an disarm command on an alarm control device by sending it to Niko Home Control.
+     *
+     * @param accessId
+     */
+    public void executeDisarm(String alarmId) {
     }
 }

@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -42,6 +43,11 @@ public class HomekitSmartSpeakerImpl extends AbstractHomekitAccessoryImpl implem
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         currentMediaState = createMapping(CURRENT_MEDIA_STATE, CurrentMediaStateEnum.class);
         targetMediaState = createMapping(TARGET_MEDIA_STATE, TargetMediaStateEnum.class);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
         getServices().add(new SmartSpeakerService(this));
     }
 

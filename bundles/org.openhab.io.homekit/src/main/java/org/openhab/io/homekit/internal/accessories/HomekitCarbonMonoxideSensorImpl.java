@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -40,6 +41,11 @@ public class HomekitCarbonMonoxideSensorImpl extends AbstractHomekitAccessoryImp
             throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
         mapping = createMapping(CARBON_MONOXIDE_DETECTED_STATE, CarbonMonoxideDetectedEnum.class);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
         getServices().add(new CarbonMonoxideSensorService(this));
     }
 

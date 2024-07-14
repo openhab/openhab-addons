@@ -3,74 +3,74 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
-	<channel-type id="mileage-channel">
+	<channel-type id="mileage">
 		<item-type>Number:Length</item-type>
 		<label>Mileage</label>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d km" readOnly="true"/>
 	</channel-type>
-	<channel-type id="range-electric-channel">
+	<channel-type id="range-electric">
 		<item-type>Number:Length</item-type>
 		<label>Electric Range</label>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d km" readOnly="true"/>
 	</channel-type>
-	<channel-type id="radius-electric-channel">
+	<channel-type id="radius-electric">
 		<item-type>Number:Length</item-type>
 		<label>Electric Radius</label>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d km" readOnly="true"/>
 	</channel-type>
-	<channel-type id="soc-channel">
+	<channel-type id="home-distance">
+		<item-type>Number:Length</item-type>
+		<label>Distance to Home</label>
+		<state pattern="%.3f km" readOnly="true"/>
+	</channel-type>
+	<channel-type id="soc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Charge Level</label>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d %" readOnly="true"/>
 	</channel-type>
-	<channel-type id="charged-channel">
+	<channel-type id="charged">
 		<item-type>Number:Energy</item-type>
 		<label>Charged Battery Energy</label>
-		<state pattern="%.2f %unit%" readOnly="true"/>
+		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
-	<channel-type id="uncharged-channel">
+	<channel-type id="uncharged">
 		<item-type>Number:Energy</item-type>
 		<label>Uncharged Battery Energy</label>
-		<state pattern="%.2f %unit%" readOnly="true"/>
+		<state pattern="%.2f kWh" readOnly="true"/>
 	</channel-type>
-	<channel-type id="range-fuel-channel">
+	<channel-type id="range-fuel">
 		<item-type>Number:Length</item-type>
 		<label>Fuel Range</label>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d km" readOnly="true"/>
 	</channel-type>
-	<channel-type id="radius-fuel-channel">
+	<channel-type id="radius-fuel">
 		<item-type>Number:Length</item-type>
 		<label>Fuel Radius</label>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d km" readOnly="true"/>
 	</channel-type>
-	<channel-type id="fuel-level-channel">
+	<channel-type id="fuel-level">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Fuel Level</label>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
-	<channel-type id="fuel-remain-channel">
+	<channel-type id="fuel-remain">
 		<item-type>Number:Volume</item-type>
 		<label>Remaining Fuel</label>
-		<state pattern="%.2f %unit%" readOnly="true"/>
+		<state pattern="%.2f l" readOnly="true"/>
 	</channel-type>
-	<channel-type id="fuel-open-channel">
+	<channel-type id="fuel-open">
 		<item-type>Number:Volume</item-type>
 		<label>Open Fuel Capacity</label>
-		<state pattern="%.2f %unit%" readOnly="true"/>
+		<state pattern="%.2f l" readOnly="true"/>
 	</channel-type>
-	<channel-type id="range-hybrid-channel">
+	<channel-type id="range-hybrid">
 		<item-type>Number:Length</item-type>
 		<label>Hybrid Range</label>
-		<state pattern="%d %unit%" readOnly="true"/>
+		<state pattern="%d km" readOnly="true"/>
 	</channel-type>
-	<channel-type id="radius-hybrid-channel">
+	<channel-type id="radius-hybrid">
 		<item-type>Number:Length</item-type>
 		<label>Hybrid Radius</label>
-		<state pattern="%d %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="last-range-update-channel">
-		<item-type>DateTime</item-type>
-		<label>Last Range Update</label>
-		<state pattern="%1$tA, %1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+		<state pattern="%d km" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>

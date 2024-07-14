@@ -14,8 +14,10 @@ package org.openhab.binding.solarforecast.internal.forecastsolar.handler;
 
 import static org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants.*;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -55,10 +57,13 @@ import org.openhab.core.types.TimeSeries.Policy;
  */
 @NonNullByDefault
 public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements SolarForecastProvider {
+    private static final int CALM_DOWN_TIME_MINUTES = 61;
+
     private List<ForecastSolarPlaneHandler> planes = new ArrayList<>();
     private Optional<PointType> homeLocation;
     private Optional<ForecastSolarBridgeConfiguration> configuration = Optional.empty();
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private Instant calmDownEnd = Instant.MIN;
 
     public ForecastSolarBridgeHandler(Bridge bridge, Optional<PointType> location) {
         super(bridge);
@@ -130,6 +135,13 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
         if (planes.isEmpty()) {
             return;
         }
+        if (calmDownEnd.isAfter(Instant.now(Utils.getClock()))) {
+            // wait until calm down time is expired
+            long minutes = Duration.between(Instant.now(Utils.getClock()), calmDownEnd).toMinutes();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "@text/solarforecast.site.status.calmdown [\"" + minutes + "\"]");
+            return;
+        }
         boolean update = true;
         double energySum = 0;
         double powerSum = 0;
@@ -138,7 +150,7 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
             try {
                 ForecastSolarPlaneHandler sfph = iterator.next();
                 ForecastSolarObject fo = sfph.fetchData();
-                ZonedDateTime now = ZonedDateTime.now(fo.getZone());
+                ZonedDateTime now = ZonedDateTime.now(Utils.getClock());
                 energySum += fo.getActualEnergyValue(now);
                 powerSum += fo.getActualPowerValue(now);
                 daySum += fo.getDayTotal(now.toLocalDate());
@@ -231,5 +243,9 @@ public class ForecastSolarBridgeHandler extends BaseBridgeHandler implements Sol
             l.addAll(entry.getSolarForecasts());
         });
         return l;
+    }
+
+    public void calmDown() {
+        calmDownEnd = Instant.now(Utils.getClock()).plus(CALM_DOWN_TIME_MINUTES, ChronoUnit.MINUTES);
     }
 }

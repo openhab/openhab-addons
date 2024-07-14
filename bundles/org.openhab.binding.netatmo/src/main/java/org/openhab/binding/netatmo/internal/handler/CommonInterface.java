@@ -15,6 +15,7 @@ package org.openhab.binding.netatmo.internal.handler;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -169,8 +170,8 @@ public interface CommonInterface {
     }
 
     default <T extends RestCapability<?>> Optional<T> getHomeCapability(Class<T> clazz) {
-        return recurseUpToHomeHandler(this).map(handler -> handler.getCapabilities().get(clazz))
-                .orElse(Optional.empty());
+        return Objects.requireNonNull(recurseUpToHomeHandler(this).map(handler -> handler.getCapabilities().get(clazz))
+                .orElse(Optional.empty()));
     }
 
     default void setNewData(NAObject newData) {

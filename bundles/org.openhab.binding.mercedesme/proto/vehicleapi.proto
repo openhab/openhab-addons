@@ -1,0 +1,156 @@
+syntax = "proto3";
+package proto;
+
+import "acp.proto";
+import "google/protobuf/struct.proto";
+//import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "gogo.proto";
+
+option (gogoproto.goproto_enum_prefix_all) = true;
+option java_package = "com.daimler.mbcarkit.proto";
+
+// Sending direction: App -> BFF -> AppTwin
+message AcknowledgeAppTwinCommandStatusUpdatesByVIN {
+    int32 sequence_number = 1;
+}
+
+// Sending direction: App <- BFF <- AppTwin
+message AppTwinCommandStatusUpdatesByVIN {
+
+    int32 sequence_number = 1;
+
+    // VIN -> Update
+    map<string, AppTwinCommandStatusUpdatesByPID> updates_by_vin = 2;
+}
+
+// Sending direction: App <- BFF <- AppTwin as part of an AppTwinCommandStatusUpdatesByVIN
+message AppTwinCommandStatusUpdatesByPID {
+
+    string vin = 1;
+
+    // Process ID -> Status
+    map<int64, AppTwinCommandStatus> updates_by_pid = 2;
+}
+
+// Sending direction: App <- BFF <- AppTwin as part of an AppTwinCommandStatusUpdatesByPID
+message AppTwinCommandStatus {
+
+    // The remote vehicleAPI process id of the command.
+    int64 process_id = 1;
+
+    // The id of the command with which the app created it. Only guaranteed to be
+    // set on the first transmission to the app.
+    string request_id = 2;
+
+    // The initial CommandStatus from the response of the vehicleAPI has a timestamp of
+    // -1
+    int64 timestamp_in_ms = 3;
+
+    // Potential ACP error if the command request could not be fulfilled
+    repeated VehicleAPIError errors = 4;
+
+    // Potential timestamp until user cannot send login requests. Data in seconds
+    // since Unix epoch
+    int64 blocking_time_seconds = 5 [ deprecated = true ];
+
+    // Potential amount of failed pin attempts.
+    int32 pin_attempts = 6 [ deprecated = true ];
+
+    // The type of command the AppTwinCommandStatus belongs to
+    ACP.CommandType type = 7;
+
+    // The command state
+    VehicleAPI.CommandState state = 8;
+}
+
+// VehicleAPICommandPostResult is a message type that can be unmarshaled from a POST request against the vehicle API
+// for issuing commands.
+message VehicleAPICommandPostResult {
+
+    // The remote VVA process id of the command.
+    int64 process_id = 1 [json_name = "processid"];
+
+    // Potential ACP error if the command request could not be fulfilled
+    repeated VehicleAPIError errors = 2 [json_name = "errors"];
+
+    // The command state
+    VehicleAPI.CommandState state = 3 [json_name = "state"];
+}
+
+message VehicleAPICommandGetResult {
+    // List of processes
+    repeated VehicleAPICommandProcessStatus process = 1 [json_name = "process"];
+
+    // Number of enqueued commands in related command queue
+    int32 queue_count = 2 [json_name = "queuecount"];
+
+    // Name of related command queue type
+    VehicleAPI.QueueType queue_type = 3 [json_name = "queuetype"];
+}
+
+message VehicleAPIDataGetResult {
+    map<string, VehicleAPIAttributeStatus> data = 1;
+}
+
+message VehicleAPIAttributeStatus {
+    // Value of the attribute (can be anything)
+    google.protobuf.Value value = 3 [json_name  = "value"];
+    // UTC timestamp in milliseconds
+    int64 timestamp_in_ms = 2 [json_name  = "ts"];
+    // Status of the attribute
+    VehicleAPI.AttributeStatus Status = 1 [json_name  = "status"];
+}
+
+message VehicleAPICommandProcessStatus {
+    repeated VehicleAPIError errors = 1 [json_name = "errors"];
+
+    // GUID (RFC 4122)
+    string instance_id = 2 [json_name = "instanceid"];
+
+    // Name of the command
+    string name = 3 [json_name = "name"];
+
+    // Process ID
+    int64 process_id = 4 [json_name = "processid"];
+
+    // The parameters with which the command was requested
+    // google.protobuf.Value request_parameters = 5
+    //     [ json_name = "requestparameters" ];
+
+    // Response parameters as defined by the command
+    google.protobuf.Value response_parameters = 6 [json_name = "responseparameters"];
+
+    // Current processing state
+    VehicleAPI.CommandState state = 7 [json_name = "state"];
+
+    // UTC timestamp in seconds (ISO 9945)
+    int64 timestamp_in_s = 8 [json_name = "timestamp"];
+
+    // Tracking ID. SHOULD be a GUID (RFC 4122)
+    string tracking_id = 9 [json_name = "trackingid"];
+}
+
+message VehicleAPIError {
+    string code = 1 [json_name = "error-code"];
+    string message = 2 [json_name = "error-message"];
+    map<string, google.protobuf.Value> attributes = 3 [json_name = "attributes"];
+    repeated VehicleAPIError sub_errors = 4 [json_name = "sub-errors"];
+}
+
+// AppTwinPendingCommandsRequest is sent from the AppTwin to the app to ask for commands that the app has not yet
+// received a finished state for. This request MUST eventually be answered with AppTwinPendingCommandsResponse.
+message AppTwinPendingCommandsRequest {}
+
+// AppTwinPendingCommandsResponse is sent from the app to the AppTwin to tell it the commands that haven't been
+// "resolved yet" (are not in a finished state). The delivery of this message to the AppTwin will trigger a command
+// actor that polls the state for the specified command type and PID.
+message AppTwinPendingCommandsResponse {
+    repeated PendingCommand pending_commands = 1;
+}
+
+message PendingCommand {
+    string vin = 1;
+    int64 process_id = 2;
+    string request_id = 3;
+    ACP.CommandType type = 4;
+}

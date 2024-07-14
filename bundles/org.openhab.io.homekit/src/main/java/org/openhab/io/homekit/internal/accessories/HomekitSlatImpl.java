@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -43,6 +44,11 @@ public class HomekitSlatImpl extends AbstractHomekitAccessoryImpl implements Sla
         final String slatTypeConfig = getAccessoryConfiguration(CONFIG_TYPE, "horizontal");
         slatType = "horizontal".equalsIgnoreCase(slatTypeConfig) ? SlatTypeEnum.HORIZONTAL : SlatTypeEnum.VERTICAL;
         currentSlatStateMapping = createMapping(CURRENT_SLAT_STATE, CurrentSlatStateEnum.class);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
         getServices().add(new SlatService(this));
     }
 

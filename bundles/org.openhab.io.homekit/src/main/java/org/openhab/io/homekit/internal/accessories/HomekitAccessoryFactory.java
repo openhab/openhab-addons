@@ -52,7 +52,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.characteristics.Characteristic;
-import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 
 /**
  * Creates a HomekitAccessory for a given HomekitTaggedItem.
@@ -211,13 +210,14 @@ public class HomekitAccessoryFactory {
                             taggedItem.getName());
                     throw new HomekitException("Circular accessory references");
                 }
-                ancestorServices.add(taggedItem);
                 accessoryImpl = accessoryImplClass.getConstructor(HomekitTaggedItem.class, List.class,
                         HomekitAccessoryUpdater.class, HomekitSettings.class)
                         .newInstance(taggedItem, foundCharacteristics, updater, settings);
                 addOptionalCharacteristics(taggedItem, accessoryImpl, metadataRegistry);
                 addOptionalMetadataCharacteristics(taggedItem, accessoryImpl);
+                accessoryImpl.setIsLinkedService(!ancestorServices.isEmpty());
                 accessoryImpl.init();
+                ancestorServices.add(taggedItem);
                 addLinkedServices(taggedItem, accessoryImpl, metadataRegistry, updater, settings, ancestorServices);
                 return accessoryImpl;
             } else {
@@ -251,8 +251,8 @@ public class HomekitAccessoryFactory {
                     HomekitAccessoryType type = accessoryType.get();
                     if (meta.length > 1) {
                         // it has characteristic as well
-                        accessories.add(new SimpleEntry<>(type,
-                                HomekitCharacteristicType.valueOfTag(meta[1].trim()).orElse(EMPTY)));
+                        accessories.add(new SimpleEntry<>(type, Objects
+                                .requireNonNull(HomekitCharacteristicType.valueOfTag(meta[1].trim()).orElse(EMPTY))));
                     } else {// it has no characteristic
                         accessories.add(new SimpleEntry<>(type, EMPTY));
                     }
@@ -467,15 +467,7 @@ public class HomekitAccessoryFactory {
             final var itemProxy = new HomekitOHItemProxy(groupMember);
             final var subTaggedItem = new HomekitTaggedItem(itemProxy, accessoryType, itemConfiguration);
             final var subAccessory = create(subTaggedItem, metadataRegistry, updater, settings, ancestorServices);
-
-            try {
-                subAccessory.addCharacteristic(new NameCharacteristic(() -> subAccessory.getName()));
-            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                // This should never happen; all services should support NameCharacteristic as an optional
-                // Characteristic.
-                // If HAP-Java defined a service that doesn't support addOptionalCharacteristic(NameCharacteristic),
-                // Then it's a bug there, and we're just going to ignore the exception here.
-            }
+            subAccessory.promoteNameCharacteristic();
 
             if (subAccessory.isLinkable(accessory)) {
                 accessory.getPrimaryService().addLinkedService(subAccessory.getPrimaryService());

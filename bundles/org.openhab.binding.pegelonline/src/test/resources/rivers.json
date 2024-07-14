@@ -1,0 +1,100 @@
+[
+  {
+    "uuid": "4e7a6cfa-7548-4f7f-a97a-eb0694881003",
+    "number": "25830056",
+    "shortname": "Marburg",
+    "longname": "MARBURG",
+    "km": -38.7,
+    "agency": "REGIERUNGSPRÄSIDIUM GIESSEN ABTEILUNG STAATLICHES UMWELTAMT MARBURG",
+    "longitude": 8.764488839485487,
+    "latitude": 50.798715477809225,
+    "water": {
+      "shortname": "LAHN",
+      "longname": "LAHN"
+    }
+  },
+  {
+    "uuid": "4b386a6a-996e-4a4a-a440-15d6b40226d4",
+    "number": "25800100",
+    "shortname": "GIESSEN KLÄRWERK",
+    "longname": "GIESSEN KLÄRWERK",
+    "km": -3.21,
+    "agency": "WSA MOSEL-SAAR-LAHN",
+    "longitude": 8.64860169166119,
+    "latitude": 50.575037651225514,
+    "water": {
+      "shortname": "LAHN",
+      "longname": "LAHN"
+    }
+  },
+  {
+    "uuid": "32807065-b887-49f0-935a-80033e5f3cb0",
+    "number": "25800200",
+    "shortname": "LEUN NEU",
+    "longname": "LEUN NEU",
+    "km": 25.1,
+    "agency": "WSA MOSEL-SAAR-LAHN",
+    "longitude": 8.355230130810975,
+    "latitude": 50.545120232764674,
+    "water": {
+      "shortname": "LAHN",
+      "longname": "LAHN"
+    }
+  },
+  {
+    "uuid": "89038b42-8181-48df-a0cd-2ca3913f2d68",
+    "number": "25800440",
+    "shortname": "LIMBURG SCHLEUSE UP",
+    "longname": "LIMBURG SCHLEUSE UP",
+    "km": 76.611,
+    "agency": "WSA MOSEL-SAAR-LAHN",
+    "longitude": 8.065188851061134,
+    "latitude": 50.39151276997554,
+    "water": {
+      "shortname": "LAHN",
+      "longname": "LAHN"
+    }
+  },
+  {
+    "uuid": "eadedeb6-c31e-483f-b6c4-ca0153359ad7",
+    "number": "25800500",
+    "shortname": "DIEZ HAFEN",
+    "longname": "DIEZ HAFEN",
+    "km": 83.7,
+    "agency": "WSA MOSEL-SAAR-LAHN",
+    "longitude": 8.005066992072132,
+    "latitude": 50.3723880903084,
+    "water": {
+      "shortname": "LAHN",
+      "longname": "LAHN"
+    }
+  },
+  {
+    "uuid": "64f735fd-88b6-42ea-9cdd-dc18d3806c34",
+    "number": "25800600",
+    "shortname": "KALKOFEN NEU",
+    "longname": "KALKOFEN NEU",
+    "km": 106.4,
+    "agency": "WSA MOSEL-SAAR-LAHN",
+    "longitude": 7.8898156192725235,
+    "latitude": 50.31783177830708,
+    "water": {
+      "shortname": "LAHN",
+      "longname": "LAHN"
+    }
+  },
+  {
+    "uuid": "6b6b31e2-e5c7-4c85-8405-b8d0b6e158c4",
+    "number": "25800800",
+    "shortname": "LAHNSTEIN SCHLEUSE UP",
+    "longname": "LAHNSTEIN SCHLEUSE UP",
+    "km": 135.986,
+    "agency": "WSA MOSEL-SAAR-LAHN",
+    "longitude": 7.612956624441373,
+    "latitude": 50.30803174924558,
+    "water": {
+      "shortname": "LAHN",
+      "longname": "LAHN"
+    }
+  }
+]

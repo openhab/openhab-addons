@@ -7,8 +7,9 @@ You can then monitor and control all zone types (Heating, AC, Hot Water) as well
 
 ## `home` Thing (the Bridge)
 
-The binding supports discovery, but a `home` thing type has to be configured first.
-It serves as bridge to the tado° cloud services.
+The `home` thing serves as bridge to the tado° cloud services.
+The binding will automatically discover this thing and place it in the Inbox.
+It has to be manually configured with its `username` and `password` before it will actually go onlime.
 
 Parameter | Required | Description
 -|-|-
@@ -21,7 +22,7 @@ Example `tado.things`
 Bridge tado:home:demo [ username="mail@example.com", password="secret" ]
 ```
 
-Afterwards the discovery will show all zones and mobile devices associated with the user's home.
+Once the `home` thing is online, the binding will discover all its respective zones and mobile devices, and place them in the Inbox.
 
 ### Channels
 

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mycroft.internal.api;
 
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import javax.validation.constraints.NotNull;
@@ -100,8 +101,8 @@ public enum MessageType {
 
     @NotNull
     public static MessageType fromString(String asString) {
-        return Stream.of(values()).filter(messageType -> messageType.messageTypeName.equals(asString)).findFirst()
-                .orElse(any);
+        return Objects.requireNonNull(Stream.of(values())
+                .filter(messageType -> messageType.messageTypeName.equals(asString)).findFirst().orElse(any));
     }
 
     public String getMessageTypeName() {

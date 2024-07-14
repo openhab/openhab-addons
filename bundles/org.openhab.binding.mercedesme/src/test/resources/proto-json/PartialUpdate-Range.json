@@ -1,0 +1,16 @@
+{
+	"odo": {
+		"display_value": "15017",
+		"timestamp_in_ms": 1693923676000,
+		"distance_unit": "KILOMETERS",
+		"timestamp": 1693923676,
+		"int_value": 15017
+	},
+	"rangeelectric": {
+		"display_value": "307",
+		"timestamp_in_ms": 1693998228000,
+		"distance_unit": "KILOMETERS",
+		"timestamp": 1693998228,
+		"int_value": 307
+	}
+}

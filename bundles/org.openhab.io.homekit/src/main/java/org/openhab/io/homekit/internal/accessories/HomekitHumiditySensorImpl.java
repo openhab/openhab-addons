@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
@@ -37,6 +38,11 @@ public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl impl
     public HomekitHumiditySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             HomekitAccessoryUpdater updater, HomekitSettings settings) {
         super(taggedItem, mandatoryCharacteristics, updater, settings);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
         getServices().add(new HumiditySensorService(this));
     }
 

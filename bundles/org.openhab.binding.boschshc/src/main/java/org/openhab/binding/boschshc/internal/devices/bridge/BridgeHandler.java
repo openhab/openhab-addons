@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.boschshc.internal.devices.bridge;
 
-import static org.eclipse.jetty.http.HttpMethod.*;
+import static org.eclipse.jetty.http.HttpMethod.GET;
+import static org.eclipse.jetty.http.HttpMethod.POST;
+import static org.eclipse.jetty.http.HttpMethod.PUT;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -20,7 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -40,6 +41,7 @@ import org.openhab.binding.boschshc.internal.devices.BoschSHCHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.Message;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.PublicInformation;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Room;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
@@ -355,7 +357,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             Type collectionType = new TypeToken<ArrayList<Device>>() {
             }.getType();
             List<Device> nullableDevices = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content, collectionType);
-            return Optional.ofNullable(nullableDevices).orElse(Collections.emptyList());
+            return nullableDevices != null ? nullableDevices : Collections.emptyList();
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Request devices failed because of {}!", e.getMessage(), e);
             return Collections.emptyList();
@@ -388,7 +390,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             }.getType();
             List<UserDefinedState> nullableUserStates = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content,
                     collectionType);
-            return Optional.ofNullable(nullableUserStates).orElse(Collections.emptyList());
+            return nullableUserStates != null ? nullableUserStates : Collections.emptyList();
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Request user-defined states failed because of {}!", e.getMessage(), e);
             return List.of();
@@ -488,8 +490,42 @@ public class BridgeHandler extends BaseBridgeHandler {
                 if (channel != null && isLinked(channel.getUID())) {
                     updateState(channel.getUID(), new StringType(scenario.name));
                 }
+            } else if (serviceState instanceof Message message) {
+                handleMessage(message);
             }
         }
+    }
+
+    private void handleMessage(Message message) {
+        if (Message.SOURCE_TYPE_DEVICE.equals(message.sourceType) && message.sourceId != null) {
+            forwardMessageToDevice(message, message.sourceId);
+        }
+    }
+
+    private void forwardMessageToDevice(Message message, String deviceId) {
+        BoschSHCHandler deviceHandler = findDeviceHandler(deviceId);
+        if (deviceHandler == null) {
+            return;
+        }
+
+        deviceHandler.processMessage(message);
+    }
+
+    @Nullable
+    private BoschSHCHandler findDeviceHandler(String deviceIdToFind) {
+        for (Thing childThing : getThing().getThings()) {
+            @Nullable
+            ThingHandler baseHandler = childThing.getHandler();
+            if (baseHandler instanceof BoschSHCHandler handler) {
+                @Nullable
+                String deviceId = handler.getBoschID();
+
+                if (deviceIdToFind.equals(deviceId)) {
+                    return handler;
+                }
+            }
+        }
+        return null;
     }
 
     /**

@@ -1,0 +1,611 @@
+syntax = "proto3";
+package proto;
+//import "github.com/gogo/protobuf/gogoproto/gogo.proto";
+import "gogo.proto";
+import "google/protobuf/wrappers.proto";
+
+option (gogoproto.goproto_enum_prefix_all) = true;
+option java_package = "com.daimler.mbcarkit.proto";
+
+// Acknowledge the CommandRequest reached the apptwin actor
+// Websocket <- Apptwin
+message AcknowledgeCommandRequest {
+  string request_id = 1;
+}
+
+// After the command was issued at VVA based on this
+// command request the call will get a command request
+// correlation message which matches the request id
+// with the process id.
+// Sending direction: App - BFF -> AppTwin
+message CommandRequest {
+  string vin = 1;
+
+  // Set this id to correlate a CommandStatus
+  // with this command request.
+  string request_id = 7;
+
+  // Temporary backend switch field. Will be removed as soon as all commands are migrated to the VehicleAPI
+  // This field only needs to be set if the command is supported by both API from our backend. If this field is removed
+  // don't forget to set the field 36 to reserved.
+  enum Backend {
+    VVA = 0; // default value
+    VehicleAPI = 1;
+  }
+  Backend backend = 36;
+
+  oneof command {
+    AuxheatStart auxheat_start = 2;
+    AuxheatStop auxheat_stop = 3;
+    AuxheatConfigure auxheat_configure = 4;
+
+    DoorsLock doors_lock = 5;
+    DoorsUnlock doors_unlock = 6;
+
+    SunroofOpen sunroof_open = 9;
+    SunroofClose sunroof_close = 10;
+    SunroofLift sunroof_lift = 11;
+    SunroofMove sunroof_move = 47;
+
+    WindowsOpen windows_open = 12;
+    WindowsClose windows_close = 13;
+    WindowsVentilate windows_ventilate = 43;
+    WindowsMove windows_move = 44;
+
+    EngineStart engine_start = 19;
+    EngineStop engine_stop = 20;
+
+    ZEVPreconditioningStart zev_preconditioning_start = 21;
+    ZEVPreconditioningStop zev_preconditioning_stop = 22;
+    ZEVPreconditioningConfigure zev_precondition_configure = 25;
+    ZEVPreconditioningConfigureSeats zev_precondition_configure_seats = 26;
+
+    SpeedalertStart speedalert_start = 23;
+    SpeedalertStop speedalert_stop = 24;
+
+    BatteryChargeProgramConfigure battery_charge_program = 27;
+    BatteryMaxSocConfigure battery_max_soc = 28;
+
+    ChargeProgramConfigure charge_program_configure = 34;
+    ChargeControlConfigure charge_control_configure = 40;
+
+    ChargeOptConfigure charge_opt_configure = 29;
+    ChargeOptStart charge_opt_start = 30;
+    ChargeOptStop charge_opt_stop = 31;
+
+    TemperatureConfigure temperature_configure = 32;
+
+    WeekProfileConfigure week_profile_configure = 33;
+    WeekProfileConfigureV2 week_profile_configure_v2 = 41;
+
+    SigPosStart sigpos_start = 35;
+
+    TheftalarmConfirmDamagedetection theftalarm_confirm_damagedetection = 8;
+    TheftalarmDeselectDamagedetection theftalarm_deselect_damagedetection= 14;
+    TheftalarmDeselectInterior theftalarm_deselect_interior = 15;
+    TheftalarmDeselectTow theftalarm_deselect_tow = 16;
+    TheftalarmSelectDamagedetection theftalarm_select_damagedetection = 17;
+    TheftalarmSelectInterior theftalarm_select_interior = 18;
+    TheftalarmSelectTow theftalarm_select_tow = 37;
+    TheftalarmStart theftalarm_start = 38;
+    TheftalarmStop theftalarm_stop = 39;
+
+    AutomaticValetParkingActivate automatic_valet_parking_activate = 42;
+
+    ChargeFlapUnlock charge_flap_unlock = 45;
+    ChargeCouplerUnlock charge_coupler_unlock = 46;
+
+    DeactivateVehicleKeys deactivate_vehicle_keys = 48;
+    ActivateVehicleKeys activate_vehicle_keys = 49;
+  }
+}
+
+message DeactivateVehicleKeys {
+  string pin = 1;
+
+  int64 expiration_unix = 2;
+
+  string expiration_seconds = 3 [ json_name = "expirationSeconds" ];
+  string expiration_milliseconds = 4 [ json_name = "expirationMilliseconds" ];
+}
+
+message ActivateVehicleKeys {
+  string pin = 1;
+
+  int64 expiration_unix = 2;
+
+  string expiration_seconds = 3 [ json_name = "expirationSeconds" ];
+  string expiration_milliseconds = 4 [ json_name = "expirationMilliseconds" ];
+}
+
+message AuxheatStart {}
+message AuxheatStop {}
+message AuxheatConfigure {
+
+  enum Selection {
+    NO_SELECTION = 0;
+    TIME_1       = 1;
+    TIME_2       = 2;
+    TIME_3       = 3;
+  }
+
+  Selection time_selection = 1 [ json_name = "auxheattimeselection" ];
+
+  // Minutes from midnight.
+  int32 time_1 = 2 [ json_name = "auxheattime1" ];
+
+  // Minutes from midnight.
+  int32 time_2 = 3 [ json_name = "auxheattime2" ];
+
+  // Minutes from midnight.
+  int32 time_3 = 4 [ json_name = "auxheattime3" ];
+}
+
+enum Door {
+  // the JSON enum values are lowercase, but lowercase values are not exported in golang, so
+  // we allow aliasing all values.
+  option allow_alias = true;
+
+  // the lowercase versions are for json (de)serialization purposes only. The upper case version should be the preferred
+  // enum values to be used in code.
+  // These definitions need to come before upper case versions
+  unknown_door = 0;
+  frontleft = 1;
+  frontright = 2;
+  rearleft = 3;
+  rearright = 4;
+  trunk = 5;
+  fuelflap = 6;
+  chargeflap = 7;
+  chargecoupler = 8;
+
+  UNKNOWN_DOOR = 0;
+  FRONT_LEFT = 1;
+  FRONT_RIGHT = 2;
+  REAR_LEFT = 3;
+  REAR_RIGHT = 4;
+  TRUNK = 5;
+  FUEL_FLAP = 6;
+  CHARGE_FLAP = 7;
+  CHARGE_COUPLER = 8;
+}
+
+message DoorsLock {
+  // doors / flaps to unlock (only supported by TCU type RAMSES)
+  // leave empty to target all doors
+  repeated Door doors = 1;
+}
+
+message DoorsUnlock {
+  string pin = 1;
+  // doors / flaps to unlock (only supported by TCU type RAMSES)
+  // leave empty to target all doors
+  repeated Door doors = 2;
+}
+
+message EngineStart {
+  string pin = 1;
+}
+
+message EngineStop {}
+
+message SunroofOpen {
+  string pin = 1;
+}
+message SunroofClose {}
+message SunroofLift {
+  string pin = 1;
+}
+
+message SunroofMove {
+  string pin = 1;
+  google.protobuf.Int32Value sunroof             = 2 [ json_name = "sunroof" ];
+  google.protobuf.Int32Value sunroof_blind_front = 3 [ json_name = "sunroofblindfront" ];
+  google.protobuf.Int32Value sunroof_blind_rear  = 4 [ json_name = "sunroofblindrear" ];
+}
+
+message WindowsOpen {
+  string pin = 1;
+}
+message WindowsClose {}
+
+message WindowsVentilate {
+  string pin = 1;
+}
+
+message WindowsMove {
+  string pin = 1;
+  google.protobuf.Int32Value front_left       = 2 [ json_name = "windowfrontleft" ];
+  google.protobuf.Int32Value front_right      = 3 [ json_name = "windowfrontright" ];
+  google.protobuf.Int32Value rear_blind       = 4 [ json_name = "windowrearblind" ];
+  google.protobuf.Int32Value rear_left        = 5 [ json_name = "windowrearleft" ];
+  google.protobuf.Int32Value rear_left_blind  = 6 [ json_name = "windowrearleftblind" ];
+  google.protobuf.Int32Value rear_right       = 7 [ json_name = "windowrearright" ];
+  google.protobuf.Int32Value rear_right_blind = 8 [ json_name = "windowrearrightblind" ];
+}
+
+message SpeedalertStart {
+  int32 threshold = 1 [ json_name = "speedAlertThreshold" ];
+  int64 alert_end_time = 2 [ json_name = "speedAlertEndTime" ];
+}
+message SpeedalertStop {}
+
+// --- Vehicle API commands
+
+enum ZEVPreconditioningType {
+  // the JSON enum values are lowercase, but lowercase values are not exported in golang, so
+  // we allow aliasing all values.
+  option allow_alias = true;
+
+  // the lowercase versions are for json parsing purposes only. The upper case version should be the preferred
+  // enum values to be used in code.
+  // These definitions need to come before upper case versions
+  unknown_zev_preconditioning_command_type = 0;
+  immediate = 1;
+  departure = 2;
+  now = 3;
+  departureWeekly = 4;
+
+  // the uppercase versions are here to have exported values
+  // The given preconditioning command type is unknown
+  UNKNOWN_ZEV_PRECONDITIONING_COMMAND_TYPE = 0;
+
+  // starts immediate preconditioning
+  IMMEDIATE = 1;
+
+  // starts preconditioning at departure time (requires a departure time to be provided in ZEVPreconditioningStart)
+  DEPARTURE = 2;
+
+  // start right away (departure time is ignored)
+  NOW = 3;
+
+  // starts preconditioning for a configured weekly profile (does NOT require a departure time to be provided)
+  DEPARTURE_WEEKLY = 4;
+
+}
+
+message ZEVPreconditioningStart {
+  int32 departure_time = 1 [ json_name = "departuretime" ];
+  ZEVPreconditioningType type = 2 [ json_name = "type" ];
+}
+
+message ZEVPreconditioningStop { ZEVPreconditioningType type = 2 [ json_name = "type" ]; }
+
+// Configure preconditioning
+message ZEVPreconditioningConfigure {
+  enum DepartureTimeMode {
+    DISABLED = 0;
+    SINGLE_DEPARTURE = 1;
+    WEEKLY_DEPARTURE = 2;
+  }
+  DepartureTimeMode departure_time_mode = 1 [ json_name = "departureTimeMode" ];
+
+  int32 departure_time = 3 [ json_name = "departuretime" ];
+}
+
+// Configure which seats should be preconditioned.
+// Currently, the only available options are to precondition all seats or only the front-left seat
+message ZEVPreconditioningConfigureSeats {
+  bool front_left = 1 [ json_name = "precondSeatFrontLeft" ];
+  bool front_right = 2 [ json_name = "precondSeatFrontRight" ];
+  bool rear_left = 3 [ json_name = "precondSeatRearLeft" ];
+  bool rear_right = 4 [ json_name = "precondSeatRearRight" ];
+}
+
+// Configure the charge program
+message BatteryChargeProgramConfigure {
+  enum ChargeProgram {
+    DEFAULT = 0;
+    INSTANT = 1;
+  }
+  ChargeProgram charge_program = 1 [ json_name = "chargeprogram" ];
+}
+
+// Configure the maximum value for the state of charge of the HV battery
+message BatteryMaxSocConfigure {
+  // Values need to be between 50 and 100 and divisible by ten
+  int32 max_soc = 1 [ json_name = "maxsoc" ];
+}
+
+// Select the given charge program and enables the consumer to configure it.
+message ChargeProgramConfigure {
+  enum ChargeProgram {
+    DEFAULT_CHARGE_PROGRAM = 0;
+    // Instant charge program should not be used
+    // INSTANT_CHARGE_PROGRAM = 1;
+    HOME_CHARGE_PROGRAM = 2;
+    WORK_CHARGE_PROGRAM = 3;
+  }
+  ChargeProgram charge_program = 1 [ json_name = "chargeprogram" ];
+
+  // Values need to be between 50 and 100 and divisible by ten
+  // Maximum value for the state of charge of the HV battery [in %].
+  // Valid value range = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+  google.protobuf.Int32Value max_soc = 2 [ json_name = "maxsoc" ];
+
+  // unlock the plug after charging is finished
+  // Denotes whether the charge cable should be unlocked automatically if the HV battery is fully charged resp. charged til Max. SoC value.
+  // true - unlock automatically, false - do not unlock automatically
+  // can only be used if chargeprogram is set to home or work. Otherwise it will be ignored.
+  google.protobuf.BoolValue auto_unlock = 3 [ json_name = "autounlock" ];
+
+  // automatically switch between home and work program, based on the location of the car
+  // Denotes whether location based charging should be used.
+  // true - use location based charging, false - do not use location based charging
+  // can only be used if chargeprogram is set to home or work. Otherwise it will be ignored.
+  google.protobuf.BoolValue location_based_charging = 4 [ json_name = "locationbasedcharging" ];
+
+  // enable or disable week-profile
+  // Denotes whether weekly profile (aka. weekprofile) should be used.
+  // true - use weekly profile, false - do not use weekly profile
+  // The parameter weekprofile should not be used.
+  // google.protobuf.BoolValue weekly_profile = 5 [ json_name = "weeklyprofile" ];
+
+  // enable or disable clocktimer
+  google.protobuf.BoolValue clock_timer = 6 [ json_name = "clocktimer" ];
+
+  // enable or disable ecocharging
+  google.protobuf.BoolValue eco_charging = 7 [ json_name = "ecocharging" ];
+}
+
+// This is an experimental command
+message ChargeControlConfigure {
+  // Enables/Disables bidrectional charging
+  google.protobuf.BoolValue bi_charging_enabled = 1 [ json_name = "bidichargingenabled" ];
+
+  // Sets the charging power in kW with a resolution of 0.1 kW. The value has an offset of -100 kW. So
+  // a value of 0 is equivalent to -100 kW.
+  google.protobuf.FloatValue charging_power = 2 [ json_name = "chargingpower" ];
+
+  // must not be above max_soc
+  google.protobuf.Int32Value min_soc = 3 [ json_name = "minsoc" ];
+}
+
+// Provide functionality to initiate a charge optimization configuration
+message ChargeOptConfigure {
+  message Tariff {
+    enum Rate {
+      INVALID_PRICE = 0;
+      LOW_PRICE = 33;
+      NORMAL_PRICE = 44;
+      HIGH_PRICE = 66;
+    }
+    Rate rate = 1 [ json_name = "rate" ];
+    // Time in seconds after 00:00
+    int32 time = 2 [ json_name = "time" ];
+  }
+
+  repeated Tariff weekday_tariff = 1 [ json_name = "weekdaytariff" ];
+  repeated Tariff weekend_tariff = 2 [ json_name = "weekendtariff" ];
+}
+
+// Provide the functionality to start the charge optimization function in the vehicle
+message ChargeOptStart {
+  // empty
+}
+
+// Provide the functionality to stop the charge optimization function in the vehicle
+message ChargeOptStop {
+  // empty
+}
+
+// Set the temperature points of the vehicle
+message TemperatureConfigure {
+  message TemperaturePoint {
+    reserved 2;
+
+    enum Zone {
+      // the JSON enum values are lowercase, but lowercase values are not exported in golang, so
+      // we allow aliasing all values.
+      option allow_alias = true;
+
+      // the lowercase versions are for json parsing purposes only. The upper case version should be the preferred
+      // enum values to be used in code.
+      // These definitions need to come before upper case versions
+      unknown = 0;
+      frontLeft = 1;
+      frontRight = 2;
+      frontCenter = 3;
+      rearLeft = 4;
+      rearRight = 5;
+      rearCenter = 6;
+      rear2Left = 7;
+      rear2Right = 8;
+      rear2Center = 9;
+      // PLEASE BE AWARE OF THE FOLLOWING BEFORE ADDING NEW ZONES:
+      // Currently there is a bug in vehicle API, that we need to send the zones in the correct order. Otherwise the request will be rejected.
+      // The order needs to be like the following:
+      // Front before rear before rear2
+      // Left before right - There is no center zone if there are left and right zones in this row
+      // As this is already the order like specified here, this needs to be considered on adding new zones.
+
+      UNKNOWN_ZONE = 0;
+      FRONT_LEFT = 1;
+      FRONT_RIGHT = 2;
+      FRONT_CENTER = 3;
+      REAR_LEFT = 4;
+      REAR_RIGHT = 5;
+      REAR_CENTER = 6;
+      REAR_2_LEFT = 7;
+      REAR_2_RIGHT = 8;
+      REAR_2_CENTER = 9;
+      // PLEASE BE AWARE OF THE FOLLOWING BEFORE ADDING NEW ZONES:
+      // Currently there is a bug in vehicle API, that we need to send the zones in the correct order. Otherwise the request will be rejected.
+      // The order needs to be like the following:
+      // Front before rear before rear2
+      // Left before right - There is no center zone if there are left and right zones in this row
+      // As this is already the order like specified here, this needs to be considered on adding new zones.
+    }
+    Zone zone = 1 [ json_name = "zone" ];
+
+    double temperature_in_celsius = 3 [ json_name = "temp" ];
+  }
+
+  repeated TemperaturePoint temperature_points = 1 [ json_name = "temperaturePoints" ];
+}
+
+// Set the weekprofile for the weekly departure time settings
+message WeekProfileConfigure {
+  message WeeklySetHU {
+    enum Day {
+      MONDAY = 0;
+      TUESDAY = 1;
+      WEDNESDAY = 2;
+      THURSDAY = 3;
+      FRIDAY = 4;
+      SATURDAY = 5;
+      SUNDAY = 6;
+    }
+    Day day = 1 [ json_name = "day" ];
+    // Time in minutes after 00:00
+    int32 time = 2 [ json_name = "time" ];
+  }
+
+  repeated WeeklySetHU weekly_set_hu = 1 [ json_name = "weeklySetHU" ];
+}
+
+// Set the week profile for the weekly departure time settings version 2
+message WeekProfileConfigureV2 {
+  // * The whole list of timeProfiles must always be provided
+  repeated TimeProfile time_profiles = 1 [ json_name = "timeprofiles" ];
+}
+
+message TimeProfile {
+  //=> only if time profile entry is unchanged, do not provide attribute "id" if new profile entry shall be added
+  //   If a new time profile shall be added: do not provide the ID => ID will be set by MIC / vehicle
+  google.protobuf.Int32Value identifier = 1 [ json_name = "id" ];
+
+  // Hour after midnight range [0, 23]
+  google.protobuf.Int32Value hour = 2 [json_name = "hour" ];
+
+  // Minute after full hour range [0, 59]
+  google.protobuf.Int32Value minute = 3 [json_name = "min" ];
+
+  // Days for which the above time should be applied
+  repeated TimeProfileDay days = 4 [json_name = "day" ];
+
+  // Whether this profile entry is active or not
+  google.protobuf.BoolValue active = 5 [json_name = "active" ];
+
+  // If a timeProfile is changed or added the respective applicationId must be provided by the SDK
+  //   11 = Internal Apps
+  //   12 = External Apps
+  int32 application_identifier = 6 [ json_name = "applicationId" ];
+}
+
+enum TimeProfileDay {
+  option allow_alias = true;
+  // the short versions are for json (en)coding purposes only. The upper case version should be the preferred
+  // enum values to be used in code.
+  // These definitions need to come before upper case versions
+  Mo = 0;
+  Tu = 1;
+  We = 2;
+  Th = 3;
+  Fr = 4;
+  Sa = 5;
+  Su = 6;
+
+  MONDAY = 0;
+  TUESDAY = 1;
+  WEDNESDAY = 2;
+  THURSDAY = 3;
+  FRIDAY = 4;
+  SATURDAY = 5;
+  SUNDAY = 6;
+}
+
+// Invoke the Remote Vehicle Finder for signalling the vehicle’s position with lights, horn or panic alarm.
+message SigPosStart {
+  // Value needs to be between 0 and 30. The default is 0.
+  // Only allowed for RAMSES
+  int32 horn_repeat = 1 [ json_name = "hornRepeat" ];
+
+  // Only allowed for RAMSES
+  enum HornType {
+    HORN_OFF = 0;
+    HORN_LOW_VOLUME = 1;
+    HORN_HIGH_VOLUME = 2;
+  }
+  HornType horn_type = 2 [ json_name = "hornType" ];
+
+  // Only allowed for RAMSES
+  enum LightType {
+    LIGHT_OFF = 0;
+    DIPPED_HEAD_LIGHT = 1;
+    WARNING_LIGHT = 2;
+  }
+  LightType light_type = 3 [ json_name = "lightType" ];
+
+  // Value needs to be between 0 and 10. It indicates how long the light should be switched on.
+  int32 sigpos_duration = 4 [ json_name = "sigposDuration" ];
+
+  enum SigposType {
+    LIGHT_ONLY = 0;
+    HORN_ONLY = 1;      // Only allowed for RAMSES
+    LIGHT_AND_HORN = 2; // Only allowed for RAMSES
+    PANIC_ALARM = 3;    // Only allowed for HERMES
+  }
+  SigposType sigpos_type = 5 [ json_name = "sigposType" ];
+}
+
+// Confirm the detected parking bump
+message TheftalarmConfirmDamagedetection {
+  // empty
+}
+
+// Provide the functionality to deselect the parking damage detection sensor
+message TheftalarmDeselectDamagedetection {
+  // empty
+}
+
+// Provide the functionality to deselect the interior protection sensor
+message TheftalarmDeselectInterior {
+  // empty
+}
+
+// Provide the functionality to deselect the tow protection sensor
+message TheftalarmDeselectTow {
+  // empty
+}
+
+// Provide the functionality to select the parking damage detection sensor
+message TheftalarmSelectDamagedetection {
+  // empty
+}
+
+// Provide the functionality to select the interior protection sensor
+message TheftalarmSelectInterior {
+  // empty
+}
+
+// Provide the functionality to select the tow protection sensor
+message TheftalarmSelectTow {
+   // empty
+}
+
+// Provide the functionality to trigger an alarm that lasts for "alarm_duration" seconds
+message TheftalarmStart {
+  // Specify how many seconds the alarm should be switched on
+  int32 alarm_duration_in_seconds = 1 [ json_name = "alarmduration" ];
+}
+
+// Provide the functionality to deactivate an active/ongoing alarm
+message TheftalarmStop {
+  // empty
+}
+
+enum DriveType {
+  UNKNOWN_DRIVE_TYPE = 0;
+  PICK_UP = 1;
+  DROP_OFF = 2;
+}
+
+message AutomaticValetParkingActivate {
+  string booking_id = 1 [ json_name = "bookingId" ];
+  DriveType drive_type = 2 [ json_name = "driveType" ];
+}
+
+message ChargeFlapUnlock {}
+
+message ChargeCouplerUnlock {}

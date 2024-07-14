@@ -96,8 +96,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
             return;
         }
 
-        if (command instanceof OnOffType) {
-            OnOffType s = (OnOffType) command;
+        if (command instanceof OnOffType s) {
             if (OnOffType.ON.equals(s)) {
                 nhcAccess.executeBell();
             }
@@ -111,8 +110,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
             return;
         }
 
-        if (command instanceof OnOffType) {
-            OnOffType s = (OnOffType) command;
+        if (command instanceof OnOffType s) {
             nhcAccess.executeRingAndComeIn(OnOffType.ON.equals(s));
         }
     }
@@ -124,8 +122,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
             return;
         }
 
-        if (command instanceof OnOffType) {
-            OnOffType s = (OnOffType) command;
+        if (command instanceof OnOffType s) {
             if (OnOffType.OFF.equals(s)) {
                 nhcAccess.executeUnlock();
             }
@@ -220,8 +217,7 @@ public class NikoHomeControlAccessHandler extends NikoHomeControlBaseHandler imp
     private void updateProperties(NhcAccess nhcAccess) {
         Map<String, String> properties = new HashMap<>();
 
-        if (nhcAccess instanceof NhcAccess2) {
-            NhcAccess2 access = (NhcAccess2) nhcAccess;
+        if (nhcAccess instanceof NhcAccess2 access) {
             properties.put(PROPERTY_DEVICE_TYPE, access.getDeviceType());
             properties.put(PROPERTY_DEVICE_TECHNOLOGY, access.getDeviceTechnology());
             properties.put(PROPERTY_DEVICE_MODEL, access.getDeviceModel());

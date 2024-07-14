@@ -33,7 +33,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.salus.internal.SalusBindingConstants;
 import org.openhab.binding.salus.internal.rest.DeviceProperty;
-import org.openhab.binding.salus.internal.rest.SalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
@@ -79,7 +80,7 @@ public class DeviceHandler extends BaseThingHandler {
             return;
         }
         var bridgeHandler = bridge.getHandler();
-        if (!(bridgeHandler instanceof CloudBridgeHandler cloudHandler)) {
+        if (!(bridgeHandler instanceof AbstractBridgeHandler<?> cloudHandler)) {
             updateStatus(OFFLINE, BRIDGE_UNINITIALIZED, "@text/device-handler.initialize.errors.bridge-wrong-type");
             return;
         }
@@ -100,7 +101,7 @@ public class DeviceHandler extends BaseThingHandler {
                         "@text/device-handler.initialize.errors.dsn-not-found [\"" + dsn + "\"]");
                 return;
             }
-            if (!device.get().isConnected()) {
+            if (!device.get().connected()) {
                 updateStatus(OFFLINE, COMMUNICATION_ERROR,
                         "@text/device-handler.initialize.errors.dsn-not-connected [\"" + dsn + "\"]");
                 return;
@@ -207,6 +208,9 @@ public class DeviceHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command != REFRESH && cloudApi.isReadOnly()) {
+            return;
+        }
         try {
             if (command instanceof RefreshType) {
                 handleRefreshCommand(channelUID);
@@ -226,13 +230,13 @@ public class DeviceHandler extends BaseThingHandler {
                 logger.warn("Does not know how to handle command `{}` ({}) on channel `{}`!", command,
                         command.getClass().getSimpleName(), channelUID);
             }
-        } catch (SalusApiException e) {
+        } catch (AuthSalusApiException | SalusApiException e) {
             logger.debug("Error while handling command `{}` on channel `{}`", command, channelUID, e);
             updateStatus(OFFLINE, COMMUNICATION_ERROR, e.getLocalizedMessage());
         }
     }
 
-    private void handleRefreshCommand(ChannelUID channelUID) throws SalusApiException {
+    private void handleRefreshCommand(ChannelUID channelUID) throws SalusApiException, AuthSalusApiException {
         var id = channelUID.getId();
         String salusId;
         boolean isX100;
@@ -281,11 +285,12 @@ public class DeviceHandler extends BaseThingHandler {
         updateState(channelUID, state);
     }
 
-    private SortedSet<DeviceProperty<?>> findDeviceProperties() throws SalusApiException {
+    private SortedSet<DeviceProperty<?>> findDeviceProperties() throws SalusApiException, AuthSalusApiException {
         return this.cloudApi.findPropertiesForDevice(dsn);
     }
 
-    private void handleBoolCommand(ChannelUID channelUID, boolean command) throws SalusApiException {
+    private void handleBoolCommand(ChannelUID channelUID, boolean command)
+            throws SalusApiException, AuthSalusApiException {
         var id = channelUID.getId();
         String salusId;
         if (channelUidMap.containsKey(id)) {
@@ -298,7 +303,8 @@ public class DeviceHandler extends BaseThingHandler {
         handleCommand(channelUID, REFRESH);
     }
 
-    private void handleDecimalCommand(ChannelUID channelUID, @Nullable DecimalType command) throws SalusApiException {
+    private void handleDecimalCommand(ChannelUID channelUID, @Nullable DecimalType command)
+            throws SalusApiException, AuthSalusApiException {
         if (command == null) {
             return;
         }
@@ -319,7 +325,8 @@ public class DeviceHandler extends BaseThingHandler {
         handleCommand(channelUID, REFRESH);
     }
 
-    private void handleStringCommand(ChannelUID channelUID, StringType command) throws SalusApiException {
+    private void handleStringCommand(ChannelUID channelUID, StringType command)
+            throws SalusApiException, AuthSalusApiException {
         var id = channelUID.getId();
         String salusId;
         if (channelUidMap.containsKey(id)) {
