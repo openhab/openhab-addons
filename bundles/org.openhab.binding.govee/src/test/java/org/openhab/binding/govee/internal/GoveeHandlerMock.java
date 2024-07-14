@@ -27,7 +27,7 @@ import org.openhab.core.thing.Thing;
 /**
  * The {@link GoveeHandlerMock} is responsible for mocking {@link GoveeHandler}
  * 
- * @authorLeo Siepel - Initial contribution
+ * @author Leo Siepel - Initial contribution
  */
 @NonNullByDefault
 public class GoveeHandlerMock extends GoveeHandler {

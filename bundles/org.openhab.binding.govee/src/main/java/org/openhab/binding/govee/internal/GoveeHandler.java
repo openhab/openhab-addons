@@ -194,9 +194,7 @@ public class GoveeHandler extends BaseThingHandler {
                         break;
                 }
             }
-            if (!thing.getStatus().equals(ThingStatus.ONLINE)) {
-                updateStatus(ThingStatus.ONLINE);
-            }
+            updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname

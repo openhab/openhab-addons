@@ -46,7 +46,7 @@ import org.openhab.core.types.State;
 import com.google.gson.Gson;
 
 /**
- * @author Stefan Höhn - Initial contribution
+ * @author Leo Siepel - Initial contribution
  */
 @NonNullByDefault
 public class GoveeSerializeGoveeHandlerTest {

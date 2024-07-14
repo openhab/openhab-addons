@@ -102,7 +102,7 @@ public class CommunicationManager {
         final byte[] data = message.getBytes();
         final InetAddress address = InetAddress.getByName(hostname);
         DatagramPacket packet = new DatagramPacket(data, data.length, address, REQUEST_PORT);
-        logger.debug("Sending {} to {}", message, hostname);
+        logger.trace("Sending {} to {}", message, hostname);
         socket.send(packet);
         socket.close();
     }
