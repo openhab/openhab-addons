@@ -299,6 +299,10 @@ public class GoveeHandler extends BaseThingHandler {
         newColorTempInKelvin = (newColorTempInKelvin < COLOR_TEMPERATURE_MIN_VALUE)
                 ? COLOR_TEMPERATURE_MIN_VALUE.intValue()
                 : newColorTempInKelvin;
+        newColorTempInKelvin = (newColorTempInKelvin > COLOR_TEMPERATURE_MAX_VALUE)
+                ? COLOR_TEMPERATURE_MAX_VALUE.intValue()
+                : newColorTempInKelvin;
+
         int newColorTempInPercent = ((Double) ((newColorTempInKelvin - COLOR_TEMPERATURE_MIN_VALUE)
                 / (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) * 100.0)).intValue();
 
@@ -317,12 +321,9 @@ public class GoveeHandler extends BaseThingHandler {
         if (newColorTempInKelvin != lastColorTempInKelvin) {
             logger.trace("Color-Temperature Status: old: {} K {}% vs new: {} K", lastColorTempInKelvin,
                     newColorTempInPercent, newColorTempInKelvin);
-            if (lastColorTempInKelvin >= 2000 && lastColorTempInKelvin <= 9000) {
-                updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType<>(lastColorTempInKelvin, Units.KELVIN));
-            }
-            if (newColorTempInPercent >= 0 && newColorTempInPercent <= 100) {
-                updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(newColorTempInPercent));
-            }
+
+            updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType<>(lastColorTempInKelvin, Units.KELVIN));
+            updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(newColorTempInPercent));
 
             lastOnOff = newOnOff;
             lastColor = adaptedColor;
