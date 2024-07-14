@@ -217,8 +217,9 @@ public class SolcastObject implements SolarForecast {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
         Instant now = Instant.now(Utils.getClock());
         dtm.forEach((timestamp, energy) -> {
-            if (timestamp.toInstant().isAfter(now)) {
-                ts.add(timestamp.toInstant(), Utils.getEnergyState(getActualEnergyValue(timestamp, mode)));
+            Instant entryTimestamp = timestamp.toInstant();
+            if (Utils.isAfterOrEqual(entryTimestamp, now)) {
+                ts.add(entryTimestamp, Utils.getEnergyState(getActualEnergyValue(timestamp, mode)));
             }
         });
         return ts;
@@ -270,8 +271,9 @@ public class SolcastObject implements SolarForecast {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
         Instant now = Instant.now(Utils.getClock());
         dtm.forEach((timestamp, power) -> {
-            if (timestamp.toInstant().isAfter(now)) {
-                ts.add(timestamp.toInstant(), Utils.getPowerState(power));
+            Instant entryTimestamp = timestamp.toInstant();
+            if (Utils.isAfterOrEqual(entryTimestamp, now)) {
+                ts.add(entryTimestamp, Utils.getPowerState(power));
             }
         });
         return ts;

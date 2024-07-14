@@ -160,8 +160,9 @@ public class ForecastSolarObject implements SolarForecast {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
         Instant now = Instant.now(Utils.getClock());
         wattHourMap.forEach((timestamp, energy) -> {
-            if (timestamp.toInstant().isAfter(now)) {
-                ts.add(timestamp.toInstant(), Utils.getEnergyState(energy / 1000.0));
+            Instant entryTimestamp = timestamp.toInstant();
+            if (Utils.isAfterOrEqual(entryTimestamp, now)) {
+                ts.add(entryTimestamp, Utils.getEnergyState(energy / 1000.0));
             }
         });
         return ts;
@@ -212,8 +213,9 @@ public class ForecastSolarObject implements SolarForecast {
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
         Instant now = Instant.now(Utils.getClock());
         wattMap.forEach((timestamp, power) -> {
-            if (timestamp.toInstant().isAfter(now)) {
-                ts.add(timestamp.toInstant(), Utils.getPowerState(power / 1000.0));
+            Instant entryTimestamp = timestamp.toInstant();
+            if (Utils.isAfterOrEqual(entryTimestamp, now)) {
+                ts.add(entryTimestamp, Utils.getPowerState(power / 1000.0));
             }
         });
         return ts;

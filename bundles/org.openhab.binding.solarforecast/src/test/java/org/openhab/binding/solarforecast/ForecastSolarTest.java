@@ -354,16 +354,19 @@ class ForecastSolarTest {
         ForecastSolarObject fo = new ForecastSolarObject("fs-test", content, queryDateTime.toInstant());
 
         TimeSeries powerSeries = fo.getPowerTimeSeries(QueryMode.Average);
-        assertEquals(23, powerSeries.size());
+        Instant now = Instant.now(Utils.getClock());
+        assertEquals(24, powerSeries.size());
         powerSeries.getStates().forEachOrdered(entry -> {
+            assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
         });
 
         TimeSeries energySeries = fo.getEnergyTimeSeries(QueryMode.Average);
-        assertEquals(23, energySeries.size());
+        assertEquals(24, energySeries.size());
         energySeries.getStates().forEachOrdered(entry -> {
+            assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kWh", ((QuantityType<?>) s).getUnit().toString());
