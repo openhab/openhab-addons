@@ -39,5 +39,6 @@
         "powersave",
         "uniqueid"
     ],
-    "debug.console.wordWrap": false
+    "debug.console.wordWrap": false,
+    "java.configuration.updateBuildConfiguration": "interactive"
 }
