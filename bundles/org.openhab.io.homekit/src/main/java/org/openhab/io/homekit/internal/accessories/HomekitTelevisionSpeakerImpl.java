@@ -13,7 +13,6 @@
 package org.openhab.io.homekit.internal.accessories;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -25,7 +24,6 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.characteristics.impl.audio.MuteCharacteristic;
 import io.github.hapjava.characteristics.impl.audio.VolumeCharacteristic;
-import io.github.hapjava.characteristics.impl.common.ActiveCharacteristic;
 import io.github.hapjava.characteristics.impl.televisionspeaker.VolumeControlTypeCharacteristic;
 import io.github.hapjava.characteristics.impl.televisionspeaker.VolumeControlTypeEnum;
 import io.github.hapjava.characteristics.impl.televisionspeaker.VolumeSelectorCharacteristic;
@@ -61,6 +59,8 @@ public class HomekitTelevisionSpeakerImpl extends AbstractHomekitAccessoryImpl {
         var volumeCharacteristic = getCharacteristic(VolumeCharacteristic.class);
         var volumeSelectorCharacteristic = getCharacteristic(VolumeSelectorCharacteristic.class);
 
+        var service = new TelevisionSpeakerService(muteCharacteristic);
+
         if (volumeControlTypeCharacteristic.isEmpty()) {
             VolumeControlTypeEnum type;
             if (volumeCharacteristic.isPresent()) {
@@ -70,18 +70,12 @@ public class HomekitTelevisionSpeakerImpl extends AbstractHomekitAccessoryImpl {
             } else {
                 type = VolumeControlTypeEnum.NONE;
             }
-            volumeControlTypeCharacteristic = Optional
-                    .of(new VolumeControlTypeCharacteristic(() -> CompletableFuture.completedFuture(type), v -> {
+            service.addOptionalCharacteristic(
+                    new VolumeControlTypeCharacteristic(() -> CompletableFuture.completedFuture(type), v -> {
                     }, () -> {
                     }));
         }
 
-        var service = new TelevisionSpeakerService(muteCharacteristic);
-
-        getCharacteristic(ActiveCharacteristic.class).ifPresent(c -> service.addOptionalCharacteristic(c));
-        volumeCharacteristic.ifPresent(c -> service.addOptionalCharacteristic(c));
-        service.addOptionalCharacteristic(volumeControlTypeCharacteristic.get());
-
-        getServices().add(service);
+        addService(service);
     }
 }

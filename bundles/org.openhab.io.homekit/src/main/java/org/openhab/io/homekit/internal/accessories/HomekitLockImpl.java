@@ -49,7 +49,7 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new LockMechanismService(this));
+        addService(new LockMechanismService(this));
     }
 
     @Override

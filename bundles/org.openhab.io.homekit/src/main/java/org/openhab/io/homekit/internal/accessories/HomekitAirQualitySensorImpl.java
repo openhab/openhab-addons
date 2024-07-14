@@ -45,7 +45,7 @@ public class HomekitAirQualitySensorImpl extends AbstractHomekitAccessoryImpl im
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new AirQualityService(this));
+        addService(new AirQualityService(this));
     }
 
     @Override

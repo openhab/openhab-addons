@@ -43,7 +43,7 @@ public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl impl
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new HumiditySensorService(this));
+        addService(new HumiditySensorService(this));
     }
 
     @Override

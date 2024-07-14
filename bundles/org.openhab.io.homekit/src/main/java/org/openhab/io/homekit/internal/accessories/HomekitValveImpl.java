@@ -87,8 +87,11 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
     public void init() throws HomekitException {
         super.init();
         ValveService service = new ValveService(this);
-        getServices().add(service);
-        if (homekitTimer) {
+        addService(service);
+
+        var remainingDurationCharacteristic = getCharacteristic(RemainingDurationCharacteristic.class);
+
+        if (homekitTimer && remainingDurationCharacteristic.isEmpty()) {
             addRemainingDurationCharacteristic(getRootAccessory(), getUpdater(), service);
         }
         String valveTypeConfig = getAccessoryConfiguration(CONFIG_VALVE_TYPE, "GENERIC");

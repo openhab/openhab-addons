@@ -43,7 +43,7 @@ class HomekitFaucetImpl extends AbstractHomekitAccessoryImpl implements FaucetAc
     @Override
     public void init() throws HomekitException {
         super.init();
-        this.getServices().add(new FaucetService(this));
+        addService(new FaucetService(this));
     }
 
     @Override
