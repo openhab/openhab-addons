@@ -321,10 +321,10 @@ public class GoveeHandler extends BaseThingHandler {
         if (newColorTempInKelvin != lastColorTempInKelvin) {
             logger.trace("Color-Temperature Status: old: {} K {}% vs new: {} K", lastColorTempInKelvin,
                     newColorTempInPercent, newColorTempInKelvin);
-
             updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType<>(lastColorTempInKelvin, Units.KELVIN));
             updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(newColorTempInPercent));
         }
+
         lastOnOff = newOnOff;
         lastColor = adaptedColor;
         lastBrightness = newBrightness;

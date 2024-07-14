@@ -130,6 +130,10 @@ public class GoveeSerializeGoveeHandlerTest {
                     new HSBType(new DecimalType(114), new PercentType(100), new PercentType(0)));
 
             verify(callback).stateUpdated(
+                    new ChannelUID(thing.getUID(), GoveeBindingConstants.CHANNEL_COLOR_TEMPERATURE),
+                    new PercentType(100));
+
+            verify(callback).stateUpdated(
                     new ChannelUID(thing.getUID(), GoveeBindingConstants.CHANNEL_COLOR_TEMPERATURE_ABS),
                     getState(2000, Units.KELVIN));
         } finally {
