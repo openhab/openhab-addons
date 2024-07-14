@@ -577,7 +577,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
         if (retryConnection == null) {
             final AtlonaPro3Config config = getAtlonaConfig();
             if (config != null) {
-                logger.info("Will try to reconnect in {} seconds", config.getRetryPolling());
+                logger.debug("Will try to reconnect in {} seconds", config.getRetryPolling());
                 retryConnection = this.scheduler.schedule(() -> {
                     retryConnection = null;
                     connect();
