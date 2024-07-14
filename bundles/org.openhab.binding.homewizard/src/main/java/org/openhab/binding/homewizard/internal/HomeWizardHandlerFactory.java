@@ -47,7 +47,7 @@ public class HomeWizardHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (THING_TYPE_P1_WIFI_METER.equals(thingTypeUID)) {
-            return new HomeWizardHandler(thing, null);
+            return new HomeWizardHandler(thing);
         }
 
         return null;

@@ -21,15 +21,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.openhab.binding.homewizard.internal.dto.DataUtil;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DateTimeType;
@@ -98,15 +95,8 @@ public class HomeWizardHandlerTest {
         return channel;
     }
 
-    private static HomeWizardHandler createAndInitHandler(final ThingHandlerCallback callback, final Thing thing) {
-        // Executor that executes all commands synchronous.
-        final ScheduledExecutorService executorStub = Mockito.mock(ScheduledExecutorService.class);
-        doAnswer((InvocationOnMock invocation) -> {
-            ((Runnable) invocation.getArguments()[0]).run();
-            return null;
-        }).when(executorStub).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class));
-
-        final HomeWizardHandler handler = spy(new HomeWizardHandler(thing, executorStub));
+    private static HomeWizardHandlerMock createAndInitHandler(final ThingHandlerCallback callback, final Thing thing) {
+        final HomeWizardHandlerMock handler = spy(new HomeWizardHandlerMock(thing));
 
         try {
             doReturn(DataUtil.fromFile("response.json")).when(handler).getData();

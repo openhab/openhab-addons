@@ -53,8 +53,8 @@ public class HomeWizardHandler extends BaseThingHandler {
     private final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
+    protected ScheduledExecutorService executorService = this.scheduler;
     private HomeWizardConfiguration config = new HomeWizardConfiguration();
-    private final ScheduledExecutorService executorService;
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private String apiURL = "";
@@ -65,11 +65,9 @@ public class HomeWizardHandler extends BaseThingHandler {
      * Constructor
      *
      * @param thing The thing to handle
-     * @param executorService The executor service to use, falls back to the default scheduler when null
      */
-    public HomeWizardHandler(Thing thing, @Nullable final ScheduledExecutorService executorService) {
+    public HomeWizardHandler(Thing thing) {
         super(thing);
-        this.executorService = executorService == null ? this.scheduler : executorService;
     }
 
     /**
