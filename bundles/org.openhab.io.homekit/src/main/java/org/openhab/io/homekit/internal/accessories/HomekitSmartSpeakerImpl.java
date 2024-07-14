@@ -25,6 +25,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.SmartSpeakerAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.television.CurrentMediaStateEnum;
 import io.github.hapjava.characteristics.impl.television.TargetMediaStateEnum;
@@ -39,8 +40,9 @@ public class HomekitSmartSpeakerImpl extends AbstractHomekitAccessoryImpl implem
     private final Map<TargetMediaStateEnum, String> targetMediaState;
 
     public HomekitSmartSpeakerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         currentMediaState = createMapping(CURRENT_MEDIA_STATE, CurrentMediaStateEnum.class);
         targetMediaState = createMapping(TARGET_MEDIA_STATE, TargetMediaStateEnum.class);
     }

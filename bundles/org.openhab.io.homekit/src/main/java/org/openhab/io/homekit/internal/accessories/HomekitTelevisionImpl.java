@@ -21,6 +21,7 @@ import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.impl.common.ActiveCharacteristic;
 import io.github.hapjava.characteristics.impl.common.ActiveIdentifierCharacteristic;
 import io.github.hapjava.characteristics.impl.common.ConfiguredNameCharacteristic;
@@ -43,8 +44,9 @@ import io.github.hapjava.services.impl.TelevisionService;
 public class HomekitTelevisionImpl extends AbstractHomekitAccessoryImpl {
 
     public HomekitTelevisionImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
     }
 
     @Override

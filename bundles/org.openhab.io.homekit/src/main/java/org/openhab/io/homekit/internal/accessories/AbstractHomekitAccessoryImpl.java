@@ -72,9 +72,10 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     private final Map<Class<? extends Characteristic>, Characteristic> rawCharacteristics;
     private boolean isLinkedService = false;
 
-    public AbstractHomekitAccessoryImpl(HomekitTaggedItem accessory, List<HomekitTaggedItem> characteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        this.characteristics = characteristics;
+    public AbstractHomekitAccessoryImpl(HomekitTaggedItem accessory, List<HomekitTaggedItem> mandatoryCharacteristics,
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        this.characteristics = mandatoryCharacteristics;
         this.accessory = accessory;
         this.updater = updater;
         this.services = new ArrayList<>();
@@ -86,6 +87,15 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
             // not all mandatory characteristics are creatable via HomekitCharacteristicFactory (yet)
             if (rawCharacteristic != null) {
                 rawCharacteristics.put(rawCharacteristic.getClass(), rawCharacteristic);
+            }
+        });
+        mandatoryRawCharacteristics.forEach(c -> {
+            if (rawCharacteristics.get(c.getClass()) != null) {
+                logger.warn(
+                        "Accessory {} already has a characteristic of type {}; ignoring additional definition from metadata.",
+                        accessory.getName(), c.getClass().getSimpleName());
+            } else {
+                rawCharacteristics.put(c.getClass(), c);
             }
         });
     }

@@ -24,6 +24,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.SmokeSensorAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.smokesensor.SmokeDetectedStateEnum;
 import io.github.hapjava.services.impl.SmokeSensorService;
@@ -36,8 +37,9 @@ public class HomekitSmokeSensorImpl extends AbstractHomekitAccessoryImpl impleme
     private final Map<SmokeDetectedStateEnum, String> mapping;
 
     public HomekitSmokeSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         mapping = createMapping(SMOKE_DETECTED_STATE, SmokeDetectedStateEnum.class);
     }
 
