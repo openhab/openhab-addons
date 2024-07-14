@@ -44,7 +44,7 @@ public class HomekitOccupancySensorImpl extends AbstractHomekitAccessoryImpl imp
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new OccupancySensorService(this));
+        addService(new OccupancySensorService(this));
     }
 
     @Override

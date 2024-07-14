@@ -55,7 +55,7 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new GarageDoorOpenerService(this));
+        addService(new GarageDoorOpenerService(this));
     }
 
     @Override

@@ -44,7 +44,7 @@ public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl imple
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new ContactSensorService(this));
+        addService(new ContactSensorService(this));
     }
 
     @Override

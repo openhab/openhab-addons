@@ -73,7 +73,7 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl implements Ther
     @Override
     public void init() throws HomekitException {
         super.init();
-        this.getServices().add(new ThermostatService(this));
+        addService(new ThermostatService(this));
     }
 
     @Override

@@ -55,7 +55,7 @@ public class HomekitIrrigationSystemImpl extends AbstractHomekitAccessoryImpl im
         inUseMapping = createMapping(HomekitCharacteristicType.INUSE_STATUS, InUseEnum.class);
         programModeMap = HomekitCharacteristicFactory
                 .createMapping(getCharacteristic(HomekitCharacteristicType.PROGRAM_MODE).get(), ProgramModeEnum.class);
-        getServices().add(new IrrigationSystemService(this));
+        addService(new IrrigationSystemService(this));
     }
 
     @Override
@@ -73,7 +73,7 @@ public class HomekitIrrigationSystemImpl extends AbstractHomekitAccessoryImpl im
         final var finalEnum = serviceLabelEnum;
         var serviceLabelNamespace = getCharacteristic(ServiceLabelNamespaceCharacteristic.class).orElseGet(
                 () -> new ServiceLabelNamespaceCharacteristic(() -> CompletableFuture.completedFuture(finalEnum)));
-        getServices().add(new ServiceLabelService(serviceLabelNamespace));
+        addService(new ServiceLabelService(serviceLabelNamespace));
     }
 
     @Override
