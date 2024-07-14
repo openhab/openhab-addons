@@ -81,8 +81,7 @@ public class GoveeHandler extends BaseThingHandler {
     private static final Gson GSON = new Gson();
 
     private final Logger logger = LoggerFactory.getLogger(GoveeHandler.class);
-    private final ScheduledExecutorService executorService;
-
+    protected ScheduledExecutorService executorService = scheduler;
     @Nullable
     private ScheduledFuture<?> triggerStatusJob; // send device status update job
     private GoveeConfiguration goveeConfiguration = new GoveeConfiguration();
@@ -110,11 +109,9 @@ public class GoveeHandler extends BaseThingHandler {
         }
     };
 
-    public GoveeHandler(Thing thing, CommunicationManager communicationManager,
-            @Nullable ScheduledExecutorService executorService) {
+    public GoveeHandler(Thing thing, CommunicationManager communicationManager) {
         super(thing);
         this.communicationManager = communicationManager;
-        this.executorService = executorService == null ? this.scheduler : executorService;
     }
 
     public String getHostname() {

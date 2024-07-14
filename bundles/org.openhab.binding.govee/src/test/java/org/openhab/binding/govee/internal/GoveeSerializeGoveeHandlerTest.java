@@ -12,11 +12,8 @@
  */
 package org.openhab.binding.govee.internal;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -24,15 +21,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
 import org.openhab.binding.govee.internal.model.StatusResponse;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.DecimalType;
@@ -91,29 +85,17 @@ public class GoveeSerializeGoveeHandlerTest {
         return channel;
     }
 
-    private static GoveeHandler createAndInitHandler(final ThingHandlerCallback callback, final Thing thing) {
-        final ScheduledExecutorService executorStub = Mockito.mock(ScheduledExecutorService.class);
-        doAnswer((InvocationOnMock invocation) -> {
-            ((Runnable) invocation.getArguments()[0]).run();
-            return null;
-        }).when(executorStub).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class));
-
-        final GoveeHandler handler = spy(new GoveeHandler(thing, new CommunicationManager(), executorStub));
+    private static GoveeHandlerMock createAndInitHandler(final ThingHandlerCallback callback, final Thing thing) {
+        CommunicationManager communicationManager = mock(CommunicationManager.class);
+        final GoveeHandlerMock handler = spy(new GoveeHandlerMock(thing, communicationManager));
 
         handler.setCallback(callback);
         handler.initialize();
+
         return handler;
     }
 
-    private static State getState(final int input) {
-        return new DecimalType(input);
-    }
-
     private static State getState(final int input, Unit<?> unit) {
-        return new QuantityType<>(input, unit);
-    }
-
-    private static State getState(final double input, Unit<?> unit) {
         return new QuantityType<>(input, unit);
     }
 
@@ -121,7 +103,7 @@ public class GoveeSerializeGoveeHandlerTest {
     public void testInvalidConfiguration() {
         final Thing thing = mockThing(false);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final GoveeHandler handler = createAndInitHandler(callback, thing);
+        final GoveeHandlerMock handler = createAndInitHandler(callback, thing);
 
         try {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.OFFLINE)
@@ -135,7 +117,7 @@ public class GoveeSerializeGoveeHandlerTest {
     public void testInvalidResponseMessage() {
         final Thing thing = mockThing(true);
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final GoveeHandler handler = createAndInitHandler(callback, thing);
+        final GoveeHandlerMock handler = createAndInitHandler(callback, thing);
 
         // inject StatusResponseMessage
         StatusResponse statusMessage = GSON.fromJson(invalidValueJsonString, StatusResponse.class);
