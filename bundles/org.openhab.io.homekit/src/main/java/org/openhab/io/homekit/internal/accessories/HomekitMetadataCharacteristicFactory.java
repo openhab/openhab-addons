@@ -120,8 +120,9 @@ public class HomekitMetadataCharacteristicFactory {
     }
 
     public static Optional<Characteristic> createCharacteristic(HomekitCharacteristicType type, Object value) {
-        if (!OPTIONAL.containsKey(type))
+        if (!OPTIONAL.containsKey(type)) {
             return Optional.empty();
+        }
         return Optional.of(OPTIONAL.get(type).apply(value));
     }
 

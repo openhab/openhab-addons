@@ -368,8 +368,9 @@ public class HomekitAccessoryFactory {
         mandatoryCharacteristics.forEach(c -> {
             // Check every metadata key looking for a characteristics we can create
             var config = mainItem.getConfiguration();
-            if (config == null)
+            if (config == null) {
                 return;
+            }
             for (var entry : config.entrySet().stream().sorted((lhs, rhs) -> lhs.getKey().compareTo(rhs.getKey()))
                     .collect(Collectors.toList())) {
                 var type = HomekitCharacteristicType.valueOfTag(entry.getKey());
@@ -380,7 +381,6 @@ public class HomekitAccessoryFactory {
                     characteristic.ifPresent(rc -> rawCharacteristics.add(rc));
                 }
             }
-
         });
     }
 
