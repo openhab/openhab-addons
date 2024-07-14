@@ -324,10 +324,9 @@ public class GoveeHandler extends BaseThingHandler {
 
             updateState(CHANNEL_COLOR_TEMPERATURE_ABS, new QuantityType<>(lastColorTempInKelvin, Units.KELVIN));
             updateState(CHANNEL_COLOR_TEMPERATURE, new PercentType(newColorTempInPercent));
-
+        }
             lastOnOff = newOnOff;
             lastColor = adaptedColor;
             lastBrightness = newBrightness;
-        }
     }
 }
