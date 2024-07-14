@@ -24,7 +24,6 @@ import org.osgi.framework.ServiceReference;
 
 /**
  * 
- * 
  * @author Patrik Gfeller - Initial Contribution
  */
 @NonNullByDefault
@@ -36,7 +35,8 @@ public class HueSyncLocalizer {
             .getServiceReference(TranslationProvider.class);
     private static final Bundle bundle = bundleContext.getBundle();
 
-    public static String getResourceString(String key) {
+    @SuppressWarnings("null")
+public static String getResourceString(String key) {
         String lookupKey = key.replace("@text/", "");
         String missingKey = "⚠️ Missing Translation ⚠️: " + key;
 
