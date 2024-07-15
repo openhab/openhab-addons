@@ -269,15 +269,21 @@ public enum AmplifierModel {
     public abstract List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config);
 
     public String getZoneIdFromZoneName(String zoneName) {
-        final String zoneId = zoneIdMap.entrySet().stream().filter(entry -> zoneName.equals(entry.getValue()))
-                .map(Map.Entry::getKey).findFirst().orElse("");
-        return zoneId != null ? zoneId : "";
+        for (String zoneId : zoneIdMap.keySet()) {
+            if (zoneIdMap.get(zoneId).equals(zoneName)) {
+                return zoneId;
+            }
+        }
+        return "";
     }
 
     public String getZoneName(String zoneId) {
-        final String zoneName = zoneIdMap.entrySet().stream().filter(entry -> zoneId.equals(entry.getKey()))
-                .map(Map.Entry::getValue).findFirst().orElse("");
-        return zoneName != null ? zoneName : "";
+        String zoneName = zoneIdMap.get(zoneId);
+        if (zoneName != null) {
+            return zoneName;
+        } else {
+            return "";
+        }
     }
 
     public String getCmdPrefix() {
