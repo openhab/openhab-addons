@@ -44,7 +44,7 @@ public class DeviceRediscoveryAgent implements BroadlinkSocketListener, Discover
     }
 
     public void attemptRediscovery() {
-        logger.warn("DeviceRediscoveryAgent - Beginning Broadlink device scan for missing {}",
+        logger.debug("DeviceRediscoveryAgent - Beginning Broadlink device scan for missing {}",
                 missingThingConfig.toString());
         DiscoveryProtocol.beginAsync(this, 5000L, this, logger);
     }
