@@ -1,12 +1,12 @@
 # Teslascope Binding
 
 This binding integrates [Tesla Electrical Vehicles](https://www.tesla.com).
-
 The integration happens through the [Teslascope](https://www.teslascope.com) API.
 
 ## Supported Things
 
-All Tesla vehicles supported by Teslascope are supported..
+All Tesla vehicles supported by Teslascope are supported.
+Each vehicle is represented by its own `service` Thing.
 
 ## Discovery
 
@@ -14,7 +14,7 @@ Auto-discovery is not currently supported.
 
 ## Thing Configuration
 
-As a minimum, the IP address is needed:
+As a minimum, the apiKey and publicID are needed:
 
 - `apiKey` - apiKey provided by Teslascope
 - `publicID` - Vehicle Public ID listed in Teslascope
@@ -24,27 +24,27 @@ As a minimum, the IP address is needed:
 
 All vehicles support a huge number of channels - the following list shows the standard ones:
 
-| Channel ID       | Item Type            | Label              | Description                                                                                 |
-|------------------|----------------------|--------------------|---------------------------------------------------------------------------------------------|
-| autoconditioning | Switch               | Auto Conditioning  | Turns on auto-conditioning (a/c or heating)                                                 |
-| batterylevel     | Number:Dimensionless | Battery Level      | State of the battery in %                                                                   |
-| chargingstate    | String               | Charging State     | “Starting”, “Complete”, “Charging”, “Disconnected”, “Stopped”, “NoPower”                    |
-| chargeport       | Switch               | Charge Port        | Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed) |
-| climate          | Switch               | Climate            | Climate status indicator                                                                    |
-| doorlock         | Switch               | Door Lock          | Lock or unlock the car                                                                      |
-| insidetemp       | Number:Temperature   | Inside Temperature | Indicates the inside temperature of the vehicle                                             |
-| location         | Location             | Location           | The actual position of the vehicle                                                          |
-| odometer         | Number:Length        | Odometer           | Odometer of the vehicle                                                                     |
-| speed            | Number:Speed         | Speed              | Vehicle speed                                                                               |
-| vin              | String               | VIN                | Vehicle Identification Number                                                               |
-| vehicle-name     | String               | Name               | Vehicle Name                                                                                |
-| vehicle-state    | String               | Vehicle State      | Vehicle State                                                                               |
+| Channel ID        | Item Type            | Label              | Description                                                                                 |
+|-------------------|----------------------|--------------------|---------------------------------------------------------------------------------------------|
+| autoc-onditioning | Switch               | Auto Conditioning  | Turns on auto-conditioning (a/c or heating)                                                 |
+| battery-level     | Number:Dimensionless | Battery Level      | State of the battery in %                                                                   |
+| charging-state    | String               | Charging State     | “Starting”, “Complete”, “Charging”, “Disconnected”, “Stopped”, “NoPower”                    |
+| charge-port       | Switch               | Charge Port        | Open the Charge Port (ON) or indicates the state of the Charge Port (ON/OFF if Open/Closed) |
+| climate           | Switch               | Climate            | Climate status indicator                                                                    |
+| door-lock         | Switch               | Door Lock          | Lock or unlock the car                                                                      |
+| inside-temp       | Number:Temperature   | Inside Temperature | Indicates the inside temperature of the vehicle                                             |
+| location          | Location             | Location           | The actual position of the vehicle                                                          |
+| odometer          | Number:Length        | Odometer           | Odometer of the vehicle                                                                     |
+| speed             | Number:Speed         | Speed              | Vehicle speed                                                                               |
+| vin               | String               | VIN                | Vehicle Identification Number                                                               |
+| vehicle-name      | String               | Name               | Vehicle Name                                                                                |
+| vehicle-state     | String               | Vehicle State      | Vehicle State                                                                               |
 
 Additionally, these advanced channels are available (not all are available on all vehicle types, e.g., the sunroof):
 
 | Channel ID                  | Item Type                | Label                         | Description                                                                                                      |
 |-----------------------------|--------------------------|-------------------------------|------------------------------------------------------------------------------------------------------------------|
-| battery-ange                | Number:Length            | Battery Range                 | Range of the battery                                                                                             |
+| battery-range               | Number:Length            | Battery Range                 | Range of the battery                                                                                             |
 | center-rear-seat-heater     | Switch                   | Center Rear Seat Heater       | Indicates if the center rear seat heater is switched on                                                          |
 | charge                      | Switch                   | Charge                        | Start (ON) or stop (OFF) charging                                                                                |
 | charge-energy-added         | Number:Energy            | Charge Energy Added           | Energy added, in kWh, during the last charging session                                                           |
@@ -109,13 +109,13 @@ Additionally, these advanced channels are available (not all are available on al
 
 ## Full Example
 
-demo.Things:
+### `demo.things`:
 
 ```java
-teslascope:service:model3 [ apiKey="xxxx", publicID="aXb3" ] {
-}
+teslascope:service:model3 [ apiKey="xxxx", publicID="aXb3" ]
+```
 
-### Item Configuration
+### `example.items`:
 
 ```java
 String              TeslaVehicleName            {channel="teslascope:service:model3:vehicle-name"}
@@ -176,7 +176,7 @@ Switch              TeslaTPMSSoftWarningRL      {channel="teslascope:service:mod
 Switch              TeslaTPMSSoftWarningRR      {channel="teslascope:service:model3:tpms-soft-warning-rr"}
 ```
 
-### Sitemap Configuration
+### `example.sitemap`:
 
 ```perl
 sitemap main label="Main"
