@@ -67,38 +67,22 @@ public class TeslascopeHandler extends BaseThingHandler {
             switch (channelUID.getId()) {
                 case TeslascopeBindingConstants.CHANNEL_AUTOCONDITIONING:
                     if (command instanceof OnOffType onOffCommand) {
-                        if (onOffCommand == OnOffType.ON) {
-                            ac(true);
-                        } else {
-                            ac(false);
-                        }
+                        setAutoConditioning(onOffCommand == OnOffType.ON);
                     }
                     break;
                 case TeslascopeBindingConstants.CHANNEL_CHARGE:
                     if (command instanceof OnOffType onOffCommand) {
-                        if (onOffCommand == OnOffType.ON) {
-                            charge(true);
-                        } else {
-                            charge(false);
-                        }
+                        charge(onOffCommand == OnOffType.ON);
                     }
                     break;
                 case TeslascopeBindingConstants.CHANNEL_CHARGE_PORT:
                     if (command instanceof OnOffType onOffCommand) {
-                        if (onOffCommand == OnOffType.ON) {
-                            chargeDoor(true);
-                        } else {
-                            chargeDoor(false);
-                        }
+                        chargeDoor(onOffCommand == OnOffType.ON);
                     }
                     break;
                 case TeslascopeBindingConstants.CHANNEL_DOOR_LOCK:
                     if (command instanceof OnOffType onOffCommand) {
-                        if (onOffCommand == OnOffType.ON) {
-                            lock(true);
-                        } else {
-                            lock(false);
-                        }
+                        lock(onOffCommand == OnOffType.ON);
                     }
                     break;
                 case TeslascopeBindingConstants.CHANNEL_FLASH_LIGHTS:
@@ -127,16 +111,13 @@ public class TeslascopeHandler extends BaseThingHandler {
                     break;
                 case TeslascopeBindingConstants.CHANNEL_SENTRY_MODE:
                     if (command instanceof OnOffType onOffCommand) {
-                        if (onOffCommand == OnOffType.ON) {
-                            sentry(true);
-                        } else {
-                            sentry(false);
-                        }
+                        sentry(onOffCommand == OnOffType.ON);
                     }
                     break;
+                default:
+                    logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
+                            thing.getUID().getAsString(), channelUID.getId());
             }
-            logger.debug("Received command ({}) of wrong type for thing '{}' on channel {}", command,
-                    thing.getUID().getAsString(), channelUID.getId());
         } catch (TeslascopeAuthenticationException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         } catch (TeslascopeCommunicationException e) {
@@ -194,7 +175,6 @@ public class TeslascopeHandler extends BaseThingHandler {
             return;
         }
 
-        updateStatus(ThingStatus.ONLINE);
         updateState(TeslascopeBindingConstants.CHANNEL_VIN, new StringType(detailedInformation.vin));
         updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_NAME, new StringType(detailedInformation.vehicleName));
         updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_STATE, new StringType(detailedInformation.vehicleState));
@@ -211,11 +191,8 @@ public class TeslascopeHandler extends BaseThingHandler {
         updateState(TeslascopeBindingConstants.CHANNEL_ESTIMATED_BATTERY_RANGE,
                 new QuantityType<>(detailedInformation.estBatteryRange, ImperialUnits.MILE));
         // charge_enable_request isn't the right flag to determine if car is charging or not
-        if (detailedInformation.chargingState.equals("Charging")) {
-            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE, OnOffType.ON);
-        } else {
-            updateState(TeslascopeBindingConstants.CHANNEL_CHARGE, OnOffType.OFF);
-        }
+        updateState(TeslascopeBindingConstants.CHANNEL_CHARGE,
+                OnOffType.from("Charging".equals(detailedInformation.chargingState)));
         updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_ENERGY_ADDED,
                 new QuantityType<>(detailedInformation.chargeEnergyAdded, Units.KILOWATT_HOUR));
         updateState(CHANNEL_CHARGE_LIMIT_SOC_STANDARD, new DecimalType(detailedInformation.chargeLimitSoc / 100));
@@ -296,11 +273,8 @@ public class TeslascopeHandler extends BaseThingHandler {
         updateState(TeslascopeBindingConstants.CHANNEL_DOOR_LOCK, OnOffType.from(detailedInformation.locked));
         updateState(TeslascopeBindingConstants.CHANNEL_SENTRY_MODE, OnOffType.from(detailedInformation.sentryMode));
         updateState(TeslascopeBindingConstants.CHANNEL_VALET_MODE, OnOffType.from(detailedInformation.valetMode));
-        if (detailedInformation.softwareUpdateStatus.equals("")) {
-            updateState(TeslascopeBindingConstants.CHANNEL_SOFTWARE_UPDATE_AVAILABLE, OnOffType.OFF);
-        } else {
-            updateState(TeslascopeBindingConstants.CHANNEL_SOFTWARE_UPDATE_AVAILABLE, OnOffType.ON);
-        }
+        updateState(TeslascopeBindingConstants.CHANNEL_SOFTWARE_UPDATE_AVAILABLE,
+                OnOffType.from(!"".equals(detailedInformation.softwareUpdateStatus)));
         updateState(TeslascopeBindingConstants.CHANNEL_SOFTWARE_UPDATE_STATUS,
                 new StringType(detailedInformation.softwareUpdateStatus));
         updateState(TeslascopeBindingConstants.CHANNEL_SOFTWARE_UPDATE_VERSION,
@@ -341,7 +315,8 @@ public class TeslascopeHandler extends BaseThingHandler {
         updateState(TeslascopeBindingConstants.CHANNEL_FLASH_LIGHTS, OnOffType.OFF);
     }
 
-    protected void ac(boolean b) throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
+    protected void setAutoConditioning(boolean b)
+            throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         webTargets.sendCommand(config.publicID, config.apiKey, b ? "startAC" : "stopAC");
     }
 

@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>Teslascope</name>
 	<description>This is the binding for Teslascope.</description>
+	<connection>cloud</connection>
 
 </addon:addon>
