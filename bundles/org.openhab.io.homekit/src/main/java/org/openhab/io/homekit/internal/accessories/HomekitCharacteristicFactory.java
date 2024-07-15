@@ -610,8 +610,8 @@ public class HomekitCharacteristicFactory {
     private static ExceptionalConsumer<Double> setTemperatureConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
             Item baseItem = taggedItem.getBaseItem();
-            if (baseItem instanceof NumberItem) {
-                if (((NumberItem) baseItem).getUnit() != null) {
+            if (baseItem instanceof NumberItem baseAsNumberItem) {
+                if (baseAsNumberItem.getUnit() != null) {
                     taggedItem.send(new QuantityType(value, SIUnits.CELSIUS));
                 } else {
                     taggedItem.send(new DecimalType(convertFromCelsius(value)));
