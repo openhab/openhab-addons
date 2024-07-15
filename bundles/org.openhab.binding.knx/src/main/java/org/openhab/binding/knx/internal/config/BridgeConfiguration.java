@@ -13,6 +13,12 @@
 package org.openhab.binding.knx.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.knx.internal.KNXBindingConstants;
+import org.openhab.binding.knx.internal.tpm.TpmInterface;
+import org.openhab.core.auth.SecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * {@link org.openhab.binding.knx.internal.handler.KNXBridgeBaseThingHandler} configuration
@@ -22,6 +28,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class BridgeConfiguration {
+    private final Logger logger = LoggerFactory.getLogger(BridgeConfiguration.class);
+    @Nullable
+    TpmInterface tpmIf = null;
     private int autoReconnectPeriod = 0;
     private int readingPause = 0;
     private int readRetriesLimit = 0;
@@ -45,5 +54,19 @@ public class BridgeConfiguration {
 
     public void setAutoReconnectPeriod(int period) {
         autoReconnectPeriod = period;
+    }
+
+    protected String decrypt(String secret) {
+        if (secret.startsWith(KNXBindingConstants.ENCYRPTED_PASSWORD_SERIALIZATION_PREFIX)) {
+            try {
+                logger.info("trying to access TPM module");
+                return TpmInterface.TPM.deserializeAndDectryptSecret(
+                        secret.substring(KNXBindingConstants.ENCYRPTED_PASSWORD_SERIALIZATION_PREFIX.length()));
+            } catch (SecurityException e) {
+                logger.error("Unable to decode stored password using TPM: {}", e.getMessage());
+                // fall through
+            }
+        }
+        return secret;
     }
 }

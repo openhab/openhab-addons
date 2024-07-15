@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: KNX Binding</name>
 
   <properties>
-    <bnd.importpackage>javax.microedition.io.*;resolution:="optional",javax.usb.*;resolution:="optional",org.usb4java.*;resolution:="optional"</bnd.importpackage>
+    <bnd.importpackage>javax.microedition.io.*;resolution:="optional",javax.usb.*;resolution:="optional",org.usb4java.*;resolution:="optional",org.bouncycastle.*;resolution:="optional"</bnd.importpackage>
   </properties>
 
   <dependencies>
@@ -56,11 +56,72 @@
       <version>0.8.11</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.microsoft.azure</groupId>
+      <artifactId>TSS.Java</artifactId>
+      <version>1.0.0</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <executions>
+            <execution>
+              <id>unpack-tss</id>
+              <phase>generate-sources</phase>
+              <goals>
+                <goal>unpack</goal>
+              </goals>
+              <configuration>
+                <echo>"Unpacking TSS.Java"</echo>
+                <artifactItems>
+                  <artifactItem>
+                    <groupId>com.microsoft.azure</groupId>
+                    <artifactId>TSS.Java</artifactId>
+                    <version>1.0.0</version>
+                    <outputDirectory>
+                      ${project.build.directory}/classes
+                    </outputDirectory>
+                  </artifactItem>
+                </artifactItems>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <executions>
+
+            <execution>
+              <!-- Remove classes from the root package and re jar -->
+              <id>fix-tss</id>
+              <phase>process-sources</phase>
+              <goals>
+                <goal>run</goal>
+              </goals>
+              <configuration>
+                <target>
+                  <echo>"Fixing TSS.Java for OSGI"</echo>
+                  <delete>
+                    <fileset dir="${project.build.directory}/classes" includes="*"/>
+                  </delete>
+                  <delete includeemptydirs="true" failonerror="false">
+                    <fileset dir="${project.build.directory}/classes/samples"/>
+                  </delete>
+                </target>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+
+
         <plugin>
           <groupId>biz.aQute.bnd</groupId>
           <artifactId>bnd-maven-plugin</artifactId>
@@ -83,6 +144,11 @@ SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[tuwien.auto.calimero.
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <systemPropertyVariables>
@@ -96,6 +162,7 @@ SPI-Consumer: java.util.ServiceLoader#load(java.lang.Class[tuwien.auto.calimero.
         <version>0.8.11</version>
         <configuration>
           <excludes>
+            <exclude>tss/**/*</exclude>
             <exclude>tuwien/auto/calimero/**/*</exclude>
             <exclude>io/calimero/**/*</exclude>
           </excludes>
