@@ -29,6 +29,7 @@ import java.util.function.Supplier;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -441,6 +442,10 @@ public class HomekitCharacteristicFactory {
                 });
     }
 
+    public static Unit<Temperature> getSystemTemperatureUnit() {
+        return useFahrenheit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
+    }
+
     private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(HomekitTaggedItem item,
             Map<T, String> mapping, T defaultValue) {
         return CompletableFuture.completedFuture(getKeyFromMapping(item, mapping, defaultValue));
@@ -506,11 +511,11 @@ public class HomekitCharacteristicFactory {
     }
 
     public static double convertToCelsius(double degrees) {
-        return convertAndRound(degrees, useFahrenheit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS, SIUnits.CELSIUS);
+        return convertAndRound(degrees, getSystemTemperatureUnit(), SIUnits.CELSIUS);
     }
 
     public static double convertFromCelsius(double degrees) {
-        return convertAndRound(degrees, SIUnits.CELSIUS, useFahrenheit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS);
+        return convertAndRound(degrees, SIUnits.CELSIUS, getSystemTemperatureUnit());
     }
 
     public static double getTemperatureStep(HomekitTaggedItem taggedItem, double defaultValue) {
@@ -604,8 +609,13 @@ public class HomekitCharacteristicFactory {
 
     private static ExceptionalConsumer<Double> setTemperatureConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
-            if (taggedItem.getBaseItem() instanceof NumberItem) {
-                taggedItem.send(new DecimalType(convertFromCelsius(value)));
+            Item baseItem = taggedItem.getBaseItem();
+            if (baseItem instanceof NumberItem baseAsNumberItem) {
+                if (baseAsNumberItem.getUnit() != null) {
+                    taggedItem.send(new QuantityType(value, SIUnits.CELSIUS));
+                } else {
+                    taggedItem.send(new DecimalType(convertFromCelsius(value)));
+                }
             } else {
                 LOGGER.warn("Item type {} is not supported for {}. Only Number type is supported.",
                         taggedItem.getBaseItem().getType(), taggedItem.getName());
@@ -786,11 +796,22 @@ public class HomekitCharacteristicFactory {
 
     private static CoolingThresholdTemperatureCharacteristic createCoolingThresholdCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        double minValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
-                HomekitTaggedItem.MIN_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
-        double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
-                HomekitTaggedItem.MAX_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
-        double step = getTemperatureStep(taggedItem, CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP);
+        double minValue = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
+                Objects.requireNonNull(
+                        new QuantityType(CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE, SIUnits.CELSIUS)
+                                .toUnit(getSystemTemperatureUnit())),
+                false).toUnit(SIUnits.CELSIUS).doubleValue();
+        double maxValue = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
+                Objects.requireNonNull(
+                        new QuantityType(CoolingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE, SIUnits.CELSIUS)
+                                .toUnit(getSystemTemperatureUnit())),
+                false).toUnit(SIUnits.CELSIUS).doubleValue();
+        double step = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.STEP,
+                        Objects.requireNonNull(new QuantityType(CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP,
+                                SIUnits.CELSIUS).toUnit(getSystemTemperatureUnit())),
+                        true)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
         return new CoolingThresholdTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater),
@@ -833,11 +854,27 @@ public class HomekitCharacteristicFactory {
 
     private static CurrentTemperatureCharacteristic createCurrentTemperatureCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        double minValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
-                HomekitTaggedItem.MIN_VALUE, CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE));
-        double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
-                HomekitTaggedItem.MAX_VALUE, CurrentTemperatureCharacteristic.DEFAULT_MAX_VALUE));
-        double step = getTemperatureStep(taggedItem, CurrentTemperatureCharacteristic.DEFAULT_STEP);
+        double minValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
+                        Objects.requireNonNull(
+                                new QuantityType(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE, SIUnits.CELSIUS)
+                                        .toUnit(getSystemTemperatureUnit())),
+                        false)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
+        double maxValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
+                        Objects.requireNonNull(
+                                new QuantityType(CurrentTemperatureCharacteristic.DEFAULT_MAX_VALUE, SIUnits.CELSIUS)
+                                        .toUnit(getSystemTemperatureUnit())),
+                        false)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
+        double step = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.STEP,
+                        Objects.requireNonNull(
+                                new QuantityType(CurrentTemperatureCharacteristic.DEFAULT_STEP, SIUnits.CELSIUS)
+                                        .toUnit(getSystemTemperatureUnit())),
+                        true)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
         return new CurrentTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), getSubscriber(taggedItem, TARGET_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, TARGET_TEMPERATURE, updater));
@@ -916,11 +953,22 @@ public class HomekitCharacteristicFactory {
 
     private static HeatingThresholdTemperatureCharacteristic createHeatingThresholdCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        double minValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
-                HomekitTaggedItem.MIN_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
-        double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
-                HomekitTaggedItem.MAX_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
-        double step = getTemperatureStep(taggedItem, HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP);
+        double minValue = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
+                Objects.requireNonNull(
+                        new QuantityType(HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE, SIUnits.CELSIUS)
+                                .toUnit(getSystemTemperatureUnit())),
+                false).toUnit(SIUnits.CELSIUS).doubleValue();
+        double maxValue = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
+                Objects.requireNonNull(
+                        new QuantityType(HeatingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE, SIUnits.CELSIUS)
+                                .toUnit(getSystemTemperatureUnit())),
+                false).toUnit(SIUnits.CELSIUS).doubleValue();
+        double step = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.STEP,
+                        Objects.requireNonNull(new QuantityType(HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP,
+                                SIUnits.CELSIUS).toUnit(getSystemTemperatureUnit())),
+                        true)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
         return new HeatingThresholdTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater),
@@ -1286,11 +1334,27 @@ public class HomekitCharacteristicFactory {
 
     private static TargetTemperatureCharacteristic createTargetTemperatureCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        double minValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
-                HomekitTaggedItem.MIN_VALUE, TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE));
-        double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
-                HomekitTaggedItem.MAX_VALUE, TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE));
-        double step = getTemperatureStep(taggedItem, TargetTemperatureCharacteristic.DEFAULT_STEP);
+        double minValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
+                        Objects.requireNonNull(
+                                new QuantityType(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE, SIUnits.CELSIUS)
+                                        .toUnit(getSystemTemperatureUnit())),
+                        false)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
+        double maxValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
+                        Objects.requireNonNull(
+                                new QuantityType(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE, SIUnits.CELSIUS)
+                                        .toUnit(getSystemTemperatureUnit())),
+                        false)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
+        double step = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.STEP,
+                        Objects.requireNonNull(
+                                new QuantityType(TargetTemperatureCharacteristic.DEFAULT_STEP, SIUnits.CELSIUS)
+                                        .toUnit(getSystemTemperatureUnit())),
+                        true)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
         return new TargetTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, TARGET_TEMPERATURE, updater),
