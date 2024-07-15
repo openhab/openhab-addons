@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.monopriceaudio.internal.communication;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -216,7 +217,7 @@ public enum AmplifierModel {
     private final int numSources;
     private final boolean padNumbers;
     private final List<String> zoneIds;
-    private Map<String, String> zoneIdMap = new HashMap<>();
+    private final Map<String, String> zoneIdMap;
 
     private static final String ON_STR = "1";
     private static final String OFF_STR = "0";
@@ -258,7 +259,9 @@ public enum AmplifierModel {
         this.zoneIds = zoneIds;
 
         // Build a map between the amp's physical zone IDs and the thing's logical zone names
+        final Map<String, String> zoneIdMap = new HashMap<>();
         IntStream.range(0, zoneIds.size()).forEach(i -> zoneIdMap.put(zoneIds.get(i), "zone" + (i + 1)));
+        this.zoneIdMap = Collections.unmodifiableMap(zoneIdMap);
     }
 
     public abstract MonopriceAudioZoneDTO getZoneData(String newZoneData);
@@ -266,13 +269,15 @@ public enum AmplifierModel {
     public abstract List<StateOption> getSourceLabels(MonopriceAudioThingConfiguration config);
 
     public String getZoneIdFromZoneName(String zoneName) {
-        return zoneIdMap.entrySet().stream().filter(entry -> zoneName.equals(entry.getValue())).map(Map.Entry::getKey)
-                .findFirst().orElse("");
+        final String zoneId = zoneIdMap.entrySet().stream().filter(entry -> zoneName.equals(entry.getValue()))
+                .map(Map.Entry::getKey).findFirst().orElse("");
+        return zoneId != null ? zoneId : "";
     }
 
     public String getZoneName(String zoneId) {
-        return zoneIdMap.entrySet().stream().filter(entry -> zoneId.equals(entry.getKey())).map(Map.Entry::getValue)
-                .findFirst().orElse("");
+        final String zoneName = zoneIdMap.entrySet().stream().filter(entry -> zoneId.equals(entry.getKey()))
+                .map(Map.Entry::getValue).findFirst().orElse("");
+        return zoneName != null ? zoneName : "";
     }
 
     public String getCmdPrefix() {
