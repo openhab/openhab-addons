@@ -13,7 +13,6 @@
 package org.openhab.binding.teslascope.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Class for holding the set of parameters used to read the controller variables.
@@ -28,10 +27,10 @@ public class DetailedInformation {
     public String name = "";
     public String state = "";
     public double odometer;
-    public @Nullable VehicleState vehicle_state;
-    public @Nullable ClimateState climate_state;
-    public @Nullable ChargeState charge_state;
-    public @Nullable DriveState drive_state;
+    public @NonNullByDefault({}) VehicleState vehicle_state;
+    public @NonNullByDefault({}) ClimateState climate_state;
+    public @NonNullByDefault({}) ChargeState charge_state;
+    public @NonNullByDefault({}) DriveState drive_state;
 
     private DetailedInformation() {
     }
