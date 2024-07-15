@@ -403,8 +403,8 @@ items.replaceItem({
   tags: ['Lightbulb'],
   channels: {
     'binding:thing:device:hallway#light': {},
-    'binding:thing:device:livingroom#light': { 
-      profile: 'system:follow' 
+    'binding:thing:device:livingroom#light': {
+      profile: 'system:follow'
     }
   },
   metadata: {
@@ -435,7 +435,7 @@ See [openhab-js : ItemConfig](https://openhab.github.io/openhab-js/global.html#I
 
 #### `ItemPersistence`
 
-Calling `Item.history` returns an `ItemPersistence` object with the following functions:
+Calling `Item.persistence` returns an `ItemPersistence` object with the following functions:
 
 - ItemPersistence :`object`
   - .averageSince(timestamp, serviceId) ⇒ `PersistedState | null`
@@ -463,15 +463,19 @@ Calling `Item.history` returns an `ItemPersistence` object with the following fu
   - .getAllStatesUntil(timestamp, serviceId)  ⇒ `Array[PersistedItem]`
   - .getAllStatesBetween(begin, end, serviceId)  ⇒ `Array[PersistedItem]`
   - .lastUpdate(serviceId) ⇒ `ZonedDateTime | null`
-  - .nextUpdate(serviceId)  ⇒ `ZonedDateTime | null`
-  - .maximumSince(timestamp,serviceId) ⇒ `PersistedItem | null`
-  - .maximumUntil(timestamp,serviceId) ⇒ `PersistedItem | null`
+  - .nextUpdate(serviceId) ⇒ `ZonedDateTime | null`
+  - .lastChange(serviceId) ⇒ `ZonedDateTime | null`
+  - .nextChange(serviceId) ⇒ `ZonedDateTime | null`
+  - .maximumSince(timestamp, serviceId) ⇒ `PersistedItem | null`
+  - .maximumUntil(timestamp, serviceId) ⇒ `PersistedItem | null`
   - .maximumBetween(begin, end, serviceId) ⇒ `PersistedItem | null`
   - .minimumSince(timestamp, serviceId) ⇒ `PersistedItem | null`
   - .minimumUntil(timestamp, serviceId) ⇒ `PersistedItem | null`
   - .minimumBetween(begin, end, serviceId) ⇒ `PersistedItem | null`
   - .persist(serviceId): Tells the persistence service to store the current Item state, which is then done asynchronously.
     **Warning:** This has the side effect, that if the Item state changes shortly after `.persist` has been called, the new Item state will be persisted. See [JSDoc](https://openhab.github.io/openhab-js/items.ItemPersistence.html#persist) for a possible work-around.
+  - .persist(timestamp, state, serviceId): Tells the persistence service to store the given state at the given timestamp, which is then done asynchronously.
+  - .persist(timeSeries, serviceId): Tells the persistence service to store the given [`TimeSeries`](#timeseries), which is then done asynchronously.
   - .persistedState(timestamp, serviceId) ⇒ `PersistedItem | null`
   - .previousState(skipEqual, serviceId) ⇒ `PersistedItem | null`
   - .nextState(skipEqual, serviceId) ⇒ `PersistedItem | null`
@@ -511,6 +515,35 @@ console.log('KitchenDimmer maximum was ', historic.state, ' at ', historic.times
 ```
 
 See [openhab-js : ItemPersistence](https://openhab.github.io/openhab-js/items.ItemPersistence.html) for full API documentation.
+
+#### `TimeSeries`
+
+A `TimeSeries` is used to transport a set of states together with their timestamp.
+It is usually used for persisting historic state or forecasts in a persistence service by using [`ItemPersistence.persist`](#itempersistence).
+
+When creating a new `TimeSeries`, a policy must be chosen - it defines how the `TimeSeries` is persisted in a persistence service:
+
+- `ADD` adds the content to the persistence, well suited for persisting historic data.
+- `REPLACE` first removes all persisted elements in the timespan given by begin and end of the `TimeSeries`, well suited for persisting forecasts.
+
+A `TimeSeries` object has the following properties and methods:
+
+- `policy`: The persistence policy, either `ADD` or `REPLACE`.
+- `begin`: Timestamp of the first element of the `TimeSeries`.
+- `end`: Timestamp of the last element of the `TimeSeries`.
+- `size`: Number of elements in the `TimeSeries`.
+- `states`: States of the `TimeSeries` together with their timestamp and sorted by their timestamps.
+  Be aware that this returns a reference to the internal state array, so changes to the array will affect the `TimeSeries`.
+- `add(timestamp, state)`: Add a given state to the `TimeSeries` at the given timestamp.
+
+The following example shows how to create a `TimeSeries`:
+
+```javascript
+var timeSeries = new items.TimeSeries('ADD'); // Create a new TimeSeries with policy ADD
+timeSeries.add(time.toZDT('2024-01-01T14:53'), Quantity('5 m')).add(time.toZDT().minusMinutes(2), Quantity('0 m')).add(time.toZDT().plusMinutes(5), Quantity('5 m'));
+console.log(ts); // Let's have a look at the TimeSeries
+items.getItem('MyDistanceItem').persistence.persist(timeSeries, 'influxdb'); // Persist the TimeSeries for the Item 'MyDistanceItem' using the InfluxDB persistence service
+```
 
 ### Things
 
@@ -586,7 +619,6 @@ For example, a way to determine if today is a weekend, a public holiday, someone
 Additional information can be found on the  [Ephemeris Actions Docs](https://www.openhab.org/docs/configuration/actions.html#ephemeris) as well as the [Ephemeris JavaDoc](https://www.openhab.org/javadoc/latest/org/openhab/core/model/script/actions/ephemeris).
 
 ```javascript
-// Example
 var weekend = actions.Ephemeris.isWeekend();
 ```
 
@@ -617,6 +649,15 @@ var response = actions.HTTP.sendHttpGetRequest('<url>');
 ```
 
 Replace `<url>` with the request url.
+
+#### Ping Actions
+
+See [openhab-js : actions.Ping](https://openhab.github.io/openhab-js/actions.html#.Ping) for complete documentation.
+
+```javascript
+// Check if a host is reachable
+var reachable = actions.Ping.checkVitality(host, port, timeout); // host: string, port: int, timeout: int
+```
 
 #### ScriptExecution Actions
 
@@ -677,16 +718,6 @@ myTimer.reschedule(now.plusSeconds(5));
 
 See [openhab-js : actions.ScriptExecution](https://openhab.github.io/openhab-js/actions.ScriptExecution.html) for complete documentation.
 
-#### Semantics Actions
-
-See [openhab-js : actions.Semantics](https://openhab.github.io/openhab-js/actions.html#.Semantics) for complete documentation.
-
-#### Thing Actions
-
-It is possible to get the actions for a Thing using `actions.Things.getActions(bindingId, thingUid)`, e.g. `actions.Things.getActions('network', 'network:pingdevice:pc')`.
-
-See [openhab-js : actions.Things](https://openhab.github.io/openhab-js/actions.html#.Things) for complete documentation.
-
 #### Transformation Actions
 
 openHAB provides various [data transformation services](https://www.openhab.org/addons/#transform) which can translate between technical and human-readable values.
@@ -705,20 +736,64 @@ See [openhab-js : actions.Voice](https://openhab.github.io/openhab-js/actions.ht
 
 #### Cloud Notification Actions
 
-Note: Optional action if [openHAB Cloud Connector](https://www.openhab.org/addons/integrations/openhabcloud/) is installed.
+Requires the [openHAB Cloud Connector](https://www.openhab.org/addons/integrations/openhabcloud/) to be installed.
 
 Notification actions may be placed in rules to send alerts to mobile devices registered with an [openHAB Cloud instance](https://github.com/openhab/openhab-cloud) such as [myopenHAB.org](https://myopenhab.org/).
 
-For available actions have a look at the [Cloud Notification Actions Docs](https://www.openhab.org/docs/configuration/actions.html#cloud-notification-actions).
+There are three different types of notifications:
+
+- Broadcast Notifications: Sent to all registered devices and shown as notification on these devices.
+- Standard Notifications: Sent to the registered devices of the specified user and shown as notification on his devices.
+- Log Notifications: Only shown in the notification log, e.g. inside the Android and iOS Apps.
+
+In addition to that, notifications can be updated later be re-using the same `referenceId` and hidden/removed either by `referenceId` or `tag`.
+
+To send these three types of notifications, use the `notificationBuilder(message)` method of the `actions` namespace.
+It returns a new `NotificationBuilder` object, which by default sends a broadcast notification and provides the following methods:
+
+- `.logOnly()`: Send a log notification only.
+- `.hide()`: Hides notifications with the specified `referenceId` or `tag`.
+- `.addUserId(emailAddress)`: By adding the email address(es) of specific openHAB Cloud user(s), the notification is only sent to this (these) user(s).
+- `.withIcon(icon)`: Sets the icon of the notification.
+- `.withTag(tag)`: Sets the tag of the notification. Used for grouping notifications and to hide/remove groups of notifications.
+- `.withTitle(title)`: Sets the title of the notification.
+- `.withReferenceId(referenceId)`: Sets the reference ID of the notification. If none is set, but it might be useful, a random UUID will be generated.
+  The reference ID can be used to update or hide the notification later by using the same reference ID again.
+- `.withOnClickAction(action)`: Sets the action to be executed when the notification is clicked.
+- `.withMediaAttachmentUrl(mediaAttachmentUrl)`: Sets the URL of a media attachment to be displayed with the notification. This URL must be reachable by the push notification client.
+- `.addActionButton(label, action)`: Adds an action button to the notification. Please note that due to Android and iOS limitations, only three action buttons are supported.
+- `.send()` ⇒ `string|null`: Sends the notification and returns the reference ID or `null` for log notifications and when hiding notifications.
+
+The syntax for the `action` parameter is described in [openHAB Cloud Connector: Action Syntax](https://www.openhab.org/addons/integrations/openhabcloud/#action-syntax).
+
+The syntax for the `mediaAttachmentUrl` parameter is described in [openHAB Cloud Connector](https://www.openhab.org/addons/integrations/openhabcloud/).
 
 ```javascript
-// Example
-actions.NotificationAction.sendNotification('<email>', '<message>'); // to a single myopenHAB user identified by e-mail
-actions.NotificationAction.sendBroadcastNotification('<message>'); // to all myopenHAB users
+// Send a simple broadcast notification
+actions.notificationBuilder('Hello World!').send();
+// Send a broadcast notification with icon, tag and title
+actions.notificationBuilder('Hello World!')
+  .withIcon('f7:bell_fill').withTag('important').withTitle('Important Notification').send();
+// Send a broadcast notification with icon, tag, title, media attachment URL and actions
+actions.notificationBuilder('Hello World!')
+  .withIcon('f7:bell_fill').withTag('important').withTitle('Important Notification')
+  .withOnClickAction('ui:navigate:/page/my_floorplan_page').withMediaAttachmentUrl('http://example.com/image.jpg')
+  .addActionButton('Turn Kitchen Light ON', 'command:KitchenLights:ON').addActionButton('Turn Kitchen Light OFF', 'command:KitchenLights:OFF').send();
+
+// Send a simple standard notification to two specific users
+actions.notificationBuilder('Hello World!').addUserId('florian@example.com').addUserId('florian@example.org').send();
+// Send a standard notification with icon, tag and title to two specific users
+actions.notificationBuilder('Hello World!').addUserId('florian@example.com').addUserId('florian@example.org')
+  .withIcon('f7:bell_fill').withTag('important').withTitle('Important notification').send();
+
+// Sends a simple log notification
+actions.notificationBuilder('Hello World!').logOnly().send();
+// Sends a simple log notification with icon and tag
+actions.notificationBuilder('Hello World!').logOnly()
+  .withIcon('f7:bell_fill').withTag('important').send();
 ```
 
-Replace `<email>` with the e-mail address of the user.
-Replace `<message>` with the notification text.
+See [openhab-js : actions.NotificationBuilder](https://openhab.github.io/openhab-js/actions.html#.notificationBuilder) for complete documentation.
 
 ### Cache
 
@@ -1149,7 +1224,7 @@ Operations and conditions can also optionally take functions:
 
 ```javascript
 rules.when().item("F1_light").changed().then(event => {
-    console.log(event);
+  console.log(event);
 }).build("Test Rule", "My Test Rule");
 ```
 
@@ -1297,8 +1372,9 @@ This table gives an overview over the `event` object:
 | `triggerType`     | all except `PWMTrigger`, `PIDTrigger`               | Type of trigger that triggered event                                          | N/A                    |
 | `eventClass`      | all                                                 | Java class name of the triggering event                                       | N/A                    |
 | `module`          | all                                                 | (user-defined or auto-generated) name of trigger                              | N/A                    |
+| `raw`             | all                                                 | Original contents of the event including data passed from a calling rule      | N/A                    |
 
-All properties are typeof `string`.
+All properties are typeof `string` except for properties contained by `raw` which are unmodified from the original types.
 
 Please note that when using `GenericEventTrigger`, the available properties depend on the chosen event types.
 It is not possible for the openhab-js library to provide type conversions for all properties of all openHAB events, as those are too many.
@@ -1345,7 +1421,7 @@ Follow these steps to create your own library (it's called a CommonJS module):
    function someFunction () {
      console.log('Hello from your personal library!');
    }
-   
+
    module.exports = {
      someProperty,
      someFunction
@@ -1353,7 +1429,7 @@ Follow these steps to create your own library (it's called a CommonJS module):
    ```
 
 4. Tar it up by running `npm pack` from your library's folder.
-5. Install it by running `npm install <name>-<version>.tgz` from the `automation/js` folder.
+5. Install it by running `npm install <path-to-library-folder>/<name>-<version>.tgz` from the `automation/js` folder.
 6. After you've installed it with `npm`, you can continue development of the library inside `node_modules`.
 
 It is also possible to upload your library to [npm](https://npmjs.com) to share it with other users.

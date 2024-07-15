@@ -28,8 +28,10 @@ public class SystemInfoBindingConstants {
 
     public static final String BINDING_ID = "systeminfo";
 
-    public static final ThingTypeUID THING_TYPE_COMPUTER = new ThingTypeUID(BINDING_ID, "computer");
-    public static final ThingTypeUID THING_TYPE_COMPUTER_IMPL = new ThingTypeUID(BINDING_ID, "computer-impl");
+    public static final String THING_TYPE_COMPUTER_ID = "computer";
+    public static final ThingTypeUID THING_TYPE_COMPUTER = new ThingTypeUID(BINDING_ID, THING_TYPE_COMPUTER_ID);
+    public static final ThingTypeUID THING_TYPE_COMPUTER_IMPL = new ThingTypeUID(BINDING_ID,
+            THING_TYPE_COMPUTER_ID + "-impl");
 
     // Thing properties
     /**

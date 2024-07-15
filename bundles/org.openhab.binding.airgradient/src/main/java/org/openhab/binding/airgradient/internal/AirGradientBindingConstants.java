@@ -26,7 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class AirGradientBindingConstants {
 
-    private static final String BINDING_ID = "airgradient";
+    public static final String BINDING_ID = "airgradient";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_API = new ThingTypeUID(BINDING_ID, "airgradient-api");
@@ -46,6 +46,19 @@ public class AirGradientBindingConstants {
     public static final String CHANNEL_LEDS_MODE = "leds";
     public static final String CHANNEL_CALIBRATION = "calibration";
     public static final String CHANNEL_UPLOADS_SINCE_BOOT = "uploads-since-boot";
+    public static final String CHANNEL_COUNTRY_CODE = "country-code";
+    public static final String CHANNEL_PM_STANDARD = "pm-standard";
+    public static final String CHANNEL_ABC_DAYS = "abc-days";
+    public static final String CHANNEL_TVOC_LEARNING_OFFSET = "tvoc-learning-offset";
+    public static final String CHANNEL_NOX_LEARNING_OFFSET = "nox-learning-offset";
+    public static final String CHANNEL_MQTT_BROKER_URL = "mqtt-broker-url";
+    public static final String CHANNEL_TEMPERATURE_UNIT = "temperature-unit";
+    public static final String CHANNEL_CONFIGURATION_CONTROL = "configuration-control";
+    public static final String CHANNEL_POST_TO_CLOUD = "post-to-cloud";
+    public static final String CHANNEL_LED_BAR_BRIGHTNESS = "led-bar-brightness";
+    public static final String CHANNEL_DISPLAY_BRIGHTNESS = "display-brightness";
+    public static final String CHANNEL_MODEL = "model";
+    public static final String CHANNEL_LED_BAR_TEST = "led-bar-test";
 
     // List of all properties
     public static final String PROPERTY_NAME = "name";
@@ -59,6 +72,7 @@ public class AirGradientBindingConstants {
     // URLs for API
     public static final String CURRENT_MEASURES_PATH = "/public/api/v1/locations/measures/current?token=%s";
     public static final String CURRENT_MEASURES_LOCAL_PATH = "/measures/current";
+    public static final String LOCAL_CONFIG_PATH = "/config";
     public static final String LEDS_MODE_PATH = "/public/api/v1/sensors/%s/config/leds/mode?token=%s";
     public static final String CALIBRATE_CO2_PATH = "/public/api/v1/sensors/%s/co2/calibration?token=%s";
 

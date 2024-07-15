@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.nikohomecontrol.internal.protocol;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -23,7 +25,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class NikoHomeControlConstants {
 
     // Action types abstracted from NhcI and NhcII action types
-    public enum ActionType {
+    public static enum ActionType {
         TRIGGER,
         RELAY,
         DIMMER,
@@ -72,4 +74,16 @@ public class NikoHomeControlConstants {
     // NhcII thermostat modes
     public static final String[] THERMOSTATMODES = { "Day", "Night", "Eco", "Off", "Cool", "Prog1", "Prog2", "Prog3" };
     public static final String[] THERMOSTATDEMAND = { "Cooling", "None", "Heating" };
+
+    // NhcII alarm states
+    public static final String NHCINTERMEDIATE = "Intermediate";
+    public static final String NHCARM = "Activate";
+    public static final String NHCDISARM = "Deactivate";
+    public static final String NHCPREARMED = "PreArmed";
+    public static final String NHCDETECTORPROBLEM = "DetectorProblem";
+    public static final String NHCARMED = "Armed";
+    public static final String NHCPREALARM = "PreAlarm";
+    public static final String NHCALARM = "Alarm";
+    public static final Map<String, String> ALARMSTATES = Map.of(NHCOFF, "DISARMED", NHCPREARMED, "PREARMED",
+            NHCDETECTORPROBLEM, "DETECTOR PROBLEM", NHCARMED, "ARMED", NHCPREALARM, "PREALARM", NHCALARM, "ALARM");
 }

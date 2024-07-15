@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.solarforecast.internal.utils;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
@@ -23,6 +25,7 @@ import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.TimeSeries.Entry;
@@ -34,6 +37,32 @@ import org.openhab.core.types.TimeSeries.Entry;
  */
 @NonNullByDefault
 public class Utils {
+    private static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
+        @Override
+        public ZoneId getTimeZone() {
+            return ZoneId.systemDefault();
+        }
+    };
+
+    private static Clock clock = Clock.systemDefaultZone();
+
+    /**
+     * Only for unit testing setting a fixed clock with desired date-time
+     *
+     * @param c
+     */
+    public static void setClock(Clock c) {
+        clock = c;
+    }
+
+    public static void setTimeZoneProvider(TimeZoneProvider tzp) {
+        timeZoneProvider = tzp;
+    }
+
+    public static Clock getClock() {
+        return clock.withZone(timeZoneProvider.getTimeZone());
+    }
+
     public static QuantityType<Energy> getEnergyState(double d) {
         if (d < 0) {
             return QuantityType.valueOf(-1, Units.KILOWATT_HOUR);

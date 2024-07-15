@@ -27,7 +27,15 @@ public enum HomekitCharacteristicType {
      * It is illegal to have a characteristic type also be a device type
      */
     EMPTY("Empty"), // used in case only accessory type but no characteristic provided
+
     NAME("Name"),
+    MANUFACTURER("Manufacturer"),
+    MODEL("Model"),
+    SERIAL_NUMBER("SerialNumber"),
+    FIRMWARE_REVISION("FirmwareRevision"),
+    HARDWARE_REVISION("HardwareRevision"),
+    IDENTIFY("Identify"),
+
     BATTERY_LOW_STATUS("BatteryLowStatus"),
     ACTIVE_STATUS("ActiveStatus"),
     ISCONFIGURED("IsConfigured"),
@@ -82,6 +90,7 @@ public enum HomekitCharacteristicType {
     CURRENT_HEATING_COOLING_STATE("CurrentHeatingCoolingMode"),
     TARGET_TEMPERATURE("TargetTemperature"),
     TEMPERATURE_UNIT("TemperatureUnit"),
+    TARGET_RELATIVE_HUMIDITY("TargetRelativeHumidity"),
 
     LOCK_CURRENT_STATE("LockCurrentState"),
     LOCK_TARGET_STATE("LockTargetState"),

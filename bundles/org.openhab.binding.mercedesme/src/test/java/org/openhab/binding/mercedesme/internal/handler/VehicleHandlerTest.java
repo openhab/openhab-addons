@@ -14,7 +14,9 @@ package org.openhab.binding.mercedesme.internal.handler;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+import static org.openhab.binding.mercedesme.internal.Constants.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -37,11 +39,14 @@ import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.RefreshType;
 
 import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
+import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus;
+import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
 
 /**
  * {@link VehicleHandlerTest} check state updates and command sending of vehicles
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - Additional test for https://github.com/openhab/openhab-addons/issues/16932
  */
 @NonNullByDefault
 class VehicleHandlerTest {
@@ -166,6 +171,32 @@ class VehicleHandlerTest {
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(10, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
         assertEquals("2023-09-06 13:55", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
+                .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"), "End of Charge Time");
+    }
+
+    @Test
+    public void testBEVChargeEndtime() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
+        vh.accountHandler = Optional.of(mock(AccountHandler.class));
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vh.config = Optional.of(vehicleConfig);
+        ThingCallbackListener updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+
+        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging-Weekday.json");
+        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        vh.distributeContent(update);
+        assertEquals("2023-09-09 13:54", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
+                .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"), "End of Charge Time");
+
+        json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging-Weekday-Underrun.json");
+        update = ProtoConverter.json2Proto(json, true);
+        vh.distributeContent(update);
+        assertEquals("2023-09-11 13:55", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
                 .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"), "End of Charge Time");
     }
 
@@ -382,6 +413,8 @@ class VehicleHandlerTest {
         vh.accountHandler = Optional.of(mock(AccountHandler.class));
         VehicleConfiguration vehicleConfig = new VehicleConfiguration();
         vh.config = Optional.of(vehicleConfig);
+        AccountHandlerMock ahm = new AccountHandlerMock();
+        vh.accountHandler = Optional.of(ahm);
         ThingCallbackListener updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
 
@@ -407,6 +440,7 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        when(thingMock.getProperties()).thenReturn(Map.of(MB_KEY_COMMAND_ZEV_PRECONDITION_CONFIGURE, "true"));
         AccountHandlerMock ahm = new AccountHandlerMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
@@ -435,6 +469,7 @@ class VehicleHandlerTest {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
         when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        when(thingMock.getProperties()).thenReturn(Map.of(MB_KEY_COMMAND_CHARGE_PROGRAM_CONFIGURE, "true"));
         AccountHandlerMock ahm = new AccountHandlerMock();
         VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
                 mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
@@ -461,5 +496,25 @@ class VehicleHandlerTest {
         assertEquals(3, Utils.getChargeProgramNumber(ahm.getCommand().get("charge_program").toString()),
                 "Charge Program Command");
         assertEquals(100, ahm.getCommand().getInt("max_soc"), "Charge Program SOC Setting");
+    }
+
+    @Test
+    /**
+     * Testing UNRECOGNIZED (-1) values in CommandStatus which throws Exception
+     */
+    public void testCommandDistribution() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
+        AppTwinCommandStatus command = AppTwinCommandStatus.newBuilder().setStateValue(-1).setTypeValue(-1).build();
+        AppTwinCommandStatusUpdatesByPID commandPid = AppTwinCommandStatusUpdatesByPID.newBuilder()
+                .putUpdatesByPid(Long.MIN_VALUE, command).build();
+        try {
+            vh.distributeCommandStatus(commandPid);
+        } catch (IllegalArgumentException iae) {
+            fail();
+        }
     }
 }
