@@ -89,7 +89,7 @@ public class BroadlinkDiscoveryService extends AbstractDiscoveryService
         if (BroadlinkBindingConstants.SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.containsKey(thingTypeUID)) {
             notifyThingDiscovered(thingTypeUID, thingUID, remoteAddress, properties);
         } else {
-            logger.info("Discovered a {} but do not know how to support it at this time :-(", thingTypeUID);
+            logger.warn("Discovered a {} but do not know how to support it at this time, please report!", thingTypeUID);
         }
     }
 
