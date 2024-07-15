@@ -74,11 +74,20 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         this.deviceKey = HexUtils.hexToBytes(BroadlinkBindingConstants.BROADLINK_AUTH_KEY);
     }
 
-    // For test purposes
+    /**
+     * Method to set the socket manually for test purposes
+     *
+     * @param socket the socket to use
+     */
     void setSocket(RetryableSocket socket) {
         this.socket = socket;
     }
 
+    /**
+     * Method to define a networktraffic observer, who can react to the traffice being received.
+     *
+     * @param networkTrafficObserver
+     */
     void setNetworkTrafficObserver(NetworkTrafficObserver networkTrafficObserver) {
         this.networkTrafficObserver = networkTrafficObserver;
     }
@@ -214,7 +223,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                     "Neither a host or static IP has been defined.");
         } else {
             try {
-
                 if (NetworkUtils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000, logger)) {
                     if (!Utils.isOnline(getThing())) {
                         logger.trace("updateItemStatus; device not currently online, resolving");

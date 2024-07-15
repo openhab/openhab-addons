@@ -33,6 +33,16 @@ import org.slf4j.Logger;
 @NonNullByDefault
 public class NetworkUtils {
 
+    /**
+     * Check whether the host is available.
+     *
+     * @param host hostname or ip address of the host to check for availability
+     * @param timeout time in milliseconds for the check to timeout
+     * @param logger the logger to use for logging any issues
+     * @return true when host is available otherwhise false
+     * @throws IOException if there is an unexpected error
+     */
+
     public static boolean hostAvailabilityCheck(@Nullable String host, int timeout, Logger logger) throws IOException {
         if (host == null) {
             logger.debug("Can't check availability of a null host");
@@ -47,6 +57,13 @@ public class NetworkUtils {
         }
     }
 
+    /**
+     * Finds an InetAddress that is associated to a non-loopback device.
+     *
+     * @return null, if there is no non-loopback device address, otherwise the InetAddress associated to a non-loopback
+     *         device
+     * @throws SocketException thrown when no socket can be opened.
+     */
     public static @Nullable InetAddress findNonLoopbackAddress() throws SocketException {
         Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
         while (ifaces.hasMoreElements()) {
@@ -67,6 +84,12 @@ public class NetworkUtils {
         return null;
     }
 
+    /**
+     * Find the address of the local lan host
+     *
+     * @return InetAddress of the local lan host
+     * @throws UnknownHostException if no local lan address can be found
+     */
     public static InetAddress getLocalHostLANAddress() throws UnknownHostException {
         try {
             InetAddress candidateAddress = findNonLoopbackAddress();
@@ -88,6 +111,14 @@ public class NetworkUtils {
         }
     }
 
+    /**
+     * Randomly find a free port on the host in the defined range
+     *
+     * @param host The address of the host to find a free port on
+     * @param from port number of the start of the range
+     * @param to port number of the end of the range
+     * @return number of the available port
+     */
     public static int nextFreePort(InetAddress host, int from, int to) {
         int port = randInt(from, to);
         do {
@@ -98,6 +129,13 @@ public class NetworkUtils {
         } while (true);
     }
 
+    /**
+     * Test whether the port is available on the host
+     *
+     * @param host the host to check the port of
+     * @param port the port to check for availability
+     * @return true when available, otherwise false
+     */
     public static boolean isLocalPortFree(InetAddress host, int port) {
         try {
             (new ServerSocket(port, 50, host)).close();
@@ -107,6 +145,13 @@ public class NetworkUtils {
         return true;
     }
 
+    /**
+     * Return a random integer in the range (min, max)
+     *
+     * @param min the lower limit of the range
+     * @param max the upper limit of the range
+     * @return the random integer
+     */
     public static int randInt(int min, int max) {
         return ThreadLocalRandom.current().nextInt((max - min) + 1) + min;
     }
