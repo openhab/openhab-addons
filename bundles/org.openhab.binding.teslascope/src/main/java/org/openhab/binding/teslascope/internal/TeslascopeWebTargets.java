@@ -22,7 +22,6 @@ import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
-import org.openhab.binding.teslascope.internal.api.DetailedInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,12 +42,12 @@ public class TeslascopeWebTargets {
         this.httpClient = httpClient;
     }
 
-    public DetailedInformation getDetailedInformation(String publicID, String apiKey)
+    public String getDetailedInformation(String publicID, String apiKey)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
         String getDetailedInformationUri = BASE_URI + publicID + "/detailed?api_key=" + apiKey;
         String response = invoke(getDetailedInformationUri);
         logger.trace("Received response: \"{}\"", response);
-        return DetailedInformation.parse(response);
+        return response;
     }
 
     public void sendCommand(String publicID, String apiKey, String command)

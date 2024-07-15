@@ -41,6 +41,8 @@ import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link TeslascopeHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -55,6 +57,8 @@ public class TeslascopeHandler extends BaseThingHandler {
     private @NonNullByDefault({}) TeslascopeConfiguration config;
     private @NonNullByDefault({}) TeslascopeWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
+
+    private final Gson gson = new Gson();
 
     public TeslascopeHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -160,10 +164,10 @@ public class TeslascopeHandler extends BaseThingHandler {
     }
 
     private void pollStatus() {
-        DetailedInformation detailedInformation = null;
+        String response = "";
 
         try {
-            detailedInformation = webTargets.getDetailedInformation(config.publicID, config.apiKey);
+            response = webTargets.getDetailedInformation(config.publicID, config.apiKey);
             updateStatus(ThingStatus.ONLINE);
         } catch (TeslascopeAuthenticationException e) {
             logger.debug("Unexpected authentication error connecting to Teslascope API", e);
@@ -174,6 +178,8 @@ public class TeslascopeHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         }
+
+        DetailedInformation detailedInformation = gson.fromJson(response, DetailedInformation.class);
 
         updateState(TeslascopeBindingConstants.CHANNEL_VIN, new StringType(detailedInformation.vin));
         updateState(TeslascopeBindingConstants.CHANNEL_VEHICLE_NAME, new StringType(detailedInformation.name));
