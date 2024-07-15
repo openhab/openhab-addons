@@ -304,6 +304,7 @@
 /bundles/org.openhab.binding.qolsysiq/ @digitaldan
 /bundles/org.openhab.binding.radiobrowser/ @skinah
 /bundles/org.openhab.binding.radiothermostat/ @mlobstein
+/bundles/org.openhab.binding.rainsoft/ @morph166955
 /bundles/org.openhab.binding.regoheatpump/ @crnjan
 /bundles/org.openhab.binding.revogi/ @andibraeu
 /bundles/org.openhab.binding.remoteopenhab/ @lolodomo
