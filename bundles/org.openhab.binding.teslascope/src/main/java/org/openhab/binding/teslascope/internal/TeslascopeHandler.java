@@ -189,133 +189,144 @@ public class TeslascopeHandler extends BaseThingHandler {
 
         // charge state
         updateState(TeslascopeBindingConstants.CHANNEL_BATTERY_LEVEL,
-                new DecimalType(detailedInformation.battery_level));
+                new DecimalType(detailedInformation.charge_state.battery_level));
         updateState(TeslascopeBindingConstants.CHANNEL_USABLE_BATTERY_LEVEL,
-                new DecimalType(detailedInformation.usable_battery_level));
+                new DecimalType(detailedInformation.charge_state.usable_battery_level));
         updateState(TeslascopeBindingConstants.CHANNEL_BATTERY_RANGE,
-                new QuantityType<>(detailedInformation.battery_range, ImperialUnits.MILE));
+                new QuantityType<>(detailedInformation.charge_state.battery_range, ImperialUnits.MILE));
         updateState(TeslascopeBindingConstants.CHANNEL_ESTIMATED_BATTERY_RANGE,
-                new QuantityType<>(detailedInformation.est_battery_range, ImperialUnits.MILE));
+                new QuantityType<>(detailedInformation.charge_state.est_battery_range, ImperialUnits.MILE));
         // charge_enable_request isn't the right flag to determine if car is charging or not
         updateState(TeslascopeBindingConstants.CHANNEL_CHARGE,
-                OnOffType.from("Charging".equals(detailedInformation.charging_state)));
+                OnOffType.from("Charging".equals(detailedInformation.charge_state.charging_state)));
         updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_ENERGY_ADDED,
-                new QuantityType<>(detailedInformation.charge_energy_added, Units.KILOWATT_HOUR));
-        updateState(CHANNEL_CHARGE_LIMIT_SOC_STANDARD, new DecimalType(detailedInformation.charge_limit_soc / 100));
+                new QuantityType<>(detailedInformation.charge_state.charge_energy_added, Units.KILOWATT_HOUR));
+        updateState(CHANNEL_CHARGE_LIMIT_SOC_STANDARD,
+                new DecimalType(detailedInformation.charge_state.charge_limit_soc / 100));
         updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_PORT,
-                OnOffType.from(detailedInformation.charge_port_door_open));
+                OnOffType.from(1 == detailedInformation.charge_state.charge_port_door_open));
         updateState(TeslascopeBindingConstants.CHANNEL_CHARGE_RATE,
-                new QuantityType<>(detailedInformation.charge_rate, ImperialUnits.MILES_PER_HOUR));
+                new QuantityType<>(detailedInformation.charge_state.charge_rate, ImperialUnits.MILES_PER_HOUR));
         updateState(TeslascopeBindingConstants.CHANNEL_CHARGER_POWER,
-                new QuantityType<>(detailedInformation.charger_power, MetricPrefix.KILO(Units.WATT)));
+                new QuantityType<>(detailedInformation.charge_state.charger_power, MetricPrefix.KILO(Units.WATT)));
         updateState(TeslascopeBindingConstants.CHANNEL_CHARGER_VOLTAGE,
-                new QuantityType<>(detailedInformation.charge_rate, Units.VOLT));
+                new QuantityType<>(detailedInformation.charge_state.charge_rate, Units.VOLT));
         updateState(TeslascopeBindingConstants.CHANNEL_TIME_TO_FULL_CHARGE,
-                new QuantityType<>(detailedInformation.time_to_full_charge, Units.HOUR));
+                new QuantityType<>(detailedInformation.charge_state.time_to_full_charge, Units.HOUR));
         updateState(TeslascopeBindingConstants.CHANNEL_CHARGING_STATE,
-                new StringType(detailedInformation.charging_state));
+                new StringType(detailedInformation.charge_state.charging_state));
         updateState(TeslascopeBindingConstants.CHANNEL_SCHEDULED_CHARGING_PENDING,
-                OnOffType.from(detailedInformation.scheduled_charging_pending));
+                OnOffType.from(1 == detailedInformation.charge_state.scheduled_charging_pending));
         updateState(TeslascopeBindingConstants.CHANNEL_SCHEDULED_CHARGING_START,
-                new StringType(detailedInformation.scheduled_charging_start_time));
+                new StringType(detailedInformation.charge_state.scheduled_charging_start_time));
 
         // climate state
         updateState(TeslascopeBindingConstants.CHANNEL_AUTOCONDITIONING,
-                OnOffType.from(detailedInformation.is_auto_conditioning_on));
-        updateState(TeslascopeBindingConstants.CHANNEL_CLIMATE, OnOffType.from(detailedInformation.is_climate_on));
+                OnOffType.from(1 == detailedInformation.climate_state.is_auto_conditioning_on));
+        updateState(TeslascopeBindingConstants.CHANNEL_CLIMATE,
+                OnOffType.from(1 == detailedInformation.climate_state.is_climate_on));
         updateState(TeslascopeBindingConstants.CHANNEL_FRONT_DEFROSTER,
-                OnOffType.from(detailedInformation.is_front_defroster_on));
+                OnOffType.from(1 == detailedInformation.climate_state.is_front_defroster_on));
         updateState(TeslascopeBindingConstants.CHANNEL_PRECONDITIONING,
-                OnOffType.from(detailedInformation.is_preconditioning));
+                OnOffType.from(1 == detailedInformation.climate_state.is_preconditioning));
         updateState(TeslascopeBindingConstants.CHANNEL_REAR_DEFROSTER,
-                OnOffType.from(detailedInformation.is_rear_defroster_on));
+                OnOffType.from(1 == detailedInformation.climate_state.is_rear_defroster_on));
         updateState(TeslascopeBindingConstants.CHANNEL_LEFT_SEAT_HEATER,
-                new DecimalType(detailedInformation.seat_heater_left));
+                new DecimalType(detailedInformation.climate_state.seat_heater_left));
         updateState(TeslascopeBindingConstants.CHANNEL_CENTER_REAR_SEAT_HEATER,
-                new DecimalType(detailedInformation.seat_heater_rear_center));
+                new DecimalType(detailedInformation.climate_state.seat_heater_rear_center));
         updateState(TeslascopeBindingConstants.CHANNEL_LEFT_REAR_SEAT_HEATER,
-                new DecimalType(detailedInformation.seat_heater_rear_left));
+                new DecimalType(detailedInformation.climate_state.seat_heater_rear_left));
         updateState(TeslascopeBindingConstants.CHANNEL_RIGHT_REAR_SEAT_HEATER,
-                new DecimalType(detailedInformation.seat_heater_rear_right));
+                new DecimalType(detailedInformation.climate_state.seat_heater_rear_right));
         updateState(TeslascopeBindingConstants.CHANNEL_RIGHT_SEAT_HEATER,
-                new DecimalType(detailedInformation.seat_heater_right));
+                new DecimalType(detailedInformation.climate_state.seat_heater_right));
         updateState(TeslascopeBindingConstants.CHANNEL_SIDE_MIRROR_HEATERS,
-                OnOffType.from(detailedInformation.side_mirror_heaters));
+                OnOffType.from(1 == detailedInformation.climate_state.side_mirror_heaters));
         updateState(TeslascopeBindingConstants.CHANNEL_SMARTPRECONDITIONG,
-                OnOffType.from(detailedInformation.smart_preconditioning));
+                OnOffType.from(1 == detailedInformation.climate_state.smart_preconditioning));
         updateState(TeslascopeBindingConstants.CHANNEL_STEERING_WHEEL_HEATER,
-                OnOffType.from(detailedInformation.steering_wheel_heater));
+                OnOffType.from(1 == detailedInformation.climate_state.steering_wheel_heater));
         updateState(TeslascopeBindingConstants.CHANNEL_WIPER_BLADE_HEATER,
-                OnOffType.from(detailedInformation.wiper_blade_heater));
+                OnOffType.from(1 == detailedInformation.climate_state.wiper_blade_heater));
         updateState(TeslascopeBindingConstants.CHANNEL_DRIVER_TEMP,
-                new QuantityType<>(detailedInformation.driver_temp_setting, SIUnits.CELSIUS));
+                new QuantityType<>(detailedInformation.climate_state.driver_temp_setting, SIUnits.CELSIUS));
         updateState(TeslascopeBindingConstants.CHANNEL_INSIDE_TEMP,
-                new QuantityType<>(detailedInformation.inside_temp, SIUnits.CELSIUS));
+                new QuantityType<>(detailedInformation.climate_state.inside_temp, SIUnits.CELSIUS));
         updateState(TeslascopeBindingConstants.CHANNEL_OUTSIDE_TEMP,
-                new QuantityType<>(detailedInformation.outside_temp, SIUnits.CELSIUS));
+                new QuantityType<>(detailedInformation.climate_state.outside_temp, SIUnits.CELSIUS));
         updateState(TeslascopeBindingConstants.CHANNEL_PASSENGER_TEMP,
-                new QuantityType<>(detailedInformation.passenger_temp_setting, SIUnits.CELSIUS));
-        updateState(TeslascopeBindingConstants.CHANNEL_FAN, new DecimalType(detailedInformation.fan_status));
+                new QuantityType<>(detailedInformation.climate_state.passenger_temp_setting, SIUnits.CELSIUS));
+        updateState(TeslascopeBindingConstants.CHANNEL_FAN,
+                new DecimalType(detailedInformation.climate_state.fan_status));
         updateState(TeslascopeBindingConstants.CHANNEL_LEFT_TEMP_DIRECTION,
-                new DecimalType(detailedInformation.left_temp_direction));
+                new DecimalType(detailedInformation.climate_state.left_temp_direction));
         updateState(TeslascopeBindingConstants.CHANNEL_MAX_AVAILABLE_TEMP,
-                new QuantityType<>(detailedInformation.max_avail_temp, SIUnits.CELSIUS));
+                new QuantityType<>(detailedInformation.climate_state.max_avail_temp, SIUnits.CELSIUS));
         updateState(TeslascopeBindingConstants.CHANNEL_MIN_AVAILABLE_TEMP,
-                new QuantityType<>(detailedInformation.min_avail_temp, SIUnits.CELSIUS));
+                new QuantityType<>(detailedInformation.climate_state.min_avail_temp, SIUnits.CELSIUS));
         updateState(TeslascopeBindingConstants.CHANNEL_RIGHT_TEMP_DIRECTION,
-                new DecimalType(detailedInformation.right_temp_direction));
+                new DecimalType(detailedInformation.climate_state.right_temp_direction));
 
         // drive state
-        updateState(TeslascopeBindingConstants.CHANNEL_HEADING, new DecimalType(detailedInformation.heading));
-        updateState(TeslascopeBindingConstants.CHANNEL_LOCATION,
-                new PointType(detailedInformation.latitude + "," + detailedInformation.longitude));
+        updateState(TeslascopeBindingConstants.CHANNEL_HEADING,
+                new DecimalType(detailedInformation.drive_state.heading));
+        updateState(TeslascopeBindingConstants.CHANNEL_LOCATION, new PointType(
+                detailedInformation.drive_state.latitude + "," + detailedInformation.drive_state.longitude));
         updateState(TeslascopeBindingConstants.CHANNEL_POWER,
-                new QuantityType<>(detailedInformation.power, MetricPrefix.KILO(Units.WATT)));
-        updateState(TeslascopeBindingConstants.CHANNEL_SHIFT_STATE, new StringType(detailedInformation.shift_state));
+                new QuantityType<>(detailedInformation.drive_state.power, MetricPrefix.KILO(Units.WATT)));
+        updateState(TeslascopeBindingConstants.CHANNEL_SHIFT_STATE,
+                new StringType(detailedInformation.drive_state.shift_state));
         updateState(TeslascopeBindingConstants.CHANNEL_SPEED,
-                new QuantityType<>(detailedInformation.speed, ImperialUnits.MILES_PER_HOUR));
+                new QuantityType<>(detailedInformation.drive_state.speed, ImperialUnits.MILES_PER_HOUR));
 
         // vehicle state
-        updateState(TeslascopeBindingConstants.CHANNEL_DOOR_LOCK, OnOffType.from(detailedInformation.locked));
-        updateState(TeslascopeBindingConstants.CHANNEL_SENTRY_MODE, OnOffType.from(detailedInformation.sentry_mode));
-        updateState(TeslascopeBindingConstants.CHANNEL_VALET_MODE, OnOffType.from(detailedInformation.valet_mode));
+        updateState(TeslascopeBindingConstants.CHANNEL_DOOR_LOCK,
+                OnOffType.from(1 == detailedInformation.vehicle_state.locked));
+        updateState(TeslascopeBindingConstants.CHANNEL_SENTRY_MODE,
+                OnOffType.from(1 == detailedInformation.vehicle_state.sentry_mode));
+        updateState(TeslascopeBindingConstants.CHANNEL_VALET_MODE,
+                OnOffType.from(1 == detailedInformation.vehicle_state.valet_mode));
         updateState(TeslascopeBindingConstants.CHANNEL_SOFTWARE_UPDATE_AVAILABLE,
-                OnOffType.from(!"".equals(detailedInformation.software_update_status)));
+                OnOffType.from(!"".equals(detailedInformation.vehicle_state.software_update_status)));
         updateState(TeslascopeBindingConstants.CHANNEL_SOFTWARE_UPDATE_STATUS,
-                new StringType(detailedInformation.software_update_status));
+                new StringType(detailedInformation.vehicle_state.software_update_status));
         updateState(TeslascopeBindingConstants.CHANNEL_SOFTWARE_UPDATE_VERSION,
-                new StringType(detailedInformation.software_update_version));
+                new StringType(detailedInformation.vehicle_state.software_update_version));
         updateState(TeslascopeBindingConstants.CHANNEL_SUNROOF_STATE,
-                new StringType(detailedInformation.sun_roof_state));
+                new StringType(detailedInformation.vehicle_state.sun_roof_state));
         updateState(TeslascopeBindingConstants.CHANNEL_SUNROOF,
-                new DecimalType(detailedInformation.sun_roof_percent_open));
-        updateState(TeslascopeBindingConstants.CHANNEL_HOMELINK, OnOffType.from(detailedInformation.homelink_nearby));
+                new DecimalType(detailedInformation.vehicle_state.sun_roof_percent_open));
+        updateState(TeslascopeBindingConstants.CHANNEL_HOMELINK,
+                OnOffType.from(1 == detailedInformation.vehicle_state.homelink_nearby));
         updateState(TeslascopeBindingConstants.CHANNEL_TPMS_FL,
-                new QuantityType<>(detailedInformation.tpms_pressure_fl, Units.BAR));
+                new QuantityType<>(detailedInformation.vehicle_state.tpms_pressure_fl, Units.BAR));
         updateState(TeslascopeBindingConstants.CHANNEL_TPMS_FR,
-                new QuantityType<>(detailedInformation.tpms_pressure_fr, Units.BAR));
+                new QuantityType<>(detailedInformation.vehicle_state.tpms_pressure_fr, Units.BAR));
         updateState(TeslascopeBindingConstants.CHANNEL_TPMS_RL,
-                new QuantityType<>(detailedInformation.tpms_pressure_rl, Units.BAR));
+                new QuantityType<>(detailedInformation.vehicle_state.tpms_pressure_rl, Units.BAR));
         updateState(TeslascopeBindingConstants.CHANNEL_TPMS_RR,
-                new QuantityType<>(detailedInformation.tpms_pressure_rr, Units.BAR));
+                new QuantityType<>(detailedInformation.vehicle_state.tpms_pressure_rr, Units.BAR));
         updateState(TeslascopeBindingConstants.CHANNEL_TPMS_SOFT_WARNING_FL,
-                OnOffType.from(detailedInformation.tpms_soft_warning_fl));
+                OnOffType.from(1 == detailedInformation.vehicle_state.tpms_soft_warning_fl));
         updateState(TeslascopeBindingConstants.CHANNEL_TPMS_SOFT_WARNING_FR,
-                OnOffType.from(detailedInformation.tpms_soft_warning_fr));
+                OnOffType.from(1 == detailedInformation.vehicle_state.tpms_soft_warning_fr));
         updateState(TeslascopeBindingConstants.CHANNEL_TPMS_SOFT_WARNING_RL,
-                OnOffType.from(detailedInformation.tpms_soft_warning_rl));
+                OnOffType.from(1 == detailedInformation.vehicle_state.tpms_soft_warning_rl));
         updateState(TeslascopeBindingConstants.CHANNEL_TPMS_SOFT_WARNING_RR,
-                OnOffType.from(detailedInformation.tpms_soft_warning_rr));
+                OnOffType.from(1 == detailedInformation.vehicle_state.tpms_soft_warning_rr));
         updateState(TeslascopeBindingConstants.CHANNEL_DRIVER_FRONT_DOOR,
-                detailedInformation.df ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                (1 == detailedInformation.vehicle_state.df) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
         updateState(TeslascopeBindingConstants.CHANNEL_DRIVER_REAR_DOOR,
-                detailedInformation.dr ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                (1 == detailedInformation.vehicle_state.dr) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
         updateState(TeslascopeBindingConstants.CHANNEL_PASSENGER_FRONT_DOOR,
-                detailedInformation.pf ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+                (1 == detailedInformation.vehicle_state.pf) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
         updateState(TeslascopeBindingConstants.CHANNEL_PASSENGER_REAR_DOOR,
-                detailedInformation.pr ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
-        updateState(TeslascopeBindingConstants.CHANNEL_FRONT_TRUNK, OnOffType.from(detailedInformation.ft));
-        updateState(TeslascopeBindingConstants.CHANNEL_REAR_TRUNK, OnOffType.from(detailedInformation.rt));
+                (1 == detailedInformation.vehicle_state.pr) ? OpenClosedType.OPEN : OpenClosedType.CLOSED);
+        updateState(TeslascopeBindingConstants.CHANNEL_FRONT_TRUNK,
+                OnOffType.from(1 == detailedInformation.vehicle_state.ft));
+        updateState(TeslascopeBindingConstants.CHANNEL_REAR_TRUNK,
+                OnOffType.from(1 == detailedInformation.vehicle_state.rt));
 
         // virtual items
         updateState(TeslascopeBindingConstants.CHANNEL_HONK_HORN, OnOffType.OFF);
