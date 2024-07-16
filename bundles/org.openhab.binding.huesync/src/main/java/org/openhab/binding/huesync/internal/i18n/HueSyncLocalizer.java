@@ -13,9 +13,9 @@
 package org.openhab.binding.huesync.internal.i18n;
 
 import java.util.Locale;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.i18n.TranslationProvider;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -29,22 +29,20 @@ import org.osgi.framework.ServiceReference;
 @NonNullByDefault
 public class HueSyncLocalizer {
     private static final Locale locale = Locale.ENGLISH;
-    private static final BundleContext bundleContext = FrameworkUtil.getBundle(HueSyncLocalizer.class)
-            .getBundleContext();
-    private static final ServiceReference<TranslationProvider> serviceReference = bundleContext
-            .getServiceReference(TranslationProvider.class);
+    private static final BundleContext bundleContext = FrameworkUtil.getBundle(HueSyncLocalizer.class).getBundleContext();
+    private static final ServiceReference<TranslationProvider> serviceReference = bundleContext.getServiceReference(TranslationProvider.class);
     private static final Bundle bundle = bundleContext.getBundle();
 
-    @SuppressWarnings("null")
     public static String getResourceString(String key) {
         String lookupKey = key.replace("@text/", "");
         String missingKey = "⚠️ Missing Translation ⚠️: " + key;
 
-        Optional<TranslationProvider> translationProvider = Optional
-                .ofNullable(bundleContext.getService(serviceReference));
+        @Nullable TranslationProvider translationProvider = bundleContext.getService(serviceReference);
 
-        return translationProvider.isPresent() ? Optional
-                .ofNullable(translationProvider.get().getText(bundle, lookupKey, missingKey, locale)).orElse(missingKey)
-                : missingKey;
+        String result = translationProvider == null 
+                ? missingKey 
+                : translationProvider.getText(bundle, lookupKey, missingKey, locale);
+
+        return result == null ? missingKey : result;
     }
 }
