@@ -236,7 +236,7 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).withLabel(config.modelInfo().prettyName())
-                    .withProperty(Thing.PROPERTY_MAC_ADDRESS, config.mac()).build();
+                    .withProperty(Thing.PROPERTY_MAC_ADDRESS, config.mac().toColonDelimitedString()).build();
             thingDiscovered(discoveryResult);
         } catch (PermissionException e) {
             logger.warn("Missing permission to discover Server {}", e.getPermission());
