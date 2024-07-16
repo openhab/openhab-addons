@@ -29,14 +29,35 @@ import org.openhab.core.thing.ThingStatus;
  */
 @NonNullByDefault
 public class Utils {
+    /**
+     * Checks whether the status of the thing is online
+     *
+     * @param thing
+     * @return true if thing status is online, false otherwise
+     */
     public static boolean isOnline(Thing thing) {
         return thing.getStatus().equals(ThingStatus.ONLINE);
     }
 
+    /**
+     * Checks whether the status of the thing is offline
+     *
+     * @param thing
+     * @return true if thing status is offline, false otherwise
+     */
     public static boolean isOffline(Thing thing) {
         return thing.getStatus().equals(ThingStatus.OFFLINE);
     }
 
+    /**
+     * Slice the source array using the range(from, to)
+     *
+     * @param source the byte[] array to slice
+     * @param from the starting point
+     * @param to the end point
+     * @return the sliced part of the byte array
+     * @throws IllegalArgumentException if the slice is not possible
+     */
     public static byte[] slice(byte source[], int from, int to) throws IllegalArgumentException {
         if (from > to) {
             throw new IllegalArgumentException("Can't slice; from: " + from + " is larger than to: " + to);
@@ -56,6 +77,13 @@ public class Utils {
         }
     }
 
+    /**
+     * Pad the source byte[] based on the quotient
+     *
+     * @param source the byte[] to pad
+     * @param quotient the quotient / part to pad
+     * @return the padded byte[]
+     */
     public static byte[] padTo(byte[] source, int quotient) {
         int modulo = source.length % quotient;
         if (modulo == 0) {
@@ -69,6 +97,12 @@ public class Utils {
         return padded;
     }
 
+    /**
+     * Convert the source byte[] tp a hex string
+     *
+     * @param source the byte[] to convert
+     * @return a string with a hex representation of the source
+     */
     public static String toHexString(byte[] source) {
         StringBuilder stringBuilder = new StringBuilder(source.length * 2);
         for (byte b : source) {
@@ -77,6 +111,15 @@ public class Utils {
         return stringBuilder.toString();
     }
 
+    /**
+     * Encrypt the dat[] using the key[] with the ivSpec AES algorithm parameter
+     *
+     * @param key the key to use for the AES encryption
+     * @param ivSpec the parameter for the AES encryption
+     * @param data the byte[] to encrypt
+     * @return the encrypted data[]
+     * @throws IOException if the encryption has an issue
+     */
     public static byte[] encrypt(byte key[], IvParameterSpec ivSpec, byte data[]) throws IOException {
         SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
         try {
@@ -88,6 +131,15 @@ public class Utils {
         }
     }
 
+    /**
+     * Decrypt the data byte[] using the supplied key and AES algorithm parameter ivSpec
+     *
+     * @param key the key to use for the AES decrypt
+     * @param ivSpec the AES algorithm parameter to use
+     * @param data the data to decrypt
+     * @return the decrypted byte[]
+     * @throws IOException
+     */
     public static byte[] decrypt(byte key[], IvParameterSpec ivSpec, byte data[]) throws IOException {
         SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
         try {
