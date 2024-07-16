@@ -295,7 +295,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         profile.initFromThingType(thingType);
         logger.debug(
-                "{}: Start initializing for thing {},  type {}, Device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",
+                "{}: Start initializing for thing {}, type {}, Device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",
                 thingName, getThing().getLabel(), thingType, config.deviceAddress.toUpperCase(), gen2, profile.isBlu,
                 profile.alwaysOn, profile.hasBattery, config.eventsCoIoT);
         if (config.deviceAddress.isEmpty()) {
