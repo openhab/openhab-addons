@@ -88,7 +88,7 @@ public class XMPPClient implements IncomingChatMessageListener, ConnectionListen
                     .setPort(port) //
                     .setUsernameAndPassword(login, password) //
                     .setXmppDomain(domain) //
-                    .setSecurityMode(SecurityMode.disabled)//
+                    .setSecurityMode(securityMode)//
                     .build();
         } catch (XmppStringprepException e) {
             throw new XMPPClientConfigException(Objects.requireNonNullElse(e.getMessage(), "Unknown error message"));
