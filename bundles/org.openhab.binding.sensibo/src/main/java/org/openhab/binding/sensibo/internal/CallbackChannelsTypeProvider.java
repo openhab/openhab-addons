@@ -14,6 +14,7 @@ package org.openhab.binding.sensibo.internal;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
