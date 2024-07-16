@@ -236,8 +236,9 @@ public class ShellyDeviceProfile {
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV
                 || isWall;
-        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV;
-        alwaysOn = !hasBattery || isMotion || isSense; // true means: device is reachable all the time (no sleep mode)
+        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV || isBlu;
+        alwaysOn = !hasBattery || (isMotion && !isBlu) || isSense; // true means: device is reachable all the time (no
+                                                                   // sleep mode)
     }
 
     public void updateFromStatus(ShellySettingsStatus status) {
