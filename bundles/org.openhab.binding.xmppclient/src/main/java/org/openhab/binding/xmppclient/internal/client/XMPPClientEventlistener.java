@@ -17,7 +17,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 /**
  * The {@link XMPPClientEventlistener} is lib for handling XMPP connection events
  *
- * @author Leo Siepel - Add reconnection logic
+ * @author Leo Siepel - Initial Contribution
  */
 
 @NonNullByDefault
