@@ -32,7 +32,6 @@ import org.openhab.binding.monopriceaudio.internal.MonopriceAudioException;
 import org.openhab.binding.monopriceaudio.internal.MonopriceAudioStateDescriptionOptionProvider;
 import org.openhab.binding.monopriceaudio.internal.communication.AmplifierModel;
 import org.openhab.binding.monopriceaudio.internal.communication.MonopriceAudioConnector;
-import org.openhab.binding.monopriceaudio.internal.communication.MonopriceAudioDefaultConnector;
 import org.openhab.binding.monopriceaudio.internal.communication.MonopriceAudioIpConnector;
 import org.openhab.binding.monopriceaudio.internal.communication.MonopriceAudioMessageEvent;
 import org.openhab.binding.monopriceaudio.internal.communication.MonopriceAudioMessageEventListener;
@@ -87,7 +86,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     private @Nullable ScheduledFuture<?> reconnectJob;
     private @Nullable ScheduledFuture<?> pollingJob;
 
-    private MonopriceAudioConnector connector = new MonopriceAudioDefaultConnector();
+    private MonopriceAudioConnector connector = new MonopriceAudioIpConnector();
 
     private Map<String, MonopriceAudioZoneDTO> zoneDataMap = Map.of(ZONE, new MonopriceAudioZoneDTO());
     private Set<String> ignoreZones = new HashSet<>();
@@ -214,11 +213,11 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        String channel = channelUID.getId();
-        String[] channelSplit = channel.split(CHANNEL_DELIMIT);
-        String channelType = channelSplit[1];
-        String zoneName = channelSplit[0];
-        String zoneId = amp.getZoneIdFromZoneName(zoneName);
+        final String channel = channelUID.getId();
+        final String[] channelSplit = channel.split(CHANNEL_DELIMIT);
+        final String channelType = channelSplit[1];
+        final String zoneName = channelSplit[0];
+        final String zoneId = amp.getZoneIdFromZoneName(zoneName);
 
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             logger.debug("Thing is not ONLINE; command {} from channel {} is ignored", command, channel);
@@ -237,166 +236,192 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 return;
             }
 
-            Stream<String> zoneStream = amp.getZoneIds().stream().limit(numZones);
             try {
-                switch (channelType) {
-                    case CHANNEL_TYPE_POWER:
-                        if (command instanceof OnOffType) {
-                            connector.sendCommand(zoneId, amp.getPowerCmd(), command == OnOffType.ON ? ONE : ZERO);
-                            zoneDataMap.get(zoneId)
-                                    .setPower(command == OnOffType.ON ? amp.getOnStr() : amp.getOffStr());
-                        }
-                        break;
-                    case CHANNEL_TYPE_SOURCE:
-                        if (command instanceof DecimalType decimalCommand) {
-                            final int value = decimalCommand.intValue();
-                            if (value >= ONE && value <= amp.getNumSources()) {
-                                logger.debug("Got source command {} zone {}", value, zoneId);
-                                connector.sendCommand(zoneId, amp.getSourceCmd(), value);
-                                zoneDataMap.get(zoneId).setSource(amp.getFormattedValue(value));
-                            }
-                        }
-                        break;
-                    case CHANNEL_TYPE_VOLUME:
-                        if (command instanceof PercentType percentCommand) {
-                            final int value = (int) Math
-                                    .round(percentCommand.doubleValue() / 100.0 * (amp.getMaxVol() - MIN_VOLUME))
-                                    + MIN_VOLUME;
-                            logger.debug("Got volume command {} zone {}", value, zoneId);
-                            connector.sendCommand(zoneId, amp.getVolumeCmd(), value);
-                            zoneDataMap.get(zoneId).setVolume(value);
-                        }
-                        break;
-                    case CHANNEL_TYPE_MUTE:
-                        if (command instanceof OnOffType) {
-                            connector.sendCommand(zoneId, amp.getMuteCmd(), command == OnOffType.ON ? ONE : ZERO);
-                            zoneDataMap.get(zoneId).setMute(command == OnOffType.ON ? amp.getOnStr() : amp.getOffStr());
-                        }
-                        break;
-                    case CHANNEL_TYPE_TREBLE:
-                        if (command instanceof DecimalType decimalCommand) {
-                            final int value = decimalCommand.intValue();
-                            if (value >= amp.getMinTone() && value <= amp.getMaxTone()) {
-                                logger.debug("Got treble command {} zone {}", value, zoneId);
-                                connector.sendCommand(zoneId, amp.getTrebleCmd(), value + amp.getToneOffset());
-                                zoneDataMap.get(zoneId).setTreble(value + amp.getToneOffset());
-                            }
-                        }
-                        break;
-                    case CHANNEL_TYPE_BASS:
-                        if (command instanceof DecimalType decimalCommand) {
-                            final int value = decimalCommand.intValue();
-                            if (value >= amp.getMinTone() && value <= amp.getMaxTone()) {
-                                logger.debug("Got bass command {} zone {}", value, zoneId);
-                                connector.sendCommand(zoneId, amp.getBassCmd(), value + amp.getToneOffset());
-                                zoneDataMap.get(zoneId).setBass(value + amp.getToneOffset());
-                            }
-                        }
-                        break;
-                    case CHANNEL_TYPE_BALANCE:
-                        if (command instanceof DecimalType decimalCommand) {
-                            final int value = decimalCommand.intValue();
-                            if (value >= amp.getMinBal() && value <= amp.getMaxBal()) {
-                                logger.debug("Got balance command {} zone {}", value, zoneId);
-                                connector.sendCommand(zoneId, amp.getBalanceCmd(), value + amp.getBalOffset());
-                                zoneDataMap.get(zoneId).setBalance(value + amp.getBalOffset());
-                            }
-                        }
-                        break;
-                    case CHANNEL_TYPE_DND:
-                        if (command instanceof OnOffType) {
-                            connector.sendCommand(zoneId, amp.getDndCmd(), command == OnOffType.ON ? ONE : ZERO);
-                            zoneDataMap.get(zoneId).setDnd(command == OnOffType.ON ? amp.getOnStr() : amp.getOffStr());
-                        }
-                        break;
-                    case CHANNEL_TYPE_ALLPOWER:
-                        if (command instanceof OnOffType) {
-                            final int cmd = command == OnOffType.ON ? ONE : ZERO;
-                            zoneStream.forEach((streamZoneId) -> {
-                                if (command == OnOffType.OFF || !ignoreZones.contains(amp.getZoneName(streamZoneId))) {
-                                    try {
-                                        connector.sendCommand(streamZoneId, amp.getPowerCmd(), cmd);
-                                        zoneDataMap.get(streamZoneId).setPower(amp.getFormattedValue(cmd));
-                                        updateChannelState(streamZoneId, CHANNEL_TYPE_POWER);
+                if (!"all".equals(zoneName)) {
+                    MonopriceAudioZoneDTO dto = zoneDataMap.get(zoneId);
+                    if (dto == null) {
+                        logger.debug("no zoneData for zoneId: {}", zoneId);
+                        return;
+                    }
 
-                                        if (command == OnOffType.ON) {
-                                            // reset the volume of each zone to allVolume
-                                            connector.sendCommand(streamZoneId, amp.getVolumeCmd(), allVolume);
-                                            zoneDataMap.get(streamZoneId).setVolume(allVolume);
-                                            updateChannelState(streamZoneId, CHANNEL_TYPE_VOLUME);
-                                        }
-                                    } catch (MonopriceAudioException e) {
-                                        logger.debug("Error Turning All Zones On: {}", e.getMessage());
-                                    }
+                    switch (channelType) {
+                        case CHANNEL_TYPE_POWER:
+                            if (command instanceof OnOffType) {
+                                connector.sendCommand(zoneId, amp.getPowerCmd(), command == OnOffType.ON ? ONE : ZERO);
+                                dto.setPower(command == OnOffType.ON ? amp.getOnStr() : amp.getOffStr());
+                            }
+                            break;
+                        case CHANNEL_TYPE_SOURCE:
+                            if (command instanceof DecimalType decimalCommand) {
+                                final int value = decimalCommand.intValue();
+                                if (value >= ONE && value <= amp.getNumSources()) {
+                                    logger.debug("Got source command {} zone {}", value, zoneId);
+                                    connector.sendCommand(zoneId, amp.getSourceCmd(), value);
+                                    dto.setSource(amp.getFormattedValue(value));
                                 }
+                            }
+                            break;
+                        case CHANNEL_TYPE_VOLUME:
+                            if (command instanceof PercentType percentCommand) {
+                                final int value = (int) Math
+                                        .round(percentCommand.doubleValue() / 100.0 * (amp.getMaxVol() - MIN_VOLUME))
+                                        + MIN_VOLUME;
+                                logger.debug("Got volume command {} zone {}", value, zoneId);
+                                connector.sendCommand(zoneId, amp.getVolumeCmd(), value);
+                                dto.setVolume(value);
+                            }
+                            break;
+                        case CHANNEL_TYPE_MUTE:
+                            if (command instanceof OnOffType) {
+                                connector.sendCommand(zoneId, amp.getMuteCmd(), command == OnOffType.ON ? ONE : ZERO);
+                                dto.setMute(command == OnOffType.ON ? amp.getOnStr() : amp.getOffStr());
+                            }
+                            break;
+                        case CHANNEL_TYPE_TREBLE:
+                            if (command instanceof DecimalType decimalCommand) {
+                                final int value = decimalCommand.intValue();
+                                if (value >= amp.getMinTone() && value <= amp.getMaxTone()) {
+                                    logger.debug("Got treble command {} zone {}", value, zoneId);
+                                    connector.sendCommand(zoneId, amp.getTrebleCmd(), value + amp.getToneOffset());
+                                    dto.setTreble(value + amp.getToneOffset());
+                                }
+                            }
+                            break;
+                        case CHANNEL_TYPE_BASS:
+                            if (command instanceof DecimalType decimalCommand) {
+                                final int value = decimalCommand.intValue();
+                                if (value >= amp.getMinTone() && value <= amp.getMaxTone()) {
+                                    logger.debug("Got bass command {} zone {}", value, zoneId);
+                                    connector.sendCommand(zoneId, amp.getBassCmd(), value + amp.getToneOffset());
+                                    dto.setBass(value + amp.getToneOffset());
+                                }
+                            }
+                            break;
+                        case CHANNEL_TYPE_BALANCE:
+                            if (command instanceof DecimalType decimalCommand) {
+                                final int value = decimalCommand.intValue();
+                                if (value >= amp.getMinBal() && value <= amp.getMaxBal()) {
+                                    logger.debug("Got balance command {} zone {}", value, zoneId);
+                                    connector.sendCommand(zoneId, amp.getBalanceCmd(), value + amp.getBalOffset());
+                                    dto.setBalance(value + amp.getBalOffset());
+                                }
+                            }
+                            break;
+                        case CHANNEL_TYPE_DND:
+                            if (command instanceof OnOffType) {
+                                connector.sendCommand(zoneId, amp.getDndCmd(), command == OnOffType.ON ? ONE : ZERO);
+                                dto.setDnd(command == OnOffType.ON ? amp.getOnStr() : amp.getOffStr());
+                            }
+                            break;
+                        default:
+                            success = false;
+                            logger.debug("Command {} from channel {} failed: unexpected command", command, channel);
+                            break;
+                    }
+                } else {
+                    Stream<String> zoneStream = amp.getZoneIds().stream().limit(numZones);
 
-                            });
-                        }
-                        break;
-                    case CHANNEL_TYPE_ALLSOURCE:
-                        if (command instanceof DecimalType decimalCommand) {
-                            final int value = decimalCommand.intValue();
-                            if (value >= ONE && value <= amp.getNumSources()) {
+                    switch (channelType) {
+                        case CHANNEL_TYPE_ALLPOWER:
+                            if (command instanceof OnOffType) {
+                                final int cmd = command == OnOffType.ON ? ONE : ZERO;
+                                zoneStream.forEach((streamZoneId) -> {
+                                    if (command == OnOffType.OFF
+                                            || !ignoreZones.contains(amp.getZoneName(streamZoneId))) {
+                                        try {
+                                            MonopriceAudioZoneDTO streamDto = zoneDataMap.get(streamZoneId);
+                                            if (streamDto != null) {
+                                                connector.sendCommand(streamZoneId, amp.getPowerCmd(), cmd);
+                                                streamDto.setPower(amp.getFormattedValue(cmd));
+                                                updateChannelState(streamZoneId, CHANNEL_TYPE_POWER);
+
+                                                if (command == OnOffType.ON) {
+                                                    // reset the volume of each zone to allVolume
+                                                    connector.sendCommand(streamZoneId, amp.getVolumeCmd(), allVolume);
+                                                    streamDto.setVolume(allVolume);
+                                                    updateChannelState(streamZoneId, CHANNEL_TYPE_VOLUME);
+                                                }
+                                            }
+                                        } catch (MonopriceAudioException e) {
+                                            logger.debug("Error Turning All Zones On: {}", e.getMessage());
+                                        }
+                                    }
+
+                                });
+                            }
+                            break;
+                        case CHANNEL_TYPE_ALLSOURCE:
+                            if (command instanceof DecimalType decimalCommand) {
+                                final int value = decimalCommand.intValue();
+                                if (value >= ONE && value <= amp.getNumSources()) {
+                                    zoneStream.forEach((streamZoneId) -> {
+                                        if (!ignoreZones.contains(amp.getZoneName(streamZoneId))) {
+                                            try {
+                                                MonopriceAudioZoneDTO streamDto = zoneDataMap.get(streamZoneId);
+                                                if (streamDto != null) {
+                                                    connector.sendCommand(streamZoneId, amp.getSourceCmd(), value);
+                                                    if (streamDto.isPowerOn() && !streamDto.isMuted()) {
+                                                        streamDto.setSource(amp.getFormattedValue(value));
+                                                        updateChannelState(streamZoneId, CHANNEL_TYPE_SOURCE);
+                                                    }
+                                                }
+                                            } catch (MonopriceAudioException e) {
+                                                logger.debug("Error Setting Source for All Zones: {}", e.getMessage());
+                                            }
+                                        }
+                                    });
+                                }
+                            }
+                            break;
+                        case CHANNEL_TYPE_ALLVOLUME:
+                            if (command instanceof PercentType percentCommand) {
+                                allVolume = (int) Math
+                                        .round(percentCommand.doubleValue() / 100.0 * (amp.getMaxVol() - MIN_VOLUME))
+                                        + MIN_VOLUME;
                                 zoneStream.forEach((streamZoneId) -> {
                                     if (!ignoreZones.contains(amp.getZoneName(streamZoneId))) {
                                         try {
-                                            connector.sendCommand(streamZoneId, amp.getSourceCmd(), value);
-                                            if (zoneDataMap.get(streamZoneId).isPowerOn()
-                                                    && !zoneDataMap.get(streamZoneId).isMuted()) {
-                                                zoneDataMap.get(streamZoneId).setSource(amp.getFormattedValue(value));
-                                                updateChannelState(streamZoneId, CHANNEL_TYPE_SOURCE);
+                                            MonopriceAudioZoneDTO streamDto = zoneDataMap.get(streamZoneId);
+                                            if (streamDto != null) {
+                                                connector.sendCommand(streamZoneId, amp.getVolumeCmd(), allVolume);
+                                                if (streamDto.isPowerOn() && !streamDto.isMuted()) {
+                                                    streamDto.setVolume(allVolume);
+                                                    updateChannelState(streamZoneId, CHANNEL_TYPE_VOLUME);
+                                                }
                                             }
                                         } catch (MonopriceAudioException e) {
-                                            logger.debug("Error Setting Source for All Zones: {}", e.getMessage());
+                                            logger.debug("Error Setting Volume for All Zones: {}", e.getMessage());
                                         }
                                     }
                                 });
                             }
-                        }
-                        break;
-                    case CHANNEL_TYPE_ALLVOLUME:
-                        if (command instanceof PercentType percentCommand) {
-                            allVolume = (int) Math
-                                    .round(percentCommand.doubleValue() / 100.0 * (amp.getMaxVol() - MIN_VOLUME))
-                                    + MIN_VOLUME;
-                            zoneStream.forEach((streamZoneId) -> {
-                                if (!ignoreZones.contains(amp.getZoneName(streamZoneId))) {
-                                    try {
-                                        connector.sendCommand(streamZoneId, amp.getVolumeCmd(), allVolume);
-                                        if (zoneDataMap.get(streamZoneId).isPowerOn()
-                                                && !zoneDataMap.get(streamZoneId).isMuted()) {
-                                            zoneDataMap.get(streamZoneId).setVolume(allVolume);
-                                            updateChannelState(streamZoneId, CHANNEL_TYPE_VOLUME);
+                            break;
+                        case CHANNEL_TYPE_ALLMUTE:
+                            if (command instanceof OnOffType) {
+                                final int cmd = command == OnOffType.ON ? ONE : ZERO;
+                                zoneStream.forEach((streamZoneId) -> {
+                                    if (!ignoreZones.contains(amp.getZoneName(streamZoneId))) {
+                                        try {
+                                            MonopriceAudioZoneDTO streamDto = zoneDataMap.get(streamZoneId);
+                                            if (streamDto != null) {
+                                                connector.sendCommand(streamZoneId, amp.getMuteCmd(), cmd);
+                                                if (streamDto.isPowerOn()) {
+                                                    streamDto.setMute(amp.getFormattedValue(cmd));
+                                                    updateChannelState(streamZoneId, CHANNEL_TYPE_MUTE);
+                                                }
+                                            }
+                                        } catch (MonopriceAudioException e) {
+                                            logger.debug("Error Setting Mute for All Zones: {}", e.getMessage());
                                         }
-                                    } catch (MonopriceAudioException e) {
-                                        logger.debug("Error Setting Volume for All Zones: {}", e.getMessage());
                                     }
-                                }
-                            });
-                        }
-                        break;
-                    case CHANNEL_TYPE_ALLMUTE:
-                        if (command instanceof OnOffType) {
-                            final int cmd = command == OnOffType.ON ? ONE : ZERO;
-                            zoneStream.forEach((streamZoneId) -> {
-                                if (!ignoreZones.contains(amp.getZoneName(streamZoneId))) {
-                                    try {
-                                        connector.sendCommand(streamZoneId, amp.getMuteCmd(), cmd);
-                                        if (zoneDataMap.get(streamZoneId).isPowerOn()) {
-                                            zoneDataMap.get(streamZoneId).setMute(amp.getFormattedValue(cmd));
-                                            updateChannelState(streamZoneId, CHANNEL_TYPE_MUTE);
-                                        }
-                                    } catch (MonopriceAudioException e) {
-                                        logger.debug("Error Setting Mute for All Zones: {}", e.getMessage());
-                                    }
-                                }
-                            });
-                        }
-                        break;
-                    default:
-                        success = false;
-                        logger.debug("Command {} from channel {} failed: unexpected command", command, channel);
-                        break;
+                                });
+                            }
+                            break;
+                        default:
+                            success = false;
+                            logger.debug("Command {} from all channel {} failed: unexpected command", command, channel);
+                            break;
+                    }
                 }
 
                 if (success) {
@@ -442,9 +467,8 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
     @Override
     public void onNewMessageEvent(MonopriceAudioMessageEvent evt) {
         updateStatus(ThingStatus.ONLINE);
-        String key = evt.getKey();
 
-        switch (key) {
+        switch (evt.getKey()) {
             case MonopriceAudioConnector.KEY_ZONE_UPDATE:
                 MonopriceAudioZoneDTO newZoneData = amp.getZoneData(evt.getValue());
                 MonopriceAudioZoneDTO zoneData = zoneDataMap.get(newZoneData.getZone());
@@ -455,7 +479,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                         processZoneUpdate(zoneData, newZoneData);
                     }
                 } else {
-                    logger.debug("invalid event: {} for key: {} or zone data null", evt.getValue(), key);
+                    logger.debug("invalid event: {} for key: {} or zone data null", evt.getValue(), evt.getKey());
                 }
                 break;
 
@@ -464,7 +488,7 @@ public class MonopriceAudioHandler extends BaseThingHandler implements Monoprice
                 break;
 
             default:
-                logger.debug("onNewMessageEvent: unhandled key {}", key);
+                logger.debug("onNewMessageEvent: unhandled key {}", evt.getKey());
                 break;
         }
     }

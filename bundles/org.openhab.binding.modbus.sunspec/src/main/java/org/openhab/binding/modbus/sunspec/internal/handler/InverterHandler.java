@@ -16,6 +16,7 @@ import static org.openhab.binding.modbus.sunspec.internal.SunSpecConstants.*;
 import static org.openhab.core.library.unit.SIUnits.CELSIUS;
 import static org.openhab.core.library.unit.Units.*;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -85,7 +86,7 @@ public class InverterHandler extends AbstractSunSpecHandler {
                 status == null ? UnDefType.UNDEF : new StringType(status.name()));
 
         updateState(channelUID(GROUP_DEVICE_INFO, CHANNEL_STATUS_VENDOR),
-                block.statusVendor.<State> map(DecimalType::new).orElse(UnDefType.UNDEF));
+                Objects.requireNonNull(block.statusVendor.<State> map(DecimalType::new).orElse(UnDefType.UNDEF)));
 
         // AC General group
         updateState(channelUID(GROUP_AC_GENERAL, CHANNEL_AC_TOTAL_CURRENT),

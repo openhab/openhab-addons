@@ -83,6 +83,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
     private DenonMarantzConnectorFactory connectorFactory = new DenonMarantzConnectorFactory();
     private DenonMarantzState denonMarantzState;
     private @Nullable ScheduledFuture<?> retryJob;
+    private @Nullable ScheduledFuture<?> initJob;
 
     public DenonMarantzHandler(Thing thing, HttpClient httpClient) {
         super(thing);
@@ -211,120 +212,123 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
          * When not set we will try to auto-detect the correct values
          * for isTelnet and zoneCount and update the Thing accordingly.
          */
-        if (config.isTelnet() == null) {
-            logger.debug("Trying to auto-detect the connection.");
-            ContentResponse response;
-            boolean telnetEnable = true;
-            int httpPort = 80;
-            boolean httpApiUsable = false;
+        if (config.isTelnet() != null) {
+            return;
+        }
+        logger.debug("Trying to auto-detect the connection.");
+        ContentResponse response;
+        boolean telnetEnable = true;
+        int httpPort = 80;
+        boolean httpApiUsable = false;
 
-            // try to reach the HTTP API at port 80 (most models, except Denon ...H should respond.
-            String host = config.getHost();
+        // try to reach the HTTP API at port 80 (most models, except Denon ...H should respond.
+        String host = config.getHost();
+        try {
+            response = httpClient.newRequest("http://" + host + "/goform/Deviceinfo.xml").timeout(3, TimeUnit.SECONDS)
+                    .send();
+            if (response.getStatus() == HttpURLConnection.HTTP_OK) {
+                logger.debug("We can access the HTTP API, disabling the Telnet mode by default.");
+                telnetEnable = false;
+                httpApiUsable = true;
+            }
+        } catch (TimeoutException | ExecutionException e) {
+            logger.debug("Error when trying to access AVR using HTTP on port 80.", e);
+        }
+
+        if (telnetEnable) {
+            // the above attempt failed. Let's try on port 8080, as for some models a subset of the HTTP API is
+            // available
             try {
-                response = httpClient.newRequest("http://" + host + "/goform/Deviceinfo.xml")
+                response = httpClient.newRequest("http://" + host + ":8080/goform/Deviceinfo.xml")
                         .timeout(3, TimeUnit.SECONDS).send();
                 if (response.getStatus() == HttpURLConnection.HTTP_OK) {
-                    logger.debug("We can access the HTTP API, disabling the Telnet mode by default.");
+                    logger.debug("This model responds to HTTP port 8080, disabling the Telnet mode by default.");
                     telnetEnable = false;
+                    httpPort = 8080;
                     httpApiUsable = true;
                 }
             } catch (TimeoutException | ExecutionException e) {
-                logger.debug("Error when trying to access AVR using HTTP on port 80.", e);
+                logger.debug("Additionally tried to connect to port 8080, this also failed. Reverting to Telnet mode.",
+                        e);
             }
-
-            if (telnetEnable) {
-                // the above attempt failed. Let's try on port 8080, as for some models a subset of the HTTP API is
-                // available
-                try {
-                    response = httpClient.newRequest("http://" + host + ":8080/goform/Deviceinfo.xml")
-                            .timeout(3, TimeUnit.SECONDS).send();
-                    if (response.getStatus() == HttpURLConnection.HTTP_OK) {
-                        logger.debug("This model responds to HTTP port 8080, disabling the Telnet mode by default.");
-                        telnetEnable = false;
-                        httpPort = 8080;
-                        httpApiUsable = true;
-                    }
-                } catch (TimeoutException | ExecutionException e) {
-                    logger.debug(
-                            "Additionally tried to connect to port 8080, this also failed. Reverting to Telnet mode.",
-                            e);
-                }
-            }
-
-            // default zone count
-            int zoneCount = 2;
-
-            // try to determine the zone count by checking the Deviceinfo.xml file
-            if (httpApiUsable) {
-                int status = 0;
-                response = null;
-                try {
-                    response = httpClient.newRequest("http://" + host + ":" + httpPort + "/goform/Deviceinfo.xml")
-                            .timeout(3, TimeUnit.SECONDS).send();
-                    status = response.getStatus();
-                } catch (TimeoutException | ExecutionException e) {
-                    logger.debug("Failed in fetching the Deviceinfo.xml to determine zone count", e);
-                }
-
-                if (status == HttpURLConnection.HTTP_OK && response != null) {
-                    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-                    try {
-                        // see
-                        // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
-                        domFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
-                        domFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
-                        domFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
-                        domFactory.setXIncludeAware(false);
-                        domFactory.setExpandEntityReferences(false);
-                        DocumentBuilder builder;
-                        builder = domFactory.newDocumentBuilder();
-                        Document dDoc = builder.parse(new InputSource(new StringReader(response.getContentAsString())));
-                        XPath xPath = XPathFactory.newInstance().newXPath();
-                        Node node = (Node) xPath.evaluate("/Device_Info/DeviceZones/text()", dDoc, XPathConstants.NODE);
-                        if (node != null) {
-                            String nodeValue = node.getNodeValue();
-                            logger.trace("/Device_Info/DeviceZones/text() = {}", nodeValue);
-                            zoneCount = Integer.parseInt(nodeValue);
-                            logger.debug("Discovered number of zones: {}", zoneCount);
-                        }
-                    } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException
-                            | NumberFormatException e) {
-                        logger.debug("Something went wrong with looking up the zone count in Deviceinfo.xml: {}",
-                                e.getMessage());
-                    }
-                }
-            }
-            config.setTelnet(telnetEnable);
-            config.setZoneCount(zoneCount);
-            Configuration configuration = editConfiguration();
-            configuration.put(PARAMETER_TELNET_ENABLED, telnetEnable);
-            configuration.put(PARAMETER_ZONE_COUNT, zoneCount);
-            updateConfiguration(configuration);
         }
+
+        // default zone count
+        int zoneCount = 2;
+
+        // try to determine the zone count by checking the Deviceinfo.xml file
+        if (httpApiUsable) {
+            int status = 0;
+            response = null;
+            try {
+                response = httpClient.newRequest("http://" + host + ":" + httpPort + "/goform/Deviceinfo.xml")
+                        .timeout(3, TimeUnit.SECONDS).send();
+                status = response.getStatus();
+            } catch (TimeoutException | ExecutionException e) {
+                logger.debug("Failed in fetching the Deviceinfo.xml to determine zone count", e);
+            }
+
+            if (status == HttpURLConnection.HTTP_OK && response != null) {
+                DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+                try {
+                    // see
+                    // https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+                    domFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                    domFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+                    domFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
+                    domFactory.setXIncludeAware(false);
+                    domFactory.setExpandEntityReferences(false);
+                    DocumentBuilder builder;
+                    builder = domFactory.newDocumentBuilder();
+                    Document dDoc = builder.parse(new InputSource(new StringReader(response.getContentAsString())));
+                    XPath xPath = XPathFactory.newInstance().newXPath();
+                    Node node = (Node) xPath.evaluate("/Device_Info/DeviceZones/text()", dDoc, XPathConstants.NODE);
+                    if (node != null) {
+                        String nodeValue = node.getNodeValue();
+                        logger.trace("/Device_Info/DeviceZones/text() = {}", nodeValue);
+                        zoneCount = Integer.parseInt(nodeValue);
+                        logger.debug("Discovered number of zones: {}", zoneCount);
+                    }
+                } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException
+                        | NumberFormatException e) {
+                    logger.debug("Something went wrong with looking up the zone count in Deviceinfo.xml: {}",
+                            e.getMessage());
+                }
+            }
+        }
+        config.setTelnet(telnetEnable);
+        config.setZoneCount(zoneCount);
+        Configuration configuration = editConfiguration();
+        configuration.put(PARAMETER_TELNET_ENABLED, telnetEnable);
+        configuration.put(PARAMETER_ZONE_COUNT, zoneCount);
+        updateConfiguration(configuration);
     }
 
     @Override
     public void initialize() {
         config = getConfigAs(DenonMarantzConfiguration.class);
 
-        // Configure Connection type (Telnet/HTTP) and number of zones
-        // Note: this only happens for discovered Things
-        try {
-            autoConfigure();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return;
-        }
-
-        if (!checkConfiguration()) {
-            return;
-        }
-
-        configureZoneChannels();
         updateStatus(ThingStatus.UNKNOWN);
-        // create connection (either Telnet or HTTP)
-        // ThingStatus ONLINE/OFFLINE is set when AVR status is known.
-        createConnection();
+
+        initJob = scheduler.schedule(() -> {
+            // Configure Connection type (Telnet/HTTP) and number of zones
+            // Note: this only happens for discovered Things
+            try {
+                autoConfigure();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+
+            if (!checkConfiguration()) {
+                return;
+            }
+
+            configureZoneChannels();
+            // create connection (either Telnet or HTTP)
+            // ThingStatus ONLINE/OFFLINE is set when AVR status is known.
+            createConnection();
+        }, 0, TimeUnit.SECONDS);
     }
 
     private void createConnection() {
@@ -335,6 +339,14 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
         this.connector = connector = connectorFactory.getConnector(config, denonMarantzState, scheduler, httpClient,
                 this.getThing().getUID().getAsString());
         connector.connect();
+    }
+
+    private void cancelInitJob() {
+        ScheduledFuture<?> initJob = this.initJob;
+        if (initJob != null) {
+            initJob.cancel(true);
+        }
+        this.initJob = null;
     }
 
     private void cancelRetry() {
@@ -430,6 +442,7 @@ public class DenonMarantzHandler extends BaseThingHandler implements DenonMarant
         }
         this.connector = null;
         cancelRetry();
+        cancelInitJob();
         super.dispose();
     }
 

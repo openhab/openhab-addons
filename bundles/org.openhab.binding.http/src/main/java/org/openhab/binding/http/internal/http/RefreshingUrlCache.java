@@ -108,7 +108,7 @@ public class RefreshingUrlCache {
 
         // format URL
         try {
-            URI uri = Util.uriFromString(String.format(this.url, new Date()));
+            URI uri = Util.uriFromString(Util.wrappedStringFormat(this.url, new Date()));
             logger.trace("Requesting refresh (retry={}) from '{}' with timeout {}ms", isRetry, uri, timeout);
 
             httpClient.newRequest(uri, httpMethod, httpContent, httpContentType).thenAccept(request -> {

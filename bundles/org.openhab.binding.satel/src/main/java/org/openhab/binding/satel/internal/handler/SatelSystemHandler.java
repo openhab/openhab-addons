@@ -16,6 +16,7 @@ import static org.openhab.binding.satel.internal.SatelBindingConstants.*;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -81,8 +82,9 @@ public class SatelSystemHandler extends SatelStateThingHandler {
             return;
         }
         updateState(CHANNEL_DATE_TIME,
-                event.getIntegraTime().map(dt -> (State) new DateTimeType(dt.atZone(getBridgeHandler().getZoneId())))
-                        .orElse(UnDefType.UNDEF));
+                Objects.requireNonNull(event.getIntegraTime()
+                        .map(dt -> (State) new DateTimeType(dt.atZone(getBridgeHandler().getZoneId())))
+                        .orElse(UnDefType.UNDEF)));
         updateSwitch(CHANNEL_SERVICE_MODE, event.inServiceMode());
         updateSwitch(CHANNEL_TROUBLES, event.troublesPresent());
         updateSwitch(CHANNEL_TROUBLES_MEMORY, event.troublesMemory());

@@ -48,9 +48,10 @@ public class JythonScriptFileWatcher extends AbstractScriptFileWatcher {
 
     @Override
     protected Optional<String> getScriptType(Path scriptFilePath) {
-        String scriptType = super.getScriptType(scriptFilePath).orElse(null);
-        if (!scriptFilePath.startsWith(getWatchPath().resolve("lib")) && ("py".equals(scriptType))) {
-            return Optional.of(scriptType);
+        Optional<String> scriptType = super.getScriptType(scriptFilePath);
+        if (scriptType.isPresent() && !scriptFilePath.startsWith(getWatchPath().resolve("lib"))
+                && ("py".equals(scriptType.get()))) {
+            return scriptType;
         }
         return Optional.empty();
     }

@@ -175,6 +175,32 @@ class VehicleHandlerTest {
     }
 
     @Test
+    public void testBEVChargeEndtime() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
+        vh.accountHandler = Optional.of(mock(AccountHandler.class));
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vh.config = Optional.of(vehicleConfig);
+        ThingCallbackListener updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+
+        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging-Weekday.json");
+        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        vh.distributeContent(update);
+        assertEquals("2023-09-09 13:54", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
+                .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"), "End of Charge Time");
+
+        json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA-Charging-Weekday-Underrun.json");
+        update = ProtoConverter.json2Proto(json, true);
+        vh.distributeContent(update);
+        assertEquals("2023-09-11 13:55", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
+                .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"), "End of Charge Time");
+    }
+
+    @Test
     public void testBEVPartialChargingUpdate() {
         Thing thingMock = mock(Thing.class);
         when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);

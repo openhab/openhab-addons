@@ -379,7 +379,7 @@ public class JRubyScriptEngineConfiguration {
         private final String defaultValue;
         private final Optional<String> mappedTo;
         private final Type type;
-        private Optional<String> value;
+        private @Nullable String value;
 
         private OptionalConfigurationElement(String defaultValue) {
             this(Type.OTHER, defaultValue, null);
@@ -389,19 +389,19 @@ public class JRubyScriptEngineConfiguration {
             this.type = type;
             this.defaultValue = defaultValue;
             this.mappedTo = Optional.ofNullable(mappedTo);
-            value = Optional.empty();
         }
 
         private String getValue() {
-            return value.orElse(defaultValue);
+            String value = this.value;
+            return value != null ? value : this.defaultValue;
         }
 
-        private void setValue(String value) {
-            this.value = Optional.of(value);
+        private void setValue(@Nullable String value) {
+            this.value = value;
         }
 
         private void clearValue() {
-            this.value = Optional.empty();
+            this.value = null;
         }
 
         private Optional<String> mappedTo() {

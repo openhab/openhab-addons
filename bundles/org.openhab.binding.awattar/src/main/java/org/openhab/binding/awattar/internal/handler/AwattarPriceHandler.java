@@ -90,7 +90,8 @@ public class AwattarPriceHandler extends BaseThingHandler {
                  * here
                  */
                 thingRefresher = scheduler.scheduleAtFixedRate(this::refreshChannels,
-                        getMillisToNextMinute(1, timeZoneProvider), THING_REFRESH_INTERVAL, TimeUnit.SECONDS);
+                        getMillisToNextMinute(1, timeZoneProvider), THING_REFRESH_INTERVAL * 1000,
+                        TimeUnit.MILLISECONDS);
             }
         }
         updateStatus(ThingStatus.UNKNOWN);

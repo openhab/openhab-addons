@@ -100,9 +100,9 @@ The binding provides the same feature set across all devices as good as possible
 
  | thing-type           | Model                                                    | Vendor ID                      |
  | -------------------- | -------------------------------------------------------- | ------------------------------ |
- | shellymini1          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU     |
- | shellymini1pm        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
- | shellyminipm         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
+ | shelly1mini          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU     |
+ | shelly1pmmini        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
+ | shellypmmini         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
 
 ### Generation 2 Pro series
 
@@ -1297,7 +1297,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 
 ## Shelly Plus Mini Series
 
-### Shelly Plus 1 Mini (thing-type: shellymini1)
+### Shelly Plus 1 Mini (thing-type: shelly1mini)
 
 | Group | Channel     | Type    | read-only | Description                                                                       |
 | ----- | ----------- | ------- | --------- | --------------------------------------------------------------------------------- |
@@ -1309,7 +1309,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |       | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 
-### Shelly Plus 1PM Mini (thing-type: shellymini1pm)
+### Shelly Plus 1PM Mini (thing-type: shelly1pmmini)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
@@ -1326,7 +1326,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 
-### Shelly Plus PM Mini (thing-type: shellyminipm)
+### Shelly Plus PM Mini (thing-type: shellypmmini)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |

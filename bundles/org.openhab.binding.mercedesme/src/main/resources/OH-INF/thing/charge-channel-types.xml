@@ -65,7 +65,7 @@
 	<channel-type id="end-time">
 		<item-type>DateTime</item-type>
 		<label>Charge End Estimation</label>
-		<state pattern="%1$tH:%1$tM" readOnly="true"/>
+		<state pattern="%1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
 	</channel-type>
 	<channel-type id="max-soc">
 		<item-type>Number:Dimensionless</item-type>

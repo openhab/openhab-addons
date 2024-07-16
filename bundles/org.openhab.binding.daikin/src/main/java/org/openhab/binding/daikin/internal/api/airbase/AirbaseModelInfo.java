@@ -48,7 +48,7 @@ public class AirbaseModelInfo {
         Map<String, String> responseMap = InfoParser.parse(response);
 
         AirbaseModelInfo info = new AirbaseModelInfo();
-        info.ret = Optional.ofNullable(responseMap.get("ret")).orElse("");
+        info.ret = responseMap.getOrDefault("ret", "");
         info.zonespresent = Optional.ofNullable(responseMap.get("en_zone")).flatMap(value -> InfoParser.parseInt(value))
                 .orElse(0);
         info.commonzone = Optional.ofNullable(responseMap.get("en_common_zone"))

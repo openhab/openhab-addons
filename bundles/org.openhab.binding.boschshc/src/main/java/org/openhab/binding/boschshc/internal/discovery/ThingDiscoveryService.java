@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -214,7 +215,8 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
     }
 
     protected String getRoomNameForDevice(Device device, List<Room> rooms) {
-        return rooms.stream().filter(room -> room.id.equals(device.roomId)).findAny().map(r -> r.name).orElse("");
+        return Objects.requireNonNull(
+                rooms.stream().filter(room -> room.id.equals(device.roomId)).findAny().map(r -> r.name).orElse(""));
     }
 
     protected void addDevice(Device device, String roomName) {

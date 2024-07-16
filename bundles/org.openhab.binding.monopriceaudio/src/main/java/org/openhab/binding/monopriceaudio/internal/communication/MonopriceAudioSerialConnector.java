@@ -58,7 +58,7 @@ public class MonopriceAudioSerialConnector extends MonopriceAudioConnector {
         this.serialPortManager = serialPortManager;
         this.serialPortName = serialPortName;
         this.uid = uid;
-        setAmplifierModel(amp);
+        super.amp = amp;
     }
 
     @Override

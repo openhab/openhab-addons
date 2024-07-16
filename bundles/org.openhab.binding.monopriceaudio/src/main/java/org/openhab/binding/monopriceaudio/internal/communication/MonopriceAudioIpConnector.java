@@ -54,7 +54,16 @@ public class MonopriceAudioIpConnector extends MonopriceAudioConnector {
         this.address = address;
         this.port = port;
         this.uid = uid;
-        setAmplifierModel(amp);
+        super.amp = amp;
+    }
+
+    /**
+     * Default constructor for temporary connector object that gets replaced during initialize()
+     */
+    public MonopriceAudioIpConnector() {
+        this.address = "";
+        this.port = -1;
+        this.uid = "";
     }
 
     @Override

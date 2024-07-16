@@ -14,6 +14,7 @@ package org.openhab.binding.argoclima.internal.device.api.protocol.elements;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -413,8 +414,9 @@ public abstract class ArgoApiElementBase implements IArgoElement {
 
     private final String getInFlightCommandsRawValueOrDefault() {
         final String valueNotAvailablePlaceholder = "N/A";
-        return inFlightCommand.map(c -> c.deviceCommandToSend.orElse(valueNotAvailablePlaceholder))
-                .orElse(valueNotAvailablePlaceholder);
+        return Objects
+                .requireNonNull(inFlightCommand.map(c -> c.deviceCommandToSend.orElse(valueNotAvailablePlaceholder))
+                        .orElse(valueNotAvailablePlaceholder));
     }
 
     /////////////

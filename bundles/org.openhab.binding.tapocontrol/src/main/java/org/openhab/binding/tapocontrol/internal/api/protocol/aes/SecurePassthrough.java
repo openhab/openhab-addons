@@ -171,7 +171,7 @@ public class SecurePassthrough implements TapoProtocolInterface {
                     httpDelegator.handleError(new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, getContentAsString()));
                 } else {
                     /* request successful */
-                    String rBody = getContentAsString();
+                    String rBody = Objects.requireNonNull(getContentAsString());
                     try {
                         asyncResponseReceived(rBody, command);
                     } catch (TapoErrorHandler tapoError) {
@@ -242,7 +242,7 @@ public class SecurePassthrough implements TapoProtocolInterface {
             return tapoResponse;
         } else {
             logger.debug("({}) invalid response received", uid);
-            throw new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, "invalid response receicved");
+            throw new TapoErrorHandler(ERR_BINDING_HTTP_RESPONSE, "invalid response received");
         }
     }
 

@@ -22,6 +22,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -215,7 +216,7 @@ public class MagentaTVOAuth {
                     TimeUnit.MILLISECONDS);
             for (Enumeration<?> e = headers.keys(); e.hasMoreElements();) {
                 String key = (String) e.nextElement();
-                String val = (String) headers.get(key);
+                String val = (String) headers.get(Objects.requireNonNull(key));
                 request.header(key, val);
             }
             if (method.equals(HttpMethod.POST)) {
