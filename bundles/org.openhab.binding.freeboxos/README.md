@@ -74,6 +74,7 @@ The *revolution* or *delta* thing requires the following configuration parameter
 | Parameter Label  | Parameter ID    | Description                                                              | Required | Default |
 |------------------|-----------------|--------------------------------------------------------------------------|----------|---------|
 | Refresh Interval | refreshInterval | The refresh interval (seconds) which is used to poll the Freebox Server. | No       | 30      |
+| MAC Address      | macAddress      | The MAC address of the Freebox Server.                                   | Yes      |         |
 
 ### Player thing 
 
