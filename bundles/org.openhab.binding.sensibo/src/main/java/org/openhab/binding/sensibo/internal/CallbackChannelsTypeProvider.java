@@ -44,7 +44,7 @@ public class CallbackChannelsTypeProvider
 
     @Override
     public Collection<ChannelType> getChannelTypes(@Nullable final Locale locale) {
-        return handler != null ? handler.getChannelTypes(locale) : Collections.emptyList();
+        return handler != null ? handler.getChannelTypes(locale) : List.of();
     }
 
     @Override
