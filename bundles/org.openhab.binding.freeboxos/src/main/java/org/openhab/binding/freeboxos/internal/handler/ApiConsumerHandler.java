@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 import inet.ipaddr.IPAddress;
 
 /**
- * The {@link ServerHandler} is a base abstract class for all devices made available by the FreeboxOs bridge
+ * The {@link ApiConsumerHandler} is a base abstract class for all devices made available by the FreeboxOs bridge
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -80,7 +80,10 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
         if (bridgeHandler == null) {
             return;
         }
+        initializeOnceBridgeOnline(bridgeHandler);
+    }
 
+    private void initializeOnceBridgeOnline(FreeboxOsHandler bridgeHandler) {
         Map<String, String> properties = editProperties();
         if (properties.isEmpty()) {
             try {
@@ -132,8 +135,9 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
 
     @Override
     public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        if (checkBridgeHandler() != null) {
-            startRefreshJob();
+        FreeboxOsHandler bridgeHandler = checkBridgeHandler();
+        if (bridgeHandler != null) {
+            initializeOnceBridgeOnline(bridgeHandler);
         } else {
             stopJobs();
         }
