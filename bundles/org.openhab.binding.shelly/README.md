@@ -28,11 +28,14 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 The binding supports both hardware generations
 
 - Generation 1: The original Shelly devices like the Shelly 1, Shelly 2.5, Shelly Flood etc.
-- Generation 2: Plus / Pro series of devices
+- Generation 2+3: Plus / Pro series of devices
 - Shelly Plus Mini: Shelly Plus devices in compact format (Gen 2+3)
 - Shelly BLU: Bluetooth based series of devices
 
 The binding provides the same feature set across all devices as good as possible and depending on device specific features.
+
+`Note:` Using BLU devices or the Plus/Pro Range Extender mode require some additional configuration steps.
+See section [Discovery](#discovery) for details.
 
 ### Generation 1
 
@@ -159,12 +162,15 @@ In this case autoCoIoT should be disabled, CoIoT events will not work, because t
 
 ## Firmware
 
-The binding requires firmware version 1.8.2 or newer for generation 1  to enable all features, version 1.9.2+ is recommended. Generation 2 devices require 0.10.2 or newer, the Plus HT at least 0.11.0.
+`Generation 1`: The binding requires firmware version 1.9.2 or newer to enable all features.
+`Generation 2+3` Those Shelly devices require firmware version 1.0.0 or newer (1.10.0+ is recommended).
+`Shelly BLU deries`: Use the Shelly App to update to 1.0+ version of the firmware.
+
 Some of the features are enabled dynamically or are not available depending on device type and firmware release.
 The Web UI of the Shelly device displays the current firmware version under Settings:Firmware and shows an update option when a newer version is available.
 
 The current firmware version is reported in the Thing Properties.
-A dedicated channel (device#updateAvailable) indicates the availability of a newer firmware.
+A dedicated channel indicates the availability of a newer firmware (`device#updateAvailable`, not available for BLU devices).
 Use the device's Web UI or the Shelly App to perform the update.
 
 Check [Advanced Users](doc/AdvancedUsers.md) for information how to update your device.
@@ -183,7 +189,7 @@ They periodically announce their presence, which is used by the binding to find 
 Sometimes you need to run the manual discovery multiple times until you see all your devices.
 
 `Important for Generation 1 Devices`:
-It's recommended to enable CoIoT in the device settings for faster response times (event driven rather than polling).
+It's strongly recommended to enable CoIoT in the device settings for faster response times (event driven rather than polling).
 Open the device's Web UI, section "COIOT settings" and select "Enable COCIOT".
 It's recommended to switch the Shelly devices to CoAP peer mode if you have only your openHAB system controlling the device.
 This allows routing the CoIoT/CoAP messages across multiple IP subnets without special network setup required.
@@ -193,12 +199,12 @@ Keep Multicast mode if you have multiple hosts, which should receive the CoAP up
 ### Discovery of BLU Devices
 
 The BLU devices use Bluetooth Low Energy (BLE).
-The binding can't communicate directly with the device, but the Plus/Pro series with firmware 0.14.1 or newer could be used as a gateway.
-The binding automatically installs a script on the Shelly Device (oh-blu-scanner), which forwards the BLU events to the binding using the WebSocket channel.
+The binding can't communicate directly with the device, so a Shelly Plus/Pro device is required with enabled Bluetooth to use those devices as a hub.
+The binding automatically installs a script on the Shelly Device (oh-blu-scanner.js), which forwards the BLU events to the binding.
 
 Follow these steps to add the Shelly BLU Device to openHAB
 
-- Make sure a Shelly is near by the BLU device, enable Bluetooh on this device (**disabling** the 'Bluetooth Gateway' mode in the Shelly app/UI is recommended)
+- Make sure a Shelly is near by the BLU device, enable Bluetooh on this device (**disable the 'Bluetooth Gateway' mode** in the Shelly app/UI is recommended)
 - Add this thing to openHAB, make sure thing gets online
 - Enable "BLU Gateway Support" in the thing configuration of the Shelly device acting as gateway.
 - Now press the button on your BLU device, this wakes up the device and the script forwards this event to the binding
@@ -207,12 +213,18 @@ Follow these steps to add the Shelly BLU Device to openHAB
 - Click the device button again, the binding gets another event and creates the channels and thing changes status to ONLINE
 - Finally link the channels to the equipment in the model
 
-Note: During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
+`Note`:
+
+- During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
+- Shelly BLU Motion: It may take some time until channels like Lux show up.
+
+Try moving the device to force status updates.
 
 Every time an event is received sensors#lastUpdate and channels are updated with the reported values.
-device#wifiSignal indicates the Bluetooth signal strength and gets updated when the device sends an event.
+`device#wifiSignal` indicates the Bluetooth signal strength and gets updated when the device sends an event.
 
 The binding supports multiple Shelly Plus/Pro as gateway devices unless they are added as thing and are ONLINE.
+In this scenario the channel `device#gatewayDevice` will report the last hub device, which forwarded a status update.
 
 ### Password Protected Devices
 

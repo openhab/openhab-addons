@@ -293,8 +293,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         cache.clear();
         resetStats();
 
-        logger.debug("{}: Start initializing for thing {}, type {}, IP address {}, Gen2: {}, CoIoT: {}", thingName,
-                getThing().getLabel(), thingType, config.deviceAddress, gen2, config.eventsCoIoT);
+        profile.initFromThingType(thingType);
+        logger.debug(
+                "{}: Start initializing for thing {}, type {}, Device address {}, Gen2: {}, isBlu: {}, alwaysOn: {}, hasBattery: {}, CoIoT: {}",
+                thingName, getThing().getLabel(), thingType, config.deviceAddress.toUpperCase(), gen2, profile.isBlu,
+                profile.alwaysOn, profile.hasBattery, config.eventsCoIoT);
         if (config.deviceAddress.isEmpty()) {
             setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.missing-device-address");
             return false;
@@ -308,7 +311,6 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
         // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
         // Action URL does when enabled)
-        profile.initFromThingType(thingType);
         if (coap != null && config.eventsCoIoT && !profile.alwaysOn) {
             coap.start(thingName, config);
         }
