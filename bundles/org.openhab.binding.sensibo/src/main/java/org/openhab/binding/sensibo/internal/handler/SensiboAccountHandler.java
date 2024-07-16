@@ -30,6 +30,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.BytesContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.sensibo.internal.SensiboCommunicationException;
@@ -197,6 +198,8 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     private <T> T sendRequest(final Request request, final AbstractRequest req, final Type responseType)
             throws SensiboException {
         try {
+            request.header(HttpHeader.ACCEPT_ENCODING, "gzip");
+
             final ContentResponse contentResponse = request.send();
             final String responseJson = contentResponse.getContentAsString();
             if (contentResponse.getStatus() == HttpStatus.OK_200) {
