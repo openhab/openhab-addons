@@ -58,8 +58,8 @@ public class XMPPActions implements ThingActions {
         }
 
         XMPPClient connection = clientHandler.getXMPPClient();
-        if ((to == null) || (text == null)) {
-            logger.info("Skipping XMPP messaging to {} value {}", to, text);
+        if (to == null || text == null) {
+            logger.warn("Skipping XMPP messaging to {} value {}", to, text);
             return;
         }
         connection.sendMessage(to, text);
@@ -76,7 +76,7 @@ public class XMPPActions implements ThingActions {
         }
 
         XMPPClient connection = clientHandler.getXMPPClient();
-        if ((to == null) || (filename == null)) {
+        if (to == null || filename == null) {
             logger.warn("Skipping XMPP messaging to {} value {}", to, filename);
             return;
         }
