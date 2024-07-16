@@ -526,7 +526,7 @@ Number          thermostat_heat_thrs       "Thermostat Heat Threshold Temp [%.1f
 
 If your thermostat simply has a heating set point and cooling set point, and uses those points regardless of HEAT, COOL, or AUTO mode, you may simply omit the TargetTemperature characteristic, and the add-on will dynamically route to those characteristics as appropriate:
 
-```xtend
+```java
 Group           gThermostat                "Thermostat"                                             {homekit = "Thermostat"}
 Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"        (gThermostat) {homekit = "CurrentTemperature"}
 String          thermostat_current_mode    "Thermostat Current Mode"                  (gThermostat) {homekit = "CurrentHeatingCoolingMode"}
