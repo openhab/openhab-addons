@@ -13,6 +13,7 @@
 package org.openhab.binding.teslascope.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Exception for when an unexpected response is received from the Teslascope API.
@@ -32,7 +33,7 @@ public class TeslascopeCommunicationException extends Exception {
         super(ex);
     }
 
-    public TeslascopeCommunicationException(String message, Throwable cause) {
+    public TeslascopeCommunicationException(@Nullable String message, Throwable cause) {
         super(message, cause);
     }
 }

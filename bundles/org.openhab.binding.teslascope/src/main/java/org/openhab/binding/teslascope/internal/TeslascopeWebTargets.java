@@ -44,17 +44,12 @@ public class TeslascopeWebTargets {
 
     public String getDetailedInformation(String publicID, String apiKey)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        String getDetailedInformationUri = BASE_URI + publicID + "/detailed?api_key=" + apiKey;
-        String response = invoke(getDetailedInformationUri);
-        logger.trace("Received response: \"{}\"", response);
-        return response;
+        return invoke(BASE_URI + publicID + "/detailed?api_key=" + apiKey);
     }
 
     public void sendCommand(String publicID, String apiKey, String command)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        String sendCommandUri = BASE_URI + publicID + "/command/" + command + "?api_key=" + apiKey;
-        String response = invoke(sendCommandUri);
-        logger.trace("Received response: \"{}\"", response);
+        String response = invoke(BASE_URI + publicID + "/command/" + command + "?api_key=" + apiKey);
         return;
     }
 
@@ -63,17 +58,15 @@ public class TeslascopeWebTargets {
         String jsonResponse = "";
         int status = 0;
         try {
-            Request request = httpClient.newRequest(uri).method(HttpMethod.GET)
-                    .header("Content-Type", "application/json").timeout(TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(TIMEOUT_MS,
+                    TimeUnit.MILLISECONDS);
             if (logger.isTraceEnabled()) {
                 logger.trace("{} request for {}", HttpMethod.GET, uri);
             }
             ContentResponse response = request.send();
             status = response.getStatus();
             jsonResponse = response.getContentAsString();
-            if (!jsonResponse.isEmpty()) {
-                logger.trace("JSON response: '{}'", jsonResponse);
-            }
+            logger.trace("JSON response: '{}'", jsonResponse);
             if (status == HttpStatus.UNAUTHORIZED_401) {
                 throw new TeslascopeAuthenticationException("Unauthorized");
             }
@@ -82,7 +75,7 @@ public class TeslascopeWebTargets {
                         String.format("Teslascope returned error <%d> while invoking %s", status, uri));
             }
         } catch (TimeoutException | ExecutionException | InterruptedException ex) {
-            throw new TeslascopeCommunicationException(String.format("{}", ex.getLocalizedMessage(), ex));
+            throw new TeslascopeCommunicationException(ex.getLocalizedMessage(), ex);
         }
 
         return jsonResponse;
