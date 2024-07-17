@@ -27,7 +27,7 @@ public class TeslascopeBindingConstants {
     private static final String BINDING_ID = "teslascope";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID TESLASCOPE_THING = new ThingTypeUID(BINDING_ID, "service");
+    public static final ThingTypeUID TESLASCOPE_THING = new ThingTypeUID(BINDING_ID, "vehicle");
 
     // List of all Channel ids
     public static final String CHANNEL_VIN = "vin";

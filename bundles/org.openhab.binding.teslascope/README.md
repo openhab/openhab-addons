@@ -6,7 +6,7 @@ The integration happens through the [Teslascope](https://www.teslascope.com) API
 ## Supported Things
 
 All Tesla vehicles supported by Teslascope are supported.
-Each vehicle is represented by its own `service` Thing.
+Each vehicle is represented by its own `vehicle` Thing.
 
 ## Discovery
 
@@ -113,68 +113,68 @@ Additionally, these advanced channels are available (not all are available on al
 ### `demo.things`:
 
 ```java
-teslascope:service:model3 [ apiKey="xxxx", publicID="aXb3" ]
+teslascope:vehicle:model3 [ apiKey="xxxx", publicID="aXb3" ]
 ```
 
 ### `example.items`:
 
 ```java
-String              TeslaVehicleName            {channel="teslascope:service:model3:vehicle-name"}
-String              TeslaVehicleState           {channel="teslascope:service:model3:vehicle-state"}
-String              TeslaVIN                    {channel="teslascope:service:model3:vin"}
-Number              TeslaSpeed                  {channel="teslascope:service:model3:speed"}
-String              TeslaShiftState             {channel="teslascope:service:model3:shift-state"}
-Number              TeslaOdometer               {channel="teslascope:service:model3:odometer"}
-Number              TeslaRange                  {channel="teslascope:service:model3:range"}
+String              TeslaVehicleName            {channel="teslascope:vehicle:model3:vehicle-name"}
+String              TeslaVehicleState           {channel="teslascope:vehicle:model3:vehicle-state"}
+String              TeslaVIN                    {channel="teslascope:vehicle:model3:vin"}
+Number              TeslaSpeed                  {channel="teslascope:vehicle:model3:speed"}
+String              TeslaShiftState             {channel="teslascope:vehicle:model3:shift-state"}
+Number              TeslaOdometer               {channel="teslascope:vehicle:model3:odometer"}
+Number              TeslaRange                  {channel="teslascope:vehicle:model3:range"}
 
-Number              TeslaBatteryLevel           {channel="teslascope:service:model3:battery-level"}
-Number              TeslaPower                  {channel="teslascope:service:model3:power"}
-Number              TeslaBatteryRange           {channel="teslascope:service:model3:battery-range"}
-Number              TeslaEstBatteryRange        {channel="teslascope:service:model3:estimated-battery-range"}
-Switch              TeslaPreconditioning        {channel="teslascope:service:model3:preconditioning"}
+Number              TeslaBatteryLevel           {channel="teslascope:vehicle:model3:battery-level"}
+Number              TeslaPower                  {channel="teslascope:vehicle:model3:power"}
+Number              TeslaBatteryRange           {channel="teslascope:vehicle:model3:battery-range"}
+Number              TeslaEstBatteryRange        {channel="teslascope:vehicle:model3:estimated-battery-range"}
+Switch              TeslaPreconditioning        {channel="teslascope:vehicle:model3:preconditioning"}
 
-Switch              TeslaCharge                 {channel="teslascope:service:model3:charge"}
+Switch              TeslaCharge                 {channel="teslascope:vehicle:model3:charge"}
 
-Dimmer              TeslaChargeLimit            {channel="teslascope:service:model3:charge-limit"}
-Number              TeslaChargeRate             {channel="teslascope:service:model3:charge-rate"}
-String              TeslaChargingState          {channel="teslascope:service:model3:charging-state"}
-Number              TeslaChargerPower           {channel="teslascope:service:model3:charger-power"}
-Number              TeslaTimeToFullCharge       {channel="teslascope:service:model3:time-to-full-charge"}
+Dimmer              TeslaChargeLimit            {channel="teslascope:vehicle:model3:charge-limit"}
+Number              TeslaChargeRate             {channel="teslascope:vehicle:model3:charge-rate"}
+String              TeslaChargingState          {channel="teslascope:vehicle:model3:charging-state"}
+Number              TeslaChargerPower           {channel="teslascope:vehicle:model3:charger-power"}
+Number              TeslaTimeToFullCharge       {channel="teslascope:vehicle:model3:time-to-full-charge"}
 
-Number              TeslaChargerVoltage         {channel="teslascope:service:model3:charger-voltage"}
-Number              TeslaChargerPower           {channel="teslascope:service:model3:charger-power"}
+Number              TeslaChargerVoltage         {channel="teslascope:vehicle:model3:charger-voltage"}
+Number              TeslaChargerPower           {channel="teslascope:vehicle:model3:charger-power"}
 
-DateTime            TeslaScheduledChargingStart {channel="teslascope:service:model3:scheduled-charging-start"}
+DateTime            TeslaScheduledChargingStart {channel="teslascope:vehicle:model3:scheduled-charging-start"}
 
-Switch              TeslaDoorLock               {channel="teslascope:service:model3:door-lock"}
-Switch              TeslaHorn                   {channel="teslascope:service:model3:honk-horn"}
-Switch              TeslaSentry                 {channel="teslascope:service:model3:sentry-mode"}
-Switch              TeslaLights                 {channel="teslascope:service:model3:flash-lights"}
-Switch              TeslaValet                  {channel="teslascope:service:model3:valet-mode"}
+Switch              TeslaDoorLock               {channel="teslascope:vehicle:model3:door-lock"}
+Switch              TeslaHorn                   {channel="teslascope:vehicle:model3:honk-horn"}
+Switch              TeslaSentry                 {channel="teslascope:vehicle:model3:sentry-mode"}
+Switch              TeslaLights                 {channel="teslascope:vehicle:model3:flash-lights"}
+Switch              TeslaValet                  {channel="teslascope:vehicle:model3:valet-mode"}
 
-Switch              TeslaFrontDefrost           {channel="teslascope:service:model3:front-defroster"}
-Switch              TeslaRearDefrost            {channel="teslascope:service:model3:rear-defroster"}
-Switch              TeslaLeftSeatHeater         {channel="teslascope:service:model3:left-seat-heater"}
-Switch              TeslaRightSeatHeater        {channel="teslascope:service:model3:right-seat-heater"}
+Switch              TeslaFrontDefrost           {channel="teslascope:vehicle:model3:front-defroster"}
+Switch              TeslaRearDefrost            {channel="teslascope:vehicle:model3:rear-defroster"}
+Switch              TeslaLeftSeatHeater         {channel="teslascope:vehicle:model3:left-seat-heater"}
+Switch              TeslaRightSeatHeater        {channel="teslascope:vehicle:model3:right-seat-heater"}
 
-Switch              TeslaHomelink               {channel="teslascope:service:model3:homelink"}
-Location            TeslaLocation               {channel="teslascope:service:model3:location"}
-Number              TeslaHeading                {channel="teslascope:service:model3:heading"}
+Switch              TeslaHomelink               {channel="teslascope:vehicle:model3:homelink"}
+Location            TeslaLocation               {channel="teslascope:vehicle:model3:location"}
+Number              TeslaHeading                {channel="teslascope:vehicle:model3:heading"}
 
-Switch              TeslaAutoconditioning       {channel="teslascope:service:model3:auto-conditioning"}
-Number:Temperature  TeslaTemperature            {channel="teslascope:service:model3:temperature"}
-Number:Temperature  TeslaInsideTemperature      {channel="teslascope:service:model3:inside-temp"}
-Number:Temperature  TeslaOutsideTemperature     {channel="teslascope:service:model3:outside-temp"}
+Switch              TeslaAutoconditioning       {channel="teslascope:vehicle:model3:auto-conditioning"}
+Number:Temperature  TeslaTemperature            {channel="teslascope:vehicle:model3:temperature"}
+Number:Temperature  TeslaInsideTemperature      {channel="teslascope:vehicle:model3:inside-temp"}
+Number:Temperature  TeslaOutsideTemperature     {channel="teslascope:vehicle:model3:outside-temp"}
 
-Number:Pressure     TeslaTPMSPressureFL         {channel="teslascope:service:model3:tpms-pressure-fl"}
-Number:Pressure     TeslaTPMSPressureFR         {channel="teslascope:service:model3:tpms-pressure-fr"}
-Number:Pressure     TeslaTPMSPressureRL         {channel="teslascope:service:model3:tpms-pressure-rl"}
-Number:Pressure     TeslaTPMSPressureRR         {channel="teslascope:service:model3:tpms-pressure-rr"}
+Number:Pressure     TeslaTPMSPressureFL         {channel="teslascope:vehicle:model3:tpms-pressure-fl"}
+Number:Pressure     TeslaTPMSPressureFR         {channel="teslascope:vehicle:model3:tpms-pressure-fr"}
+Number:Pressure     TeslaTPMSPressureRL         {channel="teslascope:vehicle:model3:tpms-pressure-rl"}
+Number:Pressure     TeslaTPMSPressureRR         {channel="teslascope:vehicle:model3:tpms-pressure-rr"}
 
-Switch              TeslaTPMSSoftWarningFL      {channel="teslascope:service:model3:tpms-soft-warning-fl"}
-Switch              TeslaTPMSSoftWarningFR      {channel="teslascope:service:model3:tpms-soft-warning-fr"}
-Switch              TeslaTPMSSoftWarningRL      {channel="teslascope:service:model3:tpms-soft-warning-rl"}
-Switch              TeslaTPMSSoftWarningRR      {channel="teslascope:service:model3:tpms-soft-warning-rr"}
+Switch              TeslaTPMSSoftWarningFL      {channel="teslascope:vehicle:model3:tpms-soft-warning-fl"}
+Switch              TeslaTPMSSoftWarningFR      {channel="teslascope:vehicle:model3:tpms-soft-warning-fr"}
+Switch              TeslaTPMSSoftWarningRL      {channel="teslascope:vehicle:model3:tpms-soft-warning-rl"}
+Switch              TeslaTPMSSoftWarningRR      {channel="teslascope:vehicle:model3:tpms-soft-warning-rr"}
 ```
 
 ### `example.sitemap`:
