@@ -85,14 +85,12 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
 
     private void initializeOnceBridgeOnline(FreeboxOsHandler bridgeHandler) {
         Map<String, String> properties = editProperties();
-        if (properties.isEmpty()) {
-            try {
-                initializeProperties(properties);
-                checkAirMediaCapabilities(properties);
-                updateProperties(properties);
-            } catch (FreeboxException e) {
-                logger.warn("Error getting thing {} properties: {}", thing.getUID(), e.getMessage());
-            }
+        try {
+            initializeProperties(properties);
+            checkAirMediaCapabilities(properties);
+            updateProperties(properties);
+        } catch (FreeboxException e) {
+            logger.warn("Error getting thing {} properties: {}", thing.getUID(), e.getMessage());
         }
 
         boolean isAudioReceiver = Boolean.parseBoolean(properties.get(MediaType.AUDIO.name()));
