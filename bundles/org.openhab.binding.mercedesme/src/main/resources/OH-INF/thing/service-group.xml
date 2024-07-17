@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="service-values">
+		<label>Warnings</label>
+		<description>Current active warnings</description>
+		<channels>
+			<channel id="starter-battery" typeId="starter-battery"/>
+			<channel id="brake-fluid" typeId="brake-fluid"/>
+			<channel id="brake-lining-wear" typeId="brake-lining-wear"/>
+			<channel id="wash-water" typeId="wash-water"/>
+			<channel id="tires-rdk" typeId="tires-rdk"/>
+			<channel id="coolant-fluid" typeId="coolant-fluid"/>
+			<channel id="engine" typeId="engine"/>
+			<channel id="service-days" typeId="service-days"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

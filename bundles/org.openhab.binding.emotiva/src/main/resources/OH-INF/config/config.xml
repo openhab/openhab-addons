@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:processor:config">
+		<parameter name="ipAddress" type="text" required="true">
+			<context>network-address</context>
+			<label>Network Address</label>
+			<description>IP Network Address where Emotiva device can be Reached.</description>
+		</parameter>
+		<parameter name="controlPort" type="integer" required="false">
+			<context>control-port</context>
+			<label>Control Port</label>
+			<description>Network address port for control (UDP)</description>
+			<default>7002</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="notifyPort" type="integer" required="false">
+			<context>notify-port</context>
+			<label>Notify Port</label>
+			<description>Network address port for notifications (UDP)</description>
+			<default>7003</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="infoPort" type="integer" required="false">
+			<context>info-port</context>
+			<label>Info Port</label>
+			<description>Network address port for info (UDP)</description>
+			<default>7004</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="menuNotifyPort" type="integer" required="false">
+			<context>setup-port</context>
+			<label>Menu Notify Port</label>
+			<description>Network address port for menu notify port (UDP)</description>
+			<default>7005</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="setupPortTCP" type="integer" required="false">
+			<context>setup-port</context>
+			<label>Setup Port</label>
+			<description>Network address port for setup port (TCP)</description>
+			<default>7100</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="protocolVersion" type="text" required="false">
+			<context>protocol-revision</context>
+			<label>Protocol Version</label>
+			<description>Protocol version, only change if you know what your doing</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="retryConnectInMinutes" type="integer" required="false" unit="s">
+			<label>Reconnect Interval</label>
+			<description>The time to wait between reconnection attempts (in minutes)</description>
+			<default>2</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

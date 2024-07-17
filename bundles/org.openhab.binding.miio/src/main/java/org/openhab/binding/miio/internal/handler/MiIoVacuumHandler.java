@@ -250,6 +250,11 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
             forceStatusUpdate();
             return;
         }
+        if (channelUID.getId().equals(RobotCababilities.MOP_MODE.getChannel())) {
+            sendCommand(MiIoCommand.SET_MOP_MODE, "[" + command.toString() + "]");
+            forceStatusUpdate();
+            return;
+        }
         if (channelUID.getId().equals(RobotCababilities.SEGMENT_CLEAN.getChannel()) && !command.toString().isEmpty()
                 && !command.toString().contentEquals("-")) {
             sendCommand(MiIoCommand.START_SEGMENT, "[" + command.toString() + "]");
@@ -382,6 +387,9 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
         }
         if (deviceCapabilities.containsKey(RobotCababilities.WATERBOX_MODE)) {
             safeUpdateState(RobotCababilities.WATERBOX_MODE.getChannel(), statusInfo.getWaterBoxMode());
+        }
+        if (deviceCapabilities.containsKey(RobotCababilities.MOP_MODE)) {
+            safeUpdateState(RobotCababilities.MOP_MODE.getChannel(), statusInfo.getMopMode());
         }
         if (deviceCapabilities.containsKey(RobotCababilities.WATERBOX_STATUS)) {
             safeUpdateState(RobotCababilities.WATERBOX_STATUS.getChannel(), statusInfo.getWaterBoxStatus());

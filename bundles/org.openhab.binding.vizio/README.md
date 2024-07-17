@@ -174,7 +174,9 @@ sitemap vizio label="Vizio" {
         Selection item=TV_Source icon="screen"
         Selection item=TV_ActiveApp icon="screen"
         Default item=TV_Control
+        // This Selection is deprecated in favor of the Buttongrid element below
         Selection item=TV_Button
+        Buttongrid label="Remote Control" staticIcon=material:tv_remote item=TV_Button buttons=[1:1:POWER="PowerToggle"=switch-off, 1:2:Home="Home"=f7:house, 1:3:Menu="Menu", 1:4:Exit="Exit", 2:2:Up="Up"=f7:arrowtriangle_up, 4:2:Down="Down"=f7:arrowtriangle_down, 3:1:Left="Left"=f7:arrowtriangle_left, 3:3:Right="Right"=f7:arrowtriangle_right, 3:2:Ok="Ok", 2:4:VolumeUp="Volume +", 4:4:VolumeDown="Volume -", 3:4:MuteToggle="Mute"=soundvolume_mute, 5:1:Info="Info", 5:2:Back="Back", 5:3:Smartcast="Smartcast", 5:4:InputToggle="Input Toggle", 6:1:SeekBack="Reverse"=f7:backward, 6:2:Play="Play"=f7:play, 6:3:Pause="Pause"=f7:pause,  6:4:SeekFwd="Forward"=f7:forward, 7:1:ChannelUp="Channel +", 7:2:ChannelDown="Channel -", 7:3:PreviousCh="Previous Ch", 8:1:PictureMode="Picture Mode", 8:2:WideMode="Wide Mode", 8:3:WideToggle="Wide Toggle", 8:4:ccToggle="CC Toggle"]
     }
 }
 

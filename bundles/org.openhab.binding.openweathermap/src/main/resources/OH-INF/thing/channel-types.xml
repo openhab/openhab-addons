@@ -603,7 +603,7 @@
 	</channel-type>
 
 	<channel-type id="forecasted-atmospheric-humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Forecasted Humidity</label>
 		<description>Forecasted atmospheric relative humidity.</description>
 		<category>Humidity</category>

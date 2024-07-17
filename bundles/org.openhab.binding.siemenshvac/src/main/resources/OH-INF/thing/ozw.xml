@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="siemenshvac"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Bridge Thing Type -->
+	<bridge-type id="ozw">
+		<label>OZW IP Gateway</label>
+		<description>This is a OZW IP interface</description>
+
+		<config-description>
+			<parameter name="baseUrl" type="text" pattern="(http|https):\/\/(.+)\/">
+				<label>Base URL</label>
+				<context>url</context>
+				<description>The URL of the Siemens Hvac IP gateway. Must be in format http://hostname/ or https://hostname/. Don't
+					forget the trailing '/'</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="userName" type="text">
+				<description>User name of the Siemens Hvac gateway</description>
+				<required>false</required>
+				<label>User Name</label>
+				<default>Administrator</default>
+			</parameter>
+			<parameter name="userPassword" type="text">
+				<context>password</context>
+				<description>User password of the Siemens Hvac gateway</description>
+				<required>false</required>
+				<label>User Password</label>
+				<default>password</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>

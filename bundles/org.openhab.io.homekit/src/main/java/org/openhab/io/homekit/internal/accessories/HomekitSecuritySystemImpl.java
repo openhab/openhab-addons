@@ -22,10 +22,12 @@ import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.SecuritySystemAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.securitysystem.CurrentSecuritySystemStateEnum;
 import io.github.hapjava.characteristics.impl.securitysystem.TargetSecuritySystemStateEnum;
@@ -47,13 +49,19 @@ public class HomekitSecuritySystemImpl extends AbstractHomekitAccessoryImpl impl
     private final List<TargetSecuritySystemStateEnum> customTargetStateList = new ArrayList<>();
 
     public HomekitSecuritySystemImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         currentStateMapping = createMapping(SECURITY_SYSTEM_CURRENT_STATE, CurrentSecuritySystemStateEnum.class,
                 customCurrentStateList);
         targetStateMapping = createMapping(SECURITY_SYSTEM_TARGET_STATE, TargetSecuritySystemStateEnum.class,
                 customTargetStateList);
-        getServices().add(new SecuritySystemService(this));
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new SecuritySystemService(this));
     }
 
     @Override

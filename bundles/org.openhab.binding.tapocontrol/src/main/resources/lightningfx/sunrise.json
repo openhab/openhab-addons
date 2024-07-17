@@ -1,0 +1,128 @@
+ {
+  "id": "TapoStrip_1OVSyXIsDxrt4j7OxyRvqi",
+  "name": "Sunrise",
+  "brightness": 100,
+  "display_colors": [
+    [
+      30,
+      0,
+      100
+    ],
+    [
+      30,
+      95,
+      100
+    ],
+    [
+      0,
+      100,
+      100
+    ]
+  ],
+  "enable": 1,
+  "bAdjusted": null,
+  "brightness_range": [],
+  "backgrounds": [],
+  "custom": 0,
+  "direction": 1,
+  "duration": 600,
+  "expansion_strategy": 2,
+  "fadeoff": null,
+  "hue_range": null,
+  "init_states": [],
+  "random_seed": null,
+  "repeat_times": 1,
+  "saturation_range": null,
+  "segment_length": null,
+  "segments": [
+    0
+  ],
+  "sequence": [
+    [
+      0,
+      100,
+      5
+    ],
+    [
+      0,
+      100,
+      5
+    ],
+    [
+      10,
+      100,
+      6
+    ],
+    [
+      15,
+      100,
+      7
+    ],
+    [
+      20,
+      100,
+      8
+    ],
+    [
+      20,
+      100,
+      10
+    ],
+    [
+      30,
+      100,
+      12
+    ],
+    [
+      30,
+      95,
+      15
+    ],
+    [
+      30,
+      90,
+      20
+    ],
+    [
+      30,
+      80,
+      25
+    ],
+    [
+      30,
+      75,
+      30
+    ],
+    [
+      30,
+      70,
+      40
+    ],
+    [
+      30,
+      60,
+      50
+    ],
+    [
+      30,
+      50,
+      60
+    ],
+    [
+      30,
+      20,
+      70
+    ],
+    [
+      30,
+      0,
+      100
+    ]
+  ],
+  "spread": 1,
+  "transition": 60000,
+  "transition_range": null,
+  "type": "pulse",
+  "trans_sequence": [],
+  "run_time": 0
+}

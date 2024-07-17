@@ -272,7 +272,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
-    public void setValveTemperature(int valveId, int value) throws ShellyApiException {
+    public void setValveTemperature(int valveId, double value) throws ShellyApiException {
         httpRequest("/thermostat/" + valveId + "?target_t_enabled=1&target_t=" + value);
     }
 

@@ -143,6 +143,9 @@ public enum SonyProjectorItem {
     SERIAL_NUMBER("Serial Number", new byte[] { (byte) 0x80, 0x02 }),
     INSTALLATION_LOCATION("Installation Location", new byte[] { (byte) 0x80, 0x03 }),
 
+    MAC_ADDRESS("MAC Address", new byte[] { (byte) 0x90, 0x00 }),
+    IP_ADDRESS("IP Address", new byte[] { (byte) 0x90, 0x01 }),
+
     MENU("Menu", null, new byte[] { 0x17, 0x29 }),
     UP("Cursor UP", null, new byte[] { 0x17, 0x35 }),
     DOWN("Cursor DOWN", null, new byte[] { 0x17, 0x36 }),

@@ -13,6 +13,7 @@
 package org.openhab.binding.serial.internal.util;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.io.transport.serial.SerialPort;
@@ -54,6 +55,7 @@ public enum Parity {
      * @return the enum value
      */
     public static Parity fromConfig(final String configValue) {
-        return Arrays.asList(values()).stream().filter(p -> p.configValue.equals(configValue)).findFirst().orElse(NONE);
+        return Objects.requireNonNull(Arrays.asList(values()).stream().filter(p -> p.configValue.equals(configValue))
+                .findFirst().orElse(NONE));
     }
 }

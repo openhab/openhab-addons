@@ -1233,8 +1233,8 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 sceneContributorsCache.putAll(scenes.stream().collect(Collectors.toMap(s -> s.getId(), s -> s)));
                 sceneResourceEntries.putAll(scenes.stream().collect(Collectors.toMap(s -> s.getName(), s -> s)));
 
-                State state = scenes.stream().filter(s -> s.getSceneActive().orElse(false)).map(s -> s.getSceneState())
-                        .findAny().orElse(UnDefType.UNDEF);
+                State state = Objects.requireNonNull(scenes.stream().filter(s -> s.getSceneActive().orElse(false))
+                        .map(s -> s.getSceneState()).findAny().orElse(UnDefType.UNDEF));
 
                 // create scene channel if it is missing
                 if (getThing().getChannel(CHANNEL_2_SCENE) == null) {

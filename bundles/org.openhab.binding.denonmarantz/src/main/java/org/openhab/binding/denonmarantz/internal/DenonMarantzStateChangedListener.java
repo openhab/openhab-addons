@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.denonmarantz.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.types.State;
 
 /**
@@ -21,6 +22,7 @@ import org.openhab.core.types.State;
  * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
+@NonNullByDefault
 public interface DenonMarantzStateChangedListener {
     /**
      * Update was received.

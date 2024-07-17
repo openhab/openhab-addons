@@ -192,7 +192,8 @@ public class SOAPConnector {
 
                 SOAPMessage soapMessage = MessageFactory.newInstance().createMessage(null, is);
                 if (soapMessage.getSOAPBody().hasFault()) {
-                    String soapError = getSOAPElement(soapMessage, "errorCode").orElse("unknown");
+                    String soapError = Objects
+                            .requireNonNull(getSOAPElement(soapMessage, "errorCode").orElse("unknown"));
                     String soapReason = getSOAPElement(soapMessage, "errorDescription").orElse("unknown");
                     String error = String.format("HTTP-Response-Code %d (%s), SOAP-Fault: %s (%s)",
                             response.getStatus(), response.getReason(), soapError, soapReason);

@@ -27,7 +27,7 @@
 
 	<!-- Humidity Channels -->
 	<channel-type id="sensor_humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>The current relative humidity at this humidity sensor.</description>
 		<category>Humidity</category>
@@ -39,7 +39,7 @@
 	</channel-type>
 
 	<channel-type id="sensor_humidity_low_setpoint">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Low SetPoint</label>
 		<description>The current low setpoint for this humidity sensor.</description>
 		<category>Humidity</category>
@@ -47,7 +47,7 @@
 	</channel-type>
 
 	<channel-type id="sensor_humidity_high_setpoint">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>High SetPoint</label>
 		<description>The current high setpoint for this humidity sensor.</description>
 		<category>Humidity</category>

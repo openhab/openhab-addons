@@ -27,7 +27,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.evcc.internal.api.EvccAPI;
 import org.openhab.binding.evcc.internal.api.EvccApiException;
+import org.openhab.binding.evcc.internal.api.dto.Battery;
 import org.openhab.binding.evcc.internal.api.dto.Loadpoint;
+import org.openhab.binding.evcc.internal.api.dto.PV;
 import org.openhab.binding.evcc.internal.api.dto.Plan;
 import org.openhab.binding.evcc.internal.api.dto.Result;
 import org.openhab.binding.evcc.internal.api.dto.Vehicle;
@@ -216,7 +218,6 @@ public class EvccHandler extends BaseThingHandler {
                             return;
                         }
                     }
-
                 } else if (groupId.startsWith(CHANNEL_GROUP_ID_VEHICLE) || groupId.startsWith(CHANNEL_GROUP_ID_HEATING)
                         || (groupId.startsWith(CHANNEL_GROUP_ID_LOADPOINT)
                                 && groupId.endsWith(CHANNEL_GROUP_ID_CURRENT))) {
@@ -412,9 +413,11 @@ public class EvccHandler extends BaseThingHandler {
             Map<String, Vehicle> vehicles = result.getVehicles();
             logger.debug("Found {} vehicles on site {}.", vehicles.size(), sitename);
             updateStatus(ThingStatus.ONLINE);
-            batteryConfigured = result.getBatteryConfigured();
-            gridConfigured = result.getGridConfigured();
-            pvConfigured = result.getPvConfigured();
+            Battery[] batteries = result.getBattery();
+            batteryConfigured = ((batteries != null) && (batteries.length > 0));
+            gridConfigured = (result.getGridPower() != null);
+            PV[] pvs = result.getPV();
+            pvConfigured = ((pvs != null) && (pvs.length > 0));
             createChannelsGeneral();
             updateChannelsGeneral();
             for (int i = 0; i < numberOfLoadpoints; i++) {
@@ -704,7 +707,7 @@ public class EvccHandler extends BaseThingHandler {
         }
         boolean gridConfigured = this.gridConfigured;
         if (gridConfigured) {
-            float gridPower = result.getGridPower();
+            float gridPower = ((result.getGridPower() == null) ? 0.0f : result.getGridPower());
             channel = new ChannelUID(uid, CHANNEL_GROUP_ID_GENERAL, CHANNEL_GRID_POWER);
             updateState(channel, new QuantityType<>(gridPower, Units.WATT));
         }

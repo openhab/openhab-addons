@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:tapo:device">
+		<parameter name="ipAddress" type="text" required="true">
+			<context>network-address</context>
+			<label>IP Address</label>
+		</parameter>
+		<parameter name="httpPort" type="integer" required="true">
+			<label>Port</label>
+			<description>HTTP-Communication Port (default 80)</description>
+			<default>80</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="protocol" type="text" required="true">
+			<label>Protocol</label>
+			<description>Communication Protocol</description>
+			<options>
+				<option value="">Direct HTTP</option>
+				<option value="AES">Secured HTTP Protocol</option>
+				<option value="KLAP">Secured KLAP HTTP Protocol</option>
+			</options>
+			<limitToOptions>true</limitToOptions>
+			<default>AES</default>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="pollingInterval" type="integer" min="0" max="9999" required="false">
+			<label>Refresh Interval</label>
+			<description>Refresh interval for refreshing the data in seconds (0=disabled). Set it below 10 seconds may cause
+				communication issues (not recommed).</description>
+			<default>30</default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

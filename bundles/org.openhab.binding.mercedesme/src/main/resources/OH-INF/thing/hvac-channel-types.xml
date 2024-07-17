@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="zone-hvac">
+		<item-type>Number</item-type>
+		<label>AC Zone</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="temperature-hvac">
+		<item-type>Number:Temperature</item-type>
+		<label>AC Temperature</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="active-hvac">
+		<item-type>Switch</item-type>
+		<label>AC Control</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="front-left-hvac">
+		<item-type>Switch</item-type>
+		<label>AC Seat Front Left</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="front-right-hvac">
+		<item-type>Switch</item-type>
+		<label>AC Seat Front Right</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="rear-left-hvac">
+		<item-type>Switch</item-type>
+		<label>AC Seat Rear Left</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="rear-right-hvac">
+		<item-type>Switch</item-type>
+		<label>AC Seat Rear Right</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="aux-heat">
+		<item-type>Switch</item-type>
+		<label>Auxiliary Heating Control</label>
+		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+</thing:thing-descriptions>

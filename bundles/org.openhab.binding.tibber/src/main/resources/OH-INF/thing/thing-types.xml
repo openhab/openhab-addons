@@ -26,6 +26,7 @@
 			<channel id="live_lastMeterConsumption" typeId="consumption"/>
 			<channel id="live_lastMeterProduction" typeId="production"/>
 			<channel id="live_accumulatedConsumption" typeId="consumption"/>
+			<channel id="live_accumulatedConsumptionThisHour" typeId="consumption"/>
 			<channel id="live_accumulatedCost" typeId="cost"/>
 			<channel id="live_accumulatedReward" typeId="reward"/>
 			<channel id="live_currency" typeId="currency"/>
@@ -42,10 +43,11 @@
 			<channel id="live_minPowerproduction" typeId="power"/>
 			<channel id="live_maxPowerproduction" typeId="power"/>
 			<channel id="live_accumulatedProduction" typeId="production"/>
+			<channel id="live_accumulatedProductionThisHour" typeId="production"/>
 		</channels>
 		<properties>
 			<property name="vendor">Tibber</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 		<config-description>
 			<parameter name="token" type="text" required="true">

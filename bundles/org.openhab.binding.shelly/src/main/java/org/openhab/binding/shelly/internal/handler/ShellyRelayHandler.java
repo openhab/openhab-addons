@@ -298,7 +298,7 @@ public class ShellyRelayHandler extends ShellyBaseHandler {
 
     private void createRollerChannels(ShellyRollerStatus roller) {
         if (!areChannelsCreated()) {
-            updateChannelDefinitions(ShellyChannelDefinitions.createRollerChannels(getThing(), roller));
+            updateChannelDefinitions(ShellyChannelDefinitions.createRollerChannels(getThing(), profile, roller));
         }
     }
 

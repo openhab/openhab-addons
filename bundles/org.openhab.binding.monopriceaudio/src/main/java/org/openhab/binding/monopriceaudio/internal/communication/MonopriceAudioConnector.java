@@ -52,7 +52,7 @@ public abstract class MonopriceAudioConnector {
     private boolean connected;
     private boolean pingResponseOnly;
 
-    private @Nullable AmplifierModel amp;
+    protected AmplifierModel amp = AmplifierModel.MONOPRICE;
 
     private @Nullable Thread readerThread;
 
@@ -75,15 +75,6 @@ public abstract class MonopriceAudioConnector {
     protected void setConnected(boolean connected) {
         this.connected = connected;
         this.pingResponseOnly = false;
-    }
-
-    /**
-     * Set the AmplifierModel
-     *
-     * @param amp the AmplifierModel being used
-     */
-    protected void setAmplifierModel(AmplifierModel amp) {
-        this.amp = amp;
     }
 
     /**
@@ -177,7 +168,7 @@ public abstract class MonopriceAudioConnector {
     public void sendPing() throws MonopriceAudioException {
         pingResponseOnly = true;
         // poll zone 1 status only to see if the amp responds
-        queryZone(amp.getZoneIds().get(0));
+        queryZone(amp.getZoneIds().iterator().next());
     }
 
     /**

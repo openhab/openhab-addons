@@ -29,6 +29,7 @@ public class CapabilityDTO {
     public static final String TYPE_WINDOWDOORSENSOR = "WindowDoorSensor";
     public static final String TYPE_SMOKEDETECTORSENSOR = "SmokeDetectorSensor";
     public static final String TYPE_ALARMACTUATOR = "AlarmActuator";
+    public static final String TYPE_SIRENACTUATOR = "SirenActuator";
     public static final String TYPE_MOTIONDETECTIONSENSOR = "MotionDetectionSensor";
     public static final String TYPE_LUMINANCESENSOR = "LuminanceSensor";
     public static final String TYPE_PUSHBUTTONSENSOR = "PushButtonSensor";
@@ -219,6 +220,15 @@ public class CapabilityDTO {
      */
     public boolean isTypeAlarmActuator() {
         return TYPE_ALARMACTUATOR.equals(getType());
+    }
+
+    /**
+     * Returns true, if the {@link CapabilityDTO} is of type SirenActuator.
+     *
+     * @return true if it is an SirenActuator, otherwise false
+     */
+    public boolean isTypeSirenActuator() {
+        return TYPE_SIRENACTUATOR.equals(getType());
     }
 
     /**

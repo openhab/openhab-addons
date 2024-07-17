@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="gridbox"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="gridbox">
+
+		<label>GridBox</label>
+		<description>GridBox Thing</description>
+
+		<channels>
+			<channel id="battery-capacity" typeId="system.electric-energy"/>
+			<channel id="battery-nominal-capacity" typeId="system.electric-energy"/>
+			<channel id="battery-power" typeId="system.electric-power"/>
+			<channel id="battery-remaining-charge" typeId="system.electric-energy"/>
+			<channel id="battery-state-of-charge" typeId="state-of-charge"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="consumption" typeId="system.electric-power"/>
+			<channel id="direct-consumption" typeId="system.electric-power"/>
+			<channel id="direct-consumption-ev" typeId="system.electric-power"/>
+			<channel id="direct-consumption-heat-pump" typeId="system.electric-power"/>
+			<channel id="direct-consumption-heater" typeId="system.electric-power"/>
+			<channel id="direct-consumption-household" typeId="system.electric-power"/>
+			<channel id="direct-consumption-rate" typeId="rate"/>
+			<channel id="ev-charging-station-power" typeId="system.electric-power"/>
+			<channel id="heat-pump-power" typeId="system.electric-power"/>
+			<channel id="photovoltaic-production" typeId="system.electric-power"/>
+			<channel id="production" typeId="system.electric-power"/>
+			<channel id="self-consumption" typeId="system.electric-power"/>
+			<channel id="self-consumption-rate" typeId="rate"/>
+			<channel id="self-sufficiency-rate" typeId="rate"/>
+			<channel id="self-supply" typeId="system.electric-power"/>
+			<channel id="total-consumption" typeId="system.electric-power"/>
+		</channels>
+
+		<config-description>
+			<parameter name="email" type="text" required="true">
+				<context>email</context>
+				<label>E-Mail</label>
+				<description>E-Mail address used to log in to the GridBox API (https://mygridbox.viessmann.com/)</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<context>password</context>
+				<label>Password</label>
+				<description>Password to access the GridBox API</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>60</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="rate">
+		<item-type>Number</item-type>
+		<label>Rate</label>
+		<state min="0" max="100" step="0.01" pattern="%.2f %" readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="state-of-charge">
+		<item-type>Number</item-type>
+		<label>State of Charge</label>
+		<state min="0" max="100" step="1" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

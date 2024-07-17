@@ -12,12 +12,15 @@
  */
 package org.openhab.binding.denonmarantz.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception thrown when an unsupported command type is sent to a channel.
  *
  * @author Jan-Willem Veldhuis - Initial contribution
  *
  */
+@NonNullByDefault
 public class UnsupportedCommandTypeException extends Exception {
 
     private static final long serialVersionUID = 42L;

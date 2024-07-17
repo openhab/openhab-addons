@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.itests</groupId>
     <artifactId>org.openhab.addons.reactor.itests</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.wemo.tests</artifactId>
@@ -18,7 +18,7 @@
     <dependency>
       <groupId>org.jupnp</groupId>
       <artifactId>org.jupnp</artifactId>
-      <version>3.0.0</version>
+      <version>3.0.1</version>
       <classifier>tests</classifier>
     </dependency>
     <dependency>

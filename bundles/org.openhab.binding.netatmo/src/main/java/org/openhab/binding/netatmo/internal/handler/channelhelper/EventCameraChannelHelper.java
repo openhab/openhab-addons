@@ -39,22 +39,16 @@ public class EventCameraChannelHelper extends EventChannelHelper {
     @Override
     protected @Nullable State internalGetHomeEvent(String channelId, @Nullable String groupId, HomeEvent event) {
         if (groupId != null && groupId.startsWith(GROUP_SUB_EVENT)) {
-            switch (channelId) {
-                case CHANNEL_EVENT_TYPE:
-                    return toStringType(event.getEventType());
-                case CHANNEL_EVENT_TIME:
-                    return new DateTimeType(event.getTime());
-                case CHANNEL_EVENT_MESSAGE:
-                    return toStringType(event.getName());
-                case CHANNEL_EVENT_SNAPSHOT:
-                    return toRawType(event.getSnapshotUrl());
-                case CHANNEL_EVENT_SNAPSHOT_URL:
-                    return toStringType(event.getSnapshotUrl());
-                case CHANNEL_EVENT_VIGNETTE:
-                    return toRawType(event.getVignetteUrl());
-                case CHANNEL_EVENT_VIGNETTE_URL:
-                    return toStringType(event.getVignetteUrl());
-            }
+            return switch (channelId) {
+                case CHANNEL_EVENT_TYPE -> toStringType(event.getEventType());
+                case CHANNEL_EVENT_TIME -> new DateTimeType(event.getTime());
+                case CHANNEL_EVENT_MESSAGE -> toStringType(event.getName());
+                case CHANNEL_EVENT_SNAPSHOT -> toRawType(event.getSnapshotUrl());
+                case CHANNEL_EVENT_SNAPSHOT_URL -> toStringType(event.getSnapshotUrl());
+                case CHANNEL_EVENT_VIGNETTE -> toRawType(event.getVignetteUrl());
+                case CHANNEL_EVENT_VIGNETTE_URL -> toStringType(event.getVignetteUrl());
+                default -> super.internalGetHomeEvent(channelId, groupId, event);
+            };
         }
         return super.internalGetHomeEvent(channelId, groupId, event);
     }

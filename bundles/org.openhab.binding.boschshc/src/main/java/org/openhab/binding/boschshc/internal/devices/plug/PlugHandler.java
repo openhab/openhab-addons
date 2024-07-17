@@ -13,7 +13,7 @@
 package org.openhab.binding.boschshc.internal.devices.plug;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.boschshc.internal.devices.AbstractPowerSwitchHandler;
+import org.openhab.binding.boschshc.internal.devices.AbstractPowerSwitchHandlerWithPowerMeter;
 import org.openhab.core.thing.Thing;
 
 /**
@@ -22,7 +22,7 @@ import org.openhab.core.thing.Thing;
  * @author David Pace - Initial contribution
  */
 @NonNullByDefault
-public class PlugHandler extends AbstractPowerSwitchHandler {
+public class PlugHandler extends AbstractPowerSwitchHandlerWithPowerMeter {
 
     public PlugHandler(Thing thing) {
         super(thing);

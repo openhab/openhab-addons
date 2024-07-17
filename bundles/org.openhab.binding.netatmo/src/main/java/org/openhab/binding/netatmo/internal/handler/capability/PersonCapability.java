@@ -18,10 +18,12 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.netatmo.internal.api.data.EventSubType;
 import org.openhab.binding.netatmo.internal.api.data.EventType;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
 import org.openhab.binding.netatmo.internal.api.dto.Event;
@@ -78,7 +80,7 @@ public class PersonCapability extends HomeSecurityThingCapability {
         super.updateWebhookEvent(event);
 
         handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE,
-                event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));
+                Objects.requireNonNull(event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL)));
 
         final String message = event.getName();
         handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE,
@@ -99,8 +101,8 @@ public class PersonCapability extends HomeSecurityThingCapability {
             return; // ignore incoming events if they are deprecated
         }
         lastEventTime = eventTime;
-        handler.triggerChannel(CHANNEL_HOME_EVENT,
-                event.getSubTypeDescription().map(st -> st.name()).orElse(event.getEventType().name()));
+        handler.triggerChannel(CHANNEL_HOME_EVENT, Objects.requireNonNull(
+                event.getSubTypeDescription().map(EventSubType::name).orElse(event.getEventType().name())));
     }
 
     @Override

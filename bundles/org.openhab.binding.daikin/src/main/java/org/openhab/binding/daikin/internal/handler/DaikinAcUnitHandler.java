@@ -13,6 +13,7 @@
 package org.openhab.binding.daikin.internal.handler;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.IntStream;
 
@@ -273,9 +274,9 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
     protected void updateEnergyYearChannel(String channel, Optional<Integer[]> maybePower) {
         IntStream.range(1, 13).forEach(i -> updateState(
                 String.format(DaikinBindingConstants.CHANNEL_ENERGY_STRING_FORMAT, channel, i),
-                maybePower.<State> map(
+                Objects.requireNonNull(maybePower.<State> map(
                         t -> new QuantityType<>(BigDecimal.valueOf(t[i - 1].longValue(), 1), Units.KILOWATT_HOUR))
-                        .orElse(UnDefType.UNDEF))
+                        .orElse(UnDefType.UNDEF)))
 
         );
     }
@@ -288,8 +289,9 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
     protected void updateEnergyDayAndWeekChannel(String channel, Optional<Double> maybePower) {
         if (maybePower.isPresent()) {
             updateState(channel,
-                    maybePower.<State> map(t -> new QuantityType<>(new DecimalType(t), Units.KILOWATT_HOUR))
-                            .orElse(UnDefType.UNDEF));
+                    Objects.requireNonNull(
+                            maybePower.<State> map(t -> new QuantityType<>(new DecimalType(t), Units.KILOWATT_HOUR))
+                                    .orElse(UnDefType.UNDEF)));
         }
     }
 

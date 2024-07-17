@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -32,6 +32,7 @@
     <module>org.openhab.io.neeo</module>
     <module>org.openhab.io.openhabcloud</module>
     <!-- transformations -->
+    <module>org.openhab.transform.basicprofiles</module>
     <module>org.openhab.transform.bin2json</module>
     <module>org.openhab.transform.exec</module>
     <module>org.openhab.transform.jinja</module>
@@ -46,6 +47,7 @@
     <!-- bindings -->
     <module>org.openhab.binding.adorne</module>
     <module>org.openhab.binding.ahawastecollection</module>
+    <module>org.openhab.binding.airgradient</module>
     <module>org.openhab.binding.airq</module>
     <module>org.openhab.binding.airquality</module>
     <module>org.openhab.binding.airvisualnode</module>
@@ -53,12 +55,14 @@
     <module>org.openhab.binding.allplay</module>
     <module>org.openhab.binding.amazondashbutton</module>
     <module>org.openhab.binding.amazonechocontrol</module>
+    <module>org.openhab.binding.amberelectric</module>
     <module>org.openhab.binding.ambientweather</module>
     <module>org.openhab.binding.amplipi</module>
     <module>org.openhab.binding.androiddebugbridge</module>
     <module>org.openhab.binding.androidtv</module>
     <module>org.openhab.binding.anel</module>
     <module>org.openhab.binding.anthem</module>
+    <module>org.openhab.binding.argoclima</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.asuswrt</module>
     <module>org.openhab.binding.atlona</module>
@@ -127,12 +131,14 @@
     <module>org.openhab.binding.electroluxair</module>
     <module>org.openhab.binding.elerotransmitterstick</module>
     <module>org.openhab.binding.elroconnects</module>
+    <module>org.openhab.binding.emotiva</module>
     <module>org.openhab.binding.energenie</module>
     <module>org.openhab.binding.energidataservice</module>
     <module>org.openhab.binding.enigma2</module>
     <module>org.openhab.binding.enocean</module>
     <module>org.openhab.binding.enphase</module>
     <module>org.openhab.binding.enturno</module>
+    <module>org.openhab.binding.ephemeris</module>
     <module>org.openhab.binding.epsonprojector</module>
     <module>org.openhab.binding.etherrain</module>
     <module>org.openhab.binding.evcc</module>
@@ -146,9 +152,11 @@
     <module>org.openhab.binding.folderwatcher</module>
     <module>org.openhab.binding.folding</module>
     <module>org.openhab.binding.foobot</module>
+    <module>org.openhab.binding.freeathome</module>
     <module>org.openhab.binding.freebox</module>
     <module>org.openhab.binding.freeboxos</module>
     <module>org.openhab.binding.freecurrency</module>
+    <module>org.openhab.binding.frenchgovtenergydata</module>
     <module>org.openhab.binding.fronius</module>
     <module>org.openhab.binding.fsinternetradio</module>
     <module>org.openhab.binding.ftpupload</module>
@@ -161,6 +169,7 @@
     <module>org.openhab.binding.globalcache</module>
     <module>org.openhab.binding.gpstracker</module>
     <module>org.openhab.binding.gree</module>
+    <module>org.openhab.binding.gridbox</module>
     <module>org.openhab.binding.groheondus</module>
     <module>org.openhab.binding.groupepsa</module>
     <module>org.openhab.binding.growatt</module>
@@ -192,6 +201,7 @@
     <module>org.openhab.binding.ipcamera</module>
     <module>org.openhab.binding.ipobserver</module>
     <module>org.openhab.binding.intesis</module>
+    <module>org.openhab.binding.iotawatt</module>
     <module>org.openhab.binding.ipp</module>
     <module>org.openhab.binding.irobot</module>
     <module>org.openhab.binding.irtrans</module>
@@ -237,6 +247,7 @@
     <module>org.openhab.binding.meteoalerte</module>
     <module>org.openhab.binding.meteoblue</module>
     <module>org.openhab.binding.meteostick</module>
+    <module>org.openhab.binding.mffan</module>
     <module>org.openhab.binding.miele</module>
     <module>org.openhab.binding.mielecloud</module>
     <module>org.openhab.binding.mihome</module>
@@ -302,8 +313,10 @@
     <module>org.openhab.binding.orvibo</module>
     <module>org.openhab.binding.panasonicbdp</module>
     <module>org.openhab.binding.paradoxalarm</module>
+    <module>org.openhab.binding.pegelonline</module>
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
+    <module>org.openhab.binding.pihole</module>
     <module>org.openhab.binding.pilight</module>
     <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.pixometer</module>
@@ -337,6 +350,8 @@
     <module>org.openhab.binding.rotel</module>
     <module>org.openhab.binding.russound</module>
     <module>org.openhab.binding.sagercaster</module>
+    <module>org.openhab.binding.saicismart</module>
+    <module>org.openhab.binding.salus</module>
     <module>org.openhab.binding.samsungtv</module>
     <module>org.openhab.binding.satel</module>
     <module>org.openhab.binding.semsportal</module>
@@ -349,6 +364,7 @@
     <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.shelly</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
+    <module>org.openhab.binding.siemenshvac</module>
     <module>org.openhab.binding.siemensrds</module>
     <module>org.openhab.binding.sinope</module>
     <module>org.openhab.binding.sleepiq</module>
@@ -361,6 +377,7 @@
     <module>org.openhab.binding.sncf</module>
     <module>org.openhab.binding.snmp</module>
     <module>org.openhab.binding.solaredge</module>
+    <module>org.openhab.binding.solarforecast</module>
     <module>org.openhab.binding.solarlog</module>
     <module>org.openhab.binding.solarmax</module>
     <module>org.openhab.binding.solarwatt</module>
@@ -388,6 +405,8 @@
     <module>org.openhab.binding.teleinfo</module>
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
+    <module>org.openhab.binding.teslapowerwall</module>
+    <module>org.openhab.binding.teslascope</module>
     <module>org.openhab.binding.tibber</module>
     <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.touchwand</module>
@@ -457,6 +476,7 @@
     <module>org.openhab.voice.voicerss</module>
     <module>org.openhab.voice.voskstt</module>
     <module>org.openhab.voice.watsonstt</module>
+    <module>org.openhab.voice.whisperstt</module>
   </modules>
 
   <properties>
@@ -615,7 +635,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>3.6.1</version>
         <executions>
           <execution>
             <id>embed-dependencies</id>

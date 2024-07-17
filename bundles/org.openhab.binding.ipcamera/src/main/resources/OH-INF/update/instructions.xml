@@ -31,4 +31,20 @@
 		</instruction-set>
 	</thing-type>
 
+	<thing-type uid="ipcamera:foscam">
+		<instruction-set targetVersion="1">
+			<add-channel id="carAlarm">
+				<type>ipcamera:carAlarm</type>
+			</add-channel>
+			<add-channel id="humanAlarm">
+				<type>ipcamera:humanAlarm</type>
+			</add-channel>
+			<add-channel id="animalAlarm">
+				<type>ipcamera:animalAlarm</type>
+			</add-channel>
+			<add-channel id="lineCrossingAlarm">
+				<type>ipcamera:lineCrossingAlarm</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
 </update:update-descriptions>

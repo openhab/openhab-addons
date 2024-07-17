@@ -307,8 +307,15 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                             isDevModeReady() ? "LAN mode" : cloudFallback ? "Cloud mode fallback" : "Cloud mode");
                 } else {
                     logger.debug("Events id error: {}", id);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "unable to register events");
+                    if (!thingConfig.isDevMode()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "unable to register events");
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "LAN mode is not properly configured");
+                        logger.debug("Forcing the gateway discovery");
+                        discoverGateway();
+                    }
                 }
             }
         } catch (JsonSyntaxException e) {

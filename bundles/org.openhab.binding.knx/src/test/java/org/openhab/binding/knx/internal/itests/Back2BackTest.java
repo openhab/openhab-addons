@@ -53,7 +53,6 @@ import tuwien.auto.calimero.GroupAddress;
 import tuwien.auto.calimero.KNXException;
 import tuwien.auto.calimero.datapoint.CommandDP;
 import tuwien.auto.calimero.datapoint.Datapoint;
-import tuwien.auto.calimero.dptxlator.DPTXlator2ByteUnsigned;
 import tuwien.auto.calimero.dptxlator.TranslatorTypes;
 import tuwien.auto.calimero.process.ProcessCommunicator;
 import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
@@ -374,13 +373,9 @@ public class Back2BackTest {
     void testDpt7() {
         helper("7.001", new byte[] { 0, 42 }, new DecimalType(42));
         helper("7.001", new byte[] { (byte) 0xff, (byte) 0xff }, new DecimalType(65535));
-        // workaround in place, as Calimero uses "s" instead of "ms"
-        // refs: ValueEncoder::handleNumericTypes() (case 7) and DptUnits (static initialization)
-        assertTrue("s".equals(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_10.getUnit()));
         helper("7.002", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("255 ms"));
         helper("7.002", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
         helper("7.002", new byte[] { (byte) 0xff, (byte) 0xff }, new QuantityType<>("65535 ms"));
-        assertTrue("s".equals(DPTXlator2ByteUnsigned.DPT_TIMEPERIOD_100.getUnit()));
         helper("7.003", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 ms"));
         helper("7.003", new byte[] { (byte) 0x00, (byte) 0x64 }, new QuantityType<>("1000 ms"));
         helper("7.003", new byte[] { (byte) 0x00, (byte) 0xff }, new QuantityType<>("2550 ms"));
@@ -454,7 +449,6 @@ public class Back2BackTest {
         // special float with sign, 4-bit exponent, and mantissa in two's complement notation
         // ref: KNX spec, 03_07_02-Datapoint-Types
         // FIXME according to spec, value 0x7fff shall be regarded as "invalid data"
-        // FIXME lower boundary not fully covered by Calimero library
         // TODO add tests for clipping at lower boundary (e.g. absolute zero)
         helper("9.001", new byte[] { (byte) 0x00, (byte) 0x64 }, new QuantityType<>("1 °C"));
         helper("9.001", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 °C"));
@@ -466,13 +460,11 @@ public class Back2BackTest {
         helper("9.002", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 K"));
         helper("9.002", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 K"));
         helper("9.002", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 K"));
-        // broken, Calimero does not allow full range
-        // helper("9.002", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K"));
+        helper("9.002", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K"));
         helper("9.003", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 K/h"));
         helper("9.003", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 K/h"));
         helper("9.003", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 K/h"));
-        // broken, Calimero does not allow full range
-        // helper("9.003", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K/h"));
+        helper("9.003", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K/h"));
         helper("9.004", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 lx"));
         helper("9.004", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 lx"));
         helper("9.004", new byte[] { (byte) 0x00, (byte) 0x00 }, new QuantityType<>("0 lx"));
@@ -495,54 +487,44 @@ public class Back2BackTest {
         helper("9.009", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 m³/h"));
         helper("9.009", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 m³/h"));
         helper("9.009", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 m³/h"));
-        // broken, Calimero does not allow full range
-        // helper("9.009", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 m³/h"));
+        helper("9.009", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 m³/h"));
         helper("9.010", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 s"));
         helper("9.010", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 s"));
         helper("9.010", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 s"));
-        // broken, Calimero does not allow full range
-        // helper("9.010", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 s"));
+        helper("9.010", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 s"));
         helper("9.011", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 ms"));
         helper("9.011", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 ms"));
         helper("9.011", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 ms"));
-        // broken, Calimero does not allow full range
-        // helper("9.011", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K/h"));
+        helper("9.011", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 ms"));
 
         helper("9.020", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 mV"));
         helper("9.020", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 mV"));
         helper("9.020", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 mV"));
-        // broken, Calimero does not allow full range
-        // helper("9.020", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 mV"));
+        helper("9.020", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 mV"));
         helper("9.021", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 mA"));
         helper("9.021", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 mA"));
         helper("9.021", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 mA"));
-        // broken, Calimero does not allow full range
-        // helper("9.021", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 mA"));
+        helper("9.021", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 mA"));
         helper("9.022", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 W/m²"));
         helper("9.022", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 W/m²"));
         helper("9.022", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 W/m²"));
-        // broken, Calimero does not allow full range
-        // helper("9.022", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 W/m²"));
+        helper("9.022", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 W/m²"));
         helper("9.023", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 K/%"));
         helper("9.023", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 K/%"));
         helper("9.023", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 K/%"));
-        // broken, Calimero does not allow full range
-        // helper("9.023", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K/%"));
+        helper("9.023", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 K/%"));
         helper("9.024", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 kW"));
         helper("9.024", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 kW"));
         helper("9.024", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 kW"));
-        // broken, Calimero does not allow full range
-        // helper("9.024", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 kW"));
+        helper("9.024", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 kW"));
         helper("9.025", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 l/h"));
         helper("9.025", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 l/h"));
         helper("9.025", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 l/h"));
-        // broken, Calimero does not allow full range
-        // helper("9.025", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 l/h"));
+        helper("9.025", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 l/h"));
         helper("9.026", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 l/m²"));
         helper("9.026", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 l/m²"));
         helper("9.026", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 l/m²"));
-        // broken, Calimero does not allow full range
-        // helper("9.026", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 l/m²"));
+        helper("9.026", new byte[] { (byte) 0xf8, (byte) 0x00 }, new QuantityType<>("-671088.64 l/m²"));
         helper("9.027", new byte[] { (byte) 0x07, (byte) 0xff }, new QuantityType<>("20.47 °F"));
         helper("9.027", new byte[] { (byte) 0x7f, (byte) 0xfe }, new QuantityType<>("670433.28 °F"));
         helper("9.027", new byte[] { (byte) 0x87, (byte) 0x9c }, new QuantityType<>("-1 °F"));
@@ -823,14 +805,15 @@ public class Back2BackTest {
         helper("20.002", new byte[] { 2 }, new StringType("building protection"));
 
         // test DecimalType representation of enum
-        int[] subTypes = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 17, 20, 21, 100, 101, 102, 103, 104, 105,
-                106, 107, 108, 109, 110, 111, 112, 113, 114, 120, 121, 122, 600, 601, 602, 603, 604, 605, 606, 607, 608,
-                609, 610, 801, 802, 803, 804, 1000, 1001, 1002, 1003, 1004, 1005, 1200, 1202 };
+        int[] subTypes = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 17, 20, 21, 22, 100, 101, 102, 103, 104,
+                105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 120, 121, 122, 600, 601, 602, 603, 604, 605, 606,
+                607, 608, 609, 610, 611, 612, 613, 801, 802, 803, 804, 1000, 1001, 1002, 1003, 1004, 1005, 1200, 1202,
+                1203, 1204, 1205, 1206, 1207, 1208, 1209 };
         for (int subType : subTypes) {
             helper("20." + String.format("%03d", subType), new byte[] { 1 }, new DecimalType(1));
         }
         // once these DPTs are available in Calimero, add to check above
-        int[] unsupportedSubTypes = new int[] { 22, 115, 611, 612, 613, 1203, 1204, 1205, 1206, 1207, 1208, 1209 };
+        int[] unsupportedSubTypes = new int[] {};
         for (int subType : unsupportedSubTypes) {
             assertNull(ValueDecoder.decode("20." + String.format("%03d", subType), new byte[] { 0 }, StringType.class));
         }
@@ -842,13 +825,10 @@ public class Back2BackTest {
         helper("21.001", new byte[] { 5 }, new StringType("overridden, out of service"));
 
         // test DecimalType representation of bitfield
-        int[] subTypes = new int[] { 1, 2, 100, 101, 102, 103, 104, 105, 106, 601, 1000, 1001, 1002, 1010 };
+        int[] subTypes = new int[] { 1, 2, 100, 101, 102, 103, 104, 105, 106, 601, 1000, 1001, 1002, 1010, 1200, 1201 };
         for (int subType : subTypes) {
             helper("21." + String.format("%03d", subType), new byte[] { 1 }, new DecimalType(1));
         }
-        // once these DPTs are available in Calimero, add to check above
-        assertNull(ValueDecoder.decode("21.1200", new byte[] { 0 }, StringType.class));
-        assertNull(ValueDecoder.decode("21.1201", new byte[] { 0 }, StringType.class));
     }
 
     @Test
@@ -858,11 +838,10 @@ public class Back2BackTest {
         helper("22.101", new byte[] { 1, 2 }, new StringType("heating mode, heating eco mode"));
 
         // test DecimalType representation of bitfield
+        helper("22.100", new byte[] { 0, 2 }, new DecimalType(2));
         helper("22.101", new byte[] { 0, 2 }, new DecimalType(2));
         helper("22.1000", new byte[] { 0, 2 }, new DecimalType(2));
-        // once these DPTs are available in Calimero, add to check above
-        assertNull(ValueDecoder.decode("22.100", new byte[] { 0, 2 }, StringType.class));
-        assertNull(ValueDecoder.decode("22.1010", new byte[] { 0, 2 }, StringType.class));
+        helper("22.1010", new byte[] { 0, 2 }, new DecimalType(2));
     }
 
     @Test
@@ -930,13 +909,13 @@ public class Back2BackTest {
         // DPT 243.600 DPT_Colour_Transition_xyY
         // time(2) y(2) x(2), %brightness(1), flags(1)
         helper("243.600", new byte[] { 0, 5, 0x7F, 0, (byte) 0xfe, 0, 42, 3 },
-                new StringType("(0.9922, 0.4961) 16.5 % 0.5 s"));
+                new StringType("(0.9922, 0.4961) 16.5 % 500 ms"));
         helper("243.600", new byte[] { (byte) 0x02, (byte) 0x00, 0x7F, 0, (byte) 0xfe, 0, 42, 3 },
-                new StringType("(0.9922, 0.4961) 16.5 % 51.2 s"));
+                new StringType("(0.9922, 0.4961) 16.5 % 51200 ms"));
         helper("243.600", new byte[] { (byte) 0x40, (byte) 0x00, 0x7F, 0, (byte) 0xfe, 0, 42, 3 },
-                new StringType("(0.9922, 0.4961) 16.5 % 1638.4 s"));
+                new StringType("(0.9922, 0.4961) 16.5 % 1638400 ms"));
         helper("243.600", new byte[] { (byte) 0xff, (byte) 0xff, 0x7F, 0, (byte) 0xfe, 0, 42, 3 },
-                new StringType("(0.9922, 0.4961) 16.5 % 6553.5 s"));
+                new StringType("(0.9922, 0.4961) 16.5 % 6553500 ms"));
         // DPT 249.600 DPT_Brightness_Colour_Temperature_Transition
         // time(2) colortemp(2), brightness(1), flags(1)
         helper("249.600", new byte[] { 0, 5, 0, 40, 127, 7 }, new StringType("49.8 % 40 K 0.5 s"));

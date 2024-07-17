@@ -40,7 +40,7 @@ public abstract class AbstractRioHandlerCallback implements RioHandlerCallback {
     @Override
     public void removeListener(String channelId, RioHandlerCallbackListener listener) {
         for (ListenerState listenerState : listeners) {
-            if (listenerState.channelId.equals(channelId) && listenerState.listener == listener) {
+            if (listenerState.channelId.equals(channelId) && listener.equals(listenerState.listener)) {
                 listeners.remove(listenerState);
             }
         }

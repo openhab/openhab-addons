@@ -79,6 +79,9 @@ public class StatusDTO {
     @SerializedName("water_box_mode")
     @Expose
     private Integer waterBoxMode;
+    @SerializedName("mop_mode")
+    @Expose
+    private Integer mopMode;
     @SerializedName("water_box_carriage_status")
     @Expose
     private Integer waterBoxCarriageStatus;
@@ -169,6 +172,10 @@ public class StatusDTO {
 
     public final Integer getWaterBoxMode() {
         return waterBoxMode;
+    }
+
+    public final Integer getMopMode() {
+        return mopMode;
     }
 
     public final Integer getWaterBoxCarriageStatus() {

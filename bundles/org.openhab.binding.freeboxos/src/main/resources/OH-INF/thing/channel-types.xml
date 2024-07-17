@@ -449,7 +449,7 @@
 	</channel-type>
 
 	<channel-type id="alarm-volume">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Alarm Volume</label>
 		<category>oh:freeboxos:sirene</category>
 		<state min="0" max="100" step="1" pattern="%d %unit%"/>

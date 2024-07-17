@@ -51,6 +51,10 @@ public abstract class Event extends NAObject {
         return cameraId;
     }
 
+    public void setCameraId(String cameraId) {
+        this.cameraId = cameraId;
+    }
+
     @Override
     public @Nullable String getName() {
         String localMessage = super.getName();

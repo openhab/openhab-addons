@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SerialPortAdapter implements org.openwebnet4j.communication.serial.spi.SerialPort {
 
-    private static final Logger logger = LoggerFactory.getLogger(SerialPortAdapter.class);
+    private final Logger logger = LoggerFactory.getLogger(SerialPortAdapter.class);
 
     private static final int OPEN_TIMEOUT_MS = 200;
 

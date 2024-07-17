@@ -45,30 +45,27 @@ public class HaywardHeaterHandler extends HaywardThingHandler {
         List<String> data = new ArrayList<>();
 
         Bridge bridge = getBridge();
-        if (bridge != null) {
-            HaywardBridgeHandler bridgehandler = (HaywardBridgeHandler) bridge.getHandler();
-            if (bridgehandler != null) {
-                systemIDs = bridgehandler.evaluateXPath("//Heater/@systemId", xmlResponse);
-                String thingSystemID = getThing().getUID().getId();
-                for (int i = 0; i < systemIDs.size(); i++) {
-                    if (systemIDs.get(i).equals(thingSystemID)) {
-                        // State
-                        data = bridgehandler.evaluateXPath("//Heater/@heaterState", xmlResponse);
-                        updateData(HaywardBindingConstants.CHANNEL_HEATER_STATE, data.get(i));
+        if (bridge != null && bridge.getHandler() instanceof HaywardBridgeHandler bridgehandler) {
+            systemIDs = bridgehandler.evaluateXPath("//Heater/@systemId", xmlResponse);
+            String thingSystemID = getThing().getUID().getId();
+            for (int i = 0; i < systemIDs.size(); i++) {
+                if (systemIDs.get(i).equals(thingSystemID)) {
+                    // State
+                    data = bridgehandler.evaluateXPath("//Heater/@heaterState", xmlResponse);
+                    updateData(HaywardBindingConstants.CHANNEL_HEATER_STATE, data.get(i));
 
-                        // Enable
-                        data = bridgehandler.evaluateXPath("//Heater/@enable", xmlResponse);
-                        if ("0".equals(data.get(i))) {
-                            updateData(HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "0");
-                        } else {
-                            updateData(HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "1");
-                        }
+                    // Enable
+                    data = bridgehandler.evaluateXPath("//Heater/@enable", xmlResponse);
+                    if ("0".equals(data.get(i))) {
+                        updateData(HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "0");
+                    } else {
+                        updateData(HaywardBindingConstants.CHANNEL_HEATER_ENABLE, "1");
                     }
                 }
-                this.updateStatus(ThingStatus.ONLINE);
-            } else {
-                this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
+            this.updateStatus(ThingStatus.ONLINE);
+        } else {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
         }
     }
 }

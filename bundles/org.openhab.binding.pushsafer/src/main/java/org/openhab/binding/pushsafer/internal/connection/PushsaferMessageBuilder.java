@@ -308,7 +308,7 @@ public class PushsaferMessageBuilder {
         body.addFieldPart(MESSAGE_KEY_ANSWER, new StringContentProvider(String.valueOf(answer)), null);
 
         body.addFieldPart(MESSAGE_KEY_TIME2LIVE, new StringContentProvider(String.valueOf(time2live)), null);
-
+        String attachment = this.attachment;
         if (attachment != null) {
             String localAttachment = attachment;
             final String encodedString;

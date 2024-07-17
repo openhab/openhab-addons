@@ -74,6 +74,7 @@ public abstract class VelbusTemperatureSensorHandler extends VelbusSensorWithAla
         if (refreshJob != null) {
             refreshJob.cancel(true);
         }
+        super.dispose();
     }
 
     private void startAutomaticRefresh(int refreshInterval) {
@@ -114,10 +115,10 @@ public abstract class VelbusTemperatureSensorHandler extends VelbusSensorWithAla
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
-
-        logger.trace("onPacketReceived() was called");
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
+        }
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
@@ -133,5 +134,7 @@ public abstract class VelbusTemperatureSensorHandler extends VelbusSensorWithAla
                 updateState(temperatureChannel, state);
             }
         }
+
+        return true;
     }
 }

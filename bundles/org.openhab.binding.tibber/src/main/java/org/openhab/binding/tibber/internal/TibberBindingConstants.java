@@ -60,6 +60,7 @@ public class TibberBindingConstants {
     public static final String LIVE_LASTMETERCONSUMPTION = "live_lastMeterConsumption";
     public static final String LIVE_LASTMETERPRODUCTION = "live_lastMeterProduction";
     public static final String LIVE_ACCUMULATEDCONSUMPTION = "live_accumulatedConsumption";
+    public static final String LIVE_ACCUMULATEDCONSUMPTION_THIS_HOUR = "live_accumulatedConsumptionThisHour";
     public static final String LIVE_ACCUMULATEDCOST = "live_accumulatedCost";
     public static final String LIVE_ACCUMULATEREWARD = "live_accumulatedReward";
     public static final String LIVE_CURRENCY = "live_currency";
@@ -74,6 +75,7 @@ public class TibberBindingConstants {
     public static final String LIVE_CURRENT3 = "live_current3";
     public static final String LIVE_POWERPRODUCTION = "live_powerProduction";
     public static final String LIVE_ACCUMULATEDPRODUCTION = "live_accumulatedProduction";
+    public static final String LIVE_ACCUMULATEDPRODUCTION_THIS_HOUR = "live_accumulatedProductionThisHour";
     public static final String LIVE_MINPOWERPRODUCTION = "live_minPowerproduction";
     public static final String LIVE_MAXPOWERPRODUCTION = "live_maxPowerproduction";
 

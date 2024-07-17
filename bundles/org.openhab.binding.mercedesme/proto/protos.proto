@@ -1,0 +1,136 @@
+syntax = "proto3";
+package proto;
+
+option java_package = "com.daimler.mbcarkit.proto";
+
+// SubscriptionRequest is sent to an actor to indicate that the sender wants to subscribe
+// to events of specific topics. By convention the "Sender" property of the actor message is the
+// Subscriber and will receive the events.
+message SubscribeRequest {
+
+    // An array of topics for which the Subscriber wants to be notified from the Receiver of this message
+    repeated string topics = 1;
+
+    // indicates whether the previous set of topics should be replaced or whether the content of
+    // topics should be merged into the already existing set of topics in the publisher actor. E.g. You're already
+    // subscribed to topics A and B. If you send a SubscribeRequest with B and C:
+    // replace = true -> you are subscribed to B and C
+    // replace = false -> you are subscribed to A, B and C
+    bool replace = 2;
+}
+
+// SubscribeResponse is returned by the actor which received a SubscribeRequest. In case of a successful subscription
+// success will be true and error_codes empty/nil. In case of an error the errors map will contain
+// information that points to the reason for failure. The error map's keys are topics that have resulted in an error.
+// The message also contains all successfully subscribed topics under the `subscribed_topics` key.
+// By convention if an SubscribeRequest is sent for topics that have already been subscribed to, the SubscribeResponse
+// will be successful and no error will be returned.
+message SubscribeResponse {
+    bool success = 1;
+    map<string, SubscriptionError> errors = 2;
+    repeated string subscribed_topics = 3;
+}
+
+// UnsubscribeRequest is sent to an actor to indicate that the sender wants to unsubscribe
+// from events specified by the topics array.
+message UnsubscribeRequest {
+
+    // An array of topics for which the Subscriber does not want to receive any more messages
+    repeated string topics = 1;
+
+    // Whether the publisher should respond
+    bool anticipate_response = 2;
+}
+
+// UnsubscribeResponse is returned by the actor which received a UnsubscribeRequest. In case of a successful removal,
+// success will be true and error_codes empty/nil. In case of an error the errors map will contain
+// information that points to the reason for failure. The error map's keys are topics that have resulted in an error.
+// The message also contains all successfully subscribed topics under the `unsubscribed_topics` key.
+// By convention if an UnsubscribeRequest is sent for topics that have already been unsubscribed from the UnsubscribeResponse
+// will be successful and no error will be returned.
+message UnsubscribeResponse {
+    bool success = 1;
+    map<string, SubscriptionError> errors = 2;
+    repeated string unsubscribed_topics = 3;
+}
+
+enum SubscriptionErrorType {
+    UNKNOWN = 0;
+    INVALID_JWT = 1;
+}
+
+message SubscriptionError {
+    repeated SubscriptionErrorType code = 1;
+    repeated string message = 2; // Optional
+}
+
+// Sent from Websocket-Service -> AppTwin
+message SubscribeToAppTwinRequest {
+    string session_id = 1;
+    string ciam_id = 2;
+
+    // additional data
+    string device_locale = 3;
+    string app_id = 4;
+    string app_version = 5;
+    OperatingSystemName os_name = 6;
+    string os_version = 7;
+    string device_model = 8;
+    string network_carrier = 9;
+    string sdk_version = 10;
+}
+
+message ResubscribeToAppTwinRequest {
+    string session_id = 1;
+    string ciam_id = 2;
+}
+
+message ResubscribeToAppTwinResponse {
+    enum ResubscribeResult {
+        UNKNOWN_ERROR = 0;
+        SUCCESS = 1;
+        INVALID_JWT_ERROR = 2;
+        TARGET_DOES_NOT_EXIST = 3;
+    }
+
+    ResubscribeResult result = 1;
+}
+
+enum OperatingSystemName {
+    UNKNOWN_OPERATING_SYSTEM = 0;
+    IOS = 1;
+    ANDROID = 2;
+    INT_TEST = 3;
+    MANUAL_TEST = 4;
+    WEB = 5;
+}
+
+// Sent from AppTwin -> Websocket-Service
+message SubscribeToAppTwinResponse {
+    bool success = 1;
+    SubscriptionErrorType error_code = 2;
+}
+
+message UnsubscribeFromAppTwinRequest {
+    string session_id = 1;
+}
+
+message UnsubscribeFromAppTwinResponse {
+    bool success = 1;
+    map<string, SubscriptionError> errors = 2;
+}
+
+message Heartbeat {}
+
+
+// This message is used to tell the App which vehicles are assigned to the current user.
+// The message is sent when the AppTwin is fully initialized (i.e. when it received the first vcb-response)
+//
+// The list of VINs is needed when a user gets unassigned from a vehicle while not connected to an AppTwin
+// In this case the vehicle would still show in the app the next time the user starts it (see https://appsfactory.atlassian.net/browse/DAIM-3831)
+// To prevent this, we tell the App which VINs are assigned via this message
+message AssignedVehicles {
+    repeated string vins = 1;
+}
+
+message AcknowledgeAssignedVehicles {}

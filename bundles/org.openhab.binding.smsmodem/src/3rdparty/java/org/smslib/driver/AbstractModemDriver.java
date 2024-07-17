@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.concurrent.TimeoutException;
@@ -63,7 +64,7 @@ public abstract class AbstractModemDriver {
             ClassLoader classLoader = this.getClass().getClassLoader();
             if (classLoader != null) {
                 try (InputStream inputStream = classLoader.getResourceAsStream("modem.properties")) {
-                    modemProperties.load(inputStream);
+                    modemProperties.load(Objects.requireNonNull(inputStream));
                 }
             }
         } catch (IOException e) {

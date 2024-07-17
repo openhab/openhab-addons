@@ -13,6 +13,12 @@ The add-on is compatible with the following platforms:
 
 ## Configuration
 
+## Setting up dependencies
+
+The add-on will download the required dependencies at first activation.
+
+If your openHAB installation does not have access to the Internet, you need to download the [piper-jni jar file](https://repo1.maven.org/maven2/io/github/givimad/piper-jni/1.2.0-a0f09cd/piper-jni-1.2.0-a0f09cd.jar) and place it at '<OPENHAB_USERDATA>/piper/'.
+
 ### Downloading Voice Model Files
 
 You can find the link to the available voices at the [Piper README](https://github.com/rhasspy/piper).

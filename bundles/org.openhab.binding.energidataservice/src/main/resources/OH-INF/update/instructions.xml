@@ -78,6 +78,12 @@
 			</add-channel>
 		</instruction-set>
 
+		<instruction-set targetVersion="6">
+			<add-channel id="event" groupIds="electricity">
+				<type>energidataservice:event</type>
+			</add-channel>
+		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>

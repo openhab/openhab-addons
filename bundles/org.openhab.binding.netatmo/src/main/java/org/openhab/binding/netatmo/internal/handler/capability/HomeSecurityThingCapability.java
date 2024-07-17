@@ -43,8 +43,8 @@ public class HomeSecurityThingCapability extends Capability {
             List<ChannelHelper> channelHelpers) {
         super(handler);
         this.descriptionProvider = descriptionProvider;
-        this.eventHelper = (EventChannelHelper) channelHelpers.stream().filter(c -> c instanceof EventChannelHelper)
-                .findFirst().orElseThrow(() -> new IllegalArgumentException(
+        this.eventHelper = channelHelpers.stream().filter(EventChannelHelper.class::isInstance)
+                .map(EventChannelHelper.class::cast).findFirst().orElseThrow(() -> new IllegalArgumentException(
                         "HomeSecurityThingCapability must find an EventChannelHelper, please file a bug report."));
         eventHelper.setModuleType(moduleType);
     }

@@ -19,10 +19,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.FilterMaintenanceAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.filtermaintenance.FilterChangeIndicationEnum;
 import io.github.hapjava.services.impl.FilterMaintenanceService;
@@ -36,10 +38,16 @@ public class HomekitFilterMaintenanceImpl extends AbstractHomekitAccessoryImpl i
     private final Map<FilterChangeIndicationEnum, String> mapping;
 
     public HomekitFilterMaintenanceImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         mapping = createMapping(FILTER_CHANGE_INDICATION, FilterChangeIndicationEnum.class);
-        getServices().add(new FilterMaintenanceService(this));
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new FilterMaintenanceService(this));
     }
 
     @Override

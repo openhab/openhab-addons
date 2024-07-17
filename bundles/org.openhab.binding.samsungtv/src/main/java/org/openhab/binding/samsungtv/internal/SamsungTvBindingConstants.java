@@ -21,6 +21,7 @@ import org.openhab.core.thing.ThingTypeUID;
  *
  * @author Pauli Anttila - Initial contribution
  * @author Arjan Mels - Added constants for websocket based remote controller
+ * @author Nick Waterton - Added artMode channels
  */
 @NonNullByDefault
 public class SamsungTvBindingConstants {
@@ -33,6 +34,7 @@ public class SamsungTvBindingConstants {
     public static final String KEY_CODE = "keyCode";
     public static final String POWER = "power";
     public static final String ART_MODE = "artMode";
+    public static final String SET_ART_MODE = "setArtMode";
     public static final String SOURCE_APP = "sourceApp";
 
     // List of all media renderer thing channel id's
@@ -51,4 +53,11 @@ public class SamsungTvBindingConstants {
     public static final String CHANNEL_NAME = "channelName";
     public static final String BROWSER_URL = "url";
     public static final String STOP_BROWSER = "stopBrowser";
+
+    // List of all artMode channels (Frame TV's only)
+    public static final String ART_IMAGE = "artImage";
+    public static final String ART_LABEL = "artLabel";
+    public static final String ART_JSON = "artJson";
+    public static final String ART_BRIGHTNESS = "artBrightness";
+    public static final String ART_COLOR_TEMPERATURE = "artColorTemperature";
 }

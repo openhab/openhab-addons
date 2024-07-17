@@ -310,7 +310,7 @@
 	</channel-type>
 
 	<channel-type id="sensorHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>@text/channel-type.shelly.sensorHumidity.label</label>
 		<description>@text/channel-type.shelly.sensorHumidity.description</description>
 		<category>Humidity</category>

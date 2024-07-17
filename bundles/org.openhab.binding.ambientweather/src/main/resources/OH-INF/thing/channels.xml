@@ -50,7 +50,7 @@
 	</channel-type>
 
 	<channel-type id="relativeHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Relative Humidity</label>
 		<description>Forecast relative humidity</description>
 		<category>Humidity</category>

@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.boschshc.internal.services.cameranotification.dto;
 
-import org.openhab.binding.boschshc.internal.services.cameranotification.CameraNotificationState;
 import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
+import org.openhab.binding.boschshc.internal.services.dto.EnabledDisabledState;
 
 /**
  * Represents the state of camera notifications as reported by the Smart Home Controller.
@@ -35,5 +35,5 @@ public class CameraNotificationServiceState extends BoschSHCServiceState {
      * {"@type":"cameraNotificationState","value":"ENABLED"}
      * </pre>
      */
-    public CameraNotificationState value;
+    public EnabledDisabledState value;
 }

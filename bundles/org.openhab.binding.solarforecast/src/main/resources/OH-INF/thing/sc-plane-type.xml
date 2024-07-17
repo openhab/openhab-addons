@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solarforecast"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="sc-plane">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="sc-site"/>
+		</supported-bridge-type-refs>
+
+		<label>Solcast PV Plane</label>
+		<description>One PV Plane of Multi Plane Bridge</description>
+
+		<channel-groups>
+			<channel-group id="average" typeId="average-values"/>
+			<channel-group id="optimistic" typeId="optimistic-values"/>
+			<channel-group id="pessimistic" typeId="pessimistic-values"/>
+			<channel-group id="raw" typeId="raw-values"/>
+		</channel-groups>
+
+		<config-description-ref uri="thing-type:solarforecast:sc-plane"/>
+	</thing-type>
+</thing:thing-descriptions>

@@ -21,12 +21,14 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.GarageDoorOpenerAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.garagedoor.CurrentDoorStateEnum;
 import io.github.hapjava.characteristics.impl.garagedoor.TargetDoorStateEnum;
@@ -44,13 +46,18 @@ public class HomekitGarageDoorOpenerImpl extends AbstractHomekitAccessoryImpl im
     private final Map<TargetDoorStateEnum, String> targetDoorStateMapping;
 
     public HomekitGarageDoorOpenerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         obstructionReader = createBooleanReader(OBSTRUCTION_STATUS);
         currentDoorStateMapping = createMapping(CURRENT_DOOR_STATE, CurrentDoorStateEnum.class, true);
         targetDoorStateMapping = createMapping(TARGET_DOOR_STATE, TargetDoorStateEnum.class, true);
+    }
 
-        getServices().add(new GarageDoorOpenerService(this));
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new GarageDoorOpenerService(this));
     }
 
     @Override

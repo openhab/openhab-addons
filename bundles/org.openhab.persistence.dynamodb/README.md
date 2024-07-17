@@ -262,4 +262,9 @@ Eclipse instructions
 -DDYNAMODBTEST_REGION=REGION-ID
 -DDYNAMODBTEST_ACCESS=ACCESS-KEY
 -DDYNAMODBTEST_SECRET=SECRET
+
+--add-opens=java.base/java.lang=ALL-UNNAMED
 ```
+
+The `--add-opens` parameter is necessary also with the local temporary DynamoDB server, otherwise the mockito will fail at runtime with (`java.base does not "opens java.lang" to unnamed module`).
+

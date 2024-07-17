@@ -12,8 +12,11 @@
  */
 package org.openhab.binding.velbus.internal.packets;
 
+import static org.openhab.binding.velbus.internal.VelbusBindingConstants.*;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
+import org.openhab.binding.velbus.internal.VelbusModuleAddress;
 
 /**
  * The {@link VelbusRelayPacket} represents a Velbus packet that can be used to
@@ -30,6 +33,13 @@ public class VelbusRelayPacket extends VelbusPacket {
         super(velbusChannelIdentifier.getAddress(), PRIO_HI);
 
         this.channel = velbusChannelIdentifier.getChannelByte();
+        this.command = command;
+    }
+
+    public VelbusRelayPacket(VelbusModuleAddress velbusModuleAddress, byte command) {
+        super(velbusModuleAddress.getAddress(), PRIO_HI);
+
+        this.channel = ALL_CHANNELS;
         this.command = command;
     }
 

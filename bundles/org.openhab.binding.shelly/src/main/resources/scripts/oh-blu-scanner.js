@@ -1,7 +1,7 @@
 /*
  * This script uses the BLE scan functionality in scripting to pass scan results to openHAB
  * Supported BLU Devices: BLU Button 1, BLU Door/Window, BLU Motion, BLU H&T
- * Version 0.3
+ * Version 0.4
  */
 
 let ALLTERCO_DEVICE_NAME_PREFIX = ["SBBT", "SBDW", "SBMO", "SBHT"];
@@ -33,15 +33,17 @@ BTH[0x05] = { n: "Illuminance", t: uint24, f: 0.01 };
 BTH[0x08] = { n: "Dewpoint", t: int16, f: 0.01 };
 BTH[0x12] = { n: "Co2", t: uint16 };
 BTH[0x14] = { n: "Moisture16", t: uint16, f: 0.01 };
-BTH[0x14] = { n: "Moisture8", t: uint8 };
 BTH[0x1a] = { n: "Door", t: uint8 };
 BTH[0x20] = { n: "Moisture", t: uint8 };
 BTH[0x21] = { n: "Motion", t: uint8 };
 BTH[0x2d] = { n: "Window", t: uint8 };
+BTH[0x2e] = { n: "Humidity", t: uint8 };
+BTH[0x2f] = { n: "Moisture8", t: uint8 };
 BTH[0x3a] = { n: "Button", t: uint8 };
 BTH[0x3f] = { n: "Rotation", t: int16, f: 0.1 };
 BTH[0x43] = { n: "Current", t: uint16, f: 0.1 };
-BTH[0x43] = { n: "UVIndex", t: uint8 };
+BTH[0x45] = { n: "Temperature", t: int16, f: 0.1 };
+BTH[0x46] = { n: "UVIndex", t: uint8 };
 BTH[0x51] = { n: "Acceleration", t: uint16, f: 0.1 };
 
 function getByteSize(type) {

@@ -117,24 +117,55 @@
 	</channel>
 
 	<!-- LAN Device -->
-	<channel name="wifi24GHzEnable" label="WiFi 2.4 GHz" description="Enable/Disable the 2.4 GHz WiFi device.">
+	<channel name="wifi24GHzEnable" label="WiFi 2.4 GHz (DEPRECATED)"
+		description="Enable/Disable the 2.4 GHz WiFi device. Please re-link to wifi1Enable.">
 		<item type="Switch"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration1"/>
 		<getAction name="GetInfo" argument="NewEnable"/>
 		<setAction name="SetEnable" argument="NewEnable"/>
 	</channel>
-	<channel name="wifi5GHzEnable" label="WiFi 5 GHz" description="Enable/Disable the 5.0 GHz WiFi device.">
+	<channel name="wifi5GHzEnable" label="WiFi 5 GHz (DEPRECATED)"
+		description="Enable/Disable the 5.0 GHz WiFi device.  Please re-link to wifi2Enable.">
 		<item type="Switch"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration2"/>
 		<getAction name="GetInfo" argument="NewEnable"/>
 		<setAction name="SetEnable" argument="NewEnable"/>
 	</channel>
-	<channel name="wifiGuestEnable" label="WiFi Guest" description="Enable/Disable the guest WiFi.">
+	<channel name="wifiGuestEnable" label="WiFi Guest (DEPRECATED)"
+		description="Enable/Disable the guest WiFi. Please re-link to wifi3Enable.">
 		<item type="Switch"/>
 		<service deviceType="urn:dslforum-org:device:LANDevice:1"
 			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration3"/>
+		<getAction name="GetInfo" argument="NewEnable"/>
+		<setAction name="SetEnable" argument="NewEnable"/>
+	</channel>
+	<channel name="wifi1Enable" label="WiFi #1" description="Enable/Disable WiFi #1.">
+		<item type="Switch"/>
+		<service deviceType="urn:dslforum-org:device:LANDevice:1"
+			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration1"/>
+		<getAction name="GetInfo" argument="NewEnable"/>
+		<setAction name="SetEnable" argument="NewEnable"/>
+	</channel>
+	<channel name="wifi2Enable" label="WiFi #2" description="Enable/Disable WiFi #2.">
+		<item type="Switch"/>
+		<service deviceType="urn:dslforum-org:device:LANDevice:1"
+			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration2"/>
+		<getAction name="GetInfo" argument="NewEnable"/>
+		<setAction name="SetEnable" argument="NewEnable"/>
+	</channel>
+	<channel name="wifi3Enable" label="WiFi #3" description="Enable/Disable WiFi #3.">
+		<item type="Switch"/>
+		<service deviceType="urn:dslforum-org:device:LANDevice:1"
+			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration3"/>
+		<getAction name="GetInfo" argument="NewEnable"/>
+		<setAction name="SetEnable" argument="NewEnable"/>
+	</channel>
+	<channel name="wifi4Enable" label="WiFi #4" description="Enable/Disable WiFi #4.">
+		<item type="Switch"/>
+		<service deviceType="urn:dslforum-org:device:LANDevice:1"
+			serviceId="urn:WLANConfiguration-com:serviceId:WLANConfiguration4"/>
 		<getAction name="GetInfo" argument="NewEnable"/>
 		<setAction name="SetEnable" argument="NewEnable"/>
 	</channel>

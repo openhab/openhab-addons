@@ -24,9 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
@@ -35,6 +33,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.energidataservice.internal.DatahubTariff;
 import org.openhab.binding.energidataservice.internal.PriceCalculator;
+import org.openhab.binding.energidataservice.internal.PriceComponent;
 import org.openhab.binding.energidataservice.internal.exception.MissingPriceException;
 import org.openhab.binding.energidataservice.internal.handler.EnergiDataServiceHandler;
 import org.openhab.core.automation.annotation.ActionInput;
@@ -63,44 +62,6 @@ public class EnergiDataServiceActions implements ThingActions {
     private final Logger logger = LoggerFactory.getLogger(EnergiDataServiceActions.class);
 
     private @Nullable EnergiDataServiceHandler handler;
-
-    private enum PriceComponent {
-        SPOT_PRICE("spotprice", null),
-        GRID_TARIFF("gridtariff", DatahubTariff.GRID_TARIFF),
-        SYSTEM_TARIFF("systemtariff", DatahubTariff.SYSTEM_TARIFF),
-        TRANSMISSION_GRID_TARIFF("transmissiongridtariff", DatahubTariff.TRANSMISSION_GRID_TARIFF),
-        ELECTRICITY_TAX("electricitytax", DatahubTariff.ELECTRICITY_TAX),
-        REDUCED_ELECTRICITY_TAX("reducedelectricitytax", DatahubTariff.REDUCED_ELECTRICITY_TAX);
-
-        private static final Map<String, PriceComponent> NAME_MAP = Stream.of(values())
-                .collect(Collectors.toMap(PriceComponent::toString, Function.identity()));
-
-        private String name;
-        private @Nullable DatahubTariff datahubTariff;
-
-        private PriceComponent(String name, @Nullable DatahubTariff datahubTariff) {
-            this.name = name;
-            this.datahubTariff = datahubTariff;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-
-        public static PriceComponent fromString(final String name) {
-            PriceComponent myEnum = NAME_MAP.get(name.toLowerCase());
-            if (null == myEnum) {
-                throw new IllegalArgumentException(String.format("'%s' has no corresponding value. Accepted values: %s",
-                        name, Arrays.asList(values())));
-            }
-            return myEnum;
-        }
-
-        public @Nullable DatahubTariff getDatahubTariff() {
-            return datahubTariff;
-        }
-    }
 
     @RuleAction(label = "@text/action.get-prices.label", description = "@text/action.get-prices.description")
     public @ActionOutput(name = "prices", type = "java.util.Map<java.time.Instant, java.math.BigDecimal>") Map<Instant, BigDecimal> getPrices() {
@@ -139,7 +100,7 @@ public class EnergiDataServiceActions implements ThingActions {
     }
 
     @RuleAction(label = "@text/action.calculate-price.label", description = "@text/action.calculate-price.description")
-    public @ActionOutput(name = "price", type = "java.math.BigDecimal") BigDecimal calculatePrice(
+    public @ActionOutput(name = "price", type = "java.math.BigDecimal") @Nullable BigDecimal calculatePrice(
             @ActionInput(name = "start", type = "java.time.Instant") Instant start,
             @ActionInput(name = "end", type = "java.time.Instant") Instant end,
             @ActionInput(name = "power", type = "QuantityType<Power>") QuantityType<Power> power) {
@@ -149,7 +110,7 @@ public class EnergiDataServiceActions implements ThingActions {
             return priceCalculator.calculatePrice(start, end, power);
         } catch (MissingPriceException e) {
             logger.warn("{}", e.getMessage());
-            return BigDecimal.ZERO;
+            return null;
         }
     }
 
@@ -314,10 +275,10 @@ public class EnergiDataServiceActions implements ThingActions {
      * @param power Constant power consumption
      * @return Map of prices
      */
-    public static BigDecimal calculatePrice(@Nullable ThingActions actions, @Nullable Instant start,
+    public static @Nullable BigDecimal calculatePrice(@Nullable ThingActions actions, @Nullable Instant start,
             @Nullable Instant end, @Nullable QuantityType<Power> power) {
         if (start == null || end == null || power == null) {
-            return BigDecimal.ZERO;
+            return null;
         }
         if (actions instanceof EnergiDataServiceActions serviceActions) {
             return serviceActions.calculatePrice(start, end, power);

@@ -8,4 +8,20 @@
 	<description>The SonyProjector binding controls a Sony projector through Ethernet (PJ Talk) or serial.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>sddp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>(?i).*sony.*</regex>
+				</match-property>
+				<match-property>
+					<name>type</name>
+					<regex>(?i).*projector.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -320,7 +321,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
             }
             return new StringType(def);
         });
-        updateState(CHANNEL_ID_CLEANING_SPOT_DEFINITION, areaDefState.orElse(UnDefType.UNDEF));
+        updateState(CHANNEL_ID_CLEANING_SPOT_DEFINITION, Objects.requireNonNull(areaDefState.orElse(UnDefType.UNDEF)));
         if (newMode == CleanMode.RETURNING) {
             scheduleNextPoll(30);
         } else if (newMode.isIdle()) {
@@ -597,7 +598,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
                             lastDownloadedCleanMapUrl = record.mapImageUrl;
                             return new RawType(bytes, "image/png");
                         });
-                        updateState(CHANNEL_ID_LAST_CLEAN_MAP, content.orElse(UnDefType.NULL));
+                        updateState(CHANNEL_ID_LAST_CLEAN_MAP, Objects.requireNonNull(content.orElse(UnDefType.NULL)));
                     }
                 }
             }
@@ -713,7 +714,7 @@ public class EcovacsVacuumHandler extends BaseThingHandler implements EcovacsDev
 
     private State stringToState(@Nullable String value) {
         Optional<State> stateOpt = Optional.ofNullable(value).map(v -> StringType.valueOf(v));
-        return stateOpt.orElse(UnDefType.UNDEF);
+        return Objects.requireNonNull(stateOpt.orElse(UnDefType.UNDEF));
     }
 
     private @Nullable AbstractNoResponseCommand determineDeviceCommand(EcovacsDevice device, String command) {

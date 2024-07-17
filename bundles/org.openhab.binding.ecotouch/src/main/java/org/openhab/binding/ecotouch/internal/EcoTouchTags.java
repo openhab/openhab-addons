@@ -12,9 +12,14 @@
  */
 package org.openhab.binding.ecotouch.internal;
 
-import static org.openhab.core.library.unit.MetricPrefix.*;
-import static org.openhab.core.library.unit.SIUnits.*;
-import static org.openhab.core.library.unit.Units.*;
+import static org.openhab.core.library.unit.MetricPrefix.KILO;
+import static org.openhab.core.library.unit.SIUnits.CELSIUS;
+import static org.openhab.core.library.unit.Units.BAR;
+import static org.openhab.core.library.unit.Units.HOUR;
+import static org.openhab.core.library.unit.Units.ONE;
+import static org.openhab.core.library.unit.Units.PARTS_PER_MILLION;
+import static org.openhab.core.library.unit.Units.PERCENT;
+import static org.openhab.core.library.unit.Units.WATT;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -398,6 +403,15 @@ public enum EcoTouchTags {
             command = "hysteresis_heating";
             unit = CELSIUS;
             tagName = "A61";
+        }
+    },
+
+    // German: Hysterese Warmwasser
+    TYPE_HYSTERESIS_WARMWATER {
+        {
+            command = "hysteresis_warmwater";
+            unit = CELSIUS;
+            tagName = "A139";
         }
     },
 

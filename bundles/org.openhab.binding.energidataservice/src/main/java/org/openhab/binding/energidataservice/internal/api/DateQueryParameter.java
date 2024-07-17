@@ -72,6 +72,14 @@ public class DateQueryParameter {
         return this == EMPTY;
     }
 
+    public @Nullable DateQueryParameterType getDateType() {
+        return dateType;
+    }
+
+    public @Nullable LocalDate getDate() {
+        return date;
+    }
+
     public static DateQueryParameter of(LocalDate localDate) {
         return new DateQueryParameter(localDate);
     }

@@ -255,6 +255,9 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     case MUSIC_CONTROL:
                         handleControlCommand(command);
                         break;
+                    case CHANNEL_TYPE_SENDCMD:
+                        connector.sendCommand(command.toString());
+                        break;
                     default:
                         logger.debug("Command {} from channel {} failed: unexpected command", command, channel);
                         break;

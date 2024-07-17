@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="profile:basic-profiles:generic-command">
+		<parameter name="events" type="text" required="true" multiple="true">
+			<label>Events</label>
+			<description>Comma separated list of events to which the profile should listen.</description>
+		</parameter>
+		<parameter name="command" type="text" required="true">
+			<label>Command</label>
+			<description>Command which should be sent if the event is triggered.</description>
+			<limitToOptions>false</limitToOptions>
+			<options>
+				<option value="INCREASE">INCREASE</option>
+				<option value="DECREASE">DECREASE</option>
+				<option value="NEXT">NEXT</option>
+				<option value="PREVIOUS">PREVIOUS</option>
+				<option value="ON">ON</option>
+				<option value="OFF">OFF</option>
+				<option value="PLAY">PLAY</option>
+				<option value="PAUSE">PAUSE</option>
+				<option value="REWIND">REWIND</option>
+				<option value="FASTFORWARD">FASTFORWARD</option>
+				<option value="STOP">STOP</option>
+				<option value="MOVE">MOVE</option>
+				<option value="UP">UP</option>
+				<option value="DOWN">DOWN</option>
+			</options>
+		</parameter>
+	</config-description>
+</config-description:config-descriptions>

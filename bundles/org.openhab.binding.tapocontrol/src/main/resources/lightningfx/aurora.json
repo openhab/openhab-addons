@@ -1,0 +1,73 @@
+ {
+  "id": "TapoStrip_1MClvV18i15Jq3bvJVf0eP",
+  "name": "Aurora",
+  "brightness": 100,
+  "display_colors": [
+    [
+      120,
+      100,
+      100
+    ],
+    [
+      240,
+      100,
+      100
+    ],
+    [
+      260,
+      100,
+      100
+    ],
+    [
+      280,
+      100,
+      100
+    ]
+  ],
+  "enable": 1,
+  "bAdjusted": null,
+  "brightness_range": [],
+  "backgrounds": [],
+  "custom": 0,
+  "direction": 4,
+  "duration": 0,
+  "expansion_strategy": 1,
+  "fadeoff": null,
+  "hue_range": null,
+  "init_states": [],
+  "random_seed": null,
+  "repeat_times": 0,
+  "saturation_range": null,
+  "segment_length": null,
+  "segments": [
+    0
+  ],
+  "sequence": [
+    [
+      120,
+      100,
+      100
+    ],
+    [
+      240,
+      100,
+      100
+    ],
+    [
+      260,
+      100,
+      100
+    ],
+    [
+      280,
+      100,
+      100
+    ]
+  ],
+  "spread": 7,
+  "transition": 1500,
+  "transition_range": null,
+  "type": "sequence",
+  "trans_sequence": null,
+  "run_time": null
+}

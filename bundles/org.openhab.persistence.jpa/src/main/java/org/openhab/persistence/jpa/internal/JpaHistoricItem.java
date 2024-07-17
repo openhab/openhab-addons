@@ -19,6 +19,8 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.measure.Unit;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.ContactItem;
@@ -34,6 +36,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.persistence.HistoricItem;
@@ -100,8 +103,10 @@ public class JpaHistoricItem implements HistoricItem {
      */
     public static HistoricItem fromPersistedItem(JpaPersistentItem pItem, Item item) {
         State state;
-        if (item instanceof NumberItem) {
-            state = new DecimalType(Double.valueOf(pItem.getValue()));
+        if (item instanceof NumberItem numberItem) {
+            Unit<?> unit = numberItem.getUnit();
+            double value = Double.parseDouble(pItem.getValue());
+            state = (unit == null) ? new DecimalType(value) : new QuantityType<>(value, unit);
         } else if (item instanceof DimmerItem) {
             state = new PercentType(Integer.parseInt(pItem.getValue()));
         } else if (item instanceof SwitchItem) {

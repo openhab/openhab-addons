@@ -76,15 +76,10 @@ public class RetryPolicyFactory {
     /**
      * Determine {@link RetryStrategy} when expected spot price data is missing.
      *
-     * @param localTime the time of daily data request
-     * @param zoneId time-zone
      * @return retry strategy
      */
-    public static RetryStrategy whenExpectedSpotPriceDataMissing(LocalTime localTime, ZoneId zoneId) {
-        LocalTime now = LocalTime.now(zoneId);
-        if (now.isAfter(localTime)) {
-            return new ExponentialBackoff().withMinimum(Duration.ofMinutes(10)).withJitter(0.2);
-        }
-        return atFixedTime(localTime, zoneId);
+    public static RetryStrategy whenExpectedSpotPriceDataMissing() {
+        return new ExponentialBackoff().withMinimum(Duration.ofMinutes(10)).withMaximum(Duration.ofHours(1))
+                .withJitter(0.2);
     }
 }

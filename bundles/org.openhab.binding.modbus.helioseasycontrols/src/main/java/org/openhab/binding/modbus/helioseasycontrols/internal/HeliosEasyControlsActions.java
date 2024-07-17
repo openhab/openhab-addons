@@ -56,6 +56,7 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     private void triggerSwitch(String variableName) {
         try {
+            HeliosEasyControlsHandler handler = this.handler;
             if (handler != null) {
                 handler.writeValue(variableName, "1");
             }
@@ -159,6 +160,7 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     @RuleAction(label = "@text/action.getErrorMessages.label", description = "@text/action.getErrorMessages.description")
     public @ActionOutput(name = "errorMessages", type = "java.util.List<String>") List<String> getErrorMessages() {
+        HeliosEasyControlsHandler handler = this.handler;
         return (handler != null) ? handler.getErrorMessages() : new ArrayList<>();
     }
 
@@ -168,6 +170,7 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     @RuleAction(label = "@text/action.getWarningMessages.label", description = "@text/action.getWarningMessages.description")
     public @ActionOutput(name = "warningMessages", type = "java.util.List<String>") List<String> getWarningMessages() {
+        HeliosEasyControlsHandler handler = this.handler;
         return (handler != null) ? handler.getWarningMessages() : new ArrayList<>();
     }
 
@@ -177,6 +180,7 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     @RuleAction(label = "@text/action.getInfoMessages.label", description = "@text/action.getInfoMessages.description")
     public @ActionOutput(name = "infoMessages", type = "java.util.List<String>") List<String> getInfoMessages() {
+        HeliosEasyControlsHandler handler = this.handler;
         return (handler != null) ? handler.getInfoMessages() : new ArrayList<>();
     }
 
@@ -186,6 +190,7 @@ public class HeliosEasyControlsActions implements ThingActions {
 
     @RuleAction(label = "@text/action.getStatusMessages.label", description = "@text/action.getStatusMessages.description")
     public @ActionOutput(name = "statusMessages", type = "java.util.List<String>") List<String> getStatusMessages() {
+        HeliosEasyControlsHandler handler = this.handler;
         return (handler != null) ? handler.getStatusMessages() : new ArrayList<>();
     }
 

@@ -252,7 +252,7 @@
 	</channel-type>
 
 	<channel-type id="water-consumption">
-		<item-type>Number:Volume</item-type>
+		<item-type unitHint="l,gal">Number:Volume</item-type>
 		<label>Water Consumption</label>
 		<description>Water consumption by the currently running program on the appliance</description>
 		<category>Water</category>
@@ -260,7 +260,7 @@
 			<tag>Measurement</tag>
 			<tag>Water</tag>
 		</tags>
-		<state readOnly="true" pattern="%.1f l"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
 	<channel-type id="laundry-weight" advanced="true">

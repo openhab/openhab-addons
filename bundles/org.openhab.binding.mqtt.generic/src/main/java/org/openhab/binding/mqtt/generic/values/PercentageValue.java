@@ -73,7 +73,7 @@ public class PercentageValue extends Value {
 
     @Override
     public PercentType parseCommand(Command command) throws IllegalArgumentException {
-        PercentType oldvalue = (state == UnDefType.UNDEF) ? new PercentType() : (PercentType) state;
+        PercentType oldvalue = (state instanceof UnDefType) ? new PercentType() : (PercentType) state;
         // Nothing do to -> We have received a percentage
         if (command instanceof PercentType percent) {
             return percent;
@@ -152,6 +152,6 @@ public class PercentageValue extends Value {
     @Override
     public StateDescriptionFragmentBuilder createStateDescription(boolean readOnly) {
         return super.createStateDescription(readOnly).withMaximum(HUNDRED).withMinimum(BigDecimal.ZERO).withStep(step)
-                .withPattern("%s %%");
+                .withPattern("%.0f %%");
     }
 }

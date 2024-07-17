@@ -121,7 +121,7 @@
 
 	<!-- Thermostat -->
 	<channel-type id="SDMAmbientHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Ambient Humidity</label>
 		<description>Lists the current ambient humidity percentage from the thermostat</description>
 		<category>Humidity</category>

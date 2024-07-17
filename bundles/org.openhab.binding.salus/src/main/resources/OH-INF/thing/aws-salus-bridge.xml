@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="salus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
+						  org.eclipse.smarthome.thing-description.xsd">
+
+	<bridge-type id="salus-aws-bridge">
+		<label>AWS Salus Cloud</label>
+		<description>
+			This bridge serves as a critical connection point to the Salus cloud. It's absolutely necessary for the
+			integration of other Salus devices into the ecosystem, as it provides a pathway for them to interact with the Salus
+			cloud. Without this bridge, the devices would be unable to send, receive or exchange data with the cloud platform,
+			hindering functionality and data utilization.
+		</description>
+
+		<representation-property>username</representation-property>
+		<config-description>
+			<parameter-group name="aws">
+				<label>AWS</label>
+				<description>AWS Properties</description>
+			</parameter-group>
+			<parameter name="username" type="text" required="true">
+				<label>Username/Email</label>
+				<description>The username or email associated with your Salus account. This is required for authentication with the
+					Salus cloud.</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<context>password</context>
+				<description>The password for your Salus account. This is used in conjunction with the username or email for
+					authentication purposes.</description>
+			</parameter>
+			<parameter name="url" type="text" required="true">
+				<label>Salus API URL</label>
+				<default>https://service-api.eu.premium.salusconnect.io</default>
+				<advanced>true</advanced>
+				<context>url</context>
+				<description>The base URL for the Salus cloud. Typically, this should remain as the default, unless directed to
+					change by Salus.</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" required="false" min="1" max="600" unit="s">
+				<label>Refresh Interval</label>
+				<description>The interval in seconds at which the connection to the Salus cloud should be refreshed to ensure
+					up-to-date data.</description>
+				<advanced>true</advanced>
+				<default>30</default>
+			</parameter>
+			<parameter name="propertiesRefreshInterval" type="integer" required="false" min="1" max="600" unit="s">
+				<label>Device Property Cache Expiration</label>
+				<description>The period (in seconds) after which the cached device properties will be discarded and re-fetched fresh
+					from the Salus cloud.</description>
+				<advanced>true</advanced>
+				<default>5</default>
+			</parameter>
+			<parameter name="maxHttpRetries" type="integer" required="false">
+				<label>Max HTTP Retries</label>
+				<description>How many times HTTP requests can be retried</description>
+				<advanced>true</advanced>
+				<default>3</default>
+			</parameter>
+			<parameter name="userPoolId" type="text" groupName="aws">
+				<label>User Pool ID</label>
+				<default>eu-central-1_XGRz3CgoY</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="identityPoolId" type="text" groupName="aws">
+				<label>Identity Pool ID</label>
+				<default>60912c00-287d-413b-a2c9-ece3ccef9230</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="clientId" type="text" groupName="aws">
+				<label>Client ID</label>
+				<description>
+					The app client ID
+				</description>
+				<default>4pk5efh3v84g5dav43imsv4fbj</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="region" type="text" groupName="aws">
+				<label>Region</label>
+				<description>
+					Region with which the SDK should communicate
+				</description>
+				<default>eu-central-1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="companyCode" type="text" groupName="aws">
+				<label>Company Code</label>
+				<default>salus-eu</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="awsService" type="text" groupName="aws">
+				<label>AWS Service</label>
+				<default>a24u3z7zzwrtdl-ats</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+
+	</bridge-type>
+</thing:thing-descriptions>

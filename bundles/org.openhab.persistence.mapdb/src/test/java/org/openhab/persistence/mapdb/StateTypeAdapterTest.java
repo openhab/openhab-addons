@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -45,7 +46,8 @@ import com.google.gson.GsonBuilder;
  */
 @NonNullByDefault
 public class StateTypeAdapterTest {
-    private Gson mapper = new GsonBuilder().registerTypeHierarchyAdapter(State.class, new StateTypeAdapter()).create();
+    private Gson mapper = new GsonBuilder().setDateFormat(DateTimeType.DATE_PATTERN_JSON_COMPAT)
+            .registerTypeHierarchyAdapter(State.class, new StateTypeAdapter()).create();
 
     private static final List<DecimalType> DECIMAL_TYPE_VALUES = List.of(DecimalType.ZERO, new DecimalType(1.123),
             new DecimalType(10000000));

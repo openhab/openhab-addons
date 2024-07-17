@@ -381,7 +381,8 @@ The channel _command_ provides options
 - _horn-blow_
 - _climate-now-start_
 - _climate-now-stop_
-- _charge-now_
+- _start-charging_
+- _stop-charging_
 
 The channel _state_ shows the progress of the command execution in the following order
 

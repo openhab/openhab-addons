@@ -64,10 +64,6 @@
 				<description>Hostname or IP address of target host</description>
 				<context>network-address</context>
 			</parameter>
-			<parameter name="engineId" type="text" required="true">
-				<label>Engine ID</label>
-				<description>The authorization engine ID of this target in hexadecimal notation (22-64 characters)</description>
-			</parameter>
 			<parameter name="user" type="text" required="true">
 				<label>Username</label>
 			</parameter>
@@ -106,6 +102,7 @@
 					<option value="AES192">AES192</option>
 					<option value="AES256">AES256</option>
 					<option value="DES">DES</option>
+					<option value="DES3">3DES</option>
 				</options>
 				<limitToOptions>true</limitToOptions>
 				<default>DES</default>

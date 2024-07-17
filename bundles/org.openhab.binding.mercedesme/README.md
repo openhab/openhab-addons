@@ -1,10 +1,18 @@
 # MercedesMe Binding
 
-This binding provides similar access to your Mercedes Benz vehicle like the Smartphone App _Mercedes Me_.
-For this you need a Mercedes developer account to get data from your vehicles.
-Setup requires some, time so follow [the steps of bridge configuration](#bridge-configuration).
+This binding provides access to your Mercedes Benz vehicle like _Mercedes Me_ Smartphone App .
 
-If you face some problems during setup or runtime please have a look into the [Troubleshooting section](#troubleshooting)
+## Installation Instructions
+
+First time users shall follow the following sequence
+
+1. Setup and configure [Bridge](#bridge-configuration)
+2. Follow the [Bridge Authorization](#bridge-authorization) process
+3. [Discovery](#discovery) shall find now vehicles associated to your account
+4. Add your vehicle from discovery and [configure](#thing-configuration) it with correct VIN
+5. Connect your desired items in UI or [text-configuration](#full-example)
+6. Optional: you can [Discover your Vehicle](#discover-your-vehicle) more deeply
+7. In case of problems check [Troubleshooting](#troubleshooting) section
 
 ## Supported Things
 
@@ -15,115 +23,94 @@ If you face some problems during setup or runtime please have a look into the [T
 | Thing           | `hybrid`      | Fuel vehicle with supporting electric engine    |
 | Thing           | `bev`         | Battery electric vehicle                        |
 
+## Discovery
+
+The Mercedes Me binding is based on the API of the Smartphone App.
+You have an account which is associated to one or more vehicles.
+Setup the Mercedes Me Account Bridge with your email address.
+After successful authorization your associated vehicles are found automatically.
+There's no manual discovery!
+
 ## Bridge Configuration
 
-Bridge needs configuration in order to connect properly to your Mercedes Me Account.
+Bridge needs configuration in order to connect properly to your Mercedes Me account.
 
-### Pre-Conditions
+| Name            | Type    | Description                             | Default     | Required | Advanced |
+|-----------------|---------|-----------------------------------------|-------------|----------|----------|
+| email           | text    | Mercedes Me registered email Address    | N/A         | yes      | no       |
+| pin             | text    | Mercedes Me Smartphone App PIN          | N/A         | no       | no       |
+| region          | text    | Your region                             | EU          | yes      | no       |
+| refreshInterval | integer | API refresh interval                    | 15          | yes      | no       |
+| callbackIP      | text    | Your region                             | N/A         | yes      | yes      |
+| callbackPort    | integer | API refresh interval                    | N/A         | yes      | yes      |
 
-- **each bridge shall have its own Mercedes Benz Client ID!**
- Don't create several `account` bridges with the same client id! If this is not the case the tokens won't be stored properly and the authorization is jeopardized!
-- **each bridge shall have its own port.**
- It's absolutely necessary to assign a different port for each `account` bridge. If this is not the case the tokens won't be stored properly and the authorization is jeopardized!
+Set `region` to your location
 
-### Bridge Setup
+- `EU` : Europe and Rest of World
+- `NA` : North America
+- `AP` : Asia Pacific
+- `CN` : China 
 
-Perform the following steps to obtain the configuration data and perform the authorization flow.
+Set `pin` to your Mercedes Me App PIN.
+Parameter is *not required*.
+Note `pin` is needed for some commands which are affecting **vehicle safety**.
+Commands like _unlock doors_ will result into an _unsafe state_: your vehicle is unlocked and is accessible to everybody. 
 
-1. Go to [Mercedes Developer Page](https://developer.mercedes-benz.com/). Login with your Mercedes Me credentials.
-1. Create a project in the [console tab](https://developer.mercedes-benz.com/console)
-    - _Project Name:_  unique name e.g. **openHAB Mercedes Me binding** plus **Your bridge ID**
-    - _Purpose URL:_  use link towards [this binding description](https://www.openhab.org/addons/bindings/mercedesme/)
-    - _Business Purpose:_  e.g. **Private usage in openHAB Smarthome system**
-1. After project is created subscribe [to these Mercedes Benz APIs](https://developer.mercedes-benz.com/products?vt=cars&vt=vans&vt=smart&p=BYOCAR) with _Add Products_ button
-1. For all Products perform the same steps
-    - Select product
-    - Choose _Get For Free_
-    - Choose _BYOCAR_ (Build Your Own Car)
-    - Button _Confirm_
-1. Select the following products
-    - Vehicle Status
-    - Vehicle Lock Status
-    - Pay as you drive insurance
-    - Electric Vehicle Status
-    - Fuel Status
-1. Optional: Subscribe also to _Vehicle images_. Select the _Basic Trial_ version. The images will be stored so the API is used just a few times.
-1. Press _Subscribe_ button. Your project should have [these product subscriptions](#mb-product-subscriptions)
-1. Generate the [project credentials](#mb-credentials)
-1. Open in new browser tab your openHAB page. Add a new Thing _Mercedes Me Account_
-1. Copy paste _Client ID_ , _Client Secret_ and _API Key_ from the Mercedes tab into the openHAB configuration
-1. Check if the registered Mercedes products _excluding Vehicle Images_ are matching exactly with the openHab configuration switches
-1. Create Thing!
-1. The fresh created [account has one property](#openhab-configuration) `callbackUrl`. Copy it and paste it in a new browser tab
-1. A [simple HTML page is shown including a link towards the Authorization flow](#callback-page) - **don't click yet**. If page isn't shown please adapt IP and port in openHAB configuration with Advanced Options activated
-1. The copied URL needs to be added in your [Mercedes project credentials](#mb-credentials) from 8
-1. Now click onto the link from 14. You'll be asked one time if you [grant access](#mb-access-request) towards the API. Click OK and authorization is done!
+Commands protected by PIN
 
-Some supporting screenshots for the setup
+- Remote Starting Vehicle
+- Unlock Doors
+- Open / Ventilate Windows
+- Open / Lift Sunroof
 
-### MB Credentials
+IP `callbackIP` and port `callbackPort` will be auto-detected. 
+If you're running on server with more than one network interface please select manually.
 
-<img src="./doc/MBDeveloper-Credentials.png" width="500" height="280"/>
+### Bridge Authorization
 
-### MB Product Subscriptions
+Authorization is needed to activate the Bridge which is connected to your Mercedes Me Account.
+The Bridge will indicate in the status headline if authorization is needed including the URL which needs to be opened in your browser.
 
-<img src="./doc/MBDeveloper-Subscriptions.png" width="500" height="300"/>
+Three steps are needed
 
-### openHAB Configuration
+1. Open the mentioned URL like 192.168.x.x:8090/mb-auth 
+Opening this URL will request a PIN  which will be send to your configured email.
+Check your Mail Account if you received the PIN.
+Click on _Continue_ to proceed with Step 2.
 
-<img src="./doc/MercedesMeConfiguration.png" width="400" height="500"/>
+2. Enter your PIN in the shown field.
+Leave GUID as identifier as it is.
+Click on _Submit_ button.
 
-### MB Access Request
+3. Confirmation shall be shown that authorization was successful.
 
-<img src="./doc/MBAccessRequest.png" width="500" height="220"/>
+In case of non successful authorization check your log for errors. 
+Below screenshots are illustrating the authorization flow.
 
-### Callback page
+### After Bridge Setup
 
-<img src="./doc/CallbackUrl_Page.png" width="500" height="350"/>
+<img src="./doc/OH-Step0.png" width="500" height="240"/>
 
-### Bridge Configuration Parameters
+### Authorization Step 1
 
-| Name            | Type    | Description                           | Default     | Required | Advanced |
-|-----------------|---------|---------------------------------------|-------------|----------|----------|
-| clientId        | text    | Mercedes Benz Developer Client ID     | N/A         | yes      | no       |
-| clientSecret    | text    | Mercedes Benz Developer Client Secret | N/A         | yes      | no       |
-| imageApiKey     | text    | Mercedes Benz Developer Image API Key | N/A         | no       | no       |
-| odoScope        | boolean | PayAsYourDrive Insurance              | true        | yes      | no       |
-| vehicleScope    | boolean | Vehicle Status                        | true        | yes      | no       |
-| lockScope       | boolean | Lock status of doors and trunk        | true        | yes      | no       |
-| fuelScope       | boolean | Fuel Status                           | true        | yes      | no       |
-| evScope         | boolean | Electric Vehicle Status               | true        | yes      | no       |
-| callbackIP      | text    | IP address of your openHAB server     | auto detect | no       | yes      |
-| callbackPort    | integer | **Unique** port number                | auto detect | no       | yes      |
+<img src="./doc/OH-Step1.png" width="500" height="200"/>
 
-The `callbackPort` needs to be unique for all created Mercedes Me account things. Otherwise token exchange will be corrupted.
-Set the advanced options by yourself if you know your IP and Port, otherwise give auto detect a try.
+### Authorization Step 2
+
+<img src="./doc/OH-Step2.png" width="500" height="200"/>
+
+### Authorization Step 3
+
+<img src="./doc/OH-Step3.png" width="400" height="130"/>
 
 ## Thing Configuration
 
-For vehicle images Mercedes Benz Developer offers only a trial version with limited calls.
-Check in **beforehand** if your vehicle has some restrictions or even if it's supported at all.
-Visit [Vehicle Image Details](https://developer.mercedes-benz.com/products/vehicle_images/details) in order to check your vehicle capabilities.
-Visit [Image Settings](https://developer.mercedes-benz.com/products/vehicle_images/docs#_default_image_settings) to get more information about
-For example the EQA doesn't provide `night` images with `background`.
-If your configuration is set this way the API calls are wasted!
-
-<img src="./doc/ImageRestrictions.png" width="800" height="36"/>
-
-See also [image channel section](#image) for further advise.
-
 | Name            | Type    | Description                                         | Default | Required | Advanced |
 |-----------------|---------|-----------------------------------------------------|---------|----------|----------|
-| vin             | text    | Vehicle identification number                       | N/A     | yes      | no       |
-| refreshInterval | integer | Refresh interval in minutes                         | 5       | yes      | no       |
-| background      | boolean | Vehicle images provided with or without background  | false   | no       | yes      |
-| night           | boolean | Vehicle images in night conditions                  | false   | no       | yes      |
-| cropped         | boolean | Vehicle images in 4:3 instead of 16:9               | false   | no       | yes      |
-| roofOpen        | boolean | Vehicle images with open roof (only Cabriolet)      | false   | no       | yes      |
-| format          | text    | Vehicle images format (webp or png)                 | webp    | no       | yes      |
+| vin             | text    | Vehicle Identification Number                       | N/A     | yes      | no       |
 
-For all vehicles you're free to give the tank / battery capacity.
-Giving these values in configuration the open fuel / charge capacities are reported in the [range](#range) channels.
+For all vehicles you're free to give the fuel / battery capacity.
+Giving these values in configuration open fuel / charge capacities are reported in the [range](#range) channels.
 
 | Name            | Type    | Description                                         | Default | Required | Advanced | combustion | bev | hybrid |
 |-----------------|---------|-----------------------------------------------------|---------|----------|----------|------------|-----|--------|
@@ -136,365 +123,706 @@ Channels are separated in groups:
 
 | Channel Group ID                 | Description                                       |
 |----------------------------------|---------------------------------------------------|
-| [range](#range)                  | Provides mileage, range and charge / fuel levels  |
-| [doors](#doors)                  | Details of all doors                              |
-| [windows](#windows)              | Current position of windows                       |
-| [lights](#lights)                | Interior lights and main light switch             |
-| [lock](#lock)                    | Overall lock state of vehicle                     |
-| [location](#location)            | Heading of the vehicle                            |
-| [image](#image)                  | Images of your vehicle                            |
+| [vehicle](#vehicle)              | Vehicle Information                               |
+| [doors](#doors)                  | Details of all Doors                              |
+| [lock](#lock)                    | Doors Lock Status                                 |
+| [windows](#windows)              | Window Details                                    |
+| [hvac](#hvac)                    | Climatization                                     |
+| [service](#service)              | Service & Warnings                                |
+| [range](#range)                  | Ranges, Charge and Fuel                           |
+| [charge](#charge)                | Charging Data and Programs                        |
+| [trip](#trip)                    | Trip Data                                         |
+| [position](#position)            | Positioning Data                                  |
+| [tires](#tires)                  | Tire Information                                  |
 
-### Range
+## Actions
 
-Group name: `range`
-All channels `read-only`
+See [Vehicle Actions](#vehicle-actions) which can be used in rules.
 
-| Channel          | Type                 |  Description                 | bev | hybrid | combustion |
-|------------------|----------------------|------------------------------| ----|--------|------------|
-| mileage          | Number:Length        |  Total mileage               | X   | X      | X          |
-| soc              | Number:Dimensionless |  Battery state of charge     | X   | X      |            |
-| charged          | Number:Energy        |  Charged Battery Energy      | X   | X      |            |
-| uncharged        | Number:Energy        |  Uncharged Battery Energy    | X   | X      |            |
-| soc              | Number:Dimensionless |  Battery state of charge     | X   | X      |            |
-| range-electric   | Number:Length        |  Electric range              | X   | X      |            |
-| radius-electric  | Number:Length        |  Electric radius for map     | X   | X      |            |
-| fuel-level       | Number:Dimensionless |  Fuel level in percent       |     | X      | X          |
-| fuel-remain      | Number:Volume        |  Reamaining Fuel             |     | X      | X          |
-| fuel-open        | Number:Volume        |  Open Fuel Capacity          |     | X      | X          |
-| range-fuel       | Number:Length        |  Fuel range                  |     | X      | X          |
-| radius-fuel      | Number:Length        |  Fuel radius for map         |     | X      | X          |
-| range-hybrid     | Number:Length        |  Hybrid range                |     | X      |            |
-| radius-hybrid    | Number:Length        |  Hybrid radius for map       |     | X      |            |
-| last-update      | DateTime             |  Last range update           | X   | X      | X          |
+### Vehicle
 
-Channels with `radius` are just giving a _guess_ which radius can be reached in a map display.
+Group name: `vehicle`
+
+| Channel               | Type                |  Description                  | Read | Write | Advanced |
+|-----------------------|---------------------|-------------------------------|------|-------|----------|
+| lock                  | Number              |  Lock Status and Control      | X    | X     |          |
+| windows               | Number              |  Window Status and Control    | X    | X     |          |
+| door-status           | Number              |  Door Status                  | X    |       |          |
+| ignition              | Number              |  Ignition                     | X    | X     |          |
+| park-brake            | Switch              |  Park Brake Active            | X    |       |          |
+| feature-capabilities  | String              |  Feature Capabilities         | X    |       |    X     |
+| command-capabilities  | String              |  Command Capabilities         | X    |       |    X     |
+| proto-update          | String              |  Last Vehicle Data Update     | X    |       |    X     |
+
+Advanced channels are used to identify problems. 
+If you encounter problems with this binding follow the instructions from [Troubleshooting](#troubleshooting) section.
+
+#### Lock Status Mapping
+
+State 
+
+- 0 : Locked
+- 1 : Unlocked
+
+Command 
+
+- 0 : Lock
+- 1 : Unlock
+
+Triggers `DOORSLOCK` and `DOORSUNLOCK` from [Command Name Mapping](#command-name-mapping)
+
+#### Window Mappings
+
+State
+
+- 0 : Intermediate
+- 1 : Closed
+- 2 : Open
+
+Command
+
+- 0 : Ventilate 
+- 1 : Close
+- 2 : Open
+
+Triggers `WINDOWVENTILATE`, `WINDOWCLOSE` and `WINDOWOPEN` from [Command Name Mapping](#command-name-mapping)
+
+#### Door Status Mapping
+
+- 0 : Open
+- 1 : Closed
+
+#### Ignition Mapping
+
+State 
+
+- 0 : Off
+- 2 : Ready
+- 4 : On
+
+Command
+
+- 0 : Off
+- 4 : On
+
+Triggers `ENGINESTART` and `ENGINESTOP` from [Command Name Mapping](#command-name-mapping)
 
 ### Doors
 
 Group name: `doors`
-All channels `read-only`
 
-| Channel          | Type                 |  Description                 |
-|------------------|----------------------|------------------------------|
-| driver-front     | Contact              |  Driver door                 |
-| driver-rear      | Contact              |  Driver door reat            |
-| passenger-front  | Contact              |  Passenger door              |
-| passenger-rear   | Contact              |  Passenger door rear         |
-| deck-lid         | Contact              |  Deck lid                    |
-| sunroof          | Number               |  Sun roof (only Cabriolet)   |
-| rooftop          | Number               |  Roof top                    |
-| last-update      | DateTime             |  Last doors update           |
+State representing if door, roof, hoods or flaps are open.
+States and controls are depending on your vehicle capabilities.
 
-Mapping table `sunroof`
+| Channel             | Type                 |  Description                 | Read | Write |
+|---------------------|----------------------|------------------------------|------|-------|
+| front-left          | Contact              |  Front Left Door             | X    |       |
+| front-right         | Contact              |  Front Right Door            | X    |       |
+| rear-left           | Contact              |  Rear Left Door              | X    |       |
+| rear-right          | Contact              |  Rear Right Door             | X    |       |
+| deck-lid            | Contact              |  Deck lid                    | X    |       |
+| engine-hood         | Contact              |  Engine Hood                 | X    |       |
+| rooftop             | Number               |  Roof top                    | X    |       |
+| sunroof-front-blind | Number               |  Sunroof Front Blind         | X    |       |
+| sunroof-rear-blind  | Number               |  Sunroof Rear Blind          | X    |       |
+| sunroof             | Number               |  Sun roof                    | X    | X     |
 
-| Number          | Mapping             |
-|-----------------|---------------------|
-| 0               | Closed              |
-| 1               | Open                |
-| 2               | Open Lifting        |
-| 3               | Running             |
-| 4               | Closing             |
-| 5               | Opening             |
-| 6               | Closing             |
+#### Rooftop Mapping
+            
+- 0 : Unlocked
+- 1 : Open and locked
+- 2 : Closed and locked
 
-Mapping table `rootop`
+#### Sunroof Front Blind Mapping
 
-| Number          | Mapping             |
-|-----------------|---------------------|
-| 0               | Unlocked            |
-| 1               | Open and locked     |
-| 2               | Closed and locked   |
+- not available yet
 
-### Windows
+#### Sunroof Rear Blind Mapping
 
-Group name: `windows`
-All channels `readonly`
+- not available yet
 
-| Channel          | Type                 |  Description                 |
-|------------------|----------------------|------------------------------|
-| driver-front     | Number               |  Driver window               |
-| driver-rear      | Number               |  Driver window rear          |
-| passenger-front  | Number               |  Passenger window            |
-| passenger-rear   | Number               |  Passenger window rear       |
-| last-update      | DateTime             |  Last windows update         |
+#### Sunroof Mapping
 
-Mapping table for all windows
+State
 
-| Number          | Mapping             |
-|-----------------|---------------------|
-| 0               | Intermediate        |
-| 1               | Open                |
-| 2               | Closed              |
-| 3               | Airing              |
-| 4               | Intermediate        |
-| 5               | Running             |
+- 0 : Closed
+- 1 : Open
+- 2 : Lifted
+- 3 : Running
+- 4 : Closing
+- 5 : Opening
+- 6 : Closing
 
-### Lights
+Command
 
-Group name: `lights`
-All channels `read-only`
+- 0 : Close
+- 1 : Open
+- 2 : Lift
 
-| Channel          | Type                 |  Description                 |
-|------------------|----------------------|------------------------------|
-| interior-front   | Switch               |  Interior light front        |
-| interior-rear    | Switch               |  Interior light rear         |
-| reading-left     | Switch               |  Reading light left          |
-| reading-right    | Switch               |  Reading light right         |
-| light-switch     | Number               |  Main light switch           |
-| last-update      | DateTime             |  Last lights update          |
-
-Mapping table `light-switch`
-
-| Number          | Mapping             |
-|-----------------|---------------------|
-| 0               | Auto                |
-| 1               | Headlight           |
-| 2               | Sidelight Left      |
-| 3               | Sidelight Right     |
-| 4               | Parking Light       |
+Triggers `ROOFCLOSE`, `ROOFOPEN` and `ROOFLIFT` from [Command Name Mapping](#command-name-mapping)
 
 ### Lock
 
 Group name: `lock`
+
+State representing if doors, hoods or flaps are locked.
+States and controls are depending on your vehicle capabilities and type.
+
+| Channel             | Type                 |  Description                     | Read | Write |
+|---------------------|----------------------|----------------------------------|------|-------|
+| front-left          | Switch               |  Front Left Door Lock            | X    |       |
+| front-right         | Switch               |  Front Right Door Lock           | X    |       |
+| rear-left           | Switch               |  Rear Left Door Lock             | X    |       |
+| rear-right          | Switch               |  Rear Right Door Lock            | X    |       |
+| deck-lid            | Switch               |  Deck lid                        | X    |       |
+| gas-flap            | Switch               |  Gas Flap (combustion & hybrid)  | X    |       |
+
+### Windows
+
+Group name: `windows`
+
+State representing current window position.
+
+| Channel             | Type                 |  Description                 | Read | Write |
+|---------------------|----------------------|------------------------------|------|-------|
+| front-left          | Number               |  Front Left Window           | X    |       |
+| front-right         | Number               |  Front Right Window          | X    |       |
+| rear-left           | Number               |  Rear Left Window            | X    |       |
+| rear-right          | Number               |  Rear Right Window           | X    |       |
+| rear-right-blind    | Number               |  Rear Right Blind            | X    |       |
+| rear-left-blind     | Number               |  Rear Left Blind             | X    |       |
+| rear-blind          | Number               |  Rear Blind                  | X    |       |
+
+#### Window Channel Mapping
+
+- 0 : Intermediate
+- 1 : Open
+- 2 : Closed
+- 3 : Airing
+- 4 : Intermediate
+- 5 : Running
+
+#### Rear Right Blind Channel Mapping
+
+- not available yet
+ 
+#### Rear Left Blind Channel Mapping
+
+- not available yet
+ 
+#### Rear Blind Channel Mapping
+
+- not available yet
+
+#### Flip Window Channel Mapping
+
+- not available yet
+
+### HVAC
+
+Group name: `havc`
+
+Configuration of vehicle climatization.
+States and controls are depending on your vehicle capabilities.
+
+| Channel             | Type                 |  Description                     | Read | Write |
+|---------------------|----------------------|----------------------------------|------|-------|
+| front-left          | Switch               |  Front Left Seat Climatization   | X    |       |
+| front-right         | Switch               |  Front Left Seat Climatization   | X    |       |
+| rear-left           | Switch               |  Front Left Seat Climatization   | X    |       |
+| rear-right          | Switch               |  Front Left Seat Climatization   | X    |       |
+| zone                | Number               |  Selected Climatization Zone     | X    | X     |
+| temperature         | Number:Temperature   |  Desired Temperature for Zone    | X    | X     |
+| activate            | Switch               |  Start/Stop Climatization        | X    | X     |
+| aux-heat            | Switch               |  Auxiliary Heating               | X    | X     |
+
+#### Zone Mapping
+
+Command Options
+
+- 1 : frontLeft
+- 2 : frontRight
+- 3 : frontCenter
+- 4 : rearLeft
+- 5 : rearRight
+- 6 : rearCenter
+- 7 : rear2Left
+- 8 : rear2Right
+- 9 : rear2Center
+
+Automatically calculated based on your vehicle capabilities.
+Only options are shown which are supported by your vehicle.
+
+Triggers `- PRECONDCONFIGURESEATS` from [Command Name Mapping](#command-name-mapping)
+
+#### Temperature Setting
+
+Pre-configure selected zone with desired temperature.
+Minimum and maximum temperature depends on your local settings either Degree Celsius or Fahrenheit.
+
+Celsius 
+
+- Minimum : 16 °C
+- Maximum : 28 °C
+- Step width : 0.5 °C
+
+Fahrenheit
+
+- Minimum : 60 °F
+- Maximum : 84 °F
+- Step width : 1 °F
+
+Triggers `TEMPERATURECONFIGURE` from [Command Name Mapping](#command-name-mapping)
+
+#### Activate Switch
+
+Triggers `PRECONDSTART` and `PRECONDSTOP` from [Command Name Mapping](#command-name-mapping)
+ 
+#### Auxiliary Heat Switch
+
+Triggers `AUXHEATSTART` and `AUXHEATSTOP` from [Command Name Mapping](#command-name-mapping)
+
+### Service
+
+Group name: `service`
+
+All channels read-only.
+Service and warning information for vehicle.
+States and controls are depending on your vehicle capabilities.
+
+| Channel             | Type                 |  Description                    | bev | hybrid | combustion |
+|---------------------|----------------------|---------------------------------|-----|--------|------------|
+| starter-battery     | Number               |  Starter Battery Status         | X   | X      | X          |
+| brake-fluid         | Switch               |  Brake Fluid Warning            | X   | X      | X          |
+| brake-lining-wear   | Switch               |  Brake Lining Gear Warning      | X   | X      | X          |
+| wash-water          | Switch               |  Wash Water Low Warning         | X   | X      | X          |
+| coolant-fluid       | Switch               |  Coolant Fluid Low Warning      |     | X      | X          |
+| engine              | Switch               |  Engine Warning                 |     | X      | X          |
+| tires-rdk           | Number               |  Tire Pressure Warnings         | X   | X      | X          |
+| service-days        | Number               |  Next Service in *x* days       | X   | X      | X          |
+
+#### Starter Battery Mapping
+
+Traffic light status of the starter battery
+
+- 0 : Green
+- 1 : Yellow
+- 2 : Red
+
+### Range
+
+Group name: `range`
+
+All channels read-only.
+
+| Channel          | Type                 |  Description                 | bev | hybrid | combustion |
+|------------------|----------------------|------------------------------|-----|--------|------------|
+| mileage          | Number:Length        |  Total Mileage               | X   | X      | X          |
+| home-distance    | Number:Length        |  Distance to Home            | X   | X      | X          |
+| soc              | Number:Dimensionless |  Battery State of Charge     | X   | X      |            |
+| charged          | Number:Energy        |  Charged Battery Energy      | X   | X      |            |
+| uncharged        | Number:Energy        |  Uncharged Battery Energy    | X   | X      |            |
+| range-electric   | Number:Length        |  Electric Range              | X   | X      |            |
+| radius-electric  | Number:Length        |  Electric Radius for Map     | X   | X      |            |
+| fuel-level       | Number:Dimensionless |  Fuel Level in Percent       |     | X      | X          |
+| fuel-remain      | Number:Volume        |  Remaining Fuel              |     | X      | X          |
+| fuel-open        | Number:Volume        |  Open Fuel Capacity          |     | X      | X          |
+| range-fuel       | Number:Length        |  Fuel Range                  |     | X      | X          |
+| radius-fuel      | Number:Length        |  Fuel Radius for Map         |     | X      | X          |
+| range-hybrid     | Number:Length        |  Hybrid Range                |     | X      |            |
+| radius-hybrid    | Number:Length        |  Hybrid Radius for Map       |     | X      |            |
+
+Channels with `radius` are just giving a _guess_ which radius can be reached in a map display.
+
+### Charge
+
+Group name: `charge`
+
+Only relevant for battery electric and hybrid vehicles.
+Current charge values and charge program configuration.
+States and controls are depending on your vehicle capabilities.
+
+| Channel             | Type                 |  Description                           | Read | Write |
+|---------------------|----------------------|----------------------------------------|------|-------|
+| charge-flap         | Number               |  Charge Flap Status                    | X    |       |
+| coupler-ac          | Number               |  Coupler AC Status                     | X    |       |
+| coupler-dc          | Number               |  Coupler DC Status                     | X    |       |
+| coupler-lock        | Number               |  Coupler Lock Status                   | X    |       |
+| active              | Switch               |  Charging Active                       | X    |       |
+| power               | Number:Power         |  Current Charging Power                | X    |       |
+| end-time            | DateTime             |  Estimated Charging End                | X    |       |
+| program             | Number               |  Selected Charge Program               | X    | X     |
+| max-soc             | Number:Dimensionless |  Charge Target SoC                     | X    | X     |
+| auto-unlock         | Switch               |  Auto Unlock Coupler after charging    | X    | X     |
+
+#### Charge Flap Mapping
+
+- 0 : Open
+- 1 : Closed
+
+#### Coupler AC Mapping
+
+- 0 : Plugged
+- 2 : Unplugged
+
+#### Coupler DC Mapping
+
+- 0 : Plugged
+- 2 : Unplugged
+
+#### Coupler Lock Mapping
+
+- 0 : Locked
+- 1 : Unlocked
+
+#### Program Mapping
+
+- 0 : DEFAULT_CHARGE_PROGRAM
+- 2 : HOME_CHARGE_PROGRAM
+- 3 : WORK_CHARGE_PROGRAM
+
+Automatically calculated based on your vehicle capabilities.
+Only options are shown which are supported by your vehicle.
+
+Triggers `CHARGEPROGRAMCONFIGURE` from [Command Name Mapping](#command-name-mapping)
+
+#### Max SoC Setting
+
+SoC target for selected program can be configured if your vehicle capabilities are supporting it.
+Configuration limit needs to respect 10% steps with a minimum of 50% and maximum of 100%.
+
+Command Options
+
+- 50 %
+- 60 %
+- 70 %
+- 80 %
+- 90 %
+- 100 %
+
+Triggers `CHARGEPROGRAMCONFIGURE` from [Command Name Mapping](#command-name-mapping)
+
+#### Auto Unlock Setting
+
+Charge Program can be configured to release coupler lock after target SoC is reached
+
+Triggers `CHARGEPROGRAMCONFIGURE` from [Command Name Mapping](#command-name-mapping)
+
+### Trip
+
+Group name: `trip`
+
 All channels `read-only`
 
-| Channel          | Type                 |  Description                 |
-|------------------|----------------------|------------------------------|
-| doors            | Number               |  Lock status all doors       |
-| deck-lid         | Switch               |  Deck lid lock               |
-| flap             | Switch               |  Flap lock                   |
-| last-update      | DateTime             |  Last lock update            |
+| Channel          | Type                 |  Description                                                         |
+|------------------|----------------------|----------------------------------------------------------------------|
+| distance         | Number Length        |  Last Trip Distance                                                  |
+| time             | String               |  Last Trip Duration in days, hours and minutes                       |
+| avg-speed        | Number:Speed         |  Last Trip Average Speed in km/h                                     |
+| cons-ev          | Number               |  Last Trip Average Electric Energy Consumption                       |
+| cons-conv        | Number               |  Last Trip Average Fuel Consumption                                  |
+| distance-reset   | Number Length        |  Since Reset Trip Distance                                           |
+| time-reset       | String               |  Since Reset Duration in days, hours and minutes                     |
+| avg-speed-reset  | Number:Speed         |  Since Reset Average Speed in km/h                                   |
+| cons-ev-reset    | Number               |  Since Reset Average Electric Energy Consumption                     |
+| cons-conv-reset  | Number:Volume        |  Since Reset Average Fuel Consumption                                |
+| cons-ev-unit     | String               |  Unit of Average Electric Consumption                                |
+| cons-conv-unit   | String               |  Unit of Average Fuel Consumption                                    |
 
-Mapping table `doors`
+#### Average Consumption
 
-| Number          | Mapping             |
-|-----------------|---------------------|
-| 0               | Unlocked            |
-| 1               | Locked Internal     |
-| 2               | Locked External     |
-| 3               | Unlocked Selective  |
+You can configure different average consumption units like kWh per 100 kilometer or km per kWh.
+In your Mercedes Me App front page 
 
-### Location
+- Burger Menu top left 
+- Last Entry `Settings`
+- First Entry `Units`
 
-Group name: `location`
-All channels `readonly`
+<img src="./doc/ElectricConsumptionUnits.png" width="300" height="300"/>
 
-| Channel          | Type                 |  Description                 |
-|------------------|----------------------|------------------------------|
-| heading          | Number:Angle         |  Vehicle heading             |
-| last-update      | DateTime             |  Last location update        |
+### Trip Duration
 
-### Image
+Shown as String in format `d days, HH:mm`.
+If duration is below 24 hours format is `HH:mm`. 
 
-Provides exterior and interior images for your specific vehicle.
-Group name: `image`
+### Position
 
-| Channel          | Type                 |  Description                 | Write |
-|------------------|----------------------|------------------------------|-------|
-| image-data       | Raw                  |  Vehicle image               |       |
-| image-view       | text                 |  Vehicle image viewpoint     |   X   |
-| clear-cache      | Switch               |  Remove all stored images    |   X   |
+Group name: `position`
 
-**If** the `imageApiKey` in [Bridge Configuration Parameters](#bridge-configuration-parameters) is set the vehicle thing will try to get images.
-Pay attention to the [Advanced Image Configuration Properties](#thing-configuration) before requesting new images.
-Sending commands towards the `image-view` channel will change the image.
-The `image-view` is providing options to select the available images for your specific vehicle.
-Images are stored in `jsondb` so if you requested all images the Mercedes Benz Image API will not be called anymore which is good because you have a restricted amount of calls!
-If you're not satisfied e.g. you want a background you need to
+| Channel             | Type                 |  Description                                    | Read | Write |
+|---------------------|----------------------|-------------------------------------------------|------|-------|
+| heading             | Number:Angle         |  Heading of Vehicle                             | X    |       |
+| gps                 | Point                |  GPS Location Point of Vehicle                  | X    |       |
+| signal              | Number               |  Request Light or Horn Signal to find Vehicle   |      |  X    |
 
-1. change the [Advanced Image Configuration Properties](#thing-configuration)
-1. Switch `clear-cache` channel item to `ON` to clear all images
-1. request them via `image-view`
+#### Signal Settings
 
-### Image View Options
+Command Options
 
-You can access the options either in a rule via `YOUR_IMAGE_VIEW_ITEM.getStateDescription().getOptions()` or in UI in widget configuration as _Action: Command options_ and as _Action Item: YOUR_IMAGE_VIEW_ITEM_
+- 0 : Position Lights
+- 1 : Position Horn
 
-<img src="./doc/ImageView-CommandOptions.png" width="400" height="350"/>
+Triggers `SIGPOSSTART` from [Command Name Mapping](#command-name-mapping)
+
+### Tires
+
+Group name: `tires`
+
+All channels `read-only`
+
+| Channel                  | Type                 |  Description                    |
+|--------------------------|----------------------|---------------------------------|
+| pressure-front-left      | Number:Pressure      |  Tire Pressure Front Left       |
+| pressure-front-right     | Number:Pressure      |  Tire Pressure Front Right      |
+| pressure-rear-left       | Number:Pressure      |  Tire Pressure Rear Left        |
+| pressure-rear-right      | Number:Pressure      |  Tire Pressure Rear Right       |
+| sensor-available         | Number               |  Tire Sensor Available          | 
+| marker-front-left        | Number               |  Tire Marker Front Left         |
+| marker-front-right       | Number               |  Tire Marker Front Right        | 
+| marker-rear-left         | Number               |  Tire Marker Rear Left          | 
+| marker-rear-right        | Number               |  Tire Marker Rear Right         |
+| last-update              | DateTime             |  Timestamp of last Measurement  |
+
+#### Sensor Available Mapping
+
+- Not available yet
+
+#### Tire Marker Mapping
+
+- Not available yet
+
+### Commands
+
+Group name: `command`
+
+All channels `read-only`
+
+| Channel              | Type        |  Description                       |
+|----------------------|-------------|------------------------------------|
+| cmd-name             | Number      |  Command Name which is handled     |
+| cmd-state            | Number      |  Current Command State             |
+| cmd-last-update      | DateTime    |  Timestamp of last update          |
+
+Show state of the send command sent by above channels which are able to write values.
+**Don't flood the API with commands**.
+The Mercedes API cannot withstand _Monkey Testing_.
+Send lock/unlock or temperatures in a short period of time will result in failures.
+
+#### Command Name Mapping
+
+- 100 : DOORSLOCK
+- 110 : DOORSUNLOCK
+- 115 : TRUNKUNLOCK
+- 116 : FUELFLAPUNLOCK
+- 117 : CHARGEFLAPUNLOCK
+- 118 : CHARGECOUPLERUNLOCK
+- 300 : AUXHEATSTART
+- 310 : AUXHEATSTOP
+- 320 : AUXHEATCONFIGURE
+- 350 : TEMPERATURECONFIGURE
+- 400 : PRECONDSTART
+- 410 : PRECONDSTOP
+- 420 : PRECONDCONFIGURE
+- 425 : PRECONDCONFIGURESEATS
+- 550 : ENGINESTART
+- 560 : ENGINESTOP
+- 570 : ENGINEAVPSTART
+- 770 : SIGPOSSTART
+- 1100 : WINDOWOPEN
+- 1110 : WINDOWCLOSE
+- 1120 : WINDOWVENTILATE
+- 1121 : WINDOWMOVE
+- 1130 : ROOFOPEN
+- 1140 : ROOFCLOSE
+- 1150 : ROOFLIFT
+- 1151 : ROOFMOVE
+- 2000 : BATTERYMAXSOC
+- 2010 : BATTERYCHARGEPROGRAM
+- 2020 : CHARGEPROGRAMCONFIGURE
+
+#### Command State Mapping
+
+- 0 : UNKNOWN_COMMAND_STATE
+- 1 : INITIATION
+- 2 : ENQUEUED
+- 3 : PROCESSING
+- 4 : WAITING
+- 5 : FINISHED
+- 6 : FAILED
+
+## Vehicle Actions
+
+Actions for `vehicle` [thing}(#vehicle) are provided. 
+
+### `sendPOI`
+
+Send a Point of Interest (POI) to the vehicle message box.
+This POI can be used as navigation destination.
+
+| Parameter   | Type          | Description             | Mandatory |
+|-------------|---------------|-------------------------|-----------|
+| title       | String        | POI title               |     X     |
+| latitude    | double        | latitude of POI         |     X     |
+| longitude   | double        | longitude of POI        |     X     |
+| city        | String        | POI city location       |           |
+| street      | String        | POI street name         |           |
+| postalCode  | String        | POI postal code         |           |
+
+**Example Eiffel Tower**
+
+Required information
+
+```
+        val mercedesmeActions = getActions("mercedesme","mercedesme:bev:4711:eqa")
+        mercedesmeActions.sendPOI("Eiffel Tower",48.85957476434348,2.2939068084684853)
+```
+
+Full information
+
+```
+        val mercedesmeActions = getActions("mercedesme","mercedesme:bev:4711:eqa")
+        mercedesmeActions.sendPOI("Eiffel Tower",48.85957476434348,2.2939068084684853,"Paris","Av. Gustave Eiffel", "75007")
+```
+
+## Discover your Vehicle
+
+There's a big variety of vehicles with different features and different command capabilities.
+During discovery the capabilities of your vehicle are identified.
+They are stored in `Vehicle Properties` as shown below.
+You can check in beforehand if features like _Charge Program Configuration_ or _HVAC Configuration_ are supported or not. 
+
+<img src="./doc/OH-capabilities.png" width="500" height="280"/>
+
+If you want to dive deeper see [Troubleshooting](#troubleshooting) `feature-capabilities` and `command-capabilities` to evaluate the exact capabilities. 
 
 ## Troubleshooting
 
-### Authorization fails
+In order to be able to analyze problems 3 advanced channels are placed in the vehicle group.
 
-The configuration of openHAB account thing and the Mercedes Developer project need an extract match regarding
+* `feature-capabilities` - showing which feature your vehicle is equipped with
+* `command-capabilities` - showing which commands can be sent to your vehicle
+* `proto-update` - latest update of your vehicle data
 
-- MB project credentials vs. `clientId` `clientSecret` and `callbackUrl`
-- MB project subscription of products vs. `scope`
+In case you find problems regarding this binding add items to these 3 channels.
+The items are reporting Strings in JSON format.
+Vehicle Identification Number (VIN) isn't part of data.
+GPS data which is showing your location is anonymized.
+Please double check yourself no critical data is inside.
+The content of these items shall be used to create a problem report.
+During development the `proto-update`  contains an entry with binding version information.
 
-If you follow the [bridge configuration steps](#bridge-configuration) both will match.
-Otherwise you'll receive some error message when clicking the link after opening the `callbackUrl` in your browser
+```
+    "bindingInfo": {
+        "oh-bundle": "4.1.0.202309241814",
+        "version": "2.2-alpha",
+        "vehicle": "mercedesme:bev"
+    }
+```
 
-Most common errors:
+Keep these 3 channels disconnected during normal operation.
 
-- redirect URL doesn't match: Double check if `callbackUrl` is really saved correctly in your Mercedes Benz Developer project
-- scope failure: the requested scope doesn't match with the subscribed products.
-  - Check [openHab configuration switches](#openhab-configuration)
-  - apply changes if necessary and don't forget to save
-  - after these steps refresh the `callbackUrl` in [your browser](#callback-page) to apply these changes
-  - try a new authorization clicking the link
-
-### Receive no data
-
-Especially after setting the frist Mercedes Benz Developer Project you'll receive no data.
-It seems that the API isn't _filled_ yet.
-
-#### Pre-Condition
-
-- The Mercedes Me bridge is online = authorization is fine
-- The Mercedes Me thing is online = API calls are fine
-
-#### Solution
-
-- Reduce `refreshInterval` to 1 minute
-- Go to your vehicle, open doors and windows, turn on lights, drive a bit  ...
-- wait until values are providing the right states
-
-### Images
-
-Testing the whole image settings is hard due to the restricted call number towards the Image API.
-
-My personal experience during limited testing
-
-| Test             |Tested | OK  |  Not OK | Comment                                                 |
-|------------------|-------|-----|---------|---------------------------------------------------------|
-| `format` webp    | Yes   |  X  |         |                                                         |
-| `format` png     | Yes   |     |    X    | Internal Server Error 500 on Mercedes Server side       |
-| `format` jpeg    | No    |     |         | Not tested due to missing transparency in jpeg format   |
-| all options off  | Yes   |  X  |         |                                                         |
-| `background`     | Yes   |  X  |         |                                                         |
-| `night`          | No    |     |         | Not support by my vehicle                               |
-| `roofOpen`       | No    |     |         | Not support by my vehicle                               |
-| `cropped`        | No    |     |         | Not desired from my side                                |
-
-## Storage
-
-Data is stored in directory `%USER_DATA%/jsondb` for handling tokens and vehicle images.
-
-- _StorageHandler.For.OAuthClientService.json_ - token is stored with key `clientId` which is provided by `account` [Brige Configuration Parameters](#bridge-configuration-parameters)
-- _mercedesme_%VEHICLE_VIN%.json_ - images are stored per vehicle. File name contains `vin` configured by [vehicle Thing Configuration](#thing-configuration)
-
-With this data the binding is able to operate without new authorization towards Mercedes each startup and reduces the restricted calls towards image API.
-Also these files are properly stored in your [backup](https://community.openhab.org/t/docs-on-how-to-backup-openhab/100182) e.g. if you perform `openhab-cli backup`
-
-## Full example
-
-The example is based on a battery electric vehicle.
-Exchange configuration parameters in the Things section
-
-Bridge
-
-- 4711 - your desired bridge id
-- YOUR_CLIENT_ID - Client ID of the Mercedes Developer project
-- YOUR_CLIENT_SECRET - Client Secret of the Mercedes Developer project
-- YOUR_API_KEY - Image API Key of the Mercedes Developer project
-- YOUR_OPENHAB_SERVER_IP - IP address of your openHAB server
-- 8090 - a **unique** port number - each bridge in your openHAB installation needs to have different port number!
-
-Thing
-
-- eqa - your desired vehicle thing id
-- VEHICLE_VIN - your Vehicle Identification Number
+## Full Example
 
 ### Things file
 
 ```java
-Bridge mercedesme:account:4711   "MercedesMe John Doe" [ clientId="YOUR_CLIENT_ID", clientSecret="YOUR_CLIENT_SECRET", imageApiKey="YOUR_API_KEY", callbackIP="YOUR_OPENHAB_SERVER_IP", callbackPort=8092, odoScope=true, vehicleScope=true, lockScope=true, fuelScope=true, evScope=true] {
-         Thing bev eqa           "Mercedes EQA"        [ vin="VEHICLE_VIN", refreshInterval=5, background=false, night=false, cropped=false, roofOpen=false, format="webp"]
+Bridge mercedesme:account:4711   "Mercedes Me John Doe" [ email="YOUR_MAIL_ADDRESS", region="EU", pin=9876, refreshInterval=15] {
+         Thing bev eqa           "Mercedes EQA"        [ vin="VEHICLE_VIN", batteryCapacity=66.5]
 }
 ```
 
 ### Items file
 
 ```java
-Number:Length           EQA_Mileage                 "Odometer [%d %unit%]"                        {channel="mercedesme:bev:4711:eqa:range#mileage" }                                                                           
-Number:Length           EQA_Range                   "Range [%d %unit%]"                           {channel="mercedesme:bev:4711:eqa:range#range-electric"}
-Number:Length           EQA_RangeRadius             "Range Radius [%d %unit%]"                    {channel="mercedesme:bev:4711:eqa:range#radius-electric"}   
-Number:Dimensionless    EQA_BatterySoc              "Battery Charge [%.1f %%]"                    {channel="mercedesme:bev:4711:eqa:range#soc"}
+Number                  EQA_DoorLock                {channel="mercedesme:bev:4711:eqa:vehicle#lock" }
+Number                  EQA_Windows                 {channel="mercedesme:bev:4711:eqa:vehicle#windows" }
+Number                  EQA_DoorStatus              {channel="mercedesme:bev:4711:eqa:vehicle#door-status" }
+Number                  EQA_Ignition                {channel="mercedesme:bev:4711:eqa:vehicle#ignition" }
+Number                  EQA_ParkBrake               {channel="mercedesme:bev:4711:eqa:vehicle#park-brake" }
 
-Contact                 EQA_DriverDoor              "Driver Door [%s]"                            {channel="mercedesme:bev:4711:eqa:doors#driver-front" }
-Contact                 EQA_DriverDoorRear          "Driver Door Rear [%s]"                       {channel="mercedesme:bev:4711:eqa:doors#driver-rear" }
-Contact                 EQA_PassengerDoor           "Passenger Door [%s]"                         {channel="mercedesme:bev:4711:eqa:doors#passenger-front" }
-Contact                 EQA_PassengerDoorRear       "Passenger Door Rear [%s]"                    {channel="mercedesme:bev:4711:eqa:doors#passenger-rear" }
-Number                  EQA_Trunk                   "Trunk [%s]"                                  {channel="mercedesme:bev:4711:eqa:doors#deck-lid" }
-Number                  EQA_Rooftop                 "Rooftop [%s]"                                {channel="mercedesme:bev:4711:eqa:doors#rooftop" }
-Number                  EQA_Sunroof                 "Sunroof [%s]"                                {channel="mercedesme:bev:4711:eqa:doors#sunroof" }
+Contact                 EQA_FrontLeftDoor           {channel="mercedesme:bev:4711:eqa:doors#front-left" }
+Contact                 EQA_FrontRightDoor          {channel="mercedesme:bev:4711:eqa:doors#front-right" }
+Contact                 EQA_RearLeftDoor            {channel="mercedesme:bev:4711:eqa:doors#rear-left" }
+Contact                 EQA_RearRightDoor           {channel="mercedesme:bev:4711:eqa:doors#rear-right" }
+Contact                 EQA_DeckLid                 {channel="mercedesme:bev:4711:eqa:doors#deck-lid" }
+Contact                 EQA_EngineHood              {channel="mercedesme:bev:4711:eqa:doors#engine-hood" }
+Number                  EQA_Sunroof                 {channel="mercedesme:bev:4711:eqa:doors#sunroof" }
 
-Number                  EQA_DoorLock                "Door Lock [%s]"                              {channel="mercedesme:bev:4711:eqa:lock#doors" }
-Switch                  EQA_TrunkLock               "Trunk Lock [%s]"                             {channel="mercedesme:bev:4711:eqa:lock#deck-lid" }
-Switch                  EQA_FlapLock                "Charge Flap Lock [%s]"                       {channel="mercedesme:bev:4711:eqa:lock#flap" }
+Switch                  EQA_FrontLeftLock           {channel="mercedesme:bev:4711:eqa:lock#front-left" }
+Switch                  EQA_FrontRightLock          {channel="mercedesme:bev:4711:eqa:lock#front-right" }
+Switch                  EQA_RearLeftLock            {channel="mercedesme:bev:4711:eqa:lock#rear-left" }
+Switch                  EQA_RearRightLock           {channel="mercedesme:bev:4711:eqa:lock#rear-right" }
+Switch                  EQA_DeckLidLock             {channel="mercedesme:bev:4711:eqa:lock#deck-lid" }
 
-Number                  EQA_DriverWindow            "Driver Window [%s]"                          {channel="mercedesme:bev:4711:eqa:windows#driver-front" }
-Number                  EQA_DriverWindowRear        "Driver Window Rear [%s]"                     {channel="mercedesme:bev:4711:eqa:windows#driver-rear" }
-Number                  EQA_PassengerWindow         "Passenger Window [%s]"                       {channel="mercedesme:bev:4711:eqa:windows#passenger-front" }
-Number                  EQA_PassengerWindowRear     "Passenger Window Rear [%s]"                  {channel="mercedesme:bev:4711:eqa:windows#passenger-rear" }
+Number                  EQA_FrontLeftWindow         {channel="mercedesme:bev:4711:eqa:windows#front-left" }
+Number                  EQA_FrontRightWindow        {channel="mercedesme:bev:4711:eqa:windows#front-right" }
+Number                  EQA_RearLeftWindow          {channel="mercedesme:bev:4711:eqa:windows#rear-left" }
+Number                  EQA_RearRightWindow         {channel="mercedesme:bev:4711:eqa:windows#rear-right" }
 
-Number:Angle            EQA_Heading                 "Heading [%.1f %unit%]"                       {channel="mercedesme:bev:4711:eqa:location#heading" }  
+Number                  EQA_ACZone                  {channel="mercedesme:bev:4711:eqa:hvac#zone" }
+Number                  EQA_ACTemperature           {channel="mercedesme:bev:4711:eqa:hvac#temperature" }
+Number                  EQA_ACControl               {channel="mercedesme:bev:4711:eqa:hvac#active" }
 
-Image                   EQA_Image                   "Image"                                       {channel="mercedesme:bev:4711:eqa:image#image-data" }  
-String                  EQA_ImageViewport           "Image Viewport [%s]"                         {channel="mercedesme:bev:4711:eqa:image#image-view" }  
-Switch                  EQA_ClearCache              "Clear Cache [%s]"                            {channel="mercedesme:bev:4711:eqa:image#clear-cache" }  
+Number                  EQA_StarterBattery          {channel="mercedesme:bev:4711:eqa:service#starter-battery" }
+Switch                  EQA_BrakeFluid              {channel="mercedesme:bev:4711:eqa:service#brake-fluid" }
+Switch                  EQA_BrakeLiningWear         {channel="mercedesme:bev:4711:eqa:service#brake-lining-wear" }
+Switch                  EQA_WashWater               {channel="mercedesme:bev:4711:eqa:service#wash-water" }
+Number                  EQA_TirePressureWarn        {channel="mercedesme:bev:4711:eqa:service#tires-rdk" }
+Number                  EQA_ServiceInDays           {channel="mercedesme:bev:4711:eqa:service#service-days" }
 
-Switch                  EQA_InteriorFront           "Interior Front Light [%s]"                   {channel="mercedesme:bev:4711:eqa:lights#interior-front" }  
-Switch                  EQA_InteriorRear            "Interior Rear Light [%s]"                    {channel="mercedesme:bev:4711:eqa:lights#interior-rear" }  
-Switch                  EQA_ReadingLeft             "Reading Light Left [%s]"                     {channel="mercedesme:bev:4711:eqa:lights#reading-left" }  
-Switch                  EQA_ReadingRight            "Reading Light Right [%s]"                    {channel="mercedesme:bev:4711:eqa:lights#reading-right" }  
-Number                  EQA_LightSwitch             "Main Light Switch [%s]"                      {channel="mercedesme:bev:4711:eqa:lights#light-switch" }  
+Number:Length           EQA_Mileage                 {channel="mercedesme:bev:4711:eqa:range#mileage" }
+Number:Length           EQA_Range                   {channel="mercedesme:bev:4711:eqa:range#range-electric" }
+Number:Length           EQA_RangeRadius             {channel="mercedesme:bev:4711:eqa:range#radius-electric" }
+Number:Dimensionless    EQA_SoC                     {channel="mercedesme:bev:4711:eqa:range#soc" }
+Number:Energy           EQA_BatteryCharged          {channel="mercedesme:bev:4711:eqa:range#charged" }
+Number:Energy           EQA_BatteryUncharged        {channel="mercedesme:bev:4711:eqa:range#uncharged" }
+
+Number                  EQA_ChargeFlap              {channel="mercedesme:bev:4711:eqa:charge#charge-flap" }
+Number                  EQA_CouplerLock             {channel="mercedesme:bev:4711:eqa:charge#coupler-lock" }
+Switch                  EQA_ChargeActive            {channel="mercedesme:bev:4711:eqa:charge#active" }
+Number:Power            EQA_ChargePower             {channel="mercedesme:bev:4711:eqa:charge#power" }
+DateTime                EQA_ChargeTimeEstimate      {channel="mercedesme:bev:4711:eqa:charge#end-time" }
+Number                  EQA_ChargeProgram           {channel="mercedesme:bev:4711:eqa:charge#program" }
+Number:Dimensionless    EQA_ProgramMaxSoc           {channel="mercedesme:bev:4711:eqa:charge#max-soc" }
+
+Number:Length           EQA_TripDistance            {channel="mercedesme:bev:4711:eqa:trip#distance" }
+String                  EQA_TripDuration            {channel="mercedesme:bev:4711:eqa:trip#time" }
+Number:Speed            EQA_TripAvgSpeed            {channel="mercedesme:bev:4711:eqa:trip#avg-speed" }
+Number                  EQA_TripAvgConsumption      {channel="mercedesme:bev:4711:eqa:trip#cons-ev" }
+String                  EQA_AvgConsumptionUnit      {channel="mercedesme:bev:4711:eqa:trip#cons-ev-unit" }
+
+Number:Angle            EQA_Heading                 {channel="mercedesme:bev:4711:eqa:position#heading" }  
+Location                EQA_GPSLocation             {channel="mercedesme:bev:4711:eqa:position#gps" }
+Number                  EQA_Signal                  {channel="mercedesme:bev:4711:eqa:position#signal" }
+
+Number:Pressure         EQA_PressureFrontLeft       {channel="mercedesme:bev:4711:eqa:tires#pressure-front-left" }
+Number:Pressure         EQA_PressureFrontRight      {channel="mercedesme:bev:4711:eqa:tires#pressure-front-right" }
+Number:Pressure         EQA_PressureRearLeft        {channel="mercedesme:bev:4711:eqa:tires#pressure-rear-left" }
+Number:Pressure         EQA_PressureRearRight       {channel="mercedesme:bev:4711:eqa:tires#pressure-rear-right" }
+DateTime                EQA_MeasurementTime         {channel="mercedesme:bev:4711:eqa:tires#last-update" }
+
+Number                  EQA_CommandName             {channel="mercedesme:bev:4711:eqa:command#cmd-name" }
+Number                  EQA_CommandState            {channel="mercedesme:bev:4711:eqa:command#cmd-state" }
+DateTime                EQA_CommandTimestamp        {channel="mercedesme:bev:4711:eqa:command#cmd-last-update" }
 ```
 
-### Sitemap
+### POI ruleExample
 
-```perl
-sitemap MB label="Mercedes Benz EQA" {
-  Frame label="EQA Image" {
-    Image  item=EQA_Image  
-                       
-  } 
-  Frame label="Range" {
-    Text    item=EQA_Mileage           
-    Text    item=EQA_Range             
-    Text    item=EQA_RangeRadius     
-    Text    item=EQA_BatterySoc        
-  }
+```
+// send POI from JSON String item
+rule "Send POI"
+    when
+        Item POIJsonString changed 
+    then
+        // decode JSON
+        val json = POIJsonString.state.toString        
+        val title = transform("JSONPATH", "$.title", json)
+        val lat = transform("JSONPATH", "$.latitude", json)
+        val lon = transform("JSONPATH", "$.longitude", json)
 
-  Frame label="Door Details" {
-    Text      item=EQA_DriverDoor 
-    Text      item=EQA_DriverDoorRear   
-    Text      item=EQA_PassengerDoor 
-    Text      item=EQA_PassengerDoorRear 
-    Text      item=EQA_Trunk
-    Text      item=EQA_Rooftop
-    Text      item=EQA_Sunroof    
-    Text      item=EQA_DoorLock
-    Text      item=EQA_TrunkLock
-    Text      item=EQA_FlapLock
-  }
-
-  Frame label="Windows" {
-    Text     item=EQA_DriverWindow
-    Text     item=EQA_DriverWindowRear 
-    Text     item=EQA_PassengerWindow
-    Text     item=EQA_PassengerWindowRear
-  }
-  
-  Frame label="Location" {
-    Text    item=EQA_Heading             
-  }
-
-  Frame label="Lights" {
-    Text       item=EQA_InteriorFront
-    Text       item=EQA_InteriorRear
-    Text       item=EQA_ReadingLeft
-    Text       item=EQA_ReadingRight
-    Text       item=EQA_LightSwitch
-  } 
-
-  Frame label="Image Properties" {
-    Selection    item=EQA_ImageViewport
-    Switch       item=EQA_ClearCache
-  } 
-}
+        // send POI to vehicle
+        val mercedesmeActions = getActions("mercedesme","mercedesme:bev:4711:eqa")
+        mercedesmeActions.sendPoi(title,lat,lon)
+end
 ```
 
-## Mercedes Benz Developer
-
-Visit [Mercedes Benz Developer](https://developer.mercedes-benz.com/) to gain more deep information.

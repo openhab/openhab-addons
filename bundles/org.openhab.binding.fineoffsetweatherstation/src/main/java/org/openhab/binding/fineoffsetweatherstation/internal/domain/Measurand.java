@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -372,8 +373,8 @@ public enum Measurand {
             if (customizationType == null) {
                 return measureType;
             }
-            return Optional.ofNullable(customizations).map(m -> m.get(customizationType))
-                    .map(ParserCustomization::getMeasureType).orElse(measureType);
+            return Objects.requireNonNull(Optional.ofNullable(customizations).map(m -> m.get(customizationType))
+                    .map(ParserCustomization::getMeasureType).orElse(measureType));
         }
     }
 }

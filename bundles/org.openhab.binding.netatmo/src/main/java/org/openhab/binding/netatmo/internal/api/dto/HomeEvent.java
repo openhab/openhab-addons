@@ -37,6 +37,9 @@ public class HomeEvent extends Event {
     public class NAEventsDataResponse extends ApiResponse<BodyResponse<Home>> {
     }
 
+    private record Snapshot(String url, ZonedDateTime expiresAt) {
+    }
+
     private ZonedDateTime time = ZonedDateTime.now();
     private @Nullable String personId;
     private EventCategory category = EventCategory.UNKNOWN;
@@ -93,20 +96,18 @@ public class HomeEvent extends Event {
 
     @Override
     public @Nullable String getSnapshotUrl() {
-        Snapshot image = snapshot;
-        return image != null ? image.getUrl() : null;
+        return internalGetUrl(snapshot);
     }
 
     public @Nullable String getVignetteUrl() {
-        Snapshot image = vignette;
-        return image != null ? image.getUrl() : null;
+        return internalGetUrl(vignette);
     }
 
-    public List<HomeEvent> getSubevents() {
-        return subevents;
+    public List<HomeEvent> getSubEvents() {
+        return subevents.stream().peek(subevent -> subevent.setCameraId(getCameraId())).toList();
     }
 
-    public @Nullable Snapshot getVignette() {
-        return vignette;
+    private @Nullable String internalGetUrl(@Nullable Snapshot image) {
+        return image == null ? null : image.url();
     }
 }

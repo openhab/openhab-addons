@@ -79,7 +79,7 @@ public class ThingTypeTableGenerator {
         // write actual rows
         rows.forEach(row -> {
             writer.append(writeRow(maxColumns, row, ' ')).append('\n');
-            if (row == headerRow) {
+            if (headerRow.equals(row)) {
                 writer.append(writeRow(maxColumns, new String[] { "", "", "" }, '-')).append('\n');
             }
         });

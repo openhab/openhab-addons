@@ -248,6 +248,7 @@ Additionally depending on the capabilities of your robot vacuum other channels m
 | Switch  | status#water_box_status           | Water Box Status           |
 | Switch  | status#lock_status                | Lock Status                |
 | Number  | status#water_box_mode             | Water Box Mode             |
+| Number  | status#mop_mode                   | Mop Mode                   |
 | Switch  | status#water_box_carriage_status  | Water Box Carriage Status  |
 | Switch  | status#mop_forbidden_enable       | Mop Forbidden              |
 | Switch  | status#is_locating                | Robot is locating          |
