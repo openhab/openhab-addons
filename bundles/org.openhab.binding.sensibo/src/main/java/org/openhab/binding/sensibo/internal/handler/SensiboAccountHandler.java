@@ -184,18 +184,12 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
         final SensiboModel updatedModel = new SensiboModel(System.currentTimeMillis());
 
         final GetPodsRequest getPodsRequest = new GetPodsRequest();
-        final List<PodDTO> pods = sendRequest(buildRequest(getPodsRequest), getPodsRequest,
-                new TypeToken<ArrayList<PodDTO>>() {
+        final List<PodDetailsDTO> pods = sendRequest(buildRequest(getPodsRequest), getPodsRequest,
+                new TypeToken<ArrayList<PodDetailsDTO>>() {
                 }.getType());
 
-        for (final PodDTO pod : pods) {
-            final GetPodsDetailsRequest getPodsDetailsRequest = new GetPodsDetailsRequest(pod.id);
-
-            final PodDetailsDTO podDetails = sendRequest(buildGetPodDetailsRequest(getPodsDetailsRequest),
-                    getPodsDetailsRequest, new TypeToken<PodDetailsDTO>() {
-                    }.getType());
-
-            updatedModel.addPod(new SensiboSky(podDetails));
+        for (final PodDetailsDTO pod : pods) {
+            updatedModel.addPod(new SensiboSky(pod));
         }
 
         return updatedModel;
