@@ -21,5 +21,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface DiscoveryFinishedListener {
+    /**
+     * Method triggered when discovery is finished.
+     */
     void onDiscoveryFinished();
 }

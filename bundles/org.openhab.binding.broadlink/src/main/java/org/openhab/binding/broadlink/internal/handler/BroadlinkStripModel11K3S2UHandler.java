@@ -15,6 +15,7 @@ package org.openhab.binding.broadlink.internal.handler;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -41,16 +42,16 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
         }
 
         switch (channelUID.getId()) {
-            case "power-on-s1":
+            case BroadlinkBindingConstants.COMMAND_POWER_ON_S1:
                 interpretCommandForSocket(1, command);
                 break;
-            case "power-on-s2":
+            case BroadlinkBindingConstants.COMMAND_POWER_ON_S2:
                 interpretCommandForSocket(2, command);
                 break;
-            case "power-on-s3":
+            case BroadlinkBindingConstants.COMMAND_POWER_ON_S3:
                 interpretCommandForSocket(3, command);
                 break;
-            case "power-on-usb":
+            case BroadlinkBindingConstants.COMMAND_POWER_ON_USB:
                 interpretCommandForSocket(4, command);
                 break;
             default:
@@ -118,10 +119,14 @@ public class BroadlinkStripModel11K3S2UHandler extends BroadlinkBaseThingHandler
             byte decodedPayload[] = decodeDevicePacket(response);
             final int status = decodedPayload[14];
 
-            this.updateState("power-on-s1", (status & 0x01) == 0x01 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("power-on-s2", (status & 0x02) == 0x02 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("power-on-s3", (status & 0x04) == 0x04 ? OnOffType.ON : OnOffType.OFF);
-            this.updateState("power-on-usb", (status & 0x08) == 0x08 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S1,
+                    (status & 0x01) == 0x01 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S2,
+                    (status & 0x02) == 0x02 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_S3,
+                    (status & 0x04) == 0x04 ? OnOffType.ON : OnOffType.OFF);
+            this.updateState(BroadlinkBindingConstants.COMMAND_POWER_ON_USB,
+                    (status & 0x08) == 0x08 ? OnOffType.ON : OnOffType.OFF);
         } catch (Exception ex) {
             logger.warn("Exception while getting status from device: {}", ex.getMessage());
             return false;

@@ -13,6 +13,7 @@
 package org.openhab.binding.broadlink.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.broadlink.internal.BroadlinkBindingConstants;
 import org.openhab.binding.broadlink.internal.ModelMapper;
 import org.openhab.core.thing.Thing;
 
@@ -48,9 +49,9 @@ public class BroadlinkA1Handler extends BroadlinkBaseThingHandler {
 
             updateTemperature(temperature);
             updateHumidity((decryptResponse[6] * 10 + decryptResponse[7]) / 10D);
-            updateState("light", ModelMapper.getLightValue(decryptResponse[8]));
-            updateState("air", ModelMapper.getAirValue(decryptResponse[10]));
-            updateState("noise", ModelMapper.getNoiseValue(decryptResponse[12]));
+            updateState(BroadlinkBindingConstants.LIGHT_CHANNEL, ModelMapper.getLightValue(decryptResponse[8]));
+            updateState(BroadlinkBindingConstants.AIR_CHANNEL, ModelMapper.getAirValue(decryptResponse[10]));
+            updateState(BroadlinkBindingConstants.NOISE_CHANNEL, ModelMapper.getNoiseValue(decryptResponse[12]));
             return true;
         } catch (Exception ex) {
             logger.warn("Failed while getting device status: {}", ex.getMessage());

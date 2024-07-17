@@ -21,25 +21,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class BroadlinkDeviceConfiguration {
-    private String ipAddress;
-    private boolean staticIp;
+    private String ipAddress = "";
+    private boolean staticIp = true;
     private int port;
-    private String macAddress;
-    private byte[] macAddressBytes;
-    private int pollingInterval;
-    private String nameOfCommandToLearn;
-    private boolean ignoreFailedUpdates;
+    private String macAddress = "";
+    private byte[] macAddressBytes = new byte[0];
+    private int pollingInterval = 30;
+    private String nameOfCommandToLearn = "DEVICE_ON";
+    private boolean ignoreFailedUpdates = false;
     private int deviceType;
-
-    public BroadlinkDeviceConfiguration() {
-        ipAddress = "";
-        staticIp = true;
-        macAddress = "";
-        macAddressBytes = new byte[0];
-        pollingInterval = 30;
-        nameOfCommandToLearn = "DEVICE_ON";
-        ignoreFailedUpdates = false;
-    }
 
     public String getIpAddress() {
         return ipAddress;

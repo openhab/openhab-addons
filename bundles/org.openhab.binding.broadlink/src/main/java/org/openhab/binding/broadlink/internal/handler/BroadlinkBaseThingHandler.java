@@ -98,6 +98,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Status unknown, starting initialization");
         this.thingConfig = getConfigAs(BroadlinkDeviceConfiguration.class);
         count = (new Random()).nextInt(65535);
 

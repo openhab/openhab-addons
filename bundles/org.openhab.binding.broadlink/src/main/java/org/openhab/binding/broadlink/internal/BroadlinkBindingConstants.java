@@ -82,10 +82,18 @@ public class BroadlinkBindingConstants {
     public static final String LEARNING_CONTROL_COMMAND_DELETE = "DELETE";
     public static final String TEMPERATURE_CHANNEL = "temperature";
     public static final String HUMIDITY_CHANNEL = "humidity";
+    public static final String LIGHT_CHANNEL = "light";
+    public static final String AIR_CHANNEL = "air";
+    public static final String NOISE_CHANNEL = "noise";
     public static final String POWER_CONSUMPTION_CHANNEL = "power-consumption";
 
     public static final String COMMAND_POWER_ON = "power-on";
     public static final String COMMAND_NIGHTLIGHT = "night-light";
+    public static final String COMMAND_POWER_ON_S1 = "s1power-on";
+    public static final String COMMAND_POWER_ON_S2 = "s2power-on";
+    public static final String COMMAND_POWER_ON_S3 = "s3power-on";
+    public static final String COMMAND_POWER_ON_S4 = "s4power-on";
+    public static final String COMMAND_POWER_ON_USB = "power-on-usb";
 
     public static final String IR_MAP_NAME = "broadlink_ir";
     public static final String RF_MAP_NAME = "broadlink_rf";

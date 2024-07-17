@@ -21,7 +21,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface DeviceRediscoveryListener {
+    /**
+     * Discovered a device on the supplied ip address *
+     *
+     * @param newIpAddress
+     */
     void onDeviceRediscovered(String newIpAddress);
 
+    /**
+     * Method triggered when device discovery fails
+     */
     void onDeviceRediscoveryFailure();
 }
