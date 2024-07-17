@@ -106,8 +106,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             this.socket = new RetryableSocket(thingConfig, logger);
         }
 
-        updateItemStatus();
-
         if (thingConfig.getPollingInterval() != 0) {
             refreshHandle = scheduler.scheduleWithFixedDelay(new Runnable() {
                 @Override
