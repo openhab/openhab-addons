@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class PollHandler {
     private static final Logger logger = LoggerFactory.getLogger(PollHandler.class);
-    DeviceFeature feature;
+    LegacyDeviceFeature feature;
     Map<String, String> parameters = new HashMap<>();
 
     /**
@@ -43,7 +43,7 @@ public abstract class PollHandler {
      *
      * @param feature The device feature being polled
      */
-    PollHandler(DeviceFeature feature) {
+    PollHandler(LegacyDeviceFeature feature) {
         this.feature = feature;
     }
 
@@ -54,7 +54,7 @@ public abstract class PollHandler {
      * @param device reference to the insteon device to be polled
      * @return Insteon query message or null if creation failed
      */
-    public abstract @Nullable Msg makeMsg(InsteonDevice device);
+    public abstract @Nullable Msg makeMsg(InsteonLegacyDevice device);
 
     public void setParameters(Map<String, String> hm) {
         parameters = hm;
@@ -87,12 +87,12 @@ public abstract class PollHandler {
      * the device features file.
      */
     public static class FlexPollHandler extends PollHandler {
-        FlexPollHandler(DeviceFeature f) {
+        FlexPollHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public @Nullable Msg makeMsg(InsteonDevice d) {
+        public @Nullable Msg makeMsg(InsteonLegacyDevice d) {
             Msg m = null;
             int cmd1 = getIntParameter("cmd1", 0);
             int cmd2 = getIntParameter("cmd2", 0);
@@ -123,12 +123,12 @@ public abstract class PollHandler {
     }
 
     public static class NoPollHandler extends PollHandler {
-        NoPollHandler(DeviceFeature f) {
+        NoPollHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public @Nullable Msg makeMsg(InsteonDevice d) {
+        public @Nullable Msg makeMsg(InsteonLegacyDevice d) {
             return null;
         }
     }
@@ -141,14 +141,14 @@ public abstract class PollHandler {
      * @return the handler which was created
      */
     @Nullable
-    public static <T extends PollHandler> T makeHandler(HandlerEntry ph, DeviceFeature f) {
+    public static <T extends PollHandler> T makeHandler(HandlerEntry ph, LegacyDeviceFeature f) {
         String cname = PollHandler.class.getName() + "$" + ph.getName();
         try {
             Class<?> c = Class.forName(cname);
             @SuppressWarnings("unchecked")
             Class<? extends T> dc = (Class<? extends T>) c;
             @Nullable
-            T phc = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
+            T phc = dc.getDeclaredConstructor(LegacyDeviceFeature.class).newInstance(f);
             phc.setParameters(ph.getParams());
             return phc;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException

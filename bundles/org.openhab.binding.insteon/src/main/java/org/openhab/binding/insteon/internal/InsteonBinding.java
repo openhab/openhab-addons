@@ -32,20 +32,20 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.config.InsteonChannelConfiguration;
 import org.openhab.binding.insteon.internal.config.InsteonNetworkConfiguration;
-import org.openhab.binding.insteon.internal.device.DeviceFeature;
 import org.openhab.binding.insteon.internal.device.DeviceFeatureListener;
-import org.openhab.binding.insteon.internal.device.DeviceType;
 import org.openhab.binding.insteon.internal.device.DeviceTypeLoader;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
-import org.openhab.binding.insteon.internal.device.InsteonDevice;
-import org.openhab.binding.insteon.internal.device.InsteonDevice.DeviceStatus;
+import org.openhab.binding.insteon.internal.device.InsteonLegacyDevice;
+import org.openhab.binding.insteon.internal.device.InsteonLegacyDevice.DeviceStatus;
+import org.openhab.binding.insteon.internal.device.LegacyDeviceFeature;
+import org.openhab.binding.insteon.internal.device.LegacyDeviceType;
 import org.openhab.binding.insteon.internal.device.RequestQueueManager;
 import org.openhab.binding.insteon.internal.driver.Driver;
 import org.openhab.binding.insteon.internal.driver.DriverListener;
 import org.openhab.binding.insteon.internal.driver.ModemDBEntry;
 import org.openhab.binding.insteon.internal.driver.Poller;
 import org.openhab.binding.insteon.internal.driver.Port;
-import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
+import org.openhab.binding.insteon.internal.handler.InsteonLegacyDeviceHandler;
 import org.openhab.binding.insteon.internal.handler.InsteonNetworkHandler;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -112,7 +112,7 @@ public class InsteonBinding {
     private final Logger logger = LoggerFactory.getLogger(InsteonBinding.class);
 
     private Driver driver;
-    private Map<InsteonAddress, InsteonDevice> devices = new ConcurrentHashMap<>();
+    private Map<InsteonAddress, InsteonLegacyDevice> devices = new ConcurrentHashMap<>();
     private Map<String, InsteonChannelConfiguration> bindingConfigs = new ConcurrentHashMap<>();
     private PortListener portListener = new PortListener();
     private int devicePollIntervalMilliseconds = 300000;
@@ -157,7 +157,7 @@ public class InsteonBinding {
         String additionalFeatures = config.getAdditionalFeatures();
         if (additionalFeatures != null) {
             logger.debug("reading additional feature templates from {}", additionalFeatures);
-            DeviceFeature.readFeatureTemplates(additionalFeatures);
+            LegacyDeviceFeature.readFeatureTemplates(additionalFeatures);
         }
 
         deadDeviceTimeout = devicePollIntervalMilliseconds * DEAD_DEVICE_COUNT;
@@ -194,7 +194,7 @@ public class InsteonBinding {
             return;
         }
 
-        InsteonDevice dev = getDevice(bindingConfig.getAddress());
+        InsteonLegacyDevice dev = getDevice(bindingConfig.getAddress());
         if (dev == null) {
             logger.warn("no device found with insteon address {}", bindingConfig.getAddress());
             return;
@@ -209,19 +209,19 @@ public class InsteonBinding {
         logger.debug("adding listener for channel {}", bindingConfig.getChannelName());
 
         InsteonAddress address = bindingConfig.getAddress();
-        InsteonDevice dev = getDevice(address);
+        InsteonLegacyDevice dev = getDevice(address);
         if (dev == null) {
             logger.warn("device for address {} is null", address);
             return;
         }
         @Nullable
-        DeviceFeature f = dev.getFeature(bindingConfig.getFeature());
+        LegacyDeviceFeature f = dev.getFeature(bindingConfig.getFeature());
         if (f == null || f.isFeatureGroup()) {
             StringBuilder buf = new StringBuilder();
             ArrayList<String> names = new ArrayList<>(dev.getFeatures().keySet());
             Collections.sort(names);
             for (String name : names) {
-                DeviceFeature feature = dev.getFeature(name);
+                LegacyDeviceFeature feature = dev.getFeature(name);
                 if (feature != null && !feature.isFeatureGroup()) {
                     if (buf.length() > 0) {
                         buf.append(", ");
@@ -249,8 +249,8 @@ public class InsteonBinding {
 
         logger.debug("removing listener for channel {}", channelName);
 
-        for (Iterator<Entry<InsteonAddress, InsteonDevice>> it = devices.entrySet().iterator(); it.hasNext();) {
-            InsteonDevice dev = it.next().getValue();
+        for (Iterator<Entry<InsteonAddress, InsteonLegacyDevice>> it = devices.entrySet().iterator(); it.hasNext();) {
+            InsteonLegacyDevice dev = it.next().getValue();
             boolean removedListener = dev.removeFeatureListener(channelName);
             if (removedListener) {
                 logger.trace("removed feature listener {} from dev {}", channelName, dev);
@@ -262,21 +262,21 @@ public class InsteonBinding {
         handler.updateState(channelUID, state);
     }
 
-    public @Nullable InsteonDevice makeNewDevice(InsteonAddress addr, String productKey,
+    public @Nullable InsteonLegacyDevice makeNewDevice(InsteonAddress addr, String productKey,
             Map<String, Object> deviceConfigMap) {
         DeviceTypeLoader instance = DeviceTypeLoader.instance();
         if (instance == null) {
             return null;
         }
-        DeviceType dt = instance.getDeviceType(productKey);
+        LegacyDeviceType dt = instance.getDeviceType(productKey);
         if (dt == null) {
             return null;
         }
-        InsteonDevice dev = InsteonDevice.makeDevice(dt);
+        InsteonLegacyDevice dev = InsteonLegacyDevice.makeDevice(dt);
         dev.setAddress(addr);
         dev.setProductKey(productKey);
         dev.setDriver(driver);
-        dev.setIsModem(productKey.equals(InsteonDeviceHandler.PLM_PRODUCT_KEY));
+        dev.setIsModem(productKey.equals(InsteonLegacyDeviceHandler.PLM_PRODUCT_KEY));
         dev.setDeviceConfigMap(deviceConfigMap);
         if (!dev.hasValidPollingInterval()) {
             dev.setPollInterval(devicePollIntervalMilliseconds);
@@ -296,7 +296,7 @@ public class InsteonBinding {
     }
 
     public void removeDevice(InsteonAddress addr) {
-        InsteonDevice dev = devices.remove(addr);
+        InsteonLegacyDevice dev = devices.remove(addr);
         if (dev == null) {
             return;
         }
@@ -313,7 +313,7 @@ public class InsteonBinding {
      * @param dev The device to search for in the modem database
      * @return number of devices in modem database
      */
-    private int checkIfInModemDatabase(InsteonDevice dev) {
+    private int checkIfInModemDatabase(InsteonLegacyDevice dev) {
         try {
             InsteonAddress addr = dev.getAddress();
             Map<InsteonAddress, ModemDBEntry> dbes = driver.lockModemDBEntries();
@@ -376,8 +376,8 @@ public class InsteonBinding {
      * @param aAddr the insteon address to search for
      * @return reference to the device, or null if not found
      */
-    public @Nullable InsteonDevice getDevice(@Nullable InsteonAddress aAddr) {
-        InsteonDevice dev = (aAddr == null) ? null : devices.get(aAddr);
+    public @Nullable InsteonLegacyDevice getDevice(@Nullable InsteonAddress aAddr) {
+        InsteonLegacyDevice dev = (aAddr == null) ? null : devices.get(aAddr);
         return (dev);
     }
 
@@ -446,7 +446,7 @@ public class InsteonBinding {
                 Poller.instance().getSizeOfQueue(), messagesReceived);
         logger.debug("{}", msg);
         messagesReceived = 0;
-        for (InsteonDevice dev : devices.values()) {
+        for (InsteonLegacyDevice dev : devices.values()) {
             if (dev.isModem()) {
                 continue;
             }
@@ -489,7 +489,7 @@ public class InsteonBinding {
                     logger.debug("modem db entry: {}", k);
                 }
                 Set<InsteonAddress> addrs = new HashSet<>();
-                for (InsteonDevice dev : devices.values()) {
+                for (InsteonLegacyDevice dev : devices.values()) {
                     InsteonAddress a = dev.getAddress();
                     if (!dbes.containsKey(a)) {
                         if (!a.isX10()) {
@@ -567,7 +567,7 @@ public class InsteonBinding {
         }
 
         private void handleMessage(InsteonAddress fromAddr, Msg msg) {
-            InsteonDevice dev = getDevice(fromAddr);
+            InsteonLegacyDevice dev = getDevice(fromAddr);
             if (dev == null) {
                 logger.debug("dropping message from unknown device with address {}", fromAddr);
             } else {

@@ -14,16 +14,18 @@ package org.openhab.binding.insteon.internal.device;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.insteon.internal.utils.Utils;
+import org.openhab.binding.insteon.internal.utils.HexUtils;
 
 /**
- * This class wraps an Insteon Address 'xx.xx.xx'
+ * The {@link InsteonAddress} represents an Insteon address
  *
  * @author Daniel Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
-public class InsteonAddress {
+public class InsteonAddress implements DeviceAddress {
+    public static final InsteonAddress UNKNOWN = new InsteonAddress("00.00.00");
     private byte highByte;
     private byte middleByte;
     private byte lowByte;
@@ -36,11 +38,11 @@ public class InsteonAddress {
         x10 = false;
     }
 
-    public InsteonAddress(InsteonAddress a) {
-        highByte = a.highByte;
-        middleByte = a.middleByte;
-        lowByte = a.lowByte;
-        x10 = a.x10;
+    public InsteonAddress(InsteonAddress address) {
+        highByte = address.highByte;
+        middleByte = address.middleByte;
+        lowByte = address.lowByte;
+        x10 = address.x10;
     }
 
     public InsteonAddress(byte high, byte middle, byte low) {
@@ -50,11 +52,12 @@ public class InsteonAddress {
         x10 = false;
     }
 
-    /**
-     * Constructor
-     *
-     * @param address string must have format of e.g. '2a.3c.40' or (for X10) 'H.UU'
-     */
+    public InsteonAddress(byte[] b) throws ArrayIndexOutOfBoundsException {
+        this.highByte = b[0];
+        this.middleByte = b[1];
+        this.lowByte = b[2];
+    }
+
     public InsteonAddress(String address) throws IllegalArgumentException {
         if (X10.isValidAddress(address)) {
             highByte = 0;
@@ -66,10 +69,14 @@ public class InsteonAddress {
             if (parts.length != 3) {
                 throw new IllegalArgumentException("Address string must have 3 bytes, has: " + parts.length);
             }
-            highByte = (byte) Utils.fromHexString(parts[0]);
-            middleByte = (byte) Utils.fromHexString(parts[1]);
-            lowByte = (byte) Utils.fromHexString(parts[2]);
-            x10 = false;
+            try {
+                highByte = (byte) HexUtils.toInteger(parts[0]);
+                middleByte = (byte) HexUtils.toInteger(parts[1]);
+                lowByte = (byte) HexUtils.toInteger(parts[2]);
+                x10 = false;
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Address string must have hexadecimal bytes");
+            }
         }
     }
 
@@ -134,21 +141,21 @@ public class InsteonAddress {
         setLowByte(bytes[offset + 2]);
     }
 
+    public byte[] getBytes() {
+        return new byte[] { highByte, middleByte, lowByte };
+    }
+
     @Override
     public String toString() {
-        String s = null;
         if (isX10()) {
             byte house = (byte) (((getLowByte() & 0xf0) >> 4) & 0xff);
             byte unit = (byte) ((getLowByte() & 0x0f) & 0xff);
-            s = X10.houseToString(house) + "." + X10.unitToInt(unit);
-            // s = Utils.getHexString(lowByte);
+            return X10.houseToString(house) + "." + X10.unitToInt(unit);
         } else {
-            s = Utils.getHexString(highByte) + "." + Utils.getHexString(middleByte) + "." + Utils.getHexString(lowByte);
+            return String.format("%02X.%02X.%02X", highByte, middleByte, lowByte);
         }
-        return s;
     }
 
-    @SuppressWarnings("PMD.SimplifyBooleanReturns")
     @Override
     public boolean equals(@Nullable Object obj) {
         if (this == obj) {
@@ -161,19 +168,8 @@ public class InsteonAddress {
             return false;
         }
         InsteonAddress other = (InsteonAddress) obj;
-        if (highByte != other.highByte) {
-            return false;
-        }
-        if (lowByte != other.lowByte) {
-            return false;
-        }
-        if (middleByte != other.middleByte) {
-            return false;
-        }
-        if (x10 != other.x10) {
-            return false;
-        }
-        return true;
+        return highByte == other.highByte && middleByte == other.middleByte && lowByte == other.lowByte
+                && x10 == other.x10;
     }
 
     @Override
@@ -181,37 +177,30 @@ public class InsteonAddress {
         final int prime = 31;
         int result = 1;
         result = prime * result + highByte;
-        result = prime * result + lowByte;
         result = prime * result + middleByte;
+        result = prime * result + lowByte;
         result = prime * result + (x10 ? 1231 : 1237);
         return result;
     }
 
     /**
-     * Test if Insteon address is valid
+     * Tests if Insteon address is valid
      *
-     * @return true if address is in valid AB.CD.EF or (for X10) H.UU format
+     * @return true if address is valid
      */
-    public static boolean isValid(@Nullable String addr) {
-        if (addr == null) {
+    public static boolean isValid(@Nullable String address) {
+        if (address == null) {
             return false;
         }
-        if (X10.isValidAddress(addr)) {
+        if (X10.isValidAddress(address)) {
             return true;
         }
-        String[] fields = addr.split("\\.");
-        if (fields.length != 3) {
-            return false;
-        }
         try {
-            // convert the insteon xx.xx.xx address to integer to test
-            @SuppressWarnings("unused")
-            int test = Integer.parseInt(fields[2], 16) * 65536 + Integer.parseInt(fields[1], 16) * 256
-                    + +Integer.parseInt(fields[0], 16);
-        } catch (NumberFormatException e) {
+            new InsteonAddress(address);
+            return true;
+        } catch (IllegalArgumentException e) {
             return false;
         }
-        return true;
     }
 
     /**

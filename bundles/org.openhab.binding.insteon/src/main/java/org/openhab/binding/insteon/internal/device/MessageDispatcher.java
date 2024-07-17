@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 public abstract class MessageDispatcher {
     private static final Logger logger = LoggerFactory.getLogger(MessageDispatcher.class);
 
-    DeviceFeature feature;
+    LegacyDeviceFeature feature;
     @Nullable
     Map<String, String> parameters = new HashMap<>();
 
@@ -43,7 +43,7 @@ public abstract class MessageDispatcher {
      *
      * @param f DeviceFeature to which this MessageDispatcher belongs
      */
-    MessageDispatcher(DeviceFeature f) {
+    MessageDispatcher(LegacyDeviceFeature f) {
         feature = f;
     }
 
@@ -107,10 +107,9 @@ public abstract class MessageDispatcher {
      * @param msg
      * @return true;
      */
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     boolean isMyDirectAck(Msg msg) {
-        return msg.isAckOfDirect() && (feature.getQueryStatus() == DeviceFeature.QueryStatus.QUERY_PENDING)
-                && feature.getDevice().getFeatureQueried() == feature;
+        return msg.isAckOfDirect() && (feature.getQueryStatus() == LegacyDeviceFeature.QueryStatus.QUERY_PENDING)
+                && feature.getDevice().getFeatureQueried().equals(feature);
     }
 
     /**
@@ -129,7 +128,7 @@ public abstract class MessageDispatcher {
     //
 
     public static class DefaultDispatcher extends MessageDispatcher {
-        DefaultDispatcher(DeviceFeature f) {
+        DefaultDispatcher(LegacyDeviceFeature f) {
             super(f);
         }
 
@@ -185,7 +184,7 @@ public abstract class MessageDispatcher {
                 }
             }
             if (isConsumed) {
-                feature.setQueryStatus(DeviceFeature.QueryStatus.QUERY_ANSWERED);
+                feature.setQueryStatus(LegacyDeviceFeature.QueryStatus.QUERY_ANSWERED);
                 logger.debug("defdisp: {}:{} set status to: {}", feature.getDevice().getAddress(), feature.getName(),
                         feature.getQueryStatus());
             }
@@ -194,7 +193,7 @@ public abstract class MessageDispatcher {
     }
 
     public static class DefaultGroupDispatcher extends MessageDispatcher {
-        DefaultGroupDispatcher(DeviceFeature f) {
+        DefaultGroupDispatcher(LegacyDeviceFeature f) {
             super(f);
         }
 
@@ -237,7 +236,7 @@ public abstract class MessageDispatcher {
                 key = (cmd1 & 0xFF);
             }
             if (key != -1) {
-                for (DeviceFeature f : feature.getConnectedFeatures()) {
+                for (LegacyDeviceFeature f : feature.getConnectedFeatures()) {
                     MessageHandler h = f.getMsgHandlers().get(key);
                     if (h == null) {
                         h = f.getDefaultMsgHandler();
@@ -253,7 +252,7 @@ public abstract class MessageDispatcher {
                 }
             }
             if (isConsumed) {
-                feature.setQueryStatus(DeviceFeature.QueryStatus.QUERY_ANSWERED);
+                feature.setQueryStatus(LegacyDeviceFeature.QueryStatus.QUERY_ANSWERED);
                 logger.debug("{}:{} set status to: {}", feature.getDevice().getAddress(), feature.getName(),
                         feature.getQueryStatus());
             }
@@ -262,7 +261,7 @@ public abstract class MessageDispatcher {
     }
 
     public static class PollGroupDispatcher extends MessageDispatcher {
-        PollGroupDispatcher(DeviceFeature f) {
+        PollGroupDispatcher(LegacyDeviceFeature f) {
             super(f);
         }
 
@@ -288,7 +287,7 @@ public abstract class MessageDispatcher {
     }
 
     public static class SimpleDispatcher extends MessageDispatcher {
-        SimpleDispatcher(DeviceFeature f) {
+        SimpleDispatcher(LegacyDeviceFeature f) {
             super(f);
         }
 
@@ -325,7 +324,7 @@ public abstract class MessageDispatcher {
     }
 
     public static class X10Dispatcher extends MessageDispatcher {
-        X10Dispatcher(DeviceFeature f) {
+        X10Dispatcher(LegacyDeviceFeature f) {
             super(f);
         }
 
@@ -351,7 +350,7 @@ public abstract class MessageDispatcher {
     }
 
     public static class PassThroughDispatcher extends MessageDispatcher {
-        PassThroughDispatcher(DeviceFeature f) {
+        PassThroughDispatcher(LegacyDeviceFeature f) {
             super(f);
         }
 
@@ -371,7 +370,7 @@ public abstract class MessageDispatcher {
      * Drop all incoming messages silently
      */
     public static class NoOpDispatcher extends MessageDispatcher {
-        NoOpDispatcher(DeviceFeature f) {
+        NoOpDispatcher(LegacyDeviceFeature f) {
             super(f);
         }
 
@@ -391,14 +390,14 @@ public abstract class MessageDispatcher {
      */
     @Nullable
     public static <T extends MessageDispatcher> T makeHandler(String name, @Nullable Map<String, String> params,
-            DeviceFeature f) {
+            LegacyDeviceFeature f) {
         String cname = MessageDispatcher.class.getName() + "$" + name;
         try {
             Class<?> c = Class.forName(cname);
             @SuppressWarnings("unchecked")
             Class<? extends T> dc = (Class<? extends T>) c;
             @Nullable
-            T ch = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
+            T ch = dc.getDeclaredConstructor(LegacyDeviceFeature.class).newInstance(f);
             ch.setParameters(params);
             return ch;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException

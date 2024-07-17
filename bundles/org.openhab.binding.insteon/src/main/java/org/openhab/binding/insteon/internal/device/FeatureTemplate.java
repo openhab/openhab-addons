@@ -137,8 +137,8 @@ public class FeatureTemplate {
      *
      * @return the feature which this template describes
      */
-    public DeviceFeature build() {
-        DeviceFeature f = new DeviceFeature(name);
+    public LegacyDeviceFeature build() {
+        LegacyDeviceFeature f = new LegacyDeviceFeature(name);
         f.setStatusFeature(isStatus);
         f.setTimeout(timeout);
         HandlerEntry dispatcher = this.dispatcher;

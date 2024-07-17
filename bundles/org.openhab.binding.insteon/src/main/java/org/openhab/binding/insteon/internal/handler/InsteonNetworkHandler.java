@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.InsteonBinding;
 import org.openhab.binding.insteon.internal.config.InsteonNetworkConfiguration;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
-import org.openhab.binding.insteon.internal.discovery.InsteonDeviceDiscoveryService;
+import org.openhab.binding.insteon.internal.discovery.InsteonDeviceLegacyDiscoveryService;
 import org.openhab.binding.insteon.internal.utils.Utils;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.transport.serial.SerialPortManager;
@@ -55,7 +55,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(InsteonNetworkHandler.class);
 
     private @Nullable InsteonBinding insteonBinding;
-    private @Nullable InsteonDeviceDiscoveryService insteonDeviceDiscoveryService;
+    private @Nullable InsteonDeviceLegacyDiscoveryService insteonDeviceDiscoveryService;
     private @Nullable ScheduledFuture<?> driverInitializedJob = null;
     private @Nullable ScheduledFuture<?> pollingJob = null;
     private @Nullable ScheduledFuture<?> reconnectJob = null;
@@ -215,13 +215,13 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
         }
     }
 
-    public void setInsteonDeviceDiscoveryService(InsteonDeviceDiscoveryService insteonDeviceDiscoveryService) {
+    public void setInsteonDeviceDiscoveryService(InsteonDeviceLegacyDiscoveryService insteonDeviceDiscoveryService) {
         this.insteonDeviceDiscoveryService = insteonDeviceDiscoveryService;
     }
 
     public void addMissingDevices(List<String> missing) {
         scheduler.execute(() -> {
-            InsteonDeviceDiscoveryService insteonDeviceDiscoveryService = this.insteonDeviceDiscoveryService;
+            InsteonDeviceLegacyDiscoveryService insteonDeviceDiscoveryService = this.insteonDeviceDiscoveryService;
             if (insteonDeviceDiscoveryService != null) {
                 insteonDeviceDiscoveryService.addInsteonDevices(missing, getThing().getUID());
             }
@@ -230,7 +230,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
 
     public void deviceNotLinked(InsteonAddress addr) {
         getThing().getThings().stream().forEach((thing) -> {
-            InsteonDeviceHandler handler = (InsteonDeviceHandler) thing.getHandler();
+            InsteonLegacyDeviceHandler handler = (InsteonLegacyDeviceHandler) thing.getHandler();
             if (handler != null && addr.equals(handler.getInsteonAddress())) {
                 handler.deviceNotLinked();
                 return;
