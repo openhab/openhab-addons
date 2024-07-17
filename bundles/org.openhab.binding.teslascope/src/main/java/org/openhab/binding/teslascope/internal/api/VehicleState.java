@@ -14,6 +14,8 @@ package org.openhab.binding.teslascope.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Class for holding the set of parameters used to read the controller variables.
  *
@@ -24,25 +26,64 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class VehicleState {
     // vehicle_state
     public int locked;
-    public int sentry_mode;
-    public int valet_mode;
-    public String software_update_status = "";
-    public String software_update_version = "";
-    public int fd_window;
-    public int fp_window;
-    public int rd_window;
-    public int rp_window;
-    public String sun_roof_state = "";
-    public int sun_roof_percent_open;
-    public int homelink_nearby;
-    public double tpms_pressure_fl;
-    public double tpms_pressure_fr;
-    public double tpms_pressure_rl;
-    public double tpms_pressure_rr;
-    public int tpms_soft_warning_fl;
-    public int tpms_soft_warning_fr;
-    public int tpms_soft_warning_rl;
-    public int tpms_soft_warning_rr;
+
+    @SerializedName("sentry_mode")
+    public int sentryMode;
+
+    @SerializedName("valet_mode")
+    public int valetMode;
+
+    @SerializedName("software_update_status")
+    public String softwareUpdateStatus = "";
+
+    @SerializedName("software_update_version")
+    public String softwareUpdateVersion = "";
+
+    @SerializedName("fd_window")
+    public int fdWindow;
+
+    @SerializedName("fp_window")
+    public int fpWindow;
+
+    @SerializedName("rd_window")
+    public int rdWindow;
+
+    @SerializedName("rp_window")
+    public int rpWindow;
+
+    @SerializedName("sun_roof_state")
+    public String sunRoofState = "";
+
+    @SerializedName("sunRoofPercentOpen")
+    public int sunRoofPercentOpen;
+
+    @SerializedName("homelink_nearby")
+    public int homelinkNearby;
+
+    @SerializedName("tpms_pressure_fl")
+    public double tpmsPressureFL;
+
+    @SerializedName("tpms_pressure_fr")
+    public double tpmsPressureFR;
+
+    @SerializedName("tpms_pressure_rl")
+    public double tpmsPressureRL;
+
+    @SerializedName("tpms_pressure_rr")
+    public double tpmsPressureRR;
+
+    @SerializedName("tpms_soft_warning_fl")
+    public int tpmsSoftWarningFL;
+
+    @SerializedName("tpms_soft_warning_fr")
+    public int tpmsSoftWarningFR;
+
+    @SerializedName("tpms_soft_warning_rl")
+    public int tpmsSoftWarningRL;
+
+    @SerializedName("tpms_soft_warning_rr")
+    public int tpmsSoftWarningRR;
+
     public int df;
     public int dr;
     public int pf;

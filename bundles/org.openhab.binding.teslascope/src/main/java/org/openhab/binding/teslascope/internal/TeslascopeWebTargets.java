@@ -49,7 +49,7 @@ public class TeslascopeWebTargets {
 
     public void sendCommand(String publicID, String apiKey, String command)
             throws TeslascopeCommunicationException, TeslascopeAuthenticationException {
-        String response = invoke(BASE_URI + publicID + "/command/" + command + "?api_key=" + apiKey);
+        invoke(BASE_URI + publicID + "/command/" + command + "?api_key=" + apiKey);
         return;
     }
 

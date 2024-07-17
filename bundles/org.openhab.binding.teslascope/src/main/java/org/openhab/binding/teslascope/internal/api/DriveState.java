@@ -14,6 +14,8 @@ package org.openhab.binding.teslascope.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Class for holding the set of parameters used to read the controller variables.
  *
@@ -26,7 +28,10 @@ public class DriveState {
     public int heading;
     public float latitude;
     public float longitude;
-    public String shift_state = "";
+
+    @SerializedName("shift_state")
+    public String shiftState = "";
+
     public float power;
     public float speed = 0;
 

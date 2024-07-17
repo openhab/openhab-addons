@@ -14,6 +14,8 @@ package org.openhab.binding.teslascope.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Class for holding the set of parameters used to read the controller variables.
  *
@@ -27,10 +29,18 @@ public class DetailedInformation {
     public String name = "";
     public String state = "";
     public double odometer;
-    public @NonNullByDefault({}) VehicleState vehicle_state;
-    public @NonNullByDefault({}) ClimateState climate_state;
-    public @NonNullByDefault({}) ChargeState charge_state;
-    public @NonNullByDefault({}) DriveState drive_state;
+
+    @SerializedName("vehicle_state")
+    public @NonNullByDefault({}) VehicleState vehicleState;
+
+    @SerializedName("climate_state")
+    public @NonNullByDefault({}) ClimateState climateState;
+
+    @SerializedName("charge_state")
+    public @NonNullByDefault({}) ChargeState chargeState;
+
+    @SerializedName("drive_state")
+    public @NonNullByDefault({}) DriveState driveState;
 
     private DetailedInformation() {
     }

@@ -14,6 +14,8 @@ package org.openhab.binding.teslascope.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Class for holding the set of parameters used to read the controller variables.
  *
@@ -23,29 +25,74 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class ClimateState {
     // climate_state
-    public int is_auto_conditioning_on;
-    public int is_climate_on;
-    public int is_front_defroster_on;
-    public int is_preconditioning;
-    public int is_rear_defroster_on;
-    public int seat_heater_left;
-    public int seat_heater_rear_center;
-    public int seat_heater_rear_left;
-    public int seat_heater_rear_right;
-    public int seat_heater_right;
-    public int side_mirror_heaters;
-    public int smart_preconditioning;
-    public int steering_wheel_heater;
-    public int wiper_blade_heater;
-    public float driver_temp_setting;
-    public float inside_temp;
-    public float outside_temp;
-    public float passenger_temp_setting;
-    public float fan_status;
-    public int left_temp_direction;
-    public float max_avail_temp;
-    public float min_avail_temp;
-    public int right_temp_direction;
+    @SerializedName("is_auto_conditioning_on")
+    public int isAutoConditioningOn;
+
+    @SerializedName("is_climate_on")
+    public int isClimateOn;
+
+    @SerializedName("is_front_defroster_on")
+    public int isFrontDefrosterOn;
+
+    @SerializedName("is_preconditioning")
+    public int isPreconditioning;
+
+    @SerializedName("is_rear_defroster_on")
+    public int isRearDefrosterOn;
+
+    @SerializedName("seat_heater_left")
+    public int seatHeaterLeft;
+
+    @SerializedName("seat_heater_rear_center")
+    public int seatHeaterRearCenter;
+
+    @SerializedName("seat_heater_rear_left")
+    public int seatHeaterRearLeft;
+
+    @SerializedName("seat_heater_rear_right")
+    public int seatHeaterRearRight;
+
+    @SerializedName("seat_heater_right")
+    public int seatHeaterRight;
+
+    @SerializedName("side_mirror_heaters")
+    public int sideMirrorHeaters;
+
+    @SerializedName("smart_preconditioning")
+    public int smartPreconditioning;
+
+    @SerializedName("steering_wheel_heater")
+    public int steeringWheelHeater;
+
+    @SerializedName("wiper_blade_heater")
+    public int wiperBladeHeater;
+
+    @SerializedName("driver_temp_setting")
+    public float driverTempSetting;
+
+    @SerializedName("inside_temp")
+    public float insideTemp;
+
+    @SerializedName("outside_temp")
+    public float outsideTemp;
+
+    @SerializedName("passenger_temp_setting")
+    public float passengerTempSetting;
+
+    @SerializedName("fan_status")
+    public float fanStatus;
+
+    @SerializedName("left_temp_direction")
+    public int leftTempDirection;
+
+    @SerializedName("max_avail_temp")
+    public float maxAvailTemp;
+
+    @SerializedName("min_avail_temp")
+    public float minAvailTemp;
+
+    @SerializedName("right_temp_direction")
+    public int rightTempDirection;
 
     private ClimateState() {
     }
