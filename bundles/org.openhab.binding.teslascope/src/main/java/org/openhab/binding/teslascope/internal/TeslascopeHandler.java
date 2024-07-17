@@ -54,7 +54,7 @@ public class TeslascopeHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(TeslascopeHandler.class);
 
-    private @Nullable TeslascopeConfiguration config;
+    private TeslascopeConfiguration config = new TeslascopeConfiguration();
     private TeslascopeWebTargets webTargets;
     private @Nullable ScheduledFuture<?> pollFuture;
 
