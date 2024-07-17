@@ -109,13 +109,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         updateItemStatus();
 
         if (thingConfig.getPollingInterval() != 0) {
-            refreshHandle = scheduler.scheduleWithFixedDelay(new Runnable() {
-
-                @Override
-                public void run() {
-                    updateItemStatus();
-                }
-            }, 1L, thingConfig.getPollingInterval(), TimeUnit.SECONDS);
+            refreshHandle = scheduler.scheduleWithFixedDelay(this::updateItemStatus(), 0, thingConfig.getPollingInterval(), TimeUnit.SECONDS);
         }
     }
 
