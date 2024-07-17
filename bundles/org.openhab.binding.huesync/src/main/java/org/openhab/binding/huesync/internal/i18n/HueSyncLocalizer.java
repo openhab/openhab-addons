@@ -29,18 +29,20 @@ import org.osgi.framework.ServiceReference;
 @NonNullByDefault
 public class HueSyncLocalizer {
     private static final Locale locale = Locale.ENGLISH;
-    private static final BundleContext bundleContext = FrameworkUtil.getBundle(HueSyncLocalizer.class).getBundleContext();
-    private static final ServiceReference<TranslationProvider> serviceReference = bundleContext.getServiceReference(TranslationProvider.class);
+    private static final BundleContext bundleContext = FrameworkUtil.getBundle(HueSyncLocalizer.class)
+            .getBundleContext();
+    private static final ServiceReference<TranslationProvider> serviceReference = bundleContext
+            .getServiceReference(TranslationProvider.class);
     private static final Bundle bundle = bundleContext.getBundle();
 
     public static String getResourceString(String key) {
         String lookupKey = key.replace("@text/", "");
         String missingKey = "⚠️ Missing Translation ⚠️: " + key;
 
-        @Nullable TranslationProvider translationProvider = bundleContext.getService(serviceReference);
+        @Nullable
+        TranslationProvider translationProvider = bundleContext.getService(serviceReference);
 
-        String result = translationProvider == null 
-                ? missingKey 
+        String result = translationProvider == null ? missingKey
                 : translationProvider.getText(bundle, lookupKey, missingKey, locale);
 
         return result == null ? missingKey : result;
