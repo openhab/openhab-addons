@@ -270,7 +270,7 @@ public enum AmplifierModel {
 
     public String getZoneIdFromZoneName(String zoneName) {
         for (String zoneId : zoneIdMap.keySet()) {
-            if (zoneIdMap.get(zoneId).equals(zoneName)) {
+            if (zoneName.equals(zoneIdMap.get(zoneId))) {
                 return zoneId;
             }
         }
@@ -278,12 +278,8 @@ public enum AmplifierModel {
     }
 
     public String getZoneName(String zoneId) {
-        String zoneName = zoneIdMap.get(zoneId);
-        if (zoneName != null) {
-            return zoneName;
-        } else {
-            return "";
-        }
+        final String zoneName = zoneIdMap.get(zoneId);
+        return zoneName != null ? zoneName : "";
     }
 
     public String getCmdPrefix() {
