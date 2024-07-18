@@ -21,7 +21,6 @@ package org.openhab.binding.gree.internal.gson;
  * @author John Cunha - Initial contribution
  */
 public class GreeReqStatusPackDTO {
-
     public String t = null;
     public String[] cols = null;
     public String mac = null;

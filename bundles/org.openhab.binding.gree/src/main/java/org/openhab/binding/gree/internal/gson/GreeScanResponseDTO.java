@@ -19,14 +19,6 @@ package org.openhab.binding.gree.internal.gson;
  *
  * @author John Cunha - Initial contribution
  */
-public class GreeScanResponseDTO {
-    public String t = null;
-    public int i = 0;
-    public int uid = 0;
-    public String cid = null;
-    public String tcid = null;
-    public String pack = null;
-    public String tag = null;
-    public transient String decryptedPack = null;
+public class GreeScanResponseDTO extends GreeResponseBaseDTO {
     public transient GreeScanResponsePackDTO packJson = null;
 }

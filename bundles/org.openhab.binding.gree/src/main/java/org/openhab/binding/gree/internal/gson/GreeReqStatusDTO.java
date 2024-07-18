@@ -20,12 +20,5 @@ package org.openhab.binding.gree.internal.gson;
  *
  * @author John Cunha - Initial contribution
  */
-public class GreeReqStatusDTO {
-    public String cid = null;
-    public int i = 0;
-    public String t = null;
-    public int uid = 0;
-    public String tag = null;
-    public String pack = null;
-    public String tcid = null;
+public class GreeReqStatusDTO extends GreeRequestDTO {
 }
