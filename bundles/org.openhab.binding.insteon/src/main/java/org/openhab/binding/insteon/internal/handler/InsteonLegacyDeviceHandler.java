@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -127,7 +128,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
     public static final String POWER_METER_PRODUCT_KEY = "F00.00.17";
 
     private final Logger logger = LoggerFactory.getLogger(InsteonLegacyDeviceHandler.class);
-
+    protected ScheduledExecutorService executorService = this.scheduler;
     private @NonNullByDefault({}) InsteonDeviceConfiguration config;
     private boolean deviceLinked = true;
 
@@ -140,7 +141,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
         config = getConfigAs(InsteonDeviceConfiguration.class);
         deviceLinked = true;
 
-        scheduler.execute(() -> {
+        executorService.execute(() -> {
             final Bridge bridge = getBridge();
             if (bridge == null) {
                 String msg = "An Insteon network bridge has not been selected for this device.";

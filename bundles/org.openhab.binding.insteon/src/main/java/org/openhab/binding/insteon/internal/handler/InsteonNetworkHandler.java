@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -64,7 +65,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     private @Nullable SerialPortManager serialPortManager;
     private Map<String, String> deviceInfo = new ConcurrentHashMap<>();
     private Map<String, String> channelInfo = new ConcurrentHashMap<>();
-
+    protected ScheduledExecutorService executorService = this.scheduler;
     public static ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
     public InsteonNetworkHandler(Bridge bridge, @Nullable SerialPortManager serialPortManager) {
@@ -96,18 +97,18 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
         // hold off on starting to poll until devices that already are defined as things are added.
         // wait SETTLE_TIME_IN_SECONDS to start then check every second afterwards until it has been at
         // least SETTLE_TIME_IN_SECONDS since last device was created.
-        settleJob = scheduler.scheduleWithFixedDelay(() -> {
+        settleJob = executorService.scheduleWithFixedDelay(() -> {
             // check to see if it has been at least SETTLE_TIME_IN_SECONDS since last device was created
             if (System.currentTimeMillis() - lastInsteonDeviceCreatedTimestamp > SETTLE_TIME_IN_SECONDS * 1000) {
                 // settle time has expired start polling
                 InsteonBinding insteonBinding = this.insteonBinding;
                 if (insteonBinding != null && insteonBinding.startPolling()) {
-                    pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                    pollingJob = executorService.scheduleWithFixedDelay(() -> {
                         insteonBinding.logDeviceStatistics();
                     }, 0, LOG_DEVICE_STATISTICS_DELAY_IN_SECONDS, TimeUnit.SECONDS);
 
                     // wait until driver is initialized before setting network to ONLINE
-                    driverInitializedJob = scheduler.scheduleWithFixedDelay(() -> {
+                    driverInitializedJob = executorService.scheduleWithFixedDelay(() -> {
                         if (insteonBinding.isDriverInitialized()) {
                             logger.debug("driver is initialized");
 
@@ -187,7 +188,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     }
 
     public void bindingDisconnected() {
-        reconnectJob = scheduler.scheduleWithFixedDelay(() -> {
+        reconnectJob = executorService.scheduleWithFixedDelay(() -> {
             InsteonBinding insteonBinding = this.insteonBinding;
             if (insteonBinding != null && insteonBinding.reconnect()) {
                 updateStatus(ThingStatus.ONLINE);
@@ -220,7 +221,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     }
 
     public void addMissingDevices(List<String> missing) {
-        scheduler.execute(() -> {
+        executorService.execute(() -> {
             InsteonDeviceLegacyDiscoveryService insteonDeviceDiscoveryService = this.insteonDeviceDiscoveryService;
             if (insteonDeviceDiscoveryService != null) {
                 insteonDeviceDiscoveryService.addInsteonDevices(missing, getThing().getUID());
