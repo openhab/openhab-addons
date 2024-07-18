@@ -140,8 +140,6 @@ public class InsteonNetworkHandlerTest {
 
     @Test
     public void testUpdateChannels() {
-        // FIX-ME Fails due to not able to load xml file, while it is present ?! this has not changed
-        // https://github.com/openhab/openhab-addons/blob/12a1f76c3ce9da812a26458ecfddfa36b360274d/bundles/org.openhab.binding.insteon/src/main/java/org/openhab/binding/insteon/internal/message/Msg.java#L125
         final Thing thing = mockBridge();
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         final InsteonNetworkHandlerMock handler = createAndInitHandler(callback, thing, false);
