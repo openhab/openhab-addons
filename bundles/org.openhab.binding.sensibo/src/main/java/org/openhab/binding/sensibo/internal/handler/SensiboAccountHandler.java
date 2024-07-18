@@ -44,7 +44,6 @@ import org.openhab.binding.sensibo.internal.dto.poddetails.AcStateDTO;
 import org.openhab.binding.sensibo.internal.dto.poddetails.GetPodsDetailsRequest;
 import org.openhab.binding.sensibo.internal.dto.poddetails.PodDetailsDTO;
 import org.openhab.binding.sensibo.internal.dto.pods.GetPodsRequest;
-import org.openhab.binding.sensibo.internal.dto.pods.PodDTO;
 import org.openhab.binding.sensibo.internal.dto.setacstateproperty.SetAcStatePropertyReponse;
 import org.openhab.binding.sensibo.internal.dto.setacstateproperty.SetAcStatePropertyRequest;
 import org.openhab.binding.sensibo.internal.dto.settimer.SetTimerReponse;
