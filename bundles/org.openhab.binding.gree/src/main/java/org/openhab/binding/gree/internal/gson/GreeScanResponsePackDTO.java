@@ -19,8 +19,7 @@ package org.openhab.binding.gree.internal.gson;
  *
  * @author John Cunha - Initial contribution
  */
-public class GreeScanReponsePackDTO {
-
+public class GreeScanResponsePackDTO {
     public String t = null;
     public String cid = null;
     public String bc = null;

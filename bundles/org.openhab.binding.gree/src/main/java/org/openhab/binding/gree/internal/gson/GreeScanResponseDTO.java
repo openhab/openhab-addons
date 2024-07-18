@@ -28,5 +28,5 @@ public class GreeScanResponseDTO {
     public String pack = null;
     public String tag = null;
     public transient String decryptedPack = null;
-    public transient GreeScanReponsePackDTO packJson = null;
+    public transient GreeScanResponsePackDTO packJson = null;
 }
