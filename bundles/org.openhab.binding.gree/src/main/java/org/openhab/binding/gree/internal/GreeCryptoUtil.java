@@ -28,6 +28,7 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.gree.internal.gson.GreeBaseDTO;
 
 /**
  * The CryptoUtil class provides functionality for encrypting and decrypting
@@ -44,6 +45,11 @@ public class GreeCryptoUtil {
     private static final String GCM_ADD = "qualcomm-test";
     private static final int TAG_LENGTH = 16;
 
+    public enum EncryptionTypes {
+        ECB,
+        GCM
+    };
+
     public static byte[] getAESGeneralKeyByteArray() {
         return AES_KEY.getBytes(StandardCharsets.UTF_8);
     }
@@ -52,12 +58,48 @@ public class GreeCryptoUtil {
         return GCM_KEY.getBytes(StandardCharsets.UTF_8);
     }
 
+    public static byte[] getGeneralKeyByteArray(EncryptionTypes encType) {
+        if (encType == EncryptionTypes.GCM) {
+            return getGCMGeneralKeyByteArray();
+        }
+        return getAESGeneralKeyByteArray();
+    }
+
     public static byte[] getGCMIVByteArray() {
         return HexFormat.of().parseHex(GCM_IV);
     }
 
     public static byte[] getGCMADDByteArray() {
         return GCM_ADD.getBytes(StandardCharsets.UTF_8);
+    }
+
+    public static <T extends GreeBaseDTO> EncryptionTypes getEncryptionType(T response) {
+        return response.tag != null ? EncryptionTypes.GCM : EncryptionTypes.ECB;
+    }
+
+    public static <T extends GreeBaseDTO> String decrypt(T response) throws GreeException {
+        return decrypt(response, getEncryptionType(response));
+    }
+
+    public static <T extends GreeBaseDTO> String decrypt(byte[] keyarray, T response) throws GreeException {
+        return decrypt(keyarray, response, getEncryptionType(response));
+    }
+
+    public static <T extends GreeBaseDTO> String decrypt(T response, EncryptionTypes encType) throws GreeException {
+        if (encType == EncryptionTypes.GCM) {
+            return decrypt(getGCMGeneralKeyByteArray(), response, encType);
+        } else {
+            return decrypt(getAESGeneralKeyByteArray(), response, encType);
+        }
+    }
+
+    public static <T extends GreeBaseDTO> String decrypt(byte[] keyarray, T response, EncryptionTypes encType)
+            throws GreeException {
+        if (encType == EncryptionTypes.GCM) {
+            return decryptGCMPack(keyarray, response.pack, response.tag);
+        } else {
+            return decryptPack(keyarray, response.pack);
+        }
     }
 
     public static String decryptPack(byte[] keyarray, String message) throws GreeException {
@@ -102,6 +144,16 @@ public class GreeCryptoUtil {
         }
     }
 
+    public static String[] encrypt(byte[] keyarray, String message, EncryptionTypes encType) throws GreeException {
+        if (encType == EncryptionTypes.GCM) {
+            return encryptGCMPack(keyarray, message);
+        } else {
+            String[] res = new String[1];
+            res[0] = encryptPack(keyarray, message);
+            return res;
+        }
+    }
+
     public static String encryptPack(byte[] keyarray, String message) throws GreeException {
         try {
             Key key = new SecretKeySpec(keyarray, "AES");
@@ -136,8 +188,8 @@ public class GreeCryptoUtil {
 
             Base64.Encoder encoder = Base64.getEncoder();
             String[] encryptedData = new String[2];
-            encryptedData[0] = new String(encoder.encode(tag), StandardCharsets.UTF_8);
-            encryptedData[1] = new String(encoder.encode(pack), StandardCharsets.UTF_8);
+            encryptedData[0] = new String(encoder.encode(pack), StandardCharsets.UTF_8);
+            encryptedData[1] = new String(encoder.encode(tag), StandardCharsets.UTF_8);
             return encryptedData;
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | BadPaddingException | InvalidKeyException
                 | IllegalBlockSizeException | InvalidAlgorithmParameterException ex) {
