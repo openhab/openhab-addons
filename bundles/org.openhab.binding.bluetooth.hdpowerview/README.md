@@ -19,7 +19,7 @@ PowerView shades have motorization control for their vertical position, and some
 ## Bluetooth Bridge
 
 Before you can create `shade` Things, you must first create a Bluetooth Bridge to contain them.
-The instructions for creating a Bluetooth Bridge [here](https://www.openhab.org/addons/bindings/bluetooth/).
+The instructions for creating a Bluetooth Bridge are [here](https://www.openhab.org/addons/bindings/bluetooth/).
 
 ## Discovery
 
