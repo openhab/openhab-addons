@@ -90,6 +90,7 @@ public enum HomekitCharacteristicType {
     CURRENT_HEATING_COOLING_STATE("CurrentHeatingCoolingMode"),
     TARGET_TEMPERATURE("TargetTemperature"),
     TEMPERATURE_UNIT("TemperatureUnit"),
+    TARGET_RELATIVE_HUMIDITY("TargetRelativeHumidity"),
 
     LOCK_CURRENT_STATE("LockCurrentState"),
     LOCK_TARGET_STATE("LockTargetState"),

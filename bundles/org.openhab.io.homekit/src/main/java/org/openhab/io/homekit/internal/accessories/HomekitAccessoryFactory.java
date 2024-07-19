@@ -192,12 +192,14 @@ public class HomekitAccessoryFactory {
             throws HomekitException {
         final HomekitAccessoryType accessoryType = taggedItem.getAccessoryType();
         LOGGER.trace("Constructing {} of accessory type {}", taggedItem.getName(), accessoryType.getTag());
-        final List<HomekitTaggedItem> foundCharacteristics = getMandatoryCharacteristicsFromItem(taggedItem,
-                metadataRegistry);
+        final List<HomekitTaggedItem> characteristics = new ArrayList<>();
+        final List<Characteristic> rawCharacteristics = new ArrayList<>();
+
+        getMandatoryCharacteristicsFromItem(taggedItem, metadataRegistry, characteristics, rawCharacteristics);
         final List<HomekitCharacteristicType> mandatoryCharacteristics = getRequiredCharacteristics(taggedItem);
-        if (foundCharacteristics.size() < mandatoryCharacteristics.size()) {
-            LOGGER.warn("Accessory of type {} must have following characteristics {}. Found only {}",
-                    accessoryType.getTag(), mandatoryCharacteristics, foundCharacteristics);
+        if (characteristics.size() + rawCharacteristics.size() < mandatoryCharacteristics.size()) {
+            LOGGER.warn("Accessory of type {} must have following characteristics {}. Found only {}, {}",
+                    accessoryType.getTag(), mandatoryCharacteristics, characteristics, rawCharacteristics);
             throw new HomekitException("Missing mandatory characteristics");
         }
         AbstractHomekitAccessoryImpl accessoryImpl;
@@ -210,9 +212,10 @@ public class HomekitAccessoryFactory {
                             taggedItem.getName());
                     throw new HomekitException("Circular accessory references");
                 }
-                accessoryImpl = accessoryImplClass.getConstructor(HomekitTaggedItem.class, List.class,
-                        HomekitAccessoryUpdater.class, HomekitSettings.class)
-                        .newInstance(taggedItem, foundCharacteristics, updater, settings);
+                accessoryImpl = accessoryImplClass
+                        .getConstructor(HomekitTaggedItem.class, List.class, List.class, HomekitAccessoryUpdater.class,
+                                HomekitSettings.class)
+                        .newInstance(taggedItem, characteristics, rawCharacteristics, updater, settings);
                 addOptionalCharacteristics(taggedItem, accessoryImpl, metadataRegistry);
                 addOptionalMetadataCharacteristics(taggedItem, accessoryImpl);
                 accessoryImpl.setIsLinkedService(!ancestorServices.isEmpty());
@@ -298,18 +301,18 @@ public class HomekitAccessoryFactory {
      * @param metadataRegistry meta data registry
      * @return list of mandatory
      */
-    private static List<HomekitTaggedItem> getMandatoryCharacteristicsFromItem(HomekitTaggedItem taggedItem,
-            MetadataRegistry metadataRegistry) {
-        List<HomekitTaggedItem> collectedCharacteristics = new ArrayList<>();
+    private static void getMandatoryCharacteristicsFromItem(HomekitTaggedItem taggedItem,
+            MetadataRegistry metadataRegistry, List<HomekitTaggedItem> characteristics,
+            List<Characteristic> rawCharacteristics) {
         if (taggedItem.isGroup()) {
             for (Item item : ((GroupItem) taggedItem.getItem()).getMembers()) {
-                addMandatoryCharacteristics(taggedItem, collectedCharacteristics, item, metadataRegistry);
+                addMandatoryCharacteristics(taggedItem, characteristics, rawCharacteristics, item, metadataRegistry);
             }
         } else {
-            addMandatoryCharacteristics(taggedItem, collectedCharacteristics, taggedItem.getItem(), metadataRegistry);
+            addMandatoryCharacteristics(taggedItem, characteristics, rawCharacteristics, taggedItem.getItem(),
+                    metadataRegistry);
         }
-        LOGGER.trace("Mandatory characteristics: {}", collectedCharacteristics);
-        return collectedCharacteristics;
+        LOGGER.trace("Mandatory characteristics: {}, {}", characteristics, rawCharacteristics);
     }
 
     /**
@@ -325,7 +328,7 @@ public class HomekitAccessoryFactory {
      * @param metadataRegistry meta date registry
      */
     private static void addMandatoryCharacteristics(HomekitTaggedItem mainItem, List<HomekitTaggedItem> characteristics,
-            Item item, MetadataRegistry metadataRegistry) {
+            List<Characteristic> rawCharacteristics, Item item, MetadataRegistry metadataRegistry) {
         // get list of mandatory characteristics
         List<HomekitCharacteristicType> mandatoryCharacteristics = getRequiredCharacteristics(mainItem);
         if (mandatoryCharacteristics.isEmpty()) {
@@ -362,6 +365,23 @@ public class HomekitAccessoryFactory {
                 }
             }
         }
+        mandatoryCharacteristics.forEach(c -> {
+            // Check every metadata key looking for a characteristics we can create
+            var config = mainItem.getConfiguration();
+            if (config == null) {
+                return;
+            }
+            for (var entry : config.entrySet().stream().sorted((lhs, rhs) -> lhs.getKey().compareTo(rhs.getKey()))
+                    .collect(Collectors.toList())) {
+                var type = HomekitCharacteristicType.valueOfTag(entry.getKey());
+                if (type.isPresent() && isMandatoryCharacteristic(mainItem, type.get())) {
+                    var characteristic = HomekitMetadataCharacteristicFactory.createCharacteristic(type.get(),
+                            entry.getValue());
+
+                    characteristic.ifPresent(rc -> rawCharacteristics.add(rc));
+                }
+            }
+        });
     }
 
     /**

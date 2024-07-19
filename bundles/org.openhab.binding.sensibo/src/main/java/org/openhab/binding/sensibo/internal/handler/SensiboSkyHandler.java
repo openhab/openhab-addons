@@ -297,8 +297,10 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
     public void initialize() {
         config = Optional.ofNullable(getConfigAs(SensiboSkyConfiguration.class));
         logger.debug("Initializing SensiboSky using config {}", config);
-        getSensiboModel().findSensiboSkyByMacAddress(getMacAddress()).ifPresent(pod -> {
+        Optional<SensiboSky> optionalDevice = getSensiboModel().findSensiboSkyByMacAddress(getMacAddress());
 
+        if (optionalDevice.isPresent()) {
+            SensiboSky pod = optionalDevice.get();
             if (pod.isAlive()) {
                 addDynamicChannelsAndProperties(pod);
                 updateStatus(ThingStatus.ONLINE);
@@ -306,7 +308,10 @@ public class SensiboSkyHandler extends SensiboBaseThingHandler implements Channe
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Unreachable by Sensibo servers");
             }
-        });
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    String.format("Device with mac address %s not found", getMacAddress()));
+        }
     }
 
     private boolean isDynamicChannel(final ChannelTypeUID uid) {

@@ -16,6 +16,7 @@ import static org.openhab.io.homekit.internal.HomekitCharacteristicType.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.function.Supplier;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
+import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -116,6 +118,7 @@ import io.github.hapjava.characteristics.impl.fan.TargetFanStateEnum;
 import io.github.hapjava.characteristics.impl.filtermaintenance.FilterLifeLevelCharacteristic;
 import io.github.hapjava.characteristics.impl.filtermaintenance.ResetFilterIndicationCharacteristic;
 import io.github.hapjava.characteristics.impl.humiditysensor.CurrentRelativeHumidityCharacteristic;
+import io.github.hapjava.characteristics.impl.humiditysensor.TargetRelativeHumidityCharacteristic;
 import io.github.hapjava.characteristics.impl.inputsource.CurrentVisibilityStateCharacteristic;
 import io.github.hapjava.characteristics.impl.inputsource.CurrentVisibilityStateEnum;
 import io.github.hapjava.characteristics.impl.inputsource.InputDeviceTypeCharacteristic;
@@ -149,7 +152,15 @@ import io.github.hapjava.characteristics.impl.televisionspeaker.VolumeControlTyp
 import io.github.hapjava.characteristics.impl.televisionspeaker.VolumeSelectorCharacteristic;
 import io.github.hapjava.characteristics.impl.televisionspeaker.VolumeSelectorEnum;
 import io.github.hapjava.characteristics.impl.thermostat.CoolingThresholdTemperatureCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.CurrentHeatingCoolingStateCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.CurrentHeatingCoolingStateEnum;
+import io.github.hapjava.characteristics.impl.thermostat.CurrentTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.HeatingThresholdTemperatureCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.TargetHeatingCoolingStateCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.TargetHeatingCoolingStateEnum;
+import io.github.hapjava.characteristics.impl.thermostat.TargetTemperatureCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.TemperatureDisplayUnitCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.TemperatureDisplayUnitEnum;
 import io.github.hapjava.characteristics.impl.valve.RemainingDurationCharacteristic;
 import io.github.hapjava.characteristics.impl.valve.SetDurationCharacteristic;
 import io.github.hapjava.characteristics.impl.windowcovering.CurrentHorizontalTiltAngleCharacteristic;
@@ -184,6 +195,8 @@ public class HomekitCharacteristicFactory {
             put(CONFIGURED, HomekitCharacteristicFactory::createIsConfiguredCharacteristic);
             put(CONFIGURED_NAME, HomekitCharacteristicFactory::createConfiguredNameCharacteristic);
             put(COOLING_THRESHOLD_TEMPERATURE, HomekitCharacteristicFactory::createCoolingThresholdCharacteristic);
+            put(CURRENT_HEATING_COOLING_STATE,
+                    HomekitCharacteristicFactory::createCurrentHeatingCoolingStateCharacteristic);
             put(CURRENT_FAN_STATE, HomekitCharacteristicFactory::createCurrentFanStateCharacteristic);
             put(CURRENT_HORIZONTAL_TILT_ANGLE,
                     HomekitCharacteristicFactory::createCurrentHorizontalTiltAngleCharacteristic);
@@ -192,6 +205,7 @@ public class HomekitCharacteristicFactory {
             put(CURRENT_VERTICAL_TILT_ANGLE,
                     HomekitCharacteristicFactory::createCurrentVerticalTiltAngleCharacteristic);
             put(CURRENT_VISIBILITY, HomekitCharacteristicFactory::createCurrentVisibilityStateCharacteristic);
+            put(CURRENT_TEMPERATURE, HomekitCharacteristicFactory::createCurrentTemperatureCharacteristic);
             put(DURATION, HomekitCharacteristicFactory::createDurationCharacteristic);
             put(FAULT_STATUS, HomekitCharacteristicFactory::createStatusFaultCharacteristic);
             put(FIRMWARE_REVISION, HomekitCharacteristicFactory::createFirmwareRevisionCharacteristic);
@@ -229,12 +243,17 @@ public class HomekitCharacteristicFactory {
             put(SWING_MODE, HomekitCharacteristicFactory::createSwingModeCharacteristic);
             put(TAMPERED_STATUS, HomekitCharacteristicFactory::createStatusTamperedCharacteristic);
             put(TARGET_FAN_STATE, HomekitCharacteristicFactory::createTargetFanStateCharacteristic);
+            put(TARGET_HEATING_COOLING_STATE,
+                    HomekitCharacteristicFactory::createTargetHeatingCoolingStateCharacteristic);
             put(TARGET_HORIZONTAL_TILT_ANGLE,
                     HomekitCharacteristicFactory::createTargetHorizontalTiltAngleCharacteristic);
             put(TARGET_MEDIA_STATE, HomekitCharacteristicFactory::createTargetMediaStateCharacteristic);
+            put(TARGET_RELATIVE_HUMIDITY, HomekitCharacteristicFactory::createTargetRelativeHumidityCharacteristic);
+            put(TARGET_TEMPERATURE, HomekitCharacteristicFactory::createTargetTemperatureCharacteristic);
             put(TARGET_TILT_ANGLE, HomekitCharacteristicFactory::createTargetTiltAngleCharacteristic);
             put(TARGET_VERTICAL_TILT_ANGLE, HomekitCharacteristicFactory::createTargetVerticalTiltAngleCharacteristic);
             put(TARGET_VISIBILITY_STATE, HomekitCharacteristicFactory::createTargetVisibilityStateCharacteristic);
+            put(TEMPERATURE_UNIT, HomekitCharacteristicFactory::createTemperatureDisplayUnitCharacteristic);
             put(VOC_DENSITY, HomekitCharacteristicFactory::createVOCDensityCharacteristic);
             put(VOLUME, HomekitCharacteristicFactory::createVolumeCharacteristic);
             put(VOLUME_CONTROL_TYPE, HomekitCharacteristicFactory::createVolumeControlTypeCharacteristic);
@@ -339,6 +358,9 @@ public class HomekitCharacteristicFactory {
                 }
             });
         }
+        if (customEnumList != null && customEnumList.isEmpty()) {
+            customEnumList.addAll(map.keySet());
+        }
         LOGGER.debug("Created {} mapping for item {} ({}): {}", klazz.getSimpleName(), item.getName(),
                 item.getBaseItem().getClass().getSimpleName(), map);
         return map;
@@ -347,6 +369,11 @@ public class HomekitCharacteristicFactory {
     public static <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(HomekitTaggedItem item,
             Class<T> klazz) {
         return createMapping(item, klazz, null, false);
+    }
+
+    public static <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(HomekitTaggedItem item,
+            Class<T> klazz, @Nullable List<T> customEnumList) {
+        return createMapping(item, klazz, customEnumList, false);
     }
 
     public static <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(HomekitTaggedItem item,
@@ -403,6 +430,20 @@ public class HomekitCharacteristicFactory {
     public static boolean useFahrenheit() {
         return Boolean.TRUE.equals(FrameworkUtil.getBundle(HomekitImpl.class).getBundleContext()
                 .getServiceReference(Homekit.class.getName()).getProperty("useFahrenheitTemperature"));
+    }
+
+    public static TemperatureDisplayUnitCharacteristic createSystemTemperatureDisplayUnitCharacteristic() {
+        return new TemperatureDisplayUnitCharacteristic(() -> CompletableFuture
+                .completedFuture(HomekitCharacteristicFactory.useFahrenheit() ? TemperatureDisplayUnitEnum.FAHRENHEIT
+                        : TemperatureDisplayUnitEnum.CELSIUS),
+                (value) -> {
+                }, (cb) -> {
+                }, () -> {
+                });
+    }
+
+    public static Unit<Temperature> getSystemTemperatureUnit() {
+        return useFahrenheit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS;
     }
 
     private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(HomekitTaggedItem item,
@@ -470,11 +511,11 @@ public class HomekitCharacteristicFactory {
     }
 
     public static double convertToCelsius(double degrees) {
-        return convertAndRound(degrees, useFahrenheit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS, SIUnits.CELSIUS);
+        return convertAndRound(degrees, getSystemTemperatureUnit(), SIUnits.CELSIUS);
     }
 
     public static double convertFromCelsius(double degrees) {
-        return convertAndRound(degrees, SIUnits.CELSIUS, useFahrenheit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS);
+        return convertAndRound(degrees, SIUnits.CELSIUS, getSystemTemperatureUnit());
     }
 
     public static double getTemperatureStep(HomekitTaggedItem taggedItem, double defaultValue) {
@@ -568,8 +609,13 @@ public class HomekitCharacteristicFactory {
 
     private static ExceptionalConsumer<Double> setTemperatureConsumer(HomekitTaggedItem taggedItem) {
         return (value) -> {
-            if (taggedItem.getBaseItem() instanceof NumberItem) {
-                taggedItem.send(new DecimalType(convertFromCelsius(value)));
+            Item baseItem = taggedItem.getBaseItem();
+            if (baseItem instanceof NumberItem baseAsNumberItem) {
+                if (baseAsNumberItem.getUnit() != null) {
+                    taggedItem.send(new QuantityType(value, SIUnits.CELSIUS));
+                } else {
+                    taggedItem.send(new DecimalType(convertFromCelsius(value)));
+                }
             } else {
                 LOGGER.warn("Item type {} is not supported for {}. Only Number type is supported.",
                         taggedItem.getBaseItem().getType(), taggedItem.getName());
@@ -750,15 +796,36 @@ public class HomekitCharacteristicFactory {
 
     private static CoolingThresholdTemperatureCharacteristic createCoolingThresholdCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        double minValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
-                HomekitTaggedItem.MIN_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
-        double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
-                HomekitTaggedItem.MAX_VALUE, CoolingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
-        double step = getTemperatureStep(taggedItem, CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP);
+        double minValue = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
+                Objects.requireNonNull(
+                        new QuantityType(CoolingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE, SIUnits.CELSIUS)
+                                .toUnit(getSystemTemperatureUnit())),
+                false).toUnit(SIUnits.CELSIUS).doubleValue();
+        double maxValue = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
+                Objects.requireNonNull(
+                        new QuantityType(CoolingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE, SIUnits.CELSIUS)
+                                .toUnit(getSystemTemperatureUnit())),
+                false).toUnit(SIUnits.CELSIUS).doubleValue();
+        double step = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.STEP,
+                        Objects.requireNonNull(new QuantityType(CoolingThresholdTemperatureCharacteristic.DEFAULT_STEP,
+                                SIUnits.CELSIUS).toUnit(getSystemTemperatureUnit())),
+                        true)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
         return new CoolingThresholdTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater),
                 getUnsubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater));
+    }
+
+    private static CurrentHeatingCoolingStateCharacteristic createCurrentHeatingCoolingStateCharacteristic(
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+        List<CurrentHeatingCoolingStateEnum> validValues = new ArrayList<>();
+        var map = createMapping(taggedItem, CurrentHeatingCoolingStateEnum.class, validValues);
+        return new CurrentHeatingCoolingStateCharacteristic(validValues.toArray(new CurrentHeatingCoolingStateEnum[0]),
+                () -> getEnumFromItem(taggedItem, map, CurrentHeatingCoolingStateEnum.OFF),
+                getSubscriber(taggedItem, CURRENT_HEATING_COOLING_STATE, updater),
+                getUnsubscriber(taggedItem, CURRENT_HEATING_COOLING_STATE, updater));
     }
 
     private static CurrentFanStateCharacteristic createCurrentFanStateCharacteristic(HomekitTaggedItem taggedItem,
@@ -783,6 +850,34 @@ public class HomekitCharacteristicFactory {
                 () -> getEnumFromItem(taggedItem, map, CurrentMediaStateEnum.UNKNOWN),
                 getSubscriber(taggedItem, CURRENT_MEDIA_STATE, updater),
                 getUnsubscriber(taggedItem, CURRENT_MEDIA_STATE, updater));
+    }
+
+    private static CurrentTemperatureCharacteristic createCurrentTemperatureCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        double minValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
+                        Objects.requireNonNull(
+                                new QuantityType(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE, SIUnits.CELSIUS)
+                                        .toUnit(getSystemTemperatureUnit())),
+                        false)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
+        double maxValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
+                        Objects.requireNonNull(
+                                new QuantityType(CurrentTemperatureCharacteristic.DEFAULT_MAX_VALUE, SIUnits.CELSIUS)
+                                        .toUnit(getSystemTemperatureUnit())),
+                        false)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
+        double step = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.STEP,
+                        Objects.requireNonNull(
+                                new QuantityType(CurrentTemperatureCharacteristic.DEFAULT_STEP, SIUnits.CELSIUS)
+                                        .toUnit(getSystemTemperatureUnit())),
+                        true)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
+        return new CurrentTemperatureCharacteristic(minValue, maxValue, step,
+                getTemperatureSupplier(taggedItem, minValue), getSubscriber(taggedItem, TARGET_TEMPERATURE, updater),
+                getUnsubscriber(taggedItem, TARGET_TEMPERATURE, updater));
     }
 
     private static CurrentTiltAngleCharacteristic createCurrentTiltAngleCharacteristic(HomekitTaggedItem taggedItem,
@@ -858,11 +953,22 @@ public class HomekitCharacteristicFactory {
 
     private static HeatingThresholdTemperatureCharacteristic createHeatingThresholdCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
-        double minValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
-                HomekitTaggedItem.MIN_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE));
-        double maxValue = HomekitCharacteristicFactory.convertToCelsius(taggedItem.getConfigurationAsDouble(
-                HomekitTaggedItem.MAX_VALUE, HeatingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE));
-        double step = getTemperatureStep(taggedItem, HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP);
+        double minValue = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
+                Objects.requireNonNull(
+                        new QuantityType(HeatingThresholdTemperatureCharacteristic.DEFAULT_MIN_VALUE, SIUnits.CELSIUS)
+                                .toUnit(getSystemTemperatureUnit())),
+                false).toUnit(SIUnits.CELSIUS).doubleValue();
+        double maxValue = taggedItem.getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
+                Objects.requireNonNull(
+                        new QuantityType(HeatingThresholdTemperatureCharacteristic.DEFAULT_MAX_VALUE, SIUnits.CELSIUS)
+                                .toUnit(getSystemTemperatureUnit())),
+                false).toUnit(SIUnits.CELSIUS).doubleValue();
+        double step = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.STEP,
+                        Objects.requireNonNull(new QuantityType(HeatingThresholdTemperatureCharacteristic.DEFAULT_STEP,
+                                SIUnits.CELSIUS).toUnit(getSystemTemperatureUnit())),
+                        true)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
         return new HeatingThresholdTemperatureCharacteristic(minValue, maxValue, step,
                 getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
                 getSubscriber(taggedItem, HEATING_THRESHOLD_TEMPERATURE, updater),
@@ -1192,6 +1298,17 @@ public class HomekitCharacteristicFactory {
                 getUnsubscriber(taggedItem, TARGET_FAN_STATE, updater));
     }
 
+    private static TargetHeatingCoolingStateCharacteristic createTargetHeatingCoolingStateCharacteristic(
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+        List<TargetHeatingCoolingStateEnum> validValues = new ArrayList<>();
+        var map = createMapping(taggedItem, TargetHeatingCoolingStateEnum.class, validValues);
+        return new TargetHeatingCoolingStateCharacteristic(validValues.toArray(new TargetHeatingCoolingStateEnum[0]),
+                () -> getEnumFromItem(taggedItem, map, TargetHeatingCoolingStateEnum.OFF),
+                (value) -> setValueFromEnum(taggedItem, value, map),
+                getSubscriber(taggedItem, TARGET_HEATING_COOLING_STATE, updater),
+                getUnsubscriber(taggedItem, TARGET_HEATING_COOLING_STATE, updater));
+    }
+
     private static TargetHorizontalTiltAngleCharacteristic createTargetHorizontalTiltAngleCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         return new TargetHorizontalTiltAngleCharacteristic(getAngleSupplier(taggedItem, 0),
@@ -1206,6 +1323,42 @@ public class HomekitCharacteristicFactory {
                 (value) -> setValueFromEnum(taggedItem, value, map),
                 getSubscriber(taggedItem, TARGET_MEDIA_STATE, updater),
                 getUnsubscriber(taggedItem, TARGET_MEDIA_STATE, updater));
+    }
+
+    private static TargetRelativeHumidityCharacteristic createTargetRelativeHumidityCharacteristic(
+            HomekitTaggedItem item, HomekitAccessoryUpdater updater) {
+        return new TargetRelativeHumidityCharacteristic(getDoubleSupplier(item, 0), setDoubleConsumer(item),
+                getSubscriber(item, TARGET_RELATIVE_HUMIDITY, updater),
+                getUnsubscriber(item, TARGET_RELATIVE_HUMIDITY, updater));
+    }
+
+    private static TargetTemperatureCharacteristic createTargetTemperatureCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        double minValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
+                        Objects.requireNonNull(
+                                new QuantityType(TargetTemperatureCharacteristic.DEFAULT_MIN_VALUE, SIUnits.CELSIUS)
+                                        .toUnit(getSystemTemperatureUnit())),
+                        false)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
+        double maxValue = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
+                        Objects.requireNonNull(
+                                new QuantityType(TargetTemperatureCharacteristic.DEFAULT_MAX_VALUE, SIUnits.CELSIUS)
+                                        .toUnit(getSystemTemperatureUnit())),
+                        false)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
+        double step = taggedItem
+                .getConfigurationAsQuantity(HomekitTaggedItem.STEP,
+                        Objects.requireNonNull(
+                                new QuantityType(TargetTemperatureCharacteristic.DEFAULT_STEP, SIUnits.CELSIUS)
+                                        .toUnit(getSystemTemperatureUnit())),
+                        true)
+                .toUnit(SIUnits.CELSIUS).doubleValue();
+        return new TargetTemperatureCharacteristic(minValue, maxValue, step,
+                getTemperatureSupplier(taggedItem, minValue), setTemperatureConsumer(taggedItem),
+                getSubscriber(taggedItem, TARGET_TEMPERATURE, updater),
+                getUnsubscriber(taggedItem, TARGET_TEMPERATURE, updater));
     }
 
     private static TargetTiltAngleCharacteristic createTargetTiltAngleCharacteristic(HomekitTaggedItem taggedItem,
@@ -1230,6 +1383,17 @@ public class HomekitCharacteristicFactory {
                 (value) -> setValueFromEnum(taggedItem, value, map),
                 getSubscriber(taggedItem, TARGET_VISIBILITY_STATE, updater),
                 getUnsubscriber(taggedItem, TARGET_VISIBILITY_STATE, updater));
+    }
+
+    private static TemperatureDisplayUnitCharacteristic createTemperatureDisplayUnitCharacteristic(
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+        var map = createMapping(taggedItem, TemperatureDisplayUnitEnum.class, true);
+        return new TemperatureDisplayUnitCharacteristic(
+                () -> getEnumFromItem(taggedItem, map,
+                        useFahrenheit() ? TemperatureDisplayUnitEnum.FAHRENHEIT : TemperatureDisplayUnitEnum.CELSIUS),
+                (value) -> setValueFromEnum(taggedItem, value, map),
+                getSubscriber(taggedItem, TEMPERATURE_UNIT, updater),
+                getUnsubscriber(taggedItem, TEMPERATURE_UNIT, updater));
     }
 
     private static VOCDensityCharacteristic createVOCDensityCharacteristic(final HomekitTaggedItem taggedItem,

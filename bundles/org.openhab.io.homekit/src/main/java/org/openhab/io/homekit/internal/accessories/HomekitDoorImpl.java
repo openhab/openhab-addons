@@ -22,6 +22,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.DoorAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.windowcovering.PositionStateEnum;
 import io.github.hapjava.services.impl.DoorService;
@@ -34,14 +35,15 @@ import io.github.hapjava.services.impl.DoorService;
 public class HomekitDoorImpl extends AbstractHomekitPositionAccessoryImpl implements DoorAccessory {
 
     public HomekitDoorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
     }
 
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new DoorService(this));
+        addService(new DoorService(this));
     }
 
     @Override

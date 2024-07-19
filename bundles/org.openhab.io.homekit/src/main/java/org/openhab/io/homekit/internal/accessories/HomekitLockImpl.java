@@ -23,6 +23,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.LockMechanismAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.lock.LockCurrentStateEnum;
 import io.github.hapjava.characteristics.impl.lock.LockTargetStateEnum;
@@ -39,8 +40,9 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
     final Map<LockTargetStateEnum, String> targetStateMapping;
 
     public HomekitLockImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
 
         currentStateMapping = createMapping(HomekitCharacteristicType.LOCK_CURRENT_STATE, LockCurrentStateEnum.class);
         targetStateMapping = createMapping(HomekitCharacteristicType.LOCK_TARGET_STATE, LockTargetStateEnum.class);
@@ -49,7 +51,7 @@ public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements Loc
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new LockMechanismService(this));
+        addService(new LockMechanismService(this));
     }
 
     @Override
