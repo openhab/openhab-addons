@@ -450,7 +450,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                             .setId(channelUID.getIdWithoutGroup()).setEnabled(command));
                 }
                 if (resources.hasErrors()) {
-                    logger.info("handleCommand({}, {}) succeeded with errors: {}", channelUID, command,
+                    logger.warn("handleCommand({}, {}) succeeded with errors: {}", channelUID, command,
                             String.join("; ", resources.getErrors()));
                 }
             } catch (ApiException | AssetNotLoadedException e) {
