@@ -20,7 +20,7 @@ import org.openhab.binding.solax.internal.SolaxBindingConstants;
 import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterType;
 import org.openhab.binding.solax.internal.model.local.LocalData;
-import org.openhab.binding.solax.internal.model.local.parsers.RawDataParser;
+import org.openhab.binding.solax.internal.model.local.RawDataParser;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;

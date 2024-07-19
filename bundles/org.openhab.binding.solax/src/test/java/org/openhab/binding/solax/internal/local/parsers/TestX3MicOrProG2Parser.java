@@ -19,7 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterType;
 import org.openhab.binding.solax.internal.model.local.LocalData;
-import org.openhab.binding.solax.internal.model.local.parsers.RawDataParser;
+import org.openhab.binding.solax.internal.model.local.RawDataParser;
 
 /**
  * The {@link TestX3HybridG4Parser} simple test that tests for proper parsing against a real data from the inverter

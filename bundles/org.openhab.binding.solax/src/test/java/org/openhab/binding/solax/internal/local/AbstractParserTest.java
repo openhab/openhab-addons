@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterType;
 import org.openhab.binding.solax.internal.model.local.LocalData;
-import org.openhab.binding.solax.internal.model.local.parsers.RawDataParser;
+import org.openhab.binding.solax.internal.model.local.RawDataParser;
 
 /**
  * The {@link AbstractParserTest} Abstract class defining the common logic for testing local connections to the various

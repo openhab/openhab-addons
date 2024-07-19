@@ -21,8 +21,8 @@ import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnec
 import org.openhab.binding.solax.internal.exceptions.SolaxUpdateException;
 import org.openhab.binding.solax.internal.model.local.EvChargerData;
 import org.openhab.binding.solax.internal.model.local.LocalData;
-import org.openhab.binding.solax.internal.model.local.parsers.EvChargerDataParser;
-import org.openhab.binding.solax.internal.model.local.parsers.RawDataParser;
+import org.openhab.binding.solax.internal.model.local.evchargers.EvChargerDataParser;
+import org.openhab.binding.solax.internal.model.local.RawDataParser;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;

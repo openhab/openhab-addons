@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solax.internal.model.local.parsers;
+package org.openhab.binding.solax.internal.model.local.evchargers;
 
 import static org.openhab.binding.solax.internal.SolaxBindingConstants.*;
 
@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.local.EvChargerData;
+import org.openhab.binding.solax.internal.model.local.RawDataParser;
 
 /**
  * The {@link EvChargerDataParser} is the implementation that parses raw data into a LocalInverterData for the
