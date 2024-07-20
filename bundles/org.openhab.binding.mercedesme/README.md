@@ -451,6 +451,8 @@ States and controls are depending on your vehicle capabilities.
 | coupler-dc          | Number               |  Coupler DC Status                     | X    |       |
 | coupler-lock        | Number               |  Coupler Lock Status                   | X    |       |
 | active              | Switch               |  Charging Active                       | X    |       |
+| status              | Number               |  Charge Status                         | X    |       |
+| error               | Number               |  Charge Error                          | X    |       |
 | power               | Number:Power         |  Current Charging Power                | X    |       |
 | end-time            | DateTime             |  Estimated Charging End                | X    |       |
 | program             | Number               |  Selected Charge Program               | X    | X     |
@@ -476,6 +478,25 @@ States and controls are depending on your vehicle capabilities.
 
 - 0 : Locked
 - 1 : Unlocked
+
+#### Charge Status Mapping
+
+- 0 : Charging
+- 1 : End of Charge
+- 2 : Charge Break
+- 3 : Charge Cable Unplugged
+- 4 : Charging Failure
+- 5 : Slow Charging
+- 6 : Fast Charging
+- 7 : Discharging
+
+#### Charge Error Mapping
+
+- 0 : None
+- 1 : Cable
+- 2 : Charging Disorder
+- 3 : Charging Station
+- 4 : Charging Type
 
 #### Program Mapping
 

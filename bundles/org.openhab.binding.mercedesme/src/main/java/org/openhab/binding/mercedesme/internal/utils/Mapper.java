@@ -239,6 +239,8 @@ public class Mapper {
                 case MB_KEY_CHARGE_COUPLER_DC_STATUS:
                 case MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS:
                 case MB_KEY_TIRE_SENSOR_AVAILABLE:
+                case MB_KEY_CHARGE_STATUS:
+                case MB_KEY_CHARGE_ERROR:
                     int stateNumberInteger = Utils.getInt(value);
                     if (stateNumberInteger < 0) {
                         state = UnDefType.UNDEF;
@@ -407,6 +409,8 @@ public class Mapper {
         CHANNELS.put(MB_KEY_CHARGE_COUPLER_DC_STATUS, new String[] { OH_CHANNEL_COUPLER_DC, GROUP_CHARGE });
         CHANNELS.put(MB_KEY_CHARGE_COUPLER_DC_LOCK_STATUS, new String[] { OH_CHANNEL_COUPLER_LOCK, GROUP_CHARGE });
         CHANNELS.put(MB_KEY_CHARGINGACTIVE, new String[] { OH_CHANNEL_ACTIVE, GROUP_CHARGE });
+        CHANNELS.put(MB_KEY_CHARGE_STATUS, new String[] { OH_CHANNEL_STATUS, GROUP_CHARGE });
+        CHANNELS.put(MB_KEY_CHARGE_ERROR, new String[] { OH_CHANNEL_ERROR, GROUP_CHARGE });
         CHANNELS.put(MB_KEY_CHARGING_POWER, new String[] { OH_CHANNEL_POWER, GROUP_CHARGE });
         CHANNELS.put(MB_KEY_ENDOFCHARGETIME, new String[] { OH_CHANNEL_END_TIME, GROUP_CHARGE });
 
