@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -47,6 +48,7 @@ import org.openhab.binding.deconz.internal.types.ResourceTypeDeserializer;
 import org.openhab.binding.deconz.internal.types.ThermostatMode;
 import org.openhab.binding.deconz.internal.types.ThermostatModeGsonTypeAdapter;
 import org.openhab.core.config.discovery.DiscoveryListener;
+import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
@@ -92,6 +94,7 @@ public class DeconzTest {
         Mockito.doAnswer(answer -> CompletableFuture.completedFuture(Optional.of(bridgeFullState))).when(bridgeHandler)
                 .getBridgeFullState();
         ThingDiscoveryService discoveryService = new ThingDiscoveryService();
+        discoveryService.modified(Map.of(DiscoveryService.CONFIG_PROPERTY_BACKGROUND_DISCOVERY, false));
         discoveryService.setThingHandler(bridgeHandler);
         discoveryService.initialize();
         discoveryService.addDiscoveryListener(discoveryListener);
