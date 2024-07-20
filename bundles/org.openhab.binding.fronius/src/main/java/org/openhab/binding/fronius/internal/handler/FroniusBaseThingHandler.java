@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.fronius.internal.handler;
 
+import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_TIMEOUT;
+
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
@@ -49,7 +51,6 @@ import com.google.gson.JsonSyntaxException;
  */
 public abstract class FroniusBaseThingHandler extends BaseThingHandler {
 
-    private static final int API_TIMEOUT = 5000;
     private final Logger logger = LoggerFactory.getLogger(FroniusBaseThingHandler.class);
     private final String serviceDescription;
     private final Gson gson;
@@ -165,7 +166,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             int attempts = 1;
             while (true) {
                 logger.trace("Fetching URL = {}", url);
-                String response = FroniusHttpUtil.executeUrl(url, API_TIMEOUT);
+                String response = FroniusHttpUtil.executeUrl("GET", url, API_TIMEOUT);
                 logger.trace("aqiResponse = {}", response);
 
                 @Nullable
