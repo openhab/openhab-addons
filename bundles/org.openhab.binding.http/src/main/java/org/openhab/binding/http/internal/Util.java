@@ -64,9 +64,11 @@ public class Util {
      */
     public static URI uriFromString(String s) throws MalformedURLException, URISyntaxException {
         URL url = new URL(s);
+        String queryString = url.getQuery();
+
         URI uri = new URI(url.getProtocol(), url.getUserInfo(), IDN.toASCII(url.getHost()), url.getPort(),
                 url.getPath(), url.getQuery(), url.getRef());
-        return URI.create(uri.toASCIIString().replace("+", "%2B"));
+        return URI.create(uri.toASCIIString().replace("+", "%2B").replace("%25%25", "%"));
     }
 
     /**

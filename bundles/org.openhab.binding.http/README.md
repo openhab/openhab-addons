@@ -37,9 +37,9 @@ Authentication might fail if redirections are involved as headers are stripper p
 
 _Note:_ If you rate-limit requests by using the `delay` parameter you have to make sure that the time between two refreshes is larger than the time needed for one refresh cycle.
 
-**Attention:** `baseUrl` (and `stateExtension`/`commandExtension`) should not use escaping (e.g. `%22` instead of `"` or `%2c` instead of `,`).
+**Attention:** `baseUrl` (and `stateExtension`/`commandExtension`) usually doesn't require escaping (e.g. `%22` instead of `"` or `%2C` instead of `,`).
 URLs are properly escaped by the binding itself before the request is sent.
-Using escaped strings in URL parameters may lead to problems with the formatting (see below).
+When automatic escaping is possible (e.g. because you need to include `=` or `&` in the query string) you can use manual escaping with a doubled `%` (`%%3D` instead of `=`).
 
 ## Channels
 
