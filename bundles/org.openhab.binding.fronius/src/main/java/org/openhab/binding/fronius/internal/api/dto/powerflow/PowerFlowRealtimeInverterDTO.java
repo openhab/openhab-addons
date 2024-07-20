@@ -22,7 +22,6 @@ import com.google.gson.annotations.SerializedName;
  * @author Thomas Kordelle - Added inverter power, battery state of charge and PV solar yield
  */
 public class PowerFlowRealtimeInverterDTO {
-
     @SerializedName("DT")
     private double dt;
     @SerializedName("P")

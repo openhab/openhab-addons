@@ -15,6 +15,9 @@ package org.openhab.binding.fronius.internal.api.dto.powerflow;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,25 +26,23 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@NonNullByDefault
 public class PowerFlowRealtimeBodyDataDTO {
-
     @SerializedName("Site")
-    private PowerFlowRealtimeSiteDTO site;
+    private @Nullable PowerFlowRealtimeSiteDTO site;
 
     @SerializedName("Inverters")
-    private Map<String, PowerFlowRealtimeInverterDTO> inverters;
+    private @Nullable Map<String, PowerFlowRealtimeInverterDTO> inverters;
 
     public Map<String, PowerFlowRealtimeInverterDTO> getInverters() {
-        if (inverters == null) {
-            inverters = new HashMap<>();
+        Map<String, PowerFlowRealtimeInverterDTO> localInverters = inverters;
+        if (localInverters == null) {
+            inverters = localInverters = new HashMap<>();
         }
-        return inverters;
+        return localInverters;
     }
 
-    public PowerFlowRealtimeSiteDTO getSite() {
-        if (site == null) {
-            site = new PowerFlowRealtimeSiteDTO();
-        }
+    public @Nullable PowerFlowRealtimeSiteDTO getSite() {
         return site;
     }
 }

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.fronius.internal.api.dto.ohmpilot;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,18 +23,12 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Hannes Spenger - Initial contribution
  */
+@NonNullByDefault
 public class OhmpilotRealtimeBodyDTO {
     @SerializedName("Data")
-    private OhmpilotRealtimeBodyDataDTO data;
+    private @Nullable OhmpilotRealtimeBodyDataDTO data;
 
-    public OhmpilotRealtimeBodyDataDTO getData() {
-        if (data == null) {
-            data = new OhmpilotRealtimeBodyDataDTO();
-        }
+    public @Nullable OhmpilotRealtimeBodyDataDTO getData() {
         return data;
-    }
-
-    public void setData(OhmpilotRealtimeBodyDataDTO data) {
-        this.data = data;
     }
 }

@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.fronius.internal.api.dto.inverter;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fronius.internal.api.dto.ValueUnit;
 
 import com.google.gson.annotations.SerializedName;
@@ -23,7 +24,6 @@ import com.google.gson.annotations.SerializedName;
  * @author Thomas Rokohl - Initial contribution
  */
 public class InverterRealtimeBodyDataDTO {
-
     @SerializedName("DAY_ENERGY")
     private ValueUnit dayEnergy;
     @SerializedName("FAC")
@@ -69,10 +69,7 @@ public class InverterRealtimeBodyDataDTO {
         return yearEnergy;
     }
 
-    public InverterDeviceStatusDTO getDeviceStatus() {
-        if (deviceStatus == null) {
-            deviceStatus = new InverterDeviceStatusDTO();
-        }
+    public @Nullable InverterDeviceStatusDTO getDeviceStatus() {
         return deviceStatus;
     }
 

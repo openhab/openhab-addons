@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.fronius.internal.api.dto.inverter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,18 +23,12 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@NonNullByDefault
 public class InverterRealtimeBodyDTO {
     @SerializedName("Data")
-    private InverterRealtimeBodyDataDTO data;
+    private @Nullable InverterRealtimeBodyDataDTO data;
 
-    public InverterRealtimeBodyDataDTO getData() {
-        if (data == null) {
-            data = new InverterRealtimeBodyDataDTO();
-        }
+    public @Nullable InverterRealtimeBodyDataDTO getData() {
         return data;
-    }
-
-    public void setData(InverterRealtimeBodyDataDTO data) {
-        this.data = data;
     }
 }

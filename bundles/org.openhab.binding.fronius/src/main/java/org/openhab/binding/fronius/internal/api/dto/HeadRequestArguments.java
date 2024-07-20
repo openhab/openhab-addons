@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.fronius.internal.api.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,57 +23,30 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@NonNullByDefault
 public class HeadRequestArguments {
     @SerializedName("DataCollection")
-    private String dataCollection;
+    private @Nullable String dataCollection;
     @SerializedName("DeviceClass")
-    private String deviceClass;
+    private @Nullable String deviceClass;
     @SerializedName("DeviceId")
-    private String deviceId;
+    private @Nullable String deviceId;
     @SerializedName("Scope")
-    private String scope;
+    private @Nullable String scope;
 
-    public String getDataCollection() {
-        if (null == dataCollection) {
-            dataCollection = "";
-        }
+    public @Nullable String getDataCollection() {
         return dataCollection;
     }
 
-    public void setDataCollection(String dataCollection) {
-        this.dataCollection = dataCollection;
-    }
-
-    public String getDeviceClass() {
-        if (null == deviceClass) {
-            deviceClass = "";
-        }
+    public @Nullable String getDeviceClass() {
         return deviceClass;
     }
 
-    public void setDeviceClass(String deviceClass) {
-        this.deviceClass = deviceClass;
-    }
-
-    public String getDeviceId() {
-        if (null == deviceId) {
-            deviceId = "";
-        }
+    public @Nullable String getDeviceId() {
         return deviceId;
     }
 
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
-    }
-
-    public String getScope() {
-        if (null == scope) {
-            scope = "";
-        }
+    public @Nullable String getScope() {
         return scope;
-    }
-
-    public void setScope(String scope) {
-        this.scope = scope;
     }
 }

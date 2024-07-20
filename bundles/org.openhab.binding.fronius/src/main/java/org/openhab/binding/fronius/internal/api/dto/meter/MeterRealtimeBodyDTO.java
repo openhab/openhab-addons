@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.fronius.internal.api.dto.meter;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,18 +23,12 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Jimmy Tanagra - Initial contribution
  */
+@NonNullByDefault
 public class MeterRealtimeBodyDTO {
     @SerializedName("Data")
-    private MeterRealtimeBodyDataDTO data;
+    private @Nullable MeterRealtimeBodyDataDTO data;
 
-    public MeterRealtimeBodyDataDTO getData() {
-        if (data == null) {
-            data = new MeterRealtimeBodyDataDTO();
-        }
+    public @Nullable MeterRealtimeBodyDataDTO getData() {
         return data;
-    }
-
-    public void setData(MeterRealtimeBodyDataDTO data) {
-        this.data = data;
     }
 }

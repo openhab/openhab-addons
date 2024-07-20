@@ -21,7 +21,6 @@ import com.google.gson.annotations.SerializedName;
  * @author Thomas Rokohl - Initial contribution
  */
 public class PowerFlowRealtimeSiteDTO {
-
     @SerializedName("Mode")
     private String mode;
     @SerializedName("P_Grid")

@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.fronius.internal.api.dto.powerflow;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -20,14 +23,12 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@NonNullByDefault
 public class PowerFlowRealtimeBodyDTO {
     @SerializedName("Data")
-    private PowerFlowRealtimeBodyDataDTO data;
+    private @Nullable PowerFlowRealtimeBodyDataDTO data;
 
-    public PowerFlowRealtimeBodyDataDTO getData() {
-        if (data == null) {
-            data = new PowerFlowRealtimeBodyDataDTO();
-        }
+    public @Nullable PowerFlowRealtimeBodyDataDTO getData() {
         return data;
     }
 }

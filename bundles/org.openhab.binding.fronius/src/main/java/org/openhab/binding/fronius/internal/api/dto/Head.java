@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.fronius.internal.api.dto;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -23,46 +26,24 @@ import com.google.gson.annotations.SerializedName;
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@NonNullByDefault
 public class Head {
     @SerializedName("RequestArguments")
-    private HeadRequestArguments requestArguments;
+    private @Nullable HeadRequestArguments requestArguments;
     @SerializedName("Status")
-    private HeadStatus status;
+    private @Nullable HeadStatus status;
     @SerializedName("Timestamp")
-    private String timestamp;
+    private @Nullable String timestamp;
 
-    public HeadRequestArguments getRequestArguments() {
-        if (requestArguments == null) {
-            requestArguments = new HeadRequestArguments();
-        }
+    public @Nullable HeadRequestArguments getRequestArguments() {
         return requestArguments;
     }
 
-    public void setRequestArguments(HeadRequestArguments requestArguments) {
-        this.requestArguments = requestArguments;
-    }
-
-    public HeadStatus getStatus() {
-        if (status == null) {
-            status = new HeadStatus();
-            status.setCode(255);
-            status.setReason("undefined runtime error");
-        }
+    public @Nullable HeadStatus getStatus() {
         return status;
     }
 
-    public void setStatus(HeadStatus status) {
-        this.status = status;
-    }
-
-    public String getTimestamp() {
-        if (timestamp == null) {
-            timestamp = "";
-        }
+    public @Nullable String getTimestamp() {
         return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
     }
 }

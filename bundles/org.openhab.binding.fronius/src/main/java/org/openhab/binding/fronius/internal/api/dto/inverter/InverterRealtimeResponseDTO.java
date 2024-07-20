@@ -26,7 +26,6 @@ import com.google.gson.annotations.SerializedName;
  */
 @NonNullByDefault
 public class InverterRealtimeResponseDTO extends BaseFroniusResponse {
-
     @SerializedName("Body")
     private @Nullable InverterRealtimeBodyDTO body;
 
