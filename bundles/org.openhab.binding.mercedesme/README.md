@@ -608,11 +608,18 @@ All channels `read-only`
 
 #### Sensor Available Mapping
 
-- Not available yet
+- 0 : All Sensors Located
+- 1 : 1-3 Sensors are Missing
+- 2 : All Sensors Missing
+- 3 : System Error
 
 #### Tire Marker Mapping
 
-- Not available yet
+- 0 : No warning
+- 1 : Soft warning
+- 2 : Low warning
+- 3 : Deflation
+- 4 : Unknown warning
 
 ### Commands
 
