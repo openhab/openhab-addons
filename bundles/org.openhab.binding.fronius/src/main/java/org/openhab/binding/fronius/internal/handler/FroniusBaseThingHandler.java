@@ -13,11 +13,13 @@
 package org.openhab.binding.fronius.internal.handler;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.FroniusHttpUtil;
-import org.openhab.binding.fronius.internal.api.BaseFroniusResponse;
-import org.openhab.binding.fronius.internal.api.HeadStatus;
+import org.openhab.binding.fronius.internal.api.dto.BaseFroniusResponse;
+import org.openhab.binding.fronius.internal.api.dto.Head;
+import org.openhab.binding.fronius.internal.api.dto.HeadStatus;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -50,7 +52,6 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
     private static final int API_TIMEOUT = 5000;
     private final Logger logger = LoggerFactory.getLogger(FroniusBaseThingHandler.class);
     private final String serviceDescription;
-    private FroniusBridgeHandler bridgeHandler;
     private final Gson gson;
 
     public FroniusBaseThingHandler(Thing thing) {
@@ -167,12 +168,17 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
                 String response = FroniusHttpUtil.executeUrl(url, API_TIMEOUT);
                 logger.trace("aqiResponse = {}", response);
 
+                @Nullable
                 T result = gson.fromJson(response, type);
                 if (result == null) {
                     throw new FroniusCommunicationException("Empty json result");
                 }
 
-                HeadStatus status = result.getHead().getStatus();
+                Head head = result.getHead();
+                if (head == null) {
+                    throw new FroniusCommunicationException("Empty head in json result");
+                }
+                HeadStatus status = head.getStatus();
                 if (status.getCode() == 0) {
                     return result;
                 }

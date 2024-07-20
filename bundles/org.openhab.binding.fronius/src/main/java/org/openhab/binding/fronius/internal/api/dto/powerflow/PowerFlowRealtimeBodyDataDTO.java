@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto.powerflow;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,38 +18,30 @@ import java.util.Map;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link PowerFlowRealtimeBodyData} is responsible for storing
- * the "data" node of the JSON response
+ * The {@link PowerFlowRealtimeBodyDataDTO} is responsible for storing
+ * the "Data" node of the {@link PowerFlowRealtimeBodyDTO}.
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class PowerFlowRealtimeBodyData {
+public class PowerFlowRealtimeBodyDataDTO {
 
     @SerializedName("Site")
-    private PowerFlowRealtimeSite site;
+    private PowerFlowRealtimeSiteDTO site;
 
     @SerializedName("Inverters")
-    private Map<String, PowerFlowRealtimeInverter> inverters;
+    private Map<String, PowerFlowRealtimeInverterDTO> inverters;
 
-    public Map<String, PowerFlowRealtimeInverter> getInverters() {
+    public Map<String, PowerFlowRealtimeInverterDTO> getInverters() {
         if (inverters == null) {
             inverters = new HashMap<>();
         }
         return inverters;
     }
 
-    public void setInverters(Map<String, PowerFlowRealtimeInverter> inverters) {
-        this.inverters = inverters;
-    }
-
-    public PowerFlowRealtimeSite getSite() {
+    public PowerFlowRealtimeSiteDTO getSite() {
         if (site == null) {
-            site = new PowerFlowRealtimeSite();
+            site = new PowerFlowRealtimeSiteDTO();
         }
         return site;
-    }
-
-    public void setSite(PowerFlowRealtimeSite site) {
-        this.site = site;
     }
 }

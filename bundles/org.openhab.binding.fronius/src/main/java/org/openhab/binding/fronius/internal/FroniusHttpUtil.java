@@ -49,8 +49,9 @@ public class FroniusHttpUtil {
                 } catch (IOException e) {
                     // HttpUtil::executeUrl wraps InterruptedException into IOException.
                     // Unwrap and rethrow it so that we don't retry on InterruptedException
-                    if (e.getCause() instanceof InterruptedException) {
-                        throw (InterruptedException) e.getCause();
+                    Throwable cause = e.getCause();
+                    if (cause instanceof InterruptedException) {
+                        throw (InterruptedException) cause;
                     }
                     lastException = e;
                 }

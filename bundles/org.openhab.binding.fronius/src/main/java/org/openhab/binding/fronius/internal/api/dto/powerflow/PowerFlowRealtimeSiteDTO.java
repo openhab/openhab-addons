@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto.powerflow;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link PowerFlowRealtimeSite} is responsible for storing
- * the "site" node
+ * The {@link PowerFlowRealtimeSiteDTO} is responsible for storing
+ * the "Site" node of the {@link PowerFlowRealtimeBodyDataDTO}.
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class PowerFlowRealtimeSite {
+public class PowerFlowRealtimeSiteDTO {
 
     @SerializedName("Mode")
     private String mode;
@@ -52,87 +52,43 @@ public class PowerFlowRealtimeSite {
         return mode;
     }
 
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
-
     public double getPgrid() {
         return pgrid;
-    }
-
-    public void setPgrid(double pgrid) {
-        this.pgrid = pgrid;
     }
 
     public double getPload() {
         return pload;
     }
 
-    public void setPload(double pload) {
-        this.pload = pload;
-    }
-
     public double getPakku() {
         return pakku;
-    }
-
-    public void setPakku(double pakku) {
-        this.pakku = pakku;
     }
 
     public double getPpv() {
         return ppv;
     }
 
-    public void setPpv(double ppv) {
-        this.ppv = ppv;
-    }
-
     public double getRelSelfConsumption() {
         return relSelfConsumption;
-    }
-
-    public void setRelSelfConsumption(double relSelfConsumption) {
-        this.relSelfConsumption = relSelfConsumption;
     }
 
     public double getRelAutonomy() {
         return relAutonomy;
     }
 
-    public void setRelAutonomy(double relAutonomy) {
-        this.relAutonomy = relAutonomy;
-    }
-
     public double geteDay() {
         return eDay;
-    }
-
-    public void seteDay(double eDay) {
-        this.eDay = eDay;
     }
 
     public double geteYear() {
         return eYear;
     }
 
-    public void seteYear(double eYear) {
-        this.eYear = eYear;
-    }
-
     public double geteTotal() {
         return eTotal;
     }
 
-    public void seteTotal(double eTotal) {
-        this.eTotal = eTotal;
-    }
-
     public String getMeterLocation() {
         return meterLocation;
-    }
-
-    public void setMeterLocation(String meterLocation) {
-        this.meterLocation = meterLocation;
     }
 }

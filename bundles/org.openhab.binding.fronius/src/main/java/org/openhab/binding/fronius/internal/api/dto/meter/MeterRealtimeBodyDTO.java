@@ -10,28 +10,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto.meter;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link PowerFlowRealtimeBody} is responsible for storing
- * the "body" node of the JSON response
+ * The {@link MeterRealtimeBodyDTO} is responsible for storing
+ * the "Body" node of the {@link MeterRealtimeResponseDTO}.
  *
- * @author Thomas Rokohl - Initial contribution
+ * @author Jimmy Tanagra - Initial contribution
  */
-public class PowerFlowRealtimeBody {
+public class MeterRealtimeBodyDTO {
     @SerializedName("Data")
-    private PowerFlowRealtimeBodyData data;
+    private MeterRealtimeBodyDataDTO data;
 
-    public PowerFlowRealtimeBodyData getData() {
+    public MeterRealtimeBodyDataDTO getData() {
         if (data == null) {
-            data = new PowerFlowRealtimeBodyData();
+            data = new MeterRealtimeBodyDataDTO();
         }
         return data;
     }
 
-    public void setData(PowerFlowRealtimeBodyData data) {
+    public void setData(MeterRealtimeBodyDataDTO data) {
         this.data = data;
     }
 }

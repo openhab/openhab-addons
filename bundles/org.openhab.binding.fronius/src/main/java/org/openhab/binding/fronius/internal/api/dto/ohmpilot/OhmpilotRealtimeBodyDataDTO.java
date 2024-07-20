@@ -10,13 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto.ohmpilot;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link OhmpilotRealtimeBodyDataDTO} is responsible for storing
- * the "data" node of the JSON response
+ * the "Data" node of the {@link OhmpilotRealtimeBodyDTO}.
  *
  * @author Hannes Spenger - Initial contribution
  */
@@ -41,47 +41,23 @@ public class OhmpilotRealtimeBodyDataDTO {
         return details;
     }
 
-    public void setDetails(OhmpilotRealtimeDetailsDTO details) {
-        this.details = details;
-    }
-
     public double getEnergyRealWACSumConsumed() {
         return energyRealWACSumConsumed;
-    }
-
-    public void setEnergyRealWACSumConsumed(double energyRealWACSumConsumed) {
-        this.energyRealWACSumConsumed = energyRealWACSumConsumed;
     }
 
     public double getPowerPACSum() {
         return powerPACSum;
     }
 
-    public void setPowerPACSum(double powerPACSum) {
-        this.powerPACSum = powerPACSum;
-    }
-
     public double getTemperatureChannel1() {
         return temperatureChannel1;
-    }
-
-    public void setTemperatureChannel1(double temperatureChannel1) {
-        this.temperatureChannel1 = temperatureChannel1;
     }
 
     public int getErrorCode() {
         return errorCode;
     }
 
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
-    }
-
     public int getStateCode() {
         return stateCode;
-    }
-
-    public void setStateCode(int stateCode) {
-        this.stateCode = stateCode;
     }
 }

@@ -10,28 +10,28 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto.inverter;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link InverterRealtimeBody} is responsible for storing
- * the "body" node of the JSON response
+ * The {@link InverterRealtimeBodyDTO} is responsible for storing
+ * the "Body" node of the {@link InverterRealtimeResponseDTO}.
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class InverterRealtimeBody {
+public class InverterRealtimeBodyDTO {
     @SerializedName("Data")
-    private InverterRealtimeBodyData data;
+    private InverterRealtimeBodyDataDTO data;
 
-    public InverterRealtimeBodyData getData() {
+    public InverterRealtimeBodyDataDTO getData() {
         if (data == null) {
-            data = new InverterRealtimeBodyData();
+            data = new InverterRealtimeBodyDataDTO();
         }
         return data;
     }
 
-    public void setData(InverterRealtimeBodyData data) {
+    public void setData(InverterRealtimeBodyDataDTO data) {
         this.data = data;
     }
 }

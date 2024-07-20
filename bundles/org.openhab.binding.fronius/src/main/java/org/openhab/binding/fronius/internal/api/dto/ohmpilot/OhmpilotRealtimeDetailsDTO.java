@@ -10,13 +10,13 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto.ohmpilot;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link OhmpilotRealtimeDetailsDTO} is responsible for storing
- * the "body" node of the JSON response
+ * the "Details" node of the {@link OhmpilotRealtimeBodyDataDTO}.
  *
  * @author Hannes Spenger - Initial contribution
  */

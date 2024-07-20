@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto;
 
 import javax.measure.Unit;
 
@@ -22,8 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link InverterRealtimeResponse} is responsible for storing
- * a value
+ * The {@link ValueUnit} is responsible for storing a value.
  *
  * @author Thomas Rokohl - Initial contribution
  * @author Jimmy Tanagra - Add conversion to QuantityType

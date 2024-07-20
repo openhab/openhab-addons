@@ -120,7 +120,7 @@ public class FroniusBindingConstants {
     }
 
     public static String parseUrl(String url, String ip) {
-        return url.replace("%IP%", ip == null ? "" : ip.trim());
+        return url.replace("%IP%", ip.trim());
     }
 
     public static String parseUrl(String url, String ip, int deviceId) {

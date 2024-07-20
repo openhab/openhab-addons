@@ -85,8 +85,9 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void dispose() {
-        if (refreshJob != null) {
-            refreshJob.cancel(true);
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob != null) {
+            localRefreshJob.cancel(true);
             refreshJob = null;
         }
     }
@@ -108,8 +109,9 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
     }
 
     private void restartAutomaticRefresh() {
-        if (refreshJob != null) { // refreshJob should be null if the config isn't valid
-            refreshJob.cancel(false);
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob != null) { // refreshJob should be null if the config isn't valid
+            localRefreshJob.cancel(false);
             startAutomaticRefresh();
         }
     }
@@ -118,7 +120,8 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
      * Start the job refreshing the data
      */
     private void startAutomaticRefresh() {
-        if (refreshJob == null || refreshJob.isCancelled()) {
+        ScheduledFuture<?> localRefreshJob = refreshJob;
+        if (localRefreshJob == null || localRefreshJob.isCancelled()) {
             final FroniusBridgeConfiguration config = getConfigAs(FroniusBridgeConfiguration.class);
             Runnable runnable = () -> {
                 try {
