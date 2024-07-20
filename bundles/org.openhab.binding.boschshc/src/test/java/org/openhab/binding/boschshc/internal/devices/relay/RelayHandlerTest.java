@@ -41,6 +41,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.types.UnDefType;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -140,6 +141,30 @@ class RelayHandlerTest extends AbstractPowerSwitchHandlerTest<RelayHandler> {
         verify(getCallback(), times(2)).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_INSTANT_OF_LAST_IMPULSE),
                 new DateTimeType("2024-04-14T15:52:31.677366Z"));
+    }
+
+    @Test
+    void testUpdateChannelsImpulseSwitchServiceNoInstantOfLastImpulse()
+            throws BoschSHCException, InterruptedException, TimeoutException, ExecutionException {
+        configureImpulseSwitchMode();
+        String json = """
+                {
+                  "@type": "ImpulseSwitchState",
+                  "impulseState": true,
+                  "impulseLength": 100
+                }
+                """;
+        JsonElement jsonObject = JsonParser.parseString(json);
+
+        getFixture().processUpdate("ImpulseSwitch", jsonObject);
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_IMPULSE_SWITCH), OnOffType.ON);
+        verify(getCallback(), times(2)).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_IMPULSE_LENGTH),
+                new DecimalType(100));
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_INSTANT_OF_LAST_IMPULSE),
+                UnDefType.NULL);
     }
 
     private void configureImpulseSwitchMode()

@@ -42,11 +42,14 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.DefaultSystemChannelTypeProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,15 +59,16 @@ import org.slf4j.LoggerFactory;
  * Relays are in one of two possible modes:
  * <ul>
  * <li>Power switch mode: a switch is used to toggle the relay on / off</li>
- * <li>Impulse switch: the relay is triggered by an impulse and automatically switches off after a configured period of
- * time</li>
+ * <li>Impulse switch: the relay is triggered by an impulse and automatically
+ * switches off after a configured period of time</li>
  * </ul>
  * <p>
- * Every time the thing is initialized, we detect dynamically which mode was configured for the relay and reconfigure
- * the channels accordingly, if required.
+ * Every time the thing is initialized, we detect dynamically which mode was
+ * configured for the relay and reconfigure the channels accordingly, if
+ * required.
  * <p>
- * In common usage scenarios, this will be the case upon the very first initialization only, or if the device is
- * re-purposed.
+ * In common usage scenarios, this will be the case upon the very first
+ * initialization only, or if the device is re-purposed.
  * 
  * @author David Pace - Initial contribution
  *
@@ -78,8 +82,8 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
     private ImpulseSwitchService impulseSwitchService;
 
     /**
-     * Indicates whether the relay is configured in impulse switch mode.
-     * If this is <code>false</code>, the relay is in the default power switch (toggle) mode
+     * Indicates whether the relay is configured in impulse switch mode. If this is
+     * <code>false</code>, the relay is in the default power switch (toggle) mode
      */
     private boolean isInImpulseSwitchMode;
 
@@ -114,7 +118,8 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
      * 
      * <ul>
      * <li>Power Switch Mode (relay stays on indefinitely when switched on)</li>
-     * <li>Impulse Switch Mode (relay stays on for a configured amount of time and then switches off automatically)</li>
+     * <li>Impulse Switch Mode (relay stays on for a configured amount of time and
+     * then switches off automatically)</li>
      * </ul>
      */
     private void configureChannels() {
@@ -176,7 +181,9 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
     private Channel createChannel(String channelId) {
         ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
         ChannelTypeUID channelTypeUID = getChannelTypeUID(channelId);
-        return ChannelBuilder.create(channelUID).withType(channelTypeUID).build();
+        @Nullable
+        String itemType = getItemType(channelId);
+        return ChannelBuilder.create(channelUID, itemType).withType(channelTypeUID).build();
     }
 
     private ChannelTypeUID getChannelTypeUID(String channelId) {
@@ -184,10 +191,25 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
             case CHANNEL_IMPULSE_SWITCH, CHANNEL_IMPULSE_LENGTH, CHANNEL_INSTANT_OF_LAST_IMPULSE:
                 return new ChannelTypeUID(BINDING_ID, channelId);
             case CHANNEL_POWER_SWITCH:
-                return new ChannelTypeUID("system:power");
+                return DefaultSystemChannelTypeProvider.SYSTEM_CHANNEL_TYPE_UID_POWER;
             default:
                 throw new UnsupportedOperationException(
                         "Cannot determine channel type UID to create channel " + channelId + " dynamically.");
+
+        }
+    }
+
+    private @Nullable String getItemType(String channelId) {
+        switch (channelId) {
+            case CHANNEL_POWER_SWITCH, CHANNEL_IMPULSE_SWITCH:
+                return "Switch";
+            case CHANNEL_IMPULSE_LENGTH:
+                return "Number:Time";
+            case CHANNEL_INSTANT_OF_LAST_IMPULSE:
+                return "DateTime";
+            default:
+                throw new UnsupportedOperationException(
+                        "Cannot determine item type to create channel " + channelId + " dynamically.");
 
         }
     }
@@ -200,10 +222,12 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
     @Override
     protected void initializeServices() throws BoschSHCException {
         if (!isInImpulseSwitchMode) {
-            // initialize PowerSwitch service only if the relay is not configured as impulse switch
+            // initialize PowerSwitch service only if the relay is not configured as impulse
+            // switch
             super.initializeServices();
         } else {
-            // initialize impulse switch service only if the relay is configured as impulse switch
+            // initialize impulse switch service only if the relay is configured as impulse
+            // switch
             registerService(impulseSwitchService, this::updateChannels,
                     List.of(CHANNEL_IMPULSE_SWITCH, CHANNEL_IMPULSE_LENGTH, CHANNEL_INSTANT_OF_LAST_IMPULSE), true);
         }
@@ -226,10 +250,10 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
         updateState(CHANNEL_IMPULSE_SWITCH, OnOffType.from(impulseSwitchServiceState.impulseState));
         updateState(CHANNEL_IMPULSE_LENGTH, new DecimalType(impulseSwitchServiceState.impulseLength));
 
-        if (impulseSwitchServiceState.instantOfLastImpulse != null) {
-            updateState(CHANNEL_INSTANT_OF_LAST_IMPULSE,
-                    new DateTimeType(impulseSwitchServiceState.instantOfLastImpulse));
-        }
+        State newInstantOfLastImpulse = impulseSwitchServiceState.instantOfLastImpulse != null
+                ? new DateTimeType(impulseSwitchServiceState.instantOfLastImpulse)
+                : UnDefType.NULL;
+        updateState(CHANNEL_INSTANT_OF_LAST_IMPULSE, newInstantOfLastImpulse);
     }
 
     @Override
