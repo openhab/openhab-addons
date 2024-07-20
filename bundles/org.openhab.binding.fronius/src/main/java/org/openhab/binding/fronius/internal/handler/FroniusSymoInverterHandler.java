@@ -162,17 +162,30 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 new QuantityType<>(site.getRelAutonomy(), Units.PERCENT);
             case FroniusBindingConstants.POWER_FLOW_SELF_CONSUMPTION ->
                 new QuantityType<>(site.getRelSelfConsumption(), Units.PERCENT);
-            // Kept second channels for backwards compatibility
-            case FroniusBindingConstants.POWER_FLOW_INVERTER_POWER,
-                    FroniusBindingConstants.POWER_FLOW_INVERTER_1_POWER -> {
+            case FroniusBindingConstants.POWER_FLOW_INVERTER_POWER -> {
                 PowerFlowRealtimeInverterDTO inverter = getInverter(config.deviceId);
                 if (inverter == null) {
                     yield null;
                 }
                 yield new QuantityType<>(inverter.getP(), Units.WATT);
             }
-            case FroniusBindingConstants.POWER_FLOW_INVERTER_SOC, FroniusBindingConstants.POWER_FLOW_INVERTER_1_SOC -> {
+            case FroniusBindingConstants.POWER_FLOW_INVERTER_SOC -> {
                 PowerFlowRealtimeInverterDTO inverter = getInverter(config.deviceId);
+                if (inverter == null) {
+                    yield null;
+                }
+                yield new QuantityType<>(inverter.getSoc(), Units.PERCENT);
+            }
+            // Kept for backwards compatibility
+            case FroniusBindingConstants.POWER_FLOW_INVERTER_1_POWER -> {
+                PowerFlowRealtimeInverterDTO inverter = getInverter(1);
+                if (inverter == null) {
+                    yield null;
+                }
+                yield new QuantityType<>(inverter.getP(), Units.WATT);
+            }
+            case FroniusBindingConstants.POWER_FLOW_INVERTER_1_SOC -> {
+                PowerFlowRealtimeInverterDTO inverter = getInverter(1);
                 if (inverter == null) {
                     yield null;
                 }
