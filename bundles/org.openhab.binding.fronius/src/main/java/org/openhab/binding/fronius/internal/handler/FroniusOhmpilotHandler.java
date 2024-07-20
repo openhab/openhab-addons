@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
-import org.openhab.binding.fronius.internal.FroniusCommunicationException;
+import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.dto.ohmpilot.OhmpilotRealtimeBodyDTO;
 import org.openhab.binding.fronius.internal.api.dto.ohmpilot.OhmpilotRealtimeBodyDataDTO;
 import org.openhab.binding.fronius.internal.api.dto.ohmpilot.OhmpilotRealtimeDetailsDTO;
