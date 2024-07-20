@@ -241,23 +241,15 @@ public class Mapper {
                 case MB_KEY_TIRE_SENSOR_AVAILABLE:
                 case MB_KEY_CHARGE_STATUS:
                 case MB_KEY_CHARGE_ERROR:
+                case MB_KEY_TIRE_MARKER_FRONT_RIGHT:
+                case MB_KEY_TIRE_MARKER_FRONT_LEFT:
+                case MB_KEY_TIRE_MARKER_REAR_RIGHT:
+                case MB_KEY_TIRE_MARKER_REAR_LEFT:
                     int stateNumberInteger = Utils.getInt(value);
                     if (stateNumberInteger < 0) {
                         state = UnDefType.UNDEF;
                     } else {
                         state = new DecimalType(stateNumberInteger);
-                    }
-                    return new ChannelStateMap(ch[0], ch[1], state);
-
-                case MB_KEY_TIRE_MARKER_FRONT_RIGHT:
-                case MB_KEY_TIRE_MARKER_FRONT_LEFT:
-                case MB_KEY_TIRE_MARKER_REAR_RIGHT:
-                case MB_KEY_TIRE_MARKER_REAR_LEFT:
-                    double stateNumberDouble = Utils.getDouble(value);
-                    if (stateNumberDouble < 0) {
-                        state = UnDefType.UNDEF;
-                    } else {
-                        state = new DecimalType(stateNumberDouble);
                     }
                     return new ChannelStateMap(ch[0], ch[1], state);
 
