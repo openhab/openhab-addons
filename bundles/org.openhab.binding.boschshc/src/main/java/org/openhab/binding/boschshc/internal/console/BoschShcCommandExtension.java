@@ -43,10 +43,11 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Console command to list Bosch SHC devices and openhab support. Use the SHC
- * API to get all SHC devices and SHC services and tries to lookup openhab
- * devices and implemented service classes. Prints each name and looked-up
- * implementation on console.
+ * Console command to list Bosch SHC devices and openhab support.
+ * <p>
+ * Uses the SHC API to get all SHC devices and SHC services and tries to lookup
+ * openhab devices and implemented service classes. Prints each name and
+ * looked-up implementation on console.
  *
  * @author Gerd Zanker - Initial contribution
  */
@@ -72,10 +73,12 @@ public class BoschShcCommandExtension extends AbstractConsoleCommandExtension im
     }
 
     /**
-     * Returns all implemented services of this Bosch SHC binding. This list shall
-     * contain all available services and needs to be extended when a new service is
-     * added. A unit tests checks if this list matches with the existing subfolders
-     * in "src/main/java/org/openhab/binding/boschshc/internal/services".
+     * Returns all implemented services of this Bosch SHC binding.
+     * <p>
+     * This list shall contain all available services and needs to be extended when
+     * a new service is added. A unit tests checks if this list matches with the
+     * existing subfolders in
+     * <code>src/main/java/org/openhab/binding/boschshc/internal/services</code>.
      */
     List<String> getAllBoschShcServices() {
         return List.of("airqualitylevel", "batterylevel", "binaryswitch", "bypass", "cameranotification", "childlock",
