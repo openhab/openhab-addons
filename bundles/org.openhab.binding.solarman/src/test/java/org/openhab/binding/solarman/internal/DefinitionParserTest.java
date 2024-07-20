@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
@@ -63,8 +62,10 @@ public class DefinitionParserTest {
     public static List<String> extractDefinitionIdFromYamlFiles(List<String> yamlFiles) {
         Pattern pattern = Pattern.compile("definitions/(.*)\\.yaml");
 
-        return yamlFiles.stream().map(file -> Optional.of(pattern.matcher(file)).filter(Matcher::matches)
-                .map(matcher -> matcher.group(1)).orElse(file)).collect(Collectors.toList());
+        return yamlFiles.stream().map(file -> {
+            Matcher matcher = pattern.matcher(file);
+            return matcher.matches() ? matcher.group(1) : file;
+        }).collect(Collectors.toList());
     }
 
     public List<String> scanForYamlFiles(String directoryPath) throws IOException {
@@ -101,7 +102,7 @@ public class DefinitionParserTest {
         }
         String[] files = new java.io.File(url.getPath()).list((dir, name) -> name.endsWith(".yaml"));
         if (files != null) {
-            return Arrays.stream(files).map(file -> directoryPath + "/" + file).collect(Collectors.toList());
+            return Arrays.stream(files).map(file -> directoryPath + "/" + file).toList();
         }
         return Collections.emptyList();
     }

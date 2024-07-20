@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.solarman.internal.updater;
 
-import static org.openhab.binding.solarman.internal.util.StreamUtils.reverse;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
@@ -22,6 +20,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -197,7 +197,7 @@ public class SolarmanChannelUpdater {
     private void updateChannelWithRawValue(ParameterItem parameterItem, ChannelUID channelUID, List<Integer> registers,
             Map<Integer, byte[]> readRegistersMap) {
         String hexString = String.format("[%s]",
-                reverse(registers).stream().map(readRegistersMap::get).map(
+                reversed(registers).stream().map(readRegistersMap::get).map(
                         val -> String.format("0x%02X", ByteBuffer.wrap(val).order(ByteOrder.BIG_ENDIAN).getShort()))
                         .collect(Collectors.joining(",")));
 
@@ -211,7 +211,7 @@ public class SolarmanChannelUpdater {
 
     private BigInteger extractNumericValue(List<Integer> registers, Map<Integer, byte[]> readRegistersMap,
             ValueType valueType) {
-        return reverse(registers)
+        return reversed(registers)
                 .stream().map(readRegistersMap::get).reduce(
                         BigInteger.ZERO, (acc,
                                 val) -> acc.shiftLeft(Short.SIZE)
@@ -228,5 +228,11 @@ public class SolarmanChannelUpdater {
     @FunctionalInterface
     public interface StateUpdater {
         void updateState(ChannelUID channelUID, State state);
+    }
+
+    private <T> List<T> reversed(List<T> initialList) {
+        List<T> reversedList = new ArrayList<>(initialList);
+        Collections.reverse(reversedList);
+        return reversedList;
     }
 }

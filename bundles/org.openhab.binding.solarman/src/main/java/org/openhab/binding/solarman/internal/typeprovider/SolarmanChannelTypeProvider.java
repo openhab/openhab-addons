@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
@@ -69,7 +70,7 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
         InverterDefinition inverterDefinition = DEFINITION_PARSER.parseDefinition(inverterDefinitionId);
 
         if (inverterDefinition == null) {
-            logger.error("Unable to parse inverter definition");
+            logger.warn("Unable to parse inverter definition");
             return Collections.emptyMap();
         }
 
@@ -113,23 +114,13 @@ public class SolarmanChannelTypeProvider implements ChannelTypeProvider {
     private String computePatternForItem(ParameterItem item) {
         long decimalPoints = 0;
 
-        BigDecimal scale = item.getScale();
-        if (scale == null) {
-            scale = BigDecimal.ONE;
-        }
-
+        BigDecimal scale = Objects.requireNonNullElse(item.getScale(), BigDecimal.ONE);
         if (scale.compareTo(BigDecimal.ONE) < 0) {
             decimalPoints = Math.abs(Math.round(Math.log10(scale.doubleValue())));
         }
 
-        String pattern = null;
-        if (decimalPoints > 0) {
-            pattern = "%." + decimalPoints + "f";
-        } else {
-            pattern = "%d";
-        }
-
         String uom = item.getUom();
+        String pattern = (decimalPoints > 0) ? "%." + decimalPoints + "f" : "%d";
         return pattern + (uom != null && !uom.isBlank() ? " %unit%" : "");
     }
 

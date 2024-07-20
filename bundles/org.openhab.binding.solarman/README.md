@@ -19,7 +19,7 @@ It was tested on a SUN-12K-SG04LP3-EU only, but because the implementation uses 
 
 ## Thing Configuration
 
-To connect the logger you need the IP address of the logger and its serial number. 
+To connect the logger you need the IP address of the logger and its serial number.
 The IP address can be obtained from your router and the serial number can either be read from the label of the logger, or by connecting to the logger with a browser (default user/pass: admin/admin) and getting it from the Status page.
 *Please note* that you need the "Device serial number" from the "Device information" section, not the "Inverter serial number".
 
@@ -33,7 +33,6 @@ The IP address can be obtained from your router and the serial number can either
 | port               | integer | Port of the Solarman logger                            | 8899    | no       | yes      |
 | refreshInterval    | integer | Interval the device is polled in sec.                  | 60      | no       | yes      |
 | additionalRequests | text    | Additional requests besides the ones in the definition | N/A     | no       | yes      |
-
 
 The `inverterType` parameter governs what registers the binding will read from the logger and what channels it will expose.
 
@@ -65,9 +64,7 @@ Thing solarman:logger:local [ hostname="x.x.x.x", inverterType="deye_sg04lp3", s
 }
 ```
 
-**Please note**
-
-As of this writing inverter types besides the `deye_sg04lp3` were not tested to work. 
+**Please note** As of this writing inverter types besides the `deye_sg04lp3` were not tested to work. 
 If you have one of those inverters and it works, please drop me a message, if it doesn't work, please open an issue and I'll try to fix it.
 
 ## Channels
@@ -78,61 +75,60 @@ This is the list you get for the `deye_sg04lp3` inverter type:
 
 | Channel                                  | Type   | Read/Write   | Description                                           |
 |------------------------------------------|--------|--------------|-------------------------------------------------------|
-| inverter-frequency                       | Number | R            | Number Value \[0x27E\]                                |
-| battery-battery-temperature              | Number | R            | Battery Temperature \[0x024A\]                        |
-| inverter-inverter-l3-power               | Number | R            | Inverter L3 Power \[0x027B\]                          |
-| inverter-current-l2                      | Number | R            | Current L2 \[0x0277\]                                 |
-| upload-load-voltage-l3                   | Number | R            | Load Voltage L3 \[0x0286\]                            |
-| upload-load-voltage-l2                   | Number | R            | Load Voltage L2 \[0x0285\]                            |
-| grid-grid-voltage-l2                     | Number | R            | Grid Voltage L2 \[0x0257\]                            |
-| upload-daily-load-consumption            | Number | R            | Daily Load Consumption \[0x020E\]                     |
-| inverter-dc-temperature                  | Number | R            | DC Temperature \[0x021C\]                             |
-| grid-external-ct-l2-power                | Number | R            | External CT L2 Power \[0x0269\]                       |
-| inverter-control-board-version-no-       | Number | R            | Control Board Version No \[0x000D\]                   |
-| upload-load-l3-power                     | Number | R            | Load L3 Power \[0x028C\]                              |
-| solar-pv2-voltage                        | Number | R            | PV2 Voltage \[0x02A6\]                                |
-| solar-pv1-power                          | Number | R            | PV1 Power \[0x02A0\]                                  |
-| upload-total-load-power                  | Number | R            | Total Load Power \[0x028D\]                           |
-| solar-pv1-current                        | Number | R            | PV1 Current \[0x02A5\]                                |
-| inverter-ac-temperature                  | Number | R            | AC Temperature \[0x021D\]                             |
 | alert-alert                              | Number | R            | Alert \[0x0229,0x022A,0x022B,0x022C,0x022D,0x022E\]   |
-| grid-daily-energy-sold                   | Number | R            | Daily Energy Sold \[0x0209\]                          |
-| upload-load-l1-power                     | Number | R            | Load L1 Power \[0x028A\]                              |
-| solar-total-production                   | Number | R            | Total Production \[0x0216,0x0217\]                    |
-| battery-total-battery-discharge          | Number | R            | Total Battery Discharge \[0x0206,0x0207\]             |
-| grid-grid-voltage-l1                     | Number | R            | Grid Voltage L1 \[0x0256\]                            |
-| grid-internal-ct-l2-power                | Number | R            | Internal CT L2 Power \[0x025D\]                       |
+| battery-battery-current                  | Number | R            | Battery Current \[0x024F\]                            |
+| battery-battery-power                    | Number | R            | Battery Power \[0x024E\]                              |
+| battery-battery-soc                      | Number | R            | Battery SOC \[0x024C\]                                |
+| battery-battery-temperature              | Number | R            | Battery Temperature \[0x024A\]                        |
 | battery-battery-voltage                  | Number | R            | Battery Voltage \[0x024B\]                            |
+| battery-daily-battery-charge             | Number | R            | Daily Battery Charge \[0x0202\]                       |
+| battery-daily-battery-discharge          | Number | R            | Daily Battery Discharge \[0x0203\]                    |
+| battery-total-battery-charge             | Number | R            | Total Battery Charge \[0x0204,0x0205\]                |
+| battery-total-battery-discharge          | Number | R            | Total Battery Discharge \[0x0206,0x0207\]             |
+| grid-daily-energy-bought                 | Number | R            | Daily Energy Bought \[0x0208\]                        |
+| grid-daily-energy-sold                   | Number | R            | Daily Energy Sold \[0x0209\]                          |
+| grid-external-ct-l1-power                | Number | R            | External CT L1 Power \[0x0268\]                       |
+| grid-external-ct-l2-power                | Number | R            | External CT L2 Power \[0x0269\]                       |
+| grid-external-ct-l3-power                | Number | R            | External CT L3 Power \[0x026A\]                       |
+| grid-grid-voltage-l1                     | Number | R            | Grid Voltage L1 \[0x0256\]                            |
+| grid-grid-voltage-l2                     | Number | R            | Grid Voltage L2 \[0x0257\]                            |
+| grid-grid-voltage-l3                     | Number | R            | Grid Voltage L3 \[0x0258\]                            |
+| grid-internal-ct-l1-power                | Number | R            | Internal CT L1 Power \[0x025C\]                       |
+| grid-internal-ct-l2-power                | Number | R            | Internal CT L2 Power \[0x025D\]                       |
 | grid-internal-ct-l3-power                | Number | R            | Internal CT L3 Power \[0x025E\]                       |
 | grid-total-energy-bought                 | Number | R            | Total Energy Bought \[0x020A,0x020B\]                 |
-| battery-battery-current                  | Number | R            | Battery Current \[0x024F\]                            |
+| grid-total-energy-sold                   | Number | R            | Total Energy Sold \[0x020C\]                          |
+| grid-total-grid-power                    | Number | R            | Total Grid Power \[0x0271\]                           |
+| grid-total-grid-production               | Number | R            | Total Grid Production \[0x020C,0x020D\]               |
+| inverter-ac-temperature                  | Number | R            | AC Temperature \[0x021D\]                             |
+| inverter-communication-board-version-no- | Number | R            | Communication Board Version No \[0x0011\]             |
+| inverter-control-board-version-no-       | Number | R            | Control Board Version No \[0x000D\]                   |
+| inverter-current-l1                      | Number | R            | Current L1 \[0x0276\]                                 |
+| inverter-current-l2                      | Number | R            | Current L2 \[0x0277\]                                 |
+| inverter-current-l3                      | Number | R            | Current L3 \[0x0278\]                                 |
+| inverter-dc-temperature                  | Number | R            | DC Temperature \[0x021C\]                             |
+| inverter-frequency                       | Number | R            | Number Value \[0x27E\]                                |
+| inverter-inverter-id                     | String | R            | Inverter ID \[0x0003,0x0004,0x0005,0x0006,0x0007\]    |
 | inverter-inverter-l1-power               | Number | R            | Inverter L1 Power \[0x0279\]                          |
 | inverter-inverter-l2-power               | Number | R            | Inverter L2 Power \[0x027A\]                          |
-| solar-pv2-current                        | Number | R            | PV2 Current \[0x02A7\]                                |
-| grid-grid-voltage-l3                     | Number | R            | Grid Voltage L3 \[0x0258\]                            |
-| solar-pv1-voltage                        | Number | R            | PV1 Voltage \[0x02A4\]                                |
-| upload-load-l2-power                     | Number | R            | Load L2 Power \[0x028B\]                              |
-| inverter-communication-board-version-no- | Number | R            | Communication Board Version No \[0x0011\]             |
-| battery-daily-battery-charge             | Number | R            | Daily Battery Charge \[0x0202\]                       |
-| upload-total-load-consumption            | Number | R            | Total Load Consumption \[0x020F,0x0210\]              |
-| battery-battery-soc                      | Number | R            | Battery SOC \[0x024C\]                                |
-| inverter-current-l1                      | Number | R            | Current L1 \[0x0276\]                                 |
-| battery-battery-power                    | Number | R            | Battery Power \[0x024E\]                              |
-| grid-internal-ct-l1-power                | Number | R            | Internal CT L1 Power \[0x025C\]                       |
-| inverter-current-l3                      | Number | R            | Current L3 \[0x0278\]                                 |
-| grid-total-grid-power                    | Number | R            | Total Grid Power \[0x0271\]                           |
-| battery-total-battery-charge             | Number | R            | Total Battery Charge \[0x0204,0x0205\]                |
+| inverter-inverter-l3-power               | Number | R            | Inverter L3 Power \[0x027B\]                          |
 | solar-daily-production                   | Number | R            | Daily Production \[0x0211\]                           |
+| solar-pv1-current                        | Number | R            | PV1 Current \[0x02A5\]                                |
+| solar-pv1-power                          | Number | R            | PV1 Power \[0x02A0\]                                  |
+| solar-pv1-voltage                        | Number | R            | PV1 Voltage \[0x02A4\]                                |
+| solar-pv2-current                        | Number | R            | PV2 Current \[0x02A7\]                                |
 | solar-pv2-power                          | Number | R            | PV2 Power \[0x02A1\]                                  |
-| grid-external-ct-l3-power                | Number | R            | External CT L3 Power \[0x026A\]                       |
-| inverter-inverter-id                     | String | R            | Inverter ID \[0x0003,0x0004,0x0005,0x0006,0x0007\]    |
-| grid-external-ct-l1-power                | Number | R            | External CT L1 Power \[0x0268\]                       |
-| grid-daily-energy-bought                 | Number | R            | Daily Energy Bought \[0x0208\]                        |
+| solar-pv2-voltage                        | Number | R            | PV2 Voltage \[0x02A6\]                                |
+| solar-total-production                   | Number | R            | Total Production \[0x0216,0x0217\]                    |
+| upload-daily-load-consumption            | Number | R            | Daily Load Consumption \[0x020E\]                     |
+| upload-load-l1-power                     | Number | R            | Load L1 Power \[0x028A\]                              |
+| upload-load-l2-power                     | Number | R            | Load L2 Power \[0x028B\]                              |
+| upload-load-l3-power                     | Number | R            | Load L3 Power \[0x028C\]                              |
 | upload-load-voltage-l1                   | Number | R            | Load Voltage L1 \[0x0284\]                            |
-| battery-daily-battery-discharge          | Number | R            | Daily Battery Discharge \[0x0203\]                    |
-| grid-total-grid-production               | Number | R            | Total Grid Production \[0x020C,0x020D\]               |
-| grid-total-energy-sold                   | Number | R            | Total Energy Sold \[0x020C\]                          |
-
+| upload-load-voltage-l2                   | Number | R            | Load Voltage L2 \[0x0285\]                            |
+| upload-load-voltage-l3                   | Number | R            | Load Voltage L3 \[0x0286\]                            |
+| upload-total-load-consumption            | Number | R            | Total Load Consumption \[0x020F,0x0210\]              |
+| upload-total-load-power                  | Number | R            | Total Load Power \[0x028D\]                           |
 
 ## Full Example
 
@@ -290,5 +286,5 @@ sitemap solarman label="Solarman"
 
 ## Acknowledgments
 
-The code's creation draws significant inspiration from [Stephan Joubert's Home Assistant plugin](https://github.com/StephanJoubert/home_assistant_solarman), which provides the inverter definitions used in the project. 
+The code's creation draws significant inspiration from [Stephan Joubert's Home Assistant plugin](https://github.com/StephanJoubert/home_assistant_solarman), which provides the inverter definitions used in the project.
 Additionally, the [pysolarmanv5 module](https://pysolarmanv5.readthedocs.io/en/latest/index.html) was a valuable resource, as it offers an excellent explanation of the Solarman V5 protocol.

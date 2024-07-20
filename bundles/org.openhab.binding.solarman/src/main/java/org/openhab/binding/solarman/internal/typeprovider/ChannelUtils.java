@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarman.internal.SolarmanBindingConstants;
 import org.openhab.binding.solarman.internal.defmodel.ParameterItem;
-import org.openhab.binding.solarman.internal.util.ClassUtils;
 import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.unit.MetricPrefix;
 import org.openhab.core.library.unit.SIUnits;
@@ -76,15 +75,14 @@ public class ChannelUtils {
      */
     private static String computeNumberType(String uom) {
         return switch (uom.toUpperCase()) {
-            case "A" -> CoreItemFactory.NUMBER + ":" + ClassUtils.getShortClassName(ElectricCurrent.class);
-            case "V" -> CoreItemFactory.NUMBER + ":" + ClassUtils.getShortClassName(ElectricPotential.class);
-            case "°C" -> CoreItemFactory.NUMBER + ":" + ClassUtils.getShortClassName(Temperature.class);
-            case "W", "KW", "VA", "KVA", "VAR", "KVAR" ->
-                CoreItemFactory.NUMBER + ":" + ClassUtils.getShortClassName(Power.class);
-            case "WH", "KWH" -> CoreItemFactory.NUMBER + ":" + ClassUtils.getShortClassName(Energy.class);
-            case "S" -> CoreItemFactory.NUMBER + ":" + ClassUtils.getShortClassName(Time.class);
-            case "HZ" -> CoreItemFactory.NUMBER + ":" + ClassUtils.getShortClassName(Frequency.class);
-            case "%" -> CoreItemFactory.NUMBER + ":" + ClassUtils.getShortClassName(Dimensionless.class);
+            case "A" -> CoreItemFactory.NUMBER + ":" + ElectricCurrent.class.getSimpleName();
+            case "V" -> CoreItemFactory.NUMBER + ":" + ElectricPotential.class.getSimpleName();
+            case "°C" -> CoreItemFactory.NUMBER + ":" + Temperature.class.getSimpleName();
+            case "W", "KW", "VA", "KVA", "VAR", "KVAR" -> CoreItemFactory.NUMBER + ":" + Power.class.getSimpleName();
+            case "WH", "KWH" -> CoreItemFactory.NUMBER + ":" + Energy.class.getSimpleName();
+            case "S" -> CoreItemFactory.NUMBER + ":" + Time.class.getSimpleName();
+            case "HZ" -> CoreItemFactory.NUMBER + ":" + Frequency.class.getSimpleName();
+            case "%" -> CoreItemFactory.NUMBER + ":" + Dimensionless.class.getSimpleName();
             default -> CoreItemFactory.NUMBER;
         };
     }

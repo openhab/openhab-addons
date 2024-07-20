@@ -86,7 +86,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
         InverterDefinition inverterDefinition = definitionParser.parseDefinition(config.inverterType);
 
         if (inverterDefinition == null) {
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_ERROR,
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Unable to find a definition for the provided inverter type");
             return;
         } else {
@@ -123,14 +123,13 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
                     solarmanLoggerConnector, solarmanV5Protocol, paramToChannelMapping);
 
             if (solarmanProcessResult.hasSuccessfulResponses()) {
-                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.ONLINE.NONE, solarmanProcessResult.toString());
+                updateStatus(ThingStatus.ONLINE);
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         solarmanProcessResult.toString());
             }
         } catch (Exception e) {
-            logger.debug("Error processing requests: {}", e.getMessage());
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.getMessage());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -159,7 +158,7 @@ public class SolarmanLoggerHandler extends BaseThingHandler {
         String[] tokens = registers.split(",");
         Pattern pattern = Pattern.compile("\\s*(0x[\\da-fA-F]+|[\\d]+)\\s*");
         return Stream.of(tokens).map(pattern::matcher).filter(Matcher::matches).map(matcher -> matcher.group(1))
-                .map(SolarmanLoggerHandler::parseNumber).collect(Collectors.toList());
+                .map(SolarmanLoggerHandler::parseNumber).toList();
     }
 
     // For now just concatenate the list, in the future, merge overlapping requests

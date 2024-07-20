@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.solarman.internal.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -75,22 +72,6 @@ public class StreamUtils {
         Spliterator<C> split = Spliterators.spliterator(cIterator, zipSize, characteristics);
         return (a.isParallel() || b.isParallel()) ? StreamSupport.stream(split, true)
                 : StreamSupport.stream(split, false);
-    }
-
-    /**
-     * Reverses a list of integers.
-     *
-     * @param list The list to be reversed
-     * @return A collection containing the elements of the list in reverse order
-     */
-    public static Collection<Object> reverse(List<Integer> list) {
-        return list.stream().reduce(new ArrayList<>(), (l, i) -> {
-            l.add(0, i);
-            return l;
-        }, (l1, l2) -> {
-            l2.addAll(l1);
-            return l2;
-        });
     }
 
     /**

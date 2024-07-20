@@ -32,7 +32,7 @@ public class SolarmanLoggerConfiguration {
     public String inverterType = "sg04lp3";
     public int refreshInterval = 30;
     @Nullable
-    public String additionalRequests = "";
+    public String additionalRequests;
 
     public SolarmanLoggerConfiguration() {
     }
