@@ -7,10 +7,13 @@
 		<item-type>Number</item-type>
 		<label>Starter Battery Status</label>
 		<state readOnly="true">
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/StarterBatteryState.swift -->
 			<options>
 				<option value="0">Green</option>
 				<option value="1">Yellow</option>
 				<option value="2">Red</option>
+				<option value="3">Service Disabled</option>
+				<option value="4">Vehicle Not Available </option>
 			</options>
 		</state>
 	</channel-type>

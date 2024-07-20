@@ -408,6 +408,8 @@ Traffic light status of the starter battery
 - 0 : Green
 - 1 : Yellow
 - 2 : Red
+- 3 : Service Disabled
+- 4 : Vehicle Not Available
 
 ### Range
 
