@@ -20,10 +20,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.IrrigationSystemAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.common.ActiveEnum;
 import io.github.hapjava.characteristics.impl.common.InUseEnum;
@@ -49,16 +51,19 @@ public class HomekitIrrigationSystemImpl extends AbstractHomekitAccessoryImpl im
     private static final String SERVICE_LABEL = "ServiceLabel";
 
     public HomekitIrrigationSystemImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         inUseMapping = createMapping(HomekitCharacteristicType.INUSE_STATUS, InUseEnum.class);
         programModeMap = HomekitCharacteristicFactory
                 .createMapping(getCharacteristic(HomekitCharacteristicType.PROGRAM_MODE).get(), ProgramModeEnum.class);
-        getServices().add(new IrrigationSystemService(this));
+        addService(new IrrigationSystemService(this));
     }
 
     @Override
-    public void init() {
+    public void init() throws HomekitException {
+        super.init();
+
         String serviceLabelNamespaceConfig = getAccessoryConfiguration(SERVICE_LABEL, "ARABIC_NUMERALS");
         ServiceLabelNamespaceEnum serviceLabelEnum;
 
@@ -70,7 +75,7 @@ public class HomekitIrrigationSystemImpl extends AbstractHomekitAccessoryImpl im
         final var finalEnum = serviceLabelEnum;
         var serviceLabelNamespace = getCharacteristic(ServiceLabelNamespaceCharacteristic.class).orElseGet(
                 () -> new ServiceLabelNamespaceCharacteristic(() -> CompletableFuture.completedFuture(finalEnum)));
-        getServices().add(new ServiceLabelService(serviceLabelNamespace));
+        addService(new ServiceLabelService(serviceLabelNamespace));
     }
 
     @Override

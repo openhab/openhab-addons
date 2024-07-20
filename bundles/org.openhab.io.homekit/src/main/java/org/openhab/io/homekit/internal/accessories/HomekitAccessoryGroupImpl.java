@@ -19,6 +19,8 @@ import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
+import io.github.hapjava.characteristics.Characteristic;
+
 /**
  * Bare accessory (for being the root of a multi-service accessory).
  *
@@ -27,7 +29,8 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 @NonNullByDefault
 public class HomekitAccessoryGroupImpl extends AbstractHomekitAccessoryImpl {
     public HomekitAccessoryGroupImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
     }
 }

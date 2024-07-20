@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -277,9 +278,9 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     protected synchronized Map<String, String> updateResourceState(String actionId, Map<String, String> inputs) {
-        Map<String, String> result = Optional.of(service)
-                .map(a -> a.invokeAction(this, SERVICE_MAIN_AGENT, actionId, inputs)).filter(a -> !a.isEmpty())
-                .orElse(Map.of("Result", "Command Failed"));
+        Map<String, String> result = Objects.requireNonNull(
+                Optional.of(service).map(a -> a.invokeAction(this, SERVICE_MAIN_AGENT, actionId, inputs))
+                        .filter(a -> !a.isEmpty()).orElse(Map.of("Result", "Command Failed")));
         if (isOk(result)) {
             result.keySet().stream().filter(a -> !"Result".equals(a)).forEach(a -> {
                 String val = result.getOrDefault(a, "");
@@ -305,8 +306,8 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
         if (sources.isEmpty()) {
             getSourceMap();
         }
-        String source = sources.entrySet().stream().filter(a -> a.getValue().equals(tmpSource)).map(a -> a.getKey())
-                .findFirst().orElse(tmpSource);
+        String source = Objects.requireNonNull(sources.entrySet().stream().filter(a -> a.getValue().equals(tmpSource))
+                .map(a -> a.getKey()).findFirst().orElse(tmpSource));
         Map<String, String> result = updateResourceState("SetMainTVSource",
                 Map.of("Source", source, "ID", sources.getOrDefault(source, "0"), "UiID", "0"));
         logResult(result.getOrDefault("Result", "Unable to Set Source Name: " + source));
@@ -334,25 +335,25 @@ public class MainTVServerService implements UpnpIOParticipant, SamsungTvService 
     }
 
     private String parseCurrentChannel(String xml) {
-        return Utils.loadXMLFromString(xml, host).map(a -> a.getDocumentElement())
-                .map(a -> getFirstNodeValue(a, "MajorCh", "-1")).orElse("-1");
+        return Objects.requireNonNull(Utils.loadXMLFromString(xml, host).map(a -> a.getDocumentElement())
+                .map(a -> getFirstNodeValue(a, "MajorCh", "-1")).orElse("-1"));
     }
 
     private void getSourceMap() {
         // NodeList doesn't have a stream, so do this
-        sources = Optional.of(updateResourceState("GetSourceList")).filter(a -> "OK".equals(a.get("Result")))
-                .map(a -> a.get("SourceList")).flatMap(xml -> Utils.loadXMLFromString(xml, host))
-                .map(a -> a.getDocumentElement()).map(
-                        a -> a.getElementsByTagName("Source"))
-                .map(nList -> IntStream.range(0, nList.getLength()).boxed().map(i -> (Element) nList.item(i))
-                        .collect(Collectors.toMap(a -> getFirstNodeValue(a, "SourceType", ""),
-                                a -> getFirstNodeValue(a, "ID", ""), (key1, key2) -> key2)))
-                .orElse(Map.of());
+        sources = Objects.requireNonNull(
+                Optional.of(updateResourceState("GetSourceList")).filter(a -> "OK".equals(a.get("Result")))
+                        .map(a -> a.get("SourceList")).flatMap(xml -> Utils.loadXMLFromString(xml, host))
+                        .map(a -> a.getDocumentElement()).map(a -> a.getElementsByTagName("Source")).map(
+                                nList -> IntStream.range(0, nList.getLength()).boxed().map(i -> (Element) nList.item(i))
+                                        .collect(Collectors.toMap(a -> getFirstNodeValue(a, "SourceType", ""),
+                                                a -> getFirstNodeValue(a, "ID", ""), (key1, key2) -> key2)))
+                        .orElse(Map.of()));
     }
 
     private String getFirstNodeValue(Element nodeList, String node, String ifNone) {
-        return Optional.ofNullable(nodeList).map(a -> a.getElementsByTagName(node)).filter(a -> a.getLength() > 0)
-                .map(a -> a.item(0)).map(a -> a.getTextContent()).orElse(ifNone);
+        return Objects.requireNonNull(Optional.ofNullable(nodeList).map(a -> a.getElementsByTagName(node))
+                .filter(a -> a.getLength() > 0).map(a -> a.item(0)).map(a -> a.getTextContent()).orElse(ifNone));
     }
 
     /**

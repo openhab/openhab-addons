@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -316,6 +316,7 @@
     <module>org.openhab.binding.pegelonline</module>
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
+    <module>org.openhab.binding.pihole</module>
     <module>org.openhab.binding.pilight</module>
     <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.pixometer</module>
@@ -405,6 +406,7 @@
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
     <module>org.openhab.binding.teslapowerwall</module>
+    <module>org.openhab.binding.teslascope</module>
     <module>org.openhab.binding.tibber</module>
     <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.touchwand</module>

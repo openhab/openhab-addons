@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="pihole"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="server">
+		<label>Pi-hole Server</label>
+		<description>This thing represents a Pi-hole server and is used for the Pi-hole binding.</description>
+
+		<channels>
+			<channel id="domains-being-blocked" typeId="number-channel">
+				<label>Domains Blocked</label>
+				<description>The total number of domains currently being blocked.</description>
+			</channel>
+			<channel id="dns-queries-today" typeId="number-channel">
+				<label>DNS Queries Today</label>
+				<description>The count of DNS queries made today.</description>
+			</channel>
+			<channel id="ads-blocked-today" typeId="number-channel">
+				<label>Ads Blocked Today</label>
+				<description>The number of ads blocked today.</description>
+			</channel>
+			<channel id="ads-percentage-today" typeId="number-channel">
+				<label>Ads Percentage Today</label>
+				<description>The percentage of ads blocked today.</description>
+			</channel>
+			<channel id="unique-domains" typeId="number-channel">
+				<label>Unique Domains</label>
+				<description>The count of unique domains queried.</description>
+			</channel>
+			<channel id="queries-forwarded" typeId="number-channel">
+				<label>Queries Forwarded</label>
+				<description>The number of queries forwarded to an external DNS server.</description>
+			</channel>
+			<channel id="queries-cached" typeId="number-channel">
+				<label>Queries Cached</label>
+				<description>The number of queries served from the cache.</description>
+			</channel>
+			<channel id="clients-ever-seen" typeId="number-channel">
+				<label>Clients Ever Seen</label>
+				<description>The total number of unique clients ever seen.</description>
+			</channel>
+			<channel id="unique-clients" typeId="number-channel">
+				<label>Unique Clients</label>
+				<description>The current count of unique clients.</description>
+			</channel>
+			<channel id="dns-queries-all-types" typeId="number-channel">
+				<label>DNS Queries (All Types)</label>
+				<description>The total number of DNS queries of all types.</description>
+			</channel>
+			<channel id="reply-unknown" typeId="number-channel">
+				<label>Reply UNKNOWN</label>
+				<description>DNS replies with an unknown status.</description>
+			</channel>
+			<channel id="reply-nodata" typeId="number-channel">
+				<label>Reply NODATA</label>
+				<description>DNS replies indicating no data.</description>
+			</channel>
+			<channel id="reply-nxdomain" typeId="number-channel">
+				<label>Reply NXDOMAIN</label>
+				<description>DNS replies indicating non-existent domain.</description>
+			</channel>
+			<channel id="reply-cname" typeId="number-channel">
+				<label>Reply CNAME</label>
+				<description>DNS replies with a CNAME record.</description>
+			</channel>
+			<channel id="reply-ip" typeId="number-channel">
+				<label>Reply IP</label>
+				<description>DNS replies with an IP address.</description>
+			</channel>
+			<channel id="reply-domain" typeId="number-channel">
+				<label>Reply DOMAIN</label>
+				<description>DNS replies with a domain name.</description>
+			</channel>
+			<channel id="reply-rrname" typeId="number-channel">
+				<label>Reply RRNAME</label>
+				<description>DNS replies with a resource record name.</description>
+			</channel>
+			<channel id="reply-servfail" typeId="number-channel">
+				<label>Reply SERVFAIL</label>
+				<description>DNS replies indicating a server failure.</description>
+			</channel>
+			<channel id="reply-refused" typeId="number-channel">
+				<label>Reply REFUSED</label>
+				<description>DNS replies indicating refusal.</description>
+			</channel>
+			<channel id="reply-notimp" typeId="number-channel">
+				<label>Reply NOTIMP</label>
+				<description>DNS replies indicating not implemented.</description>
+			</channel>
+			<channel id="reply-other" typeId="number-channel">
+				<label>Reply OTHER</label>
+				<description>DNS replies with other statuses.</description>
+			</channel>
+			<channel id="reply-dnssec" typeId="number-channel">
+				<label>Reply DNSSEC</label>
+				<description>DNS replies with DNSSEC information.</description>
+			</channel>
+			<channel id="reply-none" typeId="number-channel">
+				<label>Reply NONE</label>
+				<description>DNS replies with no data.</description>
+			</channel>
+			<channel id="reply-blob" typeId="number-channel">
+				<label>Reply BLOB</label>
+				<description>DNS replies with a BLOB (binary large object).</description>
+			</channel>
+			<channel id="dns-queries-all-replies" typeId="number-channel">
+				<label>DNS Queries (All Replies)</label>
+				<description>The total number of DNS queries with all reply types.</description>
+			</channel>
+			<channel id="privacy-level" typeId="number-channel">
+				<label>Privacy Level</label>
+				<description>The privacy level setting.</description>
+			</channel>
+			<channel id="enabled" typeId="enabled-channel"/>
+			<channel id="disable-enable" typeId="disable-enable-channel"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the device</description>
+			</parameter>
+			<parameter name="token" type="text" required="true">
+				<context>password</context>
+				<label>Token</label>
+				<description>Token to access the device. To generate token go to `settings` > `API` > `Show API token`</description>
+			</parameter>
+			<parameter name="refreshIntervalSeconds" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>600</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="number-channel">
+		<item-type>Number</item-type>
+		<label>Number channel</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="enabled-channel">
+		<item-type>Switch</item-type>
+		<label>Status</label>
+		<description>The current status of blocking</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="disable-enable-channel">
+		<item-type>String</item-type>
+		<label>Disable Blocking</label>
+		<command>
+			<options>
+				<option value="DISABLE">Disable Blocking Indefinitely</option>
+				<option value="FOR_10_SEC">Disable Blocking for 10 seconds</option>
+				<option value="FOR_30_SEC">Disable Blocking for 30 seconds</option>
+				<option value="FOR_5_MIN">Disable Blocking for 5 minutes</option>
+				<option value="ENABLE">Enable Blocking</option>
+			</options>
+		</command>
+	</channel-type>
+</thing:thing-descriptions>
