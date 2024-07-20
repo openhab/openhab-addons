@@ -79,7 +79,7 @@ class VehicleHandlerTest {
         assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
-        assertEquals(10, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
+        assertEquals(12, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
     }
 
     @Test
@@ -115,7 +115,11 @@ class VehicleHandlerTest {
         assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
-        assertEquals(10, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
+        assertEquals(12, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
+        // Cable unplugged = 3
+        assertEquals("3", updateListener.getResponse("test::bev:charge#status").toFullString(), "Charge Error");
+        // No Error = 0
+        assertEquals("0", updateListener.getResponse("test::bev:charge#error").toFullString(), "Charge Error");
         assertTrue(updateListener.getResponse("test::bev:range#mileage").toFullString().endsWith("mi"),
                 "Mileague Unit");
         assertTrue(updateListener.getResponse("test::bev:range#range-electric").toFullString().endsWith("mi"),
@@ -169,9 +173,13 @@ class VehicleHandlerTest {
         assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
-        assertEquals(10, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
+        assertEquals(12, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
         assertEquals("2023-09-06 13:55", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
                 .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"), "End of Charge Time");
+        // Charging = 0
+        assertEquals("0", updateListener.getResponse("test::bev:charge#status").toFullString(), "Charge Status");
+        // No Error = 0
+        assertEquals("0", updateListener.getResponse("test::bev:charge#error").toFullString(), "Charge Error");
     }
 
     @Test
@@ -297,7 +305,7 @@ class VehicleHandlerTest {
         assertEquals(2, updateListener.getUpdatesForGroup("position"), "Update Upadte Count");
         assertEquals(6, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
-        assertEquals(7, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
+        assertEquals(9, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
     }
 
     @Test
@@ -360,15 +368,15 @@ class VehicleHandlerTest {
         assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
-        assertEquals(10, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
+        assertEquals(12, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
 
         /**
          * VehicleHandler fully updated eventStorage shall contain all data
          * Let's simulate an item ad causing a RefreshType command
          * Shall deliver data immediately
          */
-        assertEquals(83, vh.eventStorage.size());
-        assertEquals(83, updateListener.updatesReceived.size());
+        assertEquals(85, vh.eventStorage.size());
+        assertEquals(85, updateListener.updatesReceived.size());
         updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
         ChannelUID mileageChannelUID = new ChannelUID(new ThingUID("test", Constants.BEV), Constants.GROUP_RANGE,

@@ -60,6 +60,8 @@ public class Constants {
     public static final String MB_KEY_CHARGE_COUPLER_DC_STATUS = "chargeCouplerDCStatus";
     public static final String MB_KEY_CHARGE_COUPLER_AC_STATUS = "chargeCouplerACStatus";
     public static final String MB_KEY_CHARGE_FLAP_DC_STATUS = "chargeFlapDCStatus";
+    public static final String MB_KEY_CHARGE_STATUS = "chargingstatus";
+    public static final String MB_KEY_CHARGE_ERROR = "chargingErrorDetails";
     public static final String MB_KEY_SERVICEINTERVALDAYS = "serviceintervaldays";
     public static final String MB_KEY_TIREWARNINGSRDK = "tirewarningsrdk";
     public static final String MB_KEY_STARTER_BATTERY_STATE = "starterBatteryState";
@@ -247,6 +249,8 @@ public class Constants {
     public static final String OH_CHANNEL_GPS = "gps";
     public static final String OH_CHANNEL_CONS_CONV_UNIT = "cons-conv-unit";
     public static final String OH_CHANNEL_CONS_EV_UNIT = "cons-ev-unit";
+    public static final String OH_CHANNEL_STATUS = "status";
+    public static final String OH_CHANNEL_ERROR = "error";
 
     public static final String CALLBACK_ENDPOINT = "/mb-auth";
     // https://developer.mercedes-benz.com/content-page/api_migration_guide
