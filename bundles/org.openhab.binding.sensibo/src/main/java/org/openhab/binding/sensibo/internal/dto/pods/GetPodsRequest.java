@@ -23,6 +23,6 @@ import org.openhab.binding.sensibo.internal.dto.AbstractRequest;
 public class GetPodsRequest extends AbstractRequest {
     @Override
     public String getRequestUrl() {
-        return "/v2/users/me/pods";
+        return "/v2/users/me/pods?fields=*";
     }
 }
