@@ -23,6 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
+import org.openhab.binding.insteon.internal.InsteonBinding;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 
@@ -34,8 +35,14 @@ import org.openhab.core.thing.Bridge;
 @NonNullByDefault
 public class InsteonNetworkHandlerMock extends InsteonNetworkHandler {
 
-    public InsteonNetworkHandlerMock(Bridge thing, @Nullable SerialPortManager manager) {
+    @Nullable
+    private InsteonBinding mockedInsteonBinding;
+
+    public InsteonNetworkHandlerMock(Bridge thing, @Nullable SerialPortManager manager,
+            @Nullable InsteonBinding insteonBinding) {
         super(thing, manager);
+
+        this.mockedInsteonBinding = insteonBinding;
 
         executorService = Mockito.mock(ScheduledExecutorService.class);
         doAnswer((InvocationOnMock invocation) -> {
@@ -47,5 +54,14 @@ public class InsteonNetworkHandlerMock extends InsteonNetworkHandler {
             ((Runnable) invocation.getArguments()[0]).run();
             return null;
         }).when(executorService).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class));
+    }
+
+    @Override
+    protected void initInsteonBinding() {
+        if (mockedInsteonBinding == null) {
+            super.initInsteonBinding();
+        } else {
+            this.insteonBinding = mockedInsteonBinding;
+        }
     }
 }

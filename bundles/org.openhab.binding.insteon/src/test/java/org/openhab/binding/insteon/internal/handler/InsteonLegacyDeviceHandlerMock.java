@@ -14,15 +14,21 @@ package org.openhab.binding.insteon.internal.handler;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
+import org.openhab.binding.insteon.internal.InsteonBinding;
 import org.openhab.binding.insteon.internal.InsteonBindingLegacyConstants;
+import org.openhab.core.io.transport.serial.SerialPortManager;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingUID;
 
 /**
  * The {@link HomeWizardHandlerMock} is responsible for mocking {@link HomeWizardHandler}
@@ -40,9 +46,16 @@ public class InsteonLegacyDeviceHandlerMock extends InsteonLegacyDeviceHandler {
             ((Runnable) invocation.getArguments()[0]).run();
             return null;
         }).when(executorService).execute(any(Runnable.class));
+    }
 
-        doAnswer((InvocationOnMock invocation) -> {
-            return new ThingUID(InsteonBindingLegacyConstants.DEVICE_THING_TYPE, "insteon-test-device");
-        }).when(this).getBridge();
+    @Override
+    protected @Nullable Bridge getBridge() {
+        final Bridge bridge = TestObjects.mockBridge(InsteonBindingLegacyConstants.NETWORK_THING_TYPE,
+                "insteon-network-thing");
+        final InsteonNetworkHandlerMock handler = spy(
+                new InsteonNetworkHandlerMock(bridge, mock(SerialPortManager.class), mock(InsteonBinding.class)));
+
+        when(bridge.getHandler()).thenReturn(handler);
+        return bridge;
     }
 }
