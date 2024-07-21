@@ -72,9 +72,10 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     private final Map<Class<? extends Characteristic>, Characteristic> rawCharacteristics;
     private boolean isLinkedService = false;
 
-    public AbstractHomekitAccessoryImpl(HomekitTaggedItem accessory, List<HomekitTaggedItem> characteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        this.characteristics = characteristics;
+    public AbstractHomekitAccessoryImpl(HomekitTaggedItem accessory, List<HomekitTaggedItem> mandatoryCharacteristics,
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        this.characteristics = mandatoryCharacteristics;
         this.accessory = accessory;
         this.updater = updater;
         this.services = new ArrayList<>();
@@ -86,6 +87,15 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
             // not all mandatory characteristics are creatable via HomekitCharacteristicFactory (yet)
             if (rawCharacteristic != null) {
                 rawCharacteristics.put(rawCharacteristic.getClass(), rawCharacteristic);
+            }
+        });
+        mandatoryRawCharacteristics.forEach(c -> {
+            if (rawCharacteristics.get(c.getClass()) != null) {
+                logger.warn(
+                        "Accessory {} already has a characteristic of type {}; ignoring additional definition from metadata.",
+                        accessory.getName(), c.getClass().getSimpleName());
+            } else {
+                rawCharacteristics.put(c.getClass(), c);
             }
         });
     }
@@ -226,6 +236,25 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     @Override
     public Collection<Service> getServices() {
         return this.services;
+    }
+
+    public void addService(Service service) {
+        services.add(service);
+
+        var serviceClass = service.getClass();
+        rawCharacteristics.values().forEach(characteristic -> {
+            // belongs on the accessory information service
+            if (characteristic.getClass() == NameCharacteristic.class) {
+                return;
+            }
+            try {
+                // if the service supports adding this characteristic as optional, add it!
+                serviceClass.getMethod("addOptionalCharacteristic", characteristic.getClass()).invoke(service,
+                        characteristic);
+            } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                // the service doesn't support this optional characteristic; ignore it
+            }
+        });
     }
 
     protected HomekitAccessoryUpdater getUpdater() {

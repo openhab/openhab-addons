@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
 import io.github.hapjava.accessories.ValveAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.common.ActiveEnum;
 import io.github.hapjava.characteristics.impl.common.InUseEnum;
@@ -76,8 +77,9 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
     private ValveTypeEnum valveType;
 
     public HomekitValveImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         inUseReader = createBooleanReader(INUSE_STATUS);
         activeReader = createBooleanReader(ACTIVE_STATUS);
         homekitTimer = getAccessoryConfigurationAsBoolean(CONFIG_TIMER, false);
@@ -87,8 +89,11 @@ public class HomekitValveImpl extends AbstractHomekitAccessoryImpl implements Va
     public void init() throws HomekitException {
         super.init();
         ValveService service = new ValveService(this);
-        getServices().add(service);
-        if (homekitTimer) {
+        addService(service);
+
+        var remainingDurationCharacteristic = getCharacteristic(RemainingDurationCharacteristic.class);
+
+        if (homekitTimer && remainingDurationCharacteristic.isEmpty()) {
             addRemainingDurationCharacteristic(getRootAccessory(), getUpdater(), service);
         }
         String valveTypeConfig = getAccessoryConfiguration(CONFIG_VALVE_TYPE, "GENERIC");

@@ -27,6 +27,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.LightSensorAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.lightsensor.CurrentAmbientLightLevelCharacteristic;
 import io.github.hapjava.services.impl.LightSensorService;
@@ -39,14 +40,15 @@ import io.github.hapjava.services.impl.LightSensorService;
 public class HomekitLightSensorImpl extends AbstractHomekitAccessoryImpl implements LightSensorAccessory {
 
     public HomekitLightSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
     }
 
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new LightSensorService(this));
+        addService(new LightSensorService(this));
     }
 
     @Override

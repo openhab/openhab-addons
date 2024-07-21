@@ -22,6 +22,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.MicrophoneAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.services.impl.MicrophoneService;
 
@@ -34,15 +35,16 @@ public class HomekitMicrophoneImpl extends AbstractHomekitAccessoryImpl implemen
     private final BooleanItemReader muteReader;
 
     public HomekitMicrophoneImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         muteReader = createBooleanReader(HomekitCharacteristicType.MUTE);
     }
 
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new MicrophoneService(this));
+        addService(new MicrophoneService(this));
     }
 
     @Override

@@ -204,7 +204,7 @@ public class SocketChannelSession implements SocketSession {
             if (isRunning.getAndSet(false)) {
                 try {
                     if (!running.await(5, TimeUnit.SECONDS)) {
-                        logger.warn("Waited too long for response reader to finish");
+                        logger.debug("Waited too long for response reader to finish");
                     }
                 } catch (InterruptedException e) {
                     // Do nothing
@@ -321,7 +321,7 @@ public class SocketChannelSession implements SocketSession {
                 if (processingThread != null && Thread.currentThread() != processingThread) {
                     try {
                         if (!running.await(5, TimeUnit.SECONDS)) {
-                            logger.warn("Waited too long for dispatcher to finish");
+                            logger.debug("Waited too long for dispatcher to finish");
                         }
                     } catch (InterruptedException e) {
                         // do nothing
@@ -358,7 +358,7 @@ public class SocketChannelSession implements SocketSession {
                                     listener.responseReceived(stringResponse);
                                 }
                             } catch (Exception e) {
-                                logger.warn("Exception occurred processing the response '{}': ", response, e);
+                                logger.debug("Exception occurred processing the response '{}': ", response, e);
                             }
                         } else if (response instanceof Exception exceptionResponse) {
                             logger.debug("Dispatching exception: {}", response);
@@ -368,7 +368,7 @@ public class SocketChannelSession implements SocketSession {
                                 listener.responseException(exceptionResponse);
                             }
                         } else {
-                            logger.warn("Unknown response class: {}", response);
+                            logger.debug("Unknown response class: {}", response);
                         }
                     }
                 } catch (InterruptedException e) {
