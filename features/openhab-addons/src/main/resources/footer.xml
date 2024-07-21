@@ -13,7 +13,6 @@
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.enoceanble/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.generic/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.govee/${project.version}</bundle>
-		<!-- is there an entry for org.openhab.binding.bluetooth.grundfossalpha missing here ??  -->
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.hdpowerview/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.radoneye/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.roaming/${project.version}</bundle>
