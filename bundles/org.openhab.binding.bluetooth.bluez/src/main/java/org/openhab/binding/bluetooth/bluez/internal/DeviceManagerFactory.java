@@ -81,7 +81,7 @@ public class DeviceManagerFactory {
                 // Exception caused by first call to the library
                 try {
                     return DeviceManager.createInstance(false);
-                } catch (DBusException ex) {
+                } catch (DBusException | UnsatisfiedLinkError ex) {
                     // we might be on a system without DBus, such as macOS or Windows
                     logger.debug("Failed to initialize DeviceManager: {}", ex.getMessage());
                     return null;
