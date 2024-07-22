@@ -135,10 +135,6 @@ Channels are separated in groups:
 | [position](#position)            | Positioning Data                                  |
 | [tires](#tires)                  | Tire Information                                  |
 
-## Actions
-
-See [Vehicle Actions](#vehicle-actions) which can be used in rules.
-
 ### Vehicle
 
 Group name: `vehicle`

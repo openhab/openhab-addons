@@ -56,7 +56,7 @@
 		<item-type>Number</item-type>
 		<label>Charge Status</label>
 		<state readOnly="true">
-			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift -->
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift#L92 -->
 			<options>
 				<option value="0">Charging</option>
 				<option value="1">End of Charge</option>
@@ -73,7 +73,7 @@
 		<item-type>Number</item-type>
 		<label>Charge Error</label>
 		<state readOnly="true">
-			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift -->
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift#L19 -->
 			<options>
 				<option value="0">None</option>
 				<option value="1">Cable</option>
