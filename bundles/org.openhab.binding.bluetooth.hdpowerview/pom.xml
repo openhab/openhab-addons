@@ -12,7 +12,7 @@
 
   <artifactId>org.openhab.binding.bluetooth.hdpowerview</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: HD Powerview Bluetooth Binding</name>
+  <name>openHAB Add-ons :: Bundles :: HD Powerview Bluetooth Adapter</name>
 
   <dependencies>
     <dependency>
