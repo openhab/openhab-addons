@@ -11,7 +11,7 @@
 			<channel id="coupler-dc" typeId="coupler-dc"/>
 			<channel id="coupler-lock" typeId="coupler-lock"/>
 			<channel id="active" typeId="active"/>
-			<channel id="status" typeId="status"/>
+			<channel id="status" typeId="status-charge"/>
 			<channel id="error" typeId="error"/>
 			<channel id="power" typeId="power"/>
 			<channel id="end-time" typeId="end-time"/>
