@@ -197,7 +197,6 @@ public class SensiboAccountHandler extends BaseBridgeHandler {
     private <T> T sendRequest(final Request request, final AbstractRequest req, final Type responseType)
             throws SensiboException {
         try {
-
             final ContentResponse contentResponse = request.send();
             final String responseJson = contentResponse.getContentAsString();
             if (contentResponse.getStatus() == HttpStatus.OK_200) {
