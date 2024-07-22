@@ -93,6 +93,7 @@ public class Mapper {
                 case MB_KEY_RANGELIQUID:
                 case MB_KEY_DISTANCE_START:
                 case MB_KEY_DISTANCE_RESET:
+                case MB_KEY_ECOSCORE_BONUS:
                     Unit<?> lengthUnit = defaultLengthUnit;
                     if (value.hasDistanceUnit()) {
                         observer = new UOMObserver(value.getDistanceUnit().toString());
@@ -196,6 +197,9 @@ public class Mapper {
                 // Percentages
                 case MB_KEY_SOC:
                 case MB_KEY_TANKLEVELPERCENT:
+                case MB_KEY_ECOSCORE_ACCEL:
+                case MB_KEY_ECOSCORE_BALANCE:
+                case MB_KEY_ECOSCORE_COASTING:
                     double level = Utils.getDouble(value);
                     state = QuantityType.valueOf(level, Units.PERCENT);
                     return new ChannelStateMap(ch[0], ch[1], state);
@@ -424,6 +428,11 @@ public class Mapper {
         CHANNELS.put(MB_KEY_AVERAGE_SPEED_RESET, new String[] { OH_CHANNEL_AVG_SPEED_RESET, GROUP_TRIP });
         CHANNELS.put(MB_KEY_ELECTRICCONSUMPTIONRESET, new String[] { OH_CHANNEL_CONS_EV_RESET, GROUP_TRIP });
         CHANNELS.put(MB_KEY_LIQUIDCONSUMPTIONRESET, new String[] { OH_CHANNEL_CONS_CONV_RESET, GROUP_TRIP });
+
+        CHANNELS.put(MB_KEY_ECOSCORE_ACCEL, new String[] { OH_CHANNEL_ACCEL, GROUP_ECO });
+        CHANNELS.put(MB_KEY_ECOSCORE_BALANCE, new String[] { OH_CHANNEL_COASTING, GROUP_ECO });
+        CHANNELS.put(MB_KEY_ECOSCORE_COASTING, new String[] { OH_CHANNEL_BALANCE, GROUP_ECO });
+        CHANNELS.put(MB_KEY_ECOSCORE_BONUS, new String[] { OH_CHANNEL_BONUS_RANGE, GROUP_ECO });
 
         CHANNELS.put(MB_KEY_TIREPRESSURE_REAR_RIGHT, new String[] { OH_CHANNEL_PRESSURE_REAR_RIGHT, GROUP_TIRES });
         CHANNELS.put(MB_KEY_TIREPRESSURE_FRONT_RIGHT, new String[] { OH_CHANNEL_PRESSURE_FRONT_RIGHT, GROUP_TIRES });

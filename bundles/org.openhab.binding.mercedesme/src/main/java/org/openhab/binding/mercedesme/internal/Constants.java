@@ -154,6 +154,10 @@ public class Constants {
     public static final String MB_KEY_POSITION_ERROR = "vehiclePositionErrorCode";
     public static final String MB_KEY_AUXILIARY_WARNINGS = "auxheatwarnings";
     public static final String MB_KEY_PRECOND_NOW_ERROR = "precondNowError";
+    public static final String MB_KEY_ECOSCORE_ACCEL = "ecoscoreaccel";
+    public static final String MB_KEY_ECOSCORE_BALANCE = "ecoscoreconst";
+    public static final String MB_KEY_ECOSCORE_COASTING = "ecoscorefreewhl";
+    public static final String MB_KEY_ECOSCORE_BONUS = "ecoscorebonusrange";
 
     public static final String GROUP_VEHICLE = "vehicle";
     public static final String GROUP_DOORS = "doors";
@@ -164,6 +168,7 @@ public class Constants {
     public static final String GROUP_RANGE = "range";
     public static final String GROUP_CHARGE = "charge";
     public static final String GROUP_TRIP = "trip";
+    public static final String GROUP_ECO = "eco";
     public static final String GROUP_POSITION = "position";
     public static final String GROUP_TIRES = "tires";
     public static final String GROUP_COMMAND = "command";
@@ -256,6 +261,10 @@ public class Constants {
     public static final String OH_CHANNEL_ERROR = "error";
     public static final String OH_CHANNEL_AC_STATUS = "ac-status";
     public static final String OH_CHANNEL_AUX_STATUS = "aux-status";
+    public static final String OH_CHANNEL_ACCEL = "accel";
+    public static final String OH_CHANNEL_COASTING = "coasting";
+    public static final String OH_CHANNEL_BALANCE = "balance";
+    public static final String OH_CHANNEL_BONUS_RANGE = "bonus";
 
     public static final String CALLBACK_ENDPOINT = "/mb-auth";
     // https://developer.mercedes-benz.com/content-page/api_migration_guide
