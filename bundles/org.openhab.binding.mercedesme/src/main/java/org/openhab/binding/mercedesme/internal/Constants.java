@@ -63,7 +63,7 @@ public class Constants {
     public static final String MB_KEY_CHARGE_STATUS = "chargingstatus";
     public static final String MB_KEY_CHARGE_ERROR = "chargingErrorDetails";
     public static final String MB_KEY_SERVICEINTERVALDAYS = "serviceintervaldays";
-    public static final String MB_KEY_TIREWARNINGSRDK = "tirewarningsrdk";
+    public static final String MB_KEY_TIREWARNINGSRDK = "tiremarker";
     public static final String MB_KEY_STARTER_BATTERY_STATE = "starterBatteryState";
     public static final String MB_KEY_FLIP_WINDOW_STATUS = "flipWindowStatus";
     public static final String MB_KEY_WINDOW_STATUS_REAR_BLIND = "windowStatusRearBlind";

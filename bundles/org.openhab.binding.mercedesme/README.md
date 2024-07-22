@@ -430,6 +430,14 @@ Traffic light status of the starter battery
 - 3 : Service Disabled
 - 4 : Vehicle Not Available
 
+#### Tire Pressure Warnings Mapping
+
+- 0 : No warning
+- 1 : Soft warning
+- 2 : Low warning
+- 3 : Deflation
+- 4 : Unknown warning
+
 ### Range
 
 Group name: `range`
