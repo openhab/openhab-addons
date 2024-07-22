@@ -323,14 +323,16 @@ States and controls are depending on your vehicle capabilities.
 
 | Channel             | Type                 |  Description                     | Read | Write |
 |---------------------|----------------------|----------------------------------|------|-------|
-| front-left          | Switch               |  Front Left Seat Climatization   | X    |       |
-| front-right         | Switch               |  Front Left Seat Climatization   | X    |       |
-| rear-left           | Switch               |  Front Left Seat Climatization   | X    |       |
-| rear-right          | Switch               |  Front Left Seat Climatization   | X    |       |
-| zone                | Number               |  Selected Climatization Zone     | X    | X     |
-| temperature         | Number:Temperature   |  Desired Temperature for Zone    | X    | X     |
-| activate            | Switch               |  Start/Stop Climatization        | X    | X     |
+| front-left          | Switch               |  AC Seat Front Left              | X    |       |
+| front-right         | Switch               |  AC Seat Front Right             | X    |       |
+| rear-left           | Switch               |  AC Seat Rear Left               | X    |       |
+| rear-right          | Switch               |  AC Seat Rear Right              | X    |       |
+| zone                | Number               |  AC Zone                         | X    | X     |
+| temperature         | Number:Temperature   |  AC Desired Temperature          | X    | X     |
+| activate            | Switch               |  AC Control                      | X    | X     |
+| ac-status           | Number               |  AC Status                       | X    |       |
 | aux-heat            | Switch               |  Auxiliary Heating               | X    | X     |
+| aux-status          | Number               |  Auxiliary Status                | X    |       |
 
 #### Zone Mapping
 
@@ -370,13 +372,34 @@ Fahrenheit
 
 Triggers `TEMPERATURECONFIGURE` from [Command Name Mapping](#command-name-mapping)
 
-#### Activate Switch
+#### AC Control Switch
 
 Triggers `PRECONDSTART` and `PRECONDSTOP` from [Command Name Mapping](#command-name-mapping)
  
-#### Auxiliary Heat Switch
+#### AC Status Mapping
+
+- 0 : No Request
+- 1 : Battery or Fuel Low
+- 2 : Available after Restart Engine
+- 3 : Not Possible, Charging not Finished
+- 4 : General Error</option>
+ 
+#### Auxiliary Heating Switch
 
 Triggers `AUXHEATSTART` and `AUXHEATSTOP` from [Command Name Mapping](#command-name-mapping)
+
+#### Auxiliary Status Mapping
+
+- 0 : None
+- 1 : No Budget
+- 2 : Budget Empty
+- 4 : System Error
+- 8 : Running Error
+- 16 : Fuel on Reserve
+- 32 : Reserve Reached
+- 64 : Low Voltage
+- 128 : Low Voltage Operation
+- 256 : Communication Error
 
 ### Service
 

@@ -38,6 +38,7 @@ import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.i18n.ChannelTypeI18nLocalizationService;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.UnDefType;
 
 import com.daimler.mbcarkit.proto.VehicleEvents.VEPUpdate;
 import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatus;
@@ -51,7 +52,9 @@ import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
  */
 @NonNullByDefault
 class VehicleHandlerTest {
+    public static final int HVAC_UPDATE_COUNT = 9;
     public static final int POSITIONING_UPDATE_COUNT = 3;
+    private static final int EVENT_STORAGE_COUNT = HVAC_UPDATE_COUNT + POSITIONING_UPDATE_COUNT + 76;
 
     public static Map<String, Object> createBEV() {
         Thing thingMock = mock(Thing.class);
@@ -100,7 +103,7 @@ class VehicleHandlerTest {
         assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
         assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
-        assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
+        assertEquals(HVAC_UPDATE_COUNT, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(12, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
     }
 
@@ -136,7 +139,7 @@ class VehicleHandlerTest {
         assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
         assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
-        assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
+        assertEquals(HVAC_UPDATE_COUNT, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(12, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
         // Cable unplugged = 3
         assertEquals("3", updateListener.getResponse("test::bev:charge#status").toFullString(), "Charge Error");
@@ -194,7 +197,7 @@ class VehicleHandlerTest {
         assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
         assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
-        assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
+        assertEquals(HVAC_UPDATE_COUNT, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(12, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
         assertEquals("2023-09-06 13:55", ((DateTimeType) updateListener.getResponse("test::bev:charge#end-time"))
                 .format("%1$tY-%1$tm-%1$td %1$tH:%1$tM"), "End of Charge Time");
@@ -326,7 +329,7 @@ class VehicleHandlerTest {
         assertEquals(14, updateListener.getUpdatesForGroup("range"), "Update Upadte Count");
         assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Update Upadte Count");
         assertEquals(6, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
-        assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
+        assertEquals(HVAC_UPDATE_COUNT, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(9, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
     }
 
@@ -389,7 +392,7 @@ class VehicleHandlerTest {
         assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
         assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
-        assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
+        assertEquals(HVAC_UPDATE_COUNT, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(12, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
 
         /**
@@ -397,8 +400,8 @@ class VehicleHandlerTest {
          * Let's simulate an item ad causing a RefreshType command
          * Shall deliver data immediately
          */
-        assertEquals(86, vh.eventStorage.size());
-        assertEquals(86, updateListener.updatesReceived.size());
+        assertEquals(EVENT_STORAGE_COUNT, vh.eventStorage.size());
+        assertEquals(EVENT_STORAGE_COUNT, updateListener.updatesReceived.size());
         updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
         ChannelUID mileageChannelUID = new ChannelUID(new ThingUID("test", Constants.BEV), Constants.GROUP_RANGE,
@@ -566,6 +569,26 @@ class VehicleHandlerTest {
                 "Positioning GPS");
         assertEquals("44.5 °", updateListener.getResponse("test::bev:position#heading").toFullString(),
                 "Positioning Heading");
-        assertEquals("5", updateListener.getResponse("test::bev:position#status").toFullString(), "Positioning Status");
+        assertEquals(5, ((DecimalType) updateListener.getResponse("test::bev:position#status")).intValue(),
+                "Positioning Status");
+    }
+
+    @Test
+    public void testHVAC() {
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
+
+        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
+        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        vHandler.distributeContent(update);
+
+        assertEquals(HVAC_UPDATE_COUNT, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
+        assertEquals(0, ((DecimalType) updateListener.getResponse("test::bev:hvac#ac-status")).intValue(),
+                "AC Statuns");
+        assertEquals(UnDefType.UNDEF, updateListener.getResponse("test::bev:hvac#aux-status"), "Aux Heating Status");
     }
 }

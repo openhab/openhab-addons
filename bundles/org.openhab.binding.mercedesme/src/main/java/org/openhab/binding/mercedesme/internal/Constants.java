@@ -152,6 +152,8 @@ public class Constants {
     public static final String MB_KEY_COMMAND_WINDOWS_OPEN = "commandWindowsOpen";
     public static final String MB_KEY_COMMAND_ENGINE_START = "commandEngineStart";
     public static final String MB_KEY_POSITION_ERROR = "vehiclePositionErrorCode";
+    public static final String MB_KEY_AUXILIARY_WARNINGS = "auxheatwarnings";
+    public static final String MB_KEY_PRECOND_NOW_ERROR = "precondNowError";
 
     public static final String GROUP_VEHICLE = "vehicle";
     public static final String GROUP_DOORS = "doors";
@@ -252,6 +254,8 @@ public class Constants {
     public static final String OH_CHANNEL_CONS_EV_UNIT = "cons-ev-unit";
     public static final String OH_CHANNEL_STATUS = "status";
     public static final String OH_CHANNEL_ERROR = "error";
+    public static final String OH_CHANNEL_AC_STATUS = "ac-status";
+    public static final String OH_CHANNEL_AUX_STATUS = "aux-status";
 
     public static final String CALLBACK_ENDPOINT = "/mb-auth";
     // https://developer.mercedes-benz.com/content-page/api_migration_guide

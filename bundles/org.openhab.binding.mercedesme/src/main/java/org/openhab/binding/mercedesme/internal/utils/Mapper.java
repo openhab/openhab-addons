@@ -246,6 +246,8 @@ public class Mapper {
                 case MB_KEY_TIRE_MARKER_REAR_RIGHT:
                 case MB_KEY_TIRE_MARKER_REAR_LEFT:
                 case MB_KEY_POSITION_ERROR:
+                case MB_KEY_AUXILIARY_WARNINGS:
+                case MB_KEY_PRECOND_NOW_ERROR:
                     int stateNumberInteger = Utils.getInt(value);
                     if (stateNumberInteger < 0) {
                         state = UnDefType.UNDEF;
@@ -379,6 +381,8 @@ public class Mapper {
         CHANNELS.put(MB_KEY_PRECOND_SEAT_FRONT_LEFT, new String[] { OH_CHANNEL_FRONT_LEFT, GROUP_HVAC });
         CHANNELS.put(MB_KEY_PRECOND_SEAT_REAR_RIGHT, new String[] { OH_CHANNEL_REAR_RIGHT, GROUP_HVAC });
         CHANNELS.put(MB_KEY_PRECOND_SEAT_REAR_LEFT, new String[] { OH_CHANNEL_REAR_LEFT, GROUP_HVAC });
+        CHANNELS.put(MB_KEY_AUXILIARY_WARNINGS, new String[] { OH_CHANNEL_AUX_STATUS, GROUP_HVAC });
+        CHANNELS.put(MB_KEY_PRECOND_NOW_ERROR, new String[] { OH_CHANNEL_AC_STATUS, GROUP_HVAC });
         // temperaturePoints - special handling: sets zone & temperature
 
         CHANNELS.put(MB_KEY_STARTER_BATTERY_STATE, new String[] { OH_CHANNEL_STARTER_BATTERY, GROUP_SERVICE });
