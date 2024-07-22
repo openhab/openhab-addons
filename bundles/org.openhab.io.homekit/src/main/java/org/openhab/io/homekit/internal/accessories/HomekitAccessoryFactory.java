@@ -85,7 +85,7 @@ public class HomekitAccessoryFactory {
             put(LIGHT_SENSOR, new HomekitCharacteristicType[] { LIGHT_LEVEL });
             put(TEMPERATURE_SENSOR, new HomekitCharacteristicType[] { CURRENT_TEMPERATURE });
             put(THERMOSTAT, new HomekitCharacteristicType[] { CURRENT_HEATING_COOLING_STATE,
-                    TARGET_HEATING_COOLING_STATE, CURRENT_TEMPERATURE, TARGET_TEMPERATURE });
+                    TARGET_HEATING_COOLING_STATE, CURRENT_TEMPERATURE });
             put(LOCK, new HomekitCharacteristicType[] { LOCK_CURRENT_STATE, LOCK_TARGET_STATE });
             put(VALVE, new HomekitCharacteristicType[] { ACTIVE_STATUS, INUSE_STATUS });
             put(SECURITY_SYSTEM,
