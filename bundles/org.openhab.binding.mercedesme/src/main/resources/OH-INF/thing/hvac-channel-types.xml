@@ -15,12 +15,12 @@
 	</channel-type>
 	<channel-type id="active-hvac">
 		<item-type>Switch</item-type>
-		<label>AC Control</label>
+		<label>AC Precondition Control</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="ac-status">
 		<item-type>Number</item-type>
-		<label>AC Status</label>
+		<label>AC Precondition Status</label>
 		<state>
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/8592099d9b0d94161517ce2bc7469562f86c9886/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift#L235 -->
 			<options>

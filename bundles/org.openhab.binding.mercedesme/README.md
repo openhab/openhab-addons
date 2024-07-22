@@ -329,8 +329,8 @@ States and controls are depending on your vehicle capabilities.
 | rear-right          | Switch               |  AC Seat Rear Right              | X    |       |
 | zone                | Number               |  AC Zone                         | X    | X     |
 | temperature         | Number:Temperature   |  AC Desired Temperature          | X    | X     |
-| activate            | Switch               |  AC Control                      | X    | X     |
-| ac-status           | Number               |  AC Status                       | X    |       |
+| activate            | Switch               |  AC Precondition Control         | X    | X     |
+| ac-status           | Number               |  AC Precondition Status          | X    |       |
 | aux-heat            | Switch               |  Auxiliary Heating               | X    | X     |
 | aux-status          | Number               |  Auxiliary Status                | X    |       |
 
@@ -372,11 +372,11 @@ Fahrenheit
 
 Triggers `TEMPERATURECONFIGURE` from [Command Name Mapping](#command-name-mapping)
 
-#### AC Control Switch
+#### AC Precondition Control 
 
 Triggers `PRECONDSTART` and `PRECONDSTOP` from [Command Name Mapping](#command-name-mapping)
  
-#### AC Status Mapping
+#### AC Precondition Status Mapping
 
 - 0 : No Request
 - 1 : Battery or Fuel Low
