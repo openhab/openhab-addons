@@ -52,7 +52,7 @@
 		<label>Charge Active</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="status">
+	<channel-type id="status-charge">
 		<item-type>Number</item-type>
 		<label>Charge Status</label>
 		<state readOnly="true">

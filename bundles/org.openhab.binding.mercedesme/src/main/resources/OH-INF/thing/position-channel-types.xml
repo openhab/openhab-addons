@@ -12,7 +12,7 @@
 		<item-type>Location</item-type>
 		<label>Position GPS</label>
 	</channel-type>
-	<channel-type id="status">
+	<channel-type id="status-pos">
 		<item-type>Number</item-type>
 		<label>Status Positioning</label>
 		<state>
