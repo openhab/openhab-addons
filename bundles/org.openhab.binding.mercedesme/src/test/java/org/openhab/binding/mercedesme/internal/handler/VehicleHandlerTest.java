@@ -611,9 +611,9 @@ class VehicleHandlerTest {
         vHandler.distributeContent(update);
 
         assertEquals("72 %", updateListener.getResponse("test::bev:eco#accel").toFullString(), "Eco Acceleration");
-        assertEquals("60 %", updateListener.getResponse("test::bev:eco#coasting").toFullString(), "Eco Acceleration");
-        assertEquals("81 %", updateListener.getResponse("test::bev:eco#balance").toFullString(), "Eco Acceleration");
-        assertEquals("10.2 km", updateListener.getResponse("test::bev:eco#bonus").toFullString(), "Eco Acceleration");
+        assertEquals("81 %", updateListener.getResponse("test::bev:eco#coasting").toFullString(), "Eco Coasting");
+        assertEquals("60 %", updateListener.getResponse("test::bev:eco#constant").toFullString(), "Eco Constant");
+        assertEquals("10.2 km", updateListener.getResponse("test::bev:eco#bonus").toFullString(), "Eco Bonus");
         assertEquals(ECOSCORE_UPDATE_COUNT, updateListener.getUpdatesForGroup("eco"), "ECO Update Count");
     }
 }

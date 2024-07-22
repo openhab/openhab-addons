@@ -155,7 +155,7 @@ public class Constants {
     public static final String MB_KEY_AUXILIARY_WARNINGS = "auxheatwarnings";
     public static final String MB_KEY_PRECOND_NOW_ERROR = "precondNowError";
     public static final String MB_KEY_ECOSCORE_ACCEL = "ecoscoreaccel";
-    public static final String MB_KEY_ECOSCORE_BALANCE = "ecoscoreconst";
+    public static final String MB_KEY_ECOSCORE_CONSTANT = "ecoscoreconst";
     public static final String MB_KEY_ECOSCORE_COASTING = "ecoscorefreewhl";
     public static final String MB_KEY_ECOSCORE_BONUS = "ecoscorebonusrange";
 
@@ -263,7 +263,7 @@ public class Constants {
     public static final String OH_CHANNEL_AUX_STATUS = "aux-status";
     public static final String OH_CHANNEL_ACCEL = "accel";
     public static final String OH_CHANNEL_COASTING = "coasting";
-    public static final String OH_CHANNEL_BALANCE = "balance";
+    public static final String OH_CHANNEL_CONSTANT = "constant";
     public static final String OH_CHANNEL_BONUS_RANGE = "bonus";
 
     public static final String CALLBACK_ENDPOINT = "/mb-auth";

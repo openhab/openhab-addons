@@ -26,7 +26,7 @@
 	<channel-type id="soc">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Charge Level</label>
-		<state pattern="%d %" readOnly="true"/>
+		<state pattern="%d %%" readOnly="true"/>
 	</channel-type>
 	<channel-type id="charged">
 		<item-type>Number:Energy</item-type>

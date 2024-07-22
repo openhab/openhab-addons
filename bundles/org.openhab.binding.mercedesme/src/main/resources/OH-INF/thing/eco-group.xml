@@ -4,12 +4,12 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="eco-values">
-		<label>Mercedes Eco Score</label>
-		<description>Economic score for acceleration, coasting, balance and bonus range</description>
+		<label>ECO Score</label>
+		<description>Economic score for acceleration, coasting and constant driving plus bonus range</description>
 		<channels>
 			<channel id="accel" typeId="accel"/>
 			<channel id="coasting" typeId="coasting"/>
-			<channel id="balance" typeId="balance"/>
+			<channel id="constant" typeId="constant"/>
 			<channel id="bonus" typeId="bonus"/>
 		</channels>
 	</channel-group-type>
