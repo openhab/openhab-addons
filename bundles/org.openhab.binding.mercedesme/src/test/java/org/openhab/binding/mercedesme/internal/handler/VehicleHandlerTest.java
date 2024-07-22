@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -50,6 +51,27 @@ import com.daimler.mbcarkit.proto.Vehicleapi.AppTwinCommandStatusUpdatesByPID;
  */
 @NonNullByDefault
 class VehicleHandlerTest {
+    public static final int POSITIONING_UPDATE_COUNT = 3;
+
+    public static Map<String, Object> createBEV() {
+        Thing thingMock = mock(Thing.class);
+        when(thingMock.getThingTypeUID()).thenReturn(Constants.THING_TYPE_BEV);
+        when(thingMock.getUID()).thenReturn(new ThingUID("test", Constants.BEV));
+        when(thingMock.getProperties()).thenReturn(Map.of(MB_KEY_COMMAND_CHARGE_PROGRAM_CONFIGURE, "true"));
+        AccountHandlerMock ahm = new AccountHandlerMock();
+        VehicleHandler vh = new VehicleHandler(thingMock, new LocationProviderMock(),
+                mock(MercedesMeCommandOptionProvider.class), mock(MercedesMeStateOptionProvider.class));
+        vh.accountHandler = Optional.of(ahm);
+        VehicleConfiguration vehicleConfig = new VehicleConfiguration();
+        vh.config = Optional.of(vehicleConfig);
+        ThingCallbackListener updateListener = new ThingCallbackListener();
+        vh.setCallback(updateListener);
+        Map<String, Object> instances = new HashMap<>();
+        instances.put(ThingCallbackListener.class.getCanonicalName(), updateListener);
+        instances.put(VehicleHandler.class.getCanonicalName(), vh);
+        instances.put(AccountHandlerMock.class.getCanonicalName(), ahm);
+        return instances;
+    }
 
     @Test
     public void testBEVFullUpdateNoCapacities() {
@@ -76,7 +98,7 @@ class VehicleHandlerTest {
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
         assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
-        assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
+        assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(12, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
@@ -112,7 +134,7 @@ class VehicleHandlerTest {
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
         assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
-        assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
+        assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(12, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
@@ -170,7 +192,7 @@ class VehicleHandlerTest {
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
         assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
-        assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
+        assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(12, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
@@ -302,7 +324,7 @@ class VehicleHandlerTest {
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Trip Update Count");
         assertEquals(8, updateListener.getUpdatesForGroup("service"), "Trip Update Count");
         assertEquals(14, updateListener.getUpdatesForGroup("range"), "Update Upadte Count");
-        assertEquals(2, updateListener.getUpdatesForGroup("position"), "Update Upadte Count");
+        assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Update Upadte Count");
         assertEquals(6, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(9, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
@@ -365,7 +387,7 @@ class VehicleHandlerTest {
         assertEquals(10, updateListener.getUpdatesForGroup("tires"), "Tire Update Count");
         assertEquals(6, updateListener.getUpdatesForGroup("service"), "Service Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("range"), "Range Update Count");
-        assertEquals(2, updateListener.getUpdatesForGroup("position"), "Position Update Count");
+        assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
         assertEquals(5, updateListener.getUpdatesForGroup("lock"), "Lock Update Count");
         assertEquals(7, updateListener.getUpdatesForGroup("hvac"), "HVAC Update Count");
         assertEquals(12, updateListener.getUpdatesForGroup("charge"), "Charge Update Count");
@@ -375,8 +397,8 @@ class VehicleHandlerTest {
          * Let's simulate an item ad causing a RefreshType command
          * Shall deliver data immediately
          */
-        assertEquals(85, vh.eventStorage.size());
-        assertEquals(85, updateListener.updatesReceived.size());
+        assertEquals(86, vh.eventStorage.size());
+        assertEquals(86, updateListener.updatesReceived.size());
         updateListener = new ThingCallbackListener();
         vh.setCallback(updateListener);
         ChannelUID mileageChannelUID = new ChannelUID(new ThingUID("test", Constants.BEV), Constants.GROUP_RANGE,
@@ -524,5 +546,26 @@ class VehicleHandlerTest {
         } catch (IllegalArgumentException iae) {
             fail();
         }
+    }
+
+    @Test
+    public void testPositioning() {
+        Map<String, Object> instances = createBEV();
+        ThingCallbackListener updateListener = (ThingCallbackListener) instances
+                .get(ThingCallbackListener.class.getCanonicalName());
+        VehicleHandler vHandler = (VehicleHandler) instances.get(VehicleHandler.class.getCanonicalName());
+        assertNotNull(updateListener);
+        assertNotNull(vHandler);
+
+        String json = FileReader.readFileInString("src/test/resources/proto-json/MB-BEV-EQA.json");
+        VEPUpdate update = ProtoConverter.json2Proto(json, true);
+        vHandler.distributeContent(update);
+
+        assertEquals(POSITIONING_UPDATE_COUNT, updateListener.getUpdatesForGroup("position"), "Position Update Count");
+        assertEquals("1.23,4.56", updateListener.getResponse("test::bev:position#gps").toFullString(),
+                "Positioning GPS");
+        assertEquals("44.5 °", updateListener.getResponse("test::bev:position#heading").toFullString(),
+                "Positioning Heading");
+        assertEquals("5", updateListener.getResponse("test::bev:position#status").toFullString(), "Positioning Status");
     }
 }

@@ -151,6 +151,7 @@ public class Constants {
     public static final String MB_KEY_COMMAND_DOORS_LOCK = "commandDoorsLock";
     public static final String MB_KEY_COMMAND_WINDOWS_OPEN = "commandWindowsOpen";
     public static final String MB_KEY_COMMAND_ENGINE_START = "commandEngineStart";
+    public static final String MB_KEY_POSITION_ERROR = "vehiclePositionErrorCode";
 
     public static final String GROUP_VEHICLE = "vehicle";
     public static final String GROUP_DOORS = "doors";

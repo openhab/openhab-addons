@@ -572,7 +572,17 @@ Group name: `position`
 |---------------------|----------------------|-------------------------------------------------|------|-------|
 | heading             | Number:Angle         |  Heading of Vehicle                             | X    |       |
 | gps                 | Point                |  GPS Location Point of Vehicle                  | X    |       |
+| status              | Number               |  Status Positioning                             | X    |       |
 | signal              | Number               |  Request Light or Horn Signal to find Vehicle   |      |  X    |
+
+#### Status Mapping
+
+- 0 : Unknown
+- 1 : Service Inactive
+- 2 : Tracking Inactive
+- 3 : Parked
+- 4 : Ignition On
+- 5 : Ok
 
 #### Signal Settings
 
