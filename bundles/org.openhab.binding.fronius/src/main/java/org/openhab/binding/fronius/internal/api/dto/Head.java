@@ -18,8 +18,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link Head} is responsible for storing
- * the "head" node of the JSON response from the Fronius Solar APIs (V1)
+ * The {@link Head} is responsible for storing the "Head" node of the JSON response from the
+ * {@link BaseFroniusResponse}.
  *
  * The contents of the response object will vary depending on the preceding request but it always contains a common
  * response header and a request body.

@@ -18,7 +18,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * Base class for a response-object from the API.
+ * Base class for a response-object from the Fronius Solar API (v1).
  *
  * @author Thomas Rokohl - Initial contribution
  */
