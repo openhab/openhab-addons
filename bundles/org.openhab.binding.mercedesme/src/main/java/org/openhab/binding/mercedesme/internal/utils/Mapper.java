@@ -245,6 +245,7 @@ public class Mapper {
                 case MB_KEY_TIRE_MARKER_FRONT_LEFT:
                 case MB_KEY_TIRE_MARKER_REAR_RIGHT:
                 case MB_KEY_TIRE_MARKER_REAR_LEFT:
+                case MB_KEY_POSITION_ERROR:
                     int stateNumberInteger = Utils.getInt(value);
                     if (stateNumberInteger < 0) {
                         state = UnDefType.UNDEF;
@@ -407,6 +408,7 @@ public class Mapper {
         CHANNELS.put(MB_KEY_ENDOFCHARGETIME, new String[] { OH_CHANNEL_END_TIME, GROUP_CHARGE });
 
         CHANNELS.put(MB_KEY_POSITION_HEADING, new String[] { OH_CHANNEL_HEADING, GROUP_POSITION });
+        CHANNELS.put(MB_KEY_POSITION_ERROR, new String[] { OH_CHANNEL_STATUS, GROUP_POSITION });
 
         CHANNELS.put(MB_KEY_DISTANCE_START, new String[] { OH_CHANNEL_DISTANCE, GROUP_TRIP });
         CHANNELS.put(MB_KEY_DRIVEN_TIME_START, new String[] { OH_CHANNEL_TIME, GROUP_TRIP });
