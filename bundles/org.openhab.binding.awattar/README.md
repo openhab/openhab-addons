@@ -18,6 +18,10 @@ The `prices` Thing provides todays and (after 14:00) tomorrows net and gross pri
 
 The `bestprice` Thing identifies the hours with the cheapest prices based on the given parameters.
 
+Note: The Thing will schedule updates of the aWATTar API at 15:00, 18:00 and 21:00.
+If late updates occur, e.g. after 21:00, there is a chance that consecutive best prices will be rescheduled.
+As a consequence, a time schedule spanning over an update slot might be interrupted and rescheduled.
+
 ## Discovery
 
 Auto discovery is not supported.
