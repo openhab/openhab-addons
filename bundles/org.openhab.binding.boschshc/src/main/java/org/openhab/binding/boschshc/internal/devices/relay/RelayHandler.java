@@ -196,7 +196,6 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
             default:
                 throw new UnsupportedOperationException(
                         "Cannot determine channel type UID to create channel " + channelId + " dynamically.");
-
         }
     }
 
@@ -211,7 +210,6 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
             default:
                 throw new UnsupportedOperationException(
                         "Cannot determine item type to create channel " + channelId + " dynamically.");
-
         }
     }
 

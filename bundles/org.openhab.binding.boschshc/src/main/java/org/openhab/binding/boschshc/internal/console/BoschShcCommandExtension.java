@@ -46,7 +46,7 @@ import org.osgi.service.component.annotations.Reference;
  * Console command to list Bosch SHC devices and openhab support.
  * <p>
  * Uses the SHC API to get all SHC devices and SHC services and tries to lookup
- * openhab devices and implemented service classes. Prints each name and
+ * openHAB devices and implemented service classes. Prints each name and
  * looked-up implementation on console.
  *
  * @author Gerd Zanker - Initial contribution
