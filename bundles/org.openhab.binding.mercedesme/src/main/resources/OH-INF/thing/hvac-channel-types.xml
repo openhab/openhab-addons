@@ -59,7 +59,7 @@
 	</channel-type>
 	<channel-type id="aux-status">
 		<item-type>Number</item-type>
-		<label>Auxiliary Status</label>
+		<label>Auxiliary Heating Status</label>
 		<state>
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/8592099d9b0d94161517ce2bc7469562f86c9886/MBCarKit/MBCarKit/Common/Enums/Status/AuxheatTypes.swift#L66 -->
 			<options>
