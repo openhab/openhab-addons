@@ -11,97 +11,97 @@
 
 		<channels>
 			<channel id="eq-single-session" typeId="system.electric-energy">
-				<label>Energy charged this session</label>
+				<label>Energy This Session</label>
 				<description>The energy charged for the current session</description>
 			</channel>
 			<channel id="eq-total" typeId="system.electric-energy">
-				<label>Total energy charged</label>
+				<label>Total Energy Charged</label>
 				<description>The total energy charged for all sessions</description>
 			</channel>
 			<channel id="charger-output-power-phase1" typeId="system.electric-power">
-				<label>Charger Output Power Phase 1</label>
+				<label>Output Power Phase1</label>
 				<description>Power to/from the charger phase 1</description>
 			</channel>
 			<channel id="charger-output-power-phase2" typeId="system.electric-power">
-				<label>Charger Output Power Phase 2</label>
+				<label>Output Power Phase2</label>
 				<description>Power to/from the charger phase 2</description>
 			</channel>
 			<channel id="charger-output-power-phase3" typeId="system.electric-power">
-				<label>Charger Output Power Phase 3</label>
+				<label>Output Power Phase3</label>
 				<description>Power to/from the charger phase 3</description>
 			</channel>
 			<channel id="charger-total-output-power" typeId="system.electric-power">
-				<label>Charger Output Total Power</label>
+				<label>Output Total Power</label>
 				<description>Power from the charger on all phases</description>
 			</channel>
 			<channel id="charger-current-phase1" typeId="system.electric-current">
-				<label>Charger Output Current Phase 1</label>
+				<label>Output Current Phase1</label>
 				<description>Current from the charger phase 1</description>
 			</channel>
 			<channel id="charger-current-phase2" typeId="system.electric-current">
-				<label>Charger Output Current Phase 2</label>
+				<label>Output Current Phase2</label>
 				<description>Current from the charger phase 2</description>
 			</channel>
 			<channel id="charger-current-phase3" typeId="system.electric-current">
-				<label>Charger Output Current Phase 3</label>
+				<label>Output Current Phase3</label>
 				<description>Current from the charger phase 3</description>
 			</channel>
 			<channel id="charger-voltage-phase1" typeId="system.electric-voltage">
-				<label>Charger Voltage Phase 1</label>
+				<label>Voltage Phase1</label>
 				<description>Voltage of the charger's phase 1</description>
 			</channel>
 			<channel id="charger-voltage-phase2" typeId="system.electric-voltage">
-				<label>Charger Voltage Phase 2</label>
+				<label>Voltage Phase2</label>
 				<description>Voltage of the charger's phase 2</description>
 			</channel>
 			<channel id="charger-voltage-phase3" typeId="system.electric-voltage">
-				<label>Charger Voltage Phase 3</label>
+				<label>Voltage Phase3</label>
 				<description>Voltage of the charger's phase 3</description>
 			</channel>
 
 			<channel id="charger-external-current-phase1" typeId="system.electric-current">
-				<label>Charger External Current Phase 1</label>
+				<label>External Current Phase1</label>
 				<description>Current from the provider phase 1</description>
 			</channel>
 			<channel id="charger-external-current-phase2" typeId="system.electric-current">
-				<label>Charger External Current Phase 2</label>
+				<label>External Current Phase2</label>
 				<description>Current from the provider phase 2</description>
 			</channel>
 			<channel id="charger-external-current-phase3" typeId="system.electric-current">
-				<label>Charger External Current Phase 3</label>
+				<label>External Current Phase3</label>
 				<description>Current from the provider phase 3</description>
 			</channel>
 			<channel id="charger-external-power-phase1" typeId="system.electric-power">
-				<label>Charger External Power Phase 1</label>
+				<label>External Power Phase1</label>
 				<description>Power from the provider phase 1</description>
 			</channel>
 			<channel id="charger-external-power-phase2" typeId="system.electric-power">
-				<label>Charger External Power Phase 2</label>
+				<label>External Power Phase2</label>
 				<description>Power from the provider phase 2</description>
 			</channel>
 			<channel id="charger-external-power-phase3" typeId="system.electric-power">
-				<label>Charger External Power Phase 3</label>
+				<label>External Power Phase3</label>
 				<description>Power from the provider phase 3</description>
 			</channel>
 			<channel id="charger-external-total-power" typeId="system.electric-power">
-				<label>Charger External Total Power</label>
+				<label>External Total Power</label>
 				<description>Total power from the provider</description>
 			</channel>
 
 			<channel id="charger-plug-temperature" typeId="charger-temperature">
-				<label>Charger Plug Temperature</label>
+				<label>Plug Temperature</label>
 				<description>Temperature of the charger's plug</description>
 			</channel>
 			<channel id="charger-internal-temperature" typeId="charger-temperature">
-				<label>Charger Internal Temperature</label>
+				<label>Internal Temperature</label>
 				<description>Internal temperature on the board of the charger</description>
 			</channel>
 			<channel id="charger-mode" typeId="charger-mode">
-				<label>Charger Workmode</label>
+				<label>Workmode</label>
 				<description>Charger Workmode</description>
 			</channel>
 			<channel id="charger-state" typeId="charger-state">
-				<label>Charger State</label>
+				<label>State</label>
 				<description>Charger State</description>
 			</channel>
 
@@ -109,10 +109,6 @@
 
 			<channel id="raw-data" typeId="raw-data-type"/>
 		</channels>
-
-		<properties>
-			<property name="thingTypeVersion">2</property>
-		</properties>
 
 		<config-description>
 			<parameter name="refreshInterval" type="integer" min="1" max="600">

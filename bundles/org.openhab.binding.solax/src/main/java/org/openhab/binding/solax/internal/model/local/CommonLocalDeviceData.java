@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The {@link CommonLocalDeviceData} is an abstract class that contains the common information, applicable for all
- * inverters.
+ * devices.
  *
  * @author Konstantin Polihronov - Initial contribution
  */

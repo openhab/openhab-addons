@@ -22,8 +22,7 @@ import org.openhab.binding.solax.internal.model.local.EvChargerData;
 import org.openhab.binding.solax.internal.model.local.RawDataParser;
 
 /**
- * The {@link EvChargerDataParser} is the implementation that parses raw data into a LocalInverterData for the
- * X1 Mini / X1 Air Mini or X1 Boost Mini inverter.
+ * The {@link EvChargerDataParser} is the implementation that parses raw data into a EvChargerData for the EV charger.
  *
  * @author Konstantin Polihronov - Initial contribution
  */

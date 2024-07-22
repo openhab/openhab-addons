@@ -23,7 +23,7 @@ import org.openhab.binding.solax.internal.model.local.RawDataParser;
 import org.openhab.binding.solax.internal.model.local.X3HybridG4Data;
 
 /**
- * The {@link X3HybridG4DataParser} is the implementation that parses raw data into a LocalInverterData for the
+ * The {@link X3HybridG4DataParser} is the implementation that parses raw data into a {@link LocalData} for the
  * X3 Hybrid G4 inverter.
  *
  * @author Konstantin Polihronov - Initial contribution

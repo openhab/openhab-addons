@@ -18,8 +18,7 @@ import org.openhab.binding.solax.internal.model.InverterType;
 import org.openhab.binding.solax.internal.util.ByteUtil;
 
 /**
- * The {@link EvChargerData} is an abstract class that contains the common information, applicable for all
- * inverters.
+ * The {@link EvChargerData} is the data representation of the EV charger, retrieved from the raw data array.
  *
  * @author Konstantin Polihronov - Initial contribution
  */

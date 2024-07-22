@@ -23,7 +23,7 @@ import org.openhab.binding.solax.internal.model.local.RawDataParser;
 import org.openhab.binding.solax.internal.model.local.X1BoostAirMiniData;
 
 /**
- * The {@link X1BoostAirMiniDataParser} is the implementation that parses raw data into a LocalInverterData for the
+ * The {@link X1BoostAirMiniDataParser} is the implementation that parses raw data into a {@link LocalData} for the
  * X1 Mini / X1 Air Mini or X1 Boost Mini inverter.
  *
  * @author Konstantin Polihronov - Initial contribution
