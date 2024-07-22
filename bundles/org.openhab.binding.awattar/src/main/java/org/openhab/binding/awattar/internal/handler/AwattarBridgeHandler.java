@@ -67,6 +67,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(AwattarBridgeHandler.class);
     private final HttpClient httpClient;
     private @Nullable ScheduledFuture<?> dataRefresher;
+    private Instant lastRefresh = Instant.EPOCH;
 
     private static final String URLDE = "https://api.awattar.de/v1/marketdata";
     private static final String URLAT = "https://api.awattar.at/v1/marketdata";
@@ -179,13 +180,49 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    /**
+     * Check if the data needs to be refreshed.
+     *
+     * The data is refreshed if:
+     * - the thing is offline
+     * - the local cache is empty
+     * - the current time is after 15:00 and the last refresh was more than an hour ago
+     * - the current time is after 18:00 and the last refresh was more than an hour ago
+     * - the current time is after 21:00 and the last refresh was more than an hour ago
+     *
+     * @return true if the data needs to be refreshed
+     */
     private boolean needRefresh() {
+        // if the thing is offline, we need to refresh
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             return true;
         }
-        SortedSet<AwattarPrice> localPrices = prices;
-        return localPrices == null
-                || localPrices.last().timerange().start() < Instant.now().toEpochMilli() + 9 * 3600 * 1000;
+
+        // if the local cache is empty, we need to refresh
+        if (prices != null) {
+            return true;
+        }
+
+        // Note: all this magic is made to avoid refreshing the data too often, since the API is rate-limited
+        // to 100 requests per day.
+
+        // do not refresh before 15:00, since the prices for the next day are available only after 14:00
+        ZonedDateTime now = ZonedDateTime.now(zone);
+        if (now.getHour() < 15) {
+            return false;
+        }
+
+        // refresh then every 3 hours, if the last refresh was more than an hour ago
+        if (now.getHour() % 3 == 0 && lastRefresh.getEpochSecond() < now.minusHours(1).toEpochSecond()) {
+
+            // update the last refresh time
+            lastRefresh = Instant.now();
+
+            // return true to indicate an update is needed
+            return true;
+        }
+
+        return false;
     }
 
     public ZoneId getTimeZone() {
