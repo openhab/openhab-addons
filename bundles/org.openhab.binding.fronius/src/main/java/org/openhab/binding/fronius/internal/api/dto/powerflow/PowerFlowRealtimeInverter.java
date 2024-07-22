@@ -15,13 +15,13 @@ package org.openhab.binding.fronius.internal.api.dto.powerflow;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link PowerFlowRealtimeInverterDTO} is responsible for storing
- * the "Inverter" node of the {@link PowerFlowRealtimeBodyDataDTO}.
+ * The {@link PowerFlowRealtimeInverter} is responsible for storing
+ * the "Inverter" node of the {@link PowerFlowRealtimeBodyData}.
  *
  * @author Thomas Rokohl - Initial contribution
  * @author Thomas Kordelle - Added inverter power, battery state of charge and PV solar yield
  */
-public class PowerFlowRealtimeInverterDTO {
+public class PowerFlowRealtimeInverter {
     @SerializedName("DT")
     private double dt;
     @SerializedName("P")

@@ -15,12 +15,12 @@ package org.openhab.binding.fronius.internal.api.dto.powerflow;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link PowerFlowRealtimeSiteDTO} is responsible for storing
- * the "Site" node of the {@link PowerFlowRealtimeBodyDataDTO}.
+ * The {@link PowerFlowRealtimeSite} is responsible for storing
+ * the "Site" node of the {@link PowerFlowRealtimeBodyData}.
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class PowerFlowRealtimeSiteDTO {
+public class PowerFlowRealtimeSite {
     @SerializedName("Mode")
     private String mode;
     @SerializedName("P_Grid")

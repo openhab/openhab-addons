@@ -19,10 +19,10 @@ import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
-import org.openhab.binding.fronius.internal.api.dto.ohmpilot.OhmpilotRealtimeBodyDTO;
-import org.openhab.binding.fronius.internal.api.dto.ohmpilot.OhmpilotRealtimeBodyDataDTO;
-import org.openhab.binding.fronius.internal.api.dto.ohmpilot.OhmpilotRealtimeDetailsDTO;
-import org.openhab.binding.fronius.internal.api.dto.ohmpilot.OhmpilotRealtimeResponseDTO;
+import org.openhab.binding.fronius.internal.api.dto.ohmpilot.OhmpilotRealtimeBody;
+import org.openhab.binding.fronius.internal.api.dto.ohmpilot.OhmpilotRealtimeBodyData;
+import org.openhab.binding.fronius.internal.api.dto.ohmpilot.OhmpilotRealtimeDetails;
+import org.openhab.binding.fronius.internal.api.dto.ohmpilot.OhmpilotRealtimeResponse;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -38,7 +38,7 @@ import org.openhab.core.types.State;
  */
 public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
 
-    private @Nullable OhmpilotRealtimeBodyDataDTO ohmpilotRealtimeBodyData;
+    private @Nullable OhmpilotRealtimeBodyData ohmpilotRealtimeBodyData;
     private FroniusBaseDeviceConfiguration config;
 
     public FroniusOhmpilotHandler(Thing thing) {
@@ -71,7 +71,7 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
      */
     @Override
     protected State getValue(String channelId) {
-        OhmpilotRealtimeBodyDataDTO localOhmpilotRealtimeBodyData = ohmpilotRealtimeBodyData;
+        OhmpilotRealtimeBodyData localOhmpilotRealtimeBodyData = ohmpilotRealtimeBodyData;
         if (localOhmpilotRealtimeBodyData == null) {
             return null;
         }
@@ -102,11 +102,11 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
     }
 
     private void updateProperties() {
-        OhmpilotRealtimeBodyDataDTO localOhmpilotRealtimeBodyData = ohmpilotRealtimeBodyData;
+        OhmpilotRealtimeBodyData localOhmpilotRealtimeBodyData = ohmpilotRealtimeBodyData;
         if (localOhmpilotRealtimeBodyData == null) {
             return;
         }
-        OhmpilotRealtimeDetailsDTO details = localOhmpilotRealtimeBodyData.getDetails();
+        OhmpilotRealtimeDetails details = localOhmpilotRealtimeBodyData.getDetails();
         if (details == null) {
             return;
         }
@@ -124,9 +124,9 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
      */
     private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config)
             throws FroniusCommunicationException {
-        OhmpilotRealtimeResponseDTO ohmpilotRealtimeResponse = getOhmpilotRealtimeData(bridgeConfiguration.hostname,
+        OhmpilotRealtimeResponse ohmpilotRealtimeResponse = getOhmpilotRealtimeData(bridgeConfiguration.hostname,
                 config.deviceId);
-        OhmpilotRealtimeBodyDTO ohmpilotRealtimeBody = ohmpilotRealtimeResponse.getBody();
+        OhmpilotRealtimeBody ohmpilotRealtimeBody = ohmpilotRealtimeResponse.getBody();
         if (ohmpilotRealtimeBody == null) {
             ohmpilotRealtimeBodyData = null;
             return;
@@ -141,9 +141,9 @@ public class FroniusOhmpilotHandler extends FroniusBaseThingHandler {
      * @param deviceId of the device
      * @return {OhmpilotRealtimeResponse} the object representation of the json response
      */
-    private OhmpilotRealtimeResponseDTO getOhmpilotRealtimeData(String ip, int deviceId)
+    private OhmpilotRealtimeResponse getOhmpilotRealtimeData(String ip, int deviceId)
             throws FroniusCommunicationException {
         String location = FroniusBindingConstants.getOhmPilotDataUrl(ip, deviceId);
-        return collectDataFromUrl(OhmpilotRealtimeResponseDTO.class, location);
+        return collectDataFromUrl(OhmpilotRealtimeResponse.class, location);
     }
 }

@@ -15,12 +15,12 @@ package org.openhab.binding.fronius.internal.api.dto.inverter;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link InverterDeviceStatusDTO} is responsible for storing
- * the "DeviceStatus" node of the {@link InverterRealtimeBodyDataDTO}.
+ * The {@link InverterDeviceStatus} is responsible for storing
+ * the "DeviceStatus" node of the {@link InverterRealtimeBodyData}.
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class InverterDeviceStatusDTO {
+public class InverterDeviceStatus {
     @SerializedName("StatusCode")
     private int statusCode;
     @SerializedName("MgmtTimerRemainingTime")

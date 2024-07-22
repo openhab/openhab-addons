@@ -15,12 +15,12 @@ package org.openhab.binding.fronius.internal.api.dto.meter;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link MeterRealtimeDetailsDTO} is responsible for storing
- * the "Details" node of the {@link MeterRealtimeBodyDataDTO}.
+ * The {@link MeterRealtimeDetails} is responsible for storing
+ * the "Details" node of the {@link MeterRealtimeBodyData}.
  *
  * @author Jimmy Tanagra - Initial contribution
  */
-public class MeterRealtimeDetailsDTO {
+public class MeterRealtimeDetails {
     @SerializedName("Manufacturer")
     private String manufacturer;
     @SerializedName("Model")

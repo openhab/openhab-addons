@@ -19,10 +19,10 @@ import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
-import org.openhab.binding.fronius.internal.api.dto.meter.MeterRealtimeBodyDTO;
-import org.openhab.binding.fronius.internal.api.dto.meter.MeterRealtimeBodyDataDTO;
-import org.openhab.binding.fronius.internal.api.dto.meter.MeterRealtimeDetailsDTO;
-import org.openhab.binding.fronius.internal.api.dto.meter.MeterRealtimeResponseDTO;
+import org.openhab.binding.fronius.internal.api.dto.meter.MeterRealtimeBody;
+import org.openhab.binding.fronius.internal.api.dto.meter.MeterRealtimeBodyData;
+import org.openhab.binding.fronius.internal.api.dto.meter.MeterRealtimeDetails;
+import org.openhab.binding.fronius.internal.api.dto.meter.MeterRealtimeResponse;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -39,7 +39,7 @@ import org.openhab.core.types.State;
  */
 public class FroniusMeterHandler extends FroniusBaseThingHandler {
 
-    private @Nullable MeterRealtimeBodyDataDTO meterRealtimeBodyData;
+    private @Nullable MeterRealtimeBodyData meterRealtimeBodyData;
     private FroniusBaseDeviceConfiguration config;
 
     public FroniusMeterHandler(Thing thing) {
@@ -72,7 +72,7 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
      */
     @Override
     protected State getValue(String channelId) {
-        MeterRealtimeBodyDataDTO localMeterRealtimeBodyData = meterRealtimeBodyData;
+        MeterRealtimeBodyData localMeterRealtimeBodyData = meterRealtimeBodyData;
         if (localMeterRealtimeBodyData == null) {
             return null;
         }
@@ -126,11 +126,11 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
     }
 
     private void updateProperties() {
-        MeterRealtimeBodyDataDTO localMeterRealtimeBodyData = meterRealtimeBodyData;
+        MeterRealtimeBodyData localMeterRealtimeBodyData = meterRealtimeBodyData;
         if (localMeterRealtimeBodyData == null) {
             return;
         }
-        MeterRealtimeDetailsDTO details = localMeterRealtimeBodyData.getDetails();
+        MeterRealtimeDetails details = localMeterRealtimeBodyData.getDetails();
         if (details == null) {
             return;
         }
@@ -148,9 +148,9 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
      */
     private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config)
             throws FroniusCommunicationException {
-        MeterRealtimeResponseDTO meterRealtimeResponse = getMeterRealtimeData(bridgeConfiguration.hostname,
+        MeterRealtimeResponse meterRealtimeResponse = getMeterRealtimeData(bridgeConfiguration.hostname,
                 config.deviceId);
-        MeterRealtimeBodyDTO meterRealtimeBody = meterRealtimeResponse.getBody();
+        MeterRealtimeBody meterRealtimeBody = meterRealtimeResponse.getBody();
         if (meterRealtimeBody == null) {
             meterRealtimeBodyData = null;
             return;
@@ -165,9 +165,8 @@ public class FroniusMeterHandler extends FroniusBaseThingHandler {
      * @param deviceId of the device
      * @return {MeterRealtimeResponse} the object representation of the json response
      */
-    private MeterRealtimeResponseDTO getMeterRealtimeData(String ip, int deviceId)
-            throws FroniusCommunicationException {
+    private MeterRealtimeResponse getMeterRealtimeData(String ip, int deviceId) throws FroniusCommunicationException {
         String location = FroniusBindingConstants.getMeterDataUrl(ip, deviceId);
-        return collectDataFromUrl(MeterRealtimeResponseDTO.class, location);
+        return collectDataFromUrl(MeterRealtimeResponse.class, location);
     }
 }

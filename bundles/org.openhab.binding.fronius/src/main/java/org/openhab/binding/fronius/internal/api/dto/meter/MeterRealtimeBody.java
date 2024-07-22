@@ -14,22 +14,21 @@ package org.openhab.binding.fronius.internal.api.dto.meter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.fronius.internal.api.dto.BaseFroniusResponse;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link MeterRealtimeResponseDTO} is responsible for storing
- * the response from the GetMeterRealtimeData response.
+ * The {@link MeterRealtimeBody} is responsible for storing
+ * the "Body" node of the {@link MeterRealtimeResponse}.
  *
  * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
-public class MeterRealtimeResponseDTO extends BaseFroniusResponse {
-    @SerializedName("Body")
-    private @Nullable MeterRealtimeBodyDTO body;
+public class MeterRealtimeBody {
+    @SerializedName("Data")
+    private @Nullable MeterRealtimeBodyData data;
 
-    public @Nullable MeterRealtimeBodyDTO getBody() {
-        return body;
+    public @Nullable MeterRealtimeBodyData getData() {
+        return data;
     }
 }

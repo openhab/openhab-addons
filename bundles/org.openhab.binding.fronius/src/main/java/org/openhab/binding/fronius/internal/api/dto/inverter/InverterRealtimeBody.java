@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api.dto.meter;
+package org.openhab.binding.fronius.internal.api.dto.inverter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -18,17 +18,17 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link MeterRealtimeBodyDTO} is responsible for storing
- * the "Body" node of the {@link MeterRealtimeResponseDTO}.
+ * The {@link InverterRealtimeBody} is responsible for storing
+ * the "Body" node of the {@link InverterRealtimeResponse}.
  *
- * @author Jimmy Tanagra - Initial contribution
+ * @author Thomas Rokohl - Initial contribution
  */
 @NonNullByDefault
-public class MeterRealtimeBodyDTO {
+public class InverterRealtimeBody {
     @SerializedName("Data")
-    private @Nullable MeterRealtimeBodyDataDTO data;
+    private @Nullable InverterRealtimeBodyData data;
 
-    public @Nullable MeterRealtimeBodyDataDTO getData() {
+    public @Nullable InverterRealtimeBodyData getData() {
         return data;
     }
 }

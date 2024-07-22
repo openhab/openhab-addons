@@ -10,25 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api.dto.ohmpilot;
+package org.openhab.binding.fronius.internal.api.dto.powerflow;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.fronius.internal.api.dto.BaseFroniusResponse;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link OhmpilotRealtimeBodyDTO} is responsible for storing
- * the "Body" node of the {@link OhmpilotRealtimeResponseDTO}.
+ * The {@link PowerFlowRealtimeResponse} is responsible for storing
+ * the response from the GetPowerFlowRealtimeData response.
  *
- * @author Hannes Spenger - Initial contribution
+ * @author Thomas Rokohl - Initial contribution
  */
 @NonNullByDefault
-public class OhmpilotRealtimeBodyDTO {
-    @SerializedName("Data")
-    private @Nullable OhmpilotRealtimeBodyDataDTO data;
+public class PowerFlowRealtimeResponse extends BaseFroniusResponse {
+    @SerializedName("Body")
+    private @Nullable PowerFlowRealtimeBody body;
 
-    public @Nullable OhmpilotRealtimeBodyDataDTO getData() {
-        return data;
+    public @Nullable PowerFlowRealtimeBody getBody() {
+        return body;
     }
 }

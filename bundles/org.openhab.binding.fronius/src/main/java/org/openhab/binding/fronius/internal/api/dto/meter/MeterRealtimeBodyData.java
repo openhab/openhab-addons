@@ -15,15 +15,15 @@ package org.openhab.binding.fronius.internal.api.dto.meter;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link MeterRealtimeBodyDataDTO} is responsible for storing
- * the "Data" node of the {@link MeterRealtimeBodyDTO}.
+ * The {@link MeterRealtimeBodyData} is responsible for storing
+ * the "Data" node of the {@link MeterRealtimeBody}.
  *
  * The main SerializedName values use Smart Meter 63A names
  * The first SerializedName alternate names use Smart Meter 65A names
  *
  * @author Jimmy Tanagra - Initial contribution
  */
-public class MeterRealtimeBodyDataDTO {
+public class MeterRealtimeBodyData {
     @SerializedName(value = "Current_AC_Phase_1", alternate = { "ACBRIDGE_CURRENT_ACTIVE_MEAN_01_F32" })
     private double currentACPhase1;
     @SerializedName(value = "Current_AC_Phase_2", alternate = { "ACBRIDGE_CURRENT_ACTIVE_MEAN_02_F32" })
@@ -31,7 +31,7 @@ public class MeterRealtimeBodyDataDTO {
     @SerializedName(value = "Current_AC_Phase_3", alternate = { "ACBRIDGE_CURRENT_ACTIVE_MEAN_03_F32" })
     private double currentACPhase3;
     @SerializedName("Details")
-    private MeterRealtimeDetailsDTO details;
+    private MeterRealtimeDetails details;
     @SerializedName(value = "Enable", alternate = { "COMPONENTS_MODE_ENABLE_U16" })
     private int enable;
     @SerializedName(value = "EnergyReactive_VArAC_Sum_Consumed", alternate = {
@@ -114,9 +114,9 @@ public class MeterRealtimeBodyDataDTO {
         return currentACPhase3;
     }
 
-    public MeterRealtimeDetailsDTO getDetails() {
+    public MeterRealtimeDetails getDetails() {
         if (details == null) {
-            details = new MeterRealtimeDetailsDTO();
+            details = new MeterRealtimeDetails();
         }
         return details;
     }

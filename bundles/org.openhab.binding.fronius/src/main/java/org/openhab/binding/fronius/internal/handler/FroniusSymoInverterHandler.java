@@ -22,15 +22,15 @@ import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.dto.ValueUnit;
-import org.openhab.binding.fronius.internal.api.dto.inverter.InverterDeviceStatusDTO;
-import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeBodyDTO;
-import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeBodyDataDTO;
-import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeResponseDTO;
-import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeBodyDTO;
-import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeBodyDataDTO;
-import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeInverterDTO;
-import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeResponseDTO;
-import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeSiteDTO;
+import org.openhab.binding.fronius.internal.api.dto.inverter.InverterDeviceStatus;
+import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeBody;
+import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeBodyData;
+import org.openhab.binding.fronius.internal.api.dto.inverter.InverterRealtimeResponse;
+import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeBody;
+import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeBodyData;
+import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeInverter;
+import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeResponse;
+import org.openhab.binding.fronius.internal.api.dto.powerflow.PowerFlowRealtimeSite;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
@@ -48,8 +48,8 @@ import org.openhab.core.types.State;
  */
 public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
 
-    private @Nullable InverterRealtimeResponseDTO inverterRealtimeResponseDTO;
-    private @Nullable PowerFlowRealtimeResponseDTO powerFlowResponse;
+    private @Nullable InverterRealtimeResponse inverterRealtimeResponse;
+    private @Nullable PowerFlowRealtimeResponse powerFlowResponse;
     private FroniusBaseDeviceConfiguration config;
 
     public FroniusSymoInverterHandler(Thing thing) {
@@ -87,7 +87,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         }
         final String fieldName = fields[0];
 
-        InverterRealtimeBodyDataDTO inverterData = getInverterData();
+        InverterRealtimeBodyData inverterData = getInverterData();
         if (inverterData == null) {
             return null;
         }
@@ -129,7 +129,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 // Convert the unit to MWh for backwards compatibility with non-quantity type
                 return getQuantityOrZero(inverterData.getYearEnergy(), Units.MEGAWATT_HOUR).toUnit("MWh");
             case FroniusBindingConstants.INVERTER_DATA_CHANNEL_DEVICE_STATUS_ERROR_CODE:
-                InverterDeviceStatusDTO deviceStatus = inverterData.getDeviceStatus();
+                InverterDeviceStatus deviceStatus = inverterData.getDeviceStatus();
                 if (deviceStatus == null) {
                     return null;
                 }
@@ -144,11 +144,11 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 break;
         }
 
-        PowerFlowRealtimeBodyDataDTO powerFlowData = getPowerFlowRealtimeData();
+        PowerFlowRealtimeBodyData powerFlowData = getPowerFlowRealtimeData();
         if (powerFlowData == null) {
             return null;
         }
-        PowerFlowRealtimeSiteDTO site = powerFlowData.getSite();
+        PowerFlowRealtimeSite site = powerFlowData.getSite();
         if (site == null) {
             return null;
         }
@@ -163,14 +163,14 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             case FroniusBindingConstants.POWER_FLOW_SELF_CONSUMPTION ->
                 new QuantityType<>(site.getRelSelfConsumption(), Units.PERCENT);
             case FroniusBindingConstants.POWER_FLOW_INVERTER_POWER -> {
-                PowerFlowRealtimeInverterDTO inverter = getInverter(config.deviceId);
+                PowerFlowRealtimeInverter inverter = getInverter(config.deviceId);
                 if (inverter == null) {
                     yield null;
                 }
                 yield new QuantityType<>(inverter.getP(), Units.WATT);
             }
             case FroniusBindingConstants.POWER_FLOW_INVERTER_SOC -> {
-                PowerFlowRealtimeInverterDTO inverter = getInverter(config.deviceId);
+                PowerFlowRealtimeInverter inverter = getInverter(config.deviceId);
                 if (inverter == null) {
                     yield null;
                 }
@@ -178,14 +178,14 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             }
             // Kept for backwards compatibility
             case FroniusBindingConstants.POWER_FLOW_INVERTER_1_POWER -> {
-                PowerFlowRealtimeInverterDTO inverter = getInverter(1);
+                PowerFlowRealtimeInverter inverter = getInverter(1);
                 if (inverter == null) {
                     yield null;
                 }
                 yield new QuantityType<>(inverter.getP(), Units.WATT);
             }
             case FroniusBindingConstants.POWER_FLOW_INVERTER_1_SOC -> {
-                PowerFlowRealtimeInverterDTO inverter = getInverter(1);
+                PowerFlowRealtimeInverter inverter = getInverter(1);
                 if (inverter == null) {
                     yield null;
                 }
@@ -196,21 +196,21 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
         };
     }
 
-    private @Nullable InverterRealtimeBodyDataDTO getInverterData() {
-        InverterRealtimeResponseDTO localInverterRealtimeResponseDTO = inverterRealtimeResponseDTO;
-        if (localInverterRealtimeResponseDTO == null) {
+    private @Nullable InverterRealtimeBodyData getInverterData() {
+        InverterRealtimeResponse localInverterRealtimeResponse = inverterRealtimeResponse;
+        if (localInverterRealtimeResponse == null) {
             return null;
         }
-        InverterRealtimeBodyDTO inverterBody = localInverterRealtimeResponseDTO.getBody();
+        InverterRealtimeBody inverterBody = localInverterRealtimeResponse.getBody();
         return (inverterBody != null) ? inverterBody.getData() : null;
     }
 
-    private @Nullable PowerFlowRealtimeBodyDataDTO getPowerFlowRealtimeData() {
-        PowerFlowRealtimeResponseDTO localPowerFlowResponse = powerFlowResponse;
+    private @Nullable PowerFlowRealtimeBodyData getPowerFlowRealtimeData() {
+        PowerFlowRealtimeResponse localPowerFlowResponse = powerFlowResponse;
         if (localPowerFlowResponse == null) {
             return null;
         }
-        PowerFlowRealtimeBodyDTO powerFlowBody = localPowerFlowResponse.getBody();
+        PowerFlowRealtimeBody powerFlowBody = localPowerFlowResponse.getBody();
         return (powerFlowBody != null) ? powerFlowBody.getData() : null;
     }
 
@@ -218,10 +218,10 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * get flow data for a specific inverter.
      *
      * @param number The inverter object of the given index
-     * @return a PowerFlowRealtimeInverterDTO object.
+     * @return a PowerFlowRealtimeInverter object.
      */
-    private @Nullable PowerFlowRealtimeInverterDTO getInverter(final int number) {
-        PowerFlowRealtimeBodyDataDTO powerFlowData = getPowerFlowRealtimeData();
+    private @Nullable PowerFlowRealtimeInverter getInverter(final int number) {
+        PowerFlowRealtimeBodyData powerFlowData = getPowerFlowRealtimeData();
         if (powerFlowData == null) {
             return null;
         }
@@ -246,7 +246,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      */
     private void updateData(FroniusBridgeConfiguration bridgeConfiguration, FroniusBaseDeviceConfiguration config)
             throws FroniusCommunicationException {
-        inverterRealtimeResponseDTO = getRealtimeData(bridgeConfiguration.hostname, config.deviceId);
+        inverterRealtimeResponse = getRealtimeData(bridgeConfiguration.hostname, config.deviceId);
         powerFlowResponse = getPowerFlowRealtime(bridgeConfiguration.hostname);
     }
 
@@ -254,11 +254,11 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      * Make the PowerFlowRealtimeDataRequest
      *
      * @param ip address of the device
-     * @return {PowerFlowRealtimeResponseDTO} the object representation of the json response
+     * @return {PowerFlowRealtimeResponse} the object representation of the json response
      */
-    private PowerFlowRealtimeResponseDTO getPowerFlowRealtime(String ip) throws FroniusCommunicationException {
+    private PowerFlowRealtimeResponse getPowerFlowRealtime(String ip) throws FroniusCommunicationException {
         String location = FroniusBindingConstants.getPowerFlowDataUrl(ip);
-        return collectDataFromUrl(PowerFlowRealtimeResponseDTO.class, location);
+        return collectDataFromUrl(PowerFlowRealtimeResponse.class, location);
     }
 
     /**
@@ -266,11 +266,11 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
      *
      * @param ip address of the device
      * @param deviceId of the device
-     * @return {InverterRealtimeResponseDTO} the object representation of the json response
+     * @return {InverterRealtimeResponse} the object representation of the json response
      */
-    private InverterRealtimeResponseDTO getRealtimeData(String ip, int deviceId) throws FroniusCommunicationException {
+    private InverterRealtimeResponse getRealtimeData(String ip, int deviceId) throws FroniusCommunicationException {
         String location = FroniusBindingConstants.getInverterDataUrl(ip, deviceId);
-        return collectDataFromUrl(InverterRealtimeResponseDTO.class, location);
+        return collectDataFromUrl(InverterRealtimeResponse.class, location);
     }
 
     /**

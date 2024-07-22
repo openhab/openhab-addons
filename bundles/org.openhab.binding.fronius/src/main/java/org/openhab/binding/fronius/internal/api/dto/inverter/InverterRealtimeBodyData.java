@@ -18,12 +18,12 @@ import org.openhab.binding.fronius.internal.api.dto.ValueUnit;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link InverterRealtimeBodyDataDTO} is responsible for storing
- * the "Data" node of the {@link InverterRealtimeBodyDTO}.
+ * The {@link InverterRealtimeBodyData} is responsible for storing
+ * the "Data" node of the {@link InverterRealtimeBody}.
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class InverterRealtimeBodyDataDTO {
+public class InverterRealtimeBodyData {
     @SerializedName("DAY_ENERGY")
     private ValueUnit dayEnergy;
     @SerializedName("FAC")
@@ -51,7 +51,7 @@ public class InverterRealtimeBodyDataDTO {
     @SerializedName("YEAR_ENERGY")
     private ValueUnit yearEnergy;
     @SerializedName("DeviceStatus")
-    private InverterDeviceStatusDTO deviceStatus;
+    private InverterDeviceStatus deviceStatus;
 
     public ValueUnit getDayEnergy() {
         return dayEnergy;
@@ -69,7 +69,7 @@ public class InverterRealtimeBodyDataDTO {
         return yearEnergy;
     }
 
-    public @Nullable InverterDeviceStatusDTO getDeviceStatus() {
+    public @Nullable InverterDeviceStatus getDeviceStatus() {
         return deviceStatus;
     }
 

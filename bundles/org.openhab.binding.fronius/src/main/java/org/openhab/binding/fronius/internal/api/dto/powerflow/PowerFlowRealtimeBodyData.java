@@ -21,28 +21,28 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link PowerFlowRealtimeBodyDataDTO} is responsible for storing
- * the "Data" node of the {@link PowerFlowRealtimeBodyDTO}.
+ * The {@link PowerFlowRealtimeBodyData} is responsible for storing
+ * the "Data" node of the {@link PowerFlowRealtimeBody}.
  *
  * @author Thomas Rokohl - Initial contribution
  */
 @NonNullByDefault
-public class PowerFlowRealtimeBodyDataDTO {
+public class PowerFlowRealtimeBodyData {
     @SerializedName("Site")
-    private @Nullable PowerFlowRealtimeSiteDTO site;
+    private @Nullable PowerFlowRealtimeSite site;
 
     @SerializedName("Inverters")
-    private @Nullable Map<String, PowerFlowRealtimeInverterDTO> inverters;
+    private @Nullable Map<String, PowerFlowRealtimeInverter> inverters;
 
-    public Map<String, PowerFlowRealtimeInverterDTO> getInverters() {
-        Map<String, PowerFlowRealtimeInverterDTO> localInverters = inverters;
+    public Map<String, PowerFlowRealtimeInverter> getInverters() {
+        Map<String, PowerFlowRealtimeInverter> localInverters = inverters;
         if (localInverters == null) {
             inverters = localInverters = new HashMap<>();
         }
         return localInverters;
     }
 
-    public @Nullable PowerFlowRealtimeSiteDTO getSite() {
+    public @Nullable PowerFlowRealtimeSite getSite() {
         return site;
     }
 }

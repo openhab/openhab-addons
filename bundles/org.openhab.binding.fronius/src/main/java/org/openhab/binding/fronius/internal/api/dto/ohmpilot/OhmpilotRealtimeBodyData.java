@@ -15,14 +15,14 @@ package org.openhab.binding.fronius.internal.api.dto.ohmpilot;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link OhmpilotRealtimeBodyDataDTO} is responsible for storing
- * the "Data" node of the {@link OhmpilotRealtimeBodyDTO}.
+ * The {@link OhmpilotRealtimeBodyData} is responsible for storing
+ * the "Data" node of the {@link OhmpilotRealtimeBody}.
  *
  * @author Hannes Spenger - Initial contribution
  */
-public class OhmpilotRealtimeBodyDataDTO {
+public class OhmpilotRealtimeBodyData {
     @SerializedName("Details")
-    private OhmpilotRealtimeDetailsDTO details;
+    private OhmpilotRealtimeDetails details;
     @SerializedName("EnergyReal_WAC_Sum_Consumed")
     private double energyRealWACSumConsumed;
     @SerializedName("PowerReal_PAC_Sum")
@@ -34,9 +34,9 @@ public class OhmpilotRealtimeBodyDataDTO {
     @SerializedName("CodeOfState")
     private int stateCode;
 
-    public OhmpilotRealtimeDetailsDTO getDetails() {
+    public OhmpilotRealtimeDetails getDetails() {
         if (details == null) {
-            details = new OhmpilotRealtimeDetailsDTO();
+            details = new OhmpilotRealtimeDetails();
         }
         return details;
     }
