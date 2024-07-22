@@ -37,7 +37,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 /**
- * implements the get sites api call of the site.
+ * implements the set points api call of the API. Extracts channel ID and value from the command string. Needed by the
+ * "generic command" channel.
  *
  * @author Alexander Friese - initial contribution
  */

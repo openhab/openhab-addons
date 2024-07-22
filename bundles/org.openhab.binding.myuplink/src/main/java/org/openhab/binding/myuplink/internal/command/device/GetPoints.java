@@ -20,7 +20,7 @@ import org.openhab.binding.myuplink.internal.command.JsonResultProcessor;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkThingHandler;
 
 /**
- * implements the get sites api call of the site.
+ * implements the get points api call of the myUplink API.
  *
  * @author Alexander Friese - initial contribution
  */
