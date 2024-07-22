@@ -37,6 +37,7 @@ import org.openhab.binding.boschshc.internal.services.communicationquality.Commu
 import org.openhab.binding.boschshc.internal.services.communicationquality.dto.CommunicationQualityServiceState;
 import org.openhab.binding.boschshc.internal.services.impulseswitch.ImpulseSwitchService;
 import org.openhab.binding.boschshc.internal.services.impulseswitch.dto.ImpulseSwitchServiceState;
+import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -202,11 +203,11 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
     private @Nullable String getItemType(String channelId) {
         switch (channelId) {
             case CHANNEL_POWER_SWITCH, CHANNEL_IMPULSE_SWITCH:
-                return "Switch";
+                return CoreItemFactory.SWITCH;
             case CHANNEL_IMPULSE_LENGTH:
-                return "Number:Time";
+                return CoreItemFactory.NUMBER + ":Time";
             case CHANNEL_INSTANT_OF_LAST_IMPULSE:
-                return "DateTime";
+                return CoreItemFactory.DATETIME;
             default:
                 throw new UnsupportedOperationException(
                         "Cannot determine item type to create channel " + channelId + " dynamically.");
