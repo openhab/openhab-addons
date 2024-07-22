@@ -28,7 +28,7 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
 
 /**
- * implements the get sites api call of the site.
+ * implements the set points api call of the myUplink API.
  *
  * @author Alexander Friese - initial contribution
  */
