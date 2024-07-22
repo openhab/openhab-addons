@@ -29,6 +29,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.BatteryAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.battery.ChargingStateEnum;
 import io.github.hapjava.characteristics.impl.battery.StatusLowBatteryEnum;
@@ -48,8 +49,9 @@ public class HomekitBatteryImpl extends AbstractHomekitAccessoryImpl implements 
     private final BigDecimal lowThreshold;
 
     public HomekitBatteryImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         lowThreshold = getAccessoryConfiguration(HomekitCharacteristicType.BATTERY_LOW_STATUS,
                 HomekitTaggedItem.BATTERY_LOW_THRESHOLD, BigDecimal.valueOf(20));
         lowBatteryReader = createBooleanReader(BATTERY_LOW_STATUS, lowThreshold, true);
@@ -62,7 +64,7 @@ public class HomekitBatteryImpl extends AbstractHomekitAccessoryImpl implements 
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new BatteryService(this));
+        addService(new BatteryService(this));
     }
 
     @Override

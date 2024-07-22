@@ -23,6 +23,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.SwitchAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.services.impl.SwitchService;
 
@@ -35,15 +36,16 @@ public class HomekitSwitchImpl extends AbstractHomekitAccessoryImpl implements S
     private final BooleanItemReader onReader;
 
     public HomekitSwitchImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         onReader = createBooleanReader(ON_STATE);
     }
 
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new SwitchService(this));
+        addService(new SwitchService(this));
     }
 
     @Override

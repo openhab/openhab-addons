@@ -23,6 +23,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.FanAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.services.impl.FanService;
 
@@ -35,15 +36,16 @@ class HomekitFanImpl extends AbstractHomekitAccessoryImpl implements FanAccessor
     private final BooleanItemReader activeReader;
 
     public HomekitFanImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         activeReader = createBooleanReader(ACTIVE_STATUS);
     }
 
     @Override
     public void init() throws HomekitException {
         super.init();
-        this.getServices().add(new FanService(this));
+        addService(new FanService(this));
     }
 
     @Override

@@ -126,6 +126,11 @@ public class SensiboSkyHandlerTest {
         testAddDynamicChannels("/get_pod_details_response.json");
     }
 
+    @Test
+    public void testAddDynamicChannelsValter() throws IOException, SensiboCommunicationException {
+        testAddDynamicChannels("/get_pod_details_response_valter.json");
+    }
+
     private void testAddDynamicChannels(String podDetailsResponse) throws IOException, SensiboCommunicationException {
         final PodDetailsDTO rsp = wireHelper.deSerializeResponse(podDetailsResponse, PodDetailsDTO.class);
         SensiboSky sky = new SensiboSky(rsp);

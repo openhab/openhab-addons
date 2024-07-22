@@ -22,6 +22,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.WindowCoveringAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.windowcovering.PositionStateEnum;
 import io.github.hapjava.services.impl.WindowCoveringService;
@@ -34,14 +35,15 @@ import io.github.hapjava.services.impl.WindowCoveringService;
 public class HomekitWindowCoveringImpl extends AbstractHomekitPositionAccessoryImpl implements WindowCoveringAccessory {
 
     public HomekitWindowCoveringImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
     }
 
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new WindowCoveringService(this));
+        addService(new WindowCoveringService(this));
     }
 
     @Override

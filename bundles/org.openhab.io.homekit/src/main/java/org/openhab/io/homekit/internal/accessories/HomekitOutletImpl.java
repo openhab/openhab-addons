@@ -22,6 +22,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.OutletAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.services.impl.OutletService;
 
@@ -34,8 +35,9 @@ public class HomekitOutletImpl extends AbstractHomekitAccessoryImpl implements O
     private final BooleanItemReader onReader;
 
     public HomekitOutletImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) throws IncompleteAccessoryException {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
+            throws IncompleteAccessoryException {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         inUseReader = createBooleanReader(HomekitCharacteristicType.INUSE_STATUS);
         onReader = createBooleanReader(HomekitCharacteristicType.ON_STATE);
     }
@@ -43,7 +45,7 @@ public class HomekitOutletImpl extends AbstractHomekitAccessoryImpl implements O
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new OutletService(this));
+        addService(new OutletService(this));
     }
 
     @Override

@@ -25,6 +25,7 @@ import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.HumiditySensorAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.services.impl.HumiditySensorService;
 
@@ -36,14 +37,15 @@ public class HomekitHumiditySensorImpl extends AbstractHomekitAccessoryImpl impl
     private static final String CONFIG_MULTIPLICATOR = "homekitMultiplicator";
 
     public HomekitHumiditySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
     }
 
     @Override
     public void init() throws HomekitException {
         super.init();
-        getServices().add(new HumiditySensorService(this));
+        addService(new HumiditySensorService(this));
     }
 
     @Override
