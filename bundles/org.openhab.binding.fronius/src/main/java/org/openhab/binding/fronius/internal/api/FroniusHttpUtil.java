@@ -15,6 +15,7 @@ package org.openhab.binding.fronius.internal.api;
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,7 @@ public class FroniusHttpUtil {
      * @return the response body
      * @throws FroniusCommunicationException when the request execution failed or interrupted
      */
-    public static synchronized String executeUrl(HttpMethod httpMethod String url, int timeout)
+    public static synchronized String executeUrl(HttpMethod httpMethod, String url, int timeout)
             throws FroniusCommunicationException {
         int attemptCount = 1;
         try {

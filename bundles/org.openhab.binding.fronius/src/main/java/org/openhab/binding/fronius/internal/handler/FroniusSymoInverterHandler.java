@@ -202,10 +202,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             return null;
         }
         InverterRealtimeBodyDTO inverterBody = localInverterRealtimeResponseDTO.getBody();
-        if (inverterBody == null) {
-            return null;
-        }
-        return inverterBody.getData();
+        return (inverterBody != null) ? inverterBody.getData() : null;
     }
 
     private @Nullable PowerFlowRealtimeBodyDataDTO getPowerFlowRealtimeData() {
@@ -214,10 +211,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             return null;
         }
         PowerFlowRealtimeBodyDTO powerFlowBody = localPowerFlowResponse.getBody();
-        if (powerFlowBody == null) {
-            return null;
-        }
-        return powerFlowBody.getData();
+        return (powerFlowBody != null) ? powerFlowBody.getData() : null;
     }
 
     /**

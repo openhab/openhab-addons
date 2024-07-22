@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
@@ -145,6 +146,6 @@ public class FroniusBridgeHandler extends BaseBridgeHandler {
     }
 
     private void checkBridgeOnline(FroniusBridgeConfiguration config) throws FroniusCommunicationException {
-        FroniusHttpUtil.executeUrl("GET", "http://" + config.hostname, API_TIMEOUT);
+        FroniusHttpUtil.executeUrl(HttpMethod.GET, "http://" + config.hostname, API_TIMEOUT);
     }
 }

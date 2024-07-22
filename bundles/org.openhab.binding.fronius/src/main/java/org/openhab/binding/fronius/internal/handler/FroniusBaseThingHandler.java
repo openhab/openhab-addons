@@ -16,6 +16,7 @@ import static org.openhab.binding.fronius.internal.FroniusBindingConstants.API_T
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.FroniusHttpUtil;
@@ -167,7 +168,7 @@ public abstract class FroniusBaseThingHandler extends BaseThingHandler {
             int attempts = 1;
             while (true) {
                 logger.trace("Fetching URL = {}", url);
-                String response = FroniusHttpUtil.executeUrl("GET", url, API_TIMEOUT);
+                String response = FroniusHttpUtil.executeUrl(HttpMethod.GET, url, API_TIMEOUT);
                 logger.trace("aqiResponse = {}", response);
 
                 @Nullable
