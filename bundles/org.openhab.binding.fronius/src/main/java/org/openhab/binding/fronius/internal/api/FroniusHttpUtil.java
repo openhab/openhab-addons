@@ -39,7 +39,7 @@ public class FroniusHttpUtil {
      * @return the response body
      * @throws FroniusCommunicationException when the request execution failed or interrupted
      */
-    public static synchronized String executeUrl(String httpMethod, String url, int timeout)
+    public static synchronized String executeUrl(HttpMethod httpMethod String url, int timeout)
             throws FroniusCommunicationException {
         int attemptCount = 1;
         try {
@@ -47,13 +47,13 @@ public class FroniusHttpUtil {
                 Throwable lastException = null;
                 String result = null;
                 try {
-                    result = HttpUtil.executeUrl(httpMethod, url, timeout);
+                    result = HttpUtil.executeUrl(httpMethod.asString(), url, timeout);
                 } catch (IOException e) {
                     // HttpUtil::executeUrl wraps InterruptedException into IOException.
                     // Unwrap and rethrow it so that we don't retry on InterruptedException
                     Throwable cause = e.getCause();
-                    if (cause instanceof InterruptedException) {
-                        throw (InterruptedException) cause;
+                    if (cause instanceof InterruptedException interruptException) {
+                        throw interruptException;
                     }
                     lastException = e;
                 }
