@@ -156,7 +156,7 @@ In order to add metadata to an item:
 
 ### Textual configuration
 
-```xtend
+```java
 Switch leaksensor_metadata  "Leak Sensor"           {homekit="LeakSensor"}
 ```
 
@@ -169,7 +169,7 @@ if shorthand version has only accessory type, then HomeKit will automatically li
 e.g. HomeKit window covering has 3 mandatory characteristics: CurrentPosition, TargetPosition, PositionState.
 Following are equal configuration:
 
-```xtend
+```java
 Rollershutter    window_covering    "Window Rollershutter"     {homekit="WindowCovering"}
 Rollershutter    window_covering    "Window Rollershutter"     {homekit="WindowCovering, WindowCovering.CurrentPosition, WindowCovering.TargetPosition, WindowCovering.PositionState"}
 ```
@@ -178,7 +178,7 @@ If the shorthand version has only a characteristic then it must be a part of a g
 You can use openHAB group to define complex accessories. The group item must indicate the HomeKit accessory type,
 e.g. LeakSensor definition
 
-```xtend
+```java
 Group  gLeakSensor                      "Leak Sensor Group"                                              {homekit="LeakSensor"}
 Switch leaksensor                       "Leak Sensor"                           (gLeakSensor)            {homekit="LeakSensor.LeakDetectedState"}
 Switch leaksensor_battery               "Leak Sensor Battery"                   (gLeakSensor)            {homekit="LeakSensor.BatteryLowStatus"}
@@ -203,7 +203,7 @@ You can also group additional accessories directly under another accessory.
 In this example, HomeKit will show three separate light controls.
 As this is somewhat confusing that Home will allow controlling all members as a group, and you also have the group as a distinct switch inside the HomeKit accessory, this is not a recommended configuration.
 
-```xtend
+```java
 Group:Switch:OR(ON,OFF) gLight "Light Group" {homekit="Lighting"}
 Switch light1 "Light 1" (gLight) {homekit="Lighting"}
 Switch light2 "Light 2" (gLight) {homekit="Lighting"}
@@ -316,7 +316,7 @@ HomeKit Home app sends following commands/update:
 However, some dimmer devices for example do not expect brightness on "ON" event, some others do not expect "ON" upon brightness change.
 In order to support different devices HomeKit integration can filter some events. Which events should be filtered is defined via dimmerMode configuration.
 
-```xtend
+```java
 Dimmer dimmer_light   "Dimmer Light"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="<mode>"]}
 ```
 
@@ -329,7 +329,7 @@ Following modes are supported:
 
 Examples:
 
- ```xtend
+ ```java
  Dimmer dimmer_light_1   "Dimmer Light 1"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOn"]}
  Dimmer dimmer_light_2   "Dimmer Light 2"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterBrightness100"]}
  Dimmer dimmer_light_3   "Dimmer Light 3"     {homekit="Lighting, Lighting.Brightness" [dimmerMode="filterOnExceptBrightness100"]}
@@ -339,14 +339,14 @@ Examples:
 
 Color temperature can be represented various ways in openHAB. Given the base bulb configured like this:
 
-```xtend
+```java
 Group gLight "CCT Light" { homekit="Lighting" }
 Switch light_switch (gLight) { homekit="Lighting.OnState" }
 ```
 
 The color temperature might be configured in any of these ways:
 
-```xtend
+```java
 // Number item presumed in mireds
 Number light_temp (gLight) { homekit="Lighting.ColorTemperature" }
 
@@ -427,7 +427,7 @@ HomeKit Windows Covering, Window and Door accessory types have following mandato
 These characteristics can be mapped to a single openHAB rollershutter item. In such case currentPosition will always equal target position, means if you request to close a blind/window/door, HomeKit will immediately report that the blind/window/door is closed.
 As discussed above, one can use full or shorthand definition. Following two definitions are equal:
 
-```xtend
+```java
 Rollershutter    window                "Window"                    {homekit = "Window"}
 Rollershutter    door                  "Door"                      {homekit = "Door"}
 Rollershutter   window_covering        "Window Rollershutter"      {homekit = "WindowCovering"}
@@ -447,7 +447,7 @@ In contrast, HomeKit window covering/door/window have inverted mapping
 Therefore, HomeKit integration inverts by default the values between openHAB and HomeKit, e.g. if openHAB current position is 30% then it will send 70% to HomeKit app.
 In case you need to disable this logic you can do it with configuration parameter inverted=false, e.g.
 
-```xtend
+```java
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [inverted=false]}
 Rollershutter window          "Window"               {homekit = "Window" [inverted=false]}
 Rollershutter door            "Door"                 {homekit = "Door" [inverted=false]}
@@ -456,13 +456,13 @@ Rollershutter door            "Door"                 {homekit = "Door" [inverted
 HomeKit home app never sends "STOP" but only the target position. 
 If you add configuration parameter "stop=true", openHAB will emulate stop and send "STOP" command to rollershutter item if you click on the blind icon in the iOS home app while the blind is moving.
 
-```xtend
+```java
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [stop=true]}
  ```
 
 Some blinds devices do support "STOP" command but would stop if they receive UP/DOWN while moving om the same direction. In order to support such devices add "stopSameDirection" parameter.
 
-```xtend
+```java
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [stop=true, stopSameDirection=true]}
  ```
 
@@ -470,7 +470,7 @@ Window covering can have a number of optional characteristics like horizontal & 
 If your blind supports tilt, and you want to control tilt via HomeKit you need to define blind as a group.
 e.g.
 
-```xtend
+```java
 Group           gBlind                  "Blind with tilt"                               {homekit = "WindowCovering"}
 Rollershutter   window_covering         "Blind"                         (gBlind)        {homekit = "CurrentPosition, TargetPosition, PositionState"}
 Dimmer          window_covering_htilt   "Blind horizontal tilt"         (gBlind)        {homekit = "CurrentHorizontalTiltAngle, TargetHorizontalTiltAngle"}
@@ -480,7 +480,7 @@ Dimmer          window_covering_vtilt   "Blind vertical tilt"           (gBlind)
 Current and Target Position characteristics can be linked to Rollershutter but also to Number or Dimmer item types.
 e.g.
 
-```xtend
+```java
 Group           gBlind   "Blinds"                        {homekit = "WindowCovering"}
 Dimmer          blind_current_position    (gBlind)       {homekit = "CurrentPosition"}
 Number          blind_target_position     (gBlind)       {homekit = "TargetPosition"}
@@ -499,7 +499,7 @@ A HomeKit thermostat has following mandatory characteristics:
 In order to define a thermostat you need to create a group with at least these 4 items.
 Example:
 
-```xtend
+```java
 Group           gThermostat                "Thermostat"                                             {homekit = "Thermostat"}
 Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"  (gThermostat)       {homekit = "CurrentTemperature"}
 Number          thermostat_target_temp     "Thermostat Target Temp [%.1f °C]"   (gThermostat)       {homekit = "TargetTemperature"}
@@ -514,7 +514,7 @@ When a thermostat is configured with all three of TargetTemperature, HeatingThre
  * In AUTO TargetHeatingCoolingMode, TargetTemperature will be set to the average of CoolingThresholdThemperature and HeatingThresholdTemperature.
 Example with thresholds:
 
-```xtend
+```java
 Group           gThermostat                "Thermostat"                                             {homekit = "Thermostat"}
 Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"        (gThermostat) {homekit = "CurrentTemperature"}
 Number          thermostat_target_temp     "Thermostat Target Temp[%.1f °C]"          (gThermostat) {homekit = "TargetTemperature"}
@@ -545,7 +545,7 @@ Default limits are:
 
 You can overwrite default values using minValue and maxValue configuration at item level, e.g.
 
-```xtend
+```java
 Number          thermostat_current_temp    "Thermostat Current Temp [%.1f °C]"     (gThermostat)       {homekit = "CurrentTemperature" [minValue=5, maxValue=30]}
 Number          thermostat_target_temp     "Thermostat Target Temp[%.1f °C]"       (gThermostat)       {homekit = "TargetTemperature" [minValue=10.5, maxValue=27]}
 ```
@@ -562,7 +562,7 @@ HomeKit thermostat supports following modes
 These modes are mapped to string values of openHAB items using configuration at the item level.
 e.g. if your current mode item can have following values: "OFF", "HEATING", "COOLING" then you need following mapping at item level
 
-```xtend
+```java
 String          thermostat_current_mode     "Thermostat Current Mode" (gThermostat) {homekit = "CurrentHeatingCoolingMode" [OFF="OFF", HEAT="HEATING", COOL="COOLING"]}
 ```
 
@@ -573,7 +573,7 @@ The modes can be only reduced, but not added, i.e. it is not possible to add a n
 
 Example: if your thermostat does not support cooling, then you need to limit mapping to OFF and HEAT values only:
 
-```xtend
+```java
 String          thermostat_current_mode    "Thermostat Current Mode"            (gThermostat) {homekit = "CurrentHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}
 String          thermostat_target_mode     "Thermostat Target Mode"             (gThermostat) {homekit = "TargetHeatingCoolingMode" [HEAT="HEATING", OFF="OFF"]}
 ```
@@ -599,7 +599,7 @@ configuration for these two cases looks as follow:
 
 - valve with timer:
 
-```xtend
+```java
 Group           gValve                   "Valve Group"                             {homekit="Valve"  [ValveType="Irrigation"]}
 Switch          valve_active             "Valve active"             (gValve)       {homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
 Number          valve_duration           "Valve duration"           (gValve)       {homekit = "Valve.Duration"}
@@ -608,7 +608,7 @@ Number          valve_remaining_duration "Valve remaining duration" (gValve)    
 
 - valve without timer (no item for remaining duration required)
 
-```xtend
+```java
 Group           gValve             "Valve Group"                             {homekit="Valve"  [ValveType="Irrigation", homekitTimer="true"]}
 Switch          valve_active       "Valve active"               (gValve)     {homekit = "Valve.ActiveStatus, Valve.InUseStatus"}
 Number          valve_duration     "Valve duration"             (gValve)     {homekit = "Valve.Duration" [homekitDefaultDuration = 1800]}
@@ -660,7 +660,7 @@ The configuration "inverted=true" inverts this mapping, so that "ON" will be map
 Examples of sensor definitions.
 Sensors without optional characteristics:
 
-```xtend
+```java
 Switch  leaksensor_single    "Leak Sensor"                   {homekit="LeakSensor"}
 Number  light_sensor         "Light Sensor"                  {homekit="LightSensor"}
 Number  temperature_sensor   "Temperature Sensor [%.1f °C]"  {homekit="TemperatureSensor"}
@@ -674,7 +674,7 @@ Number  humidity_sensor      "Humidity Sensor"               {homekit="HumidityS
 
 Sensors with optional characteristics:
 
-```xtend
+```java
 Group           gLeakSensor                "Leak Sensor"                                             {homekit="LeakSensor"}
 Switch          leaksensor                 "Leak Sensor State"                  (gLeakSensor)        {homekit="LeakDetectedState"}
 Switch          leaksensor_bat             "Leak Sensor Battery"                (gLeakSensor)        {homekit="BatteryLowStatus" }
@@ -943,7 +943,7 @@ All accessories also support the following optional characteristic that can be l
 
 See the sample below for example items:
 
-```xtend
+```java
 Color           color_light_single         "Color Light Single"                                        {homekit="Lighting"}
 Color           color_light_dimmable       "Legacy Color Light Dimmable"                               {homekit="Lighting, Lighting.Brightness"}
 Color           color_light_hue            "Legacy Color Light Hue"                                    {homekit="Lighting, Lighting.Hue, Lighting.Brightness, Lighting.Saturation"}
