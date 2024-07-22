@@ -341,7 +341,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 sendCommand(DSCAlarmCode.StatusReport);
             }
         } else {
-            logger.error("Not Connected to the DSC Alarm!");
+            logger.warn("Not Connected to the DSC Alarm!");
             connect();
         }
     }
@@ -380,7 +380,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 }
 
             } else {
-                logger.error("checkThings(): Thing handler not found!");
+                logger.warn("checkThings(): Thing handler not found! Thing: {}", thing.getUID());
             }
         }
     }
@@ -648,7 +648,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 }
 
                 if (password == null) {
-                    logger.error("sendCommand(): No password!");
+                    logger.warn("sendCommand(): No password!");
                     break;
                 }
                 data = password;
@@ -669,14 +669,14 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 break;
             case CommandOutputControl: /* 020 */
                 if (dscAlarmData[0] == null || !dscAlarmData[0].matches("[1-8]")) {
-                    logger.error(
+                    logger.warn(
                             "sendCommand(): Partition number must be a single character string from 1 to 8, it was: {}",
                             dscAlarmData[0]);
                     break;
                 }
 
                 if (dscAlarmData[1] == null || !dscAlarmData[1].matches("[1-4]")) {
-                    logger.error(
+                    logger.warn(
                             "sendCommand(): Output number must be a single character string from 1 to 4, it was: {}",
                             dscAlarmData[1]);
                     break;
@@ -693,7 +693,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             case PartitionArmControlStay: /* 031 */
             case PartitionArmControlZeroEntryDelay: /* 032 */
                 if (dscAlarmData[0] == null || !dscAlarmData[0].matches("[1-8]")) {
-                    logger.error(
+                    logger.warn(
                             "sendCommand(): Partition number must be a single character string from 1 to 8, it was: {}",
                             dscAlarmData[0]);
                     break;
@@ -704,14 +704,14 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             case PartitionArmControlWithUserCode: /* 033 */
             case PartitionDisarmControl: /* 040 */
                 if (dscAlarmData[0] == null || !dscAlarmData[0].matches("[1-8]")) {
-                    logger.error(
+                    logger.warn(
                             "sendCommand(): Partition number must be a single character string from 1 to 8, it was: {}",
                             dscAlarmData[0]);
                     break;
                 }
 
                 if (userCode == null || userCode.length() < 4 || userCode.length() > 6) {
-                    logger.error("sendCommand(): User Code is invalid, must be between 4 and 6 chars");
+                    logger.warn("sendCommand(): User Code is invalid, must be between 4 and 6 chars");
                     break;
                 }
 
@@ -732,7 +732,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             case TimeDateBroadcastControl: /* 056 */
             case TemperatureBroadcastControl: /* 057 */
                 if (dscAlarmData[0] == null || !dscAlarmData[0].matches("[0-1]")) {
-                    logger.error("sendCommand(): Value must be a single character string of 0 or 1: {}",
+                    logger.warn("sendCommand(): Value must be a single character string of 0 or 1: {}",
                             dscAlarmData[0]);
                     break;
                 }
@@ -741,7 +741,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 break;
             case TriggerPanicAlarm: /* 060 */
                 if (dscAlarmData[0] == null || !dscAlarmData[0].matches("[1-3]")) {
-                    logger.error("sendCommand(): FAPcode must be a single character string from 1 to 3, it was: {}",
+                    logger.warn("sendCommand(): FAPcode must be a single character string from 1 to 3, it was: {}",
                             dscAlarmData[1]);
                     break;
                 }
@@ -752,7 +752,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 if (dscAlarmProtocol.equals(DSCAlarmProtocol.ENVISALINK_TPI)) {
                     if (dscAlarmData[0] == null || dscAlarmData[0].length() != 1
                             || !dscAlarmData[0].matches("[0-9]|A|#|\\*")) {
-                        logger.error(
+                        logger.warn(
                                 "sendCommand(): \'keystroke\' must be a single character string from 0 to 9, *, #, or A, it was: {}",
                                 dscAlarmData[0]);
                         break;
@@ -760,7 +760,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 } else if (dscAlarmProtocol.equals(DSCAlarmProtocol.IT100_API)) {
                     if (dscAlarmData[0] == null || dscAlarmData[0].length() != 1
                             || !dscAlarmData[0].matches("[0-9]|\\*|#|F|A|P|[a-e]|<|>|=|\\^|L")) {
-                        logger.error(
+                        logger.warn(
                                 "sendCommand(): \'keystroke\' must be a single character string from 0 to 9, *, #, F, A, P, a to e, <, >, =, or ^, it was: {}",
                                 dscAlarmData[0]);
                         break;
@@ -771,7 +771,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                             validCommand = true;
                             break;
                         } catch (InterruptedException e) {
-                            logger.error("sendCommand(): \'keystroke\': Error with Long Key Press!");
+                            logger.warn("sendCommand(): \'keystroke\': Error with Long Key Press!");
                             break;
                         }
                     }
@@ -789,7 +789,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
 
                 if (dscAlarmData[0] == null || dscAlarmData[0].length() > 6
                         || !dscAlarmData[0].matches("(\\d|#|\\*)+")) {
-                    logger.error(
+                    logger.warn(
                             "sendCommand(): \'keysequence\' must be a string of up to 6 characters consiting of 0 to 9, *, or #, it was: {}",
                             dscAlarmData[0]);
                     break;
@@ -799,7 +799,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
                 break;
             case CodeSend: /* 200 */
                 if (userCode == null || userCode.length() < 4 || userCode.length() > 6) {
-                    logger.error("sendCommand(): Access Code is invalid, must be between 4 and 6 chars");
+                    logger.warn("sendCommand(): Access Code is invalid, must be between 4 and 6 chars");
                     break;
                 }
 
@@ -820,7 +820,7 @@ public abstract class DSCAlarmBaseBridgeHandler extends BaseBridgeHandler {
             successful = true;
             logger.debug("sendCommand(): '{}' Command Sent - {}", dscAlarmCode, confidentialData ? "***" : cmd);
         } else {
-            logger.error("sendCommand(): Command '{}' Not Sent - Invalid!", dscAlarmCode);
+            logger.warn("sendCommand(): Command '{}' Not Sent - Invalid!", dscAlarmCode);
         }
 
         return successful;
