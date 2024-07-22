@@ -26,6 +26,7 @@ import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Message;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.AbstractBoschSHCService;
+import org.openhab.binding.boschshc.internal.services.AbstractStatelessBoschSHCDeviceService;
 import org.openhab.binding.boschshc.internal.services.AbstractStatelessBoschSHCService;
 import org.openhab.binding.boschshc.internal.services.AbstractStatelessBoschSHCServiceWithRequestBody;
 import org.openhab.binding.boschshc.internal.services.BoschSHCService;
@@ -402,11 +403,25 @@ public abstract class BoschSHCHandler extends BaseThingHandler {
             service.setState(state);
         } catch (TimeoutException | ExecutionException e) {
             this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String.format(
-                    "Error when trying to update state for service %s: %s", service.getServiceName(), e.getMessage()));
+                    "Error while trying to update state for service %s: %s", service.getServiceName(), e.getMessage()));
         } catch (InterruptedException e) {
-            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
-                    .format("Interrupted update state for service %s: %s", service.getServiceName(), e.getMessage()));
             Thread.currentThread().interrupt();
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
+                    .format("Interrupted state update for service %s: %s", service.getServiceName(), e.getMessage()));
+        }
+    }
+
+    protected <TService extends AbstractStatelessBoschSHCDeviceService<TState>, TState extends BoschSHCServiceState> void postState(
+            TService service, TState state) {
+        try {
+            service.setState(state);
+        } catch (TimeoutException | ExecutionException e) {
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String.format(
+                    "Error while trying to post state for service %s: %s", service.getServiceName(), e.getMessage()));
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            this.updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, String
+                    .format("Interrupted state update for service %s: %s", service.getServiceName(), e.getMessage()));
         }
     }
 

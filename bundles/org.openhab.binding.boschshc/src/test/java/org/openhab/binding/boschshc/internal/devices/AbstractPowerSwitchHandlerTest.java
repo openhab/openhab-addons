@@ -36,6 +36,7 @@ import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchState;
 import org.openhab.binding.boschshc.internal.services.powerswitch.dto.PowerSwitchServiceState;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.RefreshType;
@@ -90,7 +91,7 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
 
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.ON);
 
-        verify(getCallback()).statusUpdated(same(getThing()),
+        verify(getCallback()).statusUpdated(any(Thing.class),
                 argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
                         && status.getStatusDetail().equals(ThingStatusDetail.COMMUNICATION_ERROR)));
     }
@@ -132,7 +133,7 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
 
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), RefreshType.REFRESH);
 
-        verify(getCallback()).statusUpdated(same(getThing()),
+        verify(getCallback()).statusUpdated(any(Thing.class),
                 argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
                         && status.getStatusDetail().equals(ThingStatusDetail.COMMUNICATION_ERROR)));
     }

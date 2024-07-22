@@ -60,6 +60,7 @@ public class BoschSHCBindingConstants {
     public static final ThingTypeUID THING_TYPE_LIGHT_CONTROL_2 = new ThingTypeUID(BINDING_ID, "light-control-2");
     public static final ThingTypeUID THING_TYPE_DIMMER = new ThingTypeUID(BINDING_ID, "dimmer");
     public static final ThingTypeUID THING_TYPE_WATER_DETECTOR = new ThingTypeUID(BINDING_ID, "water-detector");
+    public static final ThingTypeUID THING_TYPE_RELAY = new ThingTypeUID(BINDING_ID, "relay");
 
     public static final ThingTypeUID THING_TYPE_USER_DEFINED_STATE = new ThingTypeUID(BINDING_ID, "user-defined-state");
 
@@ -112,7 +113,9 @@ public class BoschSHCBindingConstants {
     public static final String CHANNEL_ACOUSTIC_SIGNALS_ON_MOVE = "acoustic-signals-on-move";
     public static final String CHANNEL_WATER_LEAKAGE_SENSOR_CHECK = "water-leakage-sensor-check";
     public static final String CHANNEL_SENSOR_MOVED = "sensor-moved";
-
+    public static final String CHANNEL_IMPULSE_SWITCH = "impulse-switch";
+    public static final String CHANNEL_IMPULSE_LENGTH = "impulse-length";
+    public static final String CHANNEL_INSTANT_OF_LAST_IMPULSE = "instant-of-last-impulse";
     // numbered channels
     // the rationale for introducing numbered channels was discussed in
     // https://github.com/openhab/openhab-addons/pull/16400
