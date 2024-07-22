@@ -198,7 +198,7 @@ public class Mapper {
                 case MB_KEY_SOC:
                 case MB_KEY_TANKLEVELPERCENT:
                 case MB_KEY_ECOSCORE_ACCEL:
-                case MB_KEY_ECOSCORE_BALANCE:
+                case MB_KEY_ECOSCORE_CONSTANT:
                 case MB_KEY_ECOSCORE_COASTING:
                     double level = Utils.getDouble(value);
                     state = QuantityType.valueOf(level, Units.PERCENT);
@@ -430,8 +430,8 @@ public class Mapper {
         CHANNELS.put(MB_KEY_LIQUIDCONSUMPTIONRESET, new String[] { OH_CHANNEL_CONS_CONV_RESET, GROUP_TRIP });
 
         CHANNELS.put(MB_KEY_ECOSCORE_ACCEL, new String[] { OH_CHANNEL_ACCEL, GROUP_ECO });
-        CHANNELS.put(MB_KEY_ECOSCORE_BALANCE, new String[] { OH_CHANNEL_COASTING, GROUP_ECO });
-        CHANNELS.put(MB_KEY_ECOSCORE_COASTING, new String[] { OH_CHANNEL_BALANCE, GROUP_ECO });
+        CHANNELS.put(MB_KEY_ECOSCORE_CONSTANT, new String[] { OH_CHANNEL_CONSTANT, GROUP_ECO });
+        CHANNELS.put(MB_KEY_ECOSCORE_COASTING, new String[] { OH_CHANNEL_COASTING, GROUP_ECO });
         CHANNELS.put(MB_KEY_ECOSCORE_BONUS, new String[] { OH_CHANNEL_BONUS_RANGE, GROUP_ECO });
 
         CHANNELS.put(MB_KEY_TIREPRESSURE_REAR_RIGHT, new String[] { OH_CHANNEL_PRESSURE_REAR_RIGHT, GROUP_TIRES });

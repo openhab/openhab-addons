@@ -590,10 +590,31 @@ In your Mercedes Me App front page
 
 <img src="./doc/ElectricConsumptionUnits.png" width="300" height="300"/>
 
-### Trip Duration
+#### Trip Duration
 
 Shown as String in format `d days, HH:mm`.
 If duration is below 24 hours format is `HH:mm`. 
+
+### ECO Score
+
+Group name: `eco`
+
+All channels `read-only`
+
+| Channel             | Type                   |  Description            |
+|---------------------|------------------------|-------------------------|
+| accel               | Number:Dimensionless   | Acceleration Score      |
+| coasting            | Number:Dimensionless   | Coasting Score          |
+| constant            | Number:Dimensionless   | Constant Score          |
+| bonus               | Number:Length          | Bonus Range             |
+
+The Mercedes ECO Score is aimed to improve your driving behavior.
+
+- Acceleration Score: smooth acceleration e.g. use *eco driving setting*
+- Coasting Score: ideally use only *recuperation* instead of brake
+- Constant Score: drive at constant speed e.g. use *cruise control*
+- Bonus Range: assumed bonus range vs. a *very sportive driver*
+
 
 ### Position
 

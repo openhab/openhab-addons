@@ -13,9 +13,9 @@
 		<label>Coasting Score</label>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="balance">
+	<channel-type id="constant">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Balance Score</label>
+		<label>Constant Score</label>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="bonus">
