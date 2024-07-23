@@ -97,6 +97,7 @@ public enum HomekitCharacteristicType {
     POSITION_STATE("PositionState"),
     POWER_MODE("PowerMode"),
     PROGRAM_MODE("ProgramMode"),
+    PROGRAMMABLE_SWITCH_EVENT("ProgrammableSwitchEvent"),
     RELATIVE_HUMIDITY("RelativeHumidity"),
     REMAINING_DURATION("RemainingDuration"),
     REMOTE_KEY("RemoteKey"),
