@@ -72,7 +72,7 @@ public class PercentageValue extends Value {
     }
 
     @Override
-    public PercentType parseCommand(Command command) throws IllegalArgumentException {
+    public Command parseCommand(Command command) throws IllegalArgumentException {
         PercentType oldvalue = (state instanceof UnDefType) ? new PercentType() : (PercentType) state;
         // Nothing do to -> We have received a percentage
         if (command instanceof PercentType percent) {
@@ -105,8 +105,8 @@ public class PercentageValue extends Value {
             }
         } else //
                // On/Off equals 100 or 0 percent
-        if (command instanceof OnOffType increaseDecreaseCommand) {
-            return increaseDecreaseCommand == OnOffType.ON ? PercentType.HUNDRED : PercentType.ZERO;
+        if (command instanceof OnOffType) {
+            return command;
         } else//
               // Increase or decrease by "step"
         if (command instanceof UpDownType upDownCommand) {
@@ -121,9 +121,9 @@ public class PercentageValue extends Value {
                // Check against custom on/off values
         if (command instanceof StringType) {
             if (onValue != null && command.toString().equals(onValue)) {
-                return new PercentType(max);
+                return OnOffType.ON;
             } else if (offValue != null && command.toString().equals(offValue)) {
-                return new PercentType(min);
+                return OnOffType.OFF;
             } else {
                 throw new IllegalStateException("Unable to parse " + command.toString() + " as a percent.");
             }
@@ -135,16 +135,35 @@ public class PercentageValue extends Value {
 
     @Override
     public String getMQTTpublishValue(Command command, @Nullable String pattern) {
+        String formatPattern = pattern;
+        if (formatPattern == null) {
+            formatPattern = "%s";
+        }
+
+        if (command instanceof OnOffType onOffCommand) {
+            if (onOffCommand == OnOffType.ON) {
+                if (onValue != null) {
+                    command = new StringType(onValue);
+                } else {
+                    command = PercentType.HUNDRED;
+                }
+            } else {
+                if (offValue != null) {
+                    command = new StringType(offValue);
+                } else {
+                    command = PercentType.ZERO;
+                }
+            }
+        }
+        if (command instanceof StringType) {
+            return command.format(formatPattern);
+        }
+
         // Formula: From percentage to custom min/max: value*span/100+min
         // Calculation need to happen with big decimals to either return a straight integer or a decimal depending on
         // the value.
         BigDecimal value = ((PercentType) command).toBigDecimal().multiply(span).divide(HUNDRED, MathContext.DECIMAL128)
                 .add(min).stripTrailingZeros();
-
-        String formatPattern = pattern;
-        if (formatPattern == null) {
-            formatPattern = "%s";
-        }
 
         return new DecimalType(value).format(formatPattern);
     }
