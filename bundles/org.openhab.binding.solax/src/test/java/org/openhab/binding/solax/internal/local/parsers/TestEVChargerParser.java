@@ -30,16 +30,6 @@ public class TestEVChargerParser {
 
     private static final String RAW_DATA = """
             {
-            "SN":"SQEHLPBUGJ",
-            "ver":"3.004.11",
-            "type":1,
-            "Data":[
-                2,2,24094,24137,24098,1194,1183,1209,2896,2874,
-                2931,8702,120,0,2189,0,101,35463,65456,30,
-                65374,45,65373,0,49,0,2,15,0,0,0,0,0,5010,5008,5004,13880,7180,6150,5,0,0,0,0,0,0,0,0,1,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7160,0,14115,7178,6150,0,1,1,1,0,0,121,583,209,0,50,0,0,1,1,0],"Information":[11.000,1,"C31103J2625066",1,1.13,1.01,0.00,0.00,0.00,1],"OCPPServer":"","OCPPChargerId":""} to {"SN":"SQEHLPBUGJ","ver":"3.004.11","type":1,"Data":[2,2,24103,24097,24106,1227,1199,1223,2976,2908,2967,8852,123,0,2192,0,105,35463,65451,247,65462,65363,65439,0,49,0,2,15,0,0,0,0,0,5004,5006,5000,14393,7180,6150,5,0,0,0,0,0,0,0,0,1,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7281,0,14115,7178,6150,0,1,1,1,0,0,120,586,213,0,50,0,0,1,1,0],"Information":[11.000,1,"C31103J2625066",1,1.13,1.01,0.00,0.00,0.00,1],"OCPPServer":"","OCPPChargerId":""}
-                """;
-    private static final String RAW_DATA_SECOND = """
-            {
                 "SN":"SQBLABLA",
                 "ver":"3.004.11",
                 "type":1,
@@ -60,23 +50,9 @@ public class TestEVChargerParser {
             }
             """;
 
-    private static final String playground = """
-            {
-            "SN":"SQXXXXXX",
-            "ver":"3.004.11",
-            "type":1,
-            "Data":[
-                0,0,24289,24277,24198,0,0,0,0,0,
-                0,0,0,0,
-                2527,0,
-                65429,35463,77,65507,
-                65480,48,64671,0,40,0,0,15,0,0,
-                0,0,0,5000,5000,4996,12309,7699,6150,7,0,0,0,0,0,0,0,0,1,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2844,7690,6150,0,1,1,1,0,0,121,1206,1000,0,50,0,0,1,1,0],"Information":[11.000,1,"CXXX",1,1.13,1.01,0.00,0.00,0.00,1],"OCPPServer":"","OCPPChargerId":""}
-            """;
-
     @Test
     public void testParser() {
-        LocalConnectRawDataBean bean = LocalConnectRawDataBean.fromJson(RAW_DATA_SECOND);
+        LocalConnectRawDataBean bean = LocalConnectRawDataBean.fromJson(RAW_DATA);
         assertNotNull(bean);
 
         EvChargerData data = new EvChargerData(bean);
