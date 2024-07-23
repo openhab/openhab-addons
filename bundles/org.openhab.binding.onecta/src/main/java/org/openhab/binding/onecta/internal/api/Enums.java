@@ -13,6 +13,7 @@
 package org.openhab.binding.onecta.internal.api;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -273,7 +274,7 @@ public class Enums {
             return value;
         }
 
-        public static FanMovementHor fromValue(String value) {
+        public static FanMovementHor fromValue(@Nullable String value) {
             for (FanMovementHor m : FanMovementHor.values()) {
                 if (m.getValue().equals(value)) {
                     return m;
@@ -304,9 +305,9 @@ public class Enums {
             return value;
         }
 
-        public static FanMovementVer fromValue(String value) {
+        public static FanMovementVer fromValue(@Nullable String value) {
             for (FanMovementVer m : FanMovementVer.values()) {
-                if (m.getValue().toLowerCase().equals(value.toLowerCase())) {
+                if (m.getValue().equalsIgnoreCase(value)) {
                     return m;
                 }
             }

@@ -96,11 +96,8 @@ public class DataTransportService {
 
     public Enums.FanMovementHor getCurrentFanDirectionHor() {
         String fanMode = Optional.ofNullable(getManagementPoint(Enums.ManagementPoint.CLIMATECONTROL))
-                .map(ManagementPoint::getFanControl)
-                .map(FanControl::getValue)
-                .map(FanControlValue::getOperationModes)
-                .map(om -> om.getFanOperationMode(getCurrentOperationMode()))
-                .map(FanOnlyClass::getFanDirection)
+                .map(ManagementPoint::getFanControl).map(FanControl::getValue).map(FanControlValue::getOperationModes)
+                .map(om -> om.getFanOperationMode(getCurrentOperationMode())).map(FanOnlyClass::getFanDirection)
                 .map(FanDirection::getHorizontal).map(FanMovement::getCurrentMode).map(FanCurrentMode::getValue)
                 .orElse(null);
         return Enums.FanMovementHor.fromValue(fanMode);
