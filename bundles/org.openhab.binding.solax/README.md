@@ -152,7 +152,6 @@ If you're missing a channel this means that it's not supported for your inverter
 | charger-mode                             | String                      | Charger Workmode.                                             |
 | charger-state                            | String                      | Charger State.                                                |
 | last-update-time                         | DateTime                    | Last time with a successful retrieval of data.                |
-| raw-data                                 | String                      | The raw JSON data retrieved from the inverter's Wi-Fi module. |
 
 
 ### Cloud Connect Inverter Configuration

@@ -106,8 +106,6 @@
 			</channel>
 
 			<channel id="last-update-time" typeId="last-retrieve-time-stamp"/>
-
-			<channel id="raw-data" typeId="raw-data-type"/>
 		</channels>
 
 		<config-description>

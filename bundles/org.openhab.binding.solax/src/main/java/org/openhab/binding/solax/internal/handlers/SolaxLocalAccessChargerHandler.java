@@ -64,8 +64,6 @@ public class SolaxLocalAccessChargerHandler extends SolaxLocalAccessAbstractHand
     }
 
     private void updateChannels(RawDataParser parser, EvChargerData data) {
-        updateState(SolaxBindingConstants.CHANNEL_RAW_DATA, new StringType(data.getRawData()));
-
         Set<String> supportedChannels = parser.getSupportedChannels();
 
         // States/modes
