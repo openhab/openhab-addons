@@ -255,13 +255,15 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
 
         boolean off = false;
         if (jsonState.state != null) {
-            onOffValue.update(onOffValue.parseCommand(new StringType(jsonState.state)));
+            onOffValue.update((State) onOffValue.parseMessage(new StringType(jsonState.state)));
             off = onOffValue.getChannelState().equals(OnOffType.OFF);
-            if (brightnessValue.getChannelState() instanceof UnDefType) {
-                brightnessValue.update(off ? PercentType.ZERO : PercentType.HUNDRED);
-            }
-            if (colorValue.getChannelState() instanceof UnDefType) {
-                colorValue.update(off ? HSBType.BLACK : HSBType.WHITE);
+            if (onOffValue.getChannelState() instanceof OnOffType onOffState) {
+                if (brightnessValue.getChannelState() instanceof UnDefType) {
+                    brightnessValue.update(Objects.requireNonNull(onOffState.as(PercentType.class)));
+                }
+                if (colorValue.getChannelState() instanceof UnDefType) {
+                    colorValue.update(Objects.requireNonNull(onOffState.as(PercentType.class)));
+                }
             }
         }
 
