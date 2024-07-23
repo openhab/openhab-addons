@@ -100,6 +100,7 @@ public class HomekitAccessoryFactory {
             put(SMOKE_SENSOR, new HomekitCharacteristicType[] { SMOKE_DETECTED_STATE });
             put(SLAT, new HomekitCharacteristicType[] { CURRENT_SLAT_STATE });
             put(SPEAKER, new HomekitCharacteristicType[] { MUTE });
+            put(STATELESS_PROGRAMMABLE_SWITCH, new HomekitCharacteristicType[] { PROGRAMMABLE_SWITCH_EVENT });
             put(SWITCH, new HomekitCharacteristicType[] { ON_STATE });
             put(TELEVISION, new HomekitCharacteristicType[] { ACTIVE });
             put(TELEVISION_SPEAKER, new HomekitCharacteristicType[] { MUTE });
@@ -145,6 +146,7 @@ public class HomekitAccessoryFactory {
             put(SMART_SPEAKER, HomekitSmartSpeakerImpl.class);
             put(SMOKE_SENSOR, HomekitSmokeSensorImpl.class);
             put(SPEAKER, HomekitSpeakerImpl.class);
+            put(STATELESS_PROGRAMMABLE_SWITCH, HomekitStatelessProgrammableSwitchImpl.class);
             put(SWITCH, HomekitSwitchImpl.class);
             put(TELEVISION, HomekitTelevisionImpl.class);
             put(TELEVISION_SPEAKER, HomekitTelevisionSpeakerImpl.class);

@@ -54,6 +54,7 @@ public enum HomekitAccessoryType {
     SMART_SPEAKER("SmartSpeaker"),
     SMOKE_SENSOR("SmokeSensor"),
     SPEAKER("Speaker"),
+    STATELESS_PROGRAMMABLE_SWITCH("StatelessProgrammableSwitch"),
     SWITCH("Switchable"),
     TELEVISION("Television"),
     TELEVISION_SPEAKER("TelevisionSpeaker"),

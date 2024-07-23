@@ -14,6 +14,7 @@ package org.openhab.io.homekit.internal;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.items.GenericItem;
@@ -35,7 +36,7 @@ import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
  */
 public class HomekitAccessoryUpdater {
     private final Logger logger = LoggerFactory.getLogger(HomekitAccessoryUpdater.class);
-    private final ConcurrentMap<ItemKey, Subscription> subscriptionsByName = new ConcurrentHashMap<>();
+    private final ConcurrentMap<ItemKey, StateChangeListener> subscriptionsByName = new ConcurrentHashMap<>();
 
     public void subscribe(GenericItem item, HomekitCharacteristicChangeCallback callback) {
         subscribe(item, null, callback);
@@ -58,6 +59,28 @@ public class HomekitAccessoryUpdater {
             }
             logger.trace("Adding subscription for {} / {}", item, key);
             Subscription subscription = (changedItem, oldState, newState) -> callback.changed();
+            item.addStateChangeListener(subscription);
+            return subscription;
+        });
+    }
+
+    public void subscribeToUpdates(GenericItem item, String key, Consumer<State> callback) {
+        logger.trace("Received subscription request for {} / {}", item, key);
+        if (item == null) {
+            return;
+        }
+        if (callback == null) {
+            logger.trace("The received subscription contains a null callback, skipping");
+            return;
+        }
+        ItemKey itemKey = new ItemKey(item, key);
+        subscriptionsByName.compute(itemKey, (k, v) -> {
+            if (v != null) {
+                logger.debug("Received duplicate subscription for {} / {}", item, key);
+                unsubscribe(item, key);
+            }
+            logger.trace("Adding subscription for {} / {}", item, key);
+            UpdateSubscription subscription = (changedItem, newState) -> callback.accept(newState);
             item.addStateChangeListener(subscription);
             return subscription;
         });
@@ -89,6 +112,19 @@ public class HomekitAccessoryUpdater {
         default void stateUpdated(Item item, State state) {
             // Do nothing on non-change update
         }
+    }
+
+    @FunctionalInterface
+    @NonNullByDefault
+    private interface UpdateSubscription extends StateChangeListener {
+
+        @Override
+        default void stateChanged(Item item, State oldState, State newState) {
+            // Do nothing on change update
+        }
+
+        @Override
+        void stateUpdated(Item item, State state);
     }
 
     private static class ItemKey {
