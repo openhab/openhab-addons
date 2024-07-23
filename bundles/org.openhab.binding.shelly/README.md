@@ -28,11 +28,14 @@ Also check out the [Shelly Manager](doc/ShellyManager.md), which
 The binding supports both hardware generations
 
 - Generation 1: The original Shelly devices like the Shelly 1, Shelly 2.5, Shelly Flood etc.
-- Generation 2: Plus / Pro series of devices
+- Generation 2+3: Plus / Pro series of devices
 - Shelly Plus Mini: Shelly Plus devices in compact format (Gen 2+3)
 - Shelly BLU: Bluetooth based series of devices
 
 The binding provides the same feature set across all devices as good as possible and depending on device specific features.
+
+`Note:` Using BLU devices or the Plus/Pro Range Extender mode require some additional configuration steps.
+See section [Discovery](#discovery) for details.
 
 ### Generation 1
 
@@ -74,7 +77,6 @@ The binding provides the same feature set across all devices as good as possible
 | shellybutton2     | Shelly Button 2                                        | SHBTN-2             |
 | shellysense       | Shelly Motion and IR Controller                        | SHSEN-1             |
 | shellytrv         | Shelly TRV                                             | SHTRV-01            |
-| shellydevice      | A password protected Shelly device or an unknown type  |                     |
 
 ### Generation 2 Plus series
 
@@ -87,7 +89,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplusplug       | Shelly Plug-S                                            | SNPL-00112EU                 |
 | shellyplusplug       | Shelly Plug-IT                                           | SNPL-00110IT                 |
 | shellyplusplug       | Shelly Plug-UK                                           | SNPL-00112UK                 |
-| shellyplusplug       | Shelly Plug-US                                           | SNPL-00116US                 |
+| shellyplusplugus     | Shelly Plug-US                                           | SNPL-00116US                 |
 | shellyplusi4         | Shelly Plus i4 with 4x AC input                          | SNSN-0024X                   |
 | shellyplusi4dc       | Shelly Plus i4 with 4x DC input                          | SNSN-0D24X                   |
 | shellyplusht         | Shelly Plus HT with temperature + humidity sensor        | SNSN-0013A                   |
@@ -95,14 +97,15 @@ The binding provides the same feature set across all devices as good as possible
 | shellyplussmoke      | Shelly Plus Smoke sensor                                 | SNSN-0031Z                   |
 | shellypluswdus       | Shelly Plus Wall Dimmer US                               | SNDM-0013US                  |
 | shellywalldisplay    | Shelly Plus Wall Display                                 | SAWD-0A1XX10EU1              |
+| shellyblugw          | SHelly BLU Gateway                                       | SNGW-BT01                    |
 
 ### Generation 2 Plus Mini series (incl. Gen 3)
 
  | thing-type           | Model                                                    | Vendor ID                      |
  | -------------------- | -------------------------------------------------------- | ------------------------------ |
- | shellymini1          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU     |
- | shellymini1pm        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
- | shellyminipm         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
+ | shelly1mini          | Shelly Plus 1 Mini with 1x relay                         | SNSW-001X8EU, S3SW-001X8EU     |
+ | shelly1pmmini        | Shelly Plus 1PM Mini with 1x relay + power meter         | SNSW-001P8EU, S3SW-001P8EU     |
+ | shellypmmini         | Shelly Plus PM Mini with 1x power meter                  | SNPM-001PCEU16, S3PM-001PCEU16 |
 
 ### Generation 2 Pro series
 
@@ -115,6 +118,7 @@ The binding provides the same feature set across all devices as good as possible
 | shellypro2pm-roller | Shelly Pro 2 PM with 2x relay + power meter, roller mode | SPSW-002PE16EU, SPSW-102PE16EU, SPSW-202PE16EU |
 | shellypro3          | Shelly Pro 3 with 3x relay (dry contacts)                | SPSW-003XE16EU                                 |
 | shellypro3em        | Shelly Pro 3 with 3 integrated power meters              | SPEM-003CEBEU                                  |
+| shellyproem50       | Shelly Pro EM50 with 3 integrated power meters           | SPEM-002CEBEU50                                |
 | shellypro4pm        | Shelly Pro 4 PM with 4x relay + power meter              | SPSW-004PE16EU, SPSW-104PE16EU                 |
 
 ### Shelly BLU
@@ -125,6 +129,13 @@ The binding provides the same feature set across all devices as good as possible
 | shellybludw       | Shelly BLU Door/Windows                                | SBDW      |
 | shellyblumotion   | Shelly BLU Motion                                      | SBMO      |
 | shellybluht       | Shelly BLU H&T                                         | SBMO      |
+
+### Special Thing Types
+
+| thing-type        | Model                                                  | Vendor ID |
+| ----------------- | ------------------------------------------------------ | --------- |
+| shellydevice      | A password protected Shelly device or an unknown type  |           |
+| shellyunknown     | An unknown Shelly device / model has been detected     |           |
 
 ## Binding Configuration
 
@@ -151,12 +162,15 @@ In this case autoCoIoT should be disabled, CoIoT events will not work, because t
 
 ## Firmware
 
-The binding requires firmware version 1.8.2 or newer for generation 1  to enable all features, version 1.9.2+ is recommended. Generation 2 devices require 0.10.2 or newer, the Plus HT at least 0.11.0.
+`Generation 1`: The binding requires firmware version 1.9.2 or newer to enable all features.
+`Generation 2+3` Those Shelly devices require firmware version 1.0.0 or newer (1.10.0+ is recommended).
+`Shelly BLU deries`: Use the Shelly App to update to 1.0+ version of the firmware.
+
 Some of the features are enabled dynamically or are not available depending on device type and firmware release.
 The Web UI of the Shelly device displays the current firmware version under Settings:Firmware and shows an update option when a newer version is available.
 
 The current firmware version is reported in the Thing Properties.
-A dedicated channel (device#updateAvailable) indicates the availability of a newer firmware.
+A dedicated channel indicates the availability of a newer firmware (`device#updateAvailable`, not available for BLU devices).
 Use the device's Web UI or the Shelly App to perform the update.
 
 Check [Advanced Users](doc/AdvancedUsers.md) for information how to update your device.
@@ -175,7 +189,7 @@ They periodically announce their presence, which is used by the binding to find 
 Sometimes you need to run the manual discovery multiple times until you see all your devices.
 
 `Important for Generation 1 Devices`:
-It's recommended to enable CoIoT in the device settings for faster response times (event driven rather than polling).
+It's strongly recommended to enable CoIoT in the device settings for faster response times (event driven rather than polling).
 Open the device's Web UI, section "COIOT settings" and select "Enable COCIOT".
 It's recommended to switch the Shelly devices to CoAP peer mode if you have only your openHAB system controlling the device.
 This allows routing the CoIoT/CoAP messages across multiple IP subnets without special network setup required.
@@ -185,12 +199,12 @@ Keep Multicast mode if you have multiple hosts, which should receive the CoAP up
 ### Discovery of BLU Devices
 
 The BLU devices use Bluetooth Low Energy (BLE).
-The binding can't communicate directly with the device, but the Plus/Pro series with firmware 0.14.1 or newer could be used as a gateway.
-The binding automatically installs a script on the Shelly Device (oh-blu-scanner), which forwards the BLU events to the binding using the WebSocket channel.
+The binding can't communicate directly with the device, so a Shelly Plus/Pro device is required with enabled Bluetooth to use those devices as a hub.
+The binding automatically installs a script on the Shelly Device (oh-blu-scanner.js), which forwards the BLU events to the binding.
 
 Follow these steps to add the Shelly BLU Device to openHAB
 
-- Make sure a Shelly is near by the BLU device, enable Bluetooh on this device (the Bluetooth Gateway mode is not required)
+- Make sure a Shelly is near by the BLU device, enable Bluetooh on this device (**disable the 'Bluetooth Gateway' mode** in the Shelly app/UI is recommended)
 - Add this thing to openHAB, make sure thing gets online
 - Enable "BLU Gateway Support" in the thing configuration of the Shelly device acting as gateway.
 - Now press the button on your BLU device, this wakes up the device and the script forwards this event to the binding
@@ -199,12 +213,18 @@ Follow these steps to add the Shelly BLU Device to openHAB
 - Click the device button again, the binding gets another event and creates the channels and thing changes status to ONLINE
 - Finally link the channels to the equipment in the model
 
-Note: During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
+`Note`:
+
+- During initialization the script 'oh-blu-scanner.js' gets installed and activated on the Shelly Gateway device.
+- Shelly BLU Motion: It may take some time until channels like Lux show up.
+
+Try moving the device to force status updates.
 
 Every time an event is received sensors#lastUpdate and channels are updated with the reported values.
-device#wifiSignal indicates the Bluetooth signal strength and gets updated when the device sends an event.
+`device#wifiSignal` indicates the Bluetooth signal strength and gets updated when the device sends an event.
 
 The binding supports multiple Shelly Plus/Pro as gateway devices unless they are added as thing and are ONLINE.
+In this scenario the channel `device#gatewayDevice` will report the last hub device, which forwarded a status update.
 
 ### Password Protected Devices
 
@@ -1289,7 +1309,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 
 ## Shelly Plus Mini Series
 
-### Shelly Plus 1 Mini (thing-type: shellymini1)
+### Shelly Plus 1 Mini (thing-type: shelly1mini)
 
 | Group | Channel     | Type    | read-only | Description                                                                       |
 | ----- | ----------- | ------- | --------- | --------------------------------------------------------------------------------- |
@@ -1301,7 +1321,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | timerActive | Switch  | yes       | Relay #1: ON: An auto-on/off timer is active                                      |
 |       | button      | Trigger | yes       | Event trigger, see section Button Events                                          |
 
-### Shelly Plus 1PM Mini (thing-type: shellymini1pm)
+### Shelly Plus 1PM Mini (thing-type: shelly1pmmini)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
@@ -1318,7 +1338,7 @@ Channels lastEvent and eventCount are only available if input type is set to mom
 |       | lastUpdate   | DateTime | yes       | Timestamp of the last measurement                                                 |
 
 
-### Shelly Plus PM Mini (thing-type: shellyminipm)
+### Shelly Plus PM Mini (thing-type: shellypmmini)
 
 | Group | Channel      | Type     | read-only | Description                                                                       |
 | ----- | ------------ | -------- | --------- | --------------------------------------------------------------------------------- |
@@ -1550,6 +1570,10 @@ See notes on discovery of Shelly BLU devices above.
 |         | lastUpdate    | DateTime | yes       | Timestamp of the last update (any sensor value changed) |
 | battery | batteryLevel  | Number   | yes       | Battery Level in %                                      |
 |         | lowBattery    | Switch   | yes       | Low battery alert (< 20%)                               |
+
+## Shelly BLU Gateway (thing-type: shellyblugw)
+
+There are no additional channels beside the device group.
 
 ## Shelly Wall Displays
 

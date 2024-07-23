@@ -20,6 +20,7 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_INWALL_SWITCH;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_LIGHT_CONTROL_2;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_MOTION_DETECTOR;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_RELAY;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SHC;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL_2;
@@ -33,6 +34,7 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_UNIVERSAL_SWITCH_2;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_USER_DEFINED_STATE;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WALL_THERMOSTAT;
+import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WATER_DETECTOR;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.THING_TYPE_WINDOW_CONTACT_2;
 
@@ -51,6 +53,7 @@ import org.openhab.binding.boschshc.internal.devices.lightcontrol.LightControl2H
 import org.openhab.binding.boschshc.internal.devices.lightcontrol.LightControlHandler;
 import org.openhab.binding.boschshc.internal.devices.motiondetector.MotionDetectorHandler;
 import org.openhab.binding.boschshc.internal.devices.plug.PlugHandler;
+import org.openhab.binding.boschshc.internal.devices.relay.RelayHandler;
 import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterControl2Handler;
 import org.openhab.binding.boschshc.internal.devices.shuttercontrol.ShutterControlHandler;
 import org.openhab.binding.boschshc.internal.devices.smartbulb.SmartBulbHandler;
@@ -62,6 +65,7 @@ import org.openhab.binding.boschshc.internal.devices.universalswitch.UniversalSw
 import org.openhab.binding.boschshc.internal.devices.universalswitch.UniversalSwitchHandler;
 import org.openhab.binding.boschshc.internal.devices.userdefinedstate.UserStateHandler;
 import org.openhab.binding.boschshc.internal.devices.wallthermostat.WallThermostatHandler;
+import org.openhab.binding.boschshc.internal.devices.waterleakage.WaterLeakageSensorHandler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContact2Handler;
 import org.openhab.binding.boschshc.internal.devices.windowcontact.WindowContactHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
@@ -132,7 +136,9 @@ public class BoschSHCHandlerFactory extends BaseThingHandlerFactory {
                     thing -> new UniversalSwitch2Handler(thing, timeZoneProvider)),
             new ThingTypeHandlerMapping(THING_TYPE_SMOKE_DETECTOR_2, SmokeDetector2Handler::new),
             new ThingTypeHandlerMapping(THING_TYPE_LIGHT_CONTROL_2, LightControl2Handler::new),
-            new ThingTypeHandlerMapping(THING_TYPE_DIMMER, DimmerHandler::new));
+            new ThingTypeHandlerMapping(THING_TYPE_DIMMER, DimmerHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_WATER_DETECTOR, WaterLeakageSensorHandler::new),
+            new ThingTypeHandlerMapping(THING_TYPE_RELAY, RelayHandler::new));
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

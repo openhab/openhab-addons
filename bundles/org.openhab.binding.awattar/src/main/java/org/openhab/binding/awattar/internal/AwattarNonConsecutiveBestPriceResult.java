@@ -29,12 +29,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult {
-
-    private List<AwattarPrice> members;
-    private ZoneId zoneId;
+    private final List<AwattarPrice> members;
+    private final ZoneId zoneId;
     private boolean sorted = true;
 
-    public AwattarNonConsecutiveBestPriceResult(int size, ZoneId zoneId) {
+    public AwattarNonConsecutiveBestPriceResult(ZoneId zoneId) {
         super();
         this.zoneId = zoneId;
         members = new ArrayList<>();
@@ -43,13 +42,13 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
     public void addMember(AwattarPrice member) {
         sorted = false;
         members.add(member);
-        updateStart(member.getStartTimestamp());
-        updateEnd(member.getEndTimestamp());
+        updateStart(member.timerange().start());
+        updateEnd(member.timerange().end());
     }
 
     @Override
     public boolean isActive() {
-        return members.stream().anyMatch(x -> x.contains(Instant.now().toEpochMilli()));
+        return members.stream().anyMatch(x -> x.timerange().contains(Instant.now().toEpochMilli()));
     }
 
     @Override
@@ -59,12 +58,7 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
 
     private void sort() {
         if (!sorted) {
-            members.sort(new Comparator<>() {
-                @Override
-                public int compare(AwattarPrice o1, AwattarPrice o2) {
-                    return Long.compare(o1.getStartTimestamp(), o2.getStartTimestamp());
-                }
-            });
+            members.sort(Comparator.comparingLong(p -> p.timerange().start()));
         }
     }
 
@@ -77,7 +71,7 @@ public class AwattarNonConsecutiveBestPriceResult extends AwattarBestPriceResult
             if (second) {
                 res.append(',');
             }
-            res.append(getHourFrom(price.getStartTimestamp(), zoneId));
+            res.append(getHourFrom(price.timerange().start(), zoneId));
             second = true;
         }
         return res.toString();

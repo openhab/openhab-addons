@@ -16,6 +16,7 @@ import static org.openhab.binding.mielecloud.internal.MieleCloudBindingConstants
 import static org.openhab.binding.mielecloud.internal.handler.MieleHandlerFactory.SUPPORTED_THING_TYPES;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -189,7 +190,8 @@ public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<
             return deviceName.get();
         }
 
-        return ThingInformationExtractor.getDeviceAndTechType(deviceState).orElse("Miele Device");
+        return Objects
+                .requireNonNull(ThingInformationExtractor.getDeviceAndTechType(deviceState).orElse("Miele Device"));
     }
 
     @Override

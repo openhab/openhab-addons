@@ -15,6 +15,9 @@ package org.openhab.persistence.mongodb.internal;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -225,6 +228,26 @@ public class DataCreationHelper {
     }
 
     /**
+     * Checks if the current system supports AVX (Advanced Vector Extensions).
+     * AVX is a set of CPU instructions that can greatly improve performance for certain operations.
+     *
+     * @return true if AVX is supported, false otherwise
+     */
+    public static boolean isAVXSupported() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("/proc/cpuinfo"))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.toLowerCase().contains("avx")) {
+                    return true;
+                }
+            }
+        } catch (IOException e) {
+            return false;
+        }
+        return false;
+    }
+
+    /**
      * Provides a stream of arguments to be used for parameterized tests.
      *
      * Each argument is a DatabaseTestContainer instance. Some instances use a MemoryBackend,
@@ -234,7 +257,7 @@ public class DataCreationHelper {
      * @return A stream of Arguments, each containing a DatabaseTestContainer instance.
      */
     public static Stream<Arguments> provideDatabaseBackends() {
-        if (DockerClientFactory.instance().isDockerAvailable()) {
+        if (DockerClientFactory.instance().isDockerAvailable() && isAVXSupported()) {
             // If Docker is available, create a stream of Arguments with all backends
             return Stream.of(
                     // Create a DatabaseTestContainer with a MemoryBackend

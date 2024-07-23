@@ -278,6 +278,13 @@
 		<state readOnly="false"/>
 	</channel-type>
 
+	<channel-type id="input-inverted">
+		<item-type>Switch</item-type>
+		<label>Inverted</label>
+		<description>Return highest prices?</description>
+		<state readOnly="false"/>
+	</channel-type>
+
 
 	<channel-type id="switch-type">
 		<item-type>Switch</item-type>

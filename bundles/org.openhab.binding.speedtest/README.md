@@ -107,10 +107,10 @@ String                    Speedtest_Server                "Server"              
 DateTime                  Speedtest_Timestamp             "Timestamp"             { channel="speedtest:speedtest:myspeedtest:timestamp" }
 Number:Time               Speedtest_Ping_Jitter           "Ping Jitter"           { channel="speedtest:speedtest:myspeedtest:pingJitter" }
 Number:Time               Speedtest_Ping_Latency          "Ping Latency"          { channel="speedtest:speedtest:myspeedtest:pingLatency" }
-Number:DataTransferRate   Speedtest_Download_Bandwith     "Download Bandwith"     { channel="speedtest:speedtest:myspeedtest:downloadBandwidth" }
+Number:DataTransferRate   Speedtest_Download_Bandwidth    "Download Bandwidth"    { channel="speedtest:speedtest:myspeedtest:downloadBandwidth" }
 Number:DataAmount         Speedtest_Download_Bytes        "Download Bytes"        { channel="speedtest:speedtest:myspeedtest:downloadBytes" }
 Number:Time               Speedtest_Download_Elapsed      "Download Elapsed"      { channel="speedtest:speedtest:myspeedtest:downloadElapsed" }
-Number:DataTransferRate   Speedtest_Upload_Bandwith       "Upload Bandwith"       { channel="speedtest:speedtest:myspeedtest:uploadBandwidth" }
+Number:DataTransferRate   Speedtest_Upload_Bandwidth      "Upload Bandwidth"      { channel="speedtest:speedtest:myspeedtest:uploadBandwidth" }
 Number:DataAmount         Speedtest_Upload_Bytes          "Upload Bytes"          { channel="speedtest:speedtest:myspeedtest:uploadBytes" }
 Number:Time               Speedtest_Upload_Elapsed        "Upload Elapsed"        { channel="speedtest:speedtest:myspeedtest:uploadElapsed" }
 String                    Speedtest_ISP                   "ISP"                   { channel="speedtest:speedtest:myspeedtest:isp" }
