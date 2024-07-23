@@ -68,14 +68,13 @@ import io.reactivex.disposables.Disposable;
 public class SmartMeterHandler extends BaseThingHandler {
 
     private static final long DEFAULT_TIMEOUT = 30000;
-    private static final int DEFAULT_REFRESH_PERIOD = 30;
     private Logger logger = LoggerFactory.getLogger(SmartMeterHandler.class);
     private MeterDevice<?> smlDevice;
     private Disposable valueReader;
     private Conformity conformity;
     private MeterValueListener valueChangeListener;
     private SmartMeterChannelTypeProvider channelTypeProvider;
-    private @NonNull Supplier<SerialPortManager> serialPortManagerSupplier;
+    private Supplier<SerialPortManager> serialPortManagerSupplier;
 
     public SmartMeterHandler(Thing thing, SmartMeterChannelTypeProvider channelProvider,
             Supplier<SerialPortManager> serialPortManagerSupplier) {
@@ -99,11 +98,10 @@ public class SmartMeterHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "Parameter 'port' is mandatory and must be configured");
         } else {
-            byte[] pullSequence = config.initMessage == null ? null
-                    : HexUtils.hexToBytes(config.initMessage.replaceAll("\\s+", ""));
-            int baudrate = config.baudrate == null ? Baudrate.AUTO.getBaudrate()
-                    : Baudrate.fromString(config.baudrate).getBaudrate();
-            this.conformity = config.conformity == null ? Conformity.NONE : Conformity.valueOf(config.conformity);
+            String initMessage = config.initMessage;
+            byte[] pullSequence = initMessage == null ? null : HexUtils.hexToBytes(initMessage.replaceAll("\\s+", ""));
+            int baudrate = Baudrate.fromString(config.baudrate).getBaudrate();
+            this.conformity = Conformity.valueOf(config.conformity);
             this.smlDevice = MeterDeviceFactory.getDevice(serialPortManagerSupplier, config.mode,
                     this.thing.getUID().getAsString(), port, pullSequence, baudrate, config.baudrateChangeDelay);
             updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.HANDLER_CONFIGURATION_PENDING,
@@ -158,53 +156,58 @@ public class SmartMeterHandler extends BaseThingHandler {
 
                 String obisChannelString = SmartMeterBindingConstants.getObisChannelId(obis);
                 Channel channel = thing.getChannel(obisChannelString);
+
                 ChannelTypeUID channelTypeId = channelTypeProvider.getChannelTypeIdForObis(obis);
+                if (channelTypeId == null) {
+                    logger.warn("No ChannelTypeId found for OBIS {}", obis);
+                    return;
+                }
 
                 ChannelType channelType = channelTypeProvider.getChannelType(channelTypeId, null);
-                if (channelType != null) {
-                    String itemType = channelType.getItemType();
-
-                    State state = getStateForObisValue(value, channel);
-                    if (channel == null) {
-                        logger.debug("Adding channel: {} with item type: {}", obisChannelString, itemType);
-
-                        // channel has not been created yet
-                        ChannelBuilder channelBuilder = ChannelBuilder
-                                .create(new ChannelUID(thing.getUID(), obisChannelString), itemType)
-                                .withType(channelTypeId);
-
-                        Configuration configuration = new Configuration();
-                        configuration.put(SmartMeterBindingConstants.CONFIGURATION_CONVERSION, 1);
-                        channelBuilder.withConfiguration(configuration);
-                        channelBuilder.withLabel(obis);
-                        Map<String, String> channelProps = new HashMap<>();
-                        channelProps.put(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS, obis);
-                        channelBuilder.withProperties(channelProps);
-                        channelBuilder.withDescription(
-                                MessageFormat.format("Value for OBIS code: {0} with Unit: {1}", obis, value.getUnit()));
-                        channel = channelBuilder.build();
-                        ChannelUID channelId = channel.getUID();
-
-                        // add all valid channels to the thing builder
-                        List<Channel> channels = new ArrayList<>(getThing().getChannels());
-                        if (channels.stream().filter((element) -> element.getUID().equals(channelId)).count() == 0) {
-                            channels.add(channel);
-                            thingBuilder.withChannels(channels);
-                            updateThing(thingBuilder.build());
-                        }
-                    }
-
-                    if (!channel.getProperties().containsKey(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS)) {
-                        addObisPropertyToChannel(obis, channel);
-                    }
-                    if (state != null) {
-                        updateState(channel.getUID(), state);
-                    }
-
-                    updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
-                } else {
+                if (channelType == null) {
                     logger.warn("No ChannelType found for OBIS {}", obis);
+                    return;
                 }
+                String itemType = channelType.getItemType();
+
+                State state = getStateForObisValue(value, channel);
+                if (channel == null) {
+                    logger.debug("Adding channel: {} with item type: {}", obisChannelString, itemType);
+
+                    // channel has not been created yet
+                    ChannelBuilder channelBuilder = ChannelBuilder
+                            .create(new ChannelUID(thing.getUID(), obisChannelString), itemType)
+                            .withType(channelTypeId);
+
+                    Configuration configuration = new Configuration();
+                    configuration.put(SmartMeterBindingConstants.CONFIGURATION_CONVERSION, 1);
+                    channelBuilder.withConfiguration(configuration);
+                    channelBuilder.withLabel(obis);
+                    Map<String, String> channelProps = new HashMap<>();
+                    channelProps.put(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS, obis);
+                    channelBuilder.withProperties(channelProps);
+                    channelBuilder.withDescription(
+                            MessageFormat.format("Value for OBIS code: {0} with Unit: {1}", obis, value.getUnit()));
+                    channel = channelBuilder.build();
+                    ChannelUID channelId = channel.getUID();
+
+                    // add all valid channels to the thing builder
+                    List<Channel> channels = new ArrayList<>(getThing().getChannels());
+                    if (channels.stream().filter((element) -> element.getUID().equals(channelId)).count() == 0) {
+                        channels.add(channel);
+                        thingBuilder.withChannels(channels);
+                        updateThing(thingBuilder.build());
+                    }
+                }
+
+                if (!channel.getProperties().containsKey(SmartMeterBindingConstants.CHANNEL_PROPERTY_OBIS)) {
+                    addObisPropertyToChannel(obis, channel);
+                }
+                if (state != null) {
+                    updateState(channel.getUID(), state);
+                }
+
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
             }
 
             private void addObisPropertyToChannel(String obis, Channel channel) {
@@ -238,8 +241,7 @@ public class SmartMeterHandler extends BaseThingHandler {
         this.smlDevice.addValueChangeListener(valueChangeListener);
 
         SmartMeterConfiguration config = getConfigAs(SmartMeterConfiguration.class);
-        int delay = config.refresh != null ? config.refresh : DEFAULT_REFRESH_PERIOD;
-        valueReader = this.smlDevice.readValues(DEFAULT_TIMEOUT, this.scheduler, Duration.ofSeconds(delay));
+        valueReader = this.smlDevice.readValues(DEFAULT_TIMEOUT, this.scheduler, Duration.ofSeconds(config.refresh));
     }
 
     private void updateOBISChannel(ChannelUID channelId) {
