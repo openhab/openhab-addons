@@ -10,13 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solax.internal.model.local.parsers;
+package org.openhab.binding.solax.internal.model.local;
 
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
-import org.openhab.binding.solax.internal.model.local.LocalInverterData;
 
 /**
  * The {@link RawDataParser} declares generic parser implementation that parses raw data to generic inverter data which
@@ -27,7 +26,7 @@ import org.openhab.binding.solax.internal.model.local.LocalInverterData;
 @NonNullByDefault
 public interface RawDataParser {
 
-    LocalInverterData getData(LocalConnectRawDataBean bean);
+    LocalData getData(LocalConnectRawDataBean bean);
 
     Set<String> getSupportedChannels();
 }

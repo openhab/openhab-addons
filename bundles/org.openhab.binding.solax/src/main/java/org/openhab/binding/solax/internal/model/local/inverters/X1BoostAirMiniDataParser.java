@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.solax.internal.model.local.parsers;
+package org.openhab.binding.solax.internal.model.local.inverters;
 
 import static org.openhab.binding.solax.internal.SolaxBindingConstants.*;
 
@@ -18,11 +18,12 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
-import org.openhab.binding.solax.internal.model.local.LocalInverterData;
-import org.openhab.binding.solax.internal.model.local.X1BoostAirMiniInverterData;
+import org.openhab.binding.solax.internal.model.local.LocalData;
+import org.openhab.binding.solax.internal.model.local.RawDataParser;
+import org.openhab.binding.solax.internal.model.local.X1BoostAirMiniData;
 
 /**
- * The {@link X1BoostAirMiniDataParser} is the implementation that parses raw data into a LocalInverterData for the
+ * The {@link X1BoostAirMiniDataParser} is the implementation that parses raw data into a {@link LocalData} for the
  * X1 Mini / X1 Air Mini or X1 Boost Mini inverter.
  *
  * @author Konstantin Polihronov - Initial contribution
@@ -38,8 +39,8 @@ public class X1BoostAirMiniDataParser implements RawDataParser {
             CHANNEL_TOTAL_ENERGY, CHANNEL_TODAY_ENERGY, CHANNEL_POWER_USAGE);
 
     @Override
-    public LocalInverterData getData(LocalConnectRawDataBean bean) {
-        return new X1BoostAirMiniInverterData(bean);
+    public LocalData getData(LocalConnectRawDataBean bean) {
+        return new X1BoostAirMiniData(bean);
     }
 
     @Override
