@@ -59,7 +59,7 @@ public class AstroCommandTest {
         Thing thing = mock(Thing.class);
         when(thing.getConfiguration()).thenReturn(thingConfiguration);
         when(thing.getUID()).thenReturn(thingUID);
-        when(thing.getChannel(DEFAULT_TEST_CHANNEL_ID)).thenReturn(channel);
+        when(thing.getChannel(channelUID)).thenReturn(channel);
 
         ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
         CronScheduler cronScheduler = mock(CronScheduler.class);
