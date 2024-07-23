@@ -83,13 +83,6 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl {
 
         var targetHeatingCoolingStateCharacteristic = getCharacteristic(TargetHeatingCoolingStateCharacteristic.class)
                 .get();
-        if (Arrays.stream(targetHeatingCoolingStateCharacteristic.getValidValues())
-                .anyMatch(v -> v.equals(TargetHeatingCoolingStateEnum.AUTO))
-                && (!coolingThresholdTemperatureCharacteristic.isPresent()
-                        || !heatingThresholdTemperatureCharacteristic.isPresent())) {
-            throw new HomekitException(
-                    "Both HeatingThresholdTemperature and CoolingThresholdTemperature must be provided if AUTO mode is allowed.");
-        }
 
         // TargetTemperature not provided; simulate by forwarding to HeatingThresholdTemperature and
         // CoolingThresholdTemperature
