@@ -471,7 +471,7 @@ The Home App only sends exact percentages by default.
 To avoid creating a rule, you can have the HomeKit addon translate 0%/100% to UP/DOWN commands.
 
 ```java
-Rollshutter window_covering "Window Rollershutter" {homekit = "WindowCovering" [sendUpDownForExtents=true]}
+Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering" [sendUpDownForExtents=true]}
 ```
 
 Window covering can have a number of optional characteristics like horizontal & vertical tilt, obstruction status and hold position trigger.
