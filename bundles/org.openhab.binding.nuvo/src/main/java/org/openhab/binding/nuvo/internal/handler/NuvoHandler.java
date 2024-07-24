@@ -55,7 +55,6 @@ import org.openhab.binding.nuvo.internal.NuvoStateDescriptionOptionProvider;
 import org.openhab.binding.nuvo.internal.NuvoThingActions;
 import org.openhab.binding.nuvo.internal.communication.NuvoCommand;
 import org.openhab.binding.nuvo.internal.communication.NuvoConnector;
-import org.openhab.binding.nuvo.internal.communication.NuvoDefaultConnector;
 import org.openhab.binding.nuvo.internal.communication.NuvoEnum;
 import org.openhab.binding.nuvo.internal.communication.NuvoImageResizer;
 import org.openhab.binding.nuvo.internal.communication.NuvoIpConnector;
@@ -150,7 +149,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
     private @Nullable ScheduledFuture<?> clockSyncJob;
     private @Nullable ScheduledFuture<?> pingJob;
 
-    private NuvoConnector connector = new NuvoDefaultConnector();
+    private NuvoConnector connector = new NuvoIpConnector();
     private long lastEventReceived = System.currentTimeMillis();
     private int numZones = 1;
     private String versionString = BLANK;
@@ -241,10 +240,7 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         nuvoNetSrcMap.put(NuvoEnum.SOURCE5, config.nuvoNetSrc5);
         nuvoNetSrcMap.put(NuvoEnum.SOURCE6, config.nuvoNetSrc6);
 
-        nuvoGroupMap.put("1", new HashSet<>());
-        nuvoGroupMap.put("2", new HashSet<>());
-        nuvoGroupMap.put("3", new HashSet<>());
-        nuvoGroupMap.put("4", new HashSet<>());
+        IntStream.range(1, 5).forEach(i -> nuvoGroupMap.put(String.valueOf(i), new HashSet<>()));
 
         if (this.isMps4) {
             logger.debug("Port set to {} configuring binding for MPS4 compatability", MPS4_PORT);
@@ -305,13 +301,13 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             this.numZones = numZones;
         }
 
-        activeZones = IntStream.range((1), (this.numZones + 1)).boxed().collect(Collectors.toSet());
+        activeZones = IntStream.range(1, this.numZones + 1).boxed().collect(Collectors.toSet());
 
         // remove the channels for the zones we are not using
         if (this.numZones < MAX_ZONES) {
             List<Channel> channels = new ArrayList<>(this.getThing().getChannels());
 
-            List<Integer> zonesToRemove = IntStream.range((this.numZones + 1), (MAX_ZONES + 1)).boxed()
+            List<Integer> zonesToRemove = IntStream.range(this.numZones + 1, MAX_ZONES + 1).boxed()
                     .collect(Collectors.toList());
 
             zonesToRemove.forEach(zone -> channels.removeIf(c -> (c.getUID().getId().contains("zone" + zone))));
@@ -321,25 +317,25 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
         // Build a list of State options for the global favorites using user config values (if supplied)
         String[] favoritesArr = !config.favoriteLabels.isEmpty() ? config.favoriteLabels.split(COMMA) : new String[0];
         List<StateOption> favoriteLabelsStateOptions = new ArrayList<>();
-        for (int i = 0; i < MAX_FAV; i++) {
-            if (favoritesArr.length > i) {
-                favoriteLabelsStateOptions.add(new StateOption(String.valueOf(i + 1), favoritesArr[i]));
+        IntStream.range(1, MAX_FAV + 1).forEach(i -> {
+            if (favoritesArr.length >= i) {
+                favoriteLabelsStateOptions.add(new StateOption(String.valueOf(i), favoritesArr[i - 1]));
             } else if (favoritesArr.length == 0) {
-                favoriteLabelsStateOptions.add(new StateOption(String.valueOf(i + 1), "Favorite " + (i + 1)));
+                favoriteLabelsStateOptions.add(new StateOption(String.valueOf(i), "Favorite " + (i)));
             }
-        }
+        });
 
         // Also add any openHAB NuvoNet source favorites to the list
-        for (int src = 1; src <= MAX_SRC; src++) {
+        IntStream.range(1, MAX_SRC + 1).forEach(src -> {
             NuvoEnum source = NuvoEnum.valueOf(SOURCE + src);
             String[] favorites = favoriteMap.get(source);
             if (favorites != null) {
-                for (int fav = 0; fav < favorites.length; fav++) {
+                IntStream.range(0, favorites.length).forEach(fav -> {
                     favoriteLabelsStateOptions.add(new StateOption(String.valueOf(src * 100 + fav),
                             favPrefixMap.get(source) + favorites[fav]));
-                }
+                });
             }
-        }
+        });
 
         // Put the global favorites labels on all active zones
         activeZones.forEach(zoneNum -> {
@@ -1531,7 +1527,8 @@ public class NuvoHandler extends BaseThingHandler implements NuvoMessageEventLis
             logger.debug("Using MCS instance '{}' for source {}", instance, source);
             final String json = getMcsJson(String.format(GET_MCS_STATUS, mps4Host, instance, clientId), clientId);
 
-            if (json.contains("\"name\":\"PlayState\",\"value\":3}")) {
+            if (json.contains("\"name\":\"PlayState\",\"value\":1}")
+                    || json.contains("\"name\":\"PlayState\",\"value\":3}")) {
                 Matcher matcher = ART_GUID_PATTERN.matcher(json);
                 if (matcher.find()) {
                     final String nowPlayingGuid = matcher.group(1);

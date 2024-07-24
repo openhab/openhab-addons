@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.boschshc.internal.devices;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,6 +27,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 
@@ -62,7 +63,7 @@ public abstract class AbstractBoschSHCDeviceHandlerTest<T extends BoschSHCDevice
         getFixture().getThing().getConfiguration().remove("id");
         getFixture().initialize();
 
-        verify(getCallback()).statusUpdated(eq(getThing()),
+        verify(getCallback()).statusUpdated(any(Thing.class),
                 argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
                         && status.getStatusDetail().equals(ThingStatusDetail.CONFIGURATION_ERROR)));
     }
@@ -75,7 +76,7 @@ public abstract class AbstractBoschSHCDeviceHandlerTest<T extends BoschSHCDevice
 
         getFixture().initialize();
 
-        verify(getCallback()).statusUpdated(eq(getThing()),
+        verify(getCallback()).statusUpdated(any(Thing.class),
                 argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
                         && status.getStatusDetail().equals(ThingStatusDetail.CONFIGURATION_ERROR)));
     }

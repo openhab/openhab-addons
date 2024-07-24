@@ -518,8 +518,8 @@ public class DeviceState {
      * @return The raw device type.
      */
     public DeviceType getRawType() {
-        return device.flatMap(Device::getIdent).flatMap(Ident::getType).map(Type::getValueRaw)
-                .orElse(DeviceType.UNKNOWN);
+        return Objects.requireNonNull(device.flatMap(Device::getIdent).flatMap(Ident::getType).map(Type::getValueRaw)
+                .orElse(DeviceType.UNKNOWN));
     }
 
     /**

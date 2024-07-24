@@ -106,7 +106,7 @@ public class PollyTTSAudioStream extends AudioStream {
     }
 
     @Override
-    public long transferTo(@Nullable OutputStream out) throws IOException {
+    public long transferTo(OutputStream out) throws IOException {
         return innerInputStream.transferTo(out);
     }
 }

@@ -10,7 +10,7 @@ There is one bridge (`deconz`) that manages the connection to the deCONZ softwar
 These sensors are supported:
 
 | Device type                       | Resource Type                     | Thing type             |
-|-----------------------------------|-----------------------------------|------------------------|
+| --------------------------------- | --------------------------------- | ---------------------- |
 | Presence Sensor                   | ZHAPresence, CLIPPresence         | `presencesensor`       |
 | Power Sensor                      | ZHAPower, CLIPPower               | `powersensor`          |
 | Consumption Sensor                | ZHAConsumption                    | `consumptionsensor`    |
@@ -33,7 +33,7 @@ These sensors are supported:
 Additionally, lights, window coverings (blinds), door locks and thermostats are supported:
 
 | Device type                          | Resource Type                                 | Thing type              |
-|--------------------------------------|-----------------------------------------------|-------------------------|
+| ------------------------------------ | --------------------------------------------- | ----------------------- |
 | Dimmable Light                       | Dimmable light, Dimmable plug-in unit         | `dimmablelight`         |
 | On/Off Light                         | On/Off light, On/Off plug-in unit, Smart plug | `onofflight`            |
 | Color Temperature Light              | Color temperature light                       | `colortemperaturelight` |
@@ -61,7 +61,7 @@ If your device is not discovered, please check the DEBUG log for unknown devices
 These configuration parameters are available:
 
 | Parameter        | Description                                                                                                             | Type    | Default |
-|------------------|-------------------------------------------------------------------------------------------------------------------------|---------|---------|
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------- | ------- | ------- |
 | host             | Host address (hostname / ip) of deCONZ interface                                                                        | string  | n/a     |
 | httpPort         | Port of deCONZ HTTP interface                                                                                           | string  | 80      |
 | port             | Port of deCONZ Websocket (optional, can be filled automatically) **(Advanced)**                                         | string  | n/a     |
@@ -125,7 +125,7 @@ Bridge deconz:deconz:homeserver [ host="192.168.0.10", apikey="ABCDEFGHIJ" ]
 The sensor devices support some of the following channels:
 
 | Channel Type ID       | Item Type                | Access Mode | Description                                                                               | Thing types                                       |
-|-----------------------|--------------------------|-------------|-------------------------------------------------------------------------------------------|---------------------------------------------------|
+| --------------------- | ------------------------ | ----------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------- |
 | airquality            | String                   | R           | Airquality as string                                                                      | airqualitysensor                                  |
 | airqualityppb         | Number:Dimensionless     | R           | Airquality (in parts-per-billion)                                                         | airqualitysensor                                  |
 | alarm                 | Switch                   | R           | Status of an alarm: `ON` = alarm was triggered; `OFF` = no alarm                          | alarmsensor                                       |
@@ -175,14 +175,14 @@ The `last_seen` channel is added when it is available AND the `lastSeenPolling` 
 Other devices support
 
 | Channel Type ID   | Item Type            | Access Mode | Description                                                                                       | Thing types                                                                                                 |
-|-------------------|----------------------|:-----------:|---------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------|
-| brightness        | Dimmer               |     R/W     | Brightness of the light                                                                           | `dimmablelight`, `colortemperaturelight`                                                                    |                                 
+| ----------------- | -------------------- | :---------: | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| brightness        | Dimmer               |     R/W     | Brightness of the light                                                                           | `dimmablelight`, `colortemperaturelight`                                                                    |
 | switch            | Switch               |     R/W     | State of a ON/OFF device                                                                          | `onofflight`                                                                                                |
 | color             | Color                |     R/W     | Color of an multi-color light                                                                     | `colorlight`, `extendedcolorlight`, `lightgroup`                                                            |
 | color_temperature | Number               |     R/W     | Color temperature in Kelvin. The value range is determined by each individual light               | `colortemperaturelight`, `extendedcolorlight`, `lightgroup`                                                 |
 | effect            | String               |     R/W     | Effect selection. Allowed commands are set dynamically                                            | `colorlight`                                                                                                |
 | effectSpeed       | Number               |      W      | Effect Speed                                                                                      | `colorlight`                                                                                                |
-| lock              | Switch               |     R/W     | Lock (ON) or unlock (OFF) the doorlock                                                            | `doorlock`                                                                                                  |                 
+| lock              | Switch               |     R/W     | Lock (ON) or unlock (OFF) the doorlock                                                            | `doorlock`                                                                                                  |
 | ontime            | Number:Time          |      W      | Timespan for which the light is turned on                                                         | all lights                                                                                                  |
 | position          | Rollershutter        |     R/W     | Position of the blind                                                                             | `windowcovering`                                                                                            |
 | heatsetpoint      | Number:Temperature   |     R/W     | Target Temperature in °C                                                                          | `thermostat`                                                                                                |
@@ -192,7 +192,7 @@ Other devices support
 | alert             | String               |      W      | Turn alerts on. Allowed commands are `none`, `select` (short blinking), `lselect` (long blinking) | `warningdevice`, `lightgroup`, `dimmablelight`, `colorlight`, `extendedcolorlight`, `colortemperaturelight` |
 | all_on            | Switch               |      R      | All lights in group are on                                                                        | `lightgroup`                                                                                                |
 | any_on            | Switch               |      R      | Any light in group is on                                                                          | `lightgroup`                                                                                                |
-| scene             | String               |      W      | Recall a scene. Allowed commands are set dynamically                                              | `lightgroup`                                                                                                |                  
+| scene             | String               |      W      | Recall a scene. Allowed commands are set dynamically                                              | `lightgroup`                                                                                                |
 
 **NOTE:** For groups `color` and `color_temperature`  are used for sending commands to the group.
 Their state represents the last command send to the group, not necessarily the actual state of the group.
@@ -202,7 +202,7 @@ Their state represents the last command send to the group, not necessarily the a
 The dimmer switch additionally supports trigger channels.
 
 | Channel Type ID | Description              | Thing types          |
-|-----------------|--------------------------|----------------------|
+| --------------- | ------------------------ | -------------------- |
 | buttonevent     | Event for switch pressed | switch, colorcontrol |
 | gestureevent    | Event for gestures       | switch               |
 
@@ -211,7 +211,7 @@ Both will be added during runtime if supported by the switch.
 `gestureevent` can trigger one of the following events:
 
 | Gesture                          | Event |
-|----------------------------------|-------|
+| -------------------------------- | ----- |
 | GESTURE_NONE                     | 0     |
 | GESTURE_SHAKE                    | 1     |
 | GESTURE_DROP                     | 2     |
@@ -229,13 +229,13 @@ Thing actions can be used to manage the network and its content.
 The `deconz` thing supports a thing action to allow new devices to join the network:
 
 | Action name            | Input Value          | Return Value | Description                                                                                                    |
-|------------------------|----------------------|--------------|----------------------------------------------------------------------------------------------------------------|
+| ---------------------- | -------------------- | ------------ | -------------------------------------------------------------------------------------------------------------- |
 | `permitJoin(duration)` | `duration` (Integer) | -            | allows new devices to join for `duration` seconds. Allowed values are 1-240, default is 120 if no value given. |
 
 The `lightgroup` thing supports thing actions for managing scenes:
 
 | Action name         | Input Value     | Return Value | Description                                                                               |
-|---------------------|-----------------|--------------|-------------------------------------------------------------------------------------------|
+| ------------------- | --------------- | ------------ | ----------------------------------------------------------------------------------------- |
 | `createScene(name)` | `name` (String) | `newSceneId` | Creates a new scene with the name `name` and returns the new scene's id (if successfull). |
 | `deleteScene(id)`   | `id` (Integer)  | -            | Deletes the scene with the given id.                                                      |
 | `storeScene(id)`    | `id` (Integer)  | -            | Store the current group's state as scene with the given id.                               |
@@ -305,9 +305,19 @@ then
 end
 ```
 
-# Thing Actions Example
+## Thing Actions Example
 
 :::: tabs
+
+::: tab DSL
+
+ ```java
+ val deconzActions = getActions("deconz", "deconz:lightgroup:00212E040ED9:5");
+ var retVal = deconzActions.createScene("TestScene");
+ deconzActions.storeScene(retVal.get("newSceneId"));
+ ```
+
+:::
 
 ::: tab JavaScript
 
@@ -319,12 +329,12 @@ end
 
 :::
 
-::: tab DSL
+::: tab JRuby
 
- ```java
- val deconzActions = getActions("deconz", "deconz:lightgroup:00212E040ED9:5");
- var retVal = deconzActions.createScene("TestScene");
- deconzActions.storeScene(retVal.get("newSceneId"));
+ ```ruby
+ deconz_thing = things["deconz:lightgroup:00212E040ED9:5"]
+ retval = deconz_thing.create_scene("TestScene")
+ deconz_thing.store_scene(retval["newSceneId"])
  ```
 
 :::

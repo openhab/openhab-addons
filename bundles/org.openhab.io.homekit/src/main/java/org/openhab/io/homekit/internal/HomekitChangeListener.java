@@ -12,7 +12,6 @@
  */
 package org.openhab.io.homekit.internal;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -48,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
-import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 import io.github.hapjava.server.impl.HomekitRoot;
 
 /**
@@ -476,20 +474,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
                         try {
                             final AbstractHomekitAccessoryImpl additionalAccessory = HomekitAccessoryFactory
                                     .create(additionalTaggedItem, metadataRegistry, updater, settings);
-                            // Secondary accessories that don't explicitly specify a name will implicitly
-                            // get a name characteristic based on the item's name
-                            if (!additionalAccessory.getCharacteristic(HomekitCharacteristicType.NAME).isPresent()) {
-                                try {
-                                    additionalAccessory.addCharacteristic(
-                                            new NameCharacteristic(() -> additionalAccessory.getName()));
-                                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                                    // This should never happen; all services should support NameCharacteristic as an
-                                    // optional Characteristic.
-                                    // If HAP-Java defined a service that doesn't support
-                                    // addOptionalCharacteristic(NameCharacteristic), then it's a bug there, and we're
-                                    // just going to ignore the exception here.
-                                }
-                            }
+                            additionalAccessory.promoteNameCharacteristic();
                             accessory.getServices().add(additionalAccessory.getPrimaryService());
                         } catch (HomekitException e) {
                             logger.warn("Cannot create additional accessory {}", additionalTaggedItem);
@@ -498,7 +483,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             knownAccessories.put(taggedItem.getName(), accessory.toJson());
             accessoryRegistry.addRootAccessory(taggedItem.getName(), accessory);
         } catch (HomekitException e) {
-            logger.warn("Cannot create accessory {}", taggedItem);
+            logger.warn("Cannot create accessory {}: {}", taggedItem, e.getMessage());
         }
     }
 

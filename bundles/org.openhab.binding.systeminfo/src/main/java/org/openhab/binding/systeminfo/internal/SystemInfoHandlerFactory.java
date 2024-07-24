@@ -14,8 +14,6 @@ package org.openhab.binding.systeminfo.internal;
 
 import static org.openhab.binding.systeminfo.internal.SystemInfoBindingConstants.*;
 
-import java.util.Set;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.systeminfo.internal.handler.SystemInfoHandler;
@@ -43,24 +41,21 @@ public class SystemInfoHandlerFactory extends BaseThingHandlerFactory {
     private @NonNullByDefault({}) SystemInfoInterface systeminfo;
     private @NonNullByDefault({}) SystemInfoThingTypeProvider thingTypeProvider;
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_COMPUTER,
-            THING_TYPE_COMPUTER_IMPL);
-
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
+        return BINDING_ID.equals(thingTypeUID.getBindingId())
+                && thingTypeUID.getId().startsWith(THING_TYPE_COMPUTER_ID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (THING_TYPE_COMPUTER.equals(thing.getThingTypeUID())) {
+        ThingTypeUID thingTypeUID = thing.getThingTypeUID();
+        if (supportsThingType(thingTypeUID)) {
             if (thingTypeProvider.getThingType(THING_TYPE_COMPUTER_IMPL, null) == null) {
                 thingTypeProvider.createThingType(THING_TYPE_COMPUTER_IMPL);
                 // Save the current channels configs, will be restored after thing type change.
                 thingTypeProvider.storeChannelsConfig(thing);
             }
-            return new SystemInfoHandler(thing, thingTypeProvider, systeminfo);
-        } else if (THING_TYPE_COMPUTER_IMPL.equals(thing.getThingTypeUID())) {
             return new SystemInfoHandler(thing, thingTypeProvider, systeminfo);
         }
         return null;
