@@ -62,6 +62,7 @@ public class HomekitTaggedItem {
     public static final String UNIT = "unit";
     public static final String EMULATE_STOP_STATE = "stop";
     public static final String EMULATE_STOP_SAME_DIRECTION = "stopSameDirection";
+    public static final String SEND_UP_DOWN_FOR_EXTENTS = "sendUpDownForExtents";
 
     private static final Map<Integer, String> CREATED_ACCESSORY_IDS = new ConcurrentHashMap<>();
 

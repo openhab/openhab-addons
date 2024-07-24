@@ -466,6 +466,14 @@ Some blinds devices do support "STOP" command but would stop if they receive UP/
 Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering"  [stop=true, stopSameDirection=true]}
  ```
 
+Some blinds devices do not support going to a specific position, even though they are modeled as Rollershutter items.
+The Home App only sends exact percentages by default.
+To avoid creating a rule, you can have the HomeKit addon translate 0%/100% to UP/DOWN commands.
+
+```java
+Rollershutter window_covering "Window Rollershutter" {homekit = "WindowCovering" [sendUpDownForExtents=true]}
+```
+
 Window covering can have a number of optional characteristics like horizontal & vertical tilt, obstruction status and hold position trigger.
 If your blind supports tilt, and you want to control tilt via HomeKit you need to define blind as a group.
 e.g.
