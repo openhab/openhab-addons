@@ -89,13 +89,13 @@ public class VelbusNewDimmerHandler extends VelbusSensorWithAlarmClockHandler {
     }
 
     private void initializeColorChannel() {
-        for (int i = 0; i <= 8; i++) {
+        for (int i = 0; i <= 7; i++) {
             colorChannels[i] = new VelbusColorChannel();
         }
     }
 
     private void initializeFadeMode() {
-        for (int i = 0; i <= 8; i++) {
+        for (int i = 0; i <= 7; i++) {
             fadeModeChannels[i] = 0x00;
         }
     }

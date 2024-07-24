@@ -25,7 +25,7 @@ import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
  */
 @NonNullByDefault
 public class VelbusNewDimmerRequestPacket extends VelbusPacket {
-    private final byte GATEWAY_CONFIG = (byte) 0x00;
+    private static final byte GATEWAY_CONFIG = (byte) 0x00;
 
     private byte channel = ALL_CHANNELS;
 

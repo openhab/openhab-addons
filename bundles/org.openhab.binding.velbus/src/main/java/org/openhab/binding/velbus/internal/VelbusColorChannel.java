@@ -26,14 +26,14 @@ import org.openhab.core.util.ColorUtil;
  */
 @NonNullByDefault
 public class VelbusColorChannel {
-    protected final int BRIGHTNESS_MIN_VALUE = 0;
-    protected final int BRIGHTNESS_MAX_VALUE = 100;
+    protected static final int BRIGHTNESS_MIN_VALUE = 0;
+    protected static final int BRIGHTNESS_MAX_VALUE = 100;
 
-    protected final int COLOR_MIN_VALUE = 0;
-    protected final int COLOR_MAX_VALUE = 255;
+    protected static final int COLOR_MIN_VALUE = 0;
+    protected static final int COLOR_MAX_VALUE = 255;
 
-    protected final int WHITE_MIN_VALUE = 0;
-    protected final int WHITE_MAX_VALUE = 100;
+    protected static final int WHITE_MIN_VALUE = 0;
+    protected static final int WHITE_MAX_VALUE = 100;
 
     private int brightness = 100;
     private int[] color = { 255, 255, 255 };

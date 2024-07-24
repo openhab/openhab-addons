@@ -153,7 +153,7 @@
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:velbus:7channelDevice"/>
+		<config-description-ref uri="thing-type:velbus:7channelDeviceWithTemperatureSensor"/>
 	</thing-type>
 
 	<thing-type id="vmbpirm">
@@ -169,7 +169,7 @@
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:velbus:7channelDevice"/>
+		<config-description-ref uri="thing-type:velbus:7channelDeviceWithTemperatureSensor"/>
 	</thing-type>
 
 	<thing-type id="vmbpiro">

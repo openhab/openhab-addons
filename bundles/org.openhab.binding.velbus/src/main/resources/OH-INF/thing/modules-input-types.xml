@@ -107,7 +107,7 @@
 			<channel-group id="clockAlarm" typeId="clockAlarm"/>
 		</channel-groups>
 
-		<config-description-ref uri="thing-type:velbus:8channelDeviceWith4Counters"/>
+		<config-description-ref uri="thing-type:velbus:8channelDeviceWithCounters"/>
 	</thing-type>
 
 	<thing-type id="vmb8in-20">

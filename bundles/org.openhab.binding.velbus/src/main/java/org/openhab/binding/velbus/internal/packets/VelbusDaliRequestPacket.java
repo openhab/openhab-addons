@@ -25,7 +25,7 @@ import org.openhab.binding.velbus.internal.VelbusChannelIdentifier;
  */
 @NonNullByDefault
 public class VelbusDaliRequestPacket extends VelbusPacket {
-    private final byte GATEWAY_CONFIG = (byte) 0x01;
+    private static final byte GATEWAY_CONFIG = (byte) 0x01;
 
     private byte channel = ALL_DALI_CHANNELS;
 
