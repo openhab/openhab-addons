@@ -336,14 +336,18 @@ public class HomekitCharacteristicFactory {
         }
         String onValue = switchType ? OnOffType.ON.toString() : OpenClosedType.OPEN.toString();
         String offValue = switchType ? OnOffType.OFF.toString() : OpenClosedType.CLOSED.toString();
+        @Nullable
+        T offEnumValue = null, onEnumValue = null;
 
         for (var k : klazz.getEnumConstants()) {
             if (numberType) {
                 int code = k.getCode();
                 if ((switchType || contactType) && code == 0) {
                     map.put(k, inverted ? onValue : offValue);
+                    offEnumValue = k;
                 } else if ((switchType || contactType) && code == 1) {
                     map.put(k, inverted ? offValue : onValue);
+                    onEnumValue = k;
                 } else if (percentType && code == 0) {
                     map.put(k, "OFF");
                 } else if (percentType && code == 1) {
@@ -368,7 +372,13 @@ public class HomekitCharacteristicFactory {
             });
         }
         if (customEnumList != null && customEnumList.isEmpty()) {
-            customEnumList.addAll(map.keySet());
+            if (switchType || contactType) {
+                // Switches and Contacts automatically filter the valid values to the first two
+                customEnumList.add(Objects.requireNonNull(offEnumValue));
+                customEnumList.add(Objects.requireNonNull(onEnumValue));
+            } else {
+                customEnumList.addAll(map.keySet());
+            }
         }
         LOGGER.debug("Created {} mapping for item {} ({}): {}", klazz.getSimpleName(), item.getName(),
                 item.getBaseItem().getClass().getSimpleName(), map);
