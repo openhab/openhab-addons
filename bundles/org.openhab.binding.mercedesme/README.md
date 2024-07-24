@@ -1,6 +1,6 @@
 # MercedesMe Binding
 
-This binding provides access to your Mercedes Benz vehicle like _Mercedes Me_ Smartphone App .
+This binding provides access to your Mercedes Benz vehicle like _Mercedes Me_ Smartphone App.
 
 ## Installation Instructions
 
