@@ -36,7 +36,7 @@ import io.github.hapjava.services.impl.SlatService;
  */
 public class HomekitSlatImpl extends AbstractHomekitAccessoryImpl implements SlatAccessory {
     private static final String CONFIG_TYPE = "type";
-    private final Map<CurrentSlatStateEnum, String> currentSlatStateMapping;
+    private final Map<CurrentSlatStateEnum, Object> currentSlatStateMapping;
     private final SlatTypeEnum slatType;
 
     public HomekitSlatImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,

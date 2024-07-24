@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -322,9 +323,9 @@ public class HomekitCharacteristicFactory {
      *            associated with, which has already been set.
      * @return
      */
-    public static <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(HomekitTaggedItem item,
+    public static <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(HomekitTaggedItem item,
             Class<T> klazz, @Nullable List<T> customEnumList, boolean inverted) {
-        EnumMap<T, String> map = new EnumMap(klazz);
+        EnumMap<T, Object> map = new EnumMap(klazz);
         var dataTypes = item.getBaseItem().getAcceptedDataTypes();
         boolean switchType = dataTypes.contains(OnOffType.class);
         boolean contactType = dataTypes.contains(OpenClosedType.class);
@@ -362,9 +363,22 @@ public class HomekitCharacteristicFactory {
         var configuration = item.getConfiguration();
         if (configuration != null) {
             map.forEach((k, current_value) -> {
-                final Object newValue = configuration.get(k.toString());
-                if (newValue instanceof String || newValue instanceof Number) {
-                    map.put(k, newValue.toString());
+                Object newValue = configuration.get(k.toString());
+                if (newValue instanceof String || newValue instanceof Number || newValue instanceof List) {
+                    if (newValue instanceof Number) {
+                        newValue = newValue.toString();
+                    } else if (newValue instanceof List listValue) {
+                        newValue = listValue.stream().map(v -> {
+                            // they probably put "NULL" in the YAML in MainUI;
+                            // and they meant it as a string to match the UnDefType.NULL
+                            if (v == null) {
+                                return "NULL";
+                            } else {
+                                return v.toString();
+                            }
+                        }).collect(Collectors.toList());
+                    }
+                    map.put(k, Objects.requireNonNull(newValue));
                     if (customEnumList != null) {
                         customEnumList.add(k);
                     }
@@ -385,17 +399,17 @@ public class HomekitCharacteristicFactory {
         return map;
     }
 
-    public static <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(HomekitTaggedItem item,
+    public static <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(HomekitTaggedItem item,
             Class<T> klazz) {
         return createMapping(item, klazz, null, false);
     }
 
-    public static <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(HomekitTaggedItem item,
+    public static <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(HomekitTaggedItem item,
             Class<T> klazz, @Nullable List<T> customEnumList) {
         return createMapping(item, klazz, customEnumList, false);
     }
 
-    public static <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(HomekitTaggedItem item,
+    public static <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(HomekitTaggedItem item,
             Class<T> klazz, boolean inverted) {
         return createMapping(item, klazz, null, inverted);
     }
@@ -410,7 +424,7 @@ public class HomekitCharacteristicFactory {
      * @param <T> type of the result derived from
      * @return key for the value
      */
-    public static <T> T getKeyFromMapping(HomekitTaggedItem item, State state, Map<T, String> mapping, T defaultValue) {
+    public static <T> T getKeyFromMapping(HomekitTaggedItem item, State state, Map<T, Object> mapping, T defaultValue) {
         LOGGER.trace("getKeyFromMapping: characteristic {}, state {}, mapping {}", item.getAccessoryType().getTag(),
                 state, mapping);
 
@@ -433,14 +447,23 @@ public class HomekitCharacteristicFactory {
             return defaultValue;
         }
 
-        return mapping.entrySet().stream().filter(entry -> value.equalsIgnoreCase(entry.getValue())).findAny()
-                .map(Map.Entry::getKey).orElseGet(() -> {
-                    LOGGER.warn(
-                            "Wrong value {} for {} characteristic of the item {}. Expected one of following {}. Returning {}.",
-                            state.toString(), item.getAccessoryType().getTag(), item.getName(), mapping.values(),
-                            defaultValue);
-                    return defaultValue;
-                });
+        return mapping.entrySet().stream().filter(entry -> {
+            Object mappingValue = entry.getValue();
+            if (mappingValue instanceof String stringValue) {
+                return value.equalsIgnoreCase(stringValue);
+            } else if (mappingValue instanceof List listValue) {
+                return listValue.stream().filter(listEntry -> value.equalsIgnoreCase(listEntry.toString())).findAny()
+                        .isPresent();
+            } else {
+                LOGGER.warn("Found unexpected enum value type {}; this is a bug.", mappingValue.getClass());
+                return false;
+            }
+        }).findAny().map(Map.Entry::getKey).orElseGet(() -> {
+            LOGGER.warn(
+                    "Wrong value {} for {} characteristic of the item {}. Expected one of following {}. Returning {}.",
+                    state.toString(), item.getAccessoryType().getTag(), item.getName(), mapping.values(), defaultValue);
+            return defaultValue;
+        });
     }
 
     // supporting methods
@@ -465,18 +488,31 @@ public class HomekitCharacteristicFactory {
     }
 
     private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(HomekitTaggedItem item,
-            Map<T, String> mapping, T defaultValue) {
+            Map<T, Object> mapping, T defaultValue) {
         return CompletableFuture
                 .completedFuture(getKeyFromMapping(item, item.getItem().getState(), mapping, defaultValue));
     }
 
-    public static <T extends Enum<T>> void setValueFromEnum(HomekitTaggedItem taggedItem, T value, Map<T, String> map) {
+    public static <T extends Enum<T>> void setValueFromEnum(HomekitTaggedItem taggedItem, T value, Map<T, Object> map) {
+        Object mapValue = map.get(value);
+        // if the mapping has multiple values for this enum, just use the first one for the command sent to the item
+        if (mapValue instanceof List listValue) {
+            if (listValue.isEmpty()) {
+                mapValue = null;
+            } else {
+                mapValue = listValue.get(0);
+            }
+        }
+        if (mapValue == null) {
+            LOGGER.warn("Unable to find mapping value for {} for item {}", value, taggedItem.getName());
+            return;
+        }
         if (taggedItem.getBaseItem() instanceof NumberItem) {
-            taggedItem.send(new DecimalType(Objects.requireNonNull(map.get(value))));
+            taggedItem.send(new DecimalType(mapValue.toString()));
         } else if (taggedItem.getBaseItem() instanceof SwitchItem) {
-            taggedItem.send(OnOffType.from(Objects.requireNonNull(map.get(value))));
+            taggedItem.send(OnOffType.from(mapValue.toString()));
         } else {
-            taggedItem.send(new StringType(map.get(value)));
+            taggedItem.send(new StringType(mapValue.toString()));
         }
     }
 
@@ -1196,7 +1232,7 @@ public class HomekitCharacteristicFactory {
     private static ProgrammableSwitchEventCharacteristic createProgrammableSwitchEventCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         // have to build the map custom, since SINGLE_PRESS starts at 0
-        Map<ProgrammableSwitchEnum, String> map = new EnumMap(ProgrammableSwitchEnum.class);
+        Map<ProgrammableSwitchEnum, Object> map = new EnumMap(ProgrammableSwitchEnum.class);
         List<ProgrammableSwitchEnum> validValues = new ArrayList<>();
 
         if (taggedItem.getBaseItem().getAcceptedDataTypes().contains(OnOffType.class)) {
@@ -1218,11 +1254,11 @@ public class HomekitCharacteristicFactory {
     private static class ProgrammableSwitchEventCharacteristicHelper {
         private @Nullable ProgrammableSwitchEnum lastValue = null;
         private final HomekitTaggedItem taggedItem;
-        private final Map<ProgrammableSwitchEnum, String> map;
+        private final Map<ProgrammableSwitchEnum, Object> map;
         private final HomekitAccessoryUpdater updater;
 
         ProgrammableSwitchEventCharacteristicHelper(HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater,
-                Map<ProgrammableSwitchEnum, String> map) {
+                Map<ProgrammableSwitchEnum, Object> map) {
             this.taggedItem = taggedItem;
             this.map = map;
             this.updater = updater;
