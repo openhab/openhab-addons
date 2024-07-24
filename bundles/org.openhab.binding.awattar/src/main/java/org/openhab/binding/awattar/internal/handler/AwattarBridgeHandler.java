@@ -108,7 +108,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
                 return;
         }
 
-        dataRefresher = scheduler.scheduleWithFixedDelay(this::refreshIfNeeded, 0, DATA_REFRESH_INTERVAL * 1000,
+        dataRefresher = scheduler.scheduleWithFixedDelay(this::refreshIfNeeded, 0, DATA_REFRESH_INTERVAL * 1000L,
                 TimeUnit.MILLISECONDS);
     }
 
@@ -126,7 +126,6 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         if (needRefresh()) {
             refresh();
         }
-        updateStatus(ThingStatus.ONLINE);
     }
 
     private void refresh() {
@@ -199,7 +198,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         }
 
         // if the local cache is empty, we need to refresh
-        if (prices != null) {
+        if (prices == null) {
             return true;
         }
 
