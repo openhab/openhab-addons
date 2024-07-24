@@ -16,11 +16,13 @@
 	<channel-type id="active-hvac">
 		<item-type>Switch</item-type>
 		<label>AC Precondition Control</label>
+		<description>Switch on/off precondition air conditioning</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="ac-status">
 		<item-type>Number</item-type>
 		<label>AC Precondition Status</label>
+		<description>Status of precondition air conditioning</description>
 		<state>
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/8592099d9b0d94161517ce2bc7469562f86c9886/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift#L235 -->
 			<options>
@@ -55,11 +57,13 @@
 	<channel-type id="aux-heat">
 		<item-type>Switch</item-type>
 		<label>Auxiliary Heating Control</label>
+		<description>Control auxiliary heating if available</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="aux-status">
 		<item-type>Number</item-type>
 		<label>Auxiliary Heating Status</label>
+		<description>Auxiliary heating status if available</description>
 		<state>
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/8592099d9b0d94161517ce2bc7469562f86c9886/MBCarKit/MBCarKit/Common/Enums/Status/AuxheatTypes.swift#L66 -->
 			<options>
