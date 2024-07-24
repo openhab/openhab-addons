@@ -39,7 +39,7 @@ _Note:_ If you rate-limit requests by using the `delay` parameter you have to ma
 
 **Attention:** `baseUrl` (and `stateExtension`/`commandExtension`) don't normally require percent encoding (e.g. `%22` instead of `"` or `%2C` instead of `,`).
 URLs are properly escaped by the binding itself before the request is sent.
-When automatic escaping is possible (e.g. because you need to include `=` or `&` in the query string) you can use manual escaping with a doubled `%` (`%%3D` instead of `=`).
+When automatic encoding is not possible (e.g. because you need to include an encoded `=` or `&` in the query string) you can use manual encoding with a doubled `%` (`%%3D` instead of `=`).
 
 ## Channels
 
