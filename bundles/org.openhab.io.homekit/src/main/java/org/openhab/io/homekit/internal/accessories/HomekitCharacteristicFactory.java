@@ -119,6 +119,10 @@ import io.github.hapjava.characteristics.impl.fan.TargetFanStateCharacteristic;
 import io.github.hapjava.characteristics.impl.fan.TargetFanStateEnum;
 import io.github.hapjava.characteristics.impl.filtermaintenance.FilterLifeLevelCharacteristic;
 import io.github.hapjava.characteristics.impl.filtermaintenance.ResetFilterIndicationCharacteristic;
+import io.github.hapjava.characteristics.impl.garagedoor.CurrentDoorStateCharacteristic;
+import io.github.hapjava.characteristics.impl.garagedoor.CurrentDoorStateEnum;
+import io.github.hapjava.characteristics.impl.garagedoor.TargetDoorStateCharacteristic;
+import io.github.hapjava.characteristics.impl.garagedoor.TargetDoorStateEnum;
 import io.github.hapjava.characteristics.impl.humiditysensor.CurrentRelativeHumidityCharacteristic;
 import io.github.hapjava.characteristics.impl.humiditysensor.TargetRelativeHumidityCharacteristic;
 import io.github.hapjava.characteristics.impl.inputsource.CurrentVisibilityStateCharacteristic;
@@ -197,6 +201,7 @@ public class HomekitCharacteristicFactory {
             put(CONFIGURED, HomekitCharacteristicFactory::createIsConfiguredCharacteristic);
             put(CONFIGURED_NAME, HomekitCharacteristicFactory::createConfiguredNameCharacteristic);
             put(COOLING_THRESHOLD_TEMPERATURE, HomekitCharacteristicFactory::createCoolingThresholdCharacteristic);
+            put(CURRENT_DOOR_STATE, HomekitCharacteristicFactory::createCurrentDoorStateCharacteristic);
             put(CURRENT_HEATING_COOLING_STATE,
                     HomekitCharacteristicFactory::createCurrentHeatingCoolingStateCharacteristic);
             put(CURRENT_FAN_STATE, HomekitCharacteristicFactory::createCurrentFanStateCharacteristic);
@@ -245,6 +250,7 @@ public class HomekitCharacteristicFactory {
             put(SULPHUR_DIOXIDE_DENSITY, HomekitCharacteristicFactory::createSulphurDioxideDensityCharacteristic);
             put(SWING_MODE, HomekitCharacteristicFactory::createSwingModeCharacteristic);
             put(TAMPERED_STATUS, HomekitCharacteristicFactory::createStatusTamperedCharacteristic);
+            put(TARGET_DOOR_STATE, HomekitCharacteristicFactory::createTargetDoorStateCharacteristic);
             put(TARGET_FAN_STATE, HomekitCharacteristicFactory::createTargetFanStateCharacteristic);
             put(TARGET_HEATING_COOLING_STATE,
                     HomekitCharacteristicFactory::createTargetHeatingCoolingStateCharacteristic);
@@ -821,6 +827,15 @@ public class HomekitCharacteristicFactory {
                 getUnsubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater));
     }
 
+    private static CurrentDoorStateCharacteristic createCurrentDoorStateCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        List<CurrentDoorStateEnum> validValues = new ArrayList<>();
+        var map = createMapping(taggedItem, CurrentDoorStateEnum.class, validValues);
+        return new CurrentDoorStateCharacteristic(() -> getEnumFromItem(taggedItem, map, CurrentDoorStateEnum.CLOSED),
+                getSubscriber(taggedItem, CURRENT_DOOR_STATE, updater),
+                getUnsubscriber(taggedItem, CURRENT_DOOR_STATE, updater));
+    }
+
     private static CurrentHeatingCoolingStateCharacteristic createCurrentHeatingCoolingStateCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         List<CurrentHeatingCoolingStateEnum> validValues = new ArrayList<>();
@@ -1364,6 +1379,16 @@ public class HomekitCharacteristicFactory {
         return new SwingModeCharacteristic(() -> getEnumFromItem(taggedItem, map, SwingModeEnum.SWING_DISABLED),
                 (value) -> setValueFromEnum(taggedItem, value, map), getSubscriber(taggedItem, SWING_MODE, updater),
                 getUnsubscriber(taggedItem, SWING_MODE, updater));
+    }
+
+    private static TargetDoorStateCharacteristic createTargetDoorStateCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        List<TargetDoorStateEnum> validValues = new ArrayList<>();
+        var map = createMapping(taggedItem, TargetDoorStateEnum.class, validValues);
+        return new TargetDoorStateCharacteristic(() -> getEnumFromItem(taggedItem, map, TargetDoorStateEnum.CLOSED),
+                (targetState) -> setValueFromEnum(taggedItem, targetState, map),
+                getSubscriber(taggedItem, TARGET_DOOR_STATE, updater),
+                getUnsubscriber(taggedItem, TARGET_DOOR_STATE, updater));
     }
 
     private static TargetFanStateCharacteristic createTargetFanStateCharacteristic(HomekitTaggedItem taggedItem,
