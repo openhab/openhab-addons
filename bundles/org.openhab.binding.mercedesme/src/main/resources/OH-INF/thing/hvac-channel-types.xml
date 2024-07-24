@@ -57,13 +57,13 @@
 	<channel-type id="aux-heat">
 		<item-type>Switch</item-type>
 		<label>Auxiliary Heating Control</label>
-		<description>Control auxiliary heating if available</description>
+		<description>Switch on/off auxiliary heating</description>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="aux-status">
 		<item-type>Number</item-type>
 		<label>Auxiliary Heating Status</label>
-		<description>Auxiliary heating status if available</description>
+		<description>Auxiliary heating status</description>
 		<state>
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/8592099d9b0d94161517ce2bc7469562f86c9886/MBCarKit/MBCarKit/Common/Enums/Status/AuxheatTypes.swift#L66 -->
 			<options>
