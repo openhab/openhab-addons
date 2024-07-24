@@ -55,6 +55,7 @@
 	<channel-type id="status-charge">
 		<item-type>Number</item-type>
 		<label>Charge Status</label>
+		<description>Actual charging status</description>
 		<state readOnly="true">
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift#L92 -->
 			<options>
@@ -69,9 +70,10 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="error">
+	<channel-type id="error-charge">
 		<item-type>Number</item-type>
 		<label>Charge Error</label>
+		<description>Actual charging error if available</description>
 		<state readOnly="true">
 			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/ZEVTypes.swift#L19 -->
 			<options>

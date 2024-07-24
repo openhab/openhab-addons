@@ -12,7 +12,7 @@
 			<channel id="coupler-lock" typeId="coupler-lock"/>
 			<channel id="active" typeId="active"/>
 			<channel id="status" typeId="status-charge"/>
-			<channel id="error" typeId="error"/>
+			<channel id="error" typeId="error-charge"/>
 			<channel id="power" typeId="power"/>
 			<channel id="end-time" typeId="end-time"/>
 			<channel id="program" typeId="program"/>
