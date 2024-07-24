@@ -79,8 +79,7 @@ public class HomekitAccessoryFactory {
             put(FAN, new HomekitCharacteristicType[] { ACTIVE_STATUS });
             put(FAUCET, new HomekitCharacteristicType[] { ACTIVE_STATUS });
             put(FILTER_MAINTENANCE, new HomekitCharacteristicType[] { FILTER_CHANGE_INDICATION });
-            put(GARAGE_DOOR_OPENER,
-                    new HomekitCharacteristicType[] { CURRENT_DOOR_STATE, TARGET_DOOR_STATE, OBSTRUCTION_STATUS });
+            put(GARAGE_DOOR_OPENER, new HomekitCharacteristicType[] { CURRENT_DOOR_STATE, TARGET_DOOR_STATE });
             put(HEATER_COOLER, new HomekitCharacteristicType[] { ACTIVE_STATUS, CURRENT_HEATER_COOLER_STATE,
                     TARGET_HEATER_COOLER_STATE, CURRENT_TEMPERATURE });
             put(HUMIDITY_SENSOR, new HomekitCharacteristicType[] { RELATIVE_HUMIDITY });
