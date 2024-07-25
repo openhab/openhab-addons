@@ -10,28 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto.meter;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link MeterRealtimeBodyDTO} is responsible for storing
- * the "body" node of the JSON response
+ * The {@link MeterRealtimeBody} is responsible for storing
+ * the "Body" node of the {@link MeterRealtimeResponse}.
  *
  * @author Jimmy Tanagra - Initial contribution
  */
-public class MeterRealtimeBodyDTO {
+@NonNullByDefault
+public class MeterRealtimeBody {
     @SerializedName("Data")
-    private MeterRealtimeBodyDataDTO data;
+    private @Nullable MeterRealtimeBodyData data;
 
-    public MeterRealtimeBodyDataDTO getData() {
-        if (data == null) {
-            data = new MeterRealtimeBodyDataDTO();
-        }
+    public @Nullable MeterRealtimeBodyData getData() {
         return data;
-    }
-
-    public void setData(MeterRealtimeBodyDataDTO data) {
-        this.data = data;
     }
 }

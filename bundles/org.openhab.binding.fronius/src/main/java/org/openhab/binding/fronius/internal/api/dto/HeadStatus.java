@@ -10,13 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link HeadStatus} is responsible for storing
- * the "status" node from the {@link Head}
+ * The {@link HeadStatus} is responsible for storing the "Status" node from the {@link Head}.
  *
  * @author Thomas Rokohl - Initial contribution
  */

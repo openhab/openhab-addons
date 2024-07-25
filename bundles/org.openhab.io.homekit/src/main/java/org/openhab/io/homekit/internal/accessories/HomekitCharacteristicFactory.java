@@ -137,6 +137,10 @@ import io.github.hapjava.characteristics.impl.lightbulb.BrightnessCharacteristic
 import io.github.hapjava.characteristics.impl.lightbulb.ColorTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.HueCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.SaturationCharacteristic;
+import io.github.hapjava.characteristics.impl.lock.LockCurrentStateCharacteristic;
+import io.github.hapjava.characteristics.impl.lock.LockCurrentStateEnum;
+import io.github.hapjava.characteristics.impl.lock.LockTargetStateCharacteristic;
+import io.github.hapjava.characteristics.impl.lock.LockTargetStateEnum;
 import io.github.hapjava.characteristics.impl.slat.CurrentTiltAngleCharacteristic;
 import io.github.hapjava.characteristics.impl.slat.TargetTiltAngleCharacteristic;
 import io.github.hapjava.characteristics.impl.television.ClosedCaptionsCharacteristic;
@@ -227,6 +231,8 @@ public class HomekitCharacteristicFactory {
             put(INPUT_DEVICE_TYPE, HomekitCharacteristicFactory::createInputDeviceTypeCharacteristic);
             put(INPUT_SOURCE_TYPE, HomekitCharacteristicFactory::createInputSourceTypeCharacteristic);
             put(LOCK_CONTROL, HomekitCharacteristicFactory::createLockPhysicalControlsCharacteristic);
+            put(LOCK_CURRENT_STATE, HomekitCharacteristicFactory::createLockCurrentStateCharacteristic);
+            put(LOCK_TARGET_STATE, HomekitCharacteristicFactory::createLockTargetStateCharacteristic);
             put(MANUFACTURER, HomekitCharacteristicFactory::createManufacturerCharacteristic);
             put(MODEL, HomekitCharacteristicFactory::createModelCharacteristic);
             put(MUTE, HomekitCharacteristicFactory::createMuteCharacteristic);
@@ -339,13 +345,24 @@ public class HomekitCharacteristicFactory {
         @Nullable
         T offEnumValue = null, onEnumValue = null;
 
+        var configuration = item.getConfiguration();
+        boolean configurationDefinesEnumValues = false;
+        if (configuration != null && !configuration.isEmpty()) {
+            for (var k : klazz.getEnumConstants()) {
+                if (configuration.containsKey(k.toString())) {
+                    configurationDefinesEnumValues = true;
+                    break;
+                }
+            }
+        }
+
         for (var k : klazz.getEnumConstants()) {
             if (numberType) {
                 int code = k.getCode();
-                if ((switchType || contactType) && code == 0) {
+                if ((switchType || contactType) && code == 0 && !configurationDefinesEnumValues) {
                     map.put(k, inverted ? onValue : offValue);
                     offEnumValue = k;
-                } else if ((switchType || contactType) && code == 1) {
+                } else if ((switchType || contactType) && code == 1 && !configurationDefinesEnumValues) {
                     map.put(k, inverted ? offValue : onValue);
                     onEnumValue = k;
                 } else if (percentType && code == 0) {
@@ -359,8 +376,7 @@ public class HomekitCharacteristicFactory {
                 map.put(k, k.toString());
             }
         }
-        var configuration = item.getConfiguration();
-        if (configuration != null) {
+        if (configuration != null && !configuration.isEmpty()) {
             map.forEach((k, current_value) -> {
                 final Object newValue = configuration.get(k.toString());
                 if (newValue instanceof String || newValue instanceof Number) {
@@ -1085,6 +1101,23 @@ public class HomekitCharacteristicFactory {
                 () -> getEnumFromItem(taggedItem, map, LockPhysicalControlsEnum.CONTROL_LOCK_DISABLED),
                 (value) -> setValueFromEnum(taggedItem, value, map), getSubscriber(taggedItem, LOCK_CONTROL, updater),
                 getUnsubscriber(taggedItem, LOCK_CONTROL, updater));
+    }
+
+    private static LockCurrentStateCharacteristic createLockCurrentStateCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        var map = createMapping(taggedItem, LockCurrentStateEnum.class);
+        return new LockCurrentStateCharacteristic(() -> getEnumFromItem(taggedItem, map, LockCurrentStateEnum.UNKNOWN),
+                getSubscriber(taggedItem, LOCK_CURRENT_STATE, updater),
+                getUnsubscriber(taggedItem, LOCK_CURRENT_STATE, updater));
+    }
+
+    private static LockTargetStateCharacteristic createLockTargetStateCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        var map = createMapping(taggedItem, LockTargetStateEnum.class);
+        return new LockTargetStateCharacteristic(() -> getEnumFromItem(taggedItem, map, LockTargetStateEnum.UNSECURED),
+                (value) -> setValueFromEnum(taggedItem, value, map),
+                getSubscriber(taggedItem, LOCK_TARGET_STATE, updater),
+                getUnsubscriber(taggedItem, LOCK_TARGET_STATE, updater));
     }
 
     private static ManufacturerCharacteristic createManufacturerCharacteristic(HomekitTaggedItem taggedItem,
