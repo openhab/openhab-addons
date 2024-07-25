@@ -68,7 +68,8 @@ public class FlumeApi {
     public static final String APIURL_BASE = "https://api.flumewater.com/";
 
     public static final String APIURL_TOKEN = "oauth/token";
-    public static final String APIURL_FETCHUSERSDEVICES = "users/%s/devices?user=%s&location=%s";
+    public static final String APIURL_GETUSERSDEVICES = "users/%s/devices?user=%s&location=%s";
+    public static final String APIURL_GETDEVICEINFO = "users/%s/devices/%s";
     public static final String APIURL_QUERYUSAGE = "users/%s/devices/%s/query";
     public static final String APIURL_FETCHUSAGEALERTS = "users/%s/usage-alerts?device_id=%s&limit=%d&sort_field=%s&sort_direction=%s";
     public static final String APIURL_FETCHNOTIFICATIONS = "users/%s/notifications?device_id=%s&limit=%d&sort_field=%s&sort_direction=%s";
@@ -233,11 +234,11 @@ public class FlumeApi {
         }
     }
 
-    public List<FlumeApiDevice> fetchDeviceList()
+    public List<FlumeApiDevice> getDeviceList()
             throws FlumeApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
         verifyToken();
 
-        String url = APIURL_BASE + String.format(APIURL_FETCHUSERSDEVICES, this.userId, false, false);
+        String url = APIURL_BASE + String.format(APIURL_GETUSERSDEVICES, this.userId, false, false);
         Request request = httpClient.newRequest(url).method(HttpMethod.GET)
                 .header("Authorization", "Bearer " + accessToken).header(HttpHeader.CONTENT_TYPE, "application/json");
 
@@ -249,6 +250,28 @@ public class FlumeApi {
                 FlumeApiDevice[].class);
 
         return Arrays.asList(listDevices);
+    }
+
+    public @Nullable FlumeApiDevice getDeviceInfo(String deviceId)
+            throws FlumeApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
+        verifyToken();
+
+        String url = APIURL_BASE + String.format(APIURL_GETDEVICEINFO, this.userId, deviceId);
+        Request request = httpClient.newRequest(url).method(HttpMethod.GET).header("Authorization",
+                "Bearer " + accessToken);
+
+        logger.trace("GET: {}", url);
+        ContentResponse response = request.send();
+        JsonObject jsonResponse = validateResponse(response);
+
+        final FlumeApiDevice[] apiDevices = gson.fromJson(jsonResponse.get("data").getAsJsonArray(),
+                FlumeApiDevice[].class);
+
+        if (apiDevices == null) {
+            return null;
+        }
+
+        return apiDevices[0];
     }
 
     public @Nullable List<HashMap<String, List<FlumeApiQueryBucket>>> queryUsage(String deviceID,
