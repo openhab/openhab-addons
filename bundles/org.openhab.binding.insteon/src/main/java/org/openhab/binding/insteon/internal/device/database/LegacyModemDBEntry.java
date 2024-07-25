@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.transport.LegacyPort;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
-import org.openhab.binding.insteon.internal.utils.Utils;
+import org.openhab.binding.insteon.internal.utils.HexUtils;
 
 /**
  * The ModemDBEntry class holds a modem device type record
@@ -99,7 +99,7 @@ public class LegacyModemDBEntry {
                 buf.append(",");
             }
             buf.append("0x");
-            buf.append(Utils.getHexString(b));
+            buf.append(HexUtils.getHexString(b));
         }
 
         return buf.toString();

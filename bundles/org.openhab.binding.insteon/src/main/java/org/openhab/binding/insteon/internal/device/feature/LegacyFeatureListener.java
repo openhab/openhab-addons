@@ -170,7 +170,7 @@ public class LegacyFeatureListener {
         }
         String[] devs = d.split("\\+");
         for (String dev : devs) {
-            InsteonAddress a = InsteonAddress.parseAddress(dev);
+            InsteonAddress a = new InsteonAddress(dev);
             relatedDevices.add(a);
         }
     }

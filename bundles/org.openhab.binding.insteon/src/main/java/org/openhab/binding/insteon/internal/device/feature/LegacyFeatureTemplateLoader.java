@@ -24,8 +24,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.insteon.internal.utils.Utils;
-import org.openhab.binding.insteon.internal.utils.Utils.ParsingException;
+import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureTemplate.HandlerEntry;
+import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -130,7 +130,7 @@ public class LegacyFeatureTemplateLoader {
             f.setDefaultMessageHandler(he);
         } else {
             String attr = e.getAttribute("cmd");
-            int command = (attr == null) ? 0 : Utils.from0xHexString(attr);
+            int command = (attr == null) ? 0 : HexUtils.toInteger(attr);
             f.addMessageHandler(command, he);
         }
     }
@@ -167,6 +167,18 @@ public class LegacyFeatureTemplateLoader {
             return IncreaseDecreaseType.class;
         } else {
             throw new ParsingException("Unknown Command Type");
+        }
+    }
+
+    public static class ParsingException extends Exception {
+        private static final long serialVersionUID = 3997461423241843949L;
+
+        public ParsingException(String msg) {
+            super(msg);
+        }
+
+        public ParsingException(String msg, Throwable cause) {
+            super(msg, cause);
         }
     }
 }

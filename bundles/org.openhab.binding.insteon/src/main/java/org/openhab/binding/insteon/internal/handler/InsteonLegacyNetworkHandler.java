@@ -22,14 +22,19 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.InsteonLegacyBinding;
+import org.openhab.binding.insteon.internal.config.InsteonBridgeConfiguration;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyNetworkConfiguration;
+import org.openhab.binding.insteon.internal.device.DeviceAddress;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.discovery.InsteonLegacyDiscoveryService;
-import org.openhab.binding.insteon.internal.utils.Utils;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingManager;
+import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingUID;
@@ -44,6 +49,7 @@ import org.slf4j.LoggerFactory;
  * sent to one of the channels.
  *
  * @author Rob Nielsen - Initial contribution
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
@@ -55,21 +61,25 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(InsteonLegacyNetworkHandler.class);
 
     private @Nullable InsteonLegacyBinding insteonBinding;
-    private @Nullable InsteonLegacyDiscoveryService insteonDeviceDiscoveryService;
+    private @Nullable InsteonLegacyDiscoveryService insteonDiscoveryService;
     private @Nullable ScheduledFuture<?> driverInitializedJob = null;
     private @Nullable ScheduledFuture<?> pollingJob = null;
     private @Nullable ScheduledFuture<?> reconnectJob = null;
     private @Nullable ScheduledFuture<?> settleJob = null;
     private long lastInsteonDeviceCreatedTimestamp = 0;
-    private @Nullable SerialPortManager serialPortManager;
+    private SerialPortManager serialPortManager;
+    private ThingManager thingManager;
+    private ThingRegistry thingRegistry;
     private Map<String, String> deviceInfo = new ConcurrentHashMap<>();
     private Map<String, String> channelInfo = new ConcurrentHashMap<>();
+    private Map<ChannelUID, Configuration> channelConfigs = new ConcurrentHashMap<>();
 
-    public static ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-
-    public InsteonLegacyNetworkHandler(Bridge bridge, @Nullable SerialPortManager serialPortManager) {
+    public InsteonLegacyNetworkHandler(Bridge bridge, SerialPortManager serialPortManager, ThingManager thingManager,
+            ThingRegistry thingRegistry) {
         super(bridge);
         this.serialPortManager = serialPortManager;
+        this.thingManager = thingManager;
+        this.thingRegistry = thingRegistry;
     }
 
     @Override
@@ -79,17 +89,22 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         logger.debug("Starting Insteon bridge");
+
         InsteonLegacyNetworkConfiguration config = getConfigAs(InsteonLegacyNetworkConfiguration.class);
-
-        SerialPortManager serialPortManager = this.serialPortManager;
-        if (serialPortManager == null) {
-            String msg = "Initialization failed, serial port manager is null.";
-            logger.warn(msg);
-
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-
+        if (!config.isParsable()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Unable to parse port configuration.");
             return;
         }
+
+        InsteonBridgeHandler handler = getBridgeHandler(config.parse());
+        if (handler != null) {
+            logger.info("Disabling Insteon legacy network bridge {} in favor of bridge {}", getThing().getUID(),
+                    handler.getThing().getUID());
+            disable();
+            return;
+        }
+
         insteonBinding = new InsteonLegacyBinding(this, config, serialPortManager, scheduler);
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -126,7 +141,7 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
                     }, 0, DRIVER_INITIALIZED_TIME_IN_SECONDS, TimeUnit.SECONDS);
                 } else {
                     String msg = "Initialization failed, unable to start the Insteon bridge with the port '"
-                            + Utils.redactPassword(config.getPort()) + "'.";
+                            + config.getRedactedPort() + "'.";
                     logger.warn(msg);
 
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
@@ -202,8 +217,33 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
         }, 0, RETRY_DELAY_IN_SECONDS, TimeUnit.SECONDS);
     }
 
+    public void disable() {
+        scheduler.execute(() -> {
+            InsteonLegacyDiscoveryService insteonDiscoveryService = this.insteonDiscoveryService;
+            if (insteonDiscoveryService != null) {
+                insteonDiscoveryService.removeAllResults();
+            }
+
+            thingManager.setEnabled(getThing().getUID(), false);
+        });
+    }
+
     public void insteonDeviceWasCreated() {
         lastInsteonDeviceCreatedTimestamp = System.currentTimeMillis();
+    }
+
+    public @Nullable InsteonBridgeConfiguration getBridgeConfig() {
+        try {
+            return getConfigAs(InsteonLegacyNetworkConfiguration.class).parse();
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    private @Nullable InsteonBridgeHandler getBridgeHandler(InsteonBridgeConfiguration config) {
+        return thingRegistry.getAll().stream().filter(Thing::isEnabled).map(Thing::getHandler)
+                .filter(InsteonBridgeHandler.class::isInstance).map(InsteonBridgeHandler.class::cast)
+                .filter(handler -> config.equals(handler.getBridgeConfig())).findFirst().orElse(null);
     }
 
     public InsteonLegacyBinding getInsteonBinding() {
@@ -215,23 +255,23 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
         }
     }
 
-    public void setInsteonDeviceDiscoveryService(InsteonLegacyDiscoveryService insteonDeviceDiscoveryService) {
-        this.insteonDeviceDiscoveryService = insteonDeviceDiscoveryService;
+    public void setInsteonDiscoveryService(InsteonLegacyDiscoveryService insteonDiscoveryService) {
+        this.insteonDiscoveryService = insteonDiscoveryService;
     }
 
-    public void addMissingDevices(List<String> missing) {
+    public void addMissingDevices(List<InsteonAddress> missing) {
         scheduler.execute(() -> {
-            InsteonLegacyDiscoveryService insteonDeviceDiscoveryService = this.insteonDeviceDiscoveryService;
-            if (insteonDeviceDiscoveryService != null) {
-                insteonDeviceDiscoveryService.addInsteonDevices(missing, getThing().getUID());
+            InsteonLegacyDiscoveryService insteonDiscoveryService = this.insteonDiscoveryService;
+            if (insteonDiscoveryService != null) {
+                insteonDiscoveryService.addInsteonDevices(missing);
             }
         });
     }
 
-    public void deviceNotLinked(InsteonAddress addr) {
+    public void deviceNotLinked(DeviceAddress addr) {
         getThing().getThings().stream().forEach((thing) -> {
             InsteonLegacyDeviceHandler handler = (InsteonLegacyDeviceHandler) thing.getHandler();
-            if (handler != null && addr.equals(handler.getInsteonAddress())) {
+            if (handler != null && addr.equals(handler.getDeviceAddress())) {
                 handler.deviceNotLinked();
                 return;
             }
@@ -273,6 +313,14 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
 
     public void unlinked(ChannelUID uid) {
         channelInfo.remove(uid.getAsString());
+    }
+
+    public Configuration getChannelConfig(ChannelUID channelUID) {
+        return channelConfigs.getOrDefault(channelUID, new Configuration());
+    }
+
+    public void addChannelConfigs(Map<ChannelUID, Configuration> channelConfigs) {
+        this.channelConfigs.putAll(channelConfigs);
     }
 
     private void display(Console console, Map<String, String> info) {

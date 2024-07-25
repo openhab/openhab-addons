@@ -20,6 +20,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.config.InsteonLegacyNetworkConfiguration;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.database.LegacyModemDBEntry;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
@@ -30,21 +31,20 @@ import org.openhab.core.io.transport.serial.SerialPortManager;
  *
  * @author Bernd Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public class LegacyDriver {
     private LegacyPort port;
-    private String portName;
     private LegacyDriverListener listener;
     private Map<InsteonAddress, LegacyModemDBEntry> modemDBEntries = new HashMap<>();
     private ReentrantLock modemDBEntriesLock = new ReentrantLock();
 
-    public LegacyDriver(String portName, LegacyDriverListener listener, @Nullable SerialPortManager serialPortManager,
-            ScheduledExecutorService scheduler) {
+    public LegacyDriver(InsteonLegacyNetworkConfiguration config, LegacyDriverListener listener,
+            SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {
         this.listener = listener;
-        this.portName = portName;
 
-        port = new LegacyPort(portName, this, serialPortManager, scheduler);
+        this.port = new LegacyPort(config, this, serialPortManager, scheduler);
     }
 
     public boolean isReady() {
@@ -81,7 +81,7 @@ public class LegacyDriver {
     }
 
     public String getPortName() {
-        return portName;
+        return port.getName();
     }
 
     public boolean isRunning() {

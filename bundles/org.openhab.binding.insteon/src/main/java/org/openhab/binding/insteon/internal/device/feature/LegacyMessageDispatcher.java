@@ -22,7 +22,7 @@ import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceFeature;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
-import org.openhab.binding.insteon.internal.utils.Utils;
+import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernd Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public abstract class LegacyMessageDispatcher {
@@ -60,25 +61,25 @@ public abstract class LegacyMessageDispatcher {
      * @return true if the message was handled by this function
      */
     protected boolean handleAllLinkMessage(Msg msg) {
-        if (!msg.isAllLink()) {
+        if (!msg.isAllLinkBroadcastOrCleanup()) {
             return false;
         }
         try {
-            InsteonAddress a = msg.getAddress("toAddress");
+            InsteonAddress a = msg.getInsteonAddress("toAddress");
             // ALL_LINK_BROADCAST and ALL_LINK_CLEANUP
             // have a valid Command1 field
             // but the CLEANUP_SUCCESS (of type ALL_LINK_BROADCAST!)
             // message has cmd1 = 0x06 and the cmd as the
             // high byte of the toAddress.
             byte cmd1 = msg.getByte("command1");
-            if (!msg.isCleanup() && cmd1 == 0x06) {
+            if (!msg.isAllLinkCleanup() && cmd1 == 0x06) {
                 cmd1 = a.getHighByte();
             }
             // For ALL_LINK_BROADCAST messages, the group is
             // in the low byte of the toAddress. For direct
             // ALL_LINK_CLEANUP, it is in Command2
 
-            int group = (msg.isCleanup() ? msg.getByte("command2") : a.getLowByte()) & 0xff;
+            int group = (msg.isAllLinkCleanup() ? msg.getByte("command2") : a.getLowByte()) & 0xff;
             LegacyMessageHandler h = feature.getMsgHandlers().get(cmd1 & 0xFF);
             if (h == null) {
                 logger.debug("msg is not for this feature");
@@ -87,7 +88,7 @@ public abstract class LegacyMessageDispatcher {
             if (!h.isDuplicate(msg)) {
                 if (h.matchesGroup(group) && h.matches(msg)) {
                     logger.debug("{}:{}->{} cmd1:{} group {}/{}", feature.getDevice().getAddress(), feature.getName(),
-                            h.getClass().getSimpleName(), Utils.getHexByte(cmd1), group, h.getGroup());
+                            h.getClass().getSimpleName(), HexUtils.getHexString(cmd1), group, h.getGroup());
                     h.handleMessage(group, cmd1, msg, feature);
                 } else {
                     logger.debug("message ignored because matches group: {} matches filter: {}", h.matchesGroup(group),
@@ -109,10 +110,9 @@ public abstract class LegacyMessageDispatcher {
      * @param msg
      * @return true;
      */
-    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     boolean isMyDirectAck(Msg msg) {
         return msg.isAckOfDirect() && (feature.getQueryStatus() == LegacyDeviceFeature.QueryStatus.QUERY_PENDING)
-                && feature.getDevice().getFeatureQueried() == feature;
+                && feature.equals(feature.getDevice().getFeatureQueried());
     }
 
     /**

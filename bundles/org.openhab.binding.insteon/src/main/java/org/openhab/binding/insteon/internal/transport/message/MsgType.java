@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.insteon.internal.transport.message;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -22,6 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Daniel Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public enum MsgType {
@@ -40,43 +43,29 @@ public enum MsgType {
     BROADCAST(0x80),
     DIRECT(0x00),
     ACK_OF_DIRECT(0x20),
-    NACK_OF_DIRECT(0xa0),
-    ALL_LINK_BROADCAST(0xc0),
+    NACK_OF_DIRECT(0xA0),
+    ALL_LINK_BROADCAST(0xC0),
     ALL_LINK_CLEANUP(0x40),
     ALL_LINK_CLEANUP_ACK(0x60),
-    ALL_LINK_CLEANUP_NACK(0xe0),
-    INVALID(0xff); // should never happen
+    ALL_LINK_CLEANUP_NACK(0xE0),
+    INVALID(0xFF);
 
-    private static Map<Integer, MsgType> hash = new HashMap<>();
+    private static final int FLAGS_MASK = 0xE0;
 
-    private byte byteValue = 0;
+    private static final Map<Integer, MsgType> FLAGS_MAP = Arrays.stream(values())
+            .collect(Collectors.toUnmodifiableMap(type -> type.flags, Function.identity()));
 
-    /**
-     * Constructor
-     *
-     * @param b byte with insteon message type flags set
-     */
-    MsgType(int b) {
-        this.byteValue = (byte) b;
+    private final int flags;
+
+    private MsgType(int flags) {
+        this.flags = flags;
     }
 
-    static {
-        for (MsgType t : MsgType.values()) {
-            int i = t.getByteValue() & 0xff;
-            hash.put(i, t);
+    public static MsgType valueOf(int flags) throws IllegalArgumentException {
+        MsgType type = FLAGS_MAP.get(flags & FLAGS_MASK);
+        if (type == null) {
+            throw new IllegalArgumentException("unexpected msg flags value");
         }
-    }
-
-    private int getByteValue() {
-        return byteValue;
-    }
-
-    public static MsgType fromValue(byte b) throws IllegalArgumentException {
-        int i = b & 0xe0;
-        MsgType mt = hash.get(i);
-        if (mt == null) {
-            throw new IllegalArgumentException("msg type of byte value " + i + " not found");
-        }
-        return mt;
+        return type;
     }
 }

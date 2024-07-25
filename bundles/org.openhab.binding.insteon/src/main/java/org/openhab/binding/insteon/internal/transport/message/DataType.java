@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.insteon.internal.transport.message;
 
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -22,64 +24,40 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  * @author Daniel Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public enum DataType {
     BYTE("byte", 1),
-    INT("int", 4),
-    FLOAT("float", 4),
     ADDRESS("address", 3),
-    INVALID("INVALID", -1);
+    INVALID("invalid", -1);
 
-    private static Map<String, DataType> typeMap = new HashMap<>();
+    private static final Map<String, DataType> NAME_MAP = Arrays.stream(values())
+            .collect(Collectors.toUnmodifiableMap(type -> type.name, Function.identity()));
 
-    private int size;
-    private String name;
+    private final String name;
+    private final int size;
 
-    static {
-        typeMap.put(BYTE.getName(), BYTE);
-        typeMap.put(INT.getName(), INT);
-        typeMap.put(FLOAT.getName(), FLOAT);
-        typeMap.put(ADDRESS.getName(), ADDRESS);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param name the name of the data type
-     * @param size the size (in bytes) of this data type
-     */
-    DataType(String name, int size) {
-        this.size = size;
+    private DataType(String name, int size) {
         this.name = name;
+        this.size = size;
     }
 
-    /**
-     * @return the size (in bytes) of this data type
-     */
+    public String getName() {
+        return name;
+    }
+
     public int getSize() {
         return size;
     }
 
     /**
-     * @return clear text string with the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Turns a string into the corresponding data type
+     * Factory method for getting a DataType from the data type name
      *
-     * @param name the string to translate to a type
-     * @return the data type corresponding to the name string, or null if not found
+     * @param name the data type name
+     * @return the data type
      */
-    public static DataType getDataType(String name) {
-        DataType dataType = typeMap.get(name);
-        if (dataType != null) {
-            return dataType;
-        } else {
-            throw new IllegalArgumentException("Unable to find data type for " + name);
-        }
+    public static DataType get(String name) {
+        return NAME_MAP.getOrDefault(name, DataType.INVALID);
     }
 }

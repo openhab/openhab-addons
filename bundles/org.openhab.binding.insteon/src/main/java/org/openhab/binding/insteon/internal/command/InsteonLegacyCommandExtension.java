@@ -13,7 +13,6 @@
 package org.openhab.binding.insteon.internal.command;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +20,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.openhab.binding.insteon.internal.InsteonLegacyBinding;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.LegacyDevice;
@@ -30,24 +30,20 @@ import org.openhab.binding.insteon.internal.transport.LegacyPortListener;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
-import org.openhab.binding.insteon.internal.utils.Utils;
+import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.console.extensions.AbstractConsoleCommandExtension;
-import org.openhab.core.io.console.extensions.ConsoleCommandExtension;
-import org.osgi.service.component.annotations.Component;
-import org.osgi.service.component.annotations.Reference;
-import org.osgi.service.component.annotations.ReferenceCardinality;
-import org.osgi.service.component.annotations.ReferencePolicy;
-import org.osgi.service.component.annotations.ReferencePolicyOption;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingRegistry;
 
 /**
  *
- * Console commands for the Insteon binding
+ * The {@link InsteonLegacyCommandExtension} is responsible for handling legacy console commands
  *
  * @author Rob Nielsen - Initial contribution
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
-@Component(service = ConsoleCommandExtension.class)
 public class InsteonLegacyCommandExtension extends AbstractConsoleCommandExtension implements LegacyPortListener {
     private static final String DISPLAY_DEVICES = "display_devices";
     private static final String DISPLAY_CHANNELS = "display_channels";
@@ -65,24 +61,25 @@ public class InsteonLegacyCommandExtension extends AbstractConsoleCommandExtensi
         EXTENDED_2
     }
 
-    @Nullable
-    private InsteonLegacyNetworkHandler handler;
+    private final ThingRegistry thingRegistry;
+
     @Nullable
     private Console console;
     private boolean monitoring = false;
     private boolean monitorAllDevices = false;
     private Set<InsteonAddress> monitoredAddresses = new HashSet<>();
 
-    public InsteonLegacyCommandExtension() {
-        super("insteon", "Interact with the Insteon integration.");
+    public InsteonLegacyCommandExtension(final ThingRegistry thingRegistry) {
+        super(InsteonBindingConstants.BINDING_ID, "Interact with the Insteon integration.");
+        this.thingRegistry = thingRegistry;
     }
 
     @Override
     public void execute(String[] args, Console console) {
         if (args.length > 0) {
-            InsteonLegacyNetworkHandler handler = this.handler; // fix eclipse warnings about nullable
+            InsteonLegacyNetworkHandler handler = getLegacyNetworkHandler();
             if (handler == null) {
-                console.println("No Insteon network bridge configured.");
+                console.println("No Insteon legacy network bridge configured.");
             } else {
                 switch (args[0]) {
                     case DISPLAY_DEVICES:
@@ -161,10 +158,11 @@ public class InsteonLegacyCommandExtension extends AbstractConsoleCommandExtensi
 
     @Override
     public List<String> getUsages() {
-        return Arrays.asList(new String[] {
-                buildCommandUsage(DISPLAY_DEVICES, "display devices that are online, along with available channels"),
+        return List.of(
+                buildCommandUsage(DISPLAY_DEVICES,
+                        "display legacy devices that are online, along with available channels"),
                 buildCommandUsage(DISPLAY_CHANNELS,
-                        "display channels that are linked, along with configuration information"),
+                        "display legacy channels that are linked, along with configuration information"),
                 buildCommandUsage(DISPLAY_LOCAL_DATABASE, "display Insteon PLM or hub database details"),
                 buildCommandUsage(DISPLAY_MONITORED, "display monitored device(s)"),
                 buildCommandUsage(START_MONITORING + " all|address",
@@ -175,27 +173,26 @@ public class InsteonLegacyCommandExtension extends AbstractConsoleCommandExtensi
                 buildCommandUsage(SEND_EXTENDED_MESSAGE + " address flags cmd1 cmd2 [up to 13 bytes]",
                         "send extended message to a device"),
                 buildCommandUsage(SEND_EXTENDED_MESSAGE_2 + " address flags cmd1 cmd2 [up to 12 bytes]",
-                        "send extended message with a two byte crc to a device") });
+                        "send extended message with a two byte crc to a device"));
     }
 
     @Override
     public void msg(Msg msg) {
-        if (monitorAllDevices || monitoredAddresses.contains(msg.getAddr("fromAddress"))) {
-            String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
-            Console console = this.console;
-            if (console != null) {
-                console.println(date + " " + msg.toString());
+        try {
+            if (monitorAllDevices || monitoredAddresses.contains(msg.getInsteonAddress("fromAddress"))) {
+                String date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date());
+                Console console = this.console;
+                if (console != null) {
+                    console.println(date + " " + msg.toString());
+                }
             }
+        } catch (FieldException ignored) {
+            // ignore message with no address field
         }
     }
 
-    @Reference(cardinality = ReferenceCardinality.OPTIONAL, policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY)
-    public void setInsteonNetworkHandler(InsteonLegacyNetworkHandler handler) {
-        this.handler = handler;
-    }
-
-    public void unsetInsteonNetworkHandler(InsteonLegacyNetworkHandler handler) {
-        this.handler = null;
+    public boolean isAvailable() {
+        return getLegacyNetworkHandler() != null;
     }
 
     private void displayMonitoredDevices(Console console) {
@@ -213,7 +210,7 @@ public class InsteonLegacyCommandExtension extends AbstractConsoleCommandExtensi
         } else if (monitorAllDevices) {
             console.println("All devices are monitored.");
         } else {
-            console.println("Not mointoring any devices.");
+            console.println("Not monitoring any devices.");
         }
     }
 
@@ -251,7 +248,7 @@ public class InsteonLegacyCommandExtension extends AbstractConsoleCommandExtensi
 
     private void stopMonitoring(Console console, String addr) {
         if (!monitoring) {
-            console.println("Not mointoring any devices.");
+            console.println("Not monitoring any devices.");
             return;
         }
 
@@ -312,22 +309,24 @@ public class InsteonLegacyCommandExtension extends AbstractConsoleCommandExtensi
         }
 
         try {
-            byte flags = (byte) Utils.fromHexString(args[2]);
-            byte cmd1 = (byte) Utils.fromHexString(args[3]);
-            byte cmd2 = (byte) Utils.fromHexString(args[4]);
+            InsteonAddress address = (InsteonAddress) device.getAddress();
+            byte flags = (byte) HexUtils.toInteger(args[2]);
+            byte cmd1 = (byte) HexUtils.toInteger(args[3]);
+            byte cmd2 = (byte) HexUtils.toInteger(args[4]);
             Msg msg;
             if (messageType == MessageType.STANDARD) {
-                msg = device.makeStandardMessage(flags, cmd1, cmd2);
+                msg = Msg.makeStandardMessage(address, flags, cmd1, cmd2);
             } else {
                 byte[] data = new byte[args.length - 5];
                 for (int i = 0; i + 5 < args.length; i++) {
-                    data[i] = (byte) Utils.fromHexString(args[i + 5]);
+                    data[i] = (byte) HexUtils.toInteger(args[i + 5]);
                 }
 
+                msg = Msg.makeExtendedMessage(address, flags, cmd1, cmd2, data, false);
                 if (messageType == MessageType.EXTENDED) {
-                    msg = device.makeExtendedMessage(flags, cmd1, cmd2, data);
+                    msg.setCRC();
                 } else {
-                    msg = device.makeExtendedMessageCRC2(flags, cmd1, cmd2, data);
+                    msg.setCRC2();
                 }
             }
             device.enqueueMessage(msg, new LegacyDeviceFeature(device, "console"));
@@ -336,10 +335,16 @@ public class InsteonLegacyCommandExtension extends AbstractConsoleCommandExtensi
         }
     }
 
+    private @Nullable InsteonLegacyNetworkHandler getLegacyNetworkHandler() {
+        return thingRegistry.getAll().stream().filter(Thing::isEnabled).map(Thing::getHandler)
+                .filter(InsteonLegacyNetworkHandler.class::isInstance).map(InsteonLegacyNetworkHandler.class::cast)
+                .findFirst().orElse(null);
+    }
+
     private InsteonLegacyBinding getInsteonBinding() {
-        InsteonLegacyNetworkHandler handler = this.handler;
+        InsteonLegacyNetworkHandler handler = getLegacyNetworkHandler();
         if (handler == null) {
-            throw new IllegalArgumentException("No Insteon network bridge configured.");
+            throw new IllegalArgumentException("No Insteon legacy network bridge configured.");
         }
 
         return handler.getInsteonBinding();

@@ -12,14 +12,15 @@
  */
 package org.openhab.binding.insteon.internal.discovery;
 
-import java.util.Arrays;
+import static org.openhab.binding.insteon.internal.InsteonBindingConstants.*;
+
+import java.time.Instant;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.insteon.internal.InsteonLegacyBindingConstants;
+import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.handler.InsteonLegacyNetworkHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -28,47 +29,50 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link InsteonLegacyDiscoveryService} is responsible for device discovery.
+ * The {@link InsteonLegacyDiscoveryService} is responsible for legacy device discovery.
  *
  * @author Rob Nielsen - Initial contribution
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public class InsteonLegacyDiscoveryService extends AbstractDiscoveryService {
-    private static final String ADDRESS = "address";
 
     private final Logger logger = LoggerFactory.getLogger(InsteonLegacyDiscoveryService.class);
 
+    private final InsteonLegacyNetworkHandler handler;
+
     public InsteonLegacyDiscoveryService(InsteonLegacyNetworkHandler handler) {
-        super(new HashSet<>(Arrays.asList(InsteonLegacyBindingConstants.DEVICE_THING_TYPE)), 0, false);
+        super(DISCOVERABLE_LEGACY_THING_TYPES_UIDS, 0, false);
+        this.handler = handler;
 
-        handler.setInsteonDeviceDiscoveryService(this);
+        logger.debug("Initializing InsteonLegacyDiscoveryService");
 
-        logger.debug("Initializing InsteonNetworkDiscoveryService");
+        handler.setInsteonDiscoveryService(this);
     }
 
     @Override
     protected void startScan() {
     }
 
-    public void addInsteonDevices(List<String> addresses, ThingUID bridgeUid) {
-        for (String address : addresses) {
-            String[] parts = address.split("\\.");
-            if (parts.length != 3) {
-                logger.warn("Address {} must be in the format XX.XX.XX", address);
-
-                continue;
-            }
-
-            String name = parts[0] + parts[1] + parts[2];
-            ThingUID uid = new ThingUID(InsteonLegacyBindingConstants.DEVICE_THING_TYPE, bridgeUid, name);
+    public void addInsteonDevices(List<InsteonAddress> addresses) {
+        for (InsteonAddress address : addresses) {
+            ThingUID bridgeUID = handler.getThing().getUID();
+            String id = address.toString().replace(".", "");
+            ThingUID thingUID = new ThingUID(THING_TYPE_LEGACY_DEVICE, bridgeUID, id);
+            String label = "Insteon Device (Legacy) " + address;
             Map<String, Object> properties = new HashMap<>();
-            properties.put(ADDRESS, address);
+            properties.put(PROPERTY_DEVICE_ADDRESS, address.toString());
 
-            thingDiscovered(
-                    DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel("Insteon Device  " + name)
-                            .withBridge(bridgeUid).withRepresentationProperty(ADDRESS).build());
+            thingDiscovered(DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
+                    .withProperties(properties).withRepresentationProperty(PROPERTY_DEVICE_ADDRESS).build());
 
-            logger.debug("Added Insteon device {} with the address {}", name, address);
+            if (logger.isDebugEnabled()) {
+                logger.debug("added Insteon device {} to inbox", address);
+            }
         }
+    }
+
+    public void removeAllResults() {
+        removeOlderResults(Instant.now().toEpochMilli(), handler.getThing().getUID());
     }
 }

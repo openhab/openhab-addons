@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.insteon.internal.handler;
 
+import static org.openhab.binding.insteon.internal.InsteonLegacyBindingConstants.*;
+
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -22,18 +24,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.openhab.binding.insteon.internal.InsteonLegacyBinding;
-import org.openhab.binding.insteon.internal.InsteonLegacyBindingConstants;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyChannelConfiguration;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyDeviceConfiguration;
+import org.openhab.binding.insteon.internal.device.DeviceAddress;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.LegacyDevice;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceFeature;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceTypeLoader;
+import org.openhab.binding.insteon.internal.device.X10Address;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -44,6 +48,7 @@ import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,74 +61,12 @@ import com.google.gson.reflect.TypeToken;
  * sent to one of the channels.
  *
  * @author Rob Nielsen - Initial contribution
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public class InsteonLegacyDeviceHandler extends BaseThingHandler {
 
-    private static final Set<String> ALL_CHANNEL_IDS = Collections.unmodifiableSet(Stream.of(
-            InsteonLegacyBindingConstants.AC_DELAY, InsteonLegacyBindingConstants.BACKLIGHT_DURATION,
-            InsteonLegacyBindingConstants.BATTERY_LEVEL, InsteonLegacyBindingConstants.BATTERY_PERCENT,
-            InsteonLegacyBindingConstants.BATTERY_WATERMARK_LEVEL, InsteonLegacyBindingConstants.BEEP,
-            InsteonLegacyBindingConstants.BOTTOM_OUTLET, InsteonLegacyBindingConstants.BUTTON_A,
-            InsteonLegacyBindingConstants.BUTTON_B, InsteonLegacyBindingConstants.BUTTON_C,
-            InsteonLegacyBindingConstants.BUTTON_D, InsteonLegacyBindingConstants.BUTTON_E,
-            InsteonLegacyBindingConstants.BUTTON_F, InsteonLegacyBindingConstants.BUTTON_G,
-            InsteonLegacyBindingConstants.BUTTON_H, InsteonLegacyBindingConstants.BROADCAST_ON_OFF,
-            InsteonLegacyBindingConstants.CONTACT, InsteonLegacyBindingConstants.COOL_SET_POINT,
-            InsteonLegacyBindingConstants.DIMMER, InsteonLegacyBindingConstants.FAN,
-            InsteonLegacyBindingConstants.FAN_MODE, InsteonLegacyBindingConstants.FAST_ON_OFF,
-            InsteonLegacyBindingConstants.FAST_ON_OFF_BUTTON_A, InsteonLegacyBindingConstants.FAST_ON_OFF_BUTTON_B,
-            InsteonLegacyBindingConstants.FAST_ON_OFF_BUTTON_C, InsteonLegacyBindingConstants.FAST_ON_OFF_BUTTON_D,
-            InsteonLegacyBindingConstants.FAST_ON_OFF_BUTTON_E, InsteonLegacyBindingConstants.FAST_ON_OFF_BUTTON_F,
-            InsteonLegacyBindingConstants.FAST_ON_OFF_BUTTON_G, InsteonLegacyBindingConstants.FAST_ON_OFF_BUTTON_H,
-            InsteonLegacyBindingConstants.HEAT_SET_POINT, InsteonLegacyBindingConstants.HUMIDITY,
-            InsteonLegacyBindingConstants.HUMIDITY_HIGH, InsteonLegacyBindingConstants.HUMIDITY_LOW,
-            InsteonLegacyBindingConstants.IS_COOLING, InsteonLegacyBindingConstants.IS_HEATING,
-            InsteonLegacyBindingConstants.KEYPAD_BUTTON_A, InsteonLegacyBindingConstants.KEYPAD_BUTTON_B,
-            InsteonLegacyBindingConstants.KEYPAD_BUTTON_C, InsteonLegacyBindingConstants.KEYPAD_BUTTON_D,
-            InsteonLegacyBindingConstants.KEYPAD_BUTTON_E, InsteonLegacyBindingConstants.KEYPAD_BUTTON_F,
-            InsteonLegacyBindingConstants.KEYPAD_BUTTON_G, InsteonLegacyBindingConstants.KEYPAD_BUTTON_H,
-            InsteonLegacyBindingConstants.KWH, InsteonLegacyBindingConstants.LAST_HEARD_FROM,
-            InsteonLegacyBindingConstants.LED_BRIGHTNESS, InsteonLegacyBindingConstants.LED_ONOFF,
-            InsteonLegacyBindingConstants.LIGHT_DIMMER, InsteonLegacyBindingConstants.LIGHT_LEVEL,
-            InsteonLegacyBindingConstants.LIGHT_LEVEL_ABOVE_THRESHOLD, InsteonLegacyBindingConstants.LOAD_DIMMER,
-            InsteonLegacyBindingConstants.LOAD_SWITCH, InsteonLegacyBindingConstants.LOAD_SWITCH_FAST_ON_OFF,
-            InsteonLegacyBindingConstants.LOAD_SWITCH_MANUAL_CHANGE, InsteonLegacyBindingConstants.LOWBATTERY,
-            InsteonLegacyBindingConstants.MANUAL_CHANGE, InsteonLegacyBindingConstants.MANUAL_CHANGE_BUTTON_A,
-            InsteonLegacyBindingConstants.MANUAL_CHANGE_BUTTON_B, InsteonLegacyBindingConstants.MANUAL_CHANGE_BUTTON_C,
-            InsteonLegacyBindingConstants.MANUAL_CHANGE_BUTTON_D, InsteonLegacyBindingConstants.MANUAL_CHANGE_BUTTON_E,
-            InsteonLegacyBindingConstants.MANUAL_CHANGE_BUTTON_F, InsteonLegacyBindingConstants.MANUAL_CHANGE_BUTTON_G,
-            InsteonLegacyBindingConstants.MANUAL_CHANGE_BUTTON_H, InsteonLegacyBindingConstants.NOTIFICATION,
-            InsteonLegacyBindingConstants.ON_LEVEL, InsteonLegacyBindingConstants.RAMP_DIMMER,
-            InsteonLegacyBindingConstants.RAMP_RATE, InsteonLegacyBindingConstants.RESET,
-            InsteonLegacyBindingConstants.STAGE1_DURATION, InsteonLegacyBindingConstants.SWITCH,
-            InsteonLegacyBindingConstants.SYSTEM_MODE, InsteonLegacyBindingConstants.TAMPER_SWITCH,
-            InsteonLegacyBindingConstants.TEMPERATURE, InsteonLegacyBindingConstants.TEMPERATURE_LEVEL,
-            InsteonLegacyBindingConstants.TOP_OUTLET, InsteonLegacyBindingConstants.UPDATE,
-            InsteonLegacyBindingConstants.WATTS).collect(Collectors.toSet()));
-
-    public static final String BROADCAST_GROUPS = "broadcastGroups";
-    public static final String BROADCAST_ON_OFF = "broadcastonoff";
-    public static final String CMD = "cmd";
-    public static final String CMD_RESET = "reset";
-    public static final String CMD_UPDATE = "update";
-    public static final String DATA = "data";
-    public static final String FIELD = "field";
-    public static final String FIELD_BATTERY_LEVEL = "battery_level";
-    public static final String FIELD_BATTERY_PERCENTAGE = "battery_percentage";
-    public static final String FIELD_BATTERY_WATERMARK_LEVEL = "battery_watermark_level";
-    public static final String FIELD_KWH = "kwh";
-    public static final String FIELD_LIGHT_LEVEL = "light_level";
-    public static final String FIELD_TEMPERATURE_LEVEL = "temperature_level";
-    public static final String FIELD_WATTS = "watts";
-    public static final String GROUP = "group";
-    public static final String METER = "meter";
-
-    public static final String HIDDEN_DOOR_SENSOR_PRODUCT_KEY = "F00.00.03";
-    public static final String MOTION_SENSOR_II_PRODUCT_KEY = "F00.00.24";
-    public static final String MOTION_SENSOR_PRODUCT_KEY = "0x00004A";
-    public static final String PLM_PRODUCT_KEY = "0x000045";
-    public static final String POWER_METER_PRODUCT_KEY = "F00.00.17";
+    private static final String CHANNEL_TYPE_ID_PREFIX = "legacy";
 
     private final Logger logger = LoggerFactory.getLogger(InsteonLegacyDeviceHandler.class);
 
@@ -157,9 +100,10 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
                 return;
             }
-            String address = config.getAddress();
-            if (!InsteonAddress.isValid(address)) {
-                String msg = "Unable to start Insteon device, the insteon or X10 address '" + address
+
+            DeviceAddress address = getDeviceAddress();
+            if (address == null) {
+                String msg = "Unable to start Insteon device, the Insteon or X10 address '" + config.getAddress()
                         + "' is invalid. It must be in the format 'AB.CD.EF' or 'H.U' (X10).";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
@@ -204,8 +148,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
             }
 
             InsteonLegacyBinding insteonBinding = getInsteonBinding();
-            InsteonAddress insteonAddress = new InsteonAddress(address);
-            if (insteonBinding.getDevice(insteonAddress) != null) {
+            if (insteonBinding.getDevice(address) != null) {
                 String msg = "A device already exists with the address '" + address + "'.";
                 logger.warn("{} {}", thing.getUID().getAsString(), msg);
 
@@ -213,7 +156,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                 return;
             }
 
-            LegacyDevice device = insteonBinding.makeNewDevice(insteonAddress, productKey, deviceConfigMap);
+            LegacyDevice device = insteonBinding.makeNewDevice(address, productKey, deviceConfigMap);
             if (device == null) {
                 String msg = "Unable to create a device with the product key '" + productKey + "' with the address'"
                         + address + "'.";
@@ -238,33 +181,27 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                 String feature = channelId.toLowerCase();
 
                 if (productKey.equals(HIDDEN_DOOR_SENSOR_PRODUCT_KEY)) {
-                    if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.BATTERY_LEVEL)
-                            || feature.equalsIgnoreCase(InsteonLegacyBindingConstants.BATTERY_WATERMARK_LEVEL)) {
+                    if (feature.equalsIgnoreCase(BATTERY_LEVEL) || feature.equalsIgnoreCase(BATTERY_WATERMARK_LEVEL)) {
                         feature = DATA;
                     }
                 } else if (productKey.equals(MOTION_SENSOR_PRODUCT_KEY)) {
-                    if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.BATTERY_LEVEL)
-                            || feature.equalsIgnoreCase(InsteonLegacyBindingConstants.LIGHT_LEVEL)) {
+                    if (feature.equalsIgnoreCase(BATTERY_LEVEL) || feature.equalsIgnoreCase(LIGHT_LEVEL)) {
                         feature = DATA;
                     }
                 } else if (productKey.equals(MOTION_SENSOR_II_PRODUCT_KEY)) {
-                    if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.BATTERY_LEVEL)
-                            || feature.equalsIgnoreCase(InsteonLegacyBindingConstants.BATTERY_PERCENT)
-                            || feature.equalsIgnoreCase(InsteonLegacyBindingConstants.LIGHT_LEVEL)
-                            || feature.equalsIgnoreCase(InsteonLegacyBindingConstants.TEMPERATURE_LEVEL)) {
+                    if (feature.equalsIgnoreCase(BATTERY_LEVEL) || feature.equalsIgnoreCase(BATTERY_PERCENT)
+                            || feature.equalsIgnoreCase(LIGHT_LEVEL) || feature.equalsIgnoreCase(TEMPERATURE_LEVEL)) {
                         feature = DATA;
                     }
                 } else if (productKey.equals(PLM_PRODUCT_KEY)) {
                     String[] parts = feature.split("#");
-                    if (parts.length == 2 && parts[0].equalsIgnoreCase(InsteonLegacyBindingConstants.BROADCAST_ON_OFF)
+                    if (parts.length == 2 && parts[0].equalsIgnoreCase(BROADCAST_ON_OFF)
                             && parts[1].matches("^\\d+$")) {
-                        feature = BROADCAST_ON_OFF;
+                        feature = parts[0];
                     }
                 } else if (productKey.equals(POWER_METER_PRODUCT_KEY)) {
-                    if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.KWH)
-                            || feature.equalsIgnoreCase(InsteonLegacyBindingConstants.RESET)
-                            || feature.equalsIgnoreCase(InsteonLegacyBindingConstants.UPDATE)
-                            || feature.equalsIgnoreCase(InsteonLegacyBindingConstants.WATTS)) {
+                    if (feature.equalsIgnoreCase(KWH) || feature.equalsIgnoreCase(RESET)
+                            || feature.equalsIgnoreCase(UPDATE) || feature.equalsIgnoreCase(WATTS)) {
                         feature = METER;
                     }
                 }
@@ -272,11 +209,11 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                 LegacyDeviceFeature f = device.getFeature(feature);
                 if (f != null) {
                     if (!f.isFeatureGroup()) {
-                        if (channelId.equals(InsteonLegacyBindingConstants.BROADCAST_ON_OFF)) {
+                        if (channelId.equalsIgnoreCase(BROADCAST_ON_OFF)) {
                             Set<String> broadcastChannels = new HashSet<>();
                             for (Channel channel : thing.getChannels()) {
                                 String id = channel.getUID().getId();
-                                if (id.startsWith(InsteonLegacyBindingConstants.BROADCAST_ON_OFF)) {
+                                if (id.startsWith(BROADCAST_ON_OFF)) {
                                     channelMap.put(id, channel);
                                     broadcastChannels.add(id);
                                 }
@@ -289,18 +226,9 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                                     valid = true;
                                     for (Object o : list) {
                                         if (o instanceof Double && (Double) o % 1 == 0) {
-                                            String id = InsteonLegacyBindingConstants.BROADCAST_ON_OFF + "#"
-                                                    + ((Double) o).intValue();
+                                            String id = BROADCAST_ON_OFF + "#" + ((Double) o).intValue();
                                             if (!broadcastChannels.contains(id)) {
-                                                ChannelUID channelUID = new ChannelUID(thing.getUID(), id);
-                                                ChannelTypeUID channelTypeUID = new ChannelTypeUID(
-                                                        InsteonLegacyBindingConstants.BINDING_ID,
-                                                        InsteonLegacyBindingConstants.SWITCH);
-                                                Channel channel = callback
-                                                        .createChannelBuilder(channelUID, channelTypeUID).withLabel(id)
-                                                        .build();
-
-                                                channelMap.put(id, channel);
+                                                channelMap.put(id, createChannel(id, BROADCAST_ON_OFF, callback));
                                                 broadcastChannels.add(id);
                                             }
                                         } else {
@@ -320,15 +248,7 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
                                 }
                             }
                         } else {
-                            ChannelUID channelUID = new ChannelUID(thing.getUID(), channelId);
-                            ChannelTypeUID channelTypeUID = new ChannelTypeUID(InsteonLegacyBindingConstants.BINDING_ID,
-                                    channelId);
-                            Channel channel = thing.getChannel(channelUID);
-                            if (channel == null) {
-                                channel = callback.createChannelBuilder(channelUID, channelTypeUID).build();
-                            }
-
-                            channelMap.put(channelId, channel);
+                            channelMap.put(channelId, createChannel(channelId, channelId, callback));
                         }
                     } else {
                         logger.debug("{} is a feature group for {}. It will not be added as a channel.", feature,
@@ -398,9 +318,9 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
     public void dispose() {
         InsteonLegacyDeviceConfiguration config = this.config;
         if (config != null) {
-            String address = config.getAddress();
-            if (getBridge() != null && InsteonAddress.isValid(address)) {
-                getInsteonBinding().removeDevice(new InsteonAddress(address));
+            DeviceAddress address = getDeviceAddress();
+            if (getBridge() != null && address != null) {
+                getInsteonBinding().removeDevice(address);
 
                 logger.debug("removed {} address = {}", getThing().getUID().getAsString(), address);
             }
@@ -466,58 +386,62 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
         }
         String productKey = config.getProductKey();
         if (productKey.equals(HIDDEN_DOOR_SENSOR_PRODUCT_KEY)) {
-            if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.BATTERY_LEVEL)) {
+            if (feature.equalsIgnoreCase(BATTERY_LEVEL)) {
                 params.put(FIELD, FIELD_BATTERY_LEVEL);
                 feature = DATA;
-            } else if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.BATTERY_WATERMARK_LEVEL)) {
+            } else if (feature.equalsIgnoreCase(BATTERY_WATERMARK_LEVEL)) {
                 params.put(FIELD, FIELD_BATTERY_WATERMARK_LEVEL);
                 feature = DATA;
             }
         } else if (productKey.equals(MOTION_SENSOR_PRODUCT_KEY)) {
-            if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.BATTERY_LEVEL)) {
+            if (feature.equalsIgnoreCase(BATTERY_LEVEL)) {
                 params.put(FIELD, FIELD_BATTERY_LEVEL);
                 feature = DATA;
-            } else if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.LIGHT_LEVEL)) {
+            } else if (feature.equalsIgnoreCase(LIGHT_LEVEL)) {
                 params.put(FIELD, FIELD_LIGHT_LEVEL);
                 feature = DATA;
             }
         } else if (productKey.equals(MOTION_SENSOR_II_PRODUCT_KEY)) {
-            if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.BATTERY_LEVEL)) {
+            if (feature.equalsIgnoreCase(BATTERY_LEVEL)) {
                 params.put(FIELD, FIELD_BATTERY_LEVEL);
                 feature = DATA;
-            } else if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.BATTERY_PERCENT)) {
+            } else if (feature.equalsIgnoreCase(BATTERY_PERCENT)) {
                 params.put(FIELD, FIELD_BATTERY_PERCENTAGE);
                 feature = DATA;
-            } else if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.LIGHT_LEVEL)) {
+            } else if (feature.equalsIgnoreCase(LIGHT_LEVEL)) {
                 params.put(FIELD, FIELD_LIGHT_LEVEL);
                 feature = DATA;
-            } else if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.TEMPERATURE_LEVEL)) {
+            } else if (feature.equalsIgnoreCase(TEMPERATURE_LEVEL)) {
                 params.put(FIELD, FIELD_TEMPERATURE_LEVEL);
                 feature = DATA;
             }
         } else if (productKey.equals(PLM_PRODUCT_KEY)) {
             String[] parts = feature.split("#");
-            if (parts.length == 2 && parts[0].equalsIgnoreCase(InsteonLegacyBindingConstants.BROADCAST_ON_OFF)
-                    && parts[1].matches("^\\d+$")) {
+            if (parts.length == 2 && parts[0].equalsIgnoreCase(BROADCAST_ON_OFF) && parts[1].matches("^\\d+$")) {
                 params.put(GROUP, parts[1]);
-                feature = BROADCAST_ON_OFF;
+                feature = parts[0];
             }
         } else if (productKey.equals(POWER_METER_PRODUCT_KEY)) {
-            if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.KWH)) {
+            if (feature.equalsIgnoreCase(KWH)) {
                 params.put(FIELD, FIELD_KWH);
-            } else if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.WATTS)) {
+            } else if (feature.equalsIgnoreCase(WATTS)) {
                 params.put(FIELD, FIELD_WATTS);
-            } else if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.RESET)) {
+            } else if (feature.equalsIgnoreCase(RESET)) {
                 params.put(CMD, CMD_RESET);
-            } else if (feature.equalsIgnoreCase(InsteonLegacyBindingConstants.UPDATE)) {
+            } else if (feature.equalsIgnoreCase(UPDATE)) {
                 params.put(CMD, CMD_UPDATE);
             }
 
             feature = METER;
         }
 
+        DeviceAddress address = getDeviceAddress();
+        if (address == null) {
+            logger.warn("device address is null");
+            return;
+        }
         InsteonLegacyChannelConfiguration bindingConfig = new InsteonLegacyChannelConfiguration(channelUID, feature,
-                new InsteonAddress(config.getAddress()), productKey, params);
+                address, productKey, params);
         getInsteonBinding().addFeatureListener(bindingConfig);
 
         StringBuilder builder = new StringBuilder(channelUID.getAsString());
@@ -539,8 +463,17 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
         logger.debug("channel {} unlinked ", channelUID.getAsString());
     }
 
-    public InsteonAddress getInsteonAddress() {
-        return new InsteonAddress(config.getAddress());
+    public @Nullable DeviceAddress getDeviceAddress() {
+        InsteonLegacyDeviceConfiguration config = this.config;
+        if (config != null) {
+            String address = config.getAddress();
+            if (InsteonAddress.isValid(address)) {
+                return new InsteonAddress(address);
+            } else if (X10Address.isValid(address)) {
+                return new X10Address(address);
+            }
+        }
+        return null;
     }
 
     public void deviceNotLinked() {
@@ -549,6 +482,27 @@ public class InsteonLegacyDeviceHandler extends BaseThingHandler {
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
 
         deviceLinked = false;
+    }
+
+    private Channel createChannel(String channelId, String channelTypeId, ThingHandlerCallback callback) {
+        ChannelUID channelUID = new ChannelUID(getThing().getUID(), channelId);
+        ChannelTypeUID channelTypeUID = new ChannelTypeUID(InsteonBindingConstants.BINDING_ID,
+                CHANNEL_TYPE_ID_PREFIX + StringUtils.capitalize(channelTypeId));
+        Configuration channelConfig = getChannelConfig(channelUID);
+        Channel channel = getThing().getChannel(channelUID);
+        if (channel == null) {
+            channel = callback.createChannelBuilder(channelUID, channelTypeUID).withConfiguration(channelConfig)
+                    .build();
+        }
+        return channel;
+    }
+
+    private Configuration getChannelConfig(ChannelUID channelUID) {
+        try {
+            return getInsteonNetworkHandler().getChannelConfig(channelUID);
+        } catch (IllegalArgumentException e) {
+            return new Configuration();
+        }
     }
 
     private InsteonLegacyNetworkHandler getInsteonNetworkHandler() {

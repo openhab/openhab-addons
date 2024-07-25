@@ -194,4 +194,25 @@ public class LegacyFeatureTemplate {
     public String toString() {
         return getName() + "(" + isStatusFeature() + ")";
     }
+
+    /**
+     * Ugly little helper class to facilitate late instantiation of handlers
+     */
+    public static class HandlerEntry {
+        Map<String, String> params;
+        String name;
+
+        HandlerEntry(String name, Map<String, String> params) {
+            this.name = name;
+            this.params = params;
+        }
+
+        Map<String, String> getParams() {
+            return params;
+        }
+
+        String getName() {
+            return name;
+        }
+    }
 }

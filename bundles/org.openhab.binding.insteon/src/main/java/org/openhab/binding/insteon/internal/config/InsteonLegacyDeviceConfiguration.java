@@ -23,13 +23,8 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class InsteonLegacyDeviceConfiguration {
 
-    // required parameter
     private String address = "";
-
-    // required parameter
     private String productKey = "";
-
-    // optional parameter
     private @Nullable String deviceConfig;
 
     public String getAddress() {

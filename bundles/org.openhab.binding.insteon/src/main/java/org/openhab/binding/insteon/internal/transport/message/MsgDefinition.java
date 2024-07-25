@@ -12,11 +12,12 @@
  */
 package org.openhab.binding.insteon.internal.transport.message;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Definition (layout) of an Insteon message. Says which bytes go where.
@@ -25,6 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Daniel Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public class MsgDefinition {
@@ -42,8 +44,8 @@ public class MsgDefinition {
         fields = new HashMap<>(m.fields);
     }
 
-    public Map<String, Field> getFields() {
-        return fields;
+    public List<Field> getFields() {
+        return fields.values().stream().sorted(Comparator.comparing(Field::getOffset)).toList();
     }
 
     public boolean containsField(String name) {
@@ -61,12 +63,11 @@ public class MsgDefinition {
      * @return reference to field
      * @throws FieldException if no such field can be found
      */
-    public Field getField(@Nullable String name) throws FieldException {
-        @Nullable
-        Field f = fields.get(name);
-        if (f == null) {
+    public Field getField(String name) throws FieldException {
+        Field field = fields.get(name);
+        if (field == null) {
             throw new FieldException("field " + name + " not found");
         }
-        return f;
+        return field;
     }
 }

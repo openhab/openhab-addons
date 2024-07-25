@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.insteon.internal.device.feature;
 
+import static org.openhab.binding.insteon.internal.InsteonLegacyBindingConstants.*;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,15 +24,16 @@ import java.util.TimerTask;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyChannelConfiguration;
+import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.LegacyDevice;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceFeature;
-import org.openhab.binding.insteon.internal.device.X10;
+import org.openhab.binding.insteon.internal.device.X10Address;
+import org.openhab.binding.insteon.internal.device.X10Command;
 import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureListener.StateChangeType;
-import org.openhab.binding.insteon.internal.handler.InsteonLegacyDeviceHandler;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
-import org.openhab.binding.insteon.internal.utils.Utils;
+import org.openhab.binding.insteon.internal.utils.ParameterParser;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
@@ -45,6 +48,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Pfrommer - Initial contribution
  * @author Bernd Pfrommer - openHAB 1 insteonplm binding
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public abstract class LegacyCommandHandler {
@@ -80,17 +84,7 @@ public abstract class LegacyCommandHandler {
      * @return value of parameter
      */
     protected int getIntParameter(String key, int def) {
-        String val = parameters.get(key);
-        if (val == null) {
-            return (def); // param not found
-        }
-        int ret = def;
-        try {
-            ret = Utils.strToInt(val);
-        } catch (NumberFormatException e) {
-            logger.warn("malformed int parameter in command handler: {}", key);
-        }
-        return ret;
+        return ParameterParser.getParameterAsOrDefault(parameters.get(key), Integer.class, def);
     }
 
     /**
@@ -114,9 +108,8 @@ public abstract class LegacyCommandHandler {
     }
 
     protected int getMaxLightLevel(InsteonLegacyChannelConfiguration conf, int defaultLevel) {
-        Map<String, String> params = conf.getParameters();
         if (conf.getFeature().contains("dimmer")) {
-            String dimmerMax = params.get("dimmermax");
+            String dimmerMax = conf.getParameter("dimmermax");
             if (dimmerMax != null) {
                 String item = conf.getChannelName();
                 try {
@@ -150,14 +143,7 @@ public abstract class LegacyCommandHandler {
      * @return the value of the "group" parameter, or -1 if none
      */
     protected static int getGroup(InsteonLegacyChannelConfiguration c) {
-        String v = c.getParameters().get("group");
-        int iv = -1;
-        try {
-            iv = (v == null) ? -1 : Utils.strToInt(v);
-        } catch (NumberFormatException e) {
-            logger.warn("malformed int parameter in for item {}", c.getChannelName());
-        }
-        return iv;
+        return ParameterParser.getParameterAsOrDefault(c.getParameter("group"), Integer.class, -1);
     }
 
     public static class WarnCommandHandler extends LegacyCommandHandler {
@@ -203,18 +189,22 @@ public abstract class LegacyCommandHandler {
                     direc = 0x13;
                     logger.debug("{}: sent msg to switch {} off", nm(), dev.getAddress());
                 }
-                if (ext == 1 || ext == 2) {
+                int group = getGroup(conf);
+                if (group != -1) {
+                    m = Msg.makeBroadcastMessage(group, (byte) direc, (byte) level);
+                } else if (ext == 0) {
+                    m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), (byte) direc, (byte) level);
+                } else {
                     byte[] data = new byte[] { (byte) getIntParameter("d1", 0), (byte) getIntParameter("d2", 0),
                             (byte) getIntParameter("d3", 0) };
-                    m = dev.makeExtendedMessage((byte) 0x0f, (byte) direc, (byte) level, data);
+                    m = Msg.makeExtendedMessage((InsteonAddress) dev.getAddress(), (byte) direc, (byte) level, data,
+                            false);
                     logger.debug("{}: was an extended message for device {}", nm(), dev.getAddress());
                     if (ext == 1) {
                         m.setCRC();
                     } else if (ext == 2) {
                         m.setCRC2();
                     }
-                } else {
-                    m = dev.makeStandardMessage((byte) 0x0f, (byte) direc, (byte) level, getGroup(conf));
                 }
                 logger.debug("Sending message to {}", dev.getAddress());
                 dev.enqueueMessage(m, feature);
@@ -235,17 +225,17 @@ public abstract class LegacyCommandHandler {
         @Override
         public void handleCommand(InsteonLegacyChannelConfiguration conf, Command cmd, LegacyDevice dev) {
             try {
-                if (cmd == OnOffType.ON) {
-                    int level = getMaxLightLevel(conf, 0xff);
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x12, (byte) level, getGroup(conf));
-                    dev.enqueueMessage(m, feature);
-                    logger.debug("{}: sent fast on to switch {} level {}", nm(), dev.getAddress(),
-                            level == 0xff ? "on" : level);
-                } else if (cmd == OnOffType.OFF) {
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x14, (byte) 0x00, getGroup(conf));
-                    dev.enqueueMessage(m, feature);
-                    logger.debug("{}: sent fast off to switch {}", nm(), dev.getAddress());
+                int cmd1 = cmd == OnOffType.ON ? 0x12 : 0x14;
+                int level = cmd == OnOffType.ON ? getMaxLightLevel(conf, 0xff) : 0x00;
+                int group = getGroup(conf);
+                Msg m;
+                if (group != -1) {
+                    m = Msg.makeBroadcastMessage(group, (byte) cmd1, (byte) level);
+                } else {
+                    m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), (byte) cmd1, (byte) level);
                 }
+                dev.enqueueMessage(m, feature);
+                logger.debug("{}: sent fast {} to switch {} level {}", nm(), cmd, dev.getAddress(), level);
                 // expect to get a direct ack after this!
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
@@ -263,23 +253,20 @@ public abstract class LegacyCommandHandler {
         @Override
         public void handleCommand(InsteonLegacyChannelConfiguration conf, Command cmd, LegacyDevice dev) {
             try {
-                if (cmd == OnOffType.ON) {
-                    double ramptime = getRampTime(conf, 0);
-                    int ramplevel = getRampLevel(conf, 100);
-                    byte cmd2 = encode(ramptime, ramplevel);
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, getOnCmd(), cmd2, getGroup(conf));
-                    dev.enqueueMessage(m, feature);
-                    logger.debug("{}: sent ramp on to switch {} time {} level {} cmd1 {}", nm(), dev.getAddress(),
-                            ramptime, ramplevel, getOnCmd());
-                } else if (cmd == OnOffType.OFF) {
-                    double ramptime = getRampTime(conf, 0);
-                    int ramplevel = getRampLevel(conf, 0 /* ignored */);
-                    byte cmd2 = encode(ramptime, ramplevel);
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, getOffCmd(), cmd2, getGroup(conf));
-                    dev.enqueueMessage(m, feature);
-                    logger.debug("{}: sent ramp off to switch {} time {} cmd1 {}", nm(), dev.getAddress(), ramptime,
-                            getOffCmd());
+                byte cmd1 = cmd == OnOffType.ON ? getOnCmd() : getOffCmd();
+                double ramptime = getRampTime(conf, 0);
+                int ramplevel = getRampLevel(conf, 100);
+                byte cmd2 = encode(ramptime, ramplevel);
+                int group = getGroup(conf);
+                Msg m;
+                if (group != -1) {
+                    m = Msg.makeBroadcastMessage(group, cmd1, cmd2);
+                } else {
+                    m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), cmd1, cmd2);
                 }
+                dev.enqueueMessage(m, feature);
+                logger.debug("{}: sent ramp {} to switch {} time {} level {} cmd1 {}", nm(), cmd, dev.getAddress(),
+                        ramptime, ramplevel, cmd1);
                 // expect to get a direct ack after this!
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
@@ -289,7 +276,7 @@ public abstract class LegacyCommandHandler {
         }
 
         private int getRampLevel(InsteonLegacyChannelConfiguration conf, int defaultValue) {
-            String str = conf.getParameters().get("ramplevel");
+            String str = conf.getParameter("ramplevel");
             return str != null ? Integer.parseInt(str) : defaultValue;
         }
     }
@@ -306,7 +293,13 @@ public abstract class LegacyCommandHandler {
                     int v = decimalCommand.intValue();
                     int cmd1 = (v != 1) ? 0x17 : 0x18; // start or stop
                     int cmd2 = (v == 2) ? 0x01 : 0; // up or down
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) cmd1, (byte) cmd2, getGroup(conf));
+                    int group = getGroup(conf);
+                    Msg m;
+                    if (group != -1) {
+                        m = Msg.makeBroadcastMessage(group, (byte) cmd1, (byte) cmd2);
+                    } else {
+                        m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), (byte) cmd1, (byte) cmd2);
+                    }
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: cmd {} sent manual change {} {} to {}", nm(), v,
                             (cmd1 == 0x17) ? "START" : "STOP", (cmd2 == 0x01) ? "UP" : "DOWN", dev.getAddress());
@@ -333,17 +326,16 @@ public abstract class LegacyCommandHandler {
         public void handleCommand(InsteonLegacyChannelConfiguration conf, Command cmd, LegacyDevice dev) {
             try {
                 if (cmd == OnOffType.ON || cmd == OnOffType.OFF) {
-                    byte cmd1 = (byte) ((cmd == OnOffType.ON) ? 0x11 : 0x13);
-                    byte value = (byte) ((cmd == OnOffType.ON) ? 0xFF : 0x00);
+                    int cmd1 = cmd == OnOffType.ON ? 0x11 : 0x13;
+                    int cmd2 = cmd == OnOffType.ON ? 0xFF : 0x00;
                     int group = getGroup(conf);
                     if (group == -1) {
                         logger.warn("no group=xx specified in item {}", conf.getChannelName());
                         return;
                     }
-                    logger.debug("{}: sending {} broadcast to group {}", nm(), (cmd1 == 0x11) ? "ON" : "OFF",
-                            getGroup(conf));
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, cmd1, value, group);
+                    Msg m = Msg.makeBroadcastMessage(group, (byte) cmd1, (byte) cmd2);
                     dev.enqueueMessage(m, feature);
+                    logger.debug("{}: sent {} broadcast to group {}", nm(), cmd, group);
                     feature.pollRelatedDevices();
                 }
             } catch (InvalidMessageTypeException e) {
@@ -363,13 +355,13 @@ public abstract class LegacyCommandHandler {
         public void handleCommand(InsteonLegacyChannelConfiguration conf, Command cmd, LegacyDevice dev) {
             try {
                 if (cmd == OnOffType.ON) {
-                    Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x20, (byte) 0x09,
-                            new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00 });
+                    Msg m = Msg.makeExtendedMessage((InsteonAddress) dev.getAddress(), (byte) 0x20, (byte) 0x09,
+                            new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00 }, true);
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to switch {} on", nm(), dev.getAddress());
                 } else if (cmd == OnOffType.OFF) {
-                    Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x20, (byte) 0x08,
-                            new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00 });
+                    Msg m = Msg.makeExtendedMessage((InsteonAddress) dev.getAddress(), (byte) 0x20, (byte) 0x08,
+                            new byte[] { (byte) 0x00, (byte) 0x00, (byte) 0x00 }, true);
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to switch {} off", nm(), dev.getAddress());
                 }
@@ -389,17 +381,16 @@ public abstract class LegacyCommandHandler {
         @Override
         public void handleCommand(InsteonLegacyChannelConfiguration conf, Command cmd, LegacyDevice dev) {
             try {
-                byte houseCode = dev.getX10HouseCode();
-                byte houseUnitCode = (byte) (houseCode << 4 | dev.getX10UnitCode());
+                X10Address address = (X10Address) dev.getAddress();
                 if (cmd == OnOffType.ON || cmd == OnOffType.OFF) {
-                    byte houseCommandCode = (byte) (houseCode << 4
-                            | (cmd == OnOffType.ON ? X10.Command.ON.code() : X10.Command.OFF.code()));
-                    Msg munit = dev.makeX10Message(houseUnitCode, (byte) 0x00); // send unit code
+                    byte cmdCode = (byte) (address.getHouseCode() << 4
+                            | (cmd == OnOffType.ON ? X10Command.ON.code() : X10Command.OFF.code()));
+                    Msg munit = Msg.makeX10AddressMessage(address); // send unit code
                     dev.enqueueMessage(munit, feature);
-                    Msg mcmd = dev.makeX10Message(houseCommandCode, (byte) 0x80); // send command code
+                    Msg mcmd = Msg.makeX10CommandMessage(cmdCode); // send command code
                     dev.enqueueMessage(mcmd, feature);
                     String onOff = cmd == OnOffType.ON ? "ON" : "OFF";
-                    logger.debug("{}: sent msg to switch {} {}", nm(), dev.getAddress(), onOff);
+                    logger.debug("{}: sent msg to switch {} {}", nm(), address, onOff);
                 }
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
@@ -421,21 +412,20 @@ public abstract class LegacyCommandHandler {
                 // I did not have hardware that would respond to the PRESET_DIM codes.
                 // This code path needs testing.
                 //
-                byte houseCode = dev.getX10HouseCode();
-                byte houseUnitCode = (byte) (houseCode << 4 | dev.getX10UnitCode());
-                Msg munit = dev.makeX10Message(houseUnitCode, (byte) 0x00); // send unit code
+                X10Address address = (X10Address) dev.getAddress();
+                Msg munit = Msg.makeX10AddressMessage(address); // send unit code
                 dev.enqueueMessage(munit, feature);
                 PercentType pc = (PercentType) cmd;
-                logger.debug("{}: changing level of {} to {}", nm(), dev.getAddress(), pc.intValue());
+                logger.debug("{}: changing level of {} to {}", nm(), address, pc.intValue());
                 int level = (pc.intValue() * 32) / 100;
-                byte cmdCode = (level >= 16) ? X10.Command.PRESET_DIM_2.code() : X10.Command.PRESET_DIM_1.code();
+                byte cmdCode = (level >= 16) ? X10Command.PRESET_DIM_2.code() : X10Command.PRESET_DIM_1.code();
                 level = level % 16;
                 if (level <= 0) {
                     level = 0;
                 }
-                houseCode = (byte) x10CodeForLevel[level];
-                cmdCode |= (houseCode << 4);
-                Msg mcmd = dev.makeX10Message(cmdCode, (byte) 0x80); // send command code
+                byte levelCode = (byte) x10CodeForLevel[level];
+                cmdCode |= (levelCode << 4);
+                Msg mcmd = Msg.makeX10CommandMessage(cmdCode); // send command code
                 dev.enqueueMessage(mcmd, feature);
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
@@ -455,18 +445,17 @@ public abstract class LegacyCommandHandler {
         @Override
         public void handleCommand(InsteonLegacyChannelConfiguration conf, Command cmd, LegacyDevice dev) {
             try {
-                byte houseCode = dev.getX10HouseCode();
-                byte houseUnitCode = (byte) (houseCode << 4 | dev.getX10UnitCode());
+                X10Address address = (X10Address) dev.getAddress();
                 if (cmd == IncreaseDecreaseType.INCREASE || cmd == IncreaseDecreaseType.DECREASE) {
-                    byte houseCommandCode = (byte) (houseCode << 4
-                            | (cmd == IncreaseDecreaseType.INCREASE ? X10.Command.BRIGHT.code()
-                                    : X10.Command.DIM.code()));
-                    Msg munit = dev.makeX10Message(houseUnitCode, (byte) 0x00); // send unit code
+                    byte cmdCode = (byte) (address.getHouseCode() << 4
+                            | (cmd == IncreaseDecreaseType.INCREASE ? X10Command.BRIGHT.code()
+                                    : X10Command.DIM.code()));
+                    Msg munit = Msg.makeX10AddressMessage(address); // send unit code
                     dev.enqueueMessage(munit, feature);
-                    Msg mcmd = dev.makeX10Message(houseCommandCode, (byte) 0x80); // send command code
+                    Msg mcmd = Msg.makeX10CommandMessage(cmdCode); // send command code
                     dev.enqueueMessage(mcmd, feature);
                     String bd = cmd == IncreaseDecreaseType.INCREASE ? "BRIGHTEN" : "DIM";
-                    logger.debug("{}: sent msg to switch {} {}", nm(), dev.getAddress(), bd);
+                    logger.debug("{}: sent msg to switch {} {}", nm(), address, bd);
                 }
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
@@ -485,11 +474,11 @@ public abstract class LegacyCommandHandler {
         public void handleCommand(InsteonLegacyChannelConfiguration conf, Command cmd, LegacyDevice dev) {
             try {
                 if (cmd == OnOffType.ON) {
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x11, (byte) 0xff);
+                    Msg m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), (byte) 0x11, (byte) 0xff);
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to switch {} on", nm(), dev.getAddress());
                 } else if (cmd == OnOffType.OFF) {
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x13, (byte) 0x00);
+                    Msg m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), (byte) 0x13, (byte) 0x00);
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to switch {} off", nm(), dev.getAddress());
                 }
@@ -526,11 +515,11 @@ public abstract class LegacyCommandHandler {
         public void handleCommand(InsteonLegacyChannelConfiguration conf, Command cmd, LegacyDevice dev) {
             try {
                 if (cmd == IncreaseDecreaseType.INCREASE) {
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x15, (byte) 0x00);
+                    Msg m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), (byte) 0x15, (byte) 0x00);
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to brighten {}", nm(), dev.getAddress());
                 } else if (cmd == IncreaseDecreaseType.DECREASE) {
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x16, (byte) 0x00);
+                    Msg m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), (byte) 0x16, (byte) 0x00);
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to dimm {}", nm(), dev.getAddress());
                 }
@@ -555,11 +544,11 @@ public abstract class LegacyCommandHandler {
                 int level = (int) Math.ceil((pc.intValue() * 255.0) / 100); // round up
                 if (level > 0) { // make light on message with given level
                     level = getMaxLightLevel(conf, level);
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x11, (byte) level);
+                    Msg m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), (byte) 0x11, (byte) level);
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to set {} to {}", nm(), dev.getAddress(), level);
                 } else { // switch off
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x13, (byte) 0x00);
+                    Msg m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), (byte) 0x13, (byte) 0x00);
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to set {} to zero by switching off", nm(), dev.getAddress());
                 }
@@ -630,7 +619,7 @@ public abstract class LegacyCommandHandler {
         }
 
         protected double getRampTime(InsteonLegacyChannelConfiguration conf, double defaultValue) {
-            String str = conf.getParameters().get("ramptime");
+            String str = conf.getParameter("ramptime");
             return str != null ? Double.parseDouble(str) : defaultValue;
         }
     }
@@ -650,12 +639,12 @@ public abstract class LegacyCommandHandler {
                 if (level > 0) { // make light on message with given level
                     level = getMaxLightLevel(conf, level);
                     byte cmd2 = encode(ramptime, level);
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, getOnCmd(), cmd2);
+                    Msg m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), getOnCmd(), cmd2);
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to set {} to {} with {} second ramp time.", nm(), dev.getAddress(),
                             level, ramptime);
                 } else { // switch off
-                    Msg m = dev.makeStandardMessage((byte) 0x0f, getOffCmd(), (byte) 0x00);
+                    Msg m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), getOffCmd(), (byte) 0x00);
                     dev.enqueueMessage(m, feature);
                     logger.debug("{}: sent msg to set {} to zero by switching off with {} ramp time.", nm(),
                             dev.getAddress(), ramptime);
@@ -675,25 +664,23 @@ public abstract class LegacyCommandHandler {
 
         @Override
         public void handleCommand(InsteonLegacyChannelConfiguration conf, Command cmd, LegacyDevice dev) {
-            String cmdParam = conf.getParameters().get(InsteonLegacyDeviceHandler.CMD);
+            String cmdParam = conf.getParameter(CMD);
             if (cmdParam == null) {
                 logger.warn("{} ignoring cmd {} because no cmd= is configured!", nm(), cmd);
                 return;
             }
             try {
                 if (cmd == OnOffType.ON) {
-                    if (cmdParam.equals(InsteonLegacyDeviceHandler.CMD_RESET)) {
-                        Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x80, (byte) 0x00);
+                    if (cmdParam.equals(CMD_RESET)) {
+                        Msg m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), (byte) 0x80, (byte) 0x00);
                         dev.enqueueMessage(m, feature);
                         logger.debug("{}: sent reset msg to power meter {}", nm(), dev.getAddress());
-                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, InsteonLegacyDeviceHandler.CMD,
-                                InsteonLegacyDeviceHandler.CMD_RESET);
-                    } else if (cmdParam.equals(InsteonLegacyDeviceHandler.CMD_UPDATE)) {
-                        Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x82, (byte) 0x00);
+                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, CMD, CMD_RESET);
+                    } else if (cmdParam.equals(CMD_UPDATE)) {
+                        Msg m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), (byte) 0x82, (byte) 0x00);
                         dev.enqueueMessage(m, feature);
                         logger.debug("{}: sent update msg to power meter {}", nm(), dev.getAddress());
-                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, InsteonLegacyDeviceHandler.CMD,
-                                InsteonLegacyDeviceHandler.CMD_UPDATE);
+                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, CMD, CMD_UPDATE);
                     } else {
                         logger.warn("{}: ignoring unknown cmd {} for power meter {}", nm(), cmdParam, dev.getAddress());
                     }
@@ -736,6 +723,7 @@ public abstract class LegacyCommandHandler {
                 String vfield = getStringParameter("value", "");
                 if (vfield == null || vfield.isEmpty()) {
                     logger.warn("{} has no value field specified", nm());
+                    return;
                 }
                 //
                 // figure out what cmd1, cmd2, d1, d2, d3 are supposed to be
@@ -752,7 +740,8 @@ public abstract class LegacyCommandHandler {
                 if (ext == 1 || ext == 2) {
                     byte[] data = new byte[] { (byte) getIntParameter("d1", 0), (byte) getIntParameter("d2", 0),
                             (byte) getIntParameter("d3", 0) };
-                    m = dev.makeExtendedMessage((byte) 0x0f, (byte) cmd1, (byte) cmd2, data);
+                    m = Msg.makeExtendedMessage((InsteonAddress) dev.getAddress(), (byte) cmd1, (byte) cmd2, data,
+                            false);
                     m.setByte(vfield, level);
                     if (ext == 1) {
                         m.setCRC();
@@ -760,12 +749,11 @@ public abstract class LegacyCommandHandler {
                         m.setCRC2();
                     }
                 } else {
-                    m = dev.makeStandardMessage((byte) 0x0f, (byte) cmd1, (byte) cmd2);
+                    m = Msg.makeStandardMessage((InsteonAddress) dev.getAddress(), (byte) cmd1, (byte) cmd2);
                     m.setByte(vfield, level);
                 }
                 dev.enqueueMessage(m, feature);
                 logger.debug("{}: sent msg to change level to {}", nm(), ((DecimalType) cmd).intValue());
-                m = null;
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
             } catch (FieldException e) {

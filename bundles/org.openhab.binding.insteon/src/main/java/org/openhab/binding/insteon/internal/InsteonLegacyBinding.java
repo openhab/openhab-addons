@@ -32,6 +32,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyChannelConfiguration;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyNetworkConfiguration;
+import org.openhab.binding.insteon.internal.device.DeviceAddress;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.LegacyDevice;
 import org.openhab.binding.insteon.internal.device.LegacyDevice.DeviceStatus;
@@ -40,9 +41,9 @@ import org.openhab.binding.insteon.internal.device.LegacyDeviceType;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceTypeLoader;
 import org.openhab.binding.insteon.internal.device.LegacyPollManager;
 import org.openhab.binding.insteon.internal.device.LegacyRequestManager;
+import org.openhab.binding.insteon.internal.device.X10Address;
 import org.openhab.binding.insteon.internal.device.database.LegacyModemDBEntry;
 import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureListener;
-import org.openhab.binding.insteon.internal.handler.InsteonLegacyDeviceHandler;
 import org.openhab.binding.insteon.internal.handler.InsteonLegacyNetworkHandler;
 import org.openhab.binding.insteon.internal.transport.LegacyDriver;
 import org.openhab.binding.insteon.internal.transport.LegacyDriverListener;
@@ -50,7 +51,6 @@ import org.openhab.binding.insteon.internal.transport.LegacyPort;
 import org.openhab.binding.insteon.internal.transport.LegacyPortListener;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
-import org.openhab.binding.insteon.internal.utils.Utils;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -104,17 +104,17 @@ import org.xml.sax.SAXException;
  * @author Bernd Pfrommer - Initial contribution
  * @author Daniel Pfrommer - openHAB 1 insteonplm binding
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
-public class InsteonLegacyBinding {
+public class InsteonLegacyBinding implements LegacyDriverListener, LegacyPortListener {
     private static final int DEAD_DEVICE_COUNT = 10;
 
     private final Logger logger = LoggerFactory.getLogger(InsteonLegacyBinding.class);
 
     private LegacyDriver driver;
-    private Map<InsteonAddress, LegacyDevice> devices = new ConcurrentHashMap<>();
+    private Map<DeviceAddress, LegacyDevice> devices = new ConcurrentHashMap<>();
     private Map<String, InsteonLegacyChannelConfiguration> bindingConfigs = new ConcurrentHashMap<>();
-    private PortListener portListener = new PortListener();
     private int devicePollIntervalMilliseconds = 300000;
     private int deadDeviceTimeout = -1;
     private boolean driverInitialized = false;
@@ -127,11 +127,11 @@ public class InsteonLegacyBinding {
             SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {
         this.handler = handler;
 
-        String port = config.getPort();
-        logger.debug("port = '{}'", Utils.redactPassword(port));
+        String port = config.getRedactedPort();
+        logger.debug("port = '{}'", port);
 
-        driver = new LegacyDriver(port, portListener, serialPortManager, scheduler);
-        driver.addPortListener(portListener);
+        driver = new LegacyDriver(config, this, serialPortManager, scheduler);
+        driver.addPortListener(this);
 
         Integer devicePollIntervalSeconds = config.getDevicePollIntervalSeconds();
         if (devicePollIntervalSeconds != null) {
@@ -208,7 +208,7 @@ public class InsteonLegacyBinding {
     public void addFeatureListener(InsteonLegacyChannelConfiguration bindingConfig) {
         logger.debug("adding listener for channel {}", bindingConfig.getChannelName());
 
-        InsteonAddress address = bindingConfig.getAddress();
+        DeviceAddress address = bindingConfig.getAddress();
         LegacyDevice dev = getDevice(address);
         if (dev == null) {
             logger.warn("device for address {} is null", address);
@@ -249,7 +249,7 @@ public class InsteonLegacyBinding {
 
         logger.debug("removing listener for channel {}", channelName);
 
-        for (Iterator<Entry<InsteonAddress, LegacyDevice>> it = devices.entrySet().iterator(); it.hasNext();) {
+        for (Iterator<Entry<DeviceAddress, LegacyDevice>> it = devices.entrySet().iterator(); it.hasNext();) {
             LegacyDevice dev = it.next().getValue();
             boolean removedListener = dev.removeFeatureListener(channelName);
             if (removedListener) {
@@ -262,7 +262,7 @@ public class InsteonLegacyBinding {
         handler.updateState(channelUID, state);
     }
 
-    public @Nullable LegacyDevice makeNewDevice(InsteonAddress addr, String productKey,
+    public @Nullable LegacyDevice makeNewDevice(DeviceAddress addr, String productKey,
             Map<String, Object> deviceConfigMap) {
         LegacyDeviceTypeLoader instance = LegacyDeviceTypeLoader.instance();
         if (instance == null) {
@@ -276,7 +276,7 @@ public class InsteonLegacyBinding {
         dev.setAddress(addr);
         dev.setProductKey(productKey);
         dev.setDriver(driver);
-        dev.setIsModem(productKey.equals(InsteonLegacyDeviceHandler.PLM_PRODUCT_KEY));
+        dev.setIsModem(productKey.equals(InsteonLegacyBindingConstants.PLM_PRODUCT_KEY));
         dev.setDeviceConfigMap(deviceConfigMap);
         if (!dev.hasValidPollingInterval()) {
             dev.setPollInterval(devicePollIntervalMilliseconds);
@@ -295,7 +295,7 @@ public class InsteonLegacyBinding {
         return (dev);
     }
 
-    public void removeDevice(InsteonAddress addr) {
+    public void removeDevice(DeviceAddress addr) {
         LegacyDevice dev = devices.remove(addr);
         if (dev == null) {
             return;
@@ -315,17 +315,19 @@ public class InsteonLegacyBinding {
      */
     private int checkIfInModemDatabase(LegacyDevice dev) {
         try {
-            InsteonAddress addr = dev.getAddress();
             Map<InsteonAddress, LegacyModemDBEntry> dbes = driver.lockModemDBEntries();
-            if (dbes.containsKey(addr)) {
-                if (!dev.hasModemDBEntry()) {
-                    logger.debug("device {} found in the modem database and {}.", addr, getLinkInfo(dbes, addr, true));
-                    dev.setHasModemDBEntry(true);
-                }
-            } else {
-                if (driver.isModemDBComplete() && !addr.isX10()) {
-                    logger.warn("device {} not found in the modem database. Did you forget to link?", addr);
-                    handler.deviceNotLinked(addr);
+            if (dev.getAddress() instanceof InsteonAddress addr) {
+                if (dbes.containsKey(addr)) {
+                    if (!dev.hasModemDBEntry()) {
+                        logger.debug("device {} found in the modem database and {}.", addr,
+                                getLinkInfo(dbes, addr, true));
+                        dev.setHasModemDBEntry(true);
+                    }
+                } else {
+                    if (driver.isModemDBComplete()) {
+                        logger.warn("device {} not found in the modem database. Did you forget to link?", addr);
+                        handler.deviceNotLinked(addr);
+                    }
                 }
             }
             return dbes.size();
@@ -376,7 +378,7 @@ public class InsteonLegacyBinding {
      * @param aAddr the insteon address to search for
      * @return reference to the device, or null if not found
      */
-    public @Nullable LegacyDevice getDevice(@Nullable InsteonAddress aAddr) {
+    public @Nullable LegacyDevice getDevice(@Nullable DeviceAddress aAddr) {
         LegacyDevice dev = (aAddr == null) ? null : devices.get(aAddr);
         return (dev);
     }
@@ -393,8 +395,8 @@ public class InsteonLegacyBinding {
         if (port == null) {
             return "";
         }
-        String deviceName = port.getDeviceName();
-        String s = deviceName.startsWith("/hub") ? "hub" : "plm";
+        String portName = port.getName();
+        String s = portName.startsWith("/hub") ? "hub" : "plm";
         StringBuilder buf = new StringBuilder();
         if (port.isModem(a)) {
             if (prefix) {
@@ -402,7 +404,7 @@ public class InsteonLegacyBinding {
             }
             buf.append(s);
             buf.append(" (");
-            buf.append(Utils.redactPassword(deviceName));
+            buf.append(portName);
             buf.append(")");
         } else {
             if (prefix) {
@@ -457,45 +459,42 @@ public class InsteonLegacyBinding {
         }
     }
 
-    /**
-     * Handles messages that come in from the ports.
-     * Will only process one message at a time.
-     */
-    private class PortListener implements LegacyPortListener, LegacyDriverListener {
-        @Override
-        public void msg(Msg msg) {
-            if (msg.isEcho() || msg.isPureNack()) {
-                return;
-            }
-            messagesReceived++;
-            logger.debug("got msg: {}", msg);
+    @Override
+    public void msg(Msg msg) {
+        if (msg.isEcho() || msg.isPureNack()) {
+            return;
+        }
+        messagesReceived++;
+        logger.debug("got msg: {}", msg);
+        try {
             if (msg.isX10()) {
                 handleX10Message(msg);
-            } else {
+            } else if (msg.isInsteon()) {
                 handleInsteonMessage(msg);
             }
+        } catch (FieldException e) {
+            logger.warn("got bad message: {}", msg, e);
         }
+    }
 
-        @Override
-        public void driverCompletelyInitialized() {
-            List<String> missing = new ArrayList<>();
-            try {
-                Map<InsteonAddress, LegacyModemDBEntry> dbes = driver.lockModemDBEntries();
-                logger.debug("modem database has {} entries!", dbes.size());
-                if (dbes.isEmpty()) {
-                    logger.warn("the modem link database is empty!");
-                }
-                for (InsteonAddress k : dbes.keySet()) {
-                    logger.debug("modem db entry: {}", k);
-                }
-                Set<InsteonAddress> addrs = new HashSet<>();
-                for (LegacyDevice dev : devices.values()) {
-                    InsteonAddress a = dev.getAddress();
+    @Override
+    public void driverCompletelyInitialized() {
+        List<InsteonAddress> missing = new ArrayList<>();
+        try {
+            Map<InsteonAddress, LegacyModemDBEntry> dbes = driver.lockModemDBEntries();
+            logger.debug("modem database has {} entries!", dbes.size());
+            if (dbes.isEmpty()) {
+                logger.warn("the modem link database is empty!");
+            }
+            for (InsteonAddress k : dbes.keySet()) {
+                logger.debug("modem db entry: {}", k);
+            }
+            Set<InsteonAddress> addrs = new HashSet<>();
+            for (LegacyDevice dev : devices.values()) {
+                if (dev.getAddress() instanceof InsteonAddress a) {
                     if (!dbes.containsKey(a)) {
-                        if (!a.isX10()) {
-                            logger.warn("device {} not found in the modem database. Did you forget to link?", a);
-                            handler.deviceNotLinked(a);
-                        }
+                        logger.warn("device {} not found in the modem database. Did you forget to link?", a);
+                        handler.deviceNotLinked(a);
                     } else {
                         if (!dev.hasModemDBEntry()) {
                             addrs.add(a);
@@ -508,71 +507,62 @@ public class InsteonLegacyBinding {
                         }
                     }
                 }
+            }
 
-                for (InsteonAddress k : dbes.keySet()) {
-                    if (!addrs.contains(k)) {
-                        logger.debug("device {} found in the modem database, but is not configured as a thing and {}.",
-                                k, getLinkInfo(dbes, k, true));
+            for (InsteonAddress a : dbes.keySet()) {
+                if (!addrs.contains(a)) {
+                    logger.debug("device {} found in the modem database, but is not configured as a thing and {}.", a,
+                            getLinkInfo(dbes, a, true));
 
-                        missing.add(k.toString());
-                    }
+                    missing.add(a);
                 }
-            } finally {
-                driver.unlockModemDBEntries();
             }
-
-            if (!missing.isEmpty()) {
-                handler.addMissingDevices(missing);
-            }
-
-            driverInitialized = true;
+        } finally {
+            driver.unlockModemDBEntries();
         }
 
-        @Override
-        public void disconnected() {
-            handler.bindingDisconnected();
+        if (!missing.isEmpty()) {
+            handler.addMissingDevices(missing);
         }
 
-        private void handleInsteonMessage(Msg msg) {
-            InsteonAddress toAddr = msg.getAddr("toAddress");
-            if (!msg.isBroadcast() && !driver.isMsgForUs(toAddr)) {
-                // not for one of our modems, do not process
-                return;
-            }
-            InsteonAddress fromAddr = msg.getAddr("fromAddress");
-            if (fromAddr == null) {
-                logger.debug("invalid fromAddress, ignoring msg {}", msg);
-                return;
-            }
-            handleMessage(fromAddr, msg);
-        }
+        driverInitialized = true;
+    }
 
-        private void handleX10Message(Msg msg) {
-            try {
-                int x10Flag = msg.getByte("X10Flag") & 0xff;
-                int rawX10 = msg.getByte("rawX10") & 0xff;
-                if (x10Flag == 0x80) { // actual command
-                    if (x10HouseUnit != -1) {
-                        InsteonAddress fromAddr = new InsteonAddress((byte) x10HouseUnit);
-                        handleMessage(fromAddr, msg);
-                    }
-                } else if (x10Flag == 0) {
-                    // what unit the next cmd will apply to
-                    x10HouseUnit = rawX10 & 0xFF;
-                }
-            } catch (FieldException e) {
-                logger.warn("got bad X10 message: {}", msg, e);
-                return;
-            }
-        }
+    @Override
+    public void disconnected() {
+        handler.bindingDisconnected();
+    }
 
-        private void handleMessage(InsteonAddress fromAddr, Msg msg) {
-            LegacyDevice dev = getDevice(fromAddr);
-            if (dev == null) {
-                logger.debug("dropping message from unknown device with address {}", fromAddr);
-            } else {
-                dev.handleMessage(msg);
+    private void handleInsteonMessage(Msg msg) throws FieldException {
+        InsteonAddress toAddr = msg.getInsteonAddress("toAddress");
+        if (!msg.isBroadcast() && !driver.isMsgForUs(toAddr)) {
+            // not for one of our modems, do not process
+            return;
+        }
+        InsteonAddress fromAddr = msg.getInsteonAddress("fromAddress");
+        handleMessage(fromAddr, msg);
+    }
+
+    private void handleX10Message(Msg msg) throws FieldException {
+        int x10Flag = msg.getByte("X10Flag") & 0xff;
+        int rawX10 = msg.getByte("rawX10") & 0xff;
+        if (x10Flag == 0x80) { // actual command
+            if (x10HouseUnit != -1) {
+                X10Address fromAddr = new X10Address((byte) x10HouseUnit);
+                handleMessage(fromAddr, msg);
             }
+        } else if (x10Flag == 0) {
+            // what unit the next cmd will apply to
+            x10HouseUnit = rawX10 & 0xFF;
+        }
+    }
+
+    private void handleMessage(DeviceAddress fromAddr, Msg msg) {
+        LegacyDevice dev = getDevice(fromAddr);
+        if (dev == null) {
+            logger.debug("dropping message from unknown device with address {}", fromAddr);
+        } else {
+            dev.handleMessage(msg);
         }
     }
 }

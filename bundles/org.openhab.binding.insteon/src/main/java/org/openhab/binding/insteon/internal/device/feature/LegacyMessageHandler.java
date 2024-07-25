@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.insteon.internal.device.feature;
 
+import static org.openhab.binding.insteon.internal.InsteonLegacyBindingConstants.*;
+
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -20,17 +22,18 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.device.DeviceAddress;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.LegacyDevice;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceFeature;
 import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureListener.StateChangeType;
-import org.openhab.binding.insteon.internal.handler.InsteonLegacyDeviceHandler;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.transport.message.LegacyGroupMessageStateMachine.GroupMessage;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
 import org.openhab.binding.insteon.internal.transport.message.MsgType;
-import org.openhab.binding.insteon.internal.utils.Utils;
+import org.openhab.binding.insteon.internal.utils.HexUtils;
+import org.openhab.binding.insteon.internal.utils.ParameterParser;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -51,6 +54,7 @@ import org.slf4j.LoggerFactory;
  * @author Daniel Pfrommer - Initial contribution
  * @author Bernd Pfrommer - openHAB 1 insteonplm binding
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public abstract class LegacyMessageHandler {
@@ -90,7 +94,7 @@ public abstract class LegacyMessageHandler {
     public void sendExtendedQuery(LegacyDeviceFeature f, byte aCmd1, byte aCmd2) {
         LegacyDevice d = f.getDevice();
         try {
-            Msg m = d.makeExtendedMessage((byte) 0x1f, aCmd1, aCmd2);
+            Msg m = Msg.makeExtendedMessage((InsteonAddress) d.getAddress(), aCmd1, aCmd2, true);
             m.setQuietTime(500L);
             d.enqueueMessage(m, f);
         } catch (InvalidMessageTypeException e) {
@@ -128,17 +132,7 @@ public abstract class LegacyMessageHandler {
      * @return value of int parameter (or default if not found)
      */
     protected int getIntParameter(String key, int def) {
-        String val = parameters.get(key);
-        if (val == null) {
-            return (def); // param not found
-        }
-        int ret = def;
-        try {
-            ret = Utils.strToInt(val);
-        } catch (NumberFormatException e) {
-            logger.warn("malformed int parameter in message handler: {}", key);
-        }
-        return ret;
+        return ParameterParser.getParameterAsOrDefault(parameters.get(key), Integer.class, def);
     }
 
     /**
@@ -268,9 +262,9 @@ public abstract class LegacyMessageHandler {
     protected boolean isDuplicate(Msg msg) {
         boolean isDuplicate = false;
         try {
-            MsgType t = MsgType.fromValue(msg.getByte("messageFlags"));
+            MsgType t = MsgType.valueOf(msg.getByte("messageFlags"));
             if (t == MsgType.ALL_LINK_BROADCAST) {
-                int group = msg.getAddress("toAddress").getLowByte() & 0xff;
+                int group = msg.getInsteonAddress("toAddress").getLowByte() & 0xff;
                 byte cmd1 = msg.getByte("command1");
                 // if the command is 0x06, then it's success message
                 // from the original broadcaster, with which the device
@@ -303,8 +297,8 @@ public abstract class LegacyMessageHandler {
         // the broadcast messages have it as the lsb of the toAddress
         try {
             int bclean = msg.getByte("command2") & 0xff;
-            int bbcast = msg.getAddress("toAddress").getLowByte() & 0xff;
-            int button = msg.isCleanup() ? bclean : bbcast;
+            int bbcast = msg.getInsteonAddress("toAddress").getLowByte() & 0xff;
+            int button = msg.isAllLinkCleanup() ? bclean : bbcast;
             logger.trace("{} button: {} bclean: {} bbcast: {}", f.getDevice().getAddress(), button, bclean, bbcast);
             return button;
         } catch (FieldException e) {
@@ -344,7 +338,7 @@ public abstract class LegacyMessageHandler {
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            logger.debug("{} ignoring unimpl message with cmd1:{}", nm(), Utils.getHexByte(cmd1));
+            logger.debug("{} ignoring unimpl message with cmd1:{}", nm(), HexUtils.getHexString(cmd1));
         }
     }
 
@@ -355,7 +349,7 @@ public abstract class LegacyMessageHandler {
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            logger.trace("{} ignore msg {}: {}", nm(), Utils.getHexByte(cmd1), msg);
+            logger.trace("{} ignore msg {}: {}", nm(), HexUtils.getHexString(cmd1), msg);
         }
     }
 
@@ -369,7 +363,7 @@ public abstract class LegacyMessageHandler {
             if (!isMybutton(msg, f)) {
                 return;
             }
-            InsteonAddress a = f.getDevice().getAddress();
+            DeviceAddress a = f.getDevice().getAddress();
             if (msg.isAckOfDirect()) {
                 logger.warn("{}: device {}: ignoring ack of direct.", nm(), a);
             } else {
@@ -509,7 +503,7 @@ public abstract class LegacyMessageHandler {
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             try {
-                InsteonAddress a = f.getDevice().getAddress();
+                DeviceAddress a = f.getDevice().getAddress();
                 int cmd2 = msg.getByte("command2") & 0xff;
                 int button = this.getIntParameter("button", -1);
                 if (button < 0) {
@@ -531,7 +525,7 @@ public abstract class LegacyMessageHandler {
          *
          * @param cmd2
          */
-        void handleNoButtons(int cmd2, InsteonAddress a, Msg msg) {
+        void handleNoButtons(int cmd2, DeviceAddress a, Msg msg) {
             if (cmd2 == 0) {
                 logger.debug("{}: set device {} to OFF", nm(), a);
                 feature.publish(OnOffType.OFF, StateChangeType.CHANGED);
@@ -685,11 +679,11 @@ public abstract class LegacyMessageHandler {
                 int cmd2 = msg.getByte("command2") & 0xff;
                 switch (cmd2) {
                     case 0x00: // this is a product data response message
-                        int prodKey = msg.getInt24("userData2", "userData3", "userData4");
+                        int prodKey = msg.getInt24("userData2");
                         int devCat = msg.getByte("userData5");
                         int subCat = msg.getByte("userData6");
                         logger.debug("{} {} got product data: cat: {} subcat: {} key: {} ", nm(), dev.getAddress(),
-                                devCat, subCat, Utils.getHexString(prodKey));
+                                devCat, subCat, HexUtils.getHexString(prodKey));
                         break;
                     case 0x02: // this is a device text string response message
                         logger.debug("{} {} got text str {} ", nm(), dev.getAddress(), msg);
@@ -727,10 +721,9 @@ public abstract class LegacyMessageHandler {
                         lightLevel = msg.getByte("userData11") & 0xff;
                         logger.debug("{}: {} got light level: {}, battery level: {}", nm(), dev.getAddress(),
                                 lightLevel, batteryLevel);
-                        feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED,
-                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_LIGHT_LEVEL);
-                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
-                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_BATTERY_LEVEL);
+                        feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED, FIELD, FIELD_LIGHT_LEVEL);
+                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED, FIELD,
+                                FIELD_BATTERY_LEVEL);
                         break;
                     case 0x03: // this is the 2844-222 data response message
                         batteryLevel = msg.getByte("userData6") & 0xff;
@@ -738,12 +731,11 @@ public abstract class LegacyMessageHandler {
                         temperatureLevel = msg.getByte("userData8") & 0xff;
                         logger.debug("{}: {} got light level: {}, battery level: {}, temperature level: {}", nm(),
                                 dev.getAddress(), lightLevel, batteryLevel, temperatureLevel);
-                        feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED,
-                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_LIGHT_LEVEL);
-                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
-                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_BATTERY_LEVEL);
-                        feature.publish(new DecimalType(temperatureLevel), StateChangeType.CHANGED,
-                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_TEMPERATURE_LEVEL);
+                        feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED, FIELD, FIELD_LIGHT_LEVEL);
+                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED, FIELD,
+                                FIELD_BATTERY_LEVEL);
+                        feature.publish(new DecimalType(temperatureLevel), StateChangeType.CHANGED, FIELD,
+                                FIELD_TEMPERATURE_LEVEL);
 
                         // per 2844-222 dev doc: working battery level range is 0xd2 - 0x70
                         int batteryPercentage;
@@ -756,7 +748,7 @@ public abstract class LegacyMessageHandler {
                         }
                         logger.debug("{}: {} battery percentage: {}", nm(), dev.getAddress(), batteryPercentage);
                         feature.publish(new QuantityType<>(batteryPercentage, Units.PERCENT), StateChangeType.CHANGED,
-                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_BATTERY_PERCENTAGE);
+                                FIELD, FIELD_BATTERY_PERCENTAGE);
                         break;
                     default:
                         logger.warn("unknown cmd2 = {} in info reply message {}", cmd2, msg);
@@ -778,23 +770,17 @@ public abstract class LegacyMessageHandler {
             LegacyDevice dev = f.getDevice();
             try {
                 // group 0x0B (11) - alternate heartbeat group
-                InsteonAddress toAddr = msg.getAddr("toAddress");
-                if (toAddr == null) {
-                    logger.warn("toAddr is null");
-                    return;
-                }
+                InsteonAddress toAddr = msg.getInsteonAddress("toAddress");
                 int batteryLevel = toAddr.getHighByte() & 0xff;
                 int lightLevel = toAddr.getMiddleByte() & 0xff;
                 int temperatureLevel = msg.getByte("command2") & 0xff;
 
                 logger.debug("{}: {} got light level: {}, battery level: {}, temperature level: {}", nm(),
                         dev.getAddress(), lightLevel, batteryLevel, temperatureLevel);
-                feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED, InsteonLegacyDeviceHandler.FIELD,
-                        InsteonLegacyDeviceHandler.FIELD_LIGHT_LEVEL);
-                feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
-                        InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_BATTERY_LEVEL);
-                feature.publish(new DecimalType(temperatureLevel), StateChangeType.CHANGED,
-                        InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_TEMPERATURE_LEVEL);
+                feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED, FIELD, FIELD_LIGHT_LEVEL);
+                feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED, FIELD, FIELD_BATTERY_LEVEL);
+                feature.publish(new DecimalType(temperatureLevel), StateChangeType.CHANGED, FIELD,
+                        FIELD_TEMPERATURE_LEVEL);
 
                 // per 2844-222 dev doc: working battery level range is 0xd2 - 0x70
                 int batteryPercentage;
@@ -806,8 +792,8 @@ public abstract class LegacyMessageHandler {
                     batteryPercentage = (batteryLevel - 0x70) * 100 / (0xd2 - 0x70);
                 }
                 logger.debug("{}: {} battery percentage: {}", nm(), dev.getAddress(), batteryPercentage);
-                feature.publish(new QuantityType<>(batteryPercentage, Units.PERCENT), StateChangeType.CHANGED,
-                        InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_BATTERY_PERCENTAGE);
+                feature.publish(new QuantityType<>(batteryPercentage, Units.PERCENT), StateChangeType.CHANGED, FIELD,
+                        FIELD_BATTERY_PERCENTAGE);
             } catch (FieldException e) {
                 logger.warn("error parsing {}: ", msg, e);
             }
@@ -834,11 +820,10 @@ public abstract class LegacyMessageHandler {
                         int batteryWatermark = msg.getByte("userData7") & 0xff;
                         logger.debug("{}: {} got light level: {}, battery level: {}", nm(), dev.getAddress(),
                                 batteryWatermark, batteryLevel);
-                        feature.publish(new DecimalType(batteryWatermark), StateChangeType.CHANGED,
-                                InsteonLegacyDeviceHandler.FIELD,
-                                InsteonLegacyDeviceHandler.FIELD_BATTERY_WATERMARK_LEVEL);
-                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
-                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_BATTERY_LEVEL);
+                        feature.publish(new DecimalType(batteryWatermark), StateChangeType.CHANGED, FIELD,
+                                FIELD_BATTERY_WATERMARK_LEVEL);
+                        feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED, FIELD,
+                                FIELD_BATTERY_LEVEL);
                         break;
                     default:
                         logger.warn("unknown cmd2 = {} in info reply message {}", cmd2, msg);
@@ -878,10 +863,9 @@ public abstract class LegacyMessageHandler {
                     }
 
                     logger.debug("{}:{} watts: {} kwh: {} ", nm(), f.getDevice().getAddress(), watts, kwh);
-                    feature.publish(new QuantityType<>(kwh, Units.KILOWATT_HOUR), StateChangeType.CHANGED,
-                            InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_KWH);
-                    feature.publish(new QuantityType<>(watts, Units.WATT), StateChangeType.CHANGED,
-                            InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_WATTS);
+                    feature.publish(new QuantityType<>(kwh, Units.KILOWATT_HOUR), StateChangeType.CHANGED, FIELD,
+                            FIELD_KWH);
+                    feature.publish(new QuantityType<>(watts, Units.WATT), StateChangeType.CHANGED, FIELD, FIELD_WATTS);
                 } catch (FieldException e) {
                     logger.warn("error parsing {}: ", msg, e);
                 }
@@ -1013,7 +997,7 @@ public abstract class LegacyMessageHandler {
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
-            if (f.getDevice().hasProductKey(InsteonLegacyDeviceHandler.MOTION_SENSOR_II_PRODUCT_KEY)) {
+            if (f.getDevice().hasProductKey(MOTION_SENSOR_II_PRODUCT_KEY)) {
                 if (!getBooleanDeviceConfig("heartbeatOnly", false)) {
                     sendExtendedQuery(f, (byte) 0x2e, (byte) 03);
                 }
@@ -1031,7 +1015,7 @@ public abstract class LegacyMessageHandler {
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
-            if (f.getDevice().hasProductKey(InsteonLegacyDeviceHandler.MOTION_SENSOR_II_PRODUCT_KEY)) {
+            if (f.getDevice().hasProductKey(MOTION_SENSOR_II_PRODUCT_KEY)) {
                 if (!getBooleanDeviceConfig("heartbeatOnly", false)) {
                     sendExtendedQuery(f, (byte) 0x2e, (byte) 03);
                 }
@@ -1236,7 +1220,7 @@ public abstract class LegacyMessageHandler {
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            InsteonAddress a = f.getDevice().getAddress();
+            DeviceAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to ON", nm(), a);
             feature.publish(OnOffType.ON, StateChangeType.ALWAYS);
         }
@@ -1249,7 +1233,7 @@ public abstract class LegacyMessageHandler {
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            InsteonAddress a = f.getDevice().getAddress();
+            DeviceAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to OFF", nm(), a);
             feature.publish(OnOffType.OFF, StateChangeType.ALWAYS);
         }
@@ -1262,7 +1246,7 @@ public abstract class LegacyMessageHandler {
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            InsteonAddress a = f.getDevice().getAddress();
+            DeviceAddress a = f.getDevice().getAddress();
             logger.debug("{}: ignoring brighten message for device {}", nm(), a);
         }
     }
@@ -1274,7 +1258,7 @@ public abstract class LegacyMessageHandler {
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            InsteonAddress a = f.getDevice().getAddress();
+            DeviceAddress a = f.getDevice().getAddress();
             logger.debug("{}: ignoring dim message for device {}", nm(), a);
         }
     }
@@ -1286,7 +1270,7 @@ public abstract class LegacyMessageHandler {
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            InsteonAddress a = f.getDevice().getAddress();
+            DeviceAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to OPEN", nm(), a);
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
         }
@@ -1299,7 +1283,7 @@ public abstract class LegacyMessageHandler {
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            InsteonAddress a = f.getDevice().getAddress();
+            DeviceAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to CLOSED", nm(), a);
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
         }

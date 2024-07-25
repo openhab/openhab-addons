@@ -13,8 +13,8 @@
 package org.openhab.binding.insteon.internal.transport.message;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.insteon.internal.device.InsteonAddress;
-import org.openhab.binding.insteon.internal.utils.Utils;
+import org.openhab.binding.insteon.internal.device.DeviceAddress;
+import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,7 +117,7 @@ public class LegacyGroupMessageStateMachine {
      * @param cmd1 cmd1 from the message received
      * @return true if the group message is not a duplicate
      */
-    public boolean action(GroupMessage a, InsteonAddress address, int group, byte cmd1) {
+    public boolean action(GroupMessage a, DeviceAddress address, int group, byte cmd1) {
         publish = false;
         long currentTime = System.currentTimeMillis();
         switch (state) {
@@ -142,7 +142,7 @@ public class LegacyGroupMessageStateMachine {
                                 if (logger.isDebugEnabled()) {
                                     logger.debug(
                                             "{} group {} cmd1 {} is not a dup BCAST, received last message over 30000 ms ago",
-                                            address, group, Utils.getHexByte(cmd1));
+                                            address, group, HexUtils.getHexString(cmd1));
                                 }
                                 publish = true;
                             } else {
@@ -151,7 +151,7 @@ public class LegacyGroupMessageStateMachine {
                         } else {
                             if (logger.isDebugEnabled()) {
                                 logger.debug("{} group {} cmd1 {} is not a dup BCAST, last cmd1 {}", address, group,
-                                        Utils.getHexByte(cmd1), Utils.getHexByte(lastCmd1));
+                                        HexUtils.getHexString(cmd1), HexUtils.getHexString(lastCmd1));
                             }
                             publish = true;
                         }

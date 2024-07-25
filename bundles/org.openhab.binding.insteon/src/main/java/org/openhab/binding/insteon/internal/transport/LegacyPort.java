@@ -22,18 +22,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.InsteonLegacyBindingConstants;
+import org.openhab.binding.insteon.internal.config.InsteonLegacyNetworkConfiguration;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.LegacyDevice;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceType;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceTypeLoader;
 import org.openhab.binding.insteon.internal.device.database.LegacyModemDBBuilder;
 import org.openhab.binding.insteon.internal.device.database.LegacyModemDBEntry;
-import org.openhab.binding.insteon.internal.handler.InsteonLegacyDeviceHandler;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
 import org.openhab.binding.insteon.internal.transport.message.MsgFactory;
-import org.openhab.binding.insteon.internal.utils.Utils;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +55,7 @@ import org.slf4j.LoggerFactory;
  * @author Bernd Pfrommer - Initial contribution
  * @author Daniel Pfrommer - openHAB 1 insteonplm binding
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public class LegacyPort {
@@ -70,8 +71,7 @@ public class LegacyPort {
     }
 
     private IOStream ioStream;
-    private String devName;
-    private String logName;
+    private String name;
     private Modem modem;
     private IOStreamReader reader;
     private IOStreamWriter writer;
@@ -93,14 +93,13 @@ public class LegacyPort {
      * @param devName the name of the port, i.e. '/dev/insteon'
      * @param d The Driver object that manages this port
      */
-    public LegacyPort(String devName, LegacyDriver d, @Nullable SerialPortManager serialPortManager,
-            ScheduledExecutorService scheduler) {
-        this.devName = devName;
-        this.driver = d;
-        this.logName = Utils.redactPassword(devName);
+    public LegacyPort(InsteonLegacyNetworkConfiguration config, LegacyDriver driver,
+            SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {
+        this.name = config.getRedactedPort();
+        this.driver = driver;
         this.modem = new Modem();
         addListener(modem);
-        this.ioStream = IOStream.create(serialPortManager, devName);
+        this.ioStream = IOStream.create(config.parse(), scheduler, serialPortManager);
         this.reader = new IOStreamReader();
         this.writer = new IOStreamWriter();
         this.mdbb = new LegacyModemDBBuilder(this, scheduler);
@@ -122,8 +121,8 @@ public class LegacyPort {
         return modem.getAddress();
     }
 
-    public String getDeviceName() {
-        return devName;
+    public String getName() {
+        return name;
     }
 
     public LegacyDriver getDriver() {
@@ -164,18 +163,18 @@ public class LegacyPort {
      * Starts threads necessary for reading and writing
      */
     public void start() {
-        logger.debug("starting port {}", logName);
+        logger.debug("starting port {}", name);
         if (running) {
-            logger.debug("port {} already running, not started again", logName);
+            logger.debug("port {} already running, not started again", name);
             return;
         }
 
         writeQueue.clear();
         if (!ioStream.open()) {
-            logger.debug("failed to open port {}", logName);
+            logger.debug("failed to open port {}", name);
             return;
         }
-        ioStream.start();
+
         readThread = new Thread(reader);
         setParamsAndStart(readThread, "Reader");
         writeThread = new Thread(writer);
@@ -192,7 +191,7 @@ public class LegacyPort {
 
     private void setParamsAndStart(@Nullable Thread thread, String type) {
         if (thread != null) {
-            thread.setName("OH-binding-Insteon " + logName + " " + type);
+            thread.setName("OH-binding-Insteon " + name + " " + type);
             thread.setDaemon(true);
             thread.start();
         }
@@ -203,13 +202,19 @@ public class LegacyPort {
      */
     public void stop() {
         if (!running) {
-            logger.debug("port {} not running, no need to stop it", logName);
+            logger.debug("port {} not running, no need to stop it", name);
             return;
         }
 
         running = false;
-        ioStream.stop();
-        ioStream.close();
+
+        if (mdbb.isRunning()) {
+            mdbb.stop();
+        }
+
+        if (ioStream.isOpen()) {
+            ioStream.close();
+        }
 
         Thread readThread = this.readThread;
         if (readThread != null) {
@@ -219,7 +224,7 @@ public class LegacyPort {
         if (writeThread != null) {
             writeThread.interrupt();
         }
-        logger.debug("waiting for read thread to exit for port {}", logName);
+        logger.debug("waiting for read thread to exit for port {}", name);
         try {
             if (readThread != null) {
                 readThread.join();
@@ -227,7 +232,7 @@ public class LegacyPort {
         } catch (InterruptedException e) {
             logger.debug("got interrupted waiting for read thread to exit.");
         }
-        logger.debug("waiting for write thread to exit for port {}", logName);
+        logger.debug("waiting for write thread to exit for port {}", name);
         try {
             if (writeThread != null) {
                 writeThread.join();
@@ -238,7 +243,7 @@ public class LegacyPort {
         this.readThread = null;
         this.writeThread = null;
 
-        logger.debug("all threads for port {} stopped.", logName);
+        logger.debug("all threads for port {} stopped.", name);
     }
 
     /**
@@ -251,10 +256,6 @@ public class LegacyPort {
         if (m == null) {
             logger.warn("trying to write null message!");
             throw new IOException("trying to write null message!");
-        }
-        if (m.getData() == null) {
-            logger.warn("trying to write message without data!");
-            throw new IOException("trying to write message without data!");
         }
         try {
             writeQueue.add(m);
@@ -277,7 +278,7 @@ public class LegacyPort {
     public void disconnected() {
         if (isRunning()) {
             if (!disconnected.getAndSet(true)) {
-                logger.warn("port {} disconnected", logName);
+                logger.warn("port {} disconnected", name);
                 driver.disconnected();
             }
         }
@@ -308,9 +309,9 @@ public class LegacyPort {
         @Override
         public void run() {
             logger.debug("starting reader...");
-            byte[] buffer = new byte[2 * readSize];
+            byte[] buffer = new byte[readSize];
             try {
-                for (int len = -1; (len = ioStream.read(buffer, 0, readSize)) > 0;) {
+                for (int len = -1; (len = ioStream.read(buffer)) > 0;) {
                     msgFactory.addData(buffer, len);
                     processMessages();
                 }
@@ -349,7 +350,7 @@ public class LegacyPort {
         private void notifyWriter(Msg msg) {
             synchronized (getRequestReplyLock()) {
                 if (reply == ReplyType.WAITING_FOR_ACK) {
-                    if (!msg.isUnsolicited()) {
+                    if (msg.isReply()) {
                         reply = (msg.isPureNack() ? ReplyType.GOT_NACK : ReplyType.GOT_ACK);
                         logger.trace("signaling receipt of ack: {}", (reply == ReplyType.GOT_ACK));
                         getRequestReplyLock().notify();
@@ -429,26 +430,22 @@ public class LegacyPort {
                     // this call blocks until the lock on the queue is released
                     logger.trace("writer checking message queue");
                     Msg msg = writeQueue.take();
-                    if (msg.getData() == null) {
-                        logger.warn("found null message in write queue!");
-                    } else {
-                        logger.debug("writing ({}): {}", msg.getQuietTime(), msg);
-                        // To debug race conditions during startup (i.e. make the .items
-                        // file definitions be available *before* the modem link records,
-                        // slow down the modem traffic with the following statement:
-                        // Thread.sleep(500);
-                        synchronized (reader.getRequestReplyLock()) {
+                    logger.debug("writing ({}): {}", msg.getQuietTime(), msg);
+                    // To debug race conditions during startup (i.e. make the .items
+                    // file definitions be available *before* the modem link records,
+                    // slow down the modem traffic with the following statement:
+                    // Thread.sleep(500);
+                    synchronized (reader.getRequestReplyLock()) {
+                        ioStream.write(msg.getData());
+                        while (reader.waitForReply()) {
+                            Thread.sleep(WAIT_TIME);
+                            logger.trace("retransmitting msg: {}", msg);
                             ioStream.write(msg.getData());
-                            while (reader.waitForReply()) {
-                                Thread.sleep(WAIT_TIME);
-                                logger.trace("retransmitting msg: {}", msg);
-                                ioStream.write(msg.getData());
-                            }
                         }
-                        // if rate limited, need to sleep now.
-                        if (msg.getQuietTime() > 0) {
-                            Thread.sleep(msg.getQuietTime());
-                        }
+                    }
+                    // if rate limited, need to sleep now.
+                    if (msg.getQuietTime() > 0) {
+                        Thread.sleep(msg.getQuietTime());
                     }
                 } catch (InterruptedException e) {
                     logger.debug("got interrupted exception in write thread");
@@ -471,7 +468,7 @@ public class LegacyPort {
 
         InsteonAddress getAddress() {
             LegacyDevice device = this.device;
-            return (device == null) ? new InsteonAddress() : (device.getAddress());
+            return device == null ? InsteonAddress.UNKNOWN : (InsteonAddress) device.getAddress();
         }
 
         @Nullable
@@ -487,13 +484,13 @@ public class LegacyPort {
                 }
                 if (msg.getByte("Cmd") == 0x60) {
                     // add the modem to the device list
-                    InsteonAddress a = new InsteonAddress(msg.getAddress("IMAddress"));
+                    InsteonAddress a = msg.getInsteonAddress("IMAddress");
                     LegacyDeviceTypeLoader instance = LegacyDeviceTypeLoader.instance();
                     if (instance != null) {
-                        LegacyDeviceType dt = instance.getDeviceType(InsteonLegacyDeviceHandler.PLM_PRODUCT_KEY);
+                        LegacyDeviceType dt = instance.getDeviceType(InsteonLegacyBindingConstants.PLM_PRODUCT_KEY);
                         if (dt == null) {
                             logger.warn("unknown modem product key: {} for modem: {}.",
-                                    InsteonLegacyDeviceHandler.PLM_PRODUCT_KEY, a);
+                                    InsteonLegacyBindingConstants.PLM_PRODUCT_KEY, a);
                         } else {
                             device = LegacyDevice.makeDevice(dt);
                             initDevice(a, device);
@@ -513,7 +510,7 @@ public class LegacyPort {
         private void initDevice(InsteonAddress a, @Nullable LegacyDevice device) {
             if (device != null) {
                 device.setAddress(a);
-                device.setProductKey(InsteonLegacyDeviceHandler.PLM_PRODUCT_KEY);
+                device.setProductKey(InsteonLegacyBindingConstants.PLM_PRODUCT_KEY);
                 device.setDriver(driver);
                 device.setIsModem(true);
                 logger.debug("found modem {} in device_types: {}", a, device.toString());

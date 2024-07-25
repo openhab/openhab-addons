@@ -19,7 +19,7 @@ import java.util.Queue;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.insteon.internal.InsteonLegacyBindingConstants;
+import org.openhab.binding.insteon.internal.InsteonBindingConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +53,7 @@ public class LegacyRequestManager {
 
     private void setParamsAndStart(@Nullable Thread thread) {
         if (thread != null) {
-            thread.setName("OH-binding-" + InsteonLegacyBindingConstants.BINDING_ID + "-requestQueueReader");
+            thread.setName("OH-binding-" + InsteonBindingConstants.BINDING_ID + "-requestQueueReader");
             thread.setDaemon(true);
             thread.start();
         }

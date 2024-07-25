@@ -18,12 +18,14 @@ import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.device.InsteonAddress;
 import org.openhab.binding.insteon.internal.device.LegacyDevice;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceFeature;
+import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureTemplate.HandlerEntry;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
-import org.openhab.binding.insteon.internal.utils.Utils;
+import org.openhab.binding.insteon.internal.utils.ParameterParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernd Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public abstract class LegacyPollHandler {
@@ -70,17 +73,7 @@ public abstract class LegacyPollHandler {
      * @return value of parameter
      */
     protected int getIntParameter(String key, int def) {
-        String val = parameters.get(key);
-        if (val == null) {
-            return (def); // param not found
-        }
-        int ret = def;
-        try {
-            ret = Utils.strToInt(val);
-        } catch (NumberFormatException e) {
-            logger.warn("malformed int parameter in command handler: {}", key);
-        }
-        return ret;
+        return ParameterParser.getParameterAsOrDefault(parameters.get(key), Integer.class, def);
     }
 
     /**
@@ -104,15 +97,15 @@ public abstract class LegacyPollHandler {
                     int d1 = getIntParameter("d1", 0);
                     int d2 = getIntParameter("d2", 0);
                     int d3 = getIntParameter("d3", 0);
-                    m = d.makeExtendedMessage((byte) 0x0f, (byte) cmd1, (byte) cmd2,
-                            new byte[] { (byte) d1, (byte) d2, (byte) d3 });
+                    m = Msg.makeExtendedMessage((InsteonAddress) d.getAddress(), (byte) cmd1, (byte) cmd2,
+                            new byte[] { (byte) d1, (byte) d2, (byte) d3 }, false);
                     if (ext == 1) {
                         m.setCRC();
                     } else if (ext == 2) {
                         m.setCRC2();
                     }
                 } else {
-                    m = d.makeStandardMessage((byte) 0x0f, (byte) cmd1, (byte) cmd2);
+                    m = Msg.makeStandardMessage((InsteonAddress) d.getAddress(), (byte) cmd1, (byte) cmd2);
                 }
                 m.setQuietTime(500L);
             } catch (FieldException e) {

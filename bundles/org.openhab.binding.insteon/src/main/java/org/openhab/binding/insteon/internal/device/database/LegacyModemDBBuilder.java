@@ -28,7 +28,7 @@ import org.openhab.binding.insteon.internal.transport.LegacyPortListener;
 import org.openhab.binding.insteon.internal.transport.message.FieldException;
 import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
-import org.openhab.binding.insteon.internal.utils.Utils;
+import org.openhab.binding.insteon.internal.utils.HexUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Bernd Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public class LegacyModemDBBuilder implements LegacyPortListener {
@@ -63,12 +64,7 @@ public class LegacyModemDBBuilder implements LegacyPortListener {
         startDownload();
         job = scheduler.scheduleWithFixedDelay(() -> {
             if (isComplete()) {
-                logger.trace("modem db builder finished");
-                ScheduledFuture<?> job = this.job;
-                if (job != null) {
-                    job.cancel(false);
-                }
-                this.job = null;
+                stop();
             } else {
                 if (System.currentTimeMillis() - lastMessageTimestamp > MESSAGE_TIMEOUT) {
                     String s = "";
@@ -93,8 +89,21 @@ public class LegacyModemDBBuilder implements LegacyPortListener {
         getFirstLinkRecord();
     }
 
+    public void stop() {
+        logger.trace("modem db builder finished");
+        ScheduledFuture<?> job = this.job;
+        if (job != null) {
+            job.cancel(true);
+            this.job = null;
+        }
+    }
+
     public boolean isComplete() {
         return isComplete;
+    }
+
+    public boolean isRunning() {
+        return job != null;
     }
 
     private void getFirstLinkRecord() {
@@ -131,7 +140,7 @@ public class LegacyModemDBBuilder implements LegacyPortListener {
                 }
             } else if (msg.getByte("Cmd") == 0x57) {
                 // we got the link record response
-                updateModemDB(msg.getAddress("LinkAddr"), port, msg, false);
+                updateModemDB(msg.getInsteonAddress("LinkAddr"), port, msg, false);
                 port.writeMessage(Msg.makeMessage("GetNextALLLinkRecord"));
             }
         } catch (FieldException e) {
@@ -176,7 +185,7 @@ public class LegacyModemDBBuilder implements LegacyPortListener {
     }
 
     public static String toHex(byte b) {
-        return Utils.getHexString(b);
+        return HexUtils.getHexString(b);
     }
 
     public void updateModemDB(InsteonAddress linkAddr, LegacyPort port, @Nullable Msg m, boolean isModem) {

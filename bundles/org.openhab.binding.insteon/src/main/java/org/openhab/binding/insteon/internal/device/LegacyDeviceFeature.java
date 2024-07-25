@@ -31,11 +31,11 @@ import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureListener
 import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureListener.StateChangeType;
 import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureTemplate;
 import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureTemplateLoader;
+import org.openhab.binding.insteon.internal.device.feature.LegacyFeatureTemplateLoader.ParsingException;
 import org.openhab.binding.insteon.internal.device.feature.LegacyMessageDispatcher;
 import org.openhab.binding.insteon.internal.device.feature.LegacyMessageHandler;
 import org.openhab.binding.insteon.internal.device.feature.LegacyPollHandler;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
-import org.openhab.binding.insteon.internal.utils.Utils.ParsingException;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.slf4j.Logger;

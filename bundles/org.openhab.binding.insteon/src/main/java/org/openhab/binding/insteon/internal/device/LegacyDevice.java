@@ -26,8 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.config.InsteonLegacyChannelConfiguration;
 import org.openhab.binding.insteon.internal.device.LegacyDeviceType.FeatureGroup;
 import org.openhab.binding.insteon.internal.transport.LegacyDriver;
-import org.openhab.binding.insteon.internal.transport.message.FieldException;
-import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.transport.message.LegacyGroupMessageStateMachine;
 import org.openhab.binding.insteon.internal.transport.message.LegacyGroupMessageStateMachine.GroupMessage;
 import org.openhab.binding.insteon.internal.transport.message.Msg;
@@ -60,7 +58,7 @@ public class LegacyDevice {
     /** how far to space out poll messages */
     private static final int TIME_BETWEEN_POLL_MESSAGES = 1500;
 
-    private InsteonAddress address = new InsteonAddress();
+    private DeviceAddress address = InsteonAddress.UNKNOWN;
     private long pollInterval = -1L; // in milliseconds
     private @Nullable LegacyDriver driver = null;
     private Map<String, LegacyDeviceFeature> features = new HashMap<>();
@@ -101,8 +99,8 @@ public class LegacyDevice {
         return status;
     }
 
-    public InsteonAddress getAddress() {
-        return (address);
+    public DeviceAddress getAddress() {
+        return address;
     }
 
     public @Nullable LegacyDriver getDriver() {
@@ -123,14 +121,6 @@ public class LegacyDevice {
 
     public Map<String, LegacyDeviceFeature> getFeatures() {
         return features;
-    }
-
-    public byte getX10HouseCode() {
-        return (address.getX10HouseCode());
-    }
-
-    public byte getX10UnitCode() {
-        return (address.getX10UnitCode());
     }
 
     public boolean hasProductKey(String key) {
@@ -166,7 +156,7 @@ public class LegacyDevice {
         hasModemDBEntry = b;
     }
 
-    public void setAddress(InsteonAddress ia) {
+    public void setAddress(DeviceAddress ia) {
         address = ia;
     }
 
@@ -319,120 +309,6 @@ public class LegacyDevice {
                 }
             }
         }
-    }
-
-    /**
-     * Helper method to make standard message
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @return standard message
-     * @throws FieldException
-     * @throws InvalidMessageTypeException
-     */
-    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2)
-            throws FieldException, InvalidMessageTypeException {
-        return (makeStandardMessage(flags, cmd1, cmd2, -1));
-    }
-
-    /**
-     * Helper method to make standard message, possibly with group
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @param group (-1 if not a group message)
-     * @return standard message
-     * @throws FieldException
-     * @throws InvalidMessageTypeException
-     */
-    public Msg makeStandardMessage(byte flags, byte cmd1, byte cmd2, int group)
-            throws FieldException, InvalidMessageTypeException {
-        Msg m = Msg.makeMessage("SendStandardMessage");
-        InsteonAddress addr = null;
-        byte f = flags;
-        if (group != -1) {
-            f |= 0xc0; // mark message as group message
-            // and stash the group number into the address
-            addr = new InsteonAddress((byte) 0, (byte) 0, (byte) (group & 0xff));
-        } else {
-            addr = getAddress();
-        }
-        m.setAddress("toAddress", addr);
-        m.setByte("messageFlags", f);
-        m.setByte("command1", cmd1);
-        m.setByte("command2", cmd2);
-        return m;
-    }
-
-    public Msg makeX10Message(byte rawX10, byte X10Flag) throws FieldException, InvalidMessageTypeException {
-        Msg m = Msg.makeMessage("SendX10Message");
-        m.setByte("rawX10", rawX10);
-        m.setByte("X10Flag", X10Flag);
-        m.setQuietTime(300L);
-        return m;
-    }
-
-    /**
-     * Helper method to make extended message
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @return extended message
-     * @throws FieldException
-     * @throws InvalidMessageTypeException
-     */
-    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2)
-            throws FieldException, InvalidMessageTypeException {
-        return makeExtendedMessage(flags, cmd1, cmd2, new byte[] {});
-    }
-
-    /**
-     * Helper method to make extended message
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @param data array with userdata
-     * @return extended message
-     * @throws FieldException
-     * @throws InvalidMessageTypeException
-     */
-    public Msg makeExtendedMessage(byte flags, byte cmd1, byte cmd2, byte[] data)
-            throws FieldException, InvalidMessageTypeException {
-        Msg m = Msg.makeMessage("SendExtendedMessage");
-        m.setAddress("toAddress", getAddress());
-        m.setByte("messageFlags", (byte) (((flags & 0xff) | 0x10) & 0xff));
-        m.setByte("command1", cmd1);
-        m.setByte("command2", cmd2);
-        m.setUserData(data);
-        m.setCRC();
-        return m;
-    }
-
-    /**
-     * Helper method to make extended message, but with different CRC calculation
-     *
-     * @param flags
-     * @param cmd1
-     * @param cmd2
-     * @param data array with user data
-     * @return extended message
-     * @throws FieldException
-     * @throws InvalidMessageTypeException
-     */
-    public Msg makeExtendedMessageCRC2(byte flags, byte cmd1, byte cmd2, byte[] data)
-            throws FieldException, InvalidMessageTypeException {
-        Msg m = Msg.makeMessage("SendExtendedMessage");
-        m.setAddress("toAddress", getAddress());
-        m.setByte("messageFlags", (byte) (((flags & 0xff) | 0x10) & 0xff));
-        m.setByte("command1", cmd1);
-        m.setByte("command2", cmd2);
-        m.setUserData(data);
-        m.setCRC2();
-        return m;
     }
 
     /**
