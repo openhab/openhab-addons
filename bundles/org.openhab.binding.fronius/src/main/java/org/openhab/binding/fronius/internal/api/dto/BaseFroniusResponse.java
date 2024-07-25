@@ -10,27 +10,24 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * base class for a response-object from the API
+ * Base class for a response-object from the Fronius Solar API (v1).
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@NonNullByDefault
 public class BaseFroniusResponse {
     @SerializedName("Head")
-    private Head head;
+    private @Nullable Head head;
 
-    public Head getHead() {
-        if (head == null) {
-            head = new Head();
-        }
+    public @Nullable Head getHead() {
         return head;
-    }
-
-    public void setHead(Head head) {
-        this.head = head;
     }
 }

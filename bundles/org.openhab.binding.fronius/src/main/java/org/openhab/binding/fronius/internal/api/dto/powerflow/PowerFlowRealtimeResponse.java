@@ -10,28 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto.powerflow;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.fronius.internal.api.dto.BaseFroniusResponse;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link PowerFlowRealtimeResponse} is responsible for storing
- * the response from the powerflowrealtime api
+ * the response from the GetPowerFlowRealtimeData response.
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@NonNullByDefault
 public class PowerFlowRealtimeResponse extends BaseFroniusResponse {
     @SerializedName("Body")
-    private PowerFlowRealtimeBody body;
+    private @Nullable PowerFlowRealtimeBody body;
 
-    public PowerFlowRealtimeBody getBody() {
-        if (body == null) {
-            body = new PowerFlowRealtimeBody();
-        }
+    public @Nullable PowerFlowRealtimeBody getBody() {
         return body;
-    }
-
-    public void setBody(PowerFlowRealtimeBody body) {
-        this.body = body;
     }
 }
