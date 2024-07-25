@@ -155,7 +155,8 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
             }
 
             int pollingPeriod = Math.min(config.refreshIntervalCumulative, config.refreshIntervalInstantaneous);
-            pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 0, pollingPeriod, TimeUnit.SECONDS);
+            pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 0,
+                    Duration.ofMinutes(pollingPeriod).toSeconds(), TimeUnit.SECONDS);
             updateStatus(ThingStatus.ONLINE);
         });
     }
@@ -207,21 +208,6 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
         }
 
         return true;
-    }
-
-    public @Nullable FlumeApiDevice getApiDevice(String id) {
-        final List<FlumeApiDevice> listDevices = apiListDevicesCache.getValue();
-        if (listDevices == null) {
-            return null;
-        }
-
-        for (FlumeApiDevice dev : listDevices) {
-            if (dev.id.equals(id)) {
-                return dev;
-            }
-        }
-
-        return null;
     }
 
     @Nullable

@@ -34,8 +34,8 @@ Note, there is a rate limit of 120 queries per hour imposed by Flume so use caut
 | Flume Password                | text      | Password to access Flume cloud                                                        | N/A     | yes      | no       |
 | Flume Client ID               | text      | ID retrieved from Flume cloud                                                         | N/A     | yes      | no       |
 | Flume Client Secret           | text      | Secret retrieved from Flume cloud                                                     | N/A     | yes      | no       |
-| Instantaneous Refresh Interval| integer   | Polling interval (seconds) for instantaneous usage (rate limited to 120 queries/sec)  | 60      | no       | yes      |
-| Cumulative Refresh Interval   | integer   | Polling interval (seconds) for cumulative usage (rate-limited with above)             | 300     | no       | yes      |
+| Instantaneous Refresh Interval| integer   | Polling interval (minutes) for instantaneous usage (rate limited to 120 queries/sec)  | 1       | no       | yes      |
+| Cumulative Refresh Interval   | integer   | Polling interval (minutes) for cumulative usage (rate-limited with above)             | 5       | no       | yes      |
 
 ## Flume Meter Device Configuration
 
