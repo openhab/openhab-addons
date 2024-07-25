@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="flume"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="device">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="cloud"/>
+		</supported-bridge-type-refs>
+
+		<label>Flume Meter Device</label>
+		<description>Flume water meter device.</description>
+
+		<channels>
+			<channel id="instantUsage" typeId="instantUsage"/>
+			<channel id="cumulativeUsage" typeId="cumulativeUsage"/>
+			<channel id="batteryLevel" typeId="system.battery-level"/>
+			<channel id="lastSeen" typeId="lastSeen"/>
+			<channel id="lowBattery" typeId="system.low-battery"/>
+			<channel id="usageAlert" typeId="usageAlert"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description>
+			<parameter name="id" type="text">
+				<label>ID</label>
+				<description>Device ID</description>
+				<required>true</required>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="cumulativeUsage">
+		<item-type>Number:Volume</item-type>
+		<label>Cumulative Used</label>
+		<description>Cumulative water used (volume)</description>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+	<channel-type id="instantUsage">
+		<item-type>Number:VolumetricFlowRate</item-type>
+		<label>Instant Water Usage</label>
+		<description>Instantaneous water flow rate (volume / minute)</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="lastSeen">
+		<item-type>DateTime</item-type>
+		<label>Last Seen</label>
+		<description>Date/Time when device was last seen</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="usageAlert">
+		<kind>trigger</kind>
+		<label>Usage Alert</label>
+		<description>Trigger of a usage alert</description>
+		<event></event>
+	</channel-type>
+</thing:thing-descriptions>
