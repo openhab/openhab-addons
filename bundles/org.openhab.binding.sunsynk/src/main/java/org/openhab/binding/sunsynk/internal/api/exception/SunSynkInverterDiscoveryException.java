@@ -24,6 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SunSynkInverterDiscoveryException extends Exception {
 
+    private static final long serialVersionUID = 4L;
+
     public SunSynkInverterDiscoveryException(String message) {
         super(message);
     }

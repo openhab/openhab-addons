@@ -18,12 +18,14 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Details} is the internal class for Account detail information of the sunsynk Account.
+ * The {@link Details} is the internal class for account detail information from a
+ * Sun Synk Connect Account.
  *
  * @author Lee Charlton - Initial contribution
  */
 
 @NonNullByDefault
+@SuppressWarnings("unused")
 public class Details {
     private int code;
     private String msg = "";
@@ -48,16 +50,16 @@ public class Details {
 
     public ArrayList<Inverter> getInverters(String accessToken) {
         ArrayList<Inverter> inverters = new ArrayList<>();
-        for (Details.Inverterdata.InverterInfo Inv : getInverters()) {
+        for (Details.Inverterdata.InverterInfo inv : getInverters()) {
             Inverter temp = new Inverter();
-            String serialNo = Inv.getsn();
-            String gateSerialNo = Inv.getgsn();
+            String serialNo = inv.getsn();
+            String gateSerialNo = inv.getgsn();
             temp.setGateSerialNo(gateSerialNo);
             temp.setSerialNo(serialNo);
             temp.setUID(gateSerialNo + serialNo);
             temp.setToken(accessToken);
-            temp.setAlias(Inv.getAlias());
-            temp.setID(Inv.getID());
+            temp.setAlias(inv.getAlias());
+            temp.setID(inv.getID());
             inverters.add(temp);
         }
         return inverters;

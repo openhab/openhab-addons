@@ -81,9 +81,6 @@ public class SunSynkAccountDiscoveryService extends AbstractDiscoveryService {
     }
 
     private void addThing(Inverter inverter) {
-        if (inverter == null || !inverter.discoveryInformationPresent()) {
-            return;
-        }
         logger.debug("addThing(): Adding new SunSynk Inverter unit ({}) to the inbox", inverter.getAlias());
         Map<String, Object> properties = new HashMap<>();
         ThingUID thingUID = new ThingUID(SunSynkBindingConstants.THING_TYPE_INVERTER, bridgeUID, inverter.getUID());
@@ -92,7 +89,7 @@ public class SunSynkAccountDiscoveryService extends AbstractDiscoveryService {
         properties.put(Thing.PROPERTY_MODEL_ID, inverter.getID());
         properties.put(SunSynkBindingConstants.CONFIG_NAME, inverter.getAlias());
         thingDiscovered(DiscoveryResultBuilder.create(thingUID).withLabel(inverter.getAlias()).withBridge(bridgeUID)
-                .withProperty("uniqueId", inverter.getSerialNo()).withRepresentationProperty("uniqueId")
+                .withProperty("serialnumber", inverter.getSerialNo()).withRepresentationProperty("serialnumber")
                 .withProperties(properties).build());
     }
 }

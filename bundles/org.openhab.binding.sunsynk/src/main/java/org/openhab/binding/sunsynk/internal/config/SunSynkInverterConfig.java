@@ -25,11 +25,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class SunSynkInverterConfig {
 
     private String alias = "";
-    private String sn = "";
+    private String serialnumber = "";
     private int refresh;
 
-    public String getsn() {
-        return this.sn;
+    public String getSerialnumber() {
+        return this.serialnumber;
     }
 
     public int getRefresh() {
@@ -44,16 +44,16 @@ public class SunSynkInverterConfig {
         this.refresh = refresh;
     }
 
-    public void setalias(String alias) {
+    public void setAlias(String alias) {
         this.alias = alias;
     }
 
-    public void setsn(String sn) {
-        this.sn = sn;
+    public void setSerialnumber(String sn) {
+        this.serialnumber = sn;
     }
 
     @Override
     public String toString() {
-        return "InverterConfig [alias=" + alias + ", serial=" + sn + ", refresh=" + refresh + "]";
+        return "InverterConfig [alias=" + alias + ", serial=" + serialnumber + ", refresh=" + refresh + "]";
     }
 }

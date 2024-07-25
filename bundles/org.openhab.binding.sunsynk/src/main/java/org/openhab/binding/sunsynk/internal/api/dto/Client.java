@@ -14,9 +14,11 @@ package org.openhab.binding.sunsynk.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.sunsynk.internal.api.exception.SunSynkAuthenticateException;
 
 /**
- * The {@link Client} is the internal class for Client information from the sunsynk Account.
+ * The {@link Client} is the internal class for client information
+ * from a Sun Synk Connect Account.
  *
  * @author Lee Charlton - Initial contribution
  */
@@ -26,7 +28,8 @@ public class Client {
     private int code; // 102 username or password probloem
     private String msg = "";
     private boolean success;
-    private @Nullable APIdata data = new APIdata();
+    @Nullable
+    private APIdata data = new APIdata();
     private int status;
     private String error = ""; // "{"timestamp":"2024-06-16T11:21:17.690+00:00","status":404,"error":"Not
                                // Found","path":"/oauth/toke"}"
@@ -37,7 +40,7 @@ public class Client {
     }
 
     public static String getAccessTokenString() {
-        return APIdata.static_access_token;
+        return APIdata.staticAccessToken;
     }
 
     public int getCode() {
@@ -65,34 +68,31 @@ public class Client {
     }
 
     public void setAccessTokenString(String token) {
-        APIdata.static_access_token = token;
+        APIdata.staticAccessToken = token;
     }
 
-    public Long getExpiresIn() {
-        return data.getExpiresIn();
+    public Long getExpiresIn() throws SunSynkAuthenticateException {
+        return this.getData().getExpiresIn();
     }
 
-    public String getRefreshTokenString() {
-        return data.getRefreshToken();
+    public String getRefreshTokenString() throws SunSynkAuthenticateException {
+        return this.getData().getRefreshToken();
     }
 
-    public Long getIssuedAt() {
-        return data.getIssuedAt();
+    public Long getIssuedAt() throws SunSynkAuthenticateException {
+        return this.getData().getIssuedAt();
     }
 
-    public void setIssuedAt(Long issued_at) {
-        data.setIssuedAt(issued_at);
+    public void setIssuedAt(Long issuedAt) throws SunSynkAuthenticateException {
+        this.getData().setIssuedAt(issuedAt);
     }
 
-    public @Nullable APIdata getData() {
-        return this.data;
-    }
-
-    public boolean dataIsNotNull() {
-        if (this.data == null) {
-            return false;
+    public APIdata getData() throws SunSynkAuthenticateException {
+        APIdata data = this.data; // Nullable inherited from APIdata
+        if (data != null) {
+            return data;
         } else {
-            return true;
+            throw new SunSynkAuthenticateException("Empty client data.");
         }
     }
 

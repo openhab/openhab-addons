@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * The {@link Daytemps} is the internal class for Inverter temperature history information
- * from the sunsynk Account.
+ * from a Sun Synk Connect Account.
  * The minute following midnight returns an empty array.
  * 
  * @author Lee Charlton - Initial contribution
@@ -38,18 +38,9 @@ public class Daytemps {
 
     class Data {
         private @Nullable List<Infos> infos = new ArrayList<Infos>();
-
-        private boolean isNotNull() { // sometimes after midnight Sun Synk responds with an empty array
-            if (infos == null) {
-                return false;
-            } else if (infos.get(0).records == null) {
-                return false;
-            } else {
-                return true;
-            }
-        }
     }
 
+    @SuppressWarnings("unused")
     class Infos {
         private String unit = "";
         private @Nullable List<Record> records = new ArrayList<Record>();
@@ -57,6 +48,7 @@ public class Daytemps {
         private String label = "";
     }
 
+    @SuppressWarnings("unused")
     class Record {
         private String time = "";
         private double value;
@@ -65,12 +57,17 @@ public class Daytemps {
 
     public void getLastValue() {
 
-        if (this.data.isNotNull()) {
-            Infos dc_record = this.data.infos.get(0);
-            Infos ac_record = this.data.infos.get(1);
-            this.dc_temperature = dc_record.records.get(dc_record.records.size() - 1).value;
-            this.ac_temperature = ac_record.records.get(ac_record.records.size() - 1).value;
-            return;
+        List<Infos> infos = this.data.infos;
+        if (infos != null) { // Sometimes after midnight infos or records are empty
+            if (!infos.isEmpty()) {
+                List<Record> dc_record = infos.get(0).records;
+                List<Record> ac_record = infos.get(1).records;
+                if (dc_record != null && ac_record != null) {
+                    this.dc_temperature = dc_record.get(dc_record.size() - 1).value;
+                    this.ac_temperature = ac_record.get(ac_record.size() - 1).value;
+                    return;
+                }
+            }
         }
         this.response_status = false;
         // do nothing leave dc_ and ac_ temperature values as they are.

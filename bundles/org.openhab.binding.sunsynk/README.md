@@ -32,9 +32,10 @@ Acknowledgements:
 ## Discovery
 
 The binding supports discovery via configuring your login and password in an openHAB bridge.
+
 1. Add the sunsynk binding.
 1. Add a new thing of type SunSynk Account via the SunSynk Binding and configure with username and password.
-1. Go to Inbox press \[+\] and via the SunSynk Account start discovery \[Scan\] of inverters. 
+1. Go to Inbox press \[+\] and via the SunSynk Account start discovery \[Scan\] of inverters.
 1. Inverters should appear in your inbox!
 
 The SunSynk Account bridge thing will discover connected inverters through the UI Scan service.
@@ -44,7 +45,9 @@ When using the UI Scan service all the parameters for an Inverter Thing are disc
 - Inverter Name maps to the Sun Synk Connect inverter alias
 - Refresh time (advanced) default 60s; determines the interval between polls of Sun Synk Connect. A value above 60 is enforced. When setting this remember your inverter values are only published by Sun Synk Connect at the rate set by "data interval".
 
-The refresh rate is limited to once every 60s to prevent too many requests from the Sun Synk Connect API, although there is no rate limit, the Sun Synk data is fully refreshed at the "data interval" set in Sun Synk Connect, at best that is every 60s. This can mean the data in openHAB is more than 1 minute delayed from real-time. Commands sent (from openHAB) to Sun Synk are buffered up until the next refresh interval and as they take a while to propagate through to your inverter, some channels are not refreshed (read back) from Sun Synk Connect until the next minute. 
+The refresh rate is limited to once every 60s to prevent too many requests from the Sun Synk Connect API, although there is no rate limit, the Sun Synk data is fully refreshed at the "data interval" set in Sun Synk Connect, at best that is every 60s.
+This can mean the data in openHAB is more than 1 minute delayed from real-time.
+Commands sent (from openHAB) to Sun Synk are buffered up until the next refresh interval and as they take a while to propagate through to your inverter, some channels are not refreshed (read back) from Sun Synk Connect until the next minute.
 
 The SunSynk Account requires the user e-mail address and password used to login to Sun Synk Connect.
 
@@ -59,11 +62,11 @@ The SunSynk Account requires the user e-mail address and password used to login 
 
 ### `sunsynk:inverter:` Thing Configuration
 
-| Name    | Type    | Description                                 | Default | Required | Advanced |
-|---------|---------|---------------------------------------------|---------|----------|----------|
-| alias   | text    | The Sun Synk Connect inverter alias         | N/A     | yes      | no       |
-| sn      | text    | The Sun Synk Connect inverter serial number | N/A     | yes      | no       |
-| refresh | integer | Interval the device is polled in sec        | 60      | yes      | yes      |
+| Name         | Type    | Description                                 | Default | Required | Advanced |
+|--------------|---------|---------------------------------------------|---------|----------|----------|
+| alias        | text    | The Sun Synk Connect inverter alias         | N/A     | yes      | no       |
+| serialnumber | text    | The Sun Synk Connect inverter serial number | N/A     | yes      | no       |
+| refresh      | integer | Interval the device is polled in sec        | 60      | yes      | yes      |
 
 ## Channels
 
@@ -119,17 +122,15 @@ The SunSynk Inverter has the following channels.
 |inverter-control-work-mode      |String                   | R/W | Inverter work mode 1, 2 or 3      | yes      |
 |inverter-control-energy-pattern |String                   | R/W | Inverter energy pattern 1 or 2    | yes      |
 
-### Thing Configuration
+### Full Example
 
 #### sunsynk.things
 
 ```java
 Bridge sunsynk:account:xxx @ "Loft" [email= "user.symbol@domain.", password="somepassword"]{
-    Thing inverter E1234567R1231234567890 @ "Loft" [alias= "My Inverter", sn= "1234567890", refresh= 60]
+    Thing inverter E1234567R1231234567890 @ "Loft" [alias= "My Inverter", serialnumber= "1234567890", refresh= 60]
 }
 ```
-
-### Item Configuration
 
 #### sunsynk.items
 
@@ -192,8 +193,10 @@ String                      InverterControlPattern      "System Mode Energy Patt
 
 The items file above adds Metadata: Default Standalone widget: [rlk_datetime_standalone](https://community.openhab.org/t/datetime-standalone-widget/127966) to the DateTime items. Only the time portion of the DateTime item is important.
 
-Be sure to understand the time zone set up for the inverter, this can either be synchronised with Sun Synk servers, which in the UK at least applies daylight saving, or free-wheeling locally. The times set in the DateTime items using the widget are not adjusted to any time zone and are sent to the SunSynk API as Strings where they will be applied directly to your inverter. This is in contrast to other solar / energy  APIs that use Zulu (GMT) time.
+Be sure to understand the time zone set up for the inverter, this can either be synchronised with Sun Synk servers, which in the UK at least applies daylight saving, or free-wheeling locally.
+The times set in the DateTime items using the widget are not adjusted to any time zone and are sent to the SunSynk API as Strings where they will be applied directly to your inverter.
+This is in contrast to other solar / energy APIs that use Zulu (GMT) time.
 
 ## Debugging
 
-After  installation, to gain further information on any issues you encounter  you  can turn on Debug [Logging](https://www.openhab.org/docs/administration/logging.html)  either  through the [karaf console](https://www.openhab.org/docs/administration/console.html) or through the openHAB UI.
+After installation, to gain further information on any issues you encounter you can turn on Debug [Logging](https://www.openhab.org/docs/administration/logging.html) either through the [karaf console](https://www.openhab.org/docs/administration/console.html) or through the openHAB UI.

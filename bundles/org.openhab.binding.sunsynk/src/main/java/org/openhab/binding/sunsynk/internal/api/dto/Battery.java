@@ -15,12 +15,14 @@ package org.openhab.binding.sunsynk.internal.api.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Battery} is the internal class for battery information from the sunsynk Account.
+ * The {@link Battery} is the internal class for battery information
+ * from a Sun Synk Connect Account.
  * Currently only Lithium SunSynk batteries are known to work.
  * 
  * @author Lee Charlton - Initial contribution
  */
 
+@SuppressWarnings("unused")
 @NonNullByDefault
 public class Battery {
     private int code;

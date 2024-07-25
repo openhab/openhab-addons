@@ -19,8 +19,8 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Grid} is the internal class for Inverter real time grid information
- * from the SunSynk Account.
+ * The {@link Grid} is the internal class for inverter real time grid information
+ * from the a Sun Synk Connect Account.
  * 
  * 
  * @author Lee Charlton - Initial contribution

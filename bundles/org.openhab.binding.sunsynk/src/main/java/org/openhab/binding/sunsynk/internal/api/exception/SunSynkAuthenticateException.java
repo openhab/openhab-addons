@@ -24,6 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SunSynkAuthenticateException extends Exception {
 
+    private static final long serialVersionUID = 1L;
+
     public SunSynkAuthenticateException(String message) {
         super(message);
     }

@@ -84,9 +84,10 @@
 		<properties>
 			<property name="vendor">SunSynk</property>
 		</properties>
+		<representation-property>serialnumber</representation-property>
 
 		<config-description>
-			<parameter name="sn" type="text" required="true">
+			<parameter name="serialnumber" type="text" required="true">
 				<label>Inverter Serial Number</label>
 				<description>Serial number of the inverter from Sun Synk Connect.</description>
 			</parameter>

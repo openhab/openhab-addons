@@ -15,8 +15,8 @@ package org.openhab.binding.sunsynk.internal.api.dto;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Daytempsretun} is the internal class for Inverter temperature historyinformation
- * from the sunsynk Account.
+ * The {@link Daytempsretun} is the internal class for inverter temperature history information
+ * from a Sun Synk Connect Account.
  * The minute following midnight returns an empty array
  * 
  * @author Lee Charlton - Initial contribution

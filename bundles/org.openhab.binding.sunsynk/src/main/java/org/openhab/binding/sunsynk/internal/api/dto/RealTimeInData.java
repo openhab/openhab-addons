@@ -19,9 +19,9 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link RealTimeInData} is the internal class for Inverter real time information
- * from the SunSynk Account.
- * 
+ * The {@link RealTimeInData} is the internal class for inverter real time information
+ * from a Sun Synk Connect Account.
+ * Use for solar status.
  * 
  * @author Lee Charlton - Initial contribution
  */
@@ -34,6 +34,7 @@ public class RealTimeInData {
     private Data data = new Data();
     private double solar_power;
 
+    @SuppressWarnings("unused")
     class Data {
         private int pac;
         private String grid_tip_power = "";
@@ -43,6 +44,7 @@ public class RealTimeInData {
         private List<MPPTIV> mpptIV = new ArrayList<MPPTIV>();
     }
 
+    @SuppressWarnings("unused")
     private class PVIV {
         private String id = "";
         private int pvNo;

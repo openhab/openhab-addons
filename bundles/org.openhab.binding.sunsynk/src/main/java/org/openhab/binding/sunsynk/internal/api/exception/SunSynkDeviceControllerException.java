@@ -16,25 +16,25 @@ package org.openhab.binding.sunsynk.internal.api.exception;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link SunSynkSendCommandException} represents a binding specific {@link Exception}
+ * The {@link SunSynkDeviceControllerException} represents a binding specific {@link Exception}
  * 
  * @author Lee Charlton - Initial contribution
  */
 
 @NonNullByDefault
-public class SunSynkSendCommandException extends Exception {
+public class SunSynkDeviceControllerException extends Exception {
 
-    private static final long serialVersionUID = 5L;
+    private static final long serialVersionUID = 2L;
 
-    public SunSynkSendCommandException(String message) {
+    public SunSynkDeviceControllerException(String message) {
         super(message);
     }
 
-    public SunSynkSendCommandException(String message, Throwable cause) {
+    public SunSynkDeviceControllerException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public SunSynkSendCommandException(Throwable cause) {
+    public SunSynkDeviceControllerException(Throwable cause) {
         super(cause);
     }
 }

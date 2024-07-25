@@ -20,8 +20,8 @@ import java.util.List;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Settings} is the internal class for Inverter Common Settings information
- * (grid charge / battery discharge schedule)from the SunSynk Account.
+ * The {@link Settings} is the internal class for inverter common settings information
+ * (grid and solar charge / battery discharge schedule) from a Sun Synk Account.
  * 
  * 
  * @author Lee Charlton - Initial contribution
@@ -39,6 +39,7 @@ public class Settings {
     List<String> timerTime = new ArrayList<String>();
     List<Integer> batteryPowerLimit = new ArrayList<Integer>();
 
+    @SuppressWarnings("unused")
     class Data {
         private boolean time1on;
         private boolean time2on;
@@ -400,7 +401,7 @@ public class Settings {
     }
 
     public String getToken() {
-        return APIdata.static_access_token;
+        return APIdata.staticAccessToken;
     }
 
     public List<Boolean> getIntervalGridTimerOn() {

@@ -24,6 +24,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class SunSynkGetStatusException extends Exception {
 
+    private static final long serialVersionUID = 3L;
+
     public SunSynkGetStatusException(String message) {
         super(message);
     }

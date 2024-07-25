@@ -16,8 +16,10 @@ import java.time.Instant;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
- * The {@link APIdata} is the internal class for a Sunsynk Connect
+ * The {@link APIdata} is the internal class for a Sun Synk Connect
  * Account.
  * 
  * @author Lee Charlton - Initial contribution
@@ -25,24 +27,29 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 @NonNullByDefault
 public class APIdata {
-    public static String static_access_token = "";
-    private String access_token = "";
-    private String refresh_token = "";
-    private String token_type = "";
-    private Long expires_in = 0000L;
+    @SerializedName("static_access_token")
+    public static String staticAccessToken = "";
+    @SerializedName("access_token")
+    private String accessToken = "";
+    @SerializedName("refresh_token")
+    private String refreshToken = "";
+    @SerializedName("token_type")
+    private String tokenType = "";
+    @SerializedName("expires_in")
+    private Long expiresIn = 0000L;
     private String scope = "";
-    private Long issued_at = Instant.now().getEpochSecond();
+    private Long issuedAt = Instant.now().getEpochSecond();
 
     public Long getExpiresIn() {
-        return this.expires_in;
+        return this.expiresIn;
     }
 
     public String getRefreshToken() {
-        return this.refresh_token;
+        return this.refreshToken;
     }
 
-    public String getToken_type() {
-        return this.token_type;
+    public String getTokenType() {
+        return this.tokenType;
     }
 
     public String getScope() {
@@ -50,20 +57,20 @@ public class APIdata {
     }
 
     public String getAccessToken() {
-        return this.access_token;
+        return this.accessToken;
     }
 
     public Long getIssuedAt() {
-        return this.issued_at;
+        return this.issuedAt;
     }
 
-    public void setIssuedAt(Long issued_at) {
-        this.issued_at = issued_at;
+    public void setIssuedAt(Long issuedAt) {
+        this.issuedAt = issuedAt;
     }
 
     @Override
     public String toString() {
-        return "[access token: " + this.access_token + ", refresh_token: " + this.refresh_token + ", expires_in: "
-                + this.expires_in + ", issued_at: " + this.issued_at + "]";
+        return "[access token: " + this.accessToken + ", refresh_token: " + this.refreshToken + ", expires_in: "
+                + this.expiresIn + ", issued_at: " + this.issuedAt + "]";
     }
 }

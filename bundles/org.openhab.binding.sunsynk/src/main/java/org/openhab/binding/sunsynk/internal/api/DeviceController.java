@@ -29,6 +29,7 @@ import org.openhab.binding.sunsynk.internal.api.dto.Daytemps;
 import org.openhab.binding.sunsynk.internal.api.dto.Grid;
 import org.openhab.binding.sunsynk.internal.api.dto.RealTimeInData;
 import org.openhab.binding.sunsynk.internal.api.dto.Settings;
+import org.openhab.binding.sunsynk.internal.api.exception.SunSynkDeviceControllerException;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkGetStatusException;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkSendCommandException;
 import org.openhab.binding.sunsynk.internal.config.SunSynkInverterConfig;
@@ -52,38 +53,51 @@ public class DeviceController {
     private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
     private String sn = "";
     private String alias = "";
-    private @Nullable Settings batterySettings = new Settings();
-    private @Nullable Battery realTimeBattery = new Battery();
-    private @Nullable Grid grid = new Grid();
-    private @Nullable Daytemps inverter_day_temperatures = new Daytemps();
-    private @Nullable RealTimeInData realTimeDataIn = new RealTimeInData();
-    private int TimeOut = 4000;
-    public @Nullable Settings tempInverterChargeSettings = new Settings(); // Holds modified battery settings.
+    private Settings batterySettings = new Settings();
+    private Battery realTimeBattery = new Battery();
+    private Grid grid = new Grid();
+    private Daytemps inverter_day_temperatures = new Daytemps();
+    private RealTimeInData realTimeDataIn = new RealTimeInData();
+    private final static int TIMEOUT_IN_MS = 4000;
+    public Settings tempInverterChargeSettings = new Settings(); // Holds modified battery settings.
 
     public DeviceController() {
     }
 
+    /**
+     * Sets the identity of the device (inverter) according to the configuration parameters;
+     * serial number and alias.
+     * 
+     * @param config
+     */
     public DeviceController(SunSynkInverterConfig config) {
-        this.sn = config.getsn();
+        this.sn = config.getSerialnumber();
         this.alias = config.getAlias();
     }
 
-    public void sendGetState(boolean batterySettingsUpdate) throws SunSynkGetStatusException { // Class entry method to
-                                                                                               // update internal
-        // inverter state
+    /**
+     * Entry method to get status of the concrete device (inverter) and update the internal state.
+     * 
+     * @param batterySettingsUpdate used to skip the battery charge settings status
+     * @throws SunSynkGetStatusException
+     * @throws JsonSyntaxException
+     * @throws SunSynkDeviceControllerException
+     * @see Settings
+     * @see Grid
+     * @see Battery
+     * @see Daytemps
+     * @see RealTimeInData
+     */
+    public void sendGetState(boolean batterySettingsUpdate)
+            throws SunSynkGetStatusException, JsonSyntaxException, SunSynkDeviceControllerException {
         logger.debug("Will get STATE for Inverter {} serial {}", this.alias, this.sn);
         try {
             if (!batterySettingsUpdate) { // normally get settings to track changes made by other UIs
-                logger.debug("Trying Common Settings");
                 getCommonSettings(); // battery charge settings
             }
-            logger.debug("Trying Grid Real Time Settings");
             getGridRealTime(); // grid status
-            logger.debug("Trying Battery Real Time Settings");
             getBatteryRealTime(); // battery status
-            logger.debug("Trying Temperature History");
             getInverterACDCTemperatures(); // get Inverter temperatures
-            logger.debug("Trying Real Time Solar");
             getRealTimeIn(); // Used for solar power now
         } catch (IOException e) {
             logger.debug("Failed to send to Inverter API: {} ", e.getMessage());
@@ -96,78 +110,117 @@ public class DeviceController {
         logger.debug("Successfully got and parsed new data for Inverter {} serial {}", this.alias, this.sn);
     }
 
-    public @Nullable Settings getBatteryChargeSettings() {
+    public Settings getBatteryChargeSettings() {
         return this.batterySettings;
     }
 
-    public @Nullable Battery getRealTimeBatteryState() {
+    public Battery getRealTimeBatteryState() {
         return this.realTimeBattery;
     }
 
-    public @Nullable Grid getRealTimeGridStatus() {
+    public Grid getRealTimeGridStatus() {
         return this.grid;
     }
 
-    public @Nullable Daytemps getInverterTemperatureHistory() {
+    public Daytemps getInverterTemperatureHistory() {
         return this.inverter_day_temperatures;
     }
 
-    public @Nullable RealTimeInData getRealtimeSolarStatus() {
+    public RealTimeInData getRealtimeSolarStatus() {
         return this.realTimeDataIn;
     }
 
-    private void getCommonSettings() throws IOException, JsonSyntaxException {
+    @SuppressWarnings("unused")
+    private void getCommonSettings() throws IOException, JsonSyntaxException, SunSynkDeviceControllerException {
+        logger.debug("Trying Common Settings");
         String response = apiGetMethod(makeURL("api/v1/common/setting/" + this.sn + "/read"),
-                APIdata.static_access_token);
+                APIdata.staticAccessToken);
         Gson gson = new Gson();
-        this.batterySettings = gson.fromJson(response, Settings.class);
+        @Nullable
+        Settings settings = gson.fromJson(response, Settings.class);
+        if (settings == null)
+            throw new SunSynkDeviceControllerException("Could not retrieve battery charge settings");
+        this.batterySettings = settings;
         this.batterySettings.buildLists();
     }
 
-    private void getGridRealTime() throws IOException, JsonSyntaxException {
+    @SuppressWarnings("unused")
+    private void getGridRealTime() throws IOException, JsonSyntaxException, SunSynkDeviceControllerException {
+        logger.debug("Trying Grid Real Time Settings");
         String response = apiGetMethod(makeURL("api/v1/inverter/grid/" + this.sn + "/realtime?sn=") + this.sn,
-                APIdata.static_access_token);
+                APIdata.staticAccessToken);
         Gson gson = new Gson();
-        this.grid = gson.fromJson(response, Grid.class);
+        @Nullable
+        Grid grid = gson.fromJson(response, Grid.class);
+        if (grid == null)
+            throw new SunSynkDeviceControllerException("Could not retrieve grid state");
+        this.grid = grid;
         this.grid.sumVIP();
     }
 
-    private void getBatteryRealTime() throws IOException, JsonSyntaxException {
+    @SuppressWarnings("unused")
+    private void getBatteryRealTime() throws IOException, JsonSyntaxException, SunSynkDeviceControllerException {
+        logger.debug("Trying Battery Real Time Settings");
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/battery/" + this.sn + "/realtime?sn=" + this.sn + "&lan"),
-                APIdata.static_access_token);
+                APIdata.staticAccessToken);
         Gson gson = new Gson();
-        this.realTimeBattery = gson.fromJson(response, Battery.class);
+        @Nullable
+        Battery battery = gson.fromJson(response, Battery.class);
+        if (battery == null)
+            throw new SunSynkDeviceControllerException("Could not retrieve battery state");
+        this.realTimeBattery = battery;
     }
 
-    private void getInverterACDCTemperatures() throws IOException, JsonSyntaxException {
+    @SuppressWarnings("unused")
+    private void getInverterACDCTemperatures()
+            throws IOException, JsonSyntaxException, SunSynkDeviceControllerException {
+        logger.debug("Trying Temperature History");
         String date = getAPIFormatDate();
         String response = apiGetMethod(
                 makeURL("api/v1/inverter/" + this.sn + "/output/day?lan=en&date=" + date + "&column=dc_temp,igbt_temp"),
-                APIdata.static_access_token);
+                APIdata.staticAccessToken);
         Gson gson = new Gson();
-        this.inverter_day_temperatures = gson.fromJson(response, Daytemps.class);
+        @Nullable
+        Daytemps daytemps = gson.fromJson(response, Daytemps.class);
+        if (daytemps == null)
+            throw new SunSynkDeviceControllerException("Could not retrieve device temperatures");
+        this.inverter_day_temperatures = daytemps;
         this.inverter_day_temperatures.getLastValue();
     }
 
-    private void getRealTimeIn() throws IOException, JsonSyntaxException { // Get URL Respnse
+    @SuppressWarnings("unused")
+    private void getRealTimeIn() throws IOException, JsonSyntaxException, SunSynkDeviceControllerException { // Get URL
+                                                                                                             // Respnse
+        logger.debug("Trying Real Time Solar");
         String response = apiGetMethod(makeURL("api/v1/inverter/" + this.sn + "/realtime/input"),
-                APIdata.static_access_token);
+                APIdata.staticAccessToken);
         Gson gson = new Gson();
-        this.realTimeDataIn = gson.fromJson(response, RealTimeInData.class);
+        @Nullable
+        RealTimeInData realTimeInData = gson.fromJson(response, RealTimeInData.class);
+        if (realTimeInData == null)
+            throw new SunSynkDeviceControllerException("Could not retrieve solar state");
+        this.realTimeDataIn = realTimeInData;
         this.realTimeDataIn.sumPVIV();
     }
 
-    public void sendSettings(@Nullable Settings settings) throws SunSynkSendCommandException {
+    /**
+     * Sends the internal battery charge and discharge settings to the concrete device (inverter)
+     * of a Sun Synk Connect Account
+     * 
+     * @param settings
+     * @throws SunSynkSendCommandException
+     */
+    public void sendSettings(Settings settings) throws SunSynkSendCommandException {
         String body = settings.buildBody();
         sendCommandToSunSynk(body);
     }
 
-    public void sendCommandToSunSynk(String body) throws SunSynkSendCommandException {
+    private void sendCommandToSunSynk(String body) throws SunSynkSendCommandException {
         String path = "api/v1/common/setting/" + this.sn + "/set";
 
         try {
-            apiPostMethod(makeURL(path), body, APIdata.static_access_token);
+            apiPostMethod(makeURL(path), body, APIdata.staticAccessToken);
         } catch (IOException e) {
             logger.debug("Failed to send to Inverter API: {} ", e.getMessage());
             int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");
@@ -176,21 +229,24 @@ public class DeviceController {
             }
             throw new SunSynkSendCommandException("Unknown athentication fail", e);
         }
+        logger.debug("Sent command: to inverter {}.", this.sn);
     }
 
-    private String apiPostMethod(String httpsURL, String body, String access_token) throws IOException {
+    private String apiPostMethod(String httpsURL, String body, String accessToken) throws IOException {
         Properties headers = new Properties();
         headers.setProperty("Accept", "application/json");
-        headers.setProperty("Authorization", "Bearer " + access_token);
+        headers.setProperty("Authorization", "Bearer " + accessToken);
         InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
-        return HttpUtil.executeUrl(HttpMethod.POST.asString(), httpsURL, headers, stream, "application/json", TimeOut);
+        return HttpUtil.executeUrl(HttpMethod.POST.asString(), httpsURL, headers, stream, "application/json",
+                TIMEOUT_IN_MS);
     }
 
-    private String apiGetMethod(String httpsURL, String access_token) throws IOException {
+    private String apiGetMethod(String httpsURL, String accessToken) throws IOException {
         Properties headers = new Properties();
         headers.setProperty("Accept", "application/json");
-        headers.setProperty("Authorization", "Bearer " + access_token);
-        return HttpUtil.executeUrl(HttpMethod.GET.asString(), httpsURL, headers, null, "application/json", TimeOut);
+        headers.setProperty("Authorization", "Bearer " + accessToken);
+        return HttpUtil.executeUrl(HttpMethod.GET.asString(), httpsURL, headers, null, "application/json",
+                TIMEOUT_IN_MS);
     }
 
     private String makeURL(String path) {

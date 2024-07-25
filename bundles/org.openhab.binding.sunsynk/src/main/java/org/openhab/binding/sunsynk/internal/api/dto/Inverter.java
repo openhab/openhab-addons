@@ -17,9 +17,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link Inverter} is the internal class for OpenHAB Inverter identity information
- * from the sunsynk Account.
- * The minute following midnight returns an empty array
+ * The {@link Inverter} is the internal class for OpenHAB inverter identity information
+ * from a Sun Synk Connect account.
  * 
  * @author Lee Charlton - Initial contribution
  */
@@ -61,10 +60,6 @@ public class Inverter {
 
     public void setRefresh(int refresh) {
         this.refresh = refresh;
-    }
-
-    public boolean discoveryInformationPresent() {
-        return token != null && alias != null && id != null && uid != null && gateSerialNo != null;
     }
 
     public String getUID() {

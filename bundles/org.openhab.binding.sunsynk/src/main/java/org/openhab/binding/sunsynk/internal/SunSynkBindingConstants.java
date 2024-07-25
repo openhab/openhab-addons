@@ -90,6 +90,6 @@ public class SunSynkBindingConstants {
 
     // Thing Discovery
     public static final String CONFIG_GATE_SERIAL = "gsn";
-    public static final String CONFIG_SERIAL = "sn";
+    public static final String CONFIG_SERIAL = "serialnumber";
     public static final String CONFIG_NAME = "alias";
 }

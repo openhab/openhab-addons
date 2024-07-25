@@ -61,21 +61,8 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         accountConfig = getConfigAs(SunSynkAccountConfig.class);
         updateStatus(ThingStatus.UNKNOWN);
         logger.debug("SunSynk Handler Intialised attempting to retrieve configuration");
-        startDiscoverApiKeyJob();
-    }
-
-    private void startDiscoverApiKeyJob() {
-        if (discoverApiKeyJob == null || discoverApiKeyJob.isCancelled()) {
-            Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    logger.debug("Starting account discovery job.");
-                    configAccount();
-                    logger.debug("Done account discovery job.");
-                }
-            };
-            discoverApiKeyJob = scheduler.schedule(runnable, 1, TimeUnit.SECONDS);
-        }
+        discoverApiKeyJob = scheduler.schedule(this::configAccount, 0, TimeUnit.SECONDS); // calls account config
+                                                                                          // asynchronously
     }
 
     public void setBridgeOnline() {
@@ -109,9 +96,15 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     }
 
     public void configAccount() {
+        SunSynkAccountConfig accountConfig = this.accountConfig;
+        if (accountConfig == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No account config provided.");
+            return;
+        }
         if (accountConfig.getEmail().isBlank() | accountConfig.getPassword().isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "E-mail address or Password missing in account configuration");
+            return;
         }
         try {
             this.sunAccount.authenticate(accountConfig.getEmail(), accountConfig.getPassword());
@@ -123,11 +116,13 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
             return;
         }
         updateStatus(ThingStatus.ONLINE);
-        logger.debug("Account configuration updated : {}", this.sunAccount.toString());
     }
 
     public boolean refreshAccount() throws SunSynkAuthenticateException {
         try {
+            SunSynkAccountConfig accountConfig = this.accountConfig;
+            if (accountConfig == null)
+                throw new SunSynkTokenException("No account config");
             this.sunAccount.refreshAccount(accountConfig.getEmail());
         } catch (SunSynkTokenException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
