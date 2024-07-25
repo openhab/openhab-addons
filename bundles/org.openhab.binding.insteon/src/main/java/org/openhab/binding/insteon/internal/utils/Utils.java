@@ -15,7 +15,7 @@ package org.openhab.binding.insteon.internal.utils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
-import org.openhab.binding.insteon.internal.message.DataType;
+import org.openhab.binding.insteon.internal.transport.message.DataType;
 
 /**
  * Various utility functions for e.g. hex string parsing

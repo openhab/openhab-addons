@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.insteon.internal;
 
-import static org.openhab.binding.insteon.internal.InsteonBindingConstants.*;
+import static org.openhab.binding.insteon.internal.InsteonLegacyBindingConstants.*;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,9 +24,9 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.insteon.internal.discovery.InsteonDeviceDiscoveryService;
-import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
-import org.openhab.binding.insteon.internal.handler.InsteonNetworkHandler;
+import org.openhab.binding.insteon.internal.discovery.InsteonLegacyDiscoveryService;
+import org.openhab.binding.insteon.internal.handler.InsteonLegacyDeviceHandler;
+import org.openhab.binding.insteon.internal.handler.InsteonLegacyNetworkHandler;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.io.transport.serial.SerialPortManager;
 import org.openhab.core.thing.Bridge;
@@ -77,12 +77,13 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (NETWORK_THING_TYPE.equals(thingTypeUID)) {
-            InsteonNetworkHandler insteonNetworkHandler = new InsteonNetworkHandler((Bridge) thing, serialPortManager);
+            InsteonLegacyNetworkHandler insteonNetworkHandler = new InsteonLegacyNetworkHandler((Bridge) thing,
+                    serialPortManager);
             registerServices(insteonNetworkHandler);
 
             return insteonNetworkHandler;
         } else if (DEVICE_THING_TYPE.equals(thingTypeUID)) {
-            return new InsteonDeviceHandler(thing);
+            return new InsteonLegacyDeviceHandler(thing);
         }
 
         return null;
@@ -90,7 +91,7 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler thingHandler) {
-        if (thingHandler instanceof InsteonNetworkHandler) {
+        if (thingHandler instanceof InsteonLegacyNetworkHandler) {
             ThingUID uid = thingHandler.getThing().getUID();
             ServiceRegistration<?> serviceRegs = this.serviceRegs.remove(uid);
             if (serviceRegs != null) {
@@ -104,11 +105,11 @@ public class InsteonHandlerFactory extends BaseThingHandlerFactory {
         }
     }
 
-    private synchronized void registerServices(InsteonNetworkHandler handler) {
+    private synchronized void registerServices(InsteonLegacyNetworkHandler handler) {
         this.serviceRegs.put(handler.getThing().getUID(),
-                bundleContext.registerService(InsteonNetworkHandler.class.getName(), handler, new Hashtable<>()));
+                bundleContext.registerService(InsteonLegacyNetworkHandler.class.getName(), handler, new Hashtable<>()));
 
-        InsteonDeviceDiscoveryService discoveryService = new InsteonDeviceDiscoveryService(handler);
+        InsteonLegacyDiscoveryService discoveryService = new InsteonLegacyDiscoveryService(handler);
         this.discoveryServiceRegs.put(handler.getThing().getUID(),
                 bundleContext.registerService(DiscoveryService.class.getName(), discoveryService, new Hashtable<>()));
     }
