@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="flume"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="cloud">
+		<label>Flume Cloud Connector</label>
+		<description>Flume cloud connector.</description>
+
+		<config-description>
+			<parameter name="username" type="text">
+				<label>Flume Username</label>
+				<description>Flume cloud portal username</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="password" type="text">
+				<label>Flume Password</label>
+				<description>Flume cloud portal password</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="clientId" type="text">
+				<label>Flume Client ID</label>
+				<description>Visit Flume cloud portal to get client ID</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="clientSecret" type="text">
+				<label>Flume Client Secret</label>
+				<description>Visit Flume cloud portal to get client secret</description>
+				<required>true</required>
+			</parameter>
+			<parameter name="refreshIntervalInstanteous" type="integer" min="30" step="30">
+				<label>Instantaneous Refresh Interval</label>
+				<description>Seconds between fetching values from the cloud service</description>
+				<required>false</required>
+				<advanced>true</advanced>
+				<default>60</default>
+			</parameter>
+			<parameter name="refreshIntervalCumulative" type="integer" min="60" step="60">
+				<label>Cumulative Refresh Interval</label>
+				<description>Seconds between fetching values from the cloud service</description>
+				<required>false</required>
+				<advanced>true</advanced>
+				<default>300</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+</thing:thing-descriptions>
