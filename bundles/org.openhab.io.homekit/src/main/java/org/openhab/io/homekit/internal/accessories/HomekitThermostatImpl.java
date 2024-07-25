@@ -34,6 +34,7 @@ import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.thermostat.CoolingThresholdTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.CurrentHeatingCoolingStateCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.CurrentHeatingCoolingStateEnum;
 import io.github.hapjava.characteristics.impl.thermostat.CurrentTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.HeatingThresholdTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.TargetHeatingCoolingStateCharacteristic;
@@ -186,14 +187,22 @@ class HomekitThermostatImpl extends AbstractHomekitAccessoryImpl {
                     }));
         }
 
-        // This characteristic is technically mandatory, but we provide a default if it's not provided
+        // These characteristics are technically mandatory, but we provide defaults if they're not provided
+        var currentHeatingCoolingStateCharacteristic = getCharacteristic(CurrentHeatingCoolingStateCharacteristic.class)
+                .orElseGet(() -> new CurrentHeatingCoolingStateCharacteristic(
+                        new CurrentHeatingCoolingStateEnum[] { CurrentHeatingCoolingStateEnum.OFF },
+                        () -> CompletableFuture.completedFuture(CurrentHeatingCoolingStateEnum.OFF), (cb) -> {
+                        }, () -> {
+                        })
+
+                );
         var displayUnitCharacteristic = getCharacteristic(TemperatureDisplayUnitCharacteristic.class)
                 .orElseGet(() -> HomekitCharacteristicFactory.createSystemTemperatureDisplayUnitCharacteristic());
 
-        addService(new ThermostatService(getCharacteristic(CurrentHeatingCoolingStateCharacteristic.class).get(),
-                targetHeatingCoolingStateCharacteristic,
-                getCharacteristic(CurrentTemperatureCharacteristic.class).get(), targetTemperatureCharacteristic.get(),
-                displayUnitCharacteristic));
+        addService(
+                new ThermostatService(currentHeatingCoolingStateCharacteristic, targetHeatingCoolingStateCharacteristic,
+                        getCharacteristic(CurrentTemperatureCharacteristic.class).get(),
+                        targetTemperatureCharacteristic.get(), displayUnitCharacteristic));
     }
 
     private void thresholdTemperatureChanged() {
