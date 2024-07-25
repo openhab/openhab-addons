@@ -90,6 +90,7 @@ public class SensiboAccountHandlerTest {
         final String getPodsResponse = new String(getClass().getResourceAsStream(podsResponse).readAllBytes(),
                 StandardCharsets.UTF_8);
         stubFor(get(urlEqualTo("/api/v2/users/me/pods?fields=*&apiKey=APIKEY"))
+                .withHeader("Accept-Encoding", equalTo("gzip"))
                 .willReturn(aResponse().withStatus(200).withBody(getPodsResponse)));
 
         when(sensiboAccountMock.getConfiguration()).thenReturn(configuration);
