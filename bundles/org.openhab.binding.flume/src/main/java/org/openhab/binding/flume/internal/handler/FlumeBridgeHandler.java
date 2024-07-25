@@ -163,7 +163,7 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
     @Nullable
     public List<FlumeApiDevice> apiListDevicesAction() {
         try {
-            return api.fetchDeviceList();
+            return api.getDeviceList();
         } catch (FlumeApiException | IOException | InterruptedException | TimeoutException | ExecutionException e) {
             handleApiException(e);
             return null;

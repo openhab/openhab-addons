@@ -257,7 +257,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
 
         if (System.nanoTime() > this.expiryUsageAlertFetch) {
             fetchUsageAlerts();
-            this.expiryUsageAlertFetch = System.nanoTime() + USAGE_QUERY_FETCH_INTERVAL.getNano();
+            this.expiryUsageAlertFetch = System.nanoTime() + USAGE_QUERY_FETCH_INTERVAL.toNanos();
         }
 
         if (this.isLinked(CHANNEL_DEVICE_CUMULATIVEUSAGE)
@@ -301,7 +301,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
             cumulativeUsage = queryBuckets.get(0).value + cumulativeStartOfYear;
             updateState(CHANNEL_DEVICE_CUMULATIVEUSAGE,
                     new QuantityType<>(cumulativeUsage, imperialUnits ? ImperialUnits.GALLON_LIQUID_US : Units.LITRE));
-            this.expiryCumulativeUsage = System.nanoTime() + this.refreshIntervalCumulative.getNano();
+            this.expiryCumulativeUsage = System.nanoTime() + this.refreshIntervalCumulative.toNanos();
         }
     }
 
@@ -317,7 +317,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
             instantUsage = currentFlowRate.gpm;
             updateState(CHANNEL_DEVICE_INSTANTUSAGE, new QuantityType<>(instantUsage,
                     isImperial() ? ImperialUnits.GALLON_PER_MINUTE : Units.LITRE_PER_MINUTE));
-            this.expiryInstantUsage = System.nanoTime() + this.refreshIntervalInstant.getNano();
+            this.expiryInstantUsage = System.nanoTime() + this.refreshIntervalInstant.toNanos();
         }
     }
 
@@ -338,7 +338,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
 
         if (System.nanoTime() > this.expiryUsageAlertFetch) {
             fetchUsageAlerts();
-            this.expiryUsageAlertFetch = System.nanoTime() + USAGE_QUERY_FETCH_INTERVAL.getNano();
+            this.expiryUsageAlertFetch = System.nanoTime() + USAGE_QUERY_FETCH_INTERVAL.toNanos();
         }
     }
 
