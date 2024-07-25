@@ -727,7 +727,7 @@ Enums that are linked to Switches or Contacts have an `inverted` param that will
 Enum mappings can have multiple values for a single key.
 These must be an array, not a comma separated string.
 If the characteristic can be set by HomeKit, the first value will be used when sending the command to the linked item.
-At the moment, this is not accomplishable with file based items, but can be done by manually configuring the HomeKit metadata with the Code editor in MainUI:
+Such a mapping can be configured manually in MainUI on HomeKit metadata in the Code editor:
 ```yaml
 value: "Lock"
 config:
@@ -737,6 +737,10 @@ config:
   UNSECURE:
     - UNLOCK
     - UNLOCKED
+```
+Or in a `.items` file:
+```java
+String MyLock "My Lock" { homekit="Lock"[SECURE="LOCK","LOCKED", UNSECURE="UNLOCK","UNLOCKED"] }
 ```
 
 All accessories support the following characteristics that can be set via metadata or linked to a String item:
