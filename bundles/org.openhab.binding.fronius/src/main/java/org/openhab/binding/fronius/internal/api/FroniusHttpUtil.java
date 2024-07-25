@@ -10,18 +10,19 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal;
+package org.openhab.binding.fronius.internal.api;
 
 import java.io.IOException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * 
- * A version of HttpUtil implementation that retries on failure
+ * A version of HttpUtil implementation that retries on failure.
  *
  * @author Jimmy Tanagra - Initial contribution
  * 
@@ -31,26 +32,29 @@ public class FroniusHttpUtil {
     private static final Logger logger = LoggerFactory.getLogger(FroniusHttpUtil.class);
 
     /**
-     * Issue a HTTP GET request and retry on failure
+     * Issue a HTTP request and retry on failure.
      *
+     * @param httpMethod the HTTP method to use
      * @param url the url to execute
      * @param timeout the socket timeout in milliseconds to wait for data
      * @return the response body
      * @throws FroniusCommunicationException when the request execution failed or interrupted
      */
-    public static synchronized String executeUrl(String url, int timeout) throws FroniusCommunicationException {
+    public static synchronized String executeUrl(HttpMethod httpMethod, String url, int timeout)
+            throws FroniusCommunicationException {
         int attemptCount = 1;
         try {
             while (true) {
                 Throwable lastException = null;
                 String result = null;
                 try {
-                    result = HttpUtil.executeUrl("GET", url, timeout);
+                    result = HttpUtil.executeUrl(httpMethod.asString(), url, timeout);
                 } catch (IOException e) {
                     // HttpUtil::executeUrl wraps InterruptedException into IOException.
                     // Unwrap and rethrow it so that we don't retry on InterruptedException
-                    if (e.getCause() instanceof InterruptedException) {
-                        throw (InterruptedException) e.getCause();
+                    Throwable cause = e.getCause();
+                    if (cause instanceof InterruptedException interruptException) {
+                        throw interruptException;
                     }
                     lastException = e;
                 }

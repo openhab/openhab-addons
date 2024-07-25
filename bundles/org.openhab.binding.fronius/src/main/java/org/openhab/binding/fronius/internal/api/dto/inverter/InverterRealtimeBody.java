@@ -10,28 +10,25 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto.inverter;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link PowerFlowRealtimeBody} is responsible for storing
- * the "body" node of the JSON response
+ * The {@link InverterRealtimeBody} is responsible for storing
+ * the "Body" node of the {@link InverterRealtimeResponse}.
  *
  * @author Thomas Rokohl - Initial contribution
  */
-public class PowerFlowRealtimeBody {
+@NonNullByDefault
+public class InverterRealtimeBody {
     @SerializedName("Data")
-    private PowerFlowRealtimeBodyData data;
+    private @Nullable InverterRealtimeBodyData data;
 
-    public PowerFlowRealtimeBodyData getData() {
-        if (data == null) {
-            data = new PowerFlowRealtimeBodyData();
-        }
+    public @Nullable InverterRealtimeBodyData getData() {
         return data;
-    }
-
-    public void setData(PowerFlowRealtimeBodyData data) {
-        this.data = data;
     }
 }

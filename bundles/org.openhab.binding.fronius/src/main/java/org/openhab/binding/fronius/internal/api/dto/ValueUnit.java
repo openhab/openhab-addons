@@ -10,10 +10,12 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto;
 
 import javax.measure.Unit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
@@ -22,33 +24,24 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link InverterRealtimeResponse} is responsible for storing
- * a value
+ * The {@link ValueUnit} is responsible for storing a value.
  *
  * @author Thomas Rokohl - Initial contribution
  * @author Jimmy Tanagra - Add conversion to QuantityType
  */
+@NonNullByDefault
 public class ValueUnit {
-
     @SerializedName("Value")
     private double value;
     @SerializedName("Unit")
-    private String unit = "";
+    private @Nullable String unit = "";
 
     public double getValue() {
         return value;
     }
 
-    public void setValue(double value) {
-        this.value = value;
-    }
-
-    public String getUnit() {
-        return this.unit == null ? "" : this.unit;
-    }
-
-    public void setUnit(String unit) {
-        this.unit = unit;
+    public @Nullable String getUnit() {
+        return unit;
     }
 
     public QuantityType<?> asQuantityType() {
