@@ -14,6 +14,7 @@ package org.openhab.binding.myuplink.internal.provider;
 
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,14 +67,21 @@ public class ChannelFactory {
     public Channel createChannel(ThingUID thingUID, JsonObject channelData) {
         final var channelId = Utils.getAsString(channelData, JSON_KEY_CHANNEL_ID, GENERIC_NO_VAL);
         final var label = Utils.getAsString(channelData, JSON_KEY_CHANNEL_LABEL, GENERIC_NO_VAL);
-        final var unit = Utils.getAsString(channelData, JSON_KEY_CHANNEL_UNIT, GENERIC_NO_VAL);
+        final var unit = Utils.fixUnit(Utils.getAsString(channelData, JSON_KEY_CHANNEL_UNIT, ""));
         final var strVal = Utils.getAsString(channelData, JSON_KEY_CHANNEL_STR_VAL, GENERIC_NO_VAL);
         final var writable = Utils.getAsBool(channelData, JSON_KEY_CHANNEL_WRITABLE, Boolean.FALSE);
         final var enumValues = Utils.getAsJsonArray(channelData, JSON_KEY_CHANNEL_ENUM_VALUES);
+        final var minValue = Utils.getAsBigDecimal(channelData, JSON_KEY_CHANNEL_MIN);
+        final var maxValue = Utils.getAsBigDecimal(channelData, JSON_KEY_CHANNEL_MAX);
+        final var stepValue = Utils.getAsBigDecimal(channelData, JSON_KEY_CHANNEL_STEP);
 
         ChannelTypeUID channelTypeUID = null;
         if (enumValues.isEmpty()) {
-            channelTypeUID = determineStaticChannelTypeUID(unit, strVal.contains(JSON_VAL_DECIMAL_SEPARATOR));
+            if (!writable) {
+                channelTypeUID = determineStaticChannelTypeUID(unit, strVal.contains(JSON_VAL_DECIMAL_SEPARATOR));
+            } else {
+                channelTypeUID = getOrBuildNumberChannelType(channelId, unit, minValue, maxValue, stepValue);
+            }
         } else {
             channelTypeUID = determineEnumChannelTypeUID(channelId, enumValues, writable);
         }
@@ -147,6 +155,38 @@ public class ChannelFactory {
 
             type = typeBuilder.build();
             channelTypeProvider.putChannelType(type);
+        }
+
+        return channelTypeUID;
+    }
+
+    private ChannelTypeUID getOrBuildNumberChannelType(String channelId, String unit, @Nullable BigDecimal min,
+            @Nullable BigDecimal max, @Nullable BigDecimal step) {
+        final var channelTypeUID = new ChannelTypeUID(BINDING_ID,
+                CHANNEL_TYPE_PREFIX_RW + CHANNEL_TYPE_NUMERIC_PRFIX + channelId);
+        var type = channelTypeRegistry.getChannelType(channelTypeUID);
+
+        if (type == null) {
+            var stateBuilder = StateDescriptionFragmentBuilder.create().withReadOnly(false);
+
+            if (min != null) {
+                stateBuilder.withMinimum(min);
+            }
+            if (max != null) {
+                stateBuilder.withMaximum(max);
+            }
+            if (step != null) {
+                stateBuilder.withStep(step);
+            }
+
+            var itemType = determineAcceptedType(channelTypeUID, unit);
+            var typeBuilder = ChannelTypeBuilder.state(channelTypeUID, channelId, itemType)
+                    .withStateDescriptionFragment(stateBuilder.build());
+            if (!itemType.equals(CoreItemFactory.NUMBER)) {
+                typeBuilder.withUnitHint(unit);
+            }
+
+            channelTypeProvider.putChannelType(typeBuilder.build());
         }
 
         return channelTypeUID;

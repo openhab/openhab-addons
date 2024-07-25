@@ -44,6 +44,7 @@ public class MyUplinkBindingConstants {
     public static final String CHANNEL_TYPE_UNIT_NONE = "NO_UNIT";
     public static final String CHANNEL_TYPE_PREFIX_RW = "rw";
     public static final String CHANNEL_TYPE_ENUM_PRFIX = "type-enum-";
+    public static final String CHANNEL_TYPE_NUMERIC_PRFIX = "type-numeric-";
     public static final String CHANNEL_TYPE_DEFAULT_DATATYPE = "Number";
 
     public static final String CHANNEL_TYPE_ENERGY = "type-energy";
@@ -80,6 +81,9 @@ public class MyUplinkBindingConstants {
     public static final String JSON_KEY_CHANNEL_LABEL = "parameterName";
     public static final String JSON_KEY_CHANNEL_UNIT = "parameterUnit";
     public static final String JSON_KEY_CHANNEL_SCALE = "scaleValue";
+    public static final String JSON_KEY_CHANNEL_MIN = "minValue";
+    public static final String JSON_KEY_CHANNEL_MAX = "maxValue";
+    public static final String JSON_KEY_CHANNEL_STEP = "stepValue";
     public static final String JSON_KEY_SYSTEMS = "systems";
     public static final String JSON_KEY_DEVICES = "devices";
     public static final String JSON_KEY_GENERIC_ID = "id";

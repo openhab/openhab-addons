@@ -14,6 +14,7 @@ package org.openhab.binding.myuplink.internal;
 
 import static org.openhab.binding.myuplink.internal.MyUplinkBindingConstants.*;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -134,6 +135,18 @@ public final class Utils {
     }
 
     /**
+     * get element as BigDecimal.
+     *
+     * @param jsonObject
+     * @param key
+     * @return
+     */
+    public static @Nullable BigDecimal getAsBigDecimal(@Nullable JsonObject jsonObject, String key) {
+        JsonElement element = jsonObject == null ? null : jsonObject.get(key);
+        return (element == null || element instanceof JsonNull) ? null : element.getAsBigDecimal();
+    }
+
+    /**
      * get element as boolean.
      *
      * @param jsonObject
@@ -229,5 +242,13 @@ public final class Utils {
             }
         }
         return new String(buffer);
+    }
+
+    public static String fixUnit(String originalUnit) {
+        return switch (originalUnit) {
+            case "l/m" -> "l/min";
+            case "hrs" -> "h";
+            default -> originalUnit;
+        };
     }
 }
