@@ -104,6 +104,11 @@ public class AwattarBridgeHandlerRefreshTest extends JavaTest {
         when(bestPriceCallbackMock.isChannelLinked(any())).thenReturn(true);
     }
 
+    /**
+     * Test the refreshIfNeeded method with a bridge that is offline.
+     *
+     * @throws SecurityException
+     */
     @Test
     void testRefreshIfNeeded_ThingOffline() throws SecurityException {
         when(bridgeMock.getStatus()).thenReturn(ThingStatus.OFFLINE);
@@ -114,6 +119,11 @@ public class AwattarBridgeHandlerRefreshTest extends JavaTest {
                 new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null));
     }
 
+    /**
+     * Test the refreshIfNeeded method with a bridge that is online and the data is empty.
+     *
+     * @throws SecurityException
+     */
     @Test
     void testRefreshIfNeeded_DataEmptry() throws SecurityException {
         when(bridgeMock.getStatus()).thenReturn(ThingStatus.ONLINE);
