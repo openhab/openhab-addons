@@ -184,6 +184,7 @@ public class LivisiBindingConstants {
     public static final String CHANNEL_DISK = "disk";
     public static final String CHANNEL_MEMORY = "memory";
     public static final String CHANNEL_OPERATION_STATUS = "status";
+    public static final String CHANNEL_RESTART = "restart";
 
     // List of channel parameters
     public static final String INVERT_CHANNEL_PARAMETER = "invert";
