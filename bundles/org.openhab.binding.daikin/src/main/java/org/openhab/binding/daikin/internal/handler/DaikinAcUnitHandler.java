@@ -192,19 +192,25 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         switch (channelUID.getId()) {
             case DaikinBindingConstants.CHANNEL_AC_FAN_DIR:
                 if (command instanceof StringType stringCommand) {
-                    changeFanDir(stringCommand.toString());
+                    if (changeFanDir(stringCommand.toString())) {
+                        updateState(channelUID, stringCommand);
+                    }
                     return true;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AC_SPECIALMODE:
                 if (command instanceof StringType stringCommand) {
-                    changeSpecialMode(stringCommand.toString());
+                    if (changeSpecialMode(stringCommand.toString())) {
+                        updateState(channelUID, stringCommand);
+                    }
                     return true;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AC_STREAMER:
                 if (command instanceof OnOffType onOffCommand) {
-                    changeStreamer(onOffCommand.equals(OnOffType.ON));
+                    if (changeStreamer(onOffCommand.equals(OnOffType.ON))) {
+                        updateState(channelUID, onOffCommand);
+                    }
                     return true;
                 }
                 break;
@@ -216,13 +222,21 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
                 break;
             case DaikinBindingConstants.CHANNEL_AC_DEMAND_MAX_POWER:
                 if (command instanceof PercentType percentCommand) {
-                    changeDemandMaxPower(percentCommand.intValue());
+                    if (changeDemandMaxPower(percentCommand.intValue())) {
+                        updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MODE,
+                                new StringType(DemandControlMode.MANUAL.name()));
+                        updateState(channelUID, percentCommand);
+                    }
                     return true;
                 }
                 break;
             case DaikinBindingConstants.CHANNEL_AC_DEMAND_SCHEDULE:
                 if (command instanceof StringType stringCommand) {
-                    changeDemandSchedule(stringCommand.toString());
+                    if (changeDemandSchedule(stringCommand.toString())) {
+                        updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MODE,
+                                new StringType(DemandControlMode.SCHEDULED.name()));
+                        updateState(channelUID, stringCommand);
+                    }
                     return true;
                 }
                 break;
@@ -231,27 +245,27 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
     }
 
     @Override
-    protected void changePower(boolean power) throws DaikinCommunicationException {
+    protected boolean changePower(boolean power) throws DaikinCommunicationException {
         ControlInfo info = webTargets.getControlInfo();
         info.power = power;
-        webTargets.setControlInfo(info);
+        return webTargets.setControlInfo(info);
     }
 
     @Override
-    protected void changeSetPoint(double newTemperature) throws DaikinCommunicationException {
+    protected boolean changeSetPoint(double newTemperature) throws DaikinCommunicationException {
         ControlInfo info = webTargets.getControlInfo();
         info.temp = Optional.of(newTemperature);
-        webTargets.setControlInfo(info);
+        return webTargets.setControlInfo(info);
     }
 
     @Override
-    protected void changeMode(String mode) throws DaikinCommunicationException {
+    protected boolean changeMode(String mode) throws DaikinCommunicationException {
         Mode newMode;
         try {
             newMode = Mode.valueOf(mode);
         } catch (IllegalArgumentException ex) {
             logger.warn("Invalid mode: {}. Valid values: {}", mode, Mode.values());
-            return;
+            return false;
         }
         ControlInfo info = webTargets.getControlInfo();
         info.mode = newMode;
@@ -263,55 +277,58 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
         // If mode=0 is not accepted try AUTO1 (mode=1)
         if (!accepted && newMode == Mode.AUTO && autoModeValue.isEmpty()) {
             info.autoModeValue = Mode.AUTO1.getValue();
-            if (webTargets.setControlInfo(info)) {
+            accepted = webTargets.setControlInfo(info);
+            if (accepted) {
                 autoModeValue = Optional.of(info.autoModeValue);
                 logger.debug("AUTO uses mode={}", info.autoModeValue);
             } else {
                 logger.warn("AUTO mode not accepted with mode=0 or mode=1");
             }
         }
+
+        return accepted;
     }
 
     @Override
-    protected void changeFanSpeed(String fanSpeed) throws DaikinCommunicationException {
+    protected boolean changeFanSpeed(String fanSpeed) throws DaikinCommunicationException {
         FanSpeed newSpeed;
         try {
             newSpeed = FanSpeed.valueOf(fanSpeed);
         } catch (IllegalArgumentException ex) {
             logger.warn("Invalid fan speed: {}. Valid values: {}", fanSpeed, FanSpeed.values());
-            return;
+            return false;
         }
         ControlInfo info = webTargets.getControlInfo();
         info.fanSpeed = newSpeed;
-        webTargets.setControlInfo(info);
+        return webTargets.setControlInfo(info);
     }
 
-    protected void changeFanDir(String fanDir) throws DaikinCommunicationException {
+    protected boolean changeFanDir(String fanDir) throws DaikinCommunicationException {
         FanMovement newMovement;
         try {
             newMovement = FanMovement.valueOf(fanDir);
         } catch (IllegalArgumentException ex) {
             logger.warn("Invalid fan direction: {}. Valid values: {}", fanDir, FanMovement.values());
-            return;
+            return false;
         }
         ControlInfo info = webTargets.getControlInfo();
         info.fanMovement = newMovement;
-        webTargets.setControlInfo(info);
+        return webTargets.setControlInfo(info);
     }
 
-    protected void changeSpecialMode(String specialMode) throws DaikinCommunicationException {
+    protected boolean changeSpecialMode(String specialMode) throws DaikinCommunicationException {
         SpecialMode newMode;
         try {
             newMode = SpecialMode.valueOf(specialMode);
         } catch (IllegalArgumentException e) {
             logger.warn("Invalid specialmode: {}. Valid values: {}", specialMode, SpecialMode.values());
-            return;
+            return false;
         }
-        webTargets.setSpecialMode(newMode);
+        return webTargets.setSpecialMode(newMode);
     }
 
-    protected void changeStreamer(boolean streamerMode) throws DaikinCommunicationException {
-        webTargets.setStreamerMode(streamerMode);
+    protected boolean changeStreamer(boolean streamerMode) throws DaikinCommunicationException {
+        return webTargets.setStreamerMode(streamerMode);
     }
 
     protected void changeDemandMode(String mode) throws DaikinCommunicationException {
@@ -323,40 +340,54 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             return;
         }
         DemandControl demandInfo = webTargets.getDemandControl();
+        boolean scheduleChanged = false;
+        boolean maxPowerChanged = false;
         if (demandInfo.mode != newMode) {
             if (newMode == DemandControlMode.SCHEDULED && savedDemandControlSchedule.isPresent()) {
                 // restore previously saved schedule
                 demandInfo.setSchedule(savedDemandControlSchedule.get());
+                scheduleChanged = true;
             }
 
             if (newMode == DemandControlMode.MANUAL && savedDemandControlMaxPower.isPresent()) {
                 // restore previously saved maxPower
                 demandInfo.maxPower = savedDemandControlMaxPower.get();
+                maxPowerChanged = true;
             }
         }
         demandInfo.mode = newMode;
-        webTargets.setDemandControl(demandInfo);
+        if (webTargets.setDemandControl(demandInfo)) {
+            updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MODE, new StringType(newMode.name()));
+            if (scheduleChanged) {
+                updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_SCHEDULE,
+                        new StringType(savedDemandControlSchedule.get()));
+            }
+            if (maxPowerChanged) {
+                updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MAX_POWER,
+                        new PercentType(savedDemandControlMaxPower.get()));
+            }
+        }
     }
 
-    protected void changeDemandMaxPower(int maxPower) throws DaikinCommunicationException {
+    protected boolean changeDemandMaxPower(int maxPower) throws DaikinCommunicationException {
         DemandControl demandInfo = webTargets.getDemandControl();
         demandInfo.mode = DemandControlMode.MANUAL;
         demandInfo.maxPower = maxPower;
-        webTargets.setDemandControl(demandInfo);
         savedDemandControlMaxPower = Optional.of(maxPower);
+        return webTargets.setDemandControl(demandInfo);
     }
 
-    protected void changeDemandSchedule(String schedule) throws DaikinCommunicationException {
+    protected boolean changeDemandSchedule(String schedule) throws DaikinCommunicationException {
         DemandControl demandInfo = webTargets.getDemandControl();
         try {
             demandInfo.setSchedule(schedule);
         } catch (JsonSyntaxException e) {
             logger.warn("Invalid schedule: {}. {}", schedule, e.getMessage());
-            return;
+            return false;
         }
         demandInfo.mode = DemandControlMode.SCHEDULED;
-        webTargets.setDemandControl(demandInfo);
         savedDemandControlSchedule = Optional.of(demandInfo.getSchedule());
+        return webTargets.setDemandControl(demandInfo);
     }
 
     /**
