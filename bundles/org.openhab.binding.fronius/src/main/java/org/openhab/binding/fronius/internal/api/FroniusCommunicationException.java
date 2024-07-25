@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal;
+package org.openhab.binding.fronius.internal.api;
 
 import java.io.IOException;
 

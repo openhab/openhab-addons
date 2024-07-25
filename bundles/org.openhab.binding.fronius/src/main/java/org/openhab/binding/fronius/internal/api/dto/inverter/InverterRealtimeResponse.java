@@ -10,29 +10,26 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto.inverter;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.fronius.internal.api.dto.BaseFroniusResponse;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
  * The {@link InverterRealtimeResponse} is responsible for storing
- * the response from the realtime api
+ * the response from the GetInverterRealtimeData response.
  *
  * @author Thomas Rokohl - Initial contribution
  */
+@NonNullByDefault
 public class InverterRealtimeResponse extends BaseFroniusResponse {
-
     @SerializedName("Body")
-    private InverterRealtimeBody body;
+    private @Nullable InverterRealtimeBody body;
 
-    public InverterRealtimeBody getBody() {
-        if (body == null) {
-            body = new InverterRealtimeBody();
-        }
+    public @Nullable InverterRealtimeBody getBody() {
         return body;
-    }
-
-    public void setBody(InverterRealtimeBody body) {
-        this.body = body;
     }
 }

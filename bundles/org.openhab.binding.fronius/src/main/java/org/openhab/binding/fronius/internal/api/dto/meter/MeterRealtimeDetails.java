@@ -10,17 +10,17 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal.api;
+package org.openhab.binding.fronius.internal.api.dto.meter;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link MeterRealtimeDetailsDTO} is responsible for storing
- * the "body" node of the JSON response
+ * The {@link MeterRealtimeDetails} is responsible for storing
+ * the "Details" node of the {@link MeterRealtimeBodyData}.
  *
  * @author Jimmy Tanagra - Initial contribution
  */
-public class MeterRealtimeDetailsDTO {
+public class MeterRealtimeDetails {
     @SerializedName("Manufacturer")
     private String manufacturer;
     @SerializedName("Model")
@@ -32,23 +32,11 @@ public class MeterRealtimeDetailsDTO {
         return manufacturer;
     }
 
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
     public String getModel() {
         return model;
     }
 
-    public void setModel(String model) {
-        this.model = model;
-    }
-
     public String getSerial() {
         return serial;
-    }
-
-    public void setSerial(String serial) {
-        this.serial = serial;
     }
 }
