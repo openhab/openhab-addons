@@ -339,13 +339,24 @@ public class HomekitCharacteristicFactory {
         @Nullable
         T offEnumValue = null, onEnumValue = null;
 
+        var configuration = item.getConfiguration();
+        boolean configurationDefinesEnumValues = false;
+        if (configuration != null && !configuration.isEmpty()) {
+            for (var k : klazz.getEnumConstants()) {
+                if (configuration.containsKey(k.toString())) {
+                    configurationDefinesEnumValues = true;
+                    break;
+                }
+            }
+        }
+
         for (var k : klazz.getEnumConstants()) {
             if (numberType) {
                 int code = k.getCode();
-                if ((switchType || contactType) && code == 0) {
+                if ((switchType || contactType) && code == 0 && !configurationDefinesEnumValues) {
                     map.put(k, inverted ? onValue : offValue);
                     offEnumValue = k;
-                } else if ((switchType || contactType) && code == 1) {
+                } else if ((switchType || contactType) && code == 1 && !configurationDefinesEnumValues) {
                     map.put(k, inverted ? offValue : onValue);
                     onEnumValue = k;
                 } else if (percentType && code == 0) {
@@ -359,8 +370,7 @@ public class HomekitCharacteristicFactory {
                 map.put(k, k.toString());
             }
         }
-        var configuration = item.getConfiguration();
-        if (configuration != null) {
+        if (configuration != null && !configuration.isEmpty()) {
             map.forEach((k, current_value) -> {
                 final Object newValue = configuration.get(k.toString());
                 if (newValue instanceof String || newValue instanceof Number) {
