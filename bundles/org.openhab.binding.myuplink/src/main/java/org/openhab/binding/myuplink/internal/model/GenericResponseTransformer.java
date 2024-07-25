@@ -27,12 +27,10 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
-import org.openhab.core.library.unit.MetricPrefix;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.types.util.UnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +63,9 @@ public class GenericResponseTransformer {
 
             logger.debug("received channel data: {}", channelData.toString());
 
-            var value = Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_VALUE);
+            var value = Utils.getAsBigDecimal(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_VALUE);
+            var unit = UnitUtils.parseUnit(
+                    Utils.fixUnit(Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_UNIT, "")));
             var channelId = Utils.getAsString(channelData.getAsJsonObject(), JSON_KEY_CHANNEL_ID, GENERIC_NO_VAL);
 
             Channel channel;
@@ -87,30 +87,16 @@ public class GenericResponseTransformer {
                 } else {
                     try {
                         var channelTypeId = Utils.getChannelTypeId(channel);
-                        var newState = switch (channelTypeId) {
-                            case CHANNEL_TYPE_ENERGY ->
-                                new QuantityType<>(Double.parseDouble(value), MetricPrefix.KILO(Units.WATT_HOUR));
-                            case CHANNEL_TYPE_PRESSURE -> new QuantityType<>(Double.parseDouble(value), Units.BAR);
-                            case CHANNEL_TYPE_PERCENT -> new QuantityType<>(Double.parseDouble(value), Units.PERCENT);
-                            case CHANNEL_TYPE_TEMPERATURE ->
-                                new QuantityType<>(Double.parseDouble(value), SIUnits.CELSIUS);
-                            case CHANNEL_TYPE_FREQUENCY -> new QuantityType<>(Double.parseDouble(value), Units.HERTZ);
-                            case CHANNEL_TYPE_FLOW ->
-                                new QuantityType<>(Double.parseDouble(value), Units.LITRE.divide(Units.MINUTE));
-                            case CHANNEL_TYPE_ELECTRIC_CURRENT ->
-                                new QuantityType<>(Double.parseDouble(value), Units.AMPERE);
-                            case CHANNEL_TYPE_TIME -> new QuantityType<>(Double.parseDouble(value), Units.HOUR);
-                            case CHANNEL_TYPE_INTEGER -> new DecimalType(Double.valueOf(value).longValue());
-                            case CHANNEL_TYPE_DOUBLE -> new DecimalType(Double.parseDouble(value));
-                            case CHANNEL_TYPE_ON_OFF -> new DecimalType(Double.valueOf(value).longValue());
-                            case CHANNEL_TYPE_RW_SWITCH -> convertToOnOffType(value);
-                            case CHANNEL_TYPE_RW_COMMAND -> new StringType(value);
-
-                            default -> channelTypeId.startsWith(CHANNEL_TYPE_ENUM_PRFIX)
-                                    || channelTypeId.startsWith(CHANNEL_TYPE_PREFIX_RW + CHANNEL_TYPE_ENUM_PRFIX)
-                                            ? new DecimalType(Double.valueOf(value).longValue())
-                                            : UnDefType.NULL;
-                        };
+                        State newState;
+                        if (channelTypeId.equals(CHANNEL_TYPE_RW_SWITCH)) {
+                            newState = convertToOnOffType(value.stripTrailingZeros().toString());
+                        } else if (channelTypeId.equals(CHANNEL_TYPE_RW_COMMAND)) {
+                            newState = new StringType(value.toString());
+                        } else if (unit != null) {
+                            newState = new QuantityType<>(value, unit);
+                        } else {
+                            newState = new DecimalType(value.stripTrailingZeros());
+                        }
 
                         if (newState == UnDefType.NULL) {
                             logger.warn("no mapping implemented for channel type '{}'", channelTypeId);
