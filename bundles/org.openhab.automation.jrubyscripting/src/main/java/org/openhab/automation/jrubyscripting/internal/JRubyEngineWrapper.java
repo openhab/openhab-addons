@@ -50,12 +50,12 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
 
     @Override
     public CompiledScript compile(@Nullable String script) throws ScriptException {
-        return engine.compile(script);
+        return new JRubyCompiledScriptWrapper(engine.compile(script));
     }
 
     @Override
     public CompiledScript compile(@Nullable Reader reader) throws ScriptException {
-        return engine.compile(reader);
+        return new JRubyCompiledScriptWrapper(engine.compile(reader));
     }
 
     @Override
