@@ -477,7 +477,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     private void fillRollerFavorites(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
-        if (dc.sys.uiData.cover != null) {
+        if (dc.sys.uiData.cover != null && !dc.sys.uiData.cover.isEmpty()) {
             String[] favorites = dc.sys.uiData.cover.split(",");
             profile.settings.favorites = new ArrayList<>();
             for (int i = 0; i < favorites.length; i++) {
