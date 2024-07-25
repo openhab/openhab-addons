@@ -50,7 +50,7 @@ import org.openhab.core.thing.binding.ThingHandlerCallback;
 /**
  * The {@link AwattarBridgeHandlerRefreshTest} contains tests for the {@link AwattarBridgeHandler} refresh logic.
  *
- * @author Thomas Leber - Tests for refresh logic
+ * @author Thomas Leber - Initial contribution
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
