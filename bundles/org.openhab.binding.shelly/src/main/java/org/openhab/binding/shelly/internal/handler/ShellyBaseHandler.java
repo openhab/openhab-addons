@@ -1481,6 +1481,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Device profile re-initialized (thingType={})", thingName, thingType);
                 }
             }
+        } catch (ShellyApiException | RuntimeException e) {
+            logger.debug("{}: Unable to initialize Device Profile", thingName, e);
         } finally {
             refreshSettings = false;
         }
