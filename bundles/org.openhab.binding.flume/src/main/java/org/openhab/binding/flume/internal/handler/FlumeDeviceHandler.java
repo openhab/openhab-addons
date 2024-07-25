@@ -44,6 +44,7 @@ import org.openhab.binding.flume.internal.api.dto.FlumeApiDevice;
 import org.openhab.binding.flume.internal.api.dto.FlumeApiQueryBucket;
 import org.openhab.binding.flume.internal.api.dto.FlumeApiQueryWaterUsage;
 import org.openhab.binding.flume.internal.api.dto.FlumeApiUsageAlert;
+import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -60,7 +61,6 @@ import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,17 +78,28 @@ public class FlumeDeviceHandler extends BaseThingHandler {
     private static final String QUERY_ID_CUMULATIVE_START_OF_YEAR = "cumulativeStartOfYear";
     private static final String QUERY_ID_YEAR_TO_DATE = "usageYTD";
 
+    private ExpiringCache<FlumeApiDevice> apiDeviceCache = new ExpiringCache<FlumeApiDevice>(
+            Duration.ofMinutes(5).toMillis(), () -> {
+                try {
+                    return this.tryGetDeviceInfo();
+                } catch (FlumeApiException | IOException | InterruptedException | TimeoutException
+                        | ExecutionException e) {
+                    handleApiException(e);
+                    return null;
+                }
+            });
+
     private FlumeDeviceConfig config = new FlumeDeviceConfig();
 
     private float cumulativeStartOfYear = 0;
 
     private float cumulativeUsage = 0;
     private long expiryCumulativeUsage = 0;
-    private Duration refreshIntervalCumulative = Duration.ofSeconds(DEFAULT_POLLING_INTERVAL_CUMULATIVE);
+    private Duration refreshIntervalCumulative = Duration.ofMinutes(DEFAULT_POLLING_INTERVAL_CUMULATIVE);
 
     private float instantUsage = 0;
     private long expiryInstantUsage = 0;
-    private Duration refreshIntervalInstant = Duration.ofSeconds(DEFAULT_POLLING_INTERVAL_INSTANTANEOUS);
+    private Duration refreshIntervalInstant = Duration.ofMinutes(DEFAULT_POLLING_INTERVAL_INSTANTANEOUS);
 
     private LocalDateTime startOfYear = LocalDateTime.MIN;
 
@@ -130,8 +141,8 @@ public class FlumeDeviceHandler extends BaseThingHandler {
 
         FlumeBridgeConfig bridgeConfig = bh.getFlumeBridgeConfig();
 
-        refreshIntervalCumulative = Duration.ofSeconds(bridgeConfig.refreshIntervalCumulative);
-        refreshIntervalInstant = Duration.ofSeconds(bridgeConfig.refreshIntervalInstantaneous);
+        refreshIntervalCumulative = Duration.ofMinutes(bridgeConfig.refreshIntervalCumulative);
+        refreshIntervalInstant = Duration.ofMinutes(bridgeConfig.refreshIntervalInstantaneous);
 
         // always update the startOfYear number;
         startOfYear = LocalDateTime.MIN;
@@ -140,6 +151,10 @@ public class FlumeDeviceHandler extends BaseThingHandler {
             try {
                 tryQueryUsage(true);
                 tryGetCurrentFlowRate(true);
+                FlumeApiDevice apiDevice = apiDeviceCache.getValue();
+                if (apiDevice != null) {
+                    updateDeviceInfo(apiDevice);
+                }
             } catch (FlumeApiException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.device-configuration-error");
@@ -174,21 +189,28 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         return config.id;
     }
 
-    public void updateDeviceInfo(FlumeApiDevice dev) {
+    public void updateDeviceChannel(@Nullable FlumeApiDevice apiDevice, String channelUID) {
         final Map<String, Integer> mapBatteryLevel = Map.of("low", 25, "medium", 50, "high", 100);
-        String batteryLevel = dev.batteryLevel;
-
-        Integer percent = mapBatteryLevel.get(batteryLevel);
-
-        if (percent == null) {
-            updateState(CHANNEL_DEVICE_BATTERYLEVEL, UnDefType.UNDEF);
-            updateState(CHANNEL_DEVICE_LOWBATTERY, UnDefType.UNDEF);
-        } else {
-            updateState(CHANNEL_DEVICE_BATTERYLEVEL, new QuantityType<>(percent, Units.PERCENT));
-            updateState(CHANNEL_DEVICE_LOWBATTERY, (percent <= 25) ? OnOffType.ON : OnOffType.OFF);
+        if (apiDevice == null) {
+            return;
         }
 
-        updateState(CHANNEL_DEVICE_LASTSEEN, new DateTimeType(dev.lastSeen));
+        Integer percent = mapBatteryLevel.get(apiDevice.batteryLevel);
+        if (percent == null) {
+            return;
+        }
+
+        switch (channelUID) {
+            case CHANNEL_DEVICE_BATTERYLEVEL:
+                updateState(CHANNEL_DEVICE_BATTERYLEVEL, new QuantityType<>(percent, Units.PERCENT));
+                break;
+            case CHANNEL_DEVICE_LOWBATTERY:
+                updateState(CHANNEL_DEVICE_LOWBATTERY, (percent <= 25) ? OnOffType.ON : OnOffType.OFF);
+                break;
+            case CHANNEL_DEVICE_LASTSEEN:
+                updateState(CHANNEL_DEVICE_LASTSEEN, new DateTimeType(apiDevice.lastSeen));
+                break;
+        }
     }
 
     public void handleApiException(Exception e) {
@@ -321,6 +343,16 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         }
     }
 
+    protected @Nullable FlumeApiDevice tryGetDeviceInfo()
+            throws FlumeApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
+        FlumeApiDevice deviceInfo = getApi().getDeviceInfo(config.id);
+        if (deviceInfo == null) {
+            return null;
+        }
+
+        return deviceInfo;
+    }
+
     protected void queryUsage() {
         // Try to go online if the device was previously taken offline due to connection issues w/ cloud
         if (getThing().getStatus() == ThingStatus.OFFLINE) {
@@ -407,36 +439,38 @@ public class FlumeDeviceHandler extends BaseThingHandler {
                     } catch (FlumeApiException | IOException | InterruptedException | TimeoutException
                             | ExecutionException e) {
                         handleApiException(e);
+                        return;
                     }
 
                     break;
-
                 case CHANNEL_DEVICE_INSTANTUSAGE:
                     try {
                         tryGetCurrentFlowRate(true);
                     } catch (FlumeApiException | IOException | InterruptedException | TimeoutException
                             | ExecutionException e) {
                         handleApiException(e);
-                    }
-                    break;
-
-                case CHANNEL_DEVICE_BATTERYLEVEL:
-                case CHANNEL_DEVICE_LOWBATTERY:
-                case CHANNEL_DEVICE_LASTSEEN:
-                    FlumeBridgeHandler bridgeHandler = getBridgeHandler();
-
-                    if (bridgeHandler == null) {
                         return;
                     }
-
-                    FlumeApiDevice dev = bridgeHandler.getApiDevice(this.config.id);
-                    if (dev != null) {
-                        updateDeviceInfo(dev);
-                    }
-
+                    break;
+                case CHANNEL_DEVICE_BATTERYLEVEL:
+                    updateDeviceChannel(apiDeviceCache.getValue(), CHANNEL_DEVICE_BATTERYLEVEL);
+                    break;
+                case CHANNEL_DEVICE_LOWBATTERY:
+                    updateDeviceChannel(apiDeviceCache.getValue(), CHANNEL_DEVICE_LOWBATTERY);
+                    break;
+                case CHANNEL_DEVICE_LASTSEEN:
+                    updateDeviceChannel(apiDeviceCache.getValue(), CHANNEL_DEVICE_LASTSEEN);
                     break;
             }
         }
+    }
+
+    public void updateDeviceInfo(FlumeApiDevice apiDevice) {
+        apiDeviceCache.putValue(apiDevice);
+
+        updateDeviceChannel(apiDevice, CHANNEL_DEVICE_BATTERYLEVEL);
+        updateDeviceChannel(apiDevice, CHANNEL_DEVICE_LOWBATTERY);
+        updateDeviceChannel(apiDevice, CHANNEL_DEVICE_LASTSEEN);
     }
 
     public boolean isImperial() {
