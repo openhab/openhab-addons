@@ -80,6 +80,7 @@ public class ShadeHandler extends BeaconBluetoothHandler {
     private ShadeConfiguration configuration = new ShadeConfiguration();
     private boolean propertiesLoaded = false;
     private byte writeSequence = Byte.MIN_VALUE;
+    private int homeId;
 
     public ShadeHandler(Thing thing) {
         super(thing);
@@ -191,14 +192,14 @@ public class ShadeHandler extends BeaconBluetoothHandler {
             switch (channelUID.getId()) {
                 case CHANNEL_SHADE_PRIMARY:
                     if (capabilities.supportsPrimary()) {
-                        scheduleWritePosition(ShadeDataWriter.create().withSequence(writeSequence++)
+                        scheduleWritePosition(getShadeDataWriter().withSequence(writeSequence++)
                                 .withPrimary(percent.doubleValue()).getBytes());
                     }
                     break;
 
                 case CHANNEL_SHADE_SECONDARY:
                     if (capabilities.supportsSecondary()) {
-                        scheduleWritePosition(ShadeDataWriter.create().withSequence(writeSequence++)
+                        scheduleWritePosition(getShadeDataWriter().withSequence(writeSequence++)
                                 .withSecondary(percent.doubleValue()).getBytes());
                     }
                     break;
@@ -206,12 +207,16 @@ public class ShadeHandler extends BeaconBluetoothHandler {
                 case CHANNEL_SHADE_TILT:
                     if (capabilities.supportsTiltOnClosed() || capabilities.supportsTilt180()
                             || capabilities.supportsTiltAnywhere()) {
-                        scheduleWritePosition(ShadeDataWriter.create().withSequence(writeSequence++)
+                        scheduleWritePosition(getShadeDataWriter().withSequence(writeSequence++)
                                 .withTilt(percent.doubleValue()).getBytes());
                     }
                     break;
             }
         }
+    }
+
+    private ShadeDataWriter getShadeDataWriter() {
+        return homeId == 0 ? new ShadeDataWriter2() : new ShadeDataWriter1();
     }
 
     @Override
@@ -254,7 +259,7 @@ public class ShadeHandler extends BeaconBluetoothHandler {
         cachedValue = value;
         if (logger.isDebugEnabled()) {
             logger.debug("onScanRecordReceived() device={} received value={}", device.getAddress(),
-                    HexUtils.bytesToHex(value));
+                    HexUtils.bytesToHex(value, ":"));
         }
         updatePosition(value);
     }
@@ -281,7 +286,7 @@ public class ShadeHandler extends BeaconBluetoothHandler {
                                     TimeUnit.SECONDS);
                             if (logger.isDebugEnabled()) {
                                 logger.debug("readBattery() device={} read uuid={}, value={}", device.getAddress(),
-                                        characteristic.getUuid(), HexUtils.bytesToHex(value));
+                                        characteristic.getUuid(), HexUtils.bytesToHex(value, ":"));
                             }
                             updateState(CHANNEL_SHADE_BATTERY_LEVEL,
                                     value.length > 0 ? QuantityType.valueOf(value[0], Units.PERCENT) : UnDefType.UNDEF);
@@ -313,7 +318,8 @@ public class ShadeHandler extends BeaconBluetoothHandler {
                                         TimeUnit.SECONDS);
                                 if (logger.isDebugEnabled()) {
                                     logger.debug("readProperties() device={} read uuid={}, value={}",
-                                            device.getAddress(), characteristic.getUuid(), HexUtils.bytesToHex(value));
+                                            device.getAddress(), characteristic.getUuid(),
+                                            HexUtils.bytesToHex(value, ":"));
                                 }
                                 String propertyName = property.getValue();
                                 String propertyValue = BluetoothUtils.getStringValue(value, 0);
@@ -390,6 +396,7 @@ public class ShadeHandler extends BeaconBluetoothHandler {
     private void updatePosition(byte[] value) {
         logger.debug("updatePosition() device={}", device.getAddress());
         dataReader.setBytes(value);
+        homeId = dataReader.getHomeId();
 
         Capabilities capabilities = this.capabilities;
         if (capabilities == null) {
@@ -456,7 +463,7 @@ public class ShadeHandler extends BeaconBluetoothHandler {
                                     TimeUnit.SECONDS);
                             if (logger.isDebugEnabled()) {
                                 logger.debug("writePosition() device={} sent uuid={}, value={}", device.getAddress(),
-                                        characteristic.getUuid(), HexUtils.bytesToHex(value));
+                                        characteristic.getUuid(), HexUtils.bytesToHex(value, ":"));
                             }
                             onActivity();
                         }

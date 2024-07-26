@@ -23,6 +23,7 @@ import java.util.TreeMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluetooth.hdpowerview.internal.shade.ShadeDataWriter;
+import org.openhab.binding.bluetooth.hdpowerview.internal.shade.ShadeDataWriter1;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -205,9 +206,10 @@ class ShadeTests {
      */
     @Test
     void testCalculatedEqualsObserved() {
+        ShadeDataWriter shadeDataWriter = new ShadeDataWriter1();
         for (Entry<Double, byte[]> observedResult : HD_POWERVIEW_APP_OBSERVED_RESULTS.entrySet()) {
             byte[] observed = observedResult.getValue();
-            byte[] calculated = ShadeDataWriter.primaryPositionToBytes(observedResult.getKey());
+            byte[] calculated = shadeDataWriter.primaryPositionToBytes(observedResult.getKey());
             assertEquals(observed[1], calculated[1]);
             assertEquals(observed[0], calculated[0], 1); // LSB can have one bit errors; it's not clear why..
         }
@@ -220,19 +222,19 @@ class ShadeTests {
     void testShadeDataWriter() {
         // test basic output
         assertEquals("1F70807E5C07AD03100E0FB3DA", HexUtils.bytesToHex( //
-                ShadeDataWriter.create().getBytes()));
+                new ShadeDataWriter1().getBytes()));
 
         // test sequence number
         assertEquals("1F70007E5C07AD03100E0FB3DA", HexUtils.bytesToHex( //
-                ShadeDataWriter.create().withSequence((byte) 0).getBytes()));
+                new ShadeDataWriter1().withSequence((byte) 0).getBytes()));
 
         // test primary position
         assertEquals("1F70807E4CA0AD03100E0FB3DA", HexUtils.bytesToHex( //
-                ShadeDataWriter.create().withPrimary(100).getBytes()));
+                new ShadeDataWriter1().withPrimary(100).getBytes()));
 
         // test tilt position
         assertEquals("1F70807E5C07AD03100E6B33DA", HexUtils.bytesToHex( //
-                ShadeDataWriter.create().withTilt(100).getBytes()));
+                new ShadeDataWriter1().withTilt(100).getBytes()));
 
         // test secondary position
         /*
@@ -241,6 +243,6 @@ class ShadeTests {
          * added, this test will need to be changed to match.
          */
         assertEquals("1F70807E5C07AD03100E0FB3DA", HexUtils.bytesToHex( //
-                ShadeDataWriter.create().withSecondary(100).getBytes()));
+                new ShadeDataWriter1().withSecondary(100).getBytes()));
     }
 }

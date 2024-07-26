@@ -32,6 +32,7 @@ public class ShadeDataReader {
 
     // indexes to data field positions in the incoming bytes
     private static final int INDEX_MANUFACTURER_ID = 0;
+    private static final int INDEX_HOME_ID = 2;
     private static final int INDEX_TYPE_ID = 4;
     private static final int INDEX_PRIMARY = 5;
     private static final int INDEX_SECONDARY = 7;
@@ -39,6 +40,7 @@ public class ShadeDataReader {
     private static final int INDEX_VELOCITY = 10;
 
     private int manufacturerId;
+    private int homeId;
     private int typeId;
     private double primary;
     private double secondary;
@@ -50,6 +52,10 @@ public class ShadeDataReader {
 
     public int getManufacturerId() {
         return manufacturerId;
+    }
+
+    public int getHomeId() {
+        return homeId;
     }
 
     public PercentType getPrimary() {
@@ -77,6 +83,7 @@ public class ShadeDataReader {
         buffer.order(ByteOrder.LITTLE_ENDIAN);
 
         manufacturerId = buffer.getShort(INDEX_MANUFACTURER_ID);
+        homeId = buffer.getShort(INDEX_HOME_ID);
         typeId = buffer.get(INDEX_TYPE_ID);
         velocity = buffer.get(INDEX_VELOCITY);
 
