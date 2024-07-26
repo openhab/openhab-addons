@@ -451,6 +451,10 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
             return;
         }
         rawCharacteristics.put(characteristic.getClass(), characteristic);
+        // belongs on the accessory information service
+        if (characteristic.getClass() == NameCharacteristic.class) {
+            return;
+        }
         var service = getPrimaryService();
         if (service != null) {
             // find the corresponding add method at service and call it.
