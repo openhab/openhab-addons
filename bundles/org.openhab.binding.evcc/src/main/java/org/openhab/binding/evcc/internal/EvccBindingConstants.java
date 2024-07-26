@@ -26,7 +26,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 @NonNullByDefault
 public class EvccBindingConstants {
 
-    private static final String BINDING_ID = "evcc";
+    public static final String BINDING_ID = "evcc";
 
     public static final String CHANNEL_GROUP_ID_GENERAL = "general";
     public static final String CHANNEL_GROUP_ID_LOADPOINT = "loadpoint";
