@@ -190,7 +190,7 @@ public class HaID {
     public String getGroupId(@Nullable final String uniqueId, boolean newStyleChannels) {
         String result = uniqueId;
 
-        // newStyleChannels are auto-discovered things with openHAB >= 4.2.0
+        // newStyleChannels are auto-discovered things with openHAB >= 4.3.0
         // assuming the topic has both a node ID and an object ID, simply use
         // the component type and object ID - without encoding(!)
         // since the only character allowed in object IDs but not allowed in UID

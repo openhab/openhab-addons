@@ -55,7 +55,6 @@ import org.openhab.core.io.transport.mqtt.MqttConnectionState;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
-import org.openhab.core.util.UIDUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -177,10 +176,10 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         assertNull(failure);
         assertThat(haComponents.size(), is(1));
 
-        String channelGroupId = UIDUtils
-                .encode("node_" + ThingChannelConstants.TEST_HOME_ASSISTANT_THING.getId() + "_switch");
+        String channelGroupId = "switch_" + ThingChannelConstants.TEST_HOME_ASSISTANT_THING.getId();
+        String channelId = Switch.SWITCH_CHANNEL_ID;
 
-        State value = haComponents.get(channelGroupId).getChannel(Switch.SWITCH_CHANNEL_ID).getState().getCache()
+        State value = haComponents.get(channelGroupId).getChannel(channelGroupId).getState().getCache()
                 .getChannelState();
         assertThat(value, is(UnDefType.UNDEF));
 
@@ -194,8 +193,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
         verify(channelStateUpdateListener, timeout(4000).times(1)).updateChannelState(any(), any());
 
         // Value should be ON now.
-        value = haComponents.get(channelGroupId).getChannel(Switch.SWITCH_CHANNEL_ID).getState().getCache()
-                .getChannelState();
+        value = haComponents.get(channelGroupId).getChannel(channelGroupId).getState().getCache().getChannelState();
         assertThat(value, is(OnOffType.ON));
     }
 }
