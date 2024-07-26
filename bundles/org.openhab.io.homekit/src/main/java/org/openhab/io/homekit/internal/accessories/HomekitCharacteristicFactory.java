@@ -759,13 +759,13 @@ public class HomekitCharacteristicFactory {
             HomekitAccessoryUpdater updater) {
         final boolean inverted = taggedItem.isInverted();
 
+        // 9300 K
         int minValue = taggedItem
-                .getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
-                        new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MIN_VALUE, Units.MIRED), false)
+                .getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE, new QuantityType(107, Units.MIRED), false)
                 .intValue();
+        // 1800 K
         int maxValue = taggedItem
-                .getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE,
-                        new QuantityType(ColorTemperatureCharacteristic.DEFAULT_MAX_VALUE, Units.MIRED), false)
+                .getConfigurationAsQuantity(HomekitTaggedItem.MAX_VALUE, new QuantityType(556, Units.MIRED), false)
                 .intValue();
 
         // It's common to swap these if you're providing in Kelvin instead of mired
@@ -901,8 +901,7 @@ public class HomekitCharacteristicFactory {
         double minValue = taggedItem
                 .getConfigurationAsQuantity(HomekitTaggedItem.MIN_VALUE,
                         Objects.requireNonNull(
-                                new QuantityType(CurrentTemperatureCharacteristic.DEFAULT_MIN_VALUE, SIUnits.CELSIUS)
-                                        .toUnit(getSystemTemperatureUnit())),
+                                new QuantityType(-100, SIUnits.CELSIUS).toUnit(getSystemTemperatureUnit())),
                         false)
                 .toUnit(SIUnits.CELSIUS).doubleValue();
         double maxValue = taggedItem
