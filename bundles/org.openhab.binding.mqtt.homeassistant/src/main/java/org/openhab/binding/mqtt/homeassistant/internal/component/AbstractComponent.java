@@ -111,9 +111,8 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         if (name != null && !name.isEmpty()) {
             groupId = this.haID.getGroupId(channelConfiguration.getUniqueId(), newStyleChannels);
 
-            this.channelGroupUID = this.singleChannelComponent
-                    ? new ChannelGroupUID(componentConfiguration.getThingUID(), groupId)
-                    : null;
+            this.channelGroupUID = this.singleChannelComponent ? null
+                    : new ChannelGroupUID(componentConfiguration.getThingUID(), groupId);
         } else {
             this.groupId = this.singleChannelComponent ? haID.component : "";
             this.channelGroupUID = null;
