@@ -64,6 +64,10 @@ public class DaikinBindingConstants {
     public static final String CHANNEL_AC_SPECIALMODE = "specialmode";
     public static final String CHANNEL_AC_STREAMER = "streamer";
 
+    public static final String CHANNEL_AC_DEMAND_MODE = "demandcontrolmode";
+    public static final String CHANNEL_AC_DEMAND_MAX_POWER = "demandcontrolmaxpower";
+    public static final String CHANNEL_AC_DEMAND_SCHEDULE = "demandcontrolschedule";
+
     // additional channels for Airbase Controller
     public static final String CHANNEL_AIRBASE_AC_FAN_SPEED = "airbasefanspeed";
     public static final String CHANNEL_AIRBASE_AC_ZONE = "zone";

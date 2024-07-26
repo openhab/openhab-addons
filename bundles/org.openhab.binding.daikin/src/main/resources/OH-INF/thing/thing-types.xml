@@ -51,8 +51,14 @@
 			<channel id="energycoolingcurrentyear-10" typeId="acunit-energycoolingcurrentyear-10"></channel>
 			<channel id="energycoolingcurrentyear-11" typeId="acunit-energycoolingcurrentyear-11"></channel>
 			<channel id="energycoolingcurrentyear-12" typeId="acunit-energycoolingcurrentyear-12"></channel>
+			<channel id="demandcontrolmode" typeId="acunit-demandcontrolmode"></channel>
+			<channel id="demandcontrolmaxpower" typeId="acunit-demandcontrolmaxpower"></channel>
+			<channel id="demandcontrolschedule" typeId="acunit-demandcontrolschedule"></channel>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>host</representation-property>
 		<config-description-ref uri="thing-type:daikin:config"/>
 	</thing-type>
@@ -422,6 +428,32 @@
 		<description>The energy usage for cooling this year December</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="acunit-demandcontrolmode" advanced="true">
+		<item-type>String</item-type>
+		<label>Demand Control Mode</label>
+		<description>The demand control mode</description>
+		<state>
+			<options>
+				<option value="OFF">Off</option>
+				<option value="AUTO">Auto</option>
+				<option value="SCHEDULED">Scheduled</option>
+				<option value="MANUAL">Manual</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="acunit-demandcontrolmaxpower" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>Demand Control Max Power</label>
+		<description>The maximum power for demand control in percent. Allowed range is between 40% and 100% in increments of
+			5%.</description>
+		<state pattern="%d %%" min="40" max="100" step="5"></state>
+	</channel-type>
+	<channel-type id="acunit-demandcontrolschedule" advanced="true">
+		<item-type>String</item-type>
+		<label>Demand Control Schedule</label>
+		<description>The demand control schedule in JSON format.</description>
 	</channel-type>
 
 	<channel-type id="airbase-acunit-fan">
