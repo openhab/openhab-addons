@@ -198,12 +198,13 @@ public class ShellyDeviceProfile {
         }
 
         isBlu = isBluSeries(thingType); // e.g. SBBT for BLU Button
-        isGen2 = isGeneration2(thingType) || isBlu;
+        isGen2 = isGeneration2(thingType);
 
         String type = getString(device.type);
         isDimmer = type.equalsIgnoreCase(SHELLYDT_DIMMER) || type.equalsIgnoreCase(SHELLYDT_DIMMER2)
                 || type.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS)
-                || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMERUS_STR);
+                || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMERUS_STR)
+                || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMER10V_STR);
         isBulb = thingType.equals(THING_TYPE_SHELLYBULB_STR);
         isDuo = thingType.equals(THING_TYPE_SHELLYDUO_STR) || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)
                 || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR);
