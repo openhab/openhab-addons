@@ -238,6 +238,8 @@ The smart switching relay is your universal all-rounder for smart switching.
 | impulse-length          | Number:Time | &#9745;  | Channel to configure how long the relay will stay on after receiving an impulse switch event. The time is specified in tenth seconds (deciseconds), e.g. 15 means 1.5 seconds. Only available if the relay is in impulse switch mode. |
 | instant-of-last-impulse | DateTime    | &#9744;  | Timestamp indicating when the last impulse was triggered. Only available if the relay is in impulse switch mode. |
 
+If the device mode is changed from power switch to impulse switch mode or vice versa, the corresponding thing has to be deleted and re-added in OpenHAB.
+
 ### Security Camera 360
 
 Indoor security camera with 360° view and motion detection.

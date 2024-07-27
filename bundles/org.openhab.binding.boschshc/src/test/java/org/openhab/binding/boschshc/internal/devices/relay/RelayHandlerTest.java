@@ -12,22 +12,26 @@
  */
 package org.openhab.binding.boschshc.internal.devices.relay;
 
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.openhab.binding.boschshc.internal.devices.AbstractPowerSwitchHandlerTest;
@@ -39,8 +43,13 @@ import org.openhab.binding.boschshc.internal.services.impulseswitch.dto.ImpulseS
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.types.UnDefType;
 
 import com.google.gson.JsonElement;
@@ -58,6 +67,48 @@ class RelayHandlerTest extends AbstractPowerSwitchHandlerTest<RelayHandler> {
     private @Captor @NonNullByDefault({}) ArgumentCaptor<ChildProtectionServiceState> childProtectionServiceStateCaptor;
 
     private @Captor @NonNullByDefault({}) ArgumentCaptor<ImpulseSwitchServiceState> impulseSwitchServiceStateCaptor;
+
+    @Override
+    protected void beforeHandlerInitialization(TestInfo testInfo) {
+        super.beforeHandlerInitialization(testInfo);
+
+        List<Channel> channels = new ArrayList<Channel>();
+        channels.add(ChannelBuilder
+                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_SIGNAL_STRENGTH)).build());
+        channels.add(ChannelBuilder
+                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_CHILD_PROTECTION)).build());
+        channels.add(ChannelBuilder.create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_POWER_SWITCH))
+                .build());
+        channels.add(ChannelBuilder
+                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_IMPULSE_SWITCH)).build());
+        channels.add(ChannelBuilder
+                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_IMPULSE_LENGTH)).build());
+        channels.add(ChannelBuilder
+                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_INSTANT_OF_LAST_IMPULSE))
+                .build());
+
+        when(getThing().getChannels()).thenReturn(channels);
+
+        if (testInfo.getTags().contains(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME)) {
+            getDevice().deviceServiceIds = List.of(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME);
+        }
+    }
+
+    @Override
+    protected void afterHandlerInitialization(TestInfo testInfo) {
+        super.afterHandlerInitialization(testInfo);
+
+        @Nullable
+        JsonElement impulseSwitchServiceState = JsonParser.parseString("""
+                {
+                "@type": "ImpulseSwitchState",
+                "impulseState": false,
+                "impulseLength": 100,
+                "instantOfLastImpulse": "2024-04-14T15:52:31.677366Z"
+                }
+                """);
+        getFixture().processUpdate(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME, impulseSwitchServiceState);
+    }
 
     @Override
     protected RelayHandler createFixture() {
@@ -118,10 +169,10 @@ class RelayHandlerTest extends AbstractPowerSwitchHandlerTest<RelayHandler> {
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_CHILD_PROTECTION), OnOffType.ON);
     }
 
+    @Tag(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME)
     @Test
     void testUpdateChannelsImpulseSwitchService()
             throws BoschSHCException, InterruptedException, TimeoutException, ExecutionException {
-        configureImpulseSwitchMode();
         String json = """
                 {
                   "@type": "ImpulseSwitchState",
@@ -133,6 +184,7 @@ class RelayHandlerTest extends AbstractPowerSwitchHandlerTest<RelayHandler> {
         JsonElement jsonObject = JsonParser.parseString(json);
 
         getFixture().processUpdate("ImpulseSwitch", jsonObject);
+
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_IMPULSE_SWITCH), OnOffType.ON);
         verify(getCallback(), times(2)).stateUpdated(
@@ -143,10 +195,10 @@ class RelayHandlerTest extends AbstractPowerSwitchHandlerTest<RelayHandler> {
                 new DateTimeType("2024-04-14T15:52:31.677366Z"));
     }
 
+    @Tag(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME)
     @Test
     void testUpdateChannelsImpulseSwitchServiceNoInstantOfLastImpulse()
             throws BoschSHCException, InterruptedException, TimeoutException, ExecutionException {
-        configureImpulseSwitchMode();
         String json = """
                 {
                   "@type": "ImpulseSwitchState",
@@ -167,28 +219,27 @@ class RelayHandlerTest extends AbstractPowerSwitchHandlerTest<RelayHandler> {
                 UnDefType.NULL);
     }
 
-    private void configureImpulseSwitchMode()
-            throws BoschSHCException, InterruptedException, TimeoutException, ExecutionException {
+    @Test
+    void testDeviceModeChanged() throws BoschSHCException, InterruptedException, TimeoutException, ExecutionException {
         getDevice().deviceServiceIds = List.of(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME);
+
+        // initialize again to check whether mode change is detected
         getFixture().initialize();
 
-        assertThat(getFixture().getThing().getChannel(BoschSHCBindingConstants.CHANNEL_IMPULSE_SWITCH),
-                is(notNullValue()));
-        assertThat(getFixture().getThing().getChannel(BoschSHCBindingConstants.CHANNEL_IMPULSE_LENGTH),
-                is(notNullValue()));
-        assertThat(getFixture().getThing().getChannel(BoschSHCBindingConstants.CHANNEL_INSTANT_OF_LAST_IMPULSE),
-                is(notNullValue()));
+        verify(getCallback()).statusUpdated(any(Thing.class),
+                argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
+                        && status.getStatusDetail().equals(ThingStatusDetail.CONFIGURATION_ERROR)));
+    }
 
-        @Nullable
-        JsonElement impulseSwitchServiceState = JsonParser.parseString("""
-                {
-                  "@type": "ImpulseSwitchState",
-                  "impulseState": false,
-                  "impulseLength": 100,
-                  "instantOfLastImpulse": "2024-04-14T15:52:31.677366Z"
-                }
-                """);
-        getFixture().processUpdate(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME, impulseSwitchServiceState);
+    @Test
+    void testDeviceModeUnchanged()
+            throws BoschSHCException, InterruptedException, TimeoutException, ExecutionException {
+        // initialize again without mode change
+        getFixture().initialize();
+
+        verify(getCallback(), times(0)).statusUpdated(any(Thing.class),
+                argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
+                        && status.getStatusDetail().equals(ThingStatusDetail.CONFIGURATION_ERROR)));
     }
 
     @Test
@@ -211,11 +262,10 @@ class RelayHandlerTest extends AbstractPowerSwitchHandlerTest<RelayHandler> {
         verify(getBridgeHandler(), times(0)).putState(eq(getDeviceID()), eq("ChildProtection"), any());
     }
 
+    @Tag(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME)
     @Test
     void testHandleCommandImpulseStateOn()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        configureImpulseSwitchMode();
-
         Instant testDate = Instant.now();
         getFixture().setCurrentDateTimeProvider(() -> testDate);
 
@@ -229,11 +279,10 @@ class RelayHandlerTest extends AbstractPowerSwitchHandlerTest<RelayHandler> {
         assertThat(state.instantOfLastImpulse, is(testDate.toString()));
     }
 
+    @Tag(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME)
     @Test
     void testHandleCommandImpulseLength()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        configureImpulseSwitchMode();
-
         Instant testDate = Instant.now();
         getFixture().setCurrentDateTimeProvider(() -> testDate);
 
