@@ -304,8 +304,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         if (profile.alwaysOn || !profile.isInitialized()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                    messages.get("status.unknown.initializing"));
+            ThingStatusDetail detail = getThingStatusDetail();
+            if (detail != ThingStatusDetail.DUTY_CYCLE) {
+                updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+                        messages.get("status.unknown.initializing"));
+            }
         }
 
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
@@ -695,10 +698,15 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments) {
         if (!isThingOffline()) {
             updateStatus(ThingStatus.OFFLINE, detail, messages.get(messageKey, arguments));
-            api.close(); // Gen2: disconnect WS/close http sessions
-            watchdog = 0;
-            channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
         }
+        api.close(); // Gen2: disconnect WS/close http sessions
+        watchdog = 0;
+        channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
+    }
+
+    @Override
+    public void setThingStatus(ThingStatus status, ThingStatusDetail detail, String messageKey, Object... arguments) {
+        updateStatus(status, detail, messages.get(messageKey, arguments));
     }
 
     @Override

@@ -679,15 +679,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         break;
                     case SHELLY2_EVENT_CFGCHANGED:
                         ThingStatusDetail detail = getThing().getThingStatusDetail();
-                        if (getThing().getThingStatusDetail() != ThingStatusDetail.FIRMWARE_UPDATING) {
-                            logger.debug("{}: Configuration update detected, re-initialize", thingName);
-                            getThing().requestUpdates(1, true); // refresh config
-                        }
+                        logger.debug("{}: Configuration update detected, re-initialize", thingName);
+                        getThing().requestUpdates(1, true); // refresh config
                         break;
 
                     case SHELLY2_EVENT_OTASTART:
                         logger.debug("{}: Firmware update started: {}", thingName, getString(e.msg));
-                        getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
+                        getThing().setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.FIRMWARE_UPDATING,
                                 "offline.status-error-fwupgrade");
                         break;
                     case SHELLY2_EVENT_OTAPROGRESS:
@@ -740,7 +738,9 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                 logger.debug("{}: Device went to sleep mode or restarted", thingName);
             } else if (statusCode == StatusCode.ABNORMAL && !discovery && getProfile().alwaysOn) {
                 // e.g. device rebooted
-                thingOffline("WebSocket connection closed abnormal");
+                if (getThing().getThingStatusDetail() != ThingStatusDetail.DUTY_CYCLE) {
+                    thingOffline("WebSocket connection closed abnormal");
+                }
             }
         } catch (ShellyApiException e) {
             logger.debug("{}: Exception on onClose()", thingName, e);
