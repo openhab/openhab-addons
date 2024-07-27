@@ -153,7 +153,7 @@ public class UpnpXMLParser {
 
     private static class AVTransportEventHandler extends DefaultHandler {
 
-        private final Map<String, String> changes = new HashMap<String, String>();
+        private final Map<String, String> changes = new HashMap<>();
 
         AVTransportEventHandler() {
             // shouldn't be used outside of this package.
@@ -202,7 +202,7 @@ public class UpnpXMLParser {
 
         // Maintain a set of elements it is not useful to complain about.
         // This list will be initialized on the first failure case.
-        private static List<String> ignore = new ArrayList<String>();
+        private static List<String> ignore = new ArrayList<>();
 
         private String id = "";
         private String refId = "";

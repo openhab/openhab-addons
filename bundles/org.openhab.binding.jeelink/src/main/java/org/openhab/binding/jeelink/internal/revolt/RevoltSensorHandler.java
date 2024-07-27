@@ -46,7 +46,7 @@ public class RevoltSensorHandler extends JeeLinkSensorHandler<RevoltReading> {
 
     @Override
     public ReadingPublisher<RevoltReading> createPublisher() {
-        return new ReadingPublisher<RevoltReading>() {
+        return new ReadingPublisher<>() {
             @Override
             public void publish(RevoltReading reading) {
                 if (reading != null && getThing().getStatus() == ThingStatus.ONLINE) {

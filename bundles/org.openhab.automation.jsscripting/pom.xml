@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.automation.jsscripting</artifactId>
@@ -24,11 +24,12 @@
     </bnd.importpackage>
     <graal.version>22.0.0.2</graal.version> <!-- DO NOT UPGRADE: 22.0.0.2 is the latest version working on armv7l / OpenJDK 11.0.16 & armv7l / Zulu 17.0.5+8 -->
     <oh.version>${project.version}</oh.version>
-    <ohjs.version>openhab@4.7.3</ohjs.version>
+    <ohjs.version>openhab@5.3.1</ohjs.version>
   </properties>
 
   <build>
     <plugins>
+      <!-- exclude META-INF/services/com.oracle.truffle.api.TruffleLanguage$Provider when unpacking dependencies -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
@@ -44,10 +45,11 @@
           </execution>
         </executions>
       </plugin>
+      <!-- bundle the openhab-js library -->
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
-        <version>1.12.1</version>
+        <version>1.15.0</version>
         <configuration>
           <nodeVersion>v16.17.1</nodeVersion> <!-- DO NOT DOWNGRADE: NodeJS < 16 doesn't support Apple Silicon -->
           <workingDirectory>target/js</workingDirectory>
@@ -114,6 +116,7 @@
           </execution>
         </executions>
       </plugin>
+      <!-- run SAT -->
       <plugin>
         <groupId>org.openhab.tools.sat</groupId>
         <artifactId>sat-plugin</artifactId>
@@ -126,31 +129,32 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.graalvm.truffle</groupId>
-      <artifactId>truffle-api</artifactId>
-      <version>${graal.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.graalvm.js</groupId>
-      <artifactId>js-scriptengine</artifactId>
-      <version>${graal.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.graalvm.sdk</groupId>
       <artifactId>graal-sdk</artifactId>
       <version>${graal.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.graalvm.truffle</groupId>
+      <artifactId>truffle-api</artifactId>
+      <version>${graal.version}</version>
+    </dependency>
+    <!-- Graal JavaScript ScriptEngine JSR 223 support -->
+    <dependency>
+      <groupId>org.graalvm.js</groupId>
+      <artifactId>js-scriptengine</artifactId>
+      <version>${graal.version}</version>
+    </dependency>
+    <!-- Graal TRegex engine (internally used by Graal JavaScript engine) -->
+    <dependency>
       <groupId>org.graalvm.regex</groupId>
       <artifactId>regex</artifactId>
       <version>${graal.version}</version>
     </dependency>
-    <dependency> <!-- this must come AFTER the regex lib -->
+    <!-- Graal JavaScript engine (depends on Graal TRegex engine, must be added after it) -->
+    <dependency>
       <groupId>org.graalvm.js</groupId>
       <artifactId>js</artifactId>
       <version>${graal.version}</version>
     </dependency>
-    <!-- GraalJS changelog says that com.ibm.icu/icu4j is not required for GraalJS >= 22.0.0 as it moved to org.graalvm.truffle;
-      but GraalJS >= 22.2.0 requires it, so we'll need to add it when we upgrade -->
   </dependencies>
 </project>

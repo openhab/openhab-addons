@@ -27,7 +27,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.time.Duration;
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,7 +72,7 @@ public class NoboHubDiscoveryService extends AbstractThingHandlerDiscoveryServic
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 
     private final Runnable scanner = new Runnable() {

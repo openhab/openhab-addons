@@ -10,7 +10,6 @@
 		</supported-bridge-type-refs>
 
 		<label>Virtual Heater</label>
-		<description>Virtual Heater</description>
 
 		<channels>
 			<channel id="virtualHeaterEnable" typeId="system.power"/>
@@ -30,7 +29,6 @@
 	<channel-type id="currentSetpoint">
 		<item-type>Number:Temperature</item-type>
 		<label>Current Setpoint</label>
-		<description>Current Setpoint</description>
 		<category>Temperature</category>
 		<state min="65" max="90" step="1.0" pattern="%d %unit%" readOnly="false"/>
 	</channel-type>

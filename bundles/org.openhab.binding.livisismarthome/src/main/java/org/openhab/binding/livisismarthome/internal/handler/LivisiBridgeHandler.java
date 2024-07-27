@@ -762,6 +762,18 @@ public class LivisiBridgeHandler extends BaseBridgeHandler
     }
 
     /**
+     * Sends the command to turn the siren of the {@link DeviceDTO} with the given id on or off. Is called by the
+     * {@link LivisiDeviceHandler} for siren {@link DeviceDTO}s like SIR.
+     *
+     * @param deviceId device id
+     * @param sirenState siren state (boolean)
+     */
+    public void commandSwitchSiren(final String deviceId, final String sirenState) {
+        executeCommand(deviceId, CapabilityDTO.TYPE_SIRENACTUATOR,
+                (capabilityId) -> client.setSirenActuatorState(capabilityId, sirenState));
+    }
+
+    /**
      * Sends the command to set the operation mode of the {@link DeviceDTO} with the given deviceId to auto (or manual,
      * if
      * false). Is called by the {@link LivisiDeviceHandler} for thermostat {@link DeviceDTO}s like RST.

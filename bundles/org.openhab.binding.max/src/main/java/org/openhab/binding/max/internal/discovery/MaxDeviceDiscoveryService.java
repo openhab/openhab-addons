@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.max.internal.discovery;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -60,7 +60,7 @@ public class MaxDeviceDiscoveryService extends AbstractThingHandlerDiscoveryServ
     public void dispose() {
         super.dispose();
         thingHandler.unregisterDeviceStatusListener(this);
-        removeOlderResults(new Date().getTime(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
     }
 
     @Override

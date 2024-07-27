@@ -5,42 +5,29 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:mercedesme:bridge">
-		<parameter name="clientId" type="text" required="true">
-			<label>MB Developer Client ID</label>
-			<description>Mercedes Benz Developer Client ID</description>
+		<parameter name="email" type="text" required="true">
+			<label>MercedesMe EMail</label>
+			<description>EMail address for MercedesMe account</description>
+			<context>email</context>
 		</parameter>
-		<parameter name="clientSecret" type="text" required="true">
-			<label>MB Developer Client Secret</label>
-			<description>Mercedes Benz Developer Client Secret</description>
+		<parameter name="region" type="text" required="true">
+			<label>Region</label>
+			<options>
+				<option value="EU">Europe</option>
+				<option value="NA">North America</option>
+				<option value="AP">Asia-Pacific</option>
+				<option value="CN">China</option>
+			</options>
 		</parameter>
-		<parameter name="imageApiKey" type="text">
-			<label>MB Developer Image API Key</label>
-			<description>Mercedes Benz Developer Image API Key</description>
+		<parameter name="pin" type="text" required="false">
+			<label>PIN</label>
+			<description>PIN for commands</description>
+			<context>password</context>
 		</parameter>
-		<parameter name="odoScope" type="boolean">
-			<label>PayAsYourDrive Insurance</label>
-			<description>Provides total Mileage</description>
-			<default>true</default>
-		</parameter>
-		<parameter name="vehicleScope" type="boolean">
-			<label>Vehicle Status</label>
-			<description>Status of doors, windows lights</description>
-			<default>true</default>
-		</parameter>
-		<parameter name="lockScope" type="boolean">
-			<label>Vehicle Lock Status</label>
-			<description>Lock status of doors and trunk</description>
-			<default>true</default>
-		</parameter>
-		<parameter name="fuelScope" type="boolean">
-			<label>Fuel Status</label>
-			<description>Tank level and range</description>
-			<default>true</default>
-		</parameter>
-		<parameter name="evScope" type="boolean">
-			<label>Electric Vehicle Status</label>
-			<description>Electric charge and range</description>
-			<default>true</default>
+		<parameter name="refreshInterval" type="integer" min="5" unit="min" required="true">
+			<label>Refresh Interval</label>
+			<description>Refresh Interval in Minutes</description>
+			<default>15</default>
 		</parameter>
 		<parameter name="callbackIP" type="text">
 			<label>Callback IP Address</label>

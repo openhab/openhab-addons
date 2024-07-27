@@ -19,8 +19,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * Class {@link NhcMessageBase1} used as base class for output from gson for cmd or event feedback from Niko Home
  * Control. This class only contains the common base fields required for the deserializer
  * {@link NikoHomeControlMessageDeserializer1} to select the specific formats implemented in {@link NhcMessageMap1},
- * {@link NhcMessageListMap1}, {@link NhcMessageCmd1}.
- * <p>
+ * {@link NhcMessageList1}, {@link NhcMessageListMap1}, {@link NhcMessageCmd1}.
  *
  * @author Mark Herwege - Initial Contribution
  */

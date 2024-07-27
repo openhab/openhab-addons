@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.dbquery</artifactId>
@@ -16,7 +16,7 @@
 
   <properties>
     <bnd.importpackage>
-      !javax.annotation;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*
+      !javax.annotation;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*,!org.bouncycastle.*,!org.openjsse.*
     </bnd.importpackage>
   </properties>
 
@@ -45,7 +45,7 @@
     <dependency> <!-- also used for querydb library -->
       <artifactId>gson</artifactId>
       <groupId>com.google.code.gson</groupId>
-      <version>2.9.1</version>
+      <version>${gson.version}</version>
     </dependency>
     <dependency>
       <artifactId>gson-fire</artifactId>
@@ -55,7 +55,14 @@
     <dependency>
       <artifactId>okio</artifactId>
       <groupId>com.squareup.okio</groupId>
-      <version>1.17.3</version>
+      <version>${okio.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okio</groupId>
+      <artifactId>okio-jvm</artifactId>
+      <version>${okio.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <artifactId>commons-csv</artifactId>
@@ -70,7 +77,7 @@
     <dependency>
       <artifactId>okhttp</artifactId>
       <groupId>com.squareup.okhttp3</groupId>
-      <version>3.14.4</version>
+      <version>${okhttp3.version}</version>
     </dependency>
     <dependency>
       <artifactId>retrofit</artifactId>
@@ -85,7 +92,7 @@
     <dependency>
       <artifactId>logging-interceptor</artifactId>
       <groupId>com.squareup.okhttp3</groupId>
-      <version>3.14.4</version>
+      <version>${okhttp3.version}</version>
     </dependency>
     <dependency>
       <artifactId>rxjava</artifactId>

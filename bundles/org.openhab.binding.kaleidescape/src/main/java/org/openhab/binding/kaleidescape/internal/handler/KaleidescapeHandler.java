@@ -74,7 +74,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeHandler.class);
     private final SerialPortManager serialPortManager;
-    private final Map<String, String> cache = new HashMap<String, String>();
+    private final Map<String, String> cache = new HashMap<>();
 
     protected final HttpClient httpClient;
     protected final Unit<Time> apiSecondUnit = Units.SECOND;
@@ -254,6 +254,9 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     case CONTROL:
                     case MUSIC_CONTROL:
                         handleControlCommand(command);
+                        break;
+                    case CHANNEL_TYPE_SENDCMD:
+                        connector.sendCommand(command.toString());
                         break;
                     default:
                         logger.debug("Command {} from channel {} failed: unexpected command", command, channel);

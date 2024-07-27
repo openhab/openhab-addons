@@ -75,12 +75,17 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
 
     @Override
     public boolean connect() {
-        final InfluxDB createdClient = InfluxDBFactory.connect(configuration.getUrl(), configuration.getUser(),
-                configuration.getPassword());
-        createdClient.setDatabase(configuration.getDatabaseName());
-        createdClient.setRetentionPolicy(configuration.getRetentionPolicy());
-        createdClient.enableBatch(200, 100, TimeUnit.MILLISECONDS);
-        this.client = createdClient;
+        try {
+            final InfluxDB createdClient = InfluxDBFactory.connect(configuration.getUrl(), configuration.getUser(),
+                    configuration.getPassword());
+            createdClient.setDatabase(configuration.getDatabaseName());
+            createdClient.setRetentionPolicy(configuration.getRetentionPolicy());
+            createdClient.enableBatch(200, 100, TimeUnit.MILLISECONDS);
+            this.client = createdClient;
+        } catch (InfluxException | InfluxDBException e) {
+            logger.debug("Connection failed", e);
+            return false;
+        }
         return checkConnectionStatus();
     }
 

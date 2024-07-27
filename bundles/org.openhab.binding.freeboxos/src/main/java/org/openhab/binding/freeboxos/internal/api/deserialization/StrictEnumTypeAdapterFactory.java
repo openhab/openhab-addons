@@ -46,7 +46,7 @@ public class StrictEnumTypeAdapterFactory implements TypeAdapterFactory {
     }
 
     private <T> TypeAdapter<T> newStrictEnumAdapter(TypeAdapter<T> delegateAdapter) {
-        return new TypeAdapter<T>() {
+        return new TypeAdapter<>() {
             @Override
             public void write(JsonWriter out, @Nullable T value) throws IOException {
                 delegateAdapter.write(out, value);

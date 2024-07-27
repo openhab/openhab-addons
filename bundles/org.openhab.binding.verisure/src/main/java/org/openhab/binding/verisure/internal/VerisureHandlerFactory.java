@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 @Component(service = ThingHandlerFactory.class, configurationPid = "binding.verisure")
 public class VerisureHandlerFactory extends BaseThingHandlerFactory {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<ThingTypeUID>();
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>();
     static {
         SUPPORTED_THING_TYPES.addAll(VerisureBridgeHandler.SUPPORTED_THING_TYPES);
         SUPPORTED_THING_TYPES.addAll(VerisureAlarmThingHandler.SUPPORTED_THING_TYPES);

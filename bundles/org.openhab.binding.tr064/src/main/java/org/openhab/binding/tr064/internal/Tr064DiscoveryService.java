@@ -14,7 +14,7 @@ package org.openhab.binding.tr064.internal;
 
 import static org.openhab.binding.tr064.internal.Tr064BindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -52,7 +52,7 @@ public class Tr064DiscoveryService extends AbstractThingHandlerDiscoveryService<
     @Override
     public void dispose() {
         super.dispose();
-        removeOlderResults(new Date().getTime(), thingHandler.getThing().getUID());
+        removeOlderResults(Instant.now().toEpochMilli(), thingHandler.getThing().getUID());
     }
 
     @Override

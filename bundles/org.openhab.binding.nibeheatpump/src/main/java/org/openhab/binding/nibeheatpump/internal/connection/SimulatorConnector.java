@@ -48,7 +48,7 @@ public class SimulatorConnector extends NibeHeatPumpBaseConnector {
 
     private static final Random RANDOM = new Random();
 
-    private final ArrayList<ModbusValue> dataReadoutValues = new ArrayList<ModbusValue>() {
+    private final ArrayList<ModbusValue> dataReadoutValues = new ArrayList<>() {
         {
             add(new ModbusValue(43009, 287));
             add(new ModbusValue(43008, 100));

@@ -29,6 +29,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.daikin.internal.api.BasicInfo;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
+import org.openhab.binding.daikin.internal.api.DemandControl;
 import org.openhab.binding.daikin.internal.api.EnergyInfoDayAndWeek;
 import org.openhab.binding.daikin.internal.api.EnergyInfoYear;
 import org.openhab.binding.daikin.internal.api.Enums.SpecialMode;
@@ -62,6 +63,8 @@ public class DaikinWebTargets {
     private String getEnergyInfoYearUri;
     private String getEnergyInfoWeekUri;
     private String setSpecialModeUri;
+    private String setDemandControlUri;
+    private String getDemandControlUri;
 
     private String setAirbaseControlInfoUri;
     private String getAirbaseControlInfoUri;
@@ -90,6 +93,8 @@ public class DaikinWebTargets {
         getEnergyInfoYearUri = baseUri + "aircon/get_year_power_ex";
         getEnergyInfoWeekUri = baseUri + "aircon/get_week_power_ex";
         setSpecialModeUri = baseUri + "aircon/set_special_mode";
+        setDemandControlUri = baseUri + "aircon/set_demand_control";
+        getDemandControlUri = baseUri + "aircon/get_demand_control";
 
         // Daikin Airbase API
         getAirbaseBasicInfoUri = baseUri + "skyfi/common/basic_info";
@@ -167,6 +172,18 @@ public class DaikinWebTargets {
         if (!response.contains("ret=OK")) {
             logger.warn("Error setting streamer mode. Response: '{}'", response);
         }
+    }
+
+    public DemandControl getDemandControl() throws DaikinCommunicationException {
+        String response = invoke(getDemandControlUri);
+        return DemandControl.parse(response);
+    }
+
+    public boolean setDemandControl(DemandControl info) throws DaikinCommunicationException {
+        Map<String, String> queryParams = info.getParamString();
+        String result = invoke(setDemandControlUri, queryParams);
+        Map<String, String> responseMap = InfoParser.parse(result);
+        return Optional.ofNullable(responseMap.get("ret")).orElse("").equals("OK");
     }
 
     // Daikin Airbase API

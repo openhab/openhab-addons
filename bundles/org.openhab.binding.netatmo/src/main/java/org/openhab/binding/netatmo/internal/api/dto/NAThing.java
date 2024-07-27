@@ -59,16 +59,16 @@ public class NAThing extends NAObject implements NAModule {
         return dashboardData;
     }
 
-    public @Nullable String getFirmware() {
-        return firmware;
+    public Optional<String> getFirmware() {
+        return Optional.ofNullable(firmware);
     }
 
     public int getRadioStatus() {
         return radioStatus;
     }
 
-    public Optional<ZonedDateTime> getLastSeen() {
-        return Optional.ofNullable(lastSeen);
+    public @Nullable ZonedDateTime getLastSeen() {
+        return lastSeen;
     }
 
     /**

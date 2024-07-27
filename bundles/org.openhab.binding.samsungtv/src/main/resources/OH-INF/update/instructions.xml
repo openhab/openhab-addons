@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="samsungtv:tv">
+		<instruction-set targetVersion="1">
+			<add-channel id="power">
+				<type>samsungtv:power</type>
+			</add-channel>
+			<add-channel id="artMode">
+				<type>samsungtv:artmode</type>
+			</add-channel>
+			<add-channel id="setArtMode">
+				<type>samsungtv:setartmode</type>
+			</add-channel>
+			<add-channel id="artImage">
+				<type>samsungtv:artwork</type>
+			</add-channel>
+			<add-channel id="artLabel">
+				<type>samsungtv:artworklabel</type>
+			</add-channel>
+			<add-channel id="artJson">
+				<type>samsungtv:artworkjson</type>
+			</add-channel>
+			<add-channel id="artBrightness">
+				<type>samsungtv:artworkbrightness</type>
+			</add-channel>
+			<add-channel id="artColorTemperature">
+				<type>samsungtv:artworkcolortemperature</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>

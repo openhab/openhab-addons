@@ -54,7 +54,7 @@ public abstract class CustomizedTypeAdapterFactory<C> implements TypeAdapterFact
     private TypeAdapter<C> customizeMyClassAdapter(@Nullable Gson gson, TypeToken<C> type) {
         final TypeAdapter<C> delegate = gson.getDelegateAdapter(this, type);
         final TypeAdapter<JsonElement> elementAdapter = gson.getAdapter(JsonElement.class);
-        return new TypeAdapter<C>() {
+        return new TypeAdapter<>() {
             @Override
             public void write(JsonWriter out, @Nullable C value) throws IOException {
                 JsonElement tree = delegate.toJsonTree(value);

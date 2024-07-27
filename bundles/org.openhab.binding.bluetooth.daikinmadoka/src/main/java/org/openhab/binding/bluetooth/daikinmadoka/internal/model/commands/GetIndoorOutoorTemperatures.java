@@ -74,10 +74,10 @@ public class GetIndoorOutoorTemperatures extends BRC1HCommand {
             }
         }
 
-        indoorTemperature = new QuantityType<Temperature>(iIndoorTemperature, SIUnits.CELSIUS);
+        indoorTemperature = new QuantityType<>(iIndoorTemperature, SIUnits.CELSIUS);
 
         if (iOutdoorTemperature != null) {
-            outdoorTemperature = new QuantityType<Temperature>(iOutdoorTemperature, SIUnits.CELSIUS);
+            outdoorTemperature = new QuantityType<>(iOutdoorTemperature, SIUnits.CELSIUS);
         }
 
         logger.debug("Indoor Temp: {}", indoorTemperature);

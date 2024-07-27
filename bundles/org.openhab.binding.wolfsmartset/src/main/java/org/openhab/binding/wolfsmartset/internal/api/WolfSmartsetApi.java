@@ -318,7 +318,7 @@ public class WolfSmartsetApi {
     private String getSystemDescriptionString(Integer systemId, Integer gatewayId) {
         String resp = "";
         try {
-            Map<String, String> params = new HashMap<String, String>();
+            Map<String, String> params = new HashMap<>();
             params.put("SystemId", systemId.toString());
             params.put("GatewayId", gatewayId.toString());
             resp = requestGET("api/portal/GetGuiDescriptionForGateway", params).get();
@@ -406,7 +406,7 @@ public class WolfSmartsetApi {
     }
 
     private CompletableFuture<String> requestGET(String url) throws WolfSmartsetCloudException {
-        return requestGET(url, new HashMap<String, String>());
+        return requestGET(url, new HashMap<>());
     }
 
     private CompletableFuture<String> requestGET(String url, Map<String, String> params)

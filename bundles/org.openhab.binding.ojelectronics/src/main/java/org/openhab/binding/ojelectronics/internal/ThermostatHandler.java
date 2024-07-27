@@ -106,7 +106,7 @@ public class ThermostatHandler extends BaseThingHandler {
             }
         } else {
             synchronized (this) {
-                updatedValues.add(new AbstractMap.SimpleImmutableEntry<String, Command>(channelUID.getId(), command));
+                updatedValues.add(new AbstractMap.SimpleImmutableEntry<>(channelUID.getId(), command));
 
                 BridgeHandler bridgeHandler = Objects.requireNonNull(getBridge()).getHandler();
                 if (bridgeHandler != null) {
@@ -193,12 +193,13 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private void updateManualSetpoint(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_MANUALSETPOINT,
-                new QuantityType<Temperature>(thermostat.manualModeSetpoint / (double) 100, SIUnits.CELSIUS));
+                new QuantityType<>(thermostat.manualModeSetpoint / (double) 100, SIUnits.CELSIUS));
     }
 
     private void updateManualSetpoint(Command command) {
-        if (command instanceof QuantityType<?> quantityCommand) {
-            getCurrentThermostat().manualModeSetpoint = (int) (quantityCommand.floatValue() * 100);
+        QuantityType<?> harmonizedUnit = getHarmonizedQuantityType(command);
+        if (harmonizedUnit != null) {
+            getCurrentThermostat().manualModeSetpoint = (int) (harmonizedUnit.floatValue() * 100);
         } else {
             logger.warn("Unable to set value {}", command);
         }
@@ -233,12 +234,13 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private void updateComfortSetpoint(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_COMFORTSETPOINT,
-                new QuantityType<Temperature>(thermostat.comfortSetpoint / (double) 100, SIUnits.CELSIUS));
+                new QuantityType<>(thermostat.comfortSetpoint / (double) 100, SIUnits.CELSIUS));
     }
 
     private void updateComfortSetpoint(Command command) {
-        if (command instanceof QuantityType<?> quantityCommand) {
-            getCurrentThermostat().comfortSetpoint = (int) (quantityCommand.floatValue() * 100);
+        QuantityType<?> harmonizedUnit = getHarmonizedQuantityType(command);
+        if (harmonizedUnit != null) {
+            getCurrentThermostat().comfortSetpoint = (int) (harmonizedUnit.floatValue() * 100);
         } else {
             logger.warn("Unable to set value {}", command);
         }
@@ -266,22 +268,22 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private void updateFloorTemperature(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_FLOORTEMPERATURE,
-                new QuantityType<Temperature>(thermostat.floorTemperature / (double) 100, SIUnits.CELSIUS));
+                new QuantityType<>(thermostat.floorTemperature / (double) 100, SIUnits.CELSIUS));
     }
 
     private void updateFloorTemperature(ThermostatRealTimeValuesModel thermostatRealTimeValues) {
-        updateState(BindingConstants.CHANNEL_OWD5_FLOORTEMPERATURE, new QuantityType<Temperature>(
-                thermostatRealTimeValues.floorTemperature / (double) 100, SIUnits.CELSIUS));
+        updateState(BindingConstants.CHANNEL_OWD5_FLOORTEMPERATURE,
+                new QuantityType<>(thermostatRealTimeValues.floorTemperature / (double) 100, SIUnits.CELSIUS));
     }
 
     private void updateRoomTemperature(ThermostatModel thermostat) {
         updateState(BindingConstants.CHANNEL_OWD5_ROOMTEMPERATURE,
-                new QuantityType<Temperature>(thermostat.roomTemperature / (double) 100, SIUnits.CELSIUS));
+                new QuantityType<>(thermostat.roomTemperature / (double) 100, SIUnits.CELSIUS));
     }
 
     private void updateRoomTemperature(ThermostatRealTimeValuesModel thermostatRealTimeValues) {
-        updateState(BindingConstants.CHANNEL_OWD5_ROOMTEMPERATURE, new QuantityType<Temperature>(
-                thermostatRealTimeValues.roomTemperature / (double) 100, SIUnits.CELSIUS));
+        updateState(BindingConstants.CHANNEL_OWD5_ROOMTEMPERATURE,
+                new QuantityType<>(thermostatRealTimeValues.roomTemperature / (double) 100, SIUnits.CELSIUS));
     }
 
     private void updateHeating(ThermostatModel thermostat) {
@@ -351,6 +353,17 @@ public class ThermostatHandler extends BaseThingHandler {
 
     private @Nullable String getRegulationMode(int regulationMode) {
         return REGULATION_MODES.get(regulationMode);
+    }
+
+    private @Nullable QuantityType<?> getHarmonizedQuantityType(Command command) {
+        QuantityType<?> harmonizedUnit = null;
+
+        if (command instanceof QuantityType<?> quantityCommand) {
+            harmonizedUnit = quantityCommand.toUnit(SIUnits.CELSIUS);
+        } else if (command instanceof Number quantityCommand) {
+            harmonizedUnit = new QuantityType<Temperature>(quantityCommand.floatValue(), SIUnits.CELSIUS);
+        }
+        return harmonizedUnit;
     }
 
     private static Map<Integer, String> createRegulationMap() {

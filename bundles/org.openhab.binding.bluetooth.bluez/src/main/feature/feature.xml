@@ -4,8 +4,7 @@
 
 	<feature name="openhab-binding-bluetooth-bluez" description="Bluetooth Binding Bluez" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-
-		<bundle dependency="true">mvn:com.github.hypfvieh/bluez-dbus-osgi/0.1.3</bundle>
+		<bundle dependency="true">mvn:com.github.hypfvieh/bluez-dbus-osgi/0.2.0</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth/${project.version}</bundle>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bluetooth.bluez/${project.version}</bundle>
 	</feature>

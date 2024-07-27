@@ -69,7 +69,7 @@ public class QolsysIQPanelHandler extends BaseBridgeHandler
     private @Nullable QolsysiqClient apiClient;
     private @Nullable ScheduledFuture<?> retryFuture;
     private @Nullable QolsysIQChildDiscoveryService discoveryService;
-    private List<Partition> partitions = Collections.synchronizedList(new LinkedList<Partition>());
+    private List<Partition> partitions = Collections.synchronizedList(new LinkedList<>());
     private String key = "";
 
     public QolsysIQPanelHandler(Bridge bridge) {

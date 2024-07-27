@@ -132,7 +132,7 @@ public class UpnpEntryQueue {
         }
 
         // Shuffle the queue again
-        shuffledQueue = new ArrayList<UpnpEntry>(currentQueue);
+        shuffledQueue = new ArrayList<>(currentQueue);
         Collections.shuffle(shuffledQueue);
         if (current != null) {
             // Put the current entry at the beginning of the shuffled queue

@@ -66,7 +66,7 @@ public class WarmupDiscoveryService extends AbstractThingHandlerDiscoveryService
     @Override
     public void refresh(@Nullable QueryResponseDTO domain) {
         if (domain != null) {
-            HashSet<ThingUID> discoveredThings = new HashSet<ThingUID>();
+            HashSet<ThingUID> discoveredThings = new HashSet<>();
             for (LocationDTO location : domain.getData().getUser().getLocations()) {
                 for (RoomDTO room : location.getRooms()) {
                     discoverRoom(location, room, discoveredThings);

@@ -136,8 +136,7 @@ public class TestMeterReading {
     }
 
     MeterDevice<Object> getMeterDevice(ConnectorBase<Object> connector) {
-        return new MeterDevice<Object>(() -> mock(SerialPortManager.class), "id", "port", null, 9600, 0,
-                ProtocolMode.SML) {
+        return new MeterDevice<>(() -> mock(SerialPortManager.class), "id", "port", null, 9600, 0, ProtocolMode.SML) {
 
             @Override
             protected @NonNull IMeterReaderConnector<Object> createConnector(

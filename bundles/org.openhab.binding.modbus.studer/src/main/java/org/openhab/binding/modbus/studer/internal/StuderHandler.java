@@ -70,7 +70,7 @@ public class StuderHandler extends BaseThingHandler {
     /**
      * Array of tasks used to poll the device
      */
-    private ArrayList<PollTask> pollTasks = new ArrayList<PollTask>();
+    private ArrayList<PollTask> pollTasks = new ArrayList<>();
 
     /**
      * Communication interface to the slave endpoint we're connecting to

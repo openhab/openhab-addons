@@ -239,9 +239,6 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             int duration = (int) (now() - rs.timerStartetAt);
             sr.timerRemaining = duration;
         }
-        if (status.tmp == null) {
-            status.tmp = new ShellySensorTmp();
-        }
         if (rs.temperature != null) {
             if (status.tmp == null) {
                 status.tmp = new ShellySensorTmp();
@@ -480,7 +477,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     private void fillRollerFavorites(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
-        if (dc.sys.uiData.cover != null) {
+        if (dc.sys.uiData.cover != null && !dc.sys.uiData.cover.isEmpty()) {
             String[] favorites = dc.sys.uiData.cover.split(",");
             profile.settings.favorites = new ArrayList<>();
             for (int i = 0; i < favorites.length; i++) {
@@ -623,7 +620,11 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             status.extVoltage = new ShellyExtVoltage(ds.voltmeter100.voltage);
         }
         if (ds.input100 != null) {
-            status.extDigitalInput = new ShellyExtDigitalInput(getBool(ds.input100.state));
+            if (ds.input100.state != null) {
+                status.extDigitalInput = new ShellyExtDigitalInput(getBool(ds.input100.state));
+            } else if (ds.input100.percent != null) {
+                status.extAnalogInput = new ShellyExtAnalogInput(getDouble(ds.input100.percent));
+            }
         }
     }
 
@@ -778,7 +779,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     protected Shelly2RpcBaseMessage buildRequest(String method, @Nullable Object params) throws ShellyApiException {
         Shelly2RpcBaseMessage request = new Shelly2RpcBaseMessage();
         request.id = Math.abs(random.nextInt());
-        request.src = thingName;
+        request.src = "openhab-" + config.localIp; // use a unique identifier;
         request.method = !method.contains(".") ? SHELLYRPC_METHOD_CLASS_SHELLY + "." + method : method;
         request.params = params;
         request.auth = authReq;

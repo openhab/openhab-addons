@@ -1,0 +1,15 @@
+{
+    "endofchargetime": {
+        "display_value": "20:45",
+        "timestamp_in_ms": 1695140419000,
+        "clock_hour_unit": "T24H",
+        "timestamp": 1695140419,
+        "changed": true,
+        "int_value": 1245
+    },
+    "chargingPower": {
+        "timestamp_in_ms": 1695141963000,
+        "double_value": 2.1,
+        "timestamp": 1695141963
+    }
+}

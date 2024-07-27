@@ -106,7 +106,7 @@ public class SmartHomeDeviceStateGroupUpdateCalculator {
             }
         }
         // check which groups needs an update
-        Set<Integer> groupsToUpdate = new HashSet<Integer>();
+        Set<Integer> groupsToUpdate = new HashSet<>();
         for (UpdateGroup group : updateGroups.values()) {
             long millisecondsSinceLastUpdate = updateTimeStamp.getTime() - group.lastUpdated.getTime();
             if (syncAllGroups || millisecondsSinceLastUpdate >= group.intervalInSeconds * 1000) {

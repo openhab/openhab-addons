@@ -197,8 +197,8 @@ public class ShellyDeviceProfile {
             return;
         }
 
-        isGen2 = isGeneration2(thingType);
         isBlu = isBluSeries(thingType); // e.g. SBBT for BLU Button
+        isGen2 = isGeneration2(thingType) || isBlu;
 
         String type = getString(device.type);
         isDimmer = type.equalsIgnoreCase(SHELLYDT_DIMMER) || type.equalsIgnoreCase(SHELLYDT_DIMMER2)
@@ -218,7 +218,8 @@ public class ShellyDeviceProfile {
         isSmoke = thingType.equals(THING_TYPE_SHELLYSMOKE_STR) || thingType.equals(THING_TYPE_SHELLYPLUSSMOKE_STR);
         boolean isGas = thingType.equals(THING_TYPE_SHELLYGAS_STR);
         boolean isUNI = thingType.equals(THING_TYPE_SHELLYUNI_STR);
-        isHT = thingType.equals(THING_TYPE_SHELLYHT_STR) || thingType.equals(THING_TYPE_SHELLYPLUSHT_STR);
+        isHT = thingType.equals(THING_TYPE_SHELLYHT_STR) || thingType.equals(THING_TYPE_SHELLYPLUSHT_STR)
+                || thingType.equals(THING_TYPE_SHELLYPLUSHTG3_STR) || thingType.equals(THING_TYPE_SHELLYBLUHT_STR);
         isDW = thingType.equals(THING_TYPE_SHELLYDOORWIN_STR) || thingType.equals(THING_TYPE_SHELLYDOORWIN2_STR)
                 || thingType.equals(THING_TYPE_SHELLYBLUDW_STR);
         isMotion = thingType.startsWith(THING_TYPE_SHELLYMOTION_STR)
@@ -235,8 +236,9 @@ public class ShellyDeviceProfile {
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV
                 || isWall;
-        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV;
-        alwaysOn = !hasBattery || isMotion || isSense; // true means: device is reachable all the time (no sleep mode)
+        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV || isBlu;
+        alwaysOn = !hasBattery || (isMotion && !isBlu) || isSense; // true means: device is reachable all the time (no
+                                                                   // sleep mode)
     }
 
     public void updateFromStatus(ShellySettingsStatus status) {
@@ -403,12 +405,13 @@ public class ShellyDeviceProfile {
     }
 
     public static boolean isGeneration2(String thingType) {
-        return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro")
-                || thingType.startsWith("shellymini") || isBluSeries(thingType);
+        return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro") || thingType.contains("mini")
+                || thingType.startsWith("shellywall") || (thingType.startsWith("shelly") && thingType.contains("g3"))
+                || isBluSeries(thingType) || thingType.startsWith(THING_TYPE_SHELLYBLUGW_STR);
     }
 
     public static boolean isBluSeries(String thingType) {
-        return thingType.startsWith("shellyblu");
+        return thingType.startsWith("shellyblu") && !thingType.startsWith(THING_TYPE_SHELLYBLUGW_STR);
     }
 
     public boolean coiotEnabled() {
@@ -429,6 +432,8 @@ public class ShellyDeviceProfile {
                 return (THING_TYPE_SHELLYBLUDW_STR + "-" + mac).toLowerCase();
             case SHELLYDT_BLUMOTION:
                 return (THING_TYPE_SHELLYBLUMOTION_STR + "-" + mac).toLowerCase();
+            case SHELLYDT_BLUHT:
+                return (THING_TYPE_SHELLYBLUHT_STR + "-" + mac).toLowerCase();
             default:
                 throw new IllegalArgumentException("Unsupported BLU device model " + model);
         }

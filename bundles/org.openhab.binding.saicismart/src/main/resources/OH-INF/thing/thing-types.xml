@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="saicismart"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="vehicle">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>SAIC Car</label>
+		<description>iSMART enabled car</description>
+		<category>Car</category>
+
+		<channels>
+			<channel id="odometer" typeId="odometer-channel"/>
+			<channel id="range-electric" typeId="range-electric-channel"/>
+			<channel id="soc" typeId="system.battery-level"/>
+			<channel id="power" typeId="power-channel"/>
+			<channel id="charging" typeId="charging-channel"/>
+			<channel id="engine" typeId="engine-channel"/>
+			<channel id="speed" typeId="speed-channel"/>
+			<channel id="location" typeId="location-channel"/>
+			<channel id="heading" typeId="heading-channel"/>
+			<channel id="auxiliary-battery-voltage" typeId="auxiliary-battery-voltage-channel"/>
+			<channel id="tyre-pressure-front-left" typeId="tyre-pressure-channel">
+				<label>Pressure Front Left</label>
+			</channel>
+			<channel id="tyre-pressure-front-right" typeId="tyre-pressure-channel">
+				<label>Pressure Front Right</label>
+			</channel>
+			<channel id="tyre-pressure-rear-left" typeId="tyre-pressure-channel">
+				<label>Pressure Rear Left</label>
+			</channel>
+			<channel id="tyre-pressure-rear-right" typeId="tyre-pressure-channel">
+				<label>Pressure Rear Right</label>
+			</channel>
+			<channel id="interior-temperature" typeId="temperature-channel">
+				<label>Interior Temperature</label>
+			</channel>
+			<channel id="exterior-temperature" typeId="temperature-channel">
+				<label>Exterior Temperature</label>
+			</channel>
+			<channel id="door-driver" typeId="door-channel">
+				<label>Driver Door</label>
+			</channel>
+			<channel id="door-passenger" typeId="door-channel">
+				<label>Passenger Door</label>
+			</channel>
+			<channel id="door-rear-left" typeId="door-channel">
+				<label>Rear Left Door</label>
+			</channel>
+			<channel id="door-rear-right" typeId="door-channel">
+				<label>Rear Right Door</label>
+			</channel>
+			<channel id="window-driver" typeId="window-channel">
+				<label>Driver Window</label>
+			</channel>
+			<channel id="window-passenger" typeId="window-channel">
+				<label>Passenger Window</label>
+			</channel>
+			<channel id="window-rear-left" typeId="window-channel">
+				<label>Rear Left Window</label>
+			</channel>
+			<channel id="window-rear-right" typeId="window-channel">
+				<label>Rear Right Window</label>
+			</channel>
+			<channel id="window-sun-roof" typeId="window-channel">
+				<label>Sun Roof</label>
+			</channel>
+			<channel id="last-activity" typeId="timestamp-channel">
+				<label>Last Car Activity</label>
+				<description>Last time either the engine was on or the car was charging</description>
+			</channel>
+			<channel id="last-position-update" typeId="timestamp-channel">
+				<label>Last Position Timestamp</label>
+				<description>Last time the Position data was updated</description>
+			</channel>
+			<channel id="last-charge-state-update" typeId="timestamp-channel">
+				<label>Last Charge State Timestamp</label>
+				<description>Last time the Charge State data was updated</description>
+			</channel>
+			<channel id="remote-ac-status" typeId="remote-ac-status-channel"/>
+			<channel id="switch-ac" typeId="switch-ac-channel"/>
+			<channel id="force-refresh" typeId="force-refresh-channel"/>
+			<channel id="last-alarm-message-date" typeId="timestamp-channel">
+				<label>Last Alarm Message Timestamp</label>
+				<description>Last time an alarm message was sent</description>
+			</channel>
+			<channel id="last-alarm-message-content" typeId="alarm-message-channel"/>
+		</channels>
+
+		<representation-property>vin</representation-property>
+
+		<config-description-ref uri="thing-type:saicismart:vehicle"/>
+	</thing-type>
+
+	<channel-type id="odometer-channel">
+		<item-type>Number:Length</item-type>
+		<label>Total Distance Driven</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="range-electric-channel">
+		<item-type>Number:Length</item-type>
+		<label>Electric Range</label>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="power-channel">
+		<item-type>Number:Power</item-type>
+		<label>Power Usage</label>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Power</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="charging-channel">
+		<item-type>Switch</item-type>
+		<label>Charging</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="engine-channel">
+		<item-type>Switch</item-type>
+		<label>Engine State</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="tyre-pressure-channel">
+		<item-type>Number:Pressure</item-type>
+		<label>Pressure</label>
+		<category>Pressure</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Pressure</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="temperature-channel">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="speed-channel">
+		<item-type>Number:Speed</item-type>
+		<label>Speed</label>
+		<description>Vehicle speed</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="location-channel">
+		<item-type>Location</item-type>
+		<label>Location</label>
+		<description>The actual position of the vehicle</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="heading-channel">
+		<item-type>Number:Angle</item-type>
+		<label>Heading</label>
+		<description>Indicates the (compass) heading of the car, in 0-360 degrees</description>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="auxiliary-battery-voltage-channel">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Auxiliary Battery Voltage</label>
+		<description>Voltage (V) of the auxiliary battery</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Voltage</tag>
+		</tags>
+		<state pattern="%.1f V" readOnly="true"/>
+	</channel-type>
+	<channel-type id="door-channel">
+		<item-type>Contact</item-type>
+		<label>Door</label>
+		<description>Indicates if the door is opened</description>
+		<category>door</category>
+		<tags>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="window-channel">
+		<item-type>Contact</item-type>
+		<label>Window</label>
+		<description>Indicates if the window is opened</description>
+		<category>window</category>
+		<tags>
+			<tag>OpenState</tag>
+		</tags>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="timestamp-channel">
+		<item-type>DateTime</item-type>
+		<label>Timestamp</label>
+		<description>The time of the event</description>
+		<state readOnly="true" pattern="%1$tF %1$tR"/>
+	</channel-type>
+	<channel-type id="remote-ac-status-channel">
+		<item-type>Number</item-type>
+		<label>Remote A/C</label>
+		<description>Status of remote A/C</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Off</option>
+				<option value="5">On</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="switch-ac-channel">
+		<item-type>Switch</item-type>
+		<label>Switch A/C</label>
+		<description>Control the A/C remotely</description>
+	</channel-type>
+	<channel-type id="force-refresh-channel" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Force Refresh</label>
+		<description>Force an immediate refresh of the car data</description>
+	</channel-type>
+	<channel-type id="alarm-message-channel">
+		<item-type>String</item-type>
+		<label>Vehicle Message</label>
+		<description>Vehicle Message</description>
+	</channel-type>
+</thing:thing-descriptions>

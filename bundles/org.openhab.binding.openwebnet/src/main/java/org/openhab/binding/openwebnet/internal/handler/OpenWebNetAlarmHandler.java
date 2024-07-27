@@ -55,7 +55,7 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
 
     private static long lastAllDevicesRefreshTS = 0; // ts when last all device refresh was sent for this handler
 
-    private static Set<OpenWebNetAlarmHandler> zoneHandlers = new HashSet<OpenWebNetAlarmHandler>();
+    private static Set<OpenWebNetAlarmHandler> zoneHandlers = new HashSet<>();
 
     private static final String BATTERY_OK = "OK";
     private static final String BATTERY_FAULT = "FAULT";
@@ -272,8 +272,8 @@ public class OpenWebNetAlarmHandler extends OpenWebNetThingHandler {
     }
 
     @Override
-    protected String ownIdPrefix() {
-        return Who.BURGLAR_ALARM.value().toString();
+    protected Who getManagedWho() {
+        return Who.BURGLAR_ALARM;
     }
 
     @Override
