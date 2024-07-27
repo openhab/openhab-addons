@@ -678,7 +678,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         }
                         break;
                     case SHELLY2_EVENT_CFGCHANGED:
-                        ThingStatusDetail detail = getThing().getThingStatusDetail();
                         logger.debug("{}: Configuration update detected, re-initialize", thingName);
                         getThing().requestUpdates(1, true); // refresh config
                         break;
