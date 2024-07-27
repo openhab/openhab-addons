@@ -398,8 +398,7 @@ public class ShellyDeviceProfile {
             Matcher matcher = version.startsWith("v") ? GEN1_VERSION_PATTERN.matcher(vers)
                     : GEN2_VERSION_PATTERN.matcher(vers);
             if (matcher.find()) {
-                String ver = matcher.group(0);
-                return ver.contains("-") ? substringBefore(ver, "-") : ver;
+                return matcher.group(0);
             }
         }
         return "";
