@@ -14,10 +14,8 @@ package org.openhab.binding.dbquery.internal.domain;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.closeTo;
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.*;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -34,6 +32,7 @@ import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
@@ -45,13 +44,12 @@ class QueryResultJSONEncoderTest {
     public static final double TOLERANCE = 0.001d;
     private final DBQueryJSONEncoder instance = new DBQueryJSONEncoder();
     private final Gson gson = new Gson();
-    private final JsonParser jsonParser = new JsonParser();
 
     @Test
     void givenQueryResultIsSerializedToJson() {
-        String json = instance.encode(givenQueryResultWithResults());
-
-        assertThat(jsonParser.parse(json), notNullValue());
+        JsonObject jsonObjectAlt = JsonParser.parseString(instance.encode(givenQueryResultWithResults()))
+                .getAsJsonObject();
+        assertThat(jsonObjectAlt.isJsonNull(), org.hamcrest.CoreMatchers.is(false));
     }
 
     @Test
