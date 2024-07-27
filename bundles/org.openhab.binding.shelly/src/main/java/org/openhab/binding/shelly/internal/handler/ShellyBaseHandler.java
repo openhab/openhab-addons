@@ -693,21 +693,12 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments) {
-        ThingStatus status = getThingStatus();
-        ThingStatusDetail currentDetail = getThingStatusDetail();
-        if (!isThingOffline() || detail != getThingStatusDetail()) {
-            setThingStatus(ThingStatus.OFFLINE, detail, messageKey, arguments);
+        if (!isThingOffline()) {
+            updateStatus(ThingStatus.OFFLINE, detail, messages.get(messageKey, arguments));
+            api.close(); // Gen2: disconnect WS/close http sessions
+            watchdog = 0;
+            channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
         }
-        api.close(); // Gen2: disconnect WS/close http sessions
-        watchdog = 0;
-        channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
-    }
-
-    @Override
-    public void setThingStatus(ThingStatus status, ThingStatusDetail detail, String messageKey, Object... arguments) {
-        String msg = messages.get(messageKey, arguments);
-        logger.debug("{}: {}", thingName, msg);
-        updateStatus(status, detail, msg);
     }
 
     @Override
@@ -1008,8 +999,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             config.deviceAddress = config.deviceIp;
         }
         if (config.deviceAddress.isEmpty()) {
-            logger.debug("{}: IP/MAC address for the device _Offt be empty", thingName); // may not set in .things
-            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.missing-device-address"); // file
+            logger.debug("{}: IP/MAC address for the device must not be empty", thingName); // may not set in .things
+                                                                                            // file
             return false;
         }
 
