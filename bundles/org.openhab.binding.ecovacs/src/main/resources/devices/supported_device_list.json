@@ -615,5 +615,25 @@
         "modelName": "DEEBOT X2 PRO OMNI",
         "deviceClass": "ip3mmy",
         "deviceClassLink": "e6ofmn"
+    },
+    {
+        "modelName": "DEEBOT T30 OMNI",
+        "deviceClass": "z4lvk7",
+        "deviceClassLink": "lhbd50"
+    },
+    {
+        "modelName": "DEEBOT T30 PRO OMNI",
+        "deviceClass": "4vhygi",
+        "deviceClassLink": "lhbd50"
+    },
+    {
+        "modelName": "DEEBOT T30 PRO OMNI",
+        "deviceClass": "3w7j5e",
+        "deviceClassLink": "lhbd50"
+    },
+    {
+        "modelName": "DEEBOT T30 PRO OMNI",
+        "deviceClass": "tlthqk",
+        "deviceClassLink": "lhbd50"
     }
 ]
