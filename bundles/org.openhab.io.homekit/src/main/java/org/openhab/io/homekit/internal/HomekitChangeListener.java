@@ -483,7 +483,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             knownAccessories.put(taggedItem.getName(), accessory.toJson());
             accessoryRegistry.addRootAccessory(taggedItem.getName(), accessory);
         } catch (HomekitException e) {
-            logger.warn("Cannot create accessory {}", taggedItem);
+            logger.warn("Cannot create accessory {}: {}", taggedItem, e.getMessage());
         }
     }
 

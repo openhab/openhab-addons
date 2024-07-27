@@ -93,5 +93,46 @@
 		<description>The raw JSON data retrieved from the inverter's Wi-Fi module.</description>
 		<state readOnly="true"/>
 	</channel-type>
+	<channel-type id="charger-state">
+		<item-type>String</item-type>
+		<label>Charger State</label>
+		<description>Charger State</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">Preparing</option>
+				<option value="1">Preparing</option>
+				<option value="2">Charging</option>
+				<option value="3">Finishing</option>
+				<option value="4">Fault</option>
+				<option value="5">Unavailable</option>
+				<option value="6">Reserved</option>
+				<option value="7">Suspended EV</option>
+				<option value="8">Suspended EV SE</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="charger-mode">
+		<item-type>String</item-type>
+		<label>Charger Mode</label>
+		<description>Charger Mode</description>
+		<state pattern="%s" readOnly="true">
+			<options>
+				<option value="0">Stop</option>
+				<option value="1">Fast</option>
+				<option value="2">Eco</option>
+				<option value="3">Green</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="charger-temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Charger Temperature</label>
+		<description>Charger Temperature</description>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state pattern="%d %unit%" readOnly="true"/>
+	</channel-type>
 
 </thing:thing-descriptions>

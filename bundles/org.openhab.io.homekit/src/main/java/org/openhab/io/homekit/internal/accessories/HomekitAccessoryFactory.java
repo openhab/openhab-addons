@@ -68,46 +68,47 @@ public class HomekitAccessoryFactory {
     private static final Map<HomekitAccessoryType, HomekitCharacteristicType[]> MANDATORY_CHARACTERISTICS = new HashMap<>() {
         {
             put(ACCESSORY_GROUP, new HomekitCharacteristicType[] {});
-            put(LEAK_SENSOR, new HomekitCharacteristicType[] { LEAK_DETECTED_STATE });
-            put(MOTION_SENSOR, new HomekitCharacteristicType[] { MOTION_DETECTED_STATE });
-            put(OCCUPANCY_SENSOR, new HomekitCharacteristicType[] { OCCUPANCY_DETECTED_STATE });
-            put(CONTACT_SENSOR, new HomekitCharacteristicType[] { CONTACT_SENSOR_STATE });
-            put(SMOKE_SENSOR, new HomekitCharacteristicType[] { SMOKE_DETECTED_STATE });
-            put(HUMIDITY_SENSOR, new HomekitCharacteristicType[] { RELATIVE_HUMIDITY });
+
             put(AIR_QUALITY_SENSOR, new HomekitCharacteristicType[] { AIR_QUALITY });
-            put(SWITCH, new HomekitCharacteristicType[] { ON_STATE });
+            put(BASIC_FAN, new HomekitCharacteristicType[] { ON_STATE });
+            put(BATTERY, new HomekitCharacteristicType[] { BATTERY_LEVEL, BATTERY_LOW_STATUS });
             put(CARBON_DIOXIDE_SENSOR, new HomekitCharacteristicType[] { CARBON_DIOXIDE_DETECTED_STATE });
             put(CARBON_MONOXIDE_SENSOR, new HomekitCharacteristicType[] { CARBON_MONOXIDE_DETECTED_STATE });
-            put(WINDOW_COVERING, new HomekitCharacteristicType[] { TARGET_POSITION, CURRENT_POSITION, POSITION_STATE });
-            put(LIGHTBULB, new HomekitCharacteristicType[] { ON_STATE });
-            put(BASIC_FAN, new HomekitCharacteristicType[] { ON_STATE });
+            put(CONTACT_SENSOR, new HomekitCharacteristicType[] { CONTACT_SENSOR_STATE });
+            put(DOOR, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
             put(FAN, new HomekitCharacteristicType[] { ACTIVE_STATUS });
-            put(LIGHT_SENSOR, new HomekitCharacteristicType[] { LIGHT_LEVEL });
-            put(TEMPERATURE_SENSOR, new HomekitCharacteristicType[] { CURRENT_TEMPERATURE });
-            put(THERMOSTAT, new HomekitCharacteristicType[] { CURRENT_HEATING_COOLING_STATE,
-                    TARGET_HEATING_COOLING_STATE, CURRENT_TEMPERATURE, TARGET_TEMPERATURE });
-            put(LOCK, new HomekitCharacteristicType[] { LOCK_CURRENT_STATE, LOCK_TARGET_STATE });
-            put(VALVE, new HomekitCharacteristicType[] { ACTIVE_STATUS, INUSE_STATUS });
-            put(SECURITY_SYSTEM,
-                    new HomekitCharacteristicType[] { SECURITY_SYSTEM_CURRENT_STATE, SECURITY_SYSTEM_TARGET_STATE });
-            put(OUTLET, new HomekitCharacteristicType[] { ON_STATE, INUSE_STATUS });
-            put(SPEAKER, new HomekitCharacteristicType[] { MUTE });
-            put(SMART_SPEAKER, new HomekitCharacteristicType[] { CURRENT_MEDIA_STATE, TARGET_MEDIA_STATE });
-            put(GARAGE_DOOR_OPENER,
-                    new HomekitCharacteristicType[] { CURRENT_DOOR_STATE, TARGET_DOOR_STATE, OBSTRUCTION_STATUS });
+            put(FAUCET, new HomekitCharacteristicType[] { ACTIVE_STATUS });
+            put(FILTER_MAINTENANCE, new HomekitCharacteristicType[] { FILTER_CHANGE_INDICATION });
+            put(GARAGE_DOOR_OPENER, new HomekitCharacteristicType[] { CURRENT_DOOR_STATE, TARGET_DOOR_STATE });
             put(HEATER_COOLER, new HomekitCharacteristicType[] { ACTIVE_STATUS, CURRENT_HEATER_COOLER_STATE,
                     TARGET_HEATER_COOLER_STATE, CURRENT_TEMPERATURE });
-            put(WINDOW, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
-            put(DOOR, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
-            put(BATTERY, new HomekitCharacteristicType[] { BATTERY_LEVEL, BATTERY_LOW_STATUS });
-            put(FILTER_MAINTENANCE, new HomekitCharacteristicType[] { FILTER_CHANGE_INDICATION });
-            put(SLAT, new HomekitCharacteristicType[] { CURRENT_SLAT_STATE });
-            put(FAUCET, new HomekitCharacteristicType[] { ACTIVE_STATUS });
-            put(MICROPHONE, new HomekitCharacteristicType[] { MUTE });
-            put(TELEVISION, new HomekitCharacteristicType[] { ACTIVE });
+            put(HUMIDITY_SENSOR, new HomekitCharacteristicType[] { RELATIVE_HUMIDITY });
             put(INPUT_SOURCE, new HomekitCharacteristicType[] {});
-            put(TELEVISION_SPEAKER, new HomekitCharacteristicType[] { MUTE });
             put(IRRIGATION_SYSTEM, new HomekitCharacteristicType[] { ACTIVE, INUSE_STATUS, PROGRAM_MODE });
+            put(LEAK_SENSOR, new HomekitCharacteristicType[] { LEAK_DETECTED_STATE });
+            put(LIGHT_SENSOR, new HomekitCharacteristicType[] { LIGHT_LEVEL });
+            put(LIGHTBULB, new HomekitCharacteristicType[] { ON_STATE });
+            put(LOCK, new HomekitCharacteristicType[] { LOCK_CURRENT_STATE, LOCK_TARGET_STATE });
+            put(MICROPHONE, new HomekitCharacteristicType[] { MUTE });
+            put(MOTION_SENSOR, new HomekitCharacteristicType[] { MOTION_DETECTED_STATE });
+            put(OCCUPANCY_SENSOR, new HomekitCharacteristicType[] { OCCUPANCY_DETECTED_STATE });
+            put(OUTLET, new HomekitCharacteristicType[] { ON_STATE, INUSE_STATUS });
+            put(SECURITY_SYSTEM,
+                    new HomekitCharacteristicType[] { SECURITY_SYSTEM_CURRENT_STATE, SECURITY_SYSTEM_TARGET_STATE });
+            put(SMART_SPEAKER, new HomekitCharacteristicType[] { CURRENT_MEDIA_STATE, TARGET_MEDIA_STATE });
+            put(SMOKE_SENSOR, new HomekitCharacteristicType[] { SMOKE_DETECTED_STATE });
+            put(SLAT, new HomekitCharacteristicType[] { CURRENT_SLAT_STATE });
+            put(SPEAKER, new HomekitCharacteristicType[] { MUTE });
+            put(STATELESS_PROGRAMMABLE_SWITCH, new HomekitCharacteristicType[] { PROGRAMMABLE_SWITCH_EVENT });
+            put(SWITCH, new HomekitCharacteristicType[] { ON_STATE });
+            put(TELEVISION, new HomekitCharacteristicType[] { ACTIVE });
+            put(TELEVISION_SPEAKER, new HomekitCharacteristicType[] { MUTE });
+            put(TEMPERATURE_SENSOR, new HomekitCharacteristicType[] { CURRENT_TEMPERATURE });
+            put(THERMOSTAT, new HomekitCharacteristicType[] { CURRENT_HEATING_COOLING_STATE,
+                    TARGET_HEATING_COOLING_STATE, CURRENT_TEMPERATURE });
+            put(VALVE, new HomekitCharacteristicType[] { ACTIVE_STATUS, INUSE_STATUS });
+            put(WINDOW, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
+            put(WINDOW_COVERING, new HomekitCharacteristicType[] { TARGET_POSITION, CURRENT_POSITION, POSITION_STATE });
         }
     };
 
@@ -115,42 +116,44 @@ public class HomekitAccessoryFactory {
     private static final Map<HomekitAccessoryType, Class<? extends AbstractHomekitAccessoryImpl>> SERVICE_IMPL_MAP = new HashMap<>() {
         {
             put(ACCESSORY_GROUP, HomekitAccessoryGroupImpl.class);
-            put(LEAK_SENSOR, HomekitLeakSensorImpl.class);
-            put(MOTION_SENSOR, HomekitMotionSensorImpl.class);
-            put(OCCUPANCY_SENSOR, HomekitOccupancySensorImpl.class);
-            put(CONTACT_SENSOR, HomekitContactSensorImpl.class);
-            put(SMOKE_SENSOR, HomekitSmokeSensorImpl.class);
-            put(HUMIDITY_SENSOR, HomekitHumiditySensorImpl.class);
+
             put(AIR_QUALITY_SENSOR, HomekitAirQualitySensorImpl.class);
-            put(SWITCH, HomekitSwitchImpl.class);
+            put(BASIC_FAN, HomekitBasicFanImpl.class);
+            put(BATTERY, HomekitBatteryImpl.class);
             put(CARBON_DIOXIDE_SENSOR, HomekitCarbonDioxideSensorImpl.class);
             put(CARBON_MONOXIDE_SENSOR, HomekitCarbonMonoxideSensorImpl.class);
-            put(WINDOW_COVERING, HomekitWindowCoveringImpl.class);
-            put(LIGHTBULB, HomekitLightbulbImpl.class);
-            put(BASIC_FAN, HomekitBasicFanImpl.class);
+            put(CONTACT_SENSOR, HomekitContactSensorImpl.class);
+            put(DOOR, HomekitDoorImpl.class);
             put(FAN, HomekitFanImpl.class);
+            put(FAUCET, HomekitFaucetImpl.class);
+            put(FILTER_MAINTENANCE, HomekitFilterMaintenanceImpl.class);
+            put(GARAGE_DOOR_OPENER, HomekitGarageDoorOpenerImpl.class);
+            put(HEATER_COOLER, HomekitHeaterCoolerImpl.class);
+            put(HUMIDITY_SENSOR, HomekitHumiditySensorImpl.class);
+            put(INPUT_SOURCE, HomekitInputSourceImpl.class);
+            put(IRRIGATION_SYSTEM, HomekitIrrigationSystemImpl.class);
+            put(LEAK_SENSOR, HomekitLeakSensorImpl.class);
             put(LIGHT_SENSOR, HomekitLightSensorImpl.class);
+            put(LIGHTBULB, HomekitLightbulbImpl.class);
+            put(LOCK, HomekitLockImpl.class);
+            put(MICROPHONE, HomekitMicrophoneImpl.class);
+            put(MOTION_SENSOR, HomekitMotionSensorImpl.class);
+            put(OCCUPANCY_SENSOR, HomekitOccupancySensorImpl.class);
+            put(OUTLET, HomekitOutletImpl.class);
+            put(SECURITY_SYSTEM, HomekitSecuritySystemImpl.class);
+            put(SLAT, HomekitSlatImpl.class);
+            put(SMART_SPEAKER, HomekitSmartSpeakerImpl.class);
+            put(SMOKE_SENSOR, HomekitSmokeSensorImpl.class);
+            put(SPEAKER, HomekitSpeakerImpl.class);
+            put(STATELESS_PROGRAMMABLE_SWITCH, HomekitStatelessProgrammableSwitchImpl.class);
+            put(SWITCH, HomekitSwitchImpl.class);
+            put(TELEVISION, HomekitTelevisionImpl.class);
+            put(TELEVISION_SPEAKER, HomekitTelevisionSpeakerImpl.class);
             put(TEMPERATURE_SENSOR, HomekitTemperatureSensorImpl.class);
             put(THERMOSTAT, HomekitThermostatImpl.class);
-            put(LOCK, HomekitLockImpl.class);
             put(VALVE, HomekitValveImpl.class);
-            put(SECURITY_SYSTEM, HomekitSecuritySystemImpl.class);
-            put(OUTLET, HomekitOutletImpl.class);
-            put(SPEAKER, HomekitSpeakerImpl.class);
-            put(SMART_SPEAKER, HomekitSmartSpeakerImpl.class);
-            put(GARAGE_DOOR_OPENER, HomekitGarageDoorOpenerImpl.class);
-            put(DOOR, HomekitDoorImpl.class);
             put(WINDOW, HomekitWindowImpl.class);
-            put(HEATER_COOLER, HomekitHeaterCoolerImpl.class);
-            put(BATTERY, HomekitBatteryImpl.class);
-            put(FILTER_MAINTENANCE, HomekitFilterMaintenanceImpl.class);
-            put(SLAT, HomekitSlatImpl.class);
-            put(FAUCET, HomekitFaucetImpl.class);
-            put(MICROPHONE, HomekitMicrophoneImpl.class);
-            put(TELEVISION, HomekitTelevisionImpl.class);
-            put(INPUT_SOURCE, HomekitInputSourceImpl.class);
-            put(TELEVISION_SPEAKER, HomekitTelevisionSpeakerImpl.class);
-            put(IRRIGATION_SYSTEM, HomekitIrrigationSystemImpl.class);
+            put(WINDOW_COVERING, HomekitWindowCoveringImpl.class);
         }
     };
 

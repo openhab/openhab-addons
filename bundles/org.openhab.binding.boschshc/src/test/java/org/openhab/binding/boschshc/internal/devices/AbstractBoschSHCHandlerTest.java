@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -133,7 +132,7 @@ public abstract class AbstractBoschSHCHandlerTest<T extends BoschSHCHandler> {
     @Test
     void testInitialize() {
         ThingStatusInfo expectedStatusInfo = new ThingStatusInfo(ThingStatus.ONLINE, ThingStatusDetail.NONE, null);
-        verify(callback).statusUpdated(same(thing), eq(expectedStatusInfo));
+        verify(callback).statusUpdated(any(Thing.class), eq(expectedStatusInfo));
     }
 
     @Test
