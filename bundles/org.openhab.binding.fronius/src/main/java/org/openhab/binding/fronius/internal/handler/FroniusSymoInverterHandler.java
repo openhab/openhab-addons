@@ -92,6 +92,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             return null;
         }
 
+        InverterDeviceStatus deviceStatus;
         switch (fieldName) {
             case FroniusBindingConstants.INVERTER_DATA_CHANNEL_PAC:
                 return getQuantityOrZero(inverterData.getPac(), Units.WATT);
@@ -129,7 +130,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 // Convert the unit to MWh for backwards compatibility with non-quantity type
                 return getQuantityOrZero(inverterData.getYearEnergy(), Units.MEGAWATT_HOUR).toUnit("MWh");
             case FroniusBindingConstants.INVERTER_DATA_CHANNEL_DEVICE_STATUS_ERROR_CODE:
-                InverterDeviceStatus deviceStatus = inverterData.getDeviceStatus();
+                deviceStatus = inverterData.getDeviceStatus();
                 if (deviceStatus == null) {
                     return null;
                 }
