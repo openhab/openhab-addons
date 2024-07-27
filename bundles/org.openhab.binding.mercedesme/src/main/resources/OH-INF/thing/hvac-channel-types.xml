@@ -10,7 +10,7 @@
 	</channel-type>
 	<channel-type id="temperature-hvac">
 		<item-type>Number:Temperature</item-type>
-		<label>AC Desired Temperature</label>
+		<label>AC Setpoint Temperature</label>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 	<channel-type id="active-hvac">
