@@ -92,7 +92,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         if (!initialized) {
             initialized = true;
             connected = false;
-        } else {
         }
     }
 
@@ -162,10 +161,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
                 profile.settings.inputs.add(settings);
             }
             profile.status = deviceStatus;
-        }
-
-        if (!connected) {
-            throw new ShellyApiException("BLU Device not yet connected");
         }
 
         profile.initialized = true;
