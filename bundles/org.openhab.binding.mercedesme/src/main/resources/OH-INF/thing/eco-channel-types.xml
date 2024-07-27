@@ -25,6 +25,6 @@
 		<item-type>Number:Length</item-type>
 		<label>Bonus Range</label>
 		<description>Additional range vs. very sportive driver</description>
-		<state pattern="%d km" readOnly="true"/>
+		<state pattern="%d %unit%" readOnly="true"/>
 	</channel-type>
 </thing:thing-descriptions>
