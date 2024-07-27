@@ -37,6 +37,18 @@ The binding provides the same feature set across all devices as good as possible
 `Note:` Using BLU devices or the Plus/Pro Range Extender mode require some additional configuration steps.
 See section [Discovery](#discovery) for details.
 
+## Unsupported Devices
+
+Some of the devices are not yet supported:
+
+- Shelly Plus Cover 2PM
+- Shelly Plus RGBW PM
+- Shely BLU 4 button switch
+- Shely BLU 4 button wall switch
+- Shelly Development Boards (X SM)
+
+Support will be added in future version of the binding.
+
 ### Generation 1
 
 | thing-type        | Model                                                  | Vendor ID           |
