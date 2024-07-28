@@ -59,7 +59,7 @@ public class FroniusConfigAuthUtil {
      * @param httpClient the {@link HttpClient} to use for the request
      * @param loginUri the {@link URI} of the login endpoint
      * @return a {@link Map} containing the authentication parameters of the authentication challenge
-     * @throws IOException if the response does not contain the expected authentication header
+     * @throws IOException when the response does not contain the expected authentication header
      */
     private static Map<String, String> getAuthParams(HttpClient httpClient, URI loginUri, int timeout)
             throws IOException {
@@ -155,8 +155,8 @@ public class FroniusConfigAuthUtil {
      * @param httpClient the {@link HttpClient} to use for the request
      * @param loginUri the {@link URI} of the login endpoint
      * @param authHeader the authentication header to use for the login request
-     * @throws InterruptedException if the request is interrupted
-     * @throws FroniusCommunicationException if the login request fails
+     * @throws InterruptedException when the request is interrupted
+     * @throws FroniusCommunicationException when the login request failed
      */
     private static void performLoginRequest(HttpClient httpClient, URI loginUri, String authHeader, int timeout)
             throws InterruptedException, FroniusCommunicationException {
@@ -175,7 +175,8 @@ public class FroniusConfigAuthUtil {
     }
 
     /**
-     * Logs in to the Fronius inverter settings and returns the authentication header for the next request.
+     * Logs in to the Fronius inverter settings, retries on failure and returns the authentication header for the next
+     * request.
      *
      * @param httpClient the {@link HttpClient} to use for the request
      * @param baseUri the base URI of the Fronius inverter
@@ -185,7 +186,7 @@ public class FroniusConfigAuthUtil {
      * @param relativeUrl the relative URL to be accessed with the next request
      * @param timeout the timeout in milliseconds for the login requests
      * @return the authentication header for the next request
-     * @throws FroniusCommunicationException if the login failed or interrupted
+     * @throws FroniusCommunicationException when the login failed or interrupted
      */
     public static synchronized String login(HttpClient httpClient, URI baseUri, String username, String password,
             HttpMethod method, String relativeUrl, int timeout) throws FroniusCommunicationException {
