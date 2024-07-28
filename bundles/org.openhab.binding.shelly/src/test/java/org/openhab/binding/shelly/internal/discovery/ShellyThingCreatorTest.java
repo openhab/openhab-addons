@@ -137,6 +137,7 @@ public class ShellyThingCreatorTest {
                 // Plus Series
                 Arguments.of(SHELLYDT_PLUS1, "", THING_TYPE_SHELLYPLUS1_STR), //
                 Arguments.of(SHELLYDT_PLUS1PM, "", THING_TYPE_SHELLYPLUS1PM_STR), //
+                Arguments.of(SHELLYDT_PLUS1PMG3, "", THING_TYPE_SHELLYPLUS1PM_STR), //
                 Arguments.of(SHELLYDT_PLUS1UL, "", THING_TYPE_SHELLYPLUS1_STR), //
                 Arguments.of(SHELLYDT_PLUS1PMUL, "", THING_TYPE_SHELLYPLUS1PM_STR), //
                 Arguments.of("SNSW-002P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY_STR), //
