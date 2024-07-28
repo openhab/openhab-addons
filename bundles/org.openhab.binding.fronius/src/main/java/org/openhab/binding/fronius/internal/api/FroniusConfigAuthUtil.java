@@ -37,6 +37,10 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link FroniusConfigAuthUtil} handles the authentication process to access Fronius inverter settings, which are
  * available on the <code>/config</code> HTTP endpoints.
+ * <br>
+ * Due to Fronius not using the standard HTTP authorization header, it is not possible to use
+ * {@link org.eclipse.jetty.client.api.AuthenticationStore} together with
+ * {@link org.eclipse.jetty.client.util.DigestAuthentication} to authenticate against the Fronius inverter settings.
  *
  * @author Florian Hotze - Initial contribution
  */
