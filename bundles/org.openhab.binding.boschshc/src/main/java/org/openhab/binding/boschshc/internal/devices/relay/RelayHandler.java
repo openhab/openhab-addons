@@ -111,8 +111,9 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
     protected boolean processDeviceInfo(Device deviceInfo) {
         this.isInImpulseSwitchMode = isRelayInImpulseSwitchMode(deviceInfo);
         boolean isChannelConfigurationValid = configureChannels();
-        if (!isChannelConfigurationValid)
+        if (!isChannelConfigurationValid) {
             return false;
+        }
 
         updateModePropertyIfApplicable();
         return super.processDeviceInfo(deviceInfo);
@@ -122,12 +123,7 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
         String modePropertyValue = isInImpulseSwitchMode ? ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME
                 : PowerSwitchService.POWER_SWITCH_SERVICE_NAME;
 
-        Map<String, String> properties = getThing().getProperties();
-        if (properties.containsKey(PROPERTY_MODE) && properties.get(PROPERTY_MODE).equals(modePropertyValue)) {
-            return;
-        }
-
-        updateThing(editThing().withProperty(PROPERTY_MODE, modePropertyValue).build());
+        updateProperty(PROPERTY_MODE, modePropertyValue);
     }
 
     /**
