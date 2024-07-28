@@ -55,6 +55,7 @@ The FENECON binding currently only provides access to read out the values from t
 ```java
 Thing fenecon:fenecon:1 "FENECON Home" [hostname="192.168.1.11", refreshInterval=5]
 ```
+
 ### demo.items
 
 ```java
