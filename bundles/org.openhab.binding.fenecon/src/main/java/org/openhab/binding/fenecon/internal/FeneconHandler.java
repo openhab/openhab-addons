@@ -58,7 +58,7 @@ public class FeneconHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(FeneconHandler.class);
 
-    private @Nullable FeneconConfiguration config;
+    private FeneconConfiguration config = new FeneconConfiguration();
     private @Nullable ScheduledFuture<?> pollingJob;
 
     private final List<String> channels = List.of("GridMode", "State", "EssSoc", "ConsumptionActivePower",
@@ -77,12 +77,12 @@ public class FeneconHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(FeneconConfiguration.class);
 
-        logger.info("FENECON: initialize REST-API connection to {} with polling interval: {} sec", getBaseUrl(),
+        logger.info("FENECON: initialize REST-API connection to {} with polling interval: {} sec", getBaseUrl(config),
                 config.refreshInterval);
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        baseHttpRequest = createBaseHttpRequest();
+        baseHttpRequest = createBaseHttpRequest(config);
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 5, config.refreshInterval, TimeUnit.SECONDS);
     }
 
@@ -91,11 +91,11 @@ public class FeneconHandler extends BaseThingHandler {
         return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
     }
 
-    private String getBaseUrl() {
+    private String getBaseUrl(FeneconConfiguration config) {
         return "http://" + config.hostname + ":" + config.port + "/";
     }
 
-    private Builder createBaseHttpRequest() {
+    private Builder createBaseHttpRequest(FeneconConfiguration config) {
         String basicAuth = getBasicAuthHeader("x", config.password);
         return HttpRequest.newBuilder().timeout(Duration.ofSeconds(5)).header("Authorization", basicAuth)
                 .header("Content-Type", "application/json").GET();
@@ -105,8 +105,9 @@ public class FeneconHandler extends BaseThingHandler {
         for (String eachChannel : channels) {
             try {
 
-                HttpRequest request = baseHttpRequest.uri(new URI(getBaseUrl() + "rest/channel/_sum/" + eachChannel))
-                        .build();
+                @SuppressWarnings("null")
+                HttpRequest request = baseHttpRequest
+                        .uri(new URI(getBaseUrl(config) + "rest/channel/_sum/" + eachChannel)).build();
                 logger.trace("FENECON - request: {}", request);
 
                 HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
