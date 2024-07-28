@@ -17,12 +17,12 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -40,6 +40,7 @@ import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.childprotection.dto.ChildProtectionServiceState;
 import org.openhab.binding.boschshc.internal.services.impulseswitch.ImpulseSwitchService;
 import org.openhab.binding.boschshc.internal.services.impulseswitch.dto.ImpulseSwitchServiceState;
+import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchService;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -72,22 +73,35 @@ class RelayHandlerTest extends AbstractPowerSwitchHandlerTest<RelayHandler> {
     protected void beforeHandlerInitialization(TestInfo testInfo) {
         super.beforeHandlerInitialization(testInfo);
 
-        List<Channel> channels = new ArrayList<Channel>();
-        channels.add(ChannelBuilder
-                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_SIGNAL_STRENGTH)).build());
-        channels.add(ChannelBuilder
-                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_CHILD_PROTECTION)).build());
-        channels.add(ChannelBuilder.create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_POWER_SWITCH))
-                .build());
-        channels.add(ChannelBuilder
-                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_IMPULSE_SWITCH)).build());
-        channels.add(ChannelBuilder
-                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_IMPULSE_LENGTH)).build());
-        channels.add(ChannelBuilder
+        Channel signalStrengthChannel = ChannelBuilder
+                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_SIGNAL_STRENGTH)).build();
+        Channel childProtectionChannel = ChannelBuilder
+                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_CHILD_PROTECTION)).build();
+        Channel powerSwitchChannel = ChannelBuilder
+                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_POWER_SWITCH)).build();
+        Channel impulseSwitchChannel = ChannelBuilder
+                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_IMPULSE_SWITCH)).build();
+        Channel impulseLengthChannel = ChannelBuilder
+                .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_IMPULSE_LENGTH)).build();
+        Channel instantOfLastImpulseChannel = ChannelBuilder
                 .create(new ChannelUID(getThingUID(), BoschSHCBindingConstants.CHANNEL_INSTANT_OF_LAST_IMPULSE))
-                .build());
+                .build();
 
-        when(getThing().getChannels()).thenReturn(channels);
+        when(getThing().getChannels()).thenReturn(List.of(signalStrengthChannel, childProtectionChannel,
+                powerSwitchChannel, impulseSwitchChannel, impulseLengthChannel, instantOfLastImpulseChannel));
+
+        lenient().when(getThing().getChannel(BoschSHCBindingConstants.CHANNEL_SIGNAL_STRENGTH))
+                .thenReturn(signalStrengthChannel);
+        lenient().when(getThing().getChannel(BoschSHCBindingConstants.CHANNEL_CHILD_PROTECTION))
+                .thenReturn(childProtectionChannel);
+        lenient().when(getThing().getChannel(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH))
+                .thenReturn(powerSwitchChannel);
+        lenient().when(getThing().getChannel(BoschSHCBindingConstants.CHANNEL_IMPULSE_SWITCH))
+                .thenReturn(impulseSwitchChannel);
+        lenient().when(getThing().getChannel(BoschSHCBindingConstants.CHANNEL_IMPULSE_LENGTH))
+                .thenReturn(impulseLengthChannel);
+        lenient().when(getThing().getChannel(BoschSHCBindingConstants.CHANNEL_INSTANT_OF_LAST_IMPULSE))
+                .thenReturn(instantOfLastImpulseChannel);
 
         if (testInfo.getTags().contains(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME)) {
             getDevice().deviceServiceIds = List.of(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME);
@@ -229,6 +243,12 @@ class RelayHandlerTest extends AbstractPowerSwitchHandlerTest<RelayHandler> {
         verify(getCallback()).statusUpdated(any(Thing.class),
                 argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
                         && status.getStatusDetail().equals(ThingStatusDetail.CONFIGURATION_ERROR)));
+
+        verify(getCallback(), times(1)).statusUpdated(any(Thing.class),
+                argThat(status -> status.getStatus().equals(ThingStatus.ONLINE)));
+
+        verify(getCallback(), times(0)).thingUpdated(
+                argThat(t -> ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME.equals(t.getProperties().get("mode"))));
     }
 
     @Test
@@ -303,5 +323,18 @@ class RelayHandlerTest extends AbstractPowerSwitchHandlerTest<RelayHandler> {
                 OnOffType.OFF);
         verify(getBridgeHandler(), times(0)).postState(eq(getDeviceID()),
                 eq(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME), any());
+    }
+
+    @Test
+    void testUpdateModePropertyIfApplicablePowerSwitchMode() {
+        verify(getCallback()).thingUpdated(
+                argThat(t -> PowerSwitchService.POWER_SWITCH_SERVICE_NAME.equals(t.getProperties().get("mode"))));
+    }
+
+    @Tag(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME)
+    @Test
+    void testUpdateModePropertyIfApplicableImpulseSwitchMode() {
+        verify(getCallback()).thingUpdated(
+                argThat(t -> ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME.equals(t.getProperties().get("mode"))));
     }
 }

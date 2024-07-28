@@ -110,8 +110,11 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
     @Override
     protected boolean processDeviceInfo(Device deviceInfo) {
         this.isInImpulseSwitchMode = isRelayInImpulseSwitchMode(deviceInfo);
+        boolean isChannelConfigurationValid = configureChannels();
+        if (!isChannelConfigurationValid)
+            return false;
+
         updateModePropertyIfApplicable();
-        configureChannels();
         return super.processDeviceInfo(deviceInfo);
     }
 
@@ -138,26 +141,22 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
      * then switches off automatically)</li>
      * </ul>
      */
-    private void configureChannels() {
-        if (isInImpulseSwitchMode) {
-            configureImpulseSwitchModeChannels();
-        } else {
-            configurePowerSwitchModeChannels();
-        }
+    private boolean configureChannels() {
+        return isInImpulseSwitchMode ? configureImpulseSwitchModeChannels() : configurePowerSwitchModeChannels();
     }
 
-    private void configureImpulseSwitchModeChannels() {
+    private boolean configureImpulseSwitchModeChannels() {
         List<String> channelsToBePresent = List.of(CHANNEL_IMPULSE_SWITCH, CHANNEL_IMPULSE_LENGTH,
                 CHANNEL_INSTANT_OF_LAST_IMPULSE);
         List<String> channelsToBeAbsent = List.of(CHANNEL_POWER_SWITCH);
-        configureChannels(channelsToBePresent, channelsToBeAbsent);
+        return configureChannels(channelsToBePresent, channelsToBeAbsent);
     }
 
-    private void configurePowerSwitchModeChannels() {
+    private boolean configurePowerSwitchModeChannels() {
         List<String> channelsToBePresent = List.of(CHANNEL_POWER_SWITCH);
         List<String> channelsToBeAbsent = List.of(CHANNEL_IMPULSE_SWITCH, CHANNEL_IMPULSE_LENGTH,
                 CHANNEL_INSTANT_OF_LAST_IMPULSE);
-        configureChannels(channelsToBePresent, channelsToBeAbsent);
+        return configureChannels(channelsToBePresent, channelsToBeAbsent);
     }
 
     /**
@@ -165,27 +164,31 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
      * 
      * @param channelsToBePresent channels expected to be present according to the current device mode
      * @param channelsToBeAbsent channels to be removed, if present
+     * 
+     * @return <code>true</code> if the channels were reconfigured or no re-configuration is necessary,
+     *         <code>false</code> if the thing has to be re-created manually
      */
-    private void configureChannels(List<String> channelsToBePresent, List<String> channelsToBeAbsent) {
+    private boolean configureChannels(List<String> channelsToBePresent, List<String> channelsToBeAbsent) {
         Optional<String> anyChannelMissing = channelsToBePresent.stream().filter(c -> getThing().getChannel(c) == null)
                 .findAny();
 
         if (anyChannelMissing.isPresent()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.relay-recreation-required");
-            return;
+            return false;
         }
 
         List<Channel> channelsToRemove = channelsToBeAbsent.stream().map(c -> getThing().getChannel(c))
                 .filter(Objects::nonNull).map(Objects::requireNonNull).toList();
 
         if (channelsToRemove.isEmpty()) {
-            return;
+            return true;
         }
 
         ThingBuilder thingBuilder = editThing();
         thingBuilder.withoutChannels(channelsToRemove);
         updateThing(thingBuilder.build());
+        return true;
     }
 
     private boolean isRelayInImpulseSwitchMode(Device deviceInfo) {
