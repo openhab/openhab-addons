@@ -684,7 +684,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
                     case SHELLY2_EVENT_OTASTART:
                         logger.debug("{}: Firmware update started: {}", thingName, getString(e.msg));
-                        getThing().setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.FIRMWARE_UPDATING,
+                        getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
                                 "offline.status-error-fwupgrade");
                         break;
                     case SHELLY2_EVENT_OTAPROGRESS:
@@ -697,7 +697,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         break;
                     case SHELLY2_EVENT_RESTART:
                         logger.debug("{}: Device was restarted: {}", thingName, getString(e.msg));
-                        getThing().setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.DUTY_CYCLE,
+                        getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
                                 "offline.status-error-restarted");
                         break;
                     case SHELLY2_EVENT_SLEEP:
