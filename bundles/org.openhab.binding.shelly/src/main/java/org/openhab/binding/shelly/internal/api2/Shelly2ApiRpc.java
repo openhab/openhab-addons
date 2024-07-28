@@ -699,6 +699,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
                         logger.debug("{}: Device was restarted: {}", thingName, getString(e.msg));
                         getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
                                 "offline.status-error-restarted");
+                        getThing().postEvent(ALARM_TYPE_RESTARTED, true);
                         break;
                     case SHELLY2_EVENT_SLEEP:
                         logger.debug("{}: Connection terminated, e.g. device in sleep mode", thingName);
@@ -734,11 +735,11 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             String reason = getString(description);
             logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, reason);
             if ("Bye".equalsIgnoreCase(reason)) {
-                logger.debug("{}: Device went to sleep mode or restarted", thingName);
+                logger.debug("{}: Device went to sleep mode or was restarted", thingName);
             } else if (statusCode == StatusCode.ABNORMAL && !discovery && getProfile().alwaysOn) {
                 // e.g. device rebooted
                 if (getThing().getThingStatusDetail() != ThingStatusDetail.DUTY_CYCLE) {
-                    thingOffline("WebSocket connection closed abnormal");
+                    thingOffline("WebSocket connection closed abnormally");
                 }
             }
         } catch (ShellyApiException e) {
@@ -757,8 +758,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     private void thingOffline(String reason) {
         if (thing != null) { // do not reinit of battery powered devices with sleep mode
-            thing.setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "offline.status-error-unexpected-error",
-                    reason);
+            thing.setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR,
+                    "offline.status-error-unexpected-error", reason);
         }
     }
 
