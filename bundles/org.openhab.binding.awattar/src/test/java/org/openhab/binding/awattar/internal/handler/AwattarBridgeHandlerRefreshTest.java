@@ -12,8 +12,10 @@
  */
 package org.openhab.binding.awattar.internal.handler;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -125,7 +127,7 @@ public class AwattarBridgeHandlerRefreshTest extends JavaTest {
      * @throws SecurityException
      */
     @Test
-    void testRefreshIfNeeded_DataEmptry() throws SecurityException {
+    void testRefreshIfNeeded_DataEmpty() throws SecurityException {
         when(bridgeMock.getStatus()).thenReturn(ThingStatus.ONLINE);
 
         bridgeHandler.refreshIfNeeded();
