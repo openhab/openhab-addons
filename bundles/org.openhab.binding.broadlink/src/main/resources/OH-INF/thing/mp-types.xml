@@ -50,7 +50,7 @@
 			ports.</description>
 		<channels>
 			<channel id="power-on" typeId="system.power"/>
-			<channel id="power-consumption" typeId="power-consumption"/>
+			<channel id="power-consumption" typeId="system.electric-energy"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:config"/>

@@ -10,7 +10,7 @@
 		<channels>
 			<channel id="command" typeId="command"/>
 			<channel id="learning-control" typeId="learning-control"/>
-			<channel id="temperature" typeId="temperature"/>
+			<channel id="temperature" typeId="system.indoor-temperature"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmproconfig"/>
@@ -41,8 +41,8 @@
 		<channels>
 			<channel id="command" typeId="command"/>
 			<channel id="learning-control" typeId="learning-control"/>
-			<channel id="temperature" typeId="temperature"/>
-			<channel id="humidity" typeId="humidity"/>
+			<channel id="temperature" typeId="system.indoor-temperature"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmconfig"/>
@@ -55,8 +55,8 @@
 			<channel id="learning-control" typeId="learning-control"/>
 			<channel id="rfcommand" typeId="rfcommand"/>
 			<channel id="learning-rf-control" typeId="learning-rf-control"/>
-			<channel id="temperature" typeId="temperature"/>
-			<channel id="humidity" typeId="humidity"/>
+			<channel id="temperature" typeId="system.indoor-temperature"/>
+			<channel id="humidity" typeId="system.atmospheric-humidity"/>
 		</channels>
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="thing-type:broadlink:rmproconfig"/>

@@ -42,23 +42,6 @@
 			</options>
 		</state>
 	</channel-type>
-	<channel-type id="temperature">
-		<item-type>Number:Temperature</item-type>
-		<label>Temperature</label>
-		<category>Temperature</category>
-		<state pattern="%.1f %unit%" readOnly="true"/>
-	</channel-type>
-	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
-		<label>Humidity</label>
-		<category>Humidity</category>
-		<state readOnly="true" min="0" max="100" pattern="%.2f %unit%"/>
-	</channel-type>
-	<channel-type id="power-on">
-		<item-type>Switch</item-type>
-		<label>Socket Power</label>
-		<category>PowerOutlet</category>
-	</channel-type>
 	<channel-type id="night-light">
 		<item-type>Switch</item-type>
 		<label>Night Light</label>
