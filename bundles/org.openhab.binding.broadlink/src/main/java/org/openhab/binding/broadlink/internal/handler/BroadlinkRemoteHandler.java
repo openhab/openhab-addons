@@ -79,7 +79,6 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
     }
 
     @Override
-    @SuppressWarnings("null")
     public void dispose() {
         if (this.mappingService != null) {
             this.mappingService.dispose();
@@ -130,7 +129,6 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         return Utils.slice(decryptedResponse, 4, decryptedResponse.length);
     }
 
-    @SuppressWarnings("null")
     private void handleIRCommand(String irCommand, boolean replacement) {
         try {
             String message = "";
@@ -139,6 +137,14 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
             } else {
                 message = "Adding ";
             }
+
+            BroadlinkMappingService mappingService = this.mappingService;
+            if (mappingService == null) {
+                logger.warn("Mapping service is null, this should not happen");
+                updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL, new StringType("NULL"));
+                return;
+            }
+
             updateState(BroadlinkBindingConstants.LEARNING_CONTROL_CHANNEL,
                     new StringType(message + irCommand + "..."));
 
@@ -309,10 +315,15 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         return channelTypeUID;
     }
 
-    @SuppressWarnings("null")
     private byte @Nullable [] lookupIRCode(Command command, ChannelUID channelUID) {
         byte code[] = null;
-        String value = this.mappingService.lookupCode(command.toString(), CodeType.IR);
+        BroadlinkMappingService mappingService = this.mappingService;
+        if (mappingService == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Mapping service not defined.");
+            return null;
+        }
+
+        String value = mappingService.lookupCode(command.toString(), CodeType.IR);
 
         if (value == null || value.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -326,10 +337,16 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         return code;
     }
 
-    @SuppressWarnings("null")
     private byte @Nullable [] lookupRFCode(Command command, ChannelUID channelUID) {
         byte code[] = null;
-        String value = this.mappingService.lookupCode(command.toString(), CodeType.RF);
+
+        BroadlinkMappingService mappingService = this.mappingService;
+        if (mappingService == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Mapping service not defined.");
+            return null;
+        }
+
+        String value = mappingService.lookupCode(command.toString(), CodeType.RF);
 
         if (value == null || value.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -386,7 +403,6 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType("RF command learnt"));
     }
 
-    @SuppressWarnings("null")
     private void handleFindRFCommand(boolean replacement) {
         String statusInfo = "";
         if (replacement) {
@@ -396,6 +412,13 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         }
         statusInfo = statusInfo + " RF command " + thingConfig.getNameOfCommandToLearn() + "..";
         updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL, new StringType(statusInfo));
+
+        BroadlinkMappingService mappingService = this.mappingService;
+        if (mappingService == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Mapping service not defined.");
+            return;
+        }
+
         sendCommand(COMMAND_BYTE_FIND_RF_PACKET, "find the rf packet data");
 
         long start = System.currentTimeMillis();
@@ -451,10 +474,16 @@ public abstract class BroadlinkRemoteHandler extends BroadlinkBaseThingHandler {
         }
     }
 
-    @SuppressWarnings("null")
     private void deleteRFCommand() {
         updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL,
                 new StringType("Deleting RF command " + thingConfig.getNameOfCommandToLearn() + "..."));
+
+        BroadlinkMappingService mappingService = this.mappingService;
+        if (mappingService == null) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Mapping service not defined.");
+            return;
+        }
+
         String cmdLabel = mappingService.deleteCode(thingConfig.getNameOfCommandToLearn(), CodeType.RF);
         if (cmdLabel != null) {
             updateState(BroadlinkBindingConstants.RF_LEARNING_CONTROL_CHANNEL,
