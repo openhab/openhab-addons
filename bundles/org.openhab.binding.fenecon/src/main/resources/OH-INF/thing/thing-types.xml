@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="fenecon"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Sample Thing Type -->
+	<thing-type id="fenecon">
+
+		<label>FENECON Home</label>
+		<description>Thing for FENECON Home Device</description>
+		<category>Solarplant</category>
+
+		<channels>
+			<channel id="state" typeId="state"/>
+			<channel id="lastUpdate" typeId="lastUpdate"/>
+			<channel id="essSoc" typeId="essSoc"/>
+			<channel id="chargerPower" typeId="chargerPower"/>
+			<channel id="dischargerPower" typeId="dischargerPower"/>
+			<channel id="emergencyPowerMode" typeId="emergencyPowerMode"/>
+			<channel id="consumptionActivePower" typeId="consumptionActivePower"/>
+			<channel id="productionActivePower" typeId="productionActivePower"/>
+			<channel id="sellToGridPower" typeId="sellToGridPower"/>
+			<channel id="sellToGridEnergy" typeId="sellToGridEnergy"/>
+			<channel id="buyFromGridPower" typeId="buyFromGridPower"/>
+			<channel id="buyFromGridEnergy" typeId="buyFromGridEnergy"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<context>network-address</context>
+				<label>Hostname</label>
+				<description>Hostname or IP address of the FENECON device, e.g. 192.168.1.11</description>
+			</parameter>
+			<parameter name="password" type="text">
+				<context>password</context>
+				<label>Password</label>
+				<default>user</default>
+				<description>Password to access the device. The password for guest access is set by default.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="port" type="integer" min="1">
+				<context>network-address</context>
+				<label>Port</label>
+				<description>Port of the FENECON device</description>
+				<default>8084</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="s" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in sec.</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- Channel Types -->
+	<channel-type id="state">
+		<item-type>String</item-type>
+		<label>System State</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<description>FENECON system state: Ok, Info, Warning or Fault</description>
+		<category>Text</category>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="lastUpdate">
+		<item-type>DateTime</item-type>
+		<label>Last Update</label>
+		<description>Last successful update via REST-API from the FENECON system</description>
+		<category>Time</category>
+		<state readOnly="true"></state>
+	</channel-type>
+	<channel-type id="essSoc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Battery State</label>
+		<description>Battery state of charge in percent</description>
+		<category>BatteryLevel</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="chargerPower">
+		<item-type>Number:Power</item-type>
+		<label>Charger Power</label>
+		<description>Current charger power of energy storage system in watt.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="dischargerPower">
+		<item-type>Number:Power</item-type>
+		<label>Discharger Power</label>
+		<description>Current discharger power of energy storage system in watt.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="emergencyPowerMode">
+		<item-type>Switch</item-type>
+		<label>Emergency Power Mode</label>
+		<description>Indicates if there is grid power is off and the emergency power mode is on.</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="productionActivePower">
+		<item-type>Number:Power</item-type>
+		<label>Producer Power</label>
+		<description>Current active power producer load in watt.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="sellToGridPower">
+		<item-type>Number:Power</item-type>
+		<label>Sell Grid Power</label>
+		<description>Current sell to grid exchange power in watt.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="sellToGridEnergy">
+		<item-type>Number:Energy</item-type>
+		<label>Sell Grid Energy</label>
+		<description>Total energy exported to the grid in watt per hour.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="consumptionActivePower">
+		<item-type>Number:Power</item-type>
+		<label>Consumer Power</label>
+		<description>Current active power consumer load in watt.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="buyFromGridPower">
+		<item-type>Number:Power</item-type>
+		<label>Buy Grid Power</label>
+		<description>Current buy from grid exchange power in watt.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="buyFromGridEnergy">
+		<item-type>Number:Energy</item-type>
+		<label>Buy Grid Energy</label>
+		<description>Total energy imported from the grid in watt per hour.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>
