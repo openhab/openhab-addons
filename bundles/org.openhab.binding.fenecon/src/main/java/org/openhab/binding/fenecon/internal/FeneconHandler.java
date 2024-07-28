@@ -104,7 +104,6 @@ public class FeneconHandler extends BaseThingHandler {
     private void pollingCode() {
         for (String eachChannel : channels) {
             try {
-
                 @SuppressWarnings("null")
                 HttpRequest request = baseHttpRequest
                         .uri(new URI(getBaseUrl(config) + "rest/channel/_sum/" + eachChannel)).build();
@@ -128,7 +127,6 @@ public class FeneconHandler extends BaseThingHandler {
                     processDataPoint(JsonParser.parseString(response.body()).getAsJsonObject());
                     updateStatus(ThingStatus.ONLINE);
                 }
-
             } catch (URISyntaxException | JsonSyntaxException | IOException | InterruptedException err) {
                 logger.trace("FENECON - connection problem on FENECON channel {}", eachChannel, err);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, err.getMessage());
