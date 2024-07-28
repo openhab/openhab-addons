@@ -14,13 +14,4 @@
 
   <name>openHAB Add-ons :: Bundles :: FENECON Binding</name>
 
-  <!--
-    <dependencies>
-    <dependency>
-    <groupId>org.json</groupId>
-    <artifactId>json</artifactId>
-    <version>20240303</version>
-    <scope>compile</scope>
-    </dependency>
-    </dependencies> -->
 </project>
