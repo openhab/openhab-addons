@@ -100,6 +100,12 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, "Status unknown, starting initialization");
         this.thingConfig = getConfigAs(BroadlinkDeviceConfiguration.class);
+        // Validate whether the configuration makes any sense
+        if (thingConfig.isValidConfiguration().length() != 0) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    thingConfig.isValidConfiguration());
+            return;
+        }
         count = (new Random()).nextInt(65535);
 
         if (this.socket == null) {
@@ -117,11 +123,13 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     @Override
-    @SuppressWarnings("null")
     public void dispose() {
+        ScheduledFuture<?> refreshHandle = this.refreshHandle;
         if (refreshHandle != null && !refreshHandle.isDone()) {
             boolean cancelled = refreshHandle.cancel(true);
+            this.refreshHandle = null;
             logger.debug("Cancellation successful: {}", cancelled);
+
         }
         if (socket != null) {
             socket.close();
@@ -163,18 +171,22 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         }
     }
 
-    @SuppressWarnings("null")
     protected byte @Nullable [] sendAndReceiveDatagram(byte message[], String purpose) {
-        return socket.sendAndReceive(message, purpose);
+        if (socket != null) {
+            return socket.sendAndReceive(message, purpose);
+        } else {
+            return null;
+        }
     }
 
     protected byte[] buildMessage(byte command, byte payload[]) throws IOException {
         return buildMessage(command, payload, thingConfig.getDeviceType());
     }
 
-    @SuppressWarnings("null")
     private byte[] buildMessage(byte command, byte payload[], int deviceType) throws IOException {
         count = count + 1 & 0xffff;
+
+        NetworkTrafficObserver networkTrafficObserver = this.networkTrafficObserver;
 
         if (networkTrafficObserver != null) {
             networkTrafficObserver.onCommandSent(command);
@@ -185,7 +197,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                 HexUtils.hexToBytes(BroadlinkBindingConstants.BROADLINK_IV), deviceKey, deviceType, logger);
     }
 
-    @SuppressWarnings("null")
     protected byte[] decodeDevicePacket(byte[] responseBytes) throws IOException {
         byte[] rxBytes = BroadlinkProtocol.decodePacket(responseBytes, this.deviceKey,
                 BroadlinkBindingConstants.BROADLINK_IV);
@@ -290,7 +301,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         }
     }
 
-    @SuppressWarnings("null")
     private void forceOffline(ThingStatusDetail detail, String reason) {
         logger.warn("Online -> Offline due to: {}", reason);
         authenticated = false; // This session is dead; we'll need to re-authenticate next time

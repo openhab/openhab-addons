@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.broadlink.internal.config;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -106,6 +109,41 @@ public class BroadlinkDeviceConfiguration {
 
     public void setNameOfCommandToLearn(String nameOfCommandToLearn) {
         this.nameOfCommandToLearn = nameOfCommandToLearn;
+    }
+
+    public String isValidConfiguration() {
+        if (ipAddress.length() == 0) {
+            return "Not a valid IP address";
+        }
+        if (port == 0) {
+            return "Port cannot be 0";
+        }
+        if (macAddress.length() == 0) {
+            return "No MAC address defined";
+        }
+        // Regex to check valid MAC address
+        String regex = "^([0-9A-Fa-f]{2}[:-])" + "{5}([0-9A-Fa-f]{2})|" + "([0-9a-fA-F]{4}\\." + "[0-9a-fA-F]{4}\\."
+                + "[0-9a-fA-F]{4})$";
+
+        // Compile the ReGex
+        Pattern p = Pattern.compile(regex);
+        // Find match between given string and regular expression using Pattern.matcher()
+        Matcher m = p.matcher(macAddress);
+        // Return if the string matched the regular expression
+        if (!m.matches()) {
+            return "MAC address is not of the form XX:XX:XX:XX:XX:XX";
+        }
+        if (pollingInterval == 0) {
+            return "Polling interval cannot be 0";
+        }
+        if (nameOfCommandToLearn.length() == 0) {
+            return "Name of commanbd to learn needs to be defined";
+        }
+        if (deviceType == 0) {
+            return "Device type cannot be 0";
+        }
+
+        return "";
     }
 
     @Override
