@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THINQ_CONNECTION_DATA_FILE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.THINQ_USER_DATA_FOLDER;
 
 import java.io.File;
 import java.io.IOException;

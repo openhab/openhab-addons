@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.dishwasher;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;

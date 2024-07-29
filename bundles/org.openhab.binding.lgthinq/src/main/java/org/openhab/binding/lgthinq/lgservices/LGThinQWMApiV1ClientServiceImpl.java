@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
