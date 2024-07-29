@@ -113,7 +113,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             try {
                 batteryControl.reset();
             } catch (FroniusCommunicationException e) {
-                logger.error("Failed to reset battery control", e);
+                logger.warn("Failed to reset battery control", e);
             }
         }
     }
@@ -124,7 +124,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             try {
                 batteryControl.holdBatteryCharge();
             } catch (FroniusCommunicationException e) {
-                logger.error("Failed to set battery control to hold battery charge", e);
+                logger.warn("Failed to set battery control to hold battery charge", e);
             }
         }
     }
@@ -135,7 +135,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             try {
                 batteryControl.addHoldBatteryChargeSchedule(from, until);
             } catch (FroniusCommunicationException e) {
-                logger.error("Failed to add hold battery charge schedule to battery control", e);
+                logger.warn("Failed to add hold battery charge schedule to battery control", e);
             }
         }
     }
@@ -146,7 +146,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             try {
                 batteryControl.forceBatteryCharging(power);
             } catch (FroniusCommunicationException e) {
-                logger.error("Failed to set battery control to force battery charge", e);
+                logger.warn("Failed to set battery control to force battery charge", e);
             }
         }
     }
@@ -157,7 +157,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             try {
                 batteryControl.addForcedBatteryChargingSchedule(from, until, power);
             } catch (FroniusCommunicationException e) {
-                logger.error("Failed to add forced battery charge schedule to battery control", e);
+                logger.warn("Failed to add forced battery charge schedule to battery control", e);
             }
         }
     }

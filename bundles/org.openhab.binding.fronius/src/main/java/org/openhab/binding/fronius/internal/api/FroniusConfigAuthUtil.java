@@ -211,7 +211,6 @@ public class FroniusConfigAuthUtil {
                     LOGGER.debug("HTTP error on attempt #{} {}", attemptCount, loginUri);
                     Thread.sleep(500 * attemptCount);
                     attemptCount++;
-                    ;
                     lastException = e;
                 }
 
