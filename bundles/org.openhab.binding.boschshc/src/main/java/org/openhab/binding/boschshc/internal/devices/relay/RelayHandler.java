@@ -21,7 +21,6 @@ import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConst
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -79,7 +78,7 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
 
     private final Logger logger = LoggerFactory.getLogger(RelayHandler.class);
 
-    private static final String PROPERTY_MODE = "mode";
+    protected static final String PROPERTY_MODE = "mode";
 
     private ChildProtectionService childProtectionService;
     private ImpulseSwitchService impulseSwitchService;
@@ -122,7 +121,6 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
     private void updateModePropertyIfApplicable() {
         String modePropertyValue = isInImpulseSwitchMode ? ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME
                 : PowerSwitchService.POWER_SWITCH_SERVICE_NAME;
-
         updateProperty(PROPERTY_MODE, modePropertyValue);
     }
 

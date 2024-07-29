@@ -327,14 +327,14 @@ class RelayHandlerTest extends AbstractPowerSwitchHandlerTest<RelayHandler> {
 
     @Test
     void testUpdateModePropertyIfApplicablePowerSwitchMode() {
-        verify(getCallback()).thingUpdated(
-                argThat(t -> PowerSwitchService.POWER_SWITCH_SERVICE_NAME.equals(t.getProperties().get("mode"))));
+        verify(getCallback(), times(2)).thingUpdated(argThat(t -> PowerSwitchService.POWER_SWITCH_SERVICE_NAME
+                .equals(t.getProperties().get(RelayHandler.PROPERTY_MODE))));
     }
 
     @Tag(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME)
     @Test
     void testUpdateModePropertyIfApplicableImpulseSwitchMode() {
-        verify(getCallback()).thingUpdated(
-                argThat(t -> ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME.equals(t.getProperties().get("mode"))));
+        verify(getCallback(), times(2)).thingUpdated(argThat(t -> ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME
+                .equals(t.getProperties().get(RelayHandler.PROPERTY_MODE))));
     }
 }
