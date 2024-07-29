@@ -51,6 +51,15 @@ public class VmHandler extends HostHandler {
         }
     }
 
+    @Override
+    protected void internalForcePoll() throws FreeboxException {
+        super.internalForcePoll();
+
+        logger.debug("Polling Virtual machine status");
+        VirtualMachine vm = getManager(VmManager.class).getDevice(getClientId());
+        updateVmChannels(vm);
+    }
+
     public void updateVmChannels(VirtualMachine vm) {
         boolean running = Status.RUNNING.equals(vm.status());
         updateChannelOnOff(VM_STATUS, STATUS, running);
