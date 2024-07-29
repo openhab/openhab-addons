@@ -16,7 +16,9 @@ import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 import static org.openhab.core.thing.Thing.PROPERTY_MODEL_ID;
 
 import java.time.Instant;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -25,7 +27,6 @@ import org.openhab.binding.lgthinq.internal.handler.LGThinQBridgeHandler;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory;
 import org.openhab.binding.lgthinq.lgservices.LGThinQApiClientServiceFactory.LGThinQGeneralApiClientService;
 import org.openhab.binding.lgthinq.lgservices.model.LGDevice;
-import org.openhab.core.config.discovery.*;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;

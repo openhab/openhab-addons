@@ -14,7 +14,9 @@ package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;

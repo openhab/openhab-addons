@@ -12,8 +12,6 @@
  */
 package org.openhab.binding.lgthinq.internal.handler;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 import org.openhab.core.library.types.DateTimeType;
 

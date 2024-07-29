@@ -12,7 +12,9 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.ac;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqApiException;

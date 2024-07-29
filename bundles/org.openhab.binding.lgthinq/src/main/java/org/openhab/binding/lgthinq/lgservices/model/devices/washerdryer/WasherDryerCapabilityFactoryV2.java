@@ -17,11 +17,7 @@ import java.util.*;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
-import org.openhab.binding.lgthinq.lgservices.model.CommandDefinition;
-import org.openhab.binding.lgthinq.lgservices.model.FeatureDataType;
-import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
-import org.openhab.binding.lgthinq.lgservices.model.LGAPIVerion;
-import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
+import org.openhab.binding.lgthinq.lgservices.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
