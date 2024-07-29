@@ -331,7 +331,7 @@ public class ShellyDeviceProfile {
         } else if (isDimmer) {
             if (settings.dimmers != null) {
                 ShellySettingsDimmer dimmer = settings.dimmers.get(0);
-                btnType = dimmer.btnType;
+                btnType = getString(dimmer.btnType);
             }
         } else if (settings.relays != null) {
             if (numRelays == 1) {
@@ -349,7 +349,7 @@ public class ShellyDeviceProfile {
             }
         } else if (isRGBW2 && (settings.lights != null) && (idx < settings.lights.size())) {
             ShellySettingsRgbwLight light = settings.lights.get(idx);
-            btnType = light.btnType;
+            btnType = getString(light.btnType);
         }
 
         return btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY) || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
