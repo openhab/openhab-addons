@@ -287,21 +287,15 @@ The binding sets the following Thing status depending on the device status:
 
 | Status                | Description                                                                                                                  |
 | --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| INITIALIZING          | This is the default status while initializing the Thing.
-Once the initialization is triggered the Thing switches to Status ONLINE, CONFIGURATION_PENDING.                                                       |
-| UNKNOWN               | Indicates that the status is currently unknown, which must not show a problem.
-Once the device is reachable and was initialized the Thing switches to status ONLINE.                                                                  |
+| INITIALIZING          | This is the default status while initializing the Thing. Once the initialization is triggered the Thing switches to Status ONLINE.CONFIGURATION_PENDING. |
+| UNKNOWN               | Indicates that the status is currently unknown, which must not show a problem. Once the device is reachable and was initialized the Thing switches to status ONLINE. |
 | CONFIGURATION_PENDING | The thing has been initialized, but device initialization is in progress or pending (e.g. waiting for device wake-up).       |
-| ONLINE                | ONLINE indicates that the device can be accessed and is responding properly.
-Once initialized battery powered devices also stay ONLINE when in sleep mode.
-The binding has an integrated watchdog timer supervising the device, see below.
-The Thing switches to status OFFLINE when some type of communication error occurs.                                                                     |
+| ONLINE                | ONLINE indicates that the device can be accessed and is responding properly. Once initialized battery powered devices also stay ONLINE when in sleep mode. The binding has an integrated watchdog timer supervising the device, see below. The Thing switches to status OFFLINE when some type of communication error occurs.        |
 | OFFLINE               | Communication with the device failed. Check the Thing status in the UI and openHAB's log for an indication of the error.     |
-| COMMUNICATION_ERROR   | Communication with the device has reported an error, check detailed status.                                              
-If the problem persists make sure to have stable WiFi, set the correct password etc.
-Try restarting OH or deleting and re-discovering the Thing.                                                                                            |
-| FIRMWARE_UPDATING     | Device firmware is updating, just wait. The device should come back to ONLINE within 2 minutes.                              |
+| COMMUNICATION_ERROR   | Communication with the device has reported an error, check detailed status. If the problem persists make sure to have stable WiFi, set the correct password etc. Try restarting OH or deleting and re-discovering the Thing. |
+| FIRMWARE_UPDATING     | Device firmware is updating, just wait. The device should come back to ONLINE within 2 minutes.                              |
 | DUTY_CYCLE            | The device is re-initializing and reported a restart event, e.g. after a firmware update or manual reboot.                   |
+
 
 `Note:`
 For more details see  [Thing Concept](https://www.openhab.org/docs/concepts/things.html#status-details) in openHAB documentation.
