@@ -296,9 +296,10 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     private int getRelayIdx(ShellyDeviceProfile profile, @Nullable Integer id) {
-        if (id != null && profile.settings.relays != null) {
+        ArrayList<ShellySettingsRelay> relays = profile.settings.relays;
+        if (id != null && relays != null) {
             int idx = 0;
-            for (ShellySettingsRelay relay : profile.settings.relays) {
+            for (ShellySettingsRelay relay : relays) {
                 if (relay.isValid && relay.id != null && relay.id.intValue() == id.intValue()) {
                     return idx;
                 }
@@ -561,12 +562,13 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             return;
         }
 
-        if (profile.settings.dimmers != null) {
-            ShellySettingsDimmer ds = profile.settings.dimmers.get(0);
+        ArrayList<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
+        if (dimmers != null) {
+            ShellySettingsDimmer ds = dimmers.get(0);
             ds.autoOn = dc.light0.autoOnDelay;
             ds.autoOff = dc.light0.autoOffDelay;
             ds.name = dc.light0.name;
-            profile.settings.dimmers.set(0, ds);
+            dimmers.set(0, ds);
         }
     }
 
@@ -709,13 +711,13 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
     }
 
-    protected @Nullable ArrayList<ShellySettingsInput> fillInputSettings(ShellyDeviceProfile profile,
+    protected @Nullable ArrayList<@Nullable ShellySettingsInput> fillInputSettings(ShellyDeviceProfile profile,
             Shelly2GetConfigResult dc) {
         if (dc.input0 == null) {
             return null; // device has no input
         }
 
-        ArrayList<ShellySettingsInput> inputs = new ArrayList<>();
+        ArrayList<@Nullable ShellySettingsInput> inputs = new ArrayList<>();
         addInputSettings(inputs, dc.input0);
         addInputSettings(inputs, dc.input1);
         addInputSettings(inputs, dc.input2);
@@ -723,7 +725,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         return inputs;
     }
 
-    private void addInputSettings(ArrayList<ShellySettingsInput> inputs, @Nullable Shelly2DevConfigInput ic) {
+    private void addInputSettings(ArrayList<@Nullable ShellySettingsInput> inputs, @Nullable Shelly2DevConfigInput ic) {
         if (ic == null) {
             return;
         }
@@ -807,6 +809,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     protected ShellyDeviceProfile getProfile() throws ShellyApiException {
+        ShellyThingInterface thing = this.thing;
         if (thing != null) {
             return thing.getProfile();
         }

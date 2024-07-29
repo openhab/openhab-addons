@@ -154,11 +154,12 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             profile.numInputs = 1;
             settings.btnType = SHELLY_BTNT_MOMENTARY;
 
-            if (profile.settings.inputs != null) {
-                profile.settings.inputs.set(0, settings);
+            ArrayList<ShellySettingsInput> inputs = profile.settings.inputs;
+            if (inputs != null) {
+                inputs.set(0, settings);
             } else {
-                profile.settings.inputs = new ArrayList<>();
-                profile.settings.inputs.add(settings);
+                inputs = profile.settings.inputs = new ArrayList<>();
+                inputs.add(settings);
             }
             profile.status = deviceStatus;
         }
