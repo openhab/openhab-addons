@@ -25,7 +25,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.insteon.internal.device.DeviceType.FeatureGroup;
+import org.openhab.binding.insteon.internal.device.LegacyDeviceType.FeatureGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -44,7 +44,7 @@ import org.xml.sax.SAXException;
 @NonNullByDefault
 public class DeviceTypeLoader {
     private static final Logger logger = LoggerFactory.getLogger(DeviceTypeLoader.class);
-    private Map<String, DeviceType> deviceTypes = new HashMap<>();
+    private Map<String, LegacyDeviceType> deviceTypes = new HashMap<>();
     private static DeviceTypeLoader deviceTypeLoader = new DeviceTypeLoader();
 
     private DeviceTypeLoader() {
@@ -56,7 +56,7 @@ public class DeviceTypeLoader {
      * @param aProdKey product key to search for
      * @return the device type, or null if not found
      */
-    public @Nullable DeviceType getDeviceType(String aProdKey) {
+    public @Nullable LegacyDeviceType getDeviceType(String aProdKey) {
         return (deviceTypes.get(aProdKey));
     }
 
@@ -65,7 +65,7 @@ public class DeviceTypeLoader {
      *
      * @return currently known device types
      */
-    public Map<String, DeviceType> getDeviceTypes() {
+    public Map<String, LegacyDeviceType> getDeviceTypes() {
         return (deviceTypes);
     }
 
@@ -125,7 +125,7 @@ public class DeviceTypeLoader {
             logger.warn("overwriting previous definition of device {}", productKey);
             deviceTypes.remove(productKey);
         }
-        DeviceType devType = new DeviceType(productKey);
+        LegacyDeviceType devType = new LegacyDeviceType(productKey);
 
         NodeList nodes = e.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -148,7 +148,7 @@ public class DeviceTypeLoader {
         }
     }
 
-    private String processFeature(DeviceType devType, Element e) throws SAXException {
+    private String processFeature(LegacyDeviceType devType, Element e) throws SAXException {
         String name = e.getAttribute("name");
         if ("".equals(name)) {
             throw new SAXException("feature " + e.getNodeName() + " has feature without name!");
@@ -162,7 +162,7 @@ public class DeviceTypeLoader {
         return (name);
     }
 
-    private String processFeatureGroup(DeviceType devType, Element e) throws SAXException {
+    private String processFeatureGroup(LegacyDeviceType devType, Element e) throws SAXException {
         String name = e.getAttribute("name");
         if ("".equals(name)) {
             throw new SAXException("feature group " + e.getNodeName() + " has no name attr!");

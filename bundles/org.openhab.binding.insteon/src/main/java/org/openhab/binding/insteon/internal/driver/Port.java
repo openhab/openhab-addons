@@ -22,12 +22,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.insteon.internal.device.DeviceType;
 import org.openhab.binding.insteon.internal.device.DeviceTypeLoader;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
-import org.openhab.binding.insteon.internal.device.InsteonDevice;
+import org.openhab.binding.insteon.internal.device.InsteonLegacyDevice;
+import org.openhab.binding.insteon.internal.device.LegacyDeviceType;
 import org.openhab.binding.insteon.internal.device.ModemDBBuilder;
-import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
+import org.openhab.binding.insteon.internal.handler.InsteonLegacyDeviceHandler;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -468,15 +468,15 @@ public class Port {
      * Class to get info about the modem
      */
     class Modem implements MsgListener {
-        private @Nullable InsteonDevice device = null;
+        private @Nullable InsteonLegacyDevice device = null;
 
         InsteonAddress getAddress() {
-            InsteonDevice device = this.device;
+            InsteonLegacyDevice device = this.device;
             return (device == null) ? new InsteonAddress() : (device.getAddress());
         }
 
         @Nullable
-        InsteonDevice getDevice() {
+        InsteonLegacyDevice getDevice() {
             return device;
         }
 
@@ -491,12 +491,12 @@ public class Port {
                     InsteonAddress a = new InsteonAddress(msg.getAddress("IMAddress"));
                     DeviceTypeLoader instance = DeviceTypeLoader.instance();
                     if (instance != null) {
-                        DeviceType dt = instance.getDeviceType(InsteonDeviceHandler.PLM_PRODUCT_KEY);
+                        LegacyDeviceType dt = instance.getDeviceType(InsteonLegacyDeviceHandler.PLM_PRODUCT_KEY);
                         if (dt == null) {
                             logger.warn("unknown modem product key: {} for modem: {}.",
-                                    InsteonDeviceHandler.PLM_PRODUCT_KEY, a);
+                                    InsteonLegacyDeviceHandler.PLM_PRODUCT_KEY, a);
                         } else {
-                            device = InsteonDevice.makeDevice(dt);
+                            device = InsteonLegacyDevice.makeDevice(dt);
                             initDevice(a, device);
                             mdbb.updateModemDB(a, Port.this, null, true);
                         }
@@ -511,10 +511,10 @@ public class Port {
             }
         }
 
-        private void initDevice(InsteonAddress a, @Nullable InsteonDevice device) {
+        private void initDevice(InsteonAddress a, @Nullable InsteonLegacyDevice device) {
             if (device != null) {
                 device.setAddress(a);
-                device.setProductKey(InsteonDeviceHandler.PLM_PRODUCT_KEY);
+                device.setProductKey(InsteonLegacyDeviceHandler.PLM_PRODUCT_KEY);
                 device.setDriver(driver);
                 device.setIsModem(true);
                 logger.debug("found modem {} in device_types: {}", a, device.toString());

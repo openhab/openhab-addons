@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.insteon.internal.InsteonBindingConstants;
+import org.openhab.binding.insteon.internal.InsteonBindingLegacyConstants;
 import org.openhab.binding.insteon.internal.handler.InsteonNetworkHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -28,18 +28,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link InsteonDeviceDiscoveryService} is responsible for device discovery.
+ * The {@link InsteonDeviceLegacyDiscoveryService} is responsible for device discovery.
  *
  * @author Rob Nielsen - Initial contribution
  */
 @NonNullByDefault
-public class InsteonDeviceDiscoveryService extends AbstractDiscoveryService {
+public class InsteonDeviceLegacyDiscoveryService extends AbstractDiscoveryService {
     private static final String ADDRESS = "address";
 
-    private final Logger logger = LoggerFactory.getLogger(InsteonDeviceDiscoveryService.class);
+    private final Logger logger = LoggerFactory.getLogger(InsteonDeviceLegacyDiscoveryService.class);
 
-    public InsteonDeviceDiscoveryService(InsteonNetworkHandler handler) {
-        super(new HashSet<>(Arrays.asList(InsteonBindingConstants.DEVICE_THING_TYPE)), 0, false);
+    public InsteonDeviceLegacyDiscoveryService(InsteonNetworkHandler handler) {
+        super(new HashSet<>(Arrays.asList(InsteonBindingLegacyConstants.DEVICE_THING_TYPE)), 0, false);
 
         handler.setInsteonDeviceDiscoveryService(this);
 
@@ -60,7 +60,7 @@ public class InsteonDeviceDiscoveryService extends AbstractDiscoveryService {
             }
 
             String name = parts[0] + parts[1] + parts[2];
-            ThingUID uid = new ThingUID(InsteonBindingConstants.DEVICE_THING_TYPE, bridgeUid, name);
+            ThingUID uid = new ThingUID(InsteonBindingLegacyConstants.DEVICE_THING_TYPE, bridgeUid, name);
             Map<String, Object> properties = new HashMap<>();
             properties.put(ADDRESS, address);
 

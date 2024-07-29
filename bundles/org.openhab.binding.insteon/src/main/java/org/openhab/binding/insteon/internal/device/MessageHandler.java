@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.device.DeviceFeatureListener.StateChangeType;
 import org.openhab.binding.insteon.internal.device.GroupMessageStateMachine.GroupMessage;
-import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
+import org.openhab.binding.insteon.internal.handler.InsteonLegacyDeviceHandler;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 public abstract class MessageHandler {
     private static final Logger logger = LoggerFactory.getLogger(MessageHandler.class);
 
-    protected DeviceFeature feature;
+    protected LegacyDeviceFeature feature;
     protected Map<String, String> parameters = new HashMap<>();
 
     /**
@@ -61,7 +61,7 @@ public abstract class MessageHandler {
      *
      * @param p state publishing object for dissemination of state changes
      */
-    MessageHandler(DeviceFeature p) {
+    MessageHandler(LegacyDeviceFeature p) {
         feature = p;
     }
 
@@ -75,7 +75,7 @@ public abstract class MessageHandler {
      * @param msg the received insteon message
      * @param feature the DeviceFeature to which this message handler is attached
      */
-    public abstract void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature feature);
+    public abstract void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature feature);
 
     /**
      * Method to send an extended insteon message for querying a device
@@ -84,8 +84,8 @@ public abstract class MessageHandler {
      * @param aCmd1 cmd1 for message to be sent
      * @param aCmd2 cmd2 for message to be sent
      */
-    public void sendExtendedQuery(DeviceFeature f, byte aCmd1, byte aCmd2) {
-        InsteonDevice d = f.getDevice();
+    public void sendExtendedQuery(LegacyDeviceFeature f, byte aCmd1, byte aCmd2) {
+        InsteonLegacyDevice d = f.getDevice();
         try {
             Msg m = d.makeExtendedMessage((byte) 0x1f, aCmd1, aCmd2);
             m.setQuietTime(500L);
@@ -188,7 +188,7 @@ public abstract class MessageHandler {
      * @param f device feature to test
      * @return true if we have no button configured or the message is for this button
      */
-    protected boolean isMybutton(Msg msg, DeviceFeature f) {
+    protected boolean isMybutton(Msg msg, LegacyDeviceFeature f) {
         int myButton = getIntParameter("button", -1);
         // if there is no button configured for this handler
         // the message is assumed to refer to this feature
@@ -295,7 +295,7 @@ public abstract class MessageHandler {
      * @param f the device feature (needed for debug printing)
      * @return the button number or -1 if no button found
      */
-    protected static int getButtonInfo(Msg msg, DeviceFeature f) {
+    protected static int getButtonInfo(Msg msg, LegacyDeviceFeature f) {
         // the cleanup messages have the button number in the command2 field
         // the broadcast messages have it as the lsb of the toAddress
         try {
@@ -335,34 +335,34 @@ public abstract class MessageHandler {
     //
 
     public static class DefaultMsgHandler extends MessageHandler {
-        DefaultMsgHandler(DeviceFeature p) {
+        DefaultMsgHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             logger.debug("{} ignoring unimpl message with cmd1:{}", nm(), Utils.getHexByte(cmd1));
         }
     }
 
     public static class NoOpMsgHandler extends MessageHandler {
-        NoOpMsgHandler(DeviceFeature p) {
+        NoOpMsgHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             logger.trace("{} ignore msg {}: {}", nm(), Utils.getHexByte(cmd1), msg);
         }
     }
 
     public static class LightOnDimmerHandler extends MessageHandler {
-        LightOnDimmerHandler(DeviceFeature p) {
+        LightOnDimmerHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             if (!isMybutton(msg, f)) {
                 return;
             }
@@ -386,12 +386,12 @@ public abstract class MessageHandler {
     }
 
     public static class LightOffDimmerHandler extends MessageHandler {
-        LightOffDimmerHandler(DeviceFeature p) {
+        LightOffDimmerHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             if (isMybutton(msg, f)) {
                 String mode = getStringParameter("mode", "REGULAR");
                 logger.debug("{}: device {} was turned off {}.", nm(), f.getDevice().getAddress(), mode);
@@ -401,12 +401,12 @@ public abstract class MessageHandler {
     }
 
     public static class LightOnSwitchHandler extends MessageHandler {
-        LightOnSwitchHandler(DeviceFeature p) {
+        LightOnSwitchHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             if (isMybutton(msg, f)) {
                 String mode = getStringParameter("mode", "REGULAR");
                 logger.debug("{}: device {} was switched on {}.", nm(), f.getDevice().getAddress(), mode);
@@ -418,12 +418,12 @@ public abstract class MessageHandler {
     }
 
     public static class LightOffSwitchHandler extends MessageHandler {
-        LightOffSwitchHandler(DeviceFeature p) {
+        LightOffSwitchHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             if (isMybutton(msg, f)) {
                 String mode = getStringParameter("mode", "REGULAR");
                 logger.debug("{}: device {} was switched off {}.", nm(), f.getDevice().getAddress(), mode);
@@ -443,7 +443,7 @@ public abstract class MessageHandler {
         private int onCmd;
         private int offCmd;
 
-        RampDimmerHandler(DeviceFeature p) {
+        RampDimmerHandler(LegacyDeviceFeature p) {
             super(p);
             // Can't process parameters here because they are set after constructor is invoked.
             // Unfortunately, this means we can't declare the onCmd, offCmd to be final.
@@ -457,7 +457,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             if (cmd1 == onCmd) {
                 int level = getLevel(msg);
                 logger.debug("{}: device {} was switched on using ramp to level {}.", nm(), f.getDevice().getAddress(),
@@ -499,12 +499,12 @@ public abstract class MessageHandler {
      */
 
     public static class SwitchRequestReplyHandler extends MessageHandler {
-        SwitchRequestReplyHandler(DeviceFeature p) {
+        SwitchRequestReplyHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             try {
                 InsteonAddress a = f.getDevice().getAddress();
                 int cmd2 = msg.getByte("command2") & 0xff;
@@ -566,13 +566,13 @@ public abstract class MessageHandler {
      * In the dimmers case the command2 byte represents the light level from 0-255
      */
     public static class DimmerRequestReplyHandler extends MessageHandler {
-        DimmerRequestReplyHandler(DeviceFeature p) {
+        DimmerRequestReplyHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
-            InsteonDevice dev = f.getDevice();
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
+            InsteonLegacyDevice dev = f.getDevice();
             try {
                 int cmd2 = msg.getByte("command2") & 0xff;
                 if (cmd2 == 0xfe) {
@@ -601,7 +601,7 @@ public abstract class MessageHandler {
     }
 
     public static class DimmerStopManualChangeHandler extends MessageHandler {
-        DimmerStopManualChangeHandler(DeviceFeature p) {
+        DimmerStopManualChangeHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
@@ -613,7 +613,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             Msg m = f.makePollMsg();
             if (m != null) {
                 f.getDevice().enqueueMessage(m, f);
@@ -622,7 +622,7 @@ public abstract class MessageHandler {
     }
 
     public static class StartManualChangeHandler extends MessageHandler {
-        StartManualChangeHandler(DeviceFeature p) {
+        StartManualChangeHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
@@ -634,7 +634,7 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             try {
                 int cmd2 = msg.getByte("command2") & 0xff;
                 int upDown = (cmd2 == 0) ? 0 : 2;
@@ -648,7 +648,7 @@ public abstract class MessageHandler {
     }
 
     public static class StopManualChangeHandler extends MessageHandler {
-        StopManualChangeHandler(DeviceFeature p) {
+        StopManualChangeHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
@@ -660,20 +660,20 @@ public abstract class MessageHandler {
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             logger.debug("{}: dev {} manual state change: {}", nm(), f.getDevice().getAddress(), 0);
             feature.publish(new DecimalType(1), StateChangeType.ALWAYS);
         }
     }
 
     public static class InfoRequestReplyHandler extends MessageHandler {
-        InfoRequestReplyHandler(DeviceFeature p) {
+        InfoRequestReplyHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
-            InsteonDevice dev = f.getDevice();
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
+            InsteonLegacyDevice dev = f.getDevice();
             if (!msg.isExtended()) {
                 logger.warn("{} device {} expected extended msg as info reply, got {}", nm(), dev.getAddress(), msg);
                 return;
@@ -702,13 +702,13 @@ public abstract class MessageHandler {
     }
 
     public static class MotionSensorDataReplyHandler extends MessageHandler {
-        MotionSensorDataReplyHandler(DeviceFeature p) {
+        MotionSensorDataReplyHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
-            InsteonDevice dev = f.getDevice();
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
+            InsteonLegacyDevice dev = f.getDevice();
             if (!msg.isExtended()) {
                 logger.trace("{} device {} ignoring non-extended msg {}", nm(), dev.getAddress(), msg);
                 return;
@@ -725,9 +725,9 @@ public abstract class MessageHandler {
                         logger.debug("{}: {} got light level: {}, battery level: {}", nm(), dev.getAddress(),
                                 lightLevel, batteryLevel);
                         feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED,
-                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_LIGHT_LEVEL);
+                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_LIGHT_LEVEL);
                         feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
-                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_LEVEL);
+                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_BATTERY_LEVEL);
                         break;
                     case 0x03: // this is the 2844-222 data response message
                         batteryLevel = msg.getByte("userData6") & 0xff;
@@ -736,11 +736,11 @@ public abstract class MessageHandler {
                         logger.debug("{}: {} got light level: {}, battery level: {}, temperature level: {}", nm(),
                                 dev.getAddress(), lightLevel, batteryLevel, temperatureLevel);
                         feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED,
-                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_LIGHT_LEVEL);
+                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_LIGHT_LEVEL);
                         feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
-                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_LEVEL);
+                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_BATTERY_LEVEL);
                         feature.publish(new DecimalType(temperatureLevel), StateChangeType.CHANGED,
-                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_TEMPERATURE_LEVEL);
+                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_TEMPERATURE_LEVEL);
 
                         // per 2844-222 dev doc: working battery level range is 0xd2 - 0x70
                         int batteryPercentage;
@@ -753,7 +753,7 @@ public abstract class MessageHandler {
                         }
                         logger.debug("{}: {} battery percentage: {}", nm(), dev.getAddress(), batteryPercentage);
                         feature.publish(new QuantityType<>(batteryPercentage, Units.PERCENT), StateChangeType.CHANGED,
-                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_PERCENTAGE);
+                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_BATTERY_PERCENTAGE);
                         break;
                     default:
                         logger.warn("unknown cmd2 = {} in info reply message {}", cmd2, msg);
@@ -766,13 +766,13 @@ public abstract class MessageHandler {
     }
 
     public static class MotionSensor2AlternateHeartbeatHandler extends MessageHandler {
-        MotionSensor2AlternateHeartbeatHandler(DeviceFeature p) {
+        MotionSensor2AlternateHeartbeatHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
-            InsteonDevice dev = f.getDevice();
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
+            InsteonLegacyDevice dev = f.getDevice();
             try {
                 // group 0x0B (11) - alternate heartbeat group
                 InsteonAddress toAddr = msg.getAddr("toAddress");
@@ -786,12 +786,12 @@ public abstract class MessageHandler {
 
                 logger.debug("{}: {} got light level: {}, battery level: {}, temperature level: {}", nm(),
                         dev.getAddress(), lightLevel, batteryLevel, temperatureLevel);
-                feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED, InsteonDeviceHandler.FIELD,
-                        InsteonDeviceHandler.FIELD_LIGHT_LEVEL);
-                feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED, InsteonDeviceHandler.FIELD,
-                        InsteonDeviceHandler.FIELD_BATTERY_LEVEL);
-                feature.publish(new DecimalType(temperatureLevel), StateChangeType.CHANGED, InsteonDeviceHandler.FIELD,
-                        InsteonDeviceHandler.FIELD_TEMPERATURE_LEVEL);
+                feature.publish(new DecimalType(lightLevel), StateChangeType.CHANGED, InsteonLegacyDeviceHandler.FIELD,
+                        InsteonLegacyDeviceHandler.FIELD_LIGHT_LEVEL);
+                feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
+                        InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_BATTERY_LEVEL);
+                feature.publish(new DecimalType(temperatureLevel), StateChangeType.CHANGED,
+                        InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_TEMPERATURE_LEVEL);
 
                 // per 2844-222 dev doc: working battery level range is 0xd2 - 0x70
                 int batteryPercentage;
@@ -804,7 +804,7 @@ public abstract class MessageHandler {
                 }
                 logger.debug("{}: {} battery percentage: {}", nm(), dev.getAddress(), batteryPercentage);
                 feature.publish(new QuantityType<>(batteryPercentage, Units.PERCENT), StateChangeType.CHANGED,
-                        InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_PERCENTAGE);
+                        InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_BATTERY_PERCENTAGE);
             } catch (FieldException e) {
                 logger.warn("error parsing {}: ", msg, e);
             }
@@ -812,13 +812,13 @@ public abstract class MessageHandler {
     }
 
     public static class HiddenDoorSensorDataReplyHandler extends MessageHandler {
-        HiddenDoorSensorDataReplyHandler(DeviceFeature p) {
+        HiddenDoorSensorDataReplyHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
-            InsteonDevice dev = f.getDevice();
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
+            InsteonLegacyDevice dev = f.getDevice();
             if (!msg.isExtended()) {
                 logger.trace("{} device {} ignoring non-extended msg {}", nm(), dev.getAddress(), msg);
                 return;
@@ -832,9 +832,10 @@ public abstract class MessageHandler {
                         logger.debug("{}: {} got light level: {}, battery level: {}", nm(), dev.getAddress(),
                                 batteryWatermark, batteryLevel);
                         feature.publish(new DecimalType(batteryWatermark), StateChangeType.CHANGED,
-                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_WATERMARK_LEVEL);
+                                InsteonLegacyDeviceHandler.FIELD,
+                                InsteonLegacyDeviceHandler.FIELD_BATTERY_WATERMARK_LEVEL);
                         feature.publish(new DecimalType(batteryLevel), StateChangeType.CHANGED,
-                                InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_BATTERY_LEVEL);
+                                InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_BATTERY_LEVEL);
                         break;
                     default:
                         logger.warn("unknown cmd2 = {} in info reply message {}", cmd2, msg);
@@ -847,12 +848,12 @@ public abstract class MessageHandler {
     }
 
     public static class PowerMeterUpdateHandler extends MessageHandler {
-        PowerMeterUpdateHandler(DeviceFeature p) {
+        PowerMeterUpdateHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             if (msg.isExtended()) {
                 try {
                     // see iMeter developer notes 2423A1dev-072013-en.pdf
@@ -875,9 +876,9 @@ public abstract class MessageHandler {
 
                     logger.debug("{}:{} watts: {} kwh: {} ", nm(), f.getDevice().getAddress(), watts, kwh);
                     feature.publish(new QuantityType<>(kwh, Units.KILOWATT_HOUR), StateChangeType.CHANGED,
-                            InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_KWH);
+                            InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_KWH);
                     feature.publish(new QuantityType<>(watts, Units.WATT), StateChangeType.CHANGED,
-                            InsteonDeviceHandler.FIELD, InsteonDeviceHandler.FIELD_WATTS);
+                            InsteonLegacyDeviceHandler.FIELD, InsteonLegacyDeviceHandler.FIELD_WATTS);
                 } catch (FieldException e) {
                     logger.warn("error parsing {}: ", msg, e);
                 }
@@ -886,13 +887,13 @@ public abstract class MessageHandler {
     }
 
     public static class PowerMeterResetHandler extends MessageHandler {
-        PowerMeterResetHandler(DeviceFeature p) {
+        PowerMeterResetHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
-            InsteonDevice dev = f.getDevice();
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
+            InsteonLegacyDevice dev = f.getDevice();
             logger.debug("{}: power meter {} was reset", nm(), dev.getAddress());
 
             // poll device to get updated kilowatt hours and watts
@@ -904,23 +905,23 @@ public abstract class MessageHandler {
     }
 
     public static class LastTimeHandler extends MessageHandler {
-        LastTimeHandler(DeviceFeature p) {
+        LastTimeHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1a, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1a, Msg msg, LegacyDeviceFeature f) {
             feature.publish(new DateTimeType(), StateChangeType.ALWAYS);
         }
     }
 
     public static class ContactRequestReplyHandler extends MessageHandler {
-        ContactRequestReplyHandler(DeviceFeature p) {
+        ContactRequestReplyHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1a, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1a, Msg msg, LegacyDeviceFeature f) {
             byte cmd = 0x00;
             byte cmd2 = 0x00;
             try {
@@ -930,7 +931,8 @@ public abstract class MessageHandler {
                 logger.debug("{} no cmd found, dropping msg {}", nm(), msg);
                 return;
             }
-            if (msg.isAckOfDirect() && (f.getQueryStatus() == DeviceFeature.QueryStatus.QUERY_PENDING) && cmd == 0x50) {
+            if (msg.isAckOfDirect() && (f.getQueryStatus() == LegacyDeviceFeature.QueryStatus.QUERY_PENDING)
+                    && cmd == 0x50) {
                 OpenClosedType oc = (cmd2 == 0) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
                 logger.debug("{}: set contact {} to: {}", nm(), f.getDevice().getAddress(), oc);
                 feature.publish(oc, StateChangeType.CHANGED);
@@ -939,34 +941,34 @@ public abstract class MessageHandler {
     }
 
     public static class ClosedContactHandler extends MessageHandler {
-        ClosedContactHandler(DeviceFeature p) {
+        ClosedContactHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
         }
     }
 
     public static class OpenedContactHandler extends MessageHandler {
-        OpenedContactHandler(DeviceFeature p) {
+        OpenedContactHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
         }
     }
 
     public static class OpenedOrClosedContactHandler extends MessageHandler {
-        OpenedOrClosedContactHandler(DeviceFeature p) {
+        OpenedOrClosedContactHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             try {
                 byte cmd2 = msg.getByte("command2");
                 switch (cmd1) {
@@ -1001,14 +1003,14 @@ public abstract class MessageHandler {
     }
 
     public static class ClosedSleepingContactHandler extends MessageHandler {
-        ClosedSleepingContactHandler(DeviceFeature p) {
+        ClosedSleepingContactHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
-            if (f.getDevice().hasProductKey(InsteonDeviceHandler.MOTION_SENSOR_II_PRODUCT_KEY)) {
+            if (f.getDevice().hasProductKey(InsteonLegacyDeviceHandler.MOTION_SENSOR_II_PRODUCT_KEY)) {
                 if (!getBooleanDeviceConfig("heartbeatOnly", false)) {
                     sendExtendedQuery(f, (byte) 0x2e, (byte) 03);
                 }
@@ -1019,14 +1021,14 @@ public abstract class MessageHandler {
     }
 
     public static class OpenedSleepingContactHandler extends MessageHandler {
-        OpenedSleepingContactHandler(DeviceFeature p) {
+        OpenedSleepingContactHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
-            if (f.getDevice().hasProductKey(InsteonDeviceHandler.MOTION_SENSOR_II_PRODUCT_KEY)) {
+            if (f.getDevice().hasProductKey(InsteonLegacyDeviceHandler.MOTION_SENSOR_II_PRODUCT_KEY)) {
                 if (!getBooleanDeviceConfig("heartbeatOnly", false)) {
                     sendExtendedQuery(f, (byte) 0x2e, (byte) 03);
                 }
@@ -1045,12 +1047,12 @@ public abstract class MessageHandler {
      * the settings updated.
      */
     public static class TriggerPollMsgHandler extends MessageHandler {
-        TriggerPollMsgHandler(DeviceFeature p) {
+        TriggerPollMsgHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             feature.getDevice().doPoll(2000); // 2000 ms delay
         }
     }
@@ -1059,12 +1061,12 @@ public abstract class MessageHandler {
      * Flexible handler to extract numerical data from messages.
      */
     public static class NumberMsgHandler extends MessageHandler {
-        NumberMsgHandler(DeviceFeature p) {
+        NumberMsgHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             try {
                 // first do the bit manipulations to focus on the right area
                 int mask = getIntParameter("mask", 0xFFFF);
@@ -1120,7 +1122,7 @@ public abstract class MessageHandler {
      * conventions for numbering, we use the one of the status update messages
      */
     public static class ThermostatSystemModeMsgHandler extends NumberMsgHandler {
-        ThermostatSystemModeMsgHandler(DeviceFeature p) {
+        ThermostatSystemModeMsgHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
@@ -1148,7 +1150,7 @@ public abstract class MessageHandler {
      * Handle reply to system mode change command
      */
     public static class ThermostatSystemModeReplyHandler extends NumberMsgHandler {
-        ThermostatSystemModeReplyHandler(DeviceFeature p) {
+        ThermostatSystemModeReplyHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
@@ -1176,7 +1178,7 @@ public abstract class MessageHandler {
      * Handle reply to fan mode change command
      */
     public static class ThermostatFanModeReplyHandler extends NumberMsgHandler {
-        ThermostatFanModeReplyHandler(DeviceFeature p) {
+        ThermostatFanModeReplyHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
@@ -1198,7 +1200,7 @@ public abstract class MessageHandler {
      * Handle reply to fanlinc fan speed change command
      */
     public static class FanLincFanReplyHandler extends NumberMsgHandler {
-        FanLincFanReplyHandler(DeviceFeature p) {
+        FanLincFanReplyHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
@@ -1225,12 +1227,12 @@ public abstract class MessageHandler {
      * changes the state of an X10 device.
      */
     public static class X10OnHandler extends MessageHandler {
-        X10OnHandler(DeviceFeature p) {
+        X10OnHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to ON", nm(), a);
             feature.publish(OnOffType.ON, StateChangeType.ALWAYS);
@@ -1238,12 +1240,12 @@ public abstract class MessageHandler {
     }
 
     public static class X10OffHandler extends MessageHandler {
-        X10OffHandler(DeviceFeature p) {
+        X10OffHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to OFF", nm(), a);
             feature.publish(OnOffType.OFF, StateChangeType.ALWAYS);
@@ -1251,36 +1253,36 @@ public abstract class MessageHandler {
     }
 
     public static class X10BrightHandler extends MessageHandler {
-        X10BrightHandler(DeviceFeature p) {
+        X10BrightHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: ignoring brighten message for device {}", nm(), a);
         }
     }
 
     public static class X10DimHandler extends MessageHandler {
-        X10DimHandler(DeviceFeature p) {
+        X10DimHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: ignoring dim message for device {}", nm(), a);
         }
     }
 
     public static class X10OpenHandler extends MessageHandler {
-        X10OpenHandler(DeviceFeature p) {
+        X10OpenHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to OPEN", nm(), a);
             feature.publish(OpenClosedType.OPEN, StateChangeType.ALWAYS);
@@ -1288,12 +1290,12 @@ public abstract class MessageHandler {
     }
 
     public static class X10ClosedHandler extends MessageHandler {
-        X10ClosedHandler(DeviceFeature p) {
+        X10ClosedHandler(LegacyDeviceFeature p) {
             super(p);
         }
 
         @Override
-        public void handleMessage(int group, byte cmd1, Msg msg, DeviceFeature f) {
+        public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
             InsteonAddress a = f.getDevice().getAddress();
             logger.debug("{}: set X10 device {} to CLOSED", nm(), a);
             feature.publish(OpenClosedType.CLOSED, StateChangeType.ALWAYS);
@@ -1309,14 +1311,14 @@ public abstract class MessageHandler {
      * @return the handler which was created
      */
     public static @Nullable <T extends MessageHandler> T makeHandler(String name, Map<String, String> params,
-            DeviceFeature f) {
+            LegacyDeviceFeature f) {
         String cname = MessageHandler.class.getName() + "$" + name;
         try {
             Class<?> c = Class.forName(cname);
             @SuppressWarnings("unchecked")
             Class<? extends T> dc = (Class<? extends T>) c;
             @Nullable
-            T mh = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
+            T mh = dc.getDeclaredConstructor(LegacyDeviceFeature.class).newInstance(f);
             mh.setParameters(params);
             return mh;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException

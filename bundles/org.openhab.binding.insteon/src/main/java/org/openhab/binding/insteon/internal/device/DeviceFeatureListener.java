@@ -180,7 +180,7 @@ public class DeviceFeatureListener {
     public void pollRelatedDevices() {
         for (InsteonAddress a : relatedDevices) {
             logger.debug("polling related device {} in {} ms", a, TIME_DELAY_POLL_RELATED_MSEC);
-            InsteonDevice d = binding.getDevice(a);
+            InsteonLegacyDevice d = binding.getDevice(a);
             if (d != null) {
                 d.doPoll(TIME_DELAY_POLL_RELATED_MSEC);
             } else {

@@ -14,6 +14,8 @@ package org.openhab.binding.insteon.internal.message;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -122,7 +124,15 @@ public class Msg {
     static {
         // Use xml msg loader to load configs
         try {
-            InputStream stream = FrameworkUtil.getBundle(Msg.class).getResource("/msg_definitions.xml").openStream();
+            var bundle = FrameworkUtil.getBundle(Msg.class);
+            URL resource;
+            if (bundle != null) {
+                resource = bundle.getResource("/msg_definitions.xml");
+            } else {
+                resource = Path.of(System.getProperty("user.dir") + "/src/main/resources/msg_definitions.xml").toUri()
+                        .toURL();
+            }
+            InputStream stream = resource.openStream();
             if (stream != null) {
                 Map<String, Msg> msgs = XMLMessageReader.readMessageDefinitions(stream);
                 MSG_MAP.putAll(msgs);

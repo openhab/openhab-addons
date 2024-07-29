@@ -20,7 +20,7 @@ import java.util.TreeSet;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.InsteonBindingConstants;
-import org.openhab.binding.insteon.internal.device.InsteonDevice;
+import org.openhab.binding.insteon.internal.device.InsteonLegacyDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +73,7 @@ public class Poller {
      * @param d device to register for polling
      * @param aNumDev approximate number of total devices
      */
-    public void startPolling(InsteonDevice d, int aNumDev) {
+    public void startPolling(InsteonLegacyDevice d, int aNumDev) {
         logger.debug("start polling device {}", d);
         synchronized (pollQueue) {
             // try to spread out the scheduling when
@@ -90,7 +90,7 @@ public class Poller {
      *
      * @param d reference to the device to be polled
      */
-    public void stopPolling(InsteonDevice d) {
+    public void stopPolling(InsteonLegacyDevice d) {
         synchronized (pollQueue) {
             for (Iterator<PQEntry> i = pollQueue.iterator(); i.hasNext();) {
                 if (i.next().getDevice().getAddress().equals(d.getAddress())) {
@@ -150,7 +150,7 @@ public class Poller {
      *            a suggestion, and may be adjusted, because there must be at least a minimum gap in polling.
      */
 
-    private void addToPollQueue(InsteonDevice d, long time) {
+    private void addToPollQueue(InsteonLegacyDevice d, long time) {
         long texp = findNextExpirationTime(d, time);
         PQEntry ne = new PQEntry(d, texp);
         logger.trace("added entry {} originally aimed at time {}", ne, String.format("%tc", new Date(time)));
@@ -167,7 +167,7 @@ public class Poller {
      * @return the suggested time to poll
      */
 
-    private long findNextExpirationTime(InsteonDevice d, long aTime) {
+    private long findNextExpirationTime(InsteonLegacyDevice d, long aTime) {
         long expTime = aTime;
         // tailSet finds all those that expire after aTime - buffer
         SortedSet<PQEntry> ts = pollQueue.tailSet(new PQEntry(d, aTime - MIN_MSEC_BETWEEN_POLLS));
@@ -271,10 +271,10 @@ public class Poller {
      *
      */
     private static class PQEntry implements Comparable<PQEntry> {
-        private InsteonDevice dev;
+        private InsteonLegacyDevice dev;
         private long expirationTime;
 
-        PQEntry(InsteonDevice dev, long time) {
+        PQEntry(InsteonLegacyDevice dev, long time) {
             this.dev = dev;
             this.expirationTime = time;
         }
@@ -283,7 +283,7 @@ public class Poller {
             return expirationTime;
         }
 
-        InsteonDevice getDevice() {
+        InsteonLegacyDevice getDevice() {
             return dev;
         }
 

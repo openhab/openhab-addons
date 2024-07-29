@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +25,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.InsteonBinding;
 import org.openhab.binding.insteon.internal.config.InsteonNetworkConfiguration;
 import org.openhab.binding.insteon.internal.device.InsteonAddress;
-import org.openhab.binding.insteon.internal.discovery.InsteonDeviceDiscoveryService;
+import org.openhab.binding.insteon.internal.discovery.InsteonDeviceLegacyDiscoveryService;
 import org.openhab.binding.insteon.internal.utils.Utils;
 import org.openhab.core.io.console.Console;
 import org.openhab.core.io.transport.serial.SerialPortManager;
@@ -54,20 +55,20 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(InsteonNetworkHandler.class);
 
-    private @Nullable InsteonBinding insteonBinding;
-    private @Nullable InsteonDeviceDiscoveryService insteonDeviceDiscoveryService;
+    protected @Nullable InsteonBinding insteonBinding;
+    private @Nullable InsteonDeviceLegacyDiscoveryService insteonDeviceDiscoveryService;
     private @Nullable ScheduledFuture<?> driverInitializedJob = null;
     private @Nullable ScheduledFuture<?> pollingJob = null;
     private @Nullable ScheduledFuture<?> reconnectJob = null;
     private @Nullable ScheduledFuture<?> settleJob = null;
     private long lastInsteonDeviceCreatedTimestamp = 0;
-    private @Nullable SerialPortManager serialPortManager;
+    private SerialPortManager serialPortManager;
     private Map<String, String> deviceInfo = new ConcurrentHashMap<>();
     private Map<String, String> channelInfo = new ConcurrentHashMap<>();
-
+    protected ScheduledExecutorService executorService = this.scheduler;
     public static ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-    public InsteonNetworkHandler(Bridge bridge, @Nullable SerialPortManager serialPortManager) {
+    public InsteonNetworkHandler(Bridge bridge, SerialPortManager serialPortManager) {
         super(bridge);
         this.serialPortManager = serialPortManager;
     }
@@ -81,49 +82,25 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
         logger.debug("Starting Insteon bridge");
         InsteonNetworkConfiguration config = getConfigAs(InsteonNetworkConfiguration.class);
 
-        SerialPortManager serialPortManager = this.serialPortManager;
-        if (serialPortManager == null) {
-            String msg = "Initialization failed, serial port manager is null.";
-            logger.warn(msg);
-
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, msg);
-
-            return;
-        }
-        insteonBinding = new InsteonBinding(this, config, serialPortManager, scheduler);
+        initInsteonBinding();
         updateStatus(ThingStatus.UNKNOWN);
 
         // hold off on starting to poll until devices that already are defined as things are added.
         // wait SETTLE_TIME_IN_SECONDS to start then check every second afterwards until it has been at
         // least SETTLE_TIME_IN_SECONDS since last device was created.
-        settleJob = scheduler.scheduleWithFixedDelay(() -> {
+        settleJob = executorService.scheduleWithFixedDelay(() -> {
             // check to see if it has been at least SETTLE_TIME_IN_SECONDS since last device was created
             if (System.currentTimeMillis() - lastInsteonDeviceCreatedTimestamp > SETTLE_TIME_IN_SECONDS * 1000) {
                 // settle time has expired start polling
                 InsteonBinding insteonBinding = this.insteonBinding;
                 if (insteonBinding != null && insteonBinding.startPolling()) {
-                    pollingJob = scheduler.scheduleWithFixedDelay(() -> {
+                    pollingJob = executorService.scheduleWithFixedDelay(() -> {
                         insteonBinding.logDeviceStatistics();
                     }, 0, LOG_DEVICE_STATISTICS_DELAY_IN_SECONDS, TimeUnit.SECONDS);
 
                     // wait until driver is initialized before setting network to ONLINE
-                    driverInitializedJob = scheduler.scheduleWithFixedDelay(() -> {
-                        if (insteonBinding.isDriverInitialized()) {
-                            logger.debug("driver is initialized");
-
-                            insteonBinding.setIsActive(true);
-
-                            updateStatus(ThingStatus.ONLINE);
-
-                            ScheduledFuture<?> driverInitializedJob = this.driverInitializedJob;
-                            if (driverInitializedJob != null) {
-                                driverInitializedJob.cancel(false);
-                                this.driverInitializedJob = null;
-                            }
-                        } else {
-                            logger.debug("driver is not initialized yet");
-                        }
-                    }, 0, DRIVER_INITIALIZED_TIME_IN_SECONDS, TimeUnit.SECONDS);
+                    driverInitializedJob = executorService.scheduleWithFixedDelay(this::finishInitialisation, 0,
+                            DRIVER_INITIALIZED_TIME_IN_SECONDS, TimeUnit.SECONDS);
                 } else {
                     String msg = "Initialization failed, unable to start the Insteon bridge with the port '"
                             + Utils.redactPassword(config.getPort()) + "'.";
@@ -139,6 +116,33 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
                 }
             }
         }, SETTLE_TIME_IN_SECONDS, 1, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Wrapper that can be mocked or overriden,
+     */
+    protected void initInsteonBinding() {
+        InsteonNetworkConfiguration config = getConfigAs(InsteonNetworkConfiguration.class);
+        this.insteonBinding = new InsteonBinding(this, config, serialPortManager, scheduler);
+    }
+
+    private void finishInitialisation() {
+        InsteonBinding insteonBinding = this.insteonBinding;
+        if (insteonBinding.isDriverInitialized()) {
+            logger.debug("driver is initialized");
+
+            insteonBinding.setIsActive(true);
+
+            updateStatus(ThingStatus.ONLINE);
+
+            ScheduledFuture<?> driverInitializedJob = this.driverInitializedJob;
+            if (driverInitializedJob != null) {
+                driverInitializedJob.cancel(false);
+                this.driverInitializedJob = null;
+            }
+        } else {
+            logger.debug("driver is not initialized yet");
+        }
     }
 
     @Override
@@ -187,7 +191,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
     }
 
     public void bindingDisconnected() {
-        reconnectJob = scheduler.scheduleWithFixedDelay(() -> {
+        reconnectJob = executorService.scheduleWithFixedDelay(() -> {
             InsteonBinding insteonBinding = this.insteonBinding;
             if (insteonBinding != null && insteonBinding.reconnect()) {
                 updateStatus(ThingStatus.ONLINE);
@@ -215,13 +219,13 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
         }
     }
 
-    public void setInsteonDeviceDiscoveryService(InsteonDeviceDiscoveryService insteonDeviceDiscoveryService) {
+    public void setInsteonDeviceDiscoveryService(InsteonDeviceLegacyDiscoveryService insteonDeviceDiscoveryService) {
         this.insteonDeviceDiscoveryService = insteonDeviceDiscoveryService;
     }
 
     public void addMissingDevices(List<String> missing) {
-        scheduler.execute(() -> {
-            InsteonDeviceDiscoveryService insteonDeviceDiscoveryService = this.insteonDeviceDiscoveryService;
+        executorService.execute(() -> {
+            InsteonDeviceLegacyDiscoveryService insteonDeviceDiscoveryService = this.insteonDeviceDiscoveryService;
             if (insteonDeviceDiscoveryService != null) {
                 insteonDeviceDiscoveryService.addInsteonDevices(missing, getThing().getUID());
             }
@@ -230,7 +234,7 @@ public class InsteonNetworkHandler extends BaseBridgeHandler {
 
     public void deviceNotLinked(InsteonAddress addr) {
         getThing().getThings().stream().forEach((thing) -> {
-            InsteonDeviceHandler handler = (InsteonDeviceHandler) thing.getHandler();
+            InsteonLegacyDeviceHandler handler = (InsteonLegacyDeviceHandler) thing.getHandler();
             if (handler != null && addr.equals(handler.getInsteonAddress())) {
                 handler.deviceNotLinked();
                 return;

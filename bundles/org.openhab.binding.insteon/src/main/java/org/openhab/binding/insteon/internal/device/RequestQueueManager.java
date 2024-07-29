@@ -43,7 +43,7 @@ public class RequestQueueManager {
     private final Logger logger = LoggerFactory.getLogger(RequestQueueManager.class);
     private @Nullable Thread queueThread = null;
     private Queue<RequestQueue> requestQueues = new PriorityQueue<>();
-    private Map<InsteonDevice, RequestQueue> requestQueueHash = new HashMap<>();
+    private Map<InsteonLegacyDevice, RequestQueue> requestQueueHash = new HashMap<>();
     private boolean keepRunning = true;
 
     private RequestQueueManager() {
@@ -65,7 +65,7 @@ public class RequestQueueManager {
      * @param dev the device to add
      * @param time the time when the queue should be processed
      */
-    public void addQueue(InsteonDevice dev, long time) {
+    public void addQueue(InsteonLegacyDevice dev, long time) {
         synchronized (requestQueues) {
             RequestQueue q = requestQueueHash.get(dev);
             if (q == null) {
@@ -125,7 +125,7 @@ public class RequestQueueManager {
                         while (keepRunning && (q = requestQueues.peek()) != null) {
                             long now = System.currentTimeMillis();
                             long expTime = q.getExpirationTime();
-                            InsteonDevice dev = q.getDevice();
+                            InsteonLegacyDevice dev = q.getDevice();
                             if (expTime > now) {
                                 //
                                 // The head of the queue is not up for processing yet, wait().
@@ -169,15 +169,15 @@ public class RequestQueueManager {
     }
 
     public static class RequestQueue implements Comparable<RequestQueue> {
-        private InsteonDevice device;
+        private InsteonLegacyDevice device;
         private long expirationTime;
 
-        RequestQueue(InsteonDevice dev, long expirationTime) {
+        RequestQueue(InsteonLegacyDevice dev, long expirationTime) {
             this.device = dev;
             this.expirationTime = expirationTime;
         }
 
-        public InsteonDevice getDevice() {
+        public InsteonLegacyDevice getDevice() {
             return device;
         }
 

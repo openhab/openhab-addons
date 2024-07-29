@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.insteon.internal.config.InsteonChannelConfiguration;
 import org.openhab.binding.insteon.internal.device.DeviceFeatureListener.StateChangeType;
-import org.openhab.binding.insteon.internal.handler.InsteonDeviceHandler;
+import org.openhab.binding.insteon.internal.handler.InsteonLegacyDeviceHandler;
 import org.openhab.binding.insteon.internal.message.FieldException;
 import org.openhab.binding.insteon.internal.message.InvalidMessageTypeException;
 import org.openhab.binding.insteon.internal.message.Msg;
@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public abstract class CommandHandler {
     private static final Logger logger = LoggerFactory.getLogger(CommandHandler.class);
-    DeviceFeature feature; // related DeviceFeature
+    LegacyDeviceFeature feature; // related DeviceFeature
     Map<String, String> parameters = new HashMap<>();
 
     /**
@@ -56,7 +56,7 @@ public abstract class CommandHandler {
      *            The openHAB commands are issued on an openhab item. The .items files bind
      *            an openHAB item to a DeviceFeature.
      */
-    CommandHandler(DeviceFeature feature) {
+    CommandHandler(LegacyDeviceFeature feature) {
         this.feature = feature;
     }
 
@@ -67,7 +67,7 @@ public abstract class CommandHandler {
      * @param cmd the openhab command issued
      * @param device the Insteon device to which this command applies
      */
-    public abstract void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice device);
+    public abstract void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice device);
 
     /**
      * Returns parameter as integer
@@ -158,34 +158,34 @@ public abstract class CommandHandler {
     }
 
     public static class WarnCommandHandler extends CommandHandler {
-        WarnCommandHandler(DeviceFeature f) {
+        WarnCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             logger.warn("{}: command {} is not implemented yet!", nm(), cmd);
         }
     }
 
     public static class NoOpCommandHandler extends CommandHandler {
-        NoOpCommandHandler(DeviceFeature f) {
+        NoOpCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             // do nothing, not even log
         }
     }
 
     public static class LightOnOffCommandHandler extends CommandHandler {
-        LightOnOffCommandHandler(DeviceFeature f) {
+        LightOnOffCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 int ext = getIntParameter("ext", 0);
                 int direc = 0x00;
@@ -225,12 +225,12 @@ public abstract class CommandHandler {
     }
 
     public static class FastOnOffCommandHandler extends CommandHandler {
-        FastOnOffCommandHandler(DeviceFeature f) {
+        FastOnOffCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 if (cmd == OnOffType.ON) {
                     int level = getMaxLightLevel(conf, 0xff);
@@ -253,12 +253,12 @@ public abstract class CommandHandler {
     }
 
     public static class RampOnOffCommandHandler extends RampCommandHandler {
-        RampOnOffCommandHandler(DeviceFeature f) {
+        RampOnOffCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 if (cmd == OnOffType.ON) {
                     double ramptime = getRampTime(conf, 0);
@@ -292,12 +292,12 @@ public abstract class CommandHandler {
     }
 
     public static class ManualChangeCommandHandler extends CommandHandler {
-        ManualChangeCommandHandler(DeviceFeature f) {
+        ManualChangeCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 if (cmd instanceof DecimalType decimalCommand) {
                     int v = decimalCommand.intValue();
@@ -322,12 +322,12 @@ public abstract class CommandHandler {
      * Sends ALLLink broadcast commands to group
      */
     public static class GroupBroadcastCommandHandler extends CommandHandler {
-        GroupBroadcastCommandHandler(DeviceFeature f) {
+        GroupBroadcastCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 if (cmd == OnOffType.ON || cmd == OnOffType.OFF) {
                     byte cmd1 = (byte) ((cmd == OnOffType.ON) ? 0x11 : 0x13);
@@ -352,12 +352,12 @@ public abstract class CommandHandler {
     }
 
     public static class LEDOnOffCommandHandler extends CommandHandler {
-        LEDOnOffCommandHandler(DeviceFeature f) {
+        LEDOnOffCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 if (cmd == OnOffType.ON) {
                     Msg m = dev.makeExtendedMessage((byte) 0x1f, (byte) 0x20, (byte) 0x09,
@@ -379,12 +379,12 @@ public abstract class CommandHandler {
     }
 
     public static class X10OnOffCommandHandler extends CommandHandler {
-        X10OnOffCommandHandler(DeviceFeature f) {
+        X10OnOffCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 byte houseCode = dev.getX10HouseCode();
                 byte houseUnitCode = (byte) (houseCode << 4 | dev.getX10UnitCode());
@@ -407,12 +407,12 @@ public abstract class CommandHandler {
     }
 
     public static class X10PercentCommandHandler extends CommandHandler {
-        X10PercentCommandHandler(DeviceFeature f) {
+        X10PercentCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 //
                 // I did not have hardware that would respond to the PRESET_DIM codes.
@@ -445,12 +445,12 @@ public abstract class CommandHandler {
     }
 
     public static class X10IncreaseDecreaseCommandHandler extends CommandHandler {
-        X10IncreaseDecreaseCommandHandler(DeviceFeature f) {
+        X10IncreaseDecreaseCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 byte houseCode = dev.getX10HouseCode();
                 byte houseUnitCode = (byte) (houseCode << 4 | dev.getX10UnitCode());
@@ -474,12 +474,12 @@ public abstract class CommandHandler {
     }
 
     public static class IOLincOnOffCommandHandler extends CommandHandler {
-        IOLincOnOffCommandHandler(DeviceFeature f) {
+        IOLincOnOffCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 if (cmd == OnOffType.ON) {
                     Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x11, (byte) 0xff);
@@ -500,7 +500,7 @@ public abstract class CommandHandler {
                     @Override
                     public void run() {
                         Msg m = feature.makePollMsg();
-                        InsteonDevice dev = feature.getDevice();
+                        InsteonLegacyDevice dev = feature.getDevice();
                         if (m != null) {
                             dev.enqueueMessage(m, feature);
                         }
@@ -515,12 +515,12 @@ public abstract class CommandHandler {
     }
 
     public static class IncreaseDecreaseCommandHandler extends CommandHandler {
-        IncreaseDecreaseCommandHandler(DeviceFeature f) {
+        IncreaseDecreaseCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 if (cmd == IncreaseDecreaseType.INCREASE) {
                     Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x15, (byte) 0x00);
@@ -540,12 +540,12 @@ public abstract class CommandHandler {
     }
 
     public static class PercentHandler extends CommandHandler {
-        PercentHandler(DeviceFeature f) {
+        PercentHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 PercentType pc = (PercentType) cmd;
                 logger.debug("changing level of {} to {}", dev.getAddress(), pc.intValue());
@@ -575,7 +575,7 @@ public abstract class CommandHandler {
         private byte onCmd;
         private byte offCmd;
 
-        RampCommandHandler(DeviceFeature f) {
+        RampCommandHandler(LegacyDeviceFeature f) {
             super(f);
             // Can't process parameters here because they are set after constructor is invoked.
             // Unfortunately, this means we can't declare the onCmd, offCmd to be final.
@@ -634,12 +634,12 @@ public abstract class CommandHandler {
 
     public static class RampPercentHandler extends RampCommandHandler {
 
-        RampPercentHandler(DeviceFeature f) {
+        RampPercentHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 PercentType pc = (PercentType) cmd;
                 double ramptime = getRampTime(conf, 0);
@@ -666,31 +666,31 @@ public abstract class CommandHandler {
     }
 
     public static class PowerMeterCommandHandler extends CommandHandler {
-        PowerMeterCommandHandler(DeviceFeature f) {
+        PowerMeterCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
-            String cmdParam = conf.getParameters().get(InsteonDeviceHandler.CMD);
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
+            String cmdParam = conf.getParameters().get(InsteonLegacyDeviceHandler.CMD);
             if (cmdParam == null) {
                 logger.warn("{} ignoring cmd {} because no cmd= is configured!", nm(), cmd);
                 return;
             }
             try {
                 if (cmd == OnOffType.ON) {
-                    if (cmdParam.equals(InsteonDeviceHandler.CMD_RESET)) {
+                    if (cmdParam.equals(InsteonLegacyDeviceHandler.CMD_RESET)) {
                         Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x80, (byte) 0x00);
                         dev.enqueueMessage(m, feature);
                         logger.debug("{}: sent reset msg to power meter {}", nm(), dev.getAddress());
-                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, InsteonDeviceHandler.CMD,
-                                InsteonDeviceHandler.CMD_RESET);
-                    } else if (cmdParam.equals(InsteonDeviceHandler.CMD_UPDATE)) {
+                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, InsteonLegacyDeviceHandler.CMD,
+                                InsteonLegacyDeviceHandler.CMD_RESET);
+                    } else if (cmdParam.equals(InsteonLegacyDeviceHandler.CMD_UPDATE)) {
                         Msg m = dev.makeStandardMessage((byte) 0x0f, (byte) 0x82, (byte) 0x00);
                         dev.enqueueMessage(m, feature);
                         logger.debug("{}: sent update msg to power meter {}", nm(), dev.getAddress());
-                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, InsteonDeviceHandler.CMD,
-                                InsteonDeviceHandler.CMD_UPDATE);
+                        feature.publish(OnOffType.OFF, StateChangeType.ALWAYS, InsteonLegacyDeviceHandler.CMD,
+                                InsteonLegacyDeviceHandler.CMD_UPDATE);
                     } else {
                         logger.warn("{}: ignoring unknown cmd {} for power meter {}", nm(), cmdParam, dev.getAddress());
                     }
@@ -712,7 +712,7 @@ public abstract class CommandHandler {
      */
 
     public static class NumberCommandHandler extends CommandHandler {
-        NumberCommandHandler(DeviceFeature f) {
+        NumberCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
@@ -721,7 +721,7 @@ public abstract class CommandHandler {
         }
 
         @Override
-        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonDevice dev) {
+        public void handleCommand(InsteonChannelConfiguration conf, Command cmd, InsteonLegacyDevice dev) {
             try {
                 int dc = transform(((DecimalType) cmd).intValue());
                 int intFactor = getIntParameter("factor", 1);
@@ -775,7 +775,7 @@ public abstract class CommandHandler {
      * Handler to set the thermostat system mode
      */
     public static class ThermostatSystemModeCommandHandler extends NumberCommandHandler {
-        ThermostatSystemModeCommandHandler(DeviceFeature f) {
+        ThermostatSystemModeCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
@@ -803,7 +803,7 @@ public abstract class CommandHandler {
      * Handler to set the thermostat fan mode
      */
     public static class ThermostatFanModeCommandHandler extends NumberCommandHandler {
-        ThermostatFanModeCommandHandler(DeviceFeature f) {
+        ThermostatFanModeCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
@@ -825,7 +825,7 @@ public abstract class CommandHandler {
      * Handler to set the fanlinc fan mode
      */
     public static class FanLincFanCommandHandler extends NumberCommandHandler {
-        FanLincFanCommandHandler(DeviceFeature f) {
+        FanLincFanCommandHandler(LegacyDeviceFeature f) {
             super(f);
         }
 
@@ -856,14 +856,15 @@ public abstract class CommandHandler {
      * @return the handler which was created
      */
     @Nullable
-    public static <T extends CommandHandler> T makeHandler(String name, Map<String, String> params, DeviceFeature f) {
+    public static <T extends CommandHandler> T makeHandler(String name, Map<String, String> params,
+            LegacyDeviceFeature f) {
         String cname = CommandHandler.class.getName() + "$" + name;
         try {
             Class<?> c = Class.forName(cname);
             @SuppressWarnings("unchecked")
             Class<? extends T> dc = (Class<? extends T>) c;
             @Nullable
-            T ch = dc.getDeclaredConstructor(DeviceFeature.class).newInstance(f);
+            T ch = dc.getDeclaredConstructor(LegacyDeviceFeature.class).newInstance(f);
             ch.setParameters(params);
             return ch;
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | IllegalArgumentException
