@@ -151,7 +151,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
         try {
             if (checkBridgeHandler() != null) {
                 if (command instanceof RefreshType) {
-                    internalPoll();
+                    internalForcePoll();
                 } else if (!internalHandleCommand(channelUID.getIdWithoutGroup(), command)) {
                     logger.debug("Unexpected command {} on channel {}", command, channelUID.getId());
                 }
@@ -257,6 +257,10 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
     }
 
     protected abstract void internalPoll() throws FreeboxException;
+
+    protected void internalForcePoll() throws FreeboxException {
+        internalPoll();
+    }
 
     private void updateIfActive(String group, String channelId, State state) {
         ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);

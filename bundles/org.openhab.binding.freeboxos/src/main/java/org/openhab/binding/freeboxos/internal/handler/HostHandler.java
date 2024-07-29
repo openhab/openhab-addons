@@ -85,6 +85,12 @@ public class HostHandler extends ApiConsumerHandler {
         pushSubscribed = getManager(WebSocketManager.class).registerListener(host.getMac(), this);
     }
 
+    @Override
+    protected void internalForcePoll() throws FreeboxException {
+        LanHost host = getLanHost();
+        updateConnectivityChannels(host);
+    }
+
     protected LanHost getLanHost() throws FreeboxException {
         return getManager(LanBrowserManager.class).getHost(getMac()).map(hostIntf -> hostIntf.host())
                 .orElseThrow(() -> new FreeboxException("Host data not found"));
