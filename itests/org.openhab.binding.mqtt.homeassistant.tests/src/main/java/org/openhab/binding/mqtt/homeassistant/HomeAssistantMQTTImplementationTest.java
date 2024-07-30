@@ -170,7 +170,7 @@ public class HomeAssistantMQTTImplementationTest extends MqttOSGiTest {
 
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(4);
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING,
-                scheduler, channelStateUpdateListener, availabilityTracker, gson, jinjava, unitProvider, true));
+                scheduler, channelStateUpdateListener, availabilityTracker, gson, jinjava, unitProvider));
 
         // The DiscoverComponents object calls ComponentDiscovered callbacks.
         // In the following implementation we add the found component to the `haComponents` map

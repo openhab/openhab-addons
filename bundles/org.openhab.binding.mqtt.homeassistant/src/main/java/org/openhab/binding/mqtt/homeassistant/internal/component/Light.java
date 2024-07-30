@@ -56,12 +56,9 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
 
     protected static final String STATE_CHANNEL_ID = "state";
     protected static final String SWITCH_CHANNEL_ID = "switch";
-    protected static final String SWITCH_CHANNEL_ID_DEPRECATED = "on_off";
     protected static final String BRIGHTNESS_CHANNEL_ID = "brightness";
     protected static final String COLOR_MODE_CHANNEL_ID = "color-mode";
-    protected static final String COLOR_MODE_CHANNEL_ID_DEPRECATED = "color_mode";
     protected static final String COLOR_TEMP_CHANNEL_ID = "color-temp";
-    protected static final String COLOR_TEMP_CHANNEL_ID_DEPRECATED = "color_temp";
     protected static final String EFFECT_CHANNEL_ID = "effect";
     // This channel is a synthetic channel that may send to other channels
     // underneath
@@ -248,24 +245,23 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
 
     protected final ChannelStateUpdateListener channelStateUpdateListener;
 
-    public static Light create(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels)
-            throws UnsupportedComponentException {
+    public static Light create(ComponentFactory.ComponentConfiguration builder) throws UnsupportedComponentException {
         String schema = builder.getConfig(ChannelConfiguration.class).schema;
         switch (schema) {
             case DEFAULT_SCHEMA:
-                return new DefaultSchemaLight(builder, newStyleChannels);
+                return new DefaultSchemaLight(builder);
             case JSON_SCHEMA:
-                return new JSONSchemaLight(builder, newStyleChannels);
+                return new JSONSchemaLight(builder);
             case TEMPLATE_SCHEMA:
-                return new TemplateSchemaLight(builder, newStyleChannels);
+                return new TemplateSchemaLight(builder);
             default:
                 throw new UnsupportedComponentException(
                         "Component '" + builder.getHaID() + "' of schema '" + schema + "' is not supported!");
         }
     }
 
-    protected Light(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
-        super(builder, ChannelConfiguration.class, newStyleChannels);
+    protected Light(ComponentFactory.ComponentConfiguration builder) {
+        super(builder, ChannelConfiguration.class);
         this.channelStateUpdateListener = builder.getUpdateListener();
 
         @Nullable

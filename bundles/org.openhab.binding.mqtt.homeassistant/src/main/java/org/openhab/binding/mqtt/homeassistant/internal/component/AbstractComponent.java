@@ -111,7 +111,6 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     protected final C channelConfiguration;
 
     protected boolean configSeen;
-    protected final boolean newStyleChannels;
     protected final String uniqueId;
     protected @Nullable String groupId;
     protected String componentId;
@@ -121,14 +120,10 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
      *
      * @param componentConfiguration generic componentConfiguration with not parsed JSON config
      * @param clazz target configuration type
-     * @param newStyleChannels if new style channels should be used
      * @param singleChannelComponent if this component only ever has one channel, so should never be in a group
-     *            (only if newStyleChannels is true)
      */
-    public AbstractComponent(ComponentFactory.ComponentConfiguration componentConfiguration, Class<C> clazz,
-            boolean newStyleChannels) {
+    public AbstractComponent(ComponentFactory.ComponentConfiguration componentConfiguration, Class<C> clazz) {
         this.componentConfiguration = componentConfiguration;
-        this.newStyleChannels = newStyleChannels;
 
         this.channelConfigurationJson = componentConfiguration.getConfigJSON();
         this.channelConfiguration = componentConfiguration.getConfig(clazz);
@@ -137,18 +132,11 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         this.haID = componentConfiguration.getHaID();
 
         String name = channelConfiguration.getName();
-        if (newStyleChannels) {
-            // try for a simple component/group ID first; if there are conflicts
-            // (components of different types, but the same object id)
-            // we'll resolve them later
-            groupId = componentId = haID.objectID.replace('-', '_');
-        } else if (name != null && !name.isEmpty()) {
-            groupId = componentId = this.haID.getGroupId(channelConfiguration.getUniqueId(), false);
-        } else {
-            groupId = null;
-            componentId = "";
-        }
-        uniqueId = haID.component + "_" + haID.getGroupId(channelConfiguration.getUniqueId(), false);
+        // try for a simple component/group ID first; if there are conflicts
+        // (components of different types, but the same object id)
+        // we'll resolve them later
+        groupId = componentId = haID.objectID.replace('-', '_');
+        uniqueId = haID.component + "_" + haID.getGroupId(channelConfiguration.getUniqueId());
 
         this.configSeen = false;
 
@@ -199,9 +187,6 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     protected void finalizeChannels() {
         addJsonAttributesChannel();
-        if (!newStyleChannels) {
-            return;
-        }
         if (channels.size() == 1) {
             groupId = null;
             channels.values().forEach(c -> c.resetUID(buildChannelUID(componentId)));
@@ -214,7 +199,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
     }
 
     public void resolveConflict() {
-        if (newStyleChannels && channels.size() == 1) {
+        if (channels.size() == 1) {
             componentId = componentId + "_" + haID.component;
             channels.values().forEach(c -> c.resetUID(buildChannelUID(componentId)));
         } else {

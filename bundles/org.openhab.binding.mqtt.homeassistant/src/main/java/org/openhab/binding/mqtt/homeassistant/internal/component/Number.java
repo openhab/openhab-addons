@@ -64,8 +64,8 @@ public class Number extends AbstractComponent<Number.ChannelConfiguration> {
         protected String mode = "auto";
     }
 
-    public Number(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
-        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
+    public Number(ComponentFactory.ComponentConfiguration componentConfiguration) {
+        super(componentConfiguration, ChannelConfiguration.class);
 
         NumberValue value = new NumberValue(channelConfiguration.min, channelConfiguration.max,
                 channelConfiguration.step, UnitUtils.parseUnit(channelConfiguration.unitOfMeasurement));
