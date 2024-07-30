@@ -136,6 +136,7 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_MOTION, "", THING_TYPE_SHELLYMOTION_STR), //
                 // Plus Series
                 Arguments.of(SHELLYDT_PLUS1, "", THING_TYPE_SHELLYPLUS1_STR), //
+                Arguments.of(SHELLYDT_PLUS1G3, "", THING_TYPE_SHELLYPLUS1_STR), //
                 Arguments.of(SHELLYDT_PLUS1PM, "", THING_TYPE_SHELLYPLUS1PM_STR), //
                 Arguments.of(SHELLYDT_PLUS1PMG3, "", THING_TYPE_SHELLYPLUS1PM_STR), //
                 Arguments.of(SHELLYDT_PLUS1UL, "", THING_TYPE_SHELLYPLUS1_STR), //
