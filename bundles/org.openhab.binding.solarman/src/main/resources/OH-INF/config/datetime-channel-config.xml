@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="channel-type-config:solarman:datetime-channel">
+		<parameter name="uom" type="text">
+			<label>Unit of Measurement</label>
+			<description>The unit of measurement used for this channel</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="scale" type="decimal">
+			<label>Scale</label>
+			<description>The scaling factor, the final value will be scaled by this</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="rule" type="integer">
+			<label>Rule</label>
+			<description>The type of measurement. See explanation for possible values</description>
+			<advanced>true</advanced>
+			<options>
+				<option value="1">Unsigned Short</option>
+				<option value="2">Signed Short</option>
+				<option value="3">Unsigned Integer</option>
+				<option value="4">Signed Integer</option>
+				<option value="5">Text</option>
+				<option value="6">Bytes</option>
+				<option value="7">Version</option>
+				<option value="8">Date Time</option>
+				<option value="9">Time</option>
+			</options>
+		</parameter>
+		<parameter name="offset" type="decimal">
+			<label>Offset</label>
+			<description>The offset subtracted from the measurement</description>
+			<advanced>true</advanced>
+		</parameter>
+		<parameter name="registers" type="text">
+			<label>Registers</label>
+			<description>Comma separated list of registers to read for the measurement</description>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>
