@@ -58,6 +58,7 @@ import org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.ShellyStatusSe
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2APClientList;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2AuthChallenge;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2ConfigParms;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2DeviceConfigSta;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfig.Shelly2GetConfigResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceConfigAp;
@@ -317,15 +318,32 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             asyncApiRequest(SHELLYRPC_METHOD_GETSTATUS); // request periodic status updates from device
 
             try {
-                if (profile.alwaysOn && config.enableBluGateway != null) {
+                if (profile.alwaysOn && config.enableBluGateway != null && dc.ble != null) {
                     logger.debug("{}: BLU Gateway support is {} for this device", thingName,
                             config.enableBluGateway ? "enabled" : "disabled");
                     if (config.enableBluGateway) {
-                        boolean bluetooth = getBool(profile.settings.bluetooth);
-                        if (config.enableBluGateway && !bluetooth) {
-                            logger.info("{}: Bluetooth needs to be enabled to activate BLU Gateway mode", thingName);
+                        boolean bluetooth = getBool(dc.ble.enable);
+                        boolean observer = dc.ble.observer != null && getBool(dc.ble.observer.enable);
+                        if (!bluetooth) {
+                            logger.warn("{}: Bluetooth will be enabled to activate BLU Gateway mode", thingName);
                         }
+                        if (observer) {
+                            logger.warn("{}: Shelly Cloud Bluetooth Gateway conflicts with openHAB, disabling it",
+                                    thingName);
+                        }
+                        boolean restart = false;
+                        if (!bluetooth || observer) {
+                            logger.info("{}: Setup openHAB BLU Gateway", thingName);
+                            restart = setBluetooth(true);
+                        }
+
                         installScript(SHELLY2_BLU_GWSCRIPT, config.enableBluGateway && bluetooth);
+
+                        if (restart) {
+                            logger.info("{}: Restart device to activate BLU Gateway", thingName);
+                            deviceReboot();
+                            getThing().reinitializeThing();
+                        }
                     }
                 }
             } catch (ShellyApiException e) {
@@ -1013,13 +1031,17 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public boolean setBluetooth(boolean enable) throws ShellyApiException {
         Shelly2RpcRequestParams params = new Shelly2RpcRequestParams().withConfig();
         params.config.enable = enable;
+        if (enable) {
+            params.config.observer = new Shelly2DevConfigBleObserver();
+            params.config.observer.enable = false;
+        }
         Shelly2WsConfigResult res = apiRequest(SHELLYRPC_METHOD_BLESETCONG, params, Shelly2WsConfigResult.class);
         return res.restartRequired;
     }
 
     @Override
-    public String deviceReboot() throws ShellyApiException {
-        return apiRequest(SHELLYRPC_METHOD_REBOOT, null, String.class);
+    public void deviceReboot() throws ShellyApiException {
+        apiRequest(SHELLYRPC_METHOD_REBOOT, null, String.class);
     }
 
     @Override
