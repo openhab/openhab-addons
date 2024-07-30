@@ -101,26 +101,4 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
             snap.setSmartCourse(Objects.requireNonNullElse((String) washerDryerMap.get(altSmartCourseNodeName), ""));
         }
     }
-
-    @Override
-    protected LGAPIVerion discoveryAPIVersion(Map<String, Object> snapMap, DeviceTypes type) {
-        switch (type) {
-            case DRYER_TOWER:
-            case DRYER:
-                return LGAPIVerion.V2_0;
-            case WASHING_TOWER:
-            case WASHERDRYER_MACHINE:
-                if (snapMap.containsKey(WM_SNAPSHOT_WASHER_DRYER_NODE_V2)) {
-                    return LGAPIVerion.V2_0;
-                } else if (snapMap.containsKey("State")) {
-                    return LGAPIVerion.V1_0;
-                } else {
-                    throw new IllegalStateException(
-                            "Unexpected error. Can't find key node attributes to determine WASHERDRYER_MACHINE API version.");
-                }
-            default:
-                throw new IllegalStateException("Discovery version for device type " + type
-                        + " not supported for this builder. It most likely a bug");
-        }
-    }
 }

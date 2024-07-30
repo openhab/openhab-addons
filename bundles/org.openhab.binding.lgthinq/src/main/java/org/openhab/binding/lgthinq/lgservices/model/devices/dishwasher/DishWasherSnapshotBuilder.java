@@ -58,18 +58,4 @@ public class DishWasherSnapshotBuilder extends DefaultSnapshotBuilder<DishWasher
                         String.format("Version %s for DishWasher is not supported.", version));
         }
     }
-
-    @Override
-    protected LGAPIVerion discoveryAPIVersion(Map<String, Object> snapMap, DeviceTypes type) {
-        if (type == DeviceTypes.DISH_WASHER) {
-            if (snapMap.containsKey(DW_SNAPSHOT_WASHER_DRYER_NODE_V2)) {
-                return LGAPIVerion.V2_0;
-            } else {
-                throw new IllegalStateException(
-                        "DishWasher supports only Thinq V1. Can't find key node attributes to determine DishWasher V2 API.");
-            }
-        }
-        throw new IllegalStateException(
-                "Discovery version for device type " + type + " not supported for this builder. It most likely a bug");
-    }
 }

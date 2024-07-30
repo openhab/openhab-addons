@@ -149,7 +149,6 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
         if (snapMap == null) {
             throw new LGThinqApiException("snapshot node not present in device monitoring result.");
         }
-        LGAPIVerion version = discoveryAPIVersion(snapMap, type);
         return getSnapshot(snapMap, capDef);
     }
 
@@ -162,8 +161,6 @@ public abstract class DefaultSnapshotBuilder<S extends AbstractSnapshotDefinitio
         Objects.requireNonNull(deviceTypeId, "Unexpected error. deviceType field not present in snapshot schema");
         return DeviceTypes.fromDeviceTypeId(deviceTypeId, deviceCode);
     }
-
-    protected abstract LGAPIVerion discoveryAPIVersion(Map<String, Object> snapMap, DeviceTypes type);
 
     /**
      * Used
