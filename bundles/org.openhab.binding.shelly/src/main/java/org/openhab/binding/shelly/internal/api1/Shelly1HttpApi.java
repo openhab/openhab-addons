@@ -357,8 +357,8 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     @Override
-    public String deviceReboot() throws ShellyApiException {
-        return callApi(SHELLY_URL_RESTART, String.class);
+    public void deviceReboot() throws ShellyApiException {
+        callApi(SHELLY_URL_RESTART, String.class);
     }
 
     @Override
