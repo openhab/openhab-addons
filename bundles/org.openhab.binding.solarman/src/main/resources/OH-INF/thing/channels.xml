@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solarman"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="string">
+		<item-type>String</item-type>
+		<label>Text Value</label>
+		<config-description-ref uri="channel-type-config:solarman:string-channel"/>
+	</channel-type>
+
+	<channel-type id="number">
+		<item-type>Number</item-type>
+		<label>Number Value</label>
+		<config-description-ref uri="channel-type-config:solarman:number-channel"/>
+	</channel-type>
+
+	<channel-type id="datetime">
+		<item-type>DateTime</item-type>
+		<label>Datetime Value</label>
+		<config-description-ref uri="channel-type-config:solarman:datetime-channel"/>
+	</channel-type>
+
+	<channel-type id="dynamic">
+		<item-type>String</item-type>
+		<label>Dynamic Channel</label>
+		<config-description-ref uri="channel-type-config:solarman:dynamic-channel"/>
+	</channel-type>
+
+</thing:thing-descriptions>
