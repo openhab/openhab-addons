@@ -12,7 +12,7 @@
 				<context>url</context>
 				<label>Url</label>
 				<description>Database url</description>
-				<default>http://localhost:9999</default>
+				<default>http://localhost:8086</default>
 			</parameter>
 			<parameter name="user" type="text" required="true">
 				<label>Username</label>
