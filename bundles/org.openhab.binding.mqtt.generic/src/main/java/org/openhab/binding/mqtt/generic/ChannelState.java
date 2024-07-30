@@ -30,6 +30,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -420,7 +421,13 @@ public class ChannelState implements MqttMessageSubscriber {
 
         int qos = (config.qos != null) ? config.qos : connection.getQos();
 
-        return connection.publish(config.commandTopic, commandString.getBytes(), qos, config.retained);
+        String commandTopic;
+        if (command.equals(StopMoveType.STOP) && !config.stopCommandTopic.isEmpty()) {
+            commandTopic = config.stopCommandTopic;
+        } else {
+            commandTopic = config.commandTopic;
+        }
+        return connection.publish(commandTopic, commandString.getBytes(), qos, config.retained);
     }
 
     /**
