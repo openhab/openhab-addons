@@ -25,6 +25,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import javax.inject.Provider;
+import javax.measure.Unit;
+import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -41,6 +43,9 @@ import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchSer
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.MetricPrefix;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -79,6 +84,11 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
     private final Logger logger = LoggerFactory.getLogger(RelayHandler.class);
 
     protected static final String PROPERTY_MODE = "mode";
+
+    /**
+     * Unit for the impulse length, which is specified in deciseconds (tenth seconds)
+     */
+    private static final Unit<Time> UNIT_DECISECOND = MetricPrefix.DECI(Units.SECOND);
 
     private ChildProtectionService childProtectionService;
     private ImpulseSwitchService impulseSwitchService;
@@ -235,8 +245,8 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
             updateChildProtectionState(onOffCommand);
         } else if (CHANNEL_IMPULSE_SWITCH.equals(channelUID.getId()) && command instanceof OnOffType onOffCommand) {
             triggerImpulse(onOffCommand);
-        } else if (CHANNEL_IMPULSE_LENGTH.equals(channelUID.getId()) && command instanceof DecimalType number) {
-            updateImpulseLength(number);
+        } else if (CHANNEL_IMPULSE_LENGTH.equals(channelUID.getId())) {
+            updateImpulseLength(command);
         }
     }
 
@@ -260,15 +270,32 @@ public class RelayHandler extends AbstractPowerSwitchHandler {
         }
     }
 
-    private void updateImpulseLength(DecimalType number) {
+    private void updateImpulseLength(Command command) {
+        Integer impulseLength = getImpulseLength(command);
+        if (impulseLength == null) {
+            return;
+        }
+
         ImpulseSwitchServiceState newState = cloneCurrentImpulseSwitchServiceState();
         if (newState != null) {
-            newState.impulseLength = number.intValue();
+            newState.impulseLength = impulseLength;
             this.currentImpulseSwitchServiceState = newState;
             logger.debug("New impulse length setting for relay: {} deciseconds", newState.impulseLength);
 
             updateServiceState(impulseSwitchService, newState);
             logger.debug("Successfully sent state with new impulse length to controller.");
+        }
+    }
+
+    private @Nullable Integer getImpulseLength(Command command) {
+        if (command instanceof DecimalType decimalCommand) {
+            return decimalCommand.intValue();
+        } else if (command instanceof QuantityType<?> quantityCommand) {
+            @Nullable
+            QuantityType<?> convertedQuantity = quantityCommand.toUnit(UNIT_DECISECOND);
+            return convertedQuantity != null ? convertedQuantity.intValue() : null;
+        } else {
+            return null;
         }
     }
 

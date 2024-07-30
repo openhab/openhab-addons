@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
+import javax.measure.quantity.Time;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.junit.jupiter.api.Tag;
@@ -44,6 +46,8 @@ import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchSer
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -301,13 +305,48 @@ class RelayHandlerTest extends AbstractPowerSwitchHandlerTest<RelayHandler> {
 
     @Tag(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME)
     @Test
-    void testHandleCommandImpulseLength()
+    void testHandleCommandImpulseLengthDecimalType()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         Instant testDate = Instant.now();
         getFixture().setCurrentDateTimeProvider(() -> testDate);
 
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_IMPULSE_LENGTH),
                 new DecimalType(15));
+        verify(getBridgeHandler()).putState(eq(getDeviceID()), eq(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME),
+                impulseSwitchServiceStateCaptor.capture());
+        ImpulseSwitchServiceState state = impulseSwitchServiceStateCaptor.getValue();
+        assertThat(state.impulseState, is(false));
+        assertThat(state.impulseLength, is(15));
+        assertThat(state.instantOfLastImpulse, is("2024-04-14T15:52:31.677366Z"));
+    }
+
+    @Tag(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME)
+    @Test
+    void testHandleCommandImpulseLengthQuantityType()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        Instant testDate = Instant.now();
+        getFixture().setCurrentDateTimeProvider(() -> testDate);
+
+        getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_IMPULSE_LENGTH),
+                new QuantityType<Time>(1.5, Units.SECOND));
+        verify(getBridgeHandler()).putState(eq(getDeviceID()), eq(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME),
+                impulseSwitchServiceStateCaptor.capture());
+        ImpulseSwitchServiceState state = impulseSwitchServiceStateCaptor.getValue();
+        assertThat(state.impulseState, is(false));
+        assertThat(state.impulseLength, is(15));
+        assertThat(state.instantOfLastImpulse, is("2024-04-14T15:52:31.677366Z"));
+    }
+
+    @Tag(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME)
+    @Test
+    void testHandleCommandImpulseLengthQuantityTypeTooManyFractionDigits()
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        Instant testDate = Instant.now();
+        getFixture().setCurrentDateTimeProvider(() -> testDate);
+
+        // 0.08 s of 1.58 s will be discarded because API precision is limited to deciseconds
+        getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_IMPULSE_LENGTH),
+                new QuantityType<Time>(1.58, Units.SECOND));
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq(ImpulseSwitchService.IMPULSE_SWITCH_SERVICE_NAME),
                 impulseSwitchServiceStateCaptor.capture());
         ImpulseSwitchServiceState state = impulseSwitchServiceStateCaptor.getValue();
