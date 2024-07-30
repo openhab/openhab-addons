@@ -292,6 +292,8 @@ public class LGThinQBindingConstants {
     public static final String WM_CHANNEL_REMAIN_TIME_ID = "remain-time";
     public static final String WM_CHANNEL_DELAY_TIME_ID = "delay-time";
 
+    public static final String WM_LOST_WASHING_STATE_VALUE = "@WM_STATE_WASHING_W";
+    public static final String WM_LOST_WASHING_STATE_KEY = "WASHING";
     public static final Map<String, String> CAP_WDM_STATE = Map.ofEntries(entry("@WM_STATE_POWER_OFF_W", "Off"),
             entry("@WM_STATE_INITIAL_W", "Initial"), entry("@WM_STATE_PAUSE_W", "Pause"),
             entry("@WM_STATE_RESERVE_W", "Reserved"), entry("@WM_STATE_DETECTING_W", "Detecting"),
@@ -305,7 +307,9 @@ public class LGThinQBindingConstants {
             entry("@WM_STATE_FROZEN_PREVENT_INITIAL_W", "Frozen Preventing"),
             entry("@FROZEN_PREVENT_PAUSE", "Frozen Preventing Paused"),
             entry("@FROZEN_PREVENT_RUNNING", "Frozen Preventing Running"), entry("@AUDIBLE_DIAGNOSIS", "Diagnosing"),
-            entry("@WM_STATE_ERROR_W", "Error"));
+            entry("@WM_STATE_ERROR_W", "Error"),
+            // This last one is not defined in the cap file
+            entry(WM_LOST_WASHING_STATE_VALUE, "Washing"));
 
     public static final Map<String, String> CAP_WDM_PROCESS_STATE = Map.ofEntries(
             entry("@WM_STATE_DETECTING_W", "Detecting"), entry("@WM_STATE_STEAM_W", "Steam"),

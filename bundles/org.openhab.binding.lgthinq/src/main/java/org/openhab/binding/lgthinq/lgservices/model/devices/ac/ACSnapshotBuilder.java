@@ -50,23 +50,4 @@ public class ACSnapshotBuilder extends DefaultSnapshotBuilder<ACCanonicalSnapsho
         throw new IllegalStateException("Snapshot for device type " + capDef.getDeviceType()
                 + " not supported for this builder. It most likely a bug");
     }
-
-    @Override
-    protected LGAPIVerion discoveryAPIVersion(Map<String, Object> snapMap, DeviceTypes type) {
-        switch (type) {
-            case AIR_CONDITIONER:
-            case HEAT_PUMP:
-                if (snapMap.containsKey("airState.opMode")) {
-                    return LGAPIVerion.V2_0;
-                } else if (snapMap.containsKey("OpMode")) {
-                    return LGAPIVerion.V1_0;
-                } else {
-                    throw new IllegalStateException(
-                            "Unexpected error. Can't find key node attributes to determine ACCapability API version.");
-                }
-            default:
-                throw new IllegalStateException("Discovery version for device type " + type
-                        + " not supported for this builder. It most likely a bug");
-        }
-    }
 }

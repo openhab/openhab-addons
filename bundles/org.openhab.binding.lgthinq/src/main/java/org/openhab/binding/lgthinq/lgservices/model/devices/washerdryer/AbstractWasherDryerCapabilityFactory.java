@@ -22,6 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.internal.errors.LGThinqException;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractCapabilityFactory;
 import org.openhab.binding.lgthinq.lgservices.model.DeviceTypes;
+import org.openhab.binding.lgthinq.lgservices.model.FeatureDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.MonitoringResultFormat;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseDefinition;
 import org.openhab.binding.lgthinq.lgservices.model.devices.commons.washers.CourseType;
@@ -87,7 +88,9 @@ public abstract class AbstractWasherDryerCapabilityFactory extends AbstractCapab
             throw new LGThinqException("MonitoringValue node not found in the V2 WashingDryer cap definition.");
         }
         // mapping possible states
-        wdCap.setState(newFeatureDefinition(getStateFeatureNodeName(), monitorValueNode));
+        FeatureDefinition fd = newFeatureDefinition(getStateFeatureNodeName(), monitorValueNode);
+        fd.getValuesMapping().put(WM_LOST_WASHING_STATE_KEY, WM_LOST_WASHING_STATE_VALUE);
+        wdCap.setState(fd);
         wdCap.setProcessState(newFeatureDefinition(getProcessStateNodeName(), monitorValueNode));
         // --- Selectable features -----
         wdCap.setRinseFeat(newFeatureDefinition(getRinseFeatureNodeName(), monitorValueNode,

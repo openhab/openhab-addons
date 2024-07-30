@@ -63,18 +63,4 @@ public class FridgeSnapshotBuilder extends DefaultSnapshotBuilder<FridgeCanonica
         throw new IllegalStateException("Snapshot for device type " + capDef.getDeviceType()
                 + " not supported for this builder. It most likely a bug");
     }
-
-    @Override
-    protected LGAPIVerion discoveryAPIVersion(Map<String, Object> snapMap, DeviceTypes type) {
-        if (REFRIGERATOR.equals(type)) {
-            if (snapMap.containsKey(REFRIGERATOR_SNAPSHOT_NODE_V2)) {
-                return LGAPIVerion.V2_0;
-            } else {
-                throw new IllegalStateException(
-                        "Unexpected error. Can't find key node attributes to determine ACCapability API version.");
-            }
-        }
-        throw new IllegalStateException(
-                "Unexpected capability. The type " + type + " is not supported by this builder. It most likely a bug");
-    }
 }
