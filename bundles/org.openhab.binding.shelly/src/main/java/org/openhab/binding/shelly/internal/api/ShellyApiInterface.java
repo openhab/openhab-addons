@@ -112,7 +112,7 @@ public interface ShellyApiInterface {
 
     boolean setBluetooth(boolean enable) throws ShellyApiException;
 
-    String deviceReboot() throws ShellyApiException;
+    void deviceReboot() throws ShellyApiException;
 
     String setDebug(boolean enabled) throws ShellyApiException;
 
