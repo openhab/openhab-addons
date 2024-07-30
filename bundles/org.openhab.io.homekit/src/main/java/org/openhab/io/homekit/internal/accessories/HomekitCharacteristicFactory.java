@@ -856,7 +856,7 @@ public class HomekitCharacteristicFactory {
     private static CurrentDoorStateCharacteristic createCurrentDoorStateCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         List<CurrentDoorStateEnum> validValues = new ArrayList<>();
-        var map = createMapping(taggedItem, CurrentDoorStateEnum.class, validValues);
+        var map = createMapping(taggedItem, CurrentDoorStateEnum.class, validValues, true);
         return new CurrentDoorStateCharacteristic(() -> getEnumFromItem(taggedItem, map, CurrentDoorStateEnum.CLOSED),
                 getSubscriber(taggedItem, CURRENT_DOOR_STATE, updater),
                 getUnsubscriber(taggedItem, CURRENT_DOOR_STATE, updater));
@@ -1427,7 +1427,7 @@ public class HomekitCharacteristicFactory {
     private static TargetDoorStateCharacteristic createTargetDoorStateCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         List<TargetDoorStateEnum> validValues = new ArrayList<>();
-        var map = createMapping(taggedItem, TargetDoorStateEnum.class, validValues);
+        var map = createMapping(taggedItem, TargetDoorStateEnum.class, validValues, true);
         return new TargetDoorStateCharacteristic(() -> getEnumFromItem(taggedItem, map, TargetDoorStateEnum.CLOSED),
                 (targetState) -> setValueFromEnum(taggedItem, targetState, map),
                 getSubscriber(taggedItem, TARGET_DOOR_STATE, updater),
