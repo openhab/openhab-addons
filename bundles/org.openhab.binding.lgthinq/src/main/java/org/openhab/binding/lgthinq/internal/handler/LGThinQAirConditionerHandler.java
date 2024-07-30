@@ -214,24 +214,16 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         ACCapability acCap = getCapabilities();
-        if (getThing().getChannel(jetModeChannelUID) == null && acCap.isJetModeAvailable()) {
-            createDynSwitchChannel(CHANNEL_COOL_JET_ID, jetModeChannelUID);
-        }
-        if (getThing().getChannel(autoDryChannelUID) == null && acCap.isAutoDryModeAvailable()) {
-            createDynSwitchChannel(CHANNEL_AUTO_DRY_ID, autoDryChannelUID);
-        }
-        if (getThing().getChannel(airCleanChannelUID) == null && acCap.isAirCleanAvailable()) {
-            createDynSwitchChannel(CHANNEL_AIR_CLEAN_ID, airCleanChannelUID);
-        }
-        if (getThing().getChannel(energySavingChannelUID) == null && acCap.isEnergySavingAvailable()) {
-            createDynSwitchChannel(CHANNEL_ENERGY_SAVING_ID, energySavingChannelUID);
-        }
-        if (getThing().getChannel(stepUpDownChannelUID) == null && acCap.isStepUpDownAvailable()) {
-            createDynChannel(CHANNEL_STEP_UP_DOWN_ID, stepUpDownChannelUID, "Number");
-        }
-        if (getThing().getChannel(stepLeftRightChannelUID) == null && acCap.isStepLeftRightAvailable()) {
-            createDynChannel(CHANNEL_STEP_LEFT_RIGHT_ID, stepLeftRightChannelUID, "Number");
-        }
+        manageDynChannel(jetModeChannelUID, CHANNEL_COOL_JET_ID, "Switch", acCap.isJetModeAvailable());
+        manageDynChannel(autoDryChannelUID, CHANNEL_AUTO_DRY_ID, "Switch", acCap.isAutoDryModeAvailable());
+        manageDynChannel(airCleanChannelUID, CHANNEL_AIR_CLEAN_ID, "Switch", acCap.isAirCleanAvailable());
+        manageDynChannel(energySavingChannelUID, CHANNEL_ENERGY_SAVING_ID, "Switch", acCap.isEnergySavingAvailable());
+        manageDynChannel(stepUpDownChannelUID, CHANNEL_STEP_UP_DOWN_ID, "Number", acCap.isStepUpDownAvailable());
+        manageDynChannel(stepLeftRightChannelUID, CHANNEL_STEP_LEFT_RIGHT_ID, "Number",
+                acCap.isStepLeftRightAvailable());
+        manageDynChannel(stepLeftRightChannelUID, CHANNEL_STEP_LEFT_RIGHT_ID, "Number",
+                acCap.isStepLeftRightAvailable());
+
         if (!acCap.getFanSpeed().isEmpty()) {
             List<StateOption> options = new ArrayList<>();
             acCap.getFanSpeed()

@@ -795,4 +795,14 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
             return channel;
         }
     }
+
+    protected void manageDynChannel(ChannelUID channelUid, String channelName, String itemType,
+            boolean isFeatureAvailable) {
+        Channel chan = getThing().getChannel(channelUid);
+        if (chan == null && isFeatureAvailable) {
+            createDynChannel(channelName, channelUid, itemType);
+        } else if (chan != null && (!isFeatureAvailable)) {
+            updateThing(editThing().withoutChannel(chan.getUID()).build());
+        }
+    }
 }
