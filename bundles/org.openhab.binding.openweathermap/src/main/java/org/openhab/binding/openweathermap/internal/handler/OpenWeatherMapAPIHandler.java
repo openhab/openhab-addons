@@ -76,7 +76,8 @@ public class OpenWeatherMapAPIHandler extends BaseBridgeHandler {
         config = getConfigAs(OpenWeatherMapAPIConfiguration.class);
 
         boolean configValid = true;
-        if (config.apikey.isBlank()) {
+        String apiKey = config.apikey;
+        if (apiKey == null || apiKey.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-apikey");
             configValid = false;

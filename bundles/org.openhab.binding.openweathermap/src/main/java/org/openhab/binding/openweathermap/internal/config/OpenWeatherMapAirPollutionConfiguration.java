@@ -13,7 +13,6 @@
 package org.openhab.binding.openweathermap.internal.config;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAirPollutionHandler;
 
 /**
  * The {@link OpenWeatherMapAirPollutionConfiguration} is the class used to match the

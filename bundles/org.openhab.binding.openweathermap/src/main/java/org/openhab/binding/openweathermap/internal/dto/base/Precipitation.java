@@ -36,6 +36,8 @@ public class Precipitation {
     }
 
     public Double getVolume() {
+        Double oneHour = this.oneHour;
+        Double threeHours = this.threeHours;
         return oneHour != null ? oneHour : threeHours != null ? threeHours / 3 : 0;
     }
 }

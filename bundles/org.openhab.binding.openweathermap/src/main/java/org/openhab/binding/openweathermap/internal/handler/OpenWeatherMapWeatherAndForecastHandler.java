@@ -200,6 +200,10 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
     @Override
     protected void updateChannel(ChannelUID channelUID) {
         String channelGroupId = channelUID.getGroupId();
+        if (channelGroupId == null) {
+            logger.debug("Cannot update {} as it has no GroupId", channelUID);
+            return;
+        }
         switch (channelGroupId) {
             case CHANNEL_GROUP_STATION:
             case CHANNEL_GROUP_CURRENT_WEATHER:

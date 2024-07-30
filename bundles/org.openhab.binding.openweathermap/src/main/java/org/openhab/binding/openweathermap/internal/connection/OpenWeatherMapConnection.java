@@ -379,6 +379,8 @@ public class OpenWeatherMapConnection {
                     logger.debug("OpenWeatherMap server responded with status code {}: {}", httpStatus, errorMessage);
                     throw new ConfigurationException(errorMessage);
                 case TOO_MANY_REQUESTS_429:
+                    errorMessage = getErrorMessage(content);
+                    logger.debug("OpenWeatherMap server responded with status code {}: {}", httpStatus, errorMessage);
                     // TODO disable refresh job temporarily (see https://openweathermap.org/appid#Accesslimitation)
                 default:
                     errorMessage = getErrorMessage(content);
