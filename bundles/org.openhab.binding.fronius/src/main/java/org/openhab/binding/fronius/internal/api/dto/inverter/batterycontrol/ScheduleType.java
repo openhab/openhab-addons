@@ -10,17 +10,16 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.fronius.internal;
+package org.openhab.binding.fronius.internal.api.dto.inverter.batterycontrol;
 
 /**
- * The {@link FroniusBridgeConfiguration} is the class used to match the
- * bridge configuration.
+ * Enum for the schedule type of the battery control.
  *
- * @author Thomas Rokohl - Initial contribution
+ * @author Florian Hotze - Initial contribution
  */
-public class FroniusBridgeConfiguration {
-    public String hostname;
-    public String username;
-    public String password;
-    public Integer refreshInterval;
+public enum ScheduleType {
+    CHARGE_MIN,
+    CHARGE_MAX,
+    DISCHARGE_MIN,
+    DISCHARGE_MAX
 }

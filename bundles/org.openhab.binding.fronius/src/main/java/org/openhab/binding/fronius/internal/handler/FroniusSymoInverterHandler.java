@@ -12,14 +12,22 @@
  */
 package org.openhab.binding.fronius.internal.handler;
 
+import java.net.URI;
+import java.time.LocalTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import javax.measure.Unit;
+import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.fronius.internal.FroniusBaseDeviceConfiguration;
 import org.openhab.binding.fronius.internal.FroniusBindingConstants;
 import org.openhab.binding.fronius.internal.FroniusBridgeConfiguration;
+import org.openhab.binding.fronius.internal.action.FroniusSymoInverterActions;
+import org.openhab.binding.fronius.internal.api.FroniusBatteryControl;
 import org.openhab.binding.fronius.internal.api.FroniusCommunicationException;
 import org.openhab.binding.fronius.internal.api.dto.ValueUnit;
 import org.openhab.binding.fronius.internal.api.dto.inverter.InverterDeviceStatus;
@@ -35,7 +43,10 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.State;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link FroniusSymoInverterHandler} is responsible for updating the data, which are
@@ -45,15 +56,21 @@ import org.openhab.core.types.State;
  * @author Peter Schraffl - Added device status and error status channels
  * @author Thomas Kordelle - Added inverter power, battery state of charge and PV solar yield
  * @author Jimmy Tanagra - Add powerflow autonomy, self consumption channels
+ * @author Florian Hotze - Add battery control actions
  */
 public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(FroniusSymoInverterHandler.class);
+    private final HttpClient httpClient;
 
     private @Nullable InverterRealtimeResponse inverterRealtimeResponse;
     private @Nullable PowerFlowRealtimeResponse powerFlowResponse;
     private FroniusBaseDeviceConfiguration config;
+    private @Nullable FroniusBatteryControl batteryControl;
 
-    public FroniusSymoInverterHandler(Thing thing) {
+    public FroniusSymoInverterHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -70,7 +87,79 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(FroniusBaseDeviceConfiguration.class);
+        FroniusBridgeConfiguration bridgeConfig = getBridge().getConfiguration().as(FroniusBridgeConfiguration.class);
+        if (bridgeConfig.username != null && bridgeConfig.password != null) {
+            batteryControl = new FroniusBatteryControl(httpClient, URI.create("http://" + bridgeConfig.hostname + "/"),
+                    bridgeConfig.username, bridgeConfig.password);
+        }
         super.initialize();
+    }
+
+    @Override
+    public Collection<Class<? extends ThingHandlerService>> getServices() {
+        return List.of(FroniusSymoInverterActions.class);
+    }
+
+    private @Nullable FroniusBatteryControl getBatteryControl() {
+        if (batteryControl == null) {
+            logger.warn("Battery control is not available. Check the bridge configuration.");
+        }
+        return batteryControl;
+    }
+
+    public void resetBatteryControl() {
+        FroniusBatteryControl batteryControl = getBatteryControl();
+        if (batteryControl != null) {
+            try {
+                batteryControl.reset();
+            } catch (FroniusCommunicationException e) {
+                logger.warn("Failed to reset battery control", e);
+            }
+        }
+    }
+
+    public void holdBatteryCharge() {
+        FroniusBatteryControl batteryControl = getBatteryControl();
+        if (batteryControl != null) {
+            try {
+                batteryControl.holdBatteryCharge();
+            } catch (FroniusCommunicationException e) {
+                logger.warn("Failed to set battery control to hold battery charge", e);
+            }
+        }
+    }
+
+    public void addHoldBatteryChargeSchedule(LocalTime from, LocalTime until) {
+        FroniusBatteryControl batteryControl = getBatteryControl();
+        if (batteryControl != null) {
+            try {
+                batteryControl.addHoldBatteryChargeSchedule(from, until);
+            } catch (FroniusCommunicationException e) {
+                logger.warn("Failed to add hold battery charge schedule to battery control", e);
+            }
+        }
+    }
+
+    public void forceBatteryCharging(QuantityType<Power> power) {
+        FroniusBatteryControl batteryControl = getBatteryControl();
+        if (batteryControl != null) {
+            try {
+                batteryControl.forceBatteryCharging(power);
+            } catch (FroniusCommunicationException e) {
+                logger.warn("Failed to set battery control to force battery charge", e);
+            }
+        }
+    }
+
+    public void addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power) {
+        FroniusBatteryControl batteryControl = getBatteryControl();
+        if (batteryControl != null) {
+            try {
+                batteryControl.addForcedBatteryChargingSchedule(from, until, power);
+            } catch (FroniusCommunicationException e) {
+                logger.warn("Failed to add forced battery charge schedule to battery control", e);
+            }
+        }
     }
 
     /**
@@ -92,6 +181,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
             return null;
         }
 
+        InverterDeviceStatus deviceStatus;
         switch (fieldName) {
             case FroniusBindingConstants.INVERTER_DATA_CHANNEL_PAC:
                 return getQuantityOrZero(inverterData.getPac(), Units.WATT);
@@ -129,7 +219,7 @@ public class FroniusSymoInverterHandler extends FroniusBaseThingHandler {
                 // Convert the unit to MWh for backwards compatibility with non-quantity type
                 return getQuantityOrZero(inverterData.getYearEnergy(), Units.MEGAWATT_HOUR).toUnit("MWh");
             case FroniusBindingConstants.INVERTER_DATA_CHANNEL_DEVICE_STATUS_ERROR_CODE:
-                InverterDeviceStatus deviceStatus = inverterData.getDeviceStatus();
+                deviceStatus = inverterData.getDeviceStatus();
                 if (deviceStatus == null) {
                     return null;
                 }
