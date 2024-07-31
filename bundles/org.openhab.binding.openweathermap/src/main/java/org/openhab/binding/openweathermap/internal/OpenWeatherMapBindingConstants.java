@@ -45,6 +45,7 @@ public class OpenWeatherMapBindingConstants {
     public static final String CONFIG_API_KEY = "apikey";
     public static final String CONFIG_LANGUAGE = "language";
     public static final String CONFIG_LOCATION = "location";
+    public static final String CONFIG_HISTORY_DAYS = "historyDay";
 
     // Channel group types
     public static final ChannelGroupTypeUID CHANNEL_GROUP_TYPE_STATION = new ChannelGroupTypeUID(BINDING_ID, "station");

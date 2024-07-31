@@ -83,11 +83,10 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
     public void initialize() {
         OpenWeatherMapLocationConfiguration config = getConfigAs(OpenWeatherMapLocationConfiguration.class);
 
-        boolean configValid = true;
         if (config.location == null || config.location.trim().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-location");
-            configValid = false;
+            return;
         }
 
         try {
@@ -96,13 +95,10 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
             logger.warn("Error parsing 'location' parameter: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-parsing-location");
-            location = null;
-            configValid = false;
+            return;
         }
 
-        if (configValid) {
-            updateStatus(ThingStatus.UNKNOWN);
-        }
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override

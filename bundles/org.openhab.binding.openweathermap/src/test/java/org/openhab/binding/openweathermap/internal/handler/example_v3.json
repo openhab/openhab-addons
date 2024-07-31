@@ -1,0 +1,32 @@
+{
+    "lat": 51.0435,
+    "lon": 7.2865,
+    "timezone": "Europe/Berlin",
+    "timezone_offset": 7200,
+    "data": [
+        {
+            "dt": 1722317946,
+            "sunrise": 1722311628,
+            "sunset": 1722367234,
+            "temp": 17.45,
+            "feels_like": 17.39,
+            "pressure": 1018,
+            "humidity": 82,
+            "dew_point": 14.35,
+            "uvi": 0.62,
+            "clouds": 24,
+            "visibility": 10000,
+            "wind_speed": 1.65,
+            "wind_deg": 116,
+            "wind_gust": 5.11,
+            "weather": [
+                {
+                    "id": 801,
+                    "main": "Clouds",
+                    "description": "Ein paar Wolken",
+                    "icon": "02d"
+                }
+            ]
+        }
+    ]
+}
