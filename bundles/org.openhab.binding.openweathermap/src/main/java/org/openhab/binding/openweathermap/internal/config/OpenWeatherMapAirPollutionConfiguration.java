@@ -16,7 +16,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * The {@link OpenWeatherMapAirPollutionConfiguration} is the class used to match the
- * {@link OpenWeatherMapAirPollutionHandler}s configuration.
+ * {@link org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAirPollutionHandler}s configuration.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

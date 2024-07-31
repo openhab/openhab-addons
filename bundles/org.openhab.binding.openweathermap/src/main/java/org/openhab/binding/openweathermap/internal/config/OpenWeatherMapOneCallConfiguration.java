@@ -15,7 +15,8 @@ package org.openhab.binding.openweathermap.internal.config;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link OpenWeatherMapOneCallConfiguration} is the class used to match the {@link OpenWeatherMapOneCallHandler}s
+ * The {@link OpenWeatherMapOneCallConfiguration} is the class used to match the
+ * {@link org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapOneCallHandler}s
  * configuration.
  *
  * @author Wolfgang Klimt - Initial contribution

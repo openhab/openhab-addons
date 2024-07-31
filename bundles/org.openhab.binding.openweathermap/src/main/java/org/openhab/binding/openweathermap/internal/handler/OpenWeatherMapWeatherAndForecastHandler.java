@@ -179,11 +179,12 @@ public class OpenWeatherMapWeatherAndForecastHandler extends AbstractOpenWeather
                         editConfig.put(CONFIG_FORECAST_DAYS, 0);
                         updateConfiguration(editConfig);
                         logger.debug("Removing daily forecast channel groups.");
-                        List<Channel> channels = getThing().getChannels().stream()
-                                .filter(c -> CHANNEL_GROUP_FORECAST_TODAY.equals(c.getUID().getGroupId())
-                                        || CHANNEL_GROUP_FORECAST_TOMORROW.equals(c.getUID().getGroupId())
-                                        || c.getUID().getGroupId().startsWith(CHANNEL_GROUP_DAILY_FORECAST_PREFIX))
-                                .collect(Collectors.toList());
+                        List<Channel> channels = getThing().getChannels().stream().filter(c -> {
+                            String groupId = c.getUID().getGroupId();
+                            return CHANNEL_GROUP_FORECAST_TODAY.equals(groupId)
+                                    || CHANNEL_GROUP_FORECAST_TOMORROW.equals(groupId)
+                                    || (groupId != null && groupId.startsWith(CHANNEL_GROUP_DAILY_FORECAST_PREFIX));
+                        }).collect(Collectors.toList());
                         updateThing(editThing().withoutChannels(channels).build());
                     } else {
                         throw e;
