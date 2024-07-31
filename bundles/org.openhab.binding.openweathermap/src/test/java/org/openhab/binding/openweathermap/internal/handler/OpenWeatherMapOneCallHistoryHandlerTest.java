@@ -106,6 +106,11 @@ public class OpenWeatherMapOneCallHistoryHandlerTest {
         return handler;
     }
 
+    
+    private static void assertGroupChannelStateSet(ThingHandlerCallback callback, ThingUID uid, String channel, State state) {
+        verify(callback).stateUpdated(new ChannelUID(uid, CHANNEL_GROUP_ONECALL_HISTORY + "#" + channel), state);
+    }
+
     @Test
     public void testInvalidConfiguration() {
         // Arrange
@@ -121,12 +126,8 @@ public class OpenWeatherMapOneCallHistoryHandlerTest {
         }
     }
 
-    private void assertGroupChannelStateSet(ThingHandlerCallback callback, ThingUID uid, String channel, State state) {
-        verify(callback).stateUpdated(new ChannelUID(uid, CHANNEL_GROUP_ONECALL_HISTORY + "#" + channel), state);
-    }
-
     @Test
-    public void testResponseMessageV30() {
+    public void testCurrentWithResponseMessageV30() {
         // Arrange
         final Configuration configuration = createConfig(true, "3.0");
         final Thing thing = mockThing(configuration);
@@ -183,7 +184,7 @@ public class OpenWeatherMapOneCallHistoryHandlerTest {
     }
 
     @Test
-    public void testResponseMessageV25() {
+    public void testCurrentWithResponseMessageV25() {
         // Arrange
         final Configuration configuration = createConfig(true, "3.0");
         final Thing thing = mockThing(configuration);
