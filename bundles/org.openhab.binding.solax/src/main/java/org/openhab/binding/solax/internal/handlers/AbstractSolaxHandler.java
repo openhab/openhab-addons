@@ -36,6 +36,8 @@ import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonSyntaxException;
+
 /**
  * The {@link SolaxCloudHandler} is responsible for handling commands, which are
  * sent to one of the channels.
@@ -99,6 +101,10 @@ public abstract class AbstractSolaxHandler extends BaseThingHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             } catch (SolaxUpdateException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+            } catch (JsonSyntaxException jse) {
+                logger.debug("JsonSyntaxException received.", jse);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                        SolaxBindingConstants.I18N_KEY_OFFLINE_CONFIGURATION_ERROR_JSON_CANNOT_BE_PARSED);
             } finally {
                 retrieveDataCallLock.unlock();
             }
@@ -113,6 +119,14 @@ public abstract class AbstractSolaxHandler extends BaseThingHandler {
             scheduler.execute(this::retrieveData);
         } else {
             logger.debug("Binding {} only supports refresh command", SolaxBindingConstants.BINDING_ID);
+        }
+    }
+
+    @Override
+    protected void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description) {
+        super.updateStatus(status, statusDetail, description);
+        if (status == ThingStatus.OFFLINE && statusDetail == ThingStatusDetail.CONFIGURATION_ERROR) {
+            cancelSchedule();
         }
     }
 

@@ -199,6 +199,7 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 - **on**: An optional string (like "Open") that is recognized as `UP` state.
 - **off**: An optional string (like "Close") that is recognized as `DOWN` state.
 - **stop**: An optional string (like "Stop") that is recognized as `STOP` state.
+- **stopCommandTopic**: An optional topic to send `STOP` commands to. If not set, `STOP` commands are sent to the main **commandTopic**.
 
 Internally `UP` is converted to 0%, `DOWN` to 100%.
 If strings are defined for these values, they are used for sending commands to the broker, too.

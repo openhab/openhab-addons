@@ -167,8 +167,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     public void publishChannelIfLinked(ChannelUID channelUID) {
         Planet planet = getPlanet();
-        if (isLinked(channelUID.getId()) && planet != null) {
-            final Channel channel = getThing().getChannel(channelUID.getId());
+        if (isLinked(channelUID) && planet != null) {
+            final Channel channel = getThing().getChannel(channelUID);
             if (channel == null) {
                 logger.error("Cannot find channel for {}", channelUID);
                 return;
@@ -272,8 +272,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     private boolean isPositionalChannelLinked() {
         List<String> positionalChannels = Arrays.asList(getPositionalChannelIds());
         for (Channel channel : getThing().getChannels()) {
-            String id = channel.getUID().getId();
-            if (isLinked(id) && positionalChannels.contains(id)) {
+            ChannelUID id = channel.getUID();
+            if (isLinked(id) && positionalChannels.contains(id.getId())) {
                 return true;
             }
         }

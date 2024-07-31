@@ -24,8 +24,10 @@ import org.openhab.binding.daikin.internal.DaikinBindingConstants;
 import org.openhab.binding.daikin.internal.DaikinCommunicationException;
 import org.openhab.binding.daikin.internal.DaikinDynamicStateDescriptionProvider;
 import org.openhab.binding.daikin.internal.api.ControlInfo;
+import org.openhab.binding.daikin.internal.api.DemandControl;
 import org.openhab.binding.daikin.internal.api.EnergyInfoDayAndWeek;
 import org.openhab.binding.daikin.internal.api.EnergyInfoYear;
+import org.openhab.binding.daikin.internal.api.Enums.DemandControlMode;
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 import org.openhab.binding.daikin.internal.api.Enums.FanSpeed;
 import org.openhab.binding.daikin.internal.api.Enums.HomekitMode;
@@ -34,6 +36,7 @@ import org.openhab.binding.daikin.internal.api.Enums.SpecialMode;
 import org.openhab.binding.daikin.internal.api.SensorInfo;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
@@ -44,6 +47,8 @@ import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonSyntaxException;
 
 /**
  * Handles communicating with a Daikin air conditioning unit.
@@ -59,6 +64,9 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
     private final Logger logger = LoggerFactory.getLogger(DaikinAcUnitHandler.class);
 
     private Optional<Integer> autoModeValue = Optional.empty();
+    private boolean pollDemandControl = true;
+    private Optional<String> savedDemandControlSchedule = Optional.empty();
+    private Optional<Integer> savedDemandControlMaxPower = Optional.empty();
 
     public DaikinAcUnitHandler(Thing thing, DaikinDynamicStateDescriptionProvider stateDescriptionProvider,
             @Nullable HttpClient httpClient) {
@@ -153,6 +161,29 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             // Suppress any error if energy info is not supported.
             logger.debug("getEnergyInfoDayAndWeek() error: {}", e.getMessage());
         }
+
+        if (pollDemandControl) {
+            try {
+                DemandControl demandInfo = webTargets.getDemandControl();
+                String schedule = demandInfo.getSchedule();
+                int maxPower = demandInfo.maxPower;
+
+                if (demandInfo.mode == DemandControlMode.SCHEDULED) {
+                    savedDemandControlSchedule = Optional.of(schedule);
+                    maxPower = demandInfo.getScheduledMaxPower();
+                } else if (demandInfo.mode == DemandControlMode.MANUAL) {
+                    savedDemandControlMaxPower = Optional.of(demandInfo.maxPower);
+                }
+
+                updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MODE, new StringType(demandInfo.mode.name()));
+                updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_MAX_POWER, new PercentType(maxPower));
+                updateState(DaikinBindingConstants.CHANNEL_AC_DEMAND_SCHEDULE, new StringType(schedule));
+            } catch (DaikinCommunicationException e) {
+                // Suppress any error if demand control is not supported.
+                logger.debug("getDemandControl() error: {}", e.getMessage());
+                pollDemandControl = false;
+            }
+        }
     }
 
     @Override
@@ -174,6 +205,24 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
             case DaikinBindingConstants.CHANNEL_AC_STREAMER:
                 if (command instanceof OnOffType onOffCommand) {
                     changeStreamer(onOffCommand.equals(OnOffType.ON));
+                    return true;
+                }
+                break;
+            case DaikinBindingConstants.CHANNEL_AC_DEMAND_MODE:
+                if (command instanceof StringType stringCommand) {
+                    changeDemandMode(stringCommand.toString());
+                    return true;
+                }
+                break;
+            case DaikinBindingConstants.CHANNEL_AC_DEMAND_MAX_POWER:
+                if (command instanceof PercentType percentCommand) {
+                    changeDemandMaxPower(percentCommand.intValue());
+                    return true;
+                }
+                break;
+            case DaikinBindingConstants.CHANNEL_AC_DEMAND_SCHEDULE:
+                if (command instanceof StringType stringCommand) {
+                    changeDemandSchedule(stringCommand.toString());
                     return true;
                 }
                 break;
@@ -263,6 +312,51 @@ public class DaikinAcUnitHandler extends DaikinBaseHandler {
 
     protected void changeStreamer(boolean streamerMode) throws DaikinCommunicationException {
         webTargets.setStreamerMode(streamerMode);
+    }
+
+    protected void changeDemandMode(String mode) throws DaikinCommunicationException {
+        DemandControlMode newMode;
+        try {
+            newMode = DemandControlMode.valueOf(mode);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid demand mode: {}. Valid values: {}", mode, DemandControlMode.values());
+            return;
+        }
+        DemandControl demandInfo = webTargets.getDemandControl();
+        if (demandInfo.mode != newMode) {
+            if (newMode == DemandControlMode.SCHEDULED && savedDemandControlSchedule.isPresent()) {
+                // restore previously saved schedule
+                demandInfo.setSchedule(savedDemandControlSchedule.get());
+            }
+
+            if (newMode == DemandControlMode.MANUAL && savedDemandControlMaxPower.isPresent()) {
+                // restore previously saved maxPower
+                demandInfo.maxPower = savedDemandControlMaxPower.get();
+            }
+        }
+        demandInfo.mode = newMode;
+        webTargets.setDemandControl(demandInfo);
+    }
+
+    protected void changeDemandMaxPower(int maxPower) throws DaikinCommunicationException {
+        DemandControl demandInfo = webTargets.getDemandControl();
+        demandInfo.mode = DemandControlMode.MANUAL;
+        demandInfo.maxPower = maxPower;
+        webTargets.setDemandControl(demandInfo);
+        savedDemandControlMaxPower = Optional.of(maxPower);
+    }
+
+    protected void changeDemandSchedule(String schedule) throws DaikinCommunicationException {
+        DemandControl demandInfo = webTargets.getDemandControl();
+        try {
+            demandInfo.setSchedule(schedule);
+        } catch (JsonSyntaxException e) {
+            logger.warn("Invalid schedule: {}. {}", schedule, e.getMessage());
+            return;
+        }
+        demandInfo.mode = DemandControlMode.SCHEDULED;
+        webTargets.setDemandControl(demandInfo);
+        savedDemandControlSchedule = Optional.of(demandInfo.getSchedule());
     }
 
     /**

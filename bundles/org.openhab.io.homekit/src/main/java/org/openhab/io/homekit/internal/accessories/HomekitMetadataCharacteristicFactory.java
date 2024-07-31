@@ -43,6 +43,8 @@ import io.github.hapjava.characteristics.impl.common.IsConfiguredCharacteristic;
 import io.github.hapjava.characteristics.impl.common.IsConfiguredEnum;
 import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 import io.github.hapjava.characteristics.impl.common.ServiceLabelIndexCharacteristic;
+import io.github.hapjava.characteristics.impl.common.ServiceLabelNamespaceCharacteristic;
+import io.github.hapjava.characteristics.impl.common.ServiceLabelNamespaceEnum;
 import io.github.hapjava.characteristics.impl.heatercooler.CurrentHeaterCoolerStateCharacteristic;
 import io.github.hapjava.characteristics.impl.heatercooler.CurrentHeaterCoolerStateEnum;
 import io.github.hapjava.characteristics.impl.heatercooler.TargetHeaterCoolerStateCharacteristic;
@@ -101,6 +103,7 @@ public class HomekitMetadataCharacteristicFactory {
             put(PICTURE_MODE, HomekitMetadataCharacteristicFactory::createPictureModeCharacteristic);
             put(SERIAL_NUMBER, HomekitMetadataCharacteristicFactory::createSerialNumberCharacteristic);
             put(SERVICE_INDEX, HomekitMetadataCharacteristicFactory::createServiceIndexCharacteristic);
+            put(SERVICE_LABEL, HomekitMetadataCharacteristicFactory::createServiceLabelNamespaceCharacteristic);
             put(SLEEP_DISCOVERY_MODE, HomekitMetadataCharacteristicFactory::createSleepDiscoveryModeCharacteristic);
             put(TARGET_HEATER_COOLER_STATE,
                     HomekitMetadataCharacteristicFactory::createTargetHeaterCoolerStateCharacteristic);
@@ -290,6 +293,10 @@ public class HomekitMetadataCharacteristicFactory {
 
     private static Characteristic createServiceIndexCharacteristic(Object value) {
         return new ServiceLabelIndexCharacteristic(getInteger(value));
+    }
+
+    private static Characteristic createServiceLabelNamespaceCharacteristic(Object value) {
+        return new ServiceLabelNamespaceCharacteristic(getEnum(value, ServiceLabelNamespaceEnum.class));
     }
 
     private static Characteristic createSleepDiscoveryModeCharacteristic(Object value) {

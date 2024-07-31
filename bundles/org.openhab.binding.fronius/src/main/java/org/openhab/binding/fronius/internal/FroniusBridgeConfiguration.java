@@ -20,5 +20,7 @@ package org.openhab.binding.fronius.internal;
  */
 public class FroniusBridgeConfiguration {
     public String hostname;
+    public String username;
+    public String password;
     public Integer refreshInterval;
 }

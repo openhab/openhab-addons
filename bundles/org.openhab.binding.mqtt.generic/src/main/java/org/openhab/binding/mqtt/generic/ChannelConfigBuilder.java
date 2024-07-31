@@ -59,6 +59,13 @@ public class ChannelConfigBuilder {
         return this;
     }
 
+    public ChannelConfigBuilder withStopCommandTopic(@Nullable String topic) {
+        if (topic != null) {
+            config.stopCommandTopic = topic;
+        }
+        return this;
+    }
+
     public ChannelConfigBuilder withRetain(boolean retain) {
         config.retained = retain;
         return this;

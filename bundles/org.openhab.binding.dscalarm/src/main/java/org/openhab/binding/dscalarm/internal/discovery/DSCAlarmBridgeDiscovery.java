@@ -71,7 +71,7 @@ public class DSCAlarmBridgeDiscovery extends AbstractDiscoveryService {
 
             logger.trace("addBridge(): '{}' was added to inbox.", thingUID);
         } catch (Exception e) {
-            logger.error("addBridge(): Error", e);
+            logger.warn("addBridge(): Error", e);
         }
     }
 }

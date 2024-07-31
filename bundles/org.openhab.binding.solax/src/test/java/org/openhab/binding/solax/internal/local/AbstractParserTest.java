@@ -20,8 +20,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solax.internal.connectivity.rawdata.local.LocalConnectRawDataBean;
 import org.openhab.binding.solax.internal.model.InverterType;
-import org.openhab.binding.solax.internal.model.local.LocalInverterData;
-import org.openhab.binding.solax.internal.model.local.parsers.RawDataParser;
+import org.openhab.binding.solax.internal.model.local.LocalData;
+import org.openhab.binding.solax.internal.model.local.RawDataParser;
 
 /**
  * The {@link AbstractParserTest} Abstract class defining the common logic for testing local connections to the various
@@ -44,7 +44,7 @@ public abstract class AbstractParserTest {
         Set<String> supportedChannels = parser.getSupportedChannels();
         assertFalse(supportedChannels.isEmpty());
 
-        LocalInverterData data = parser.getData(bean);
+        LocalData data = parser.getData(bean);
         assertParserSpecific(data);
     }
 
@@ -52,5 +52,5 @@ public abstract class AbstractParserTest {
 
     protected abstract String getRawData();
 
-    protected abstract void assertParserSpecific(LocalInverterData data);
+    protected abstract void assertParserSpecific(LocalData data);
 }

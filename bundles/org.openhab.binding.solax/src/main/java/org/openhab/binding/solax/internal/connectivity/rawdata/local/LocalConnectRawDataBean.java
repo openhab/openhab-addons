@@ -30,6 +30,7 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class LocalConnectRawDataBean implements RawDataBean {
 
+    @SerializedName(value = "sn", alternate = { "SN" })
     private @Nullable String sn;
     private @Nullable String ver;
     private int type;
@@ -38,6 +39,10 @@ public class LocalConnectRawDataBean implements RawDataBean {
     @SerializedName("Information")
     private String @Nullable [] information;
     private @Nullable String rawData;
+    @SerializedName("OCPPServer")
+    private @Nullable String ocppServer;
+    @SerializedName("OCPPChargerId")
+    private @Nullable String ocppChargerId;
 
     @Override
     public String toString() {
@@ -93,6 +98,22 @@ public class LocalConnectRawDataBean implements RawDataBean {
     @Override
     public void setRawData(String rawData) {
         this.rawData = rawData;
+    }
+
+    public @Nullable String getOcppServer() {
+        return ocppServer;
+    }
+
+    public void setOcppServer(@Nullable String ocppServer) {
+        this.ocppServer = ocppServer;
+    }
+
+    public @Nullable String getOcppChargerId() {
+        return ocppChargerId;
+    }
+
+    public void setOcppChargerId(String ocppChargerId) {
+        this.ocppChargerId = ocppChargerId;
     }
 
     public static LocalConnectRawDataBean fromJson(String json) {

@@ -32,6 +32,7 @@ public class ChannelConfig {
     /** This is either a state topic or a trigger topic, depending on {@link #trigger}. */
     public String stateTopic = "";
     public String commandTopic = "";
+    public String stopCommandTopic = "";
 
     /**
      * If true, the channel state is not updated on a new message.

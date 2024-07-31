@@ -52,6 +52,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
@@ -129,6 +130,41 @@ public class ChannelStateTests {
         c.config.retained = true;
         c.publishValue(new StringType("UPDATE")).get();
         verify(connectionMock).publish(eq("command"), any(), anyInt(), eq(true));
+
+        c.stop().get();
+        verify(connectionMock).unsubscribe(eq("state"), eq(c));
+    }
+
+    @Test
+    public void publishStopTest() throws Exception {
+        ChannelConfig config = ChannelConfigBuilder.create("state", "command").build();
+        config.stop = "STOP";
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+        c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+        verify(connectionMock).subscribe(eq("state"), eq(c));
+
+        c.publishValue(StopMoveType.STOP).get();
+        verify(connectionMock).publish(eq("command"), argThat(p -> Arrays.equals(p, "STOP".getBytes())), anyInt(),
+                eq(false));
+
+        c.stop().get();
+        verify(connectionMock).unsubscribe(eq("state"), eq(c));
+    }
+
+    @Test
+    public void publishStopSeparateTopicTest() throws Exception {
+        ChannelConfig config = ChannelConfigBuilder.create("state", "command").withStopCommandTopic("stopCommand")
+                .build();
+        config.stop = "STOP";
+        ChannelState c = spy(new ChannelState(config, channelUIDMock, textValue, channelStateUpdateListenerMock));
+
+        c.start(connectionMock, scheduler, 0).get(50, TimeUnit.MILLISECONDS);
+        verify(connectionMock).subscribe(eq("state"), eq(c));
+
+        c.publishValue(StopMoveType.STOP).get();
+        verify(connectionMock).publish(eq("stopCommand"), argThat(p -> Arrays.equals(p, "STOP".getBytes())), anyInt(),
+                eq(false));
 
         c.stop().get();
         verify(connectionMock).unsubscribe(eq("state"), eq(c));

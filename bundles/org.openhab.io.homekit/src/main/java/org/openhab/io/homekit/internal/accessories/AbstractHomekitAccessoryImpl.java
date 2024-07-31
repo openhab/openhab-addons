@@ -420,7 +420,8 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
             T defaultValue) {
         final Optional<HomekitTaggedItem> c = getCharacteristic(characteristicType);
         if (c.isPresent()) {
-            return HomekitCharacteristicFactory.getKeyFromMapping(c.get(), mapping, defaultValue);
+            return HomekitCharacteristicFactory.getKeyFromMapping(c.get(), c.get().getItem().getState(), mapping,
+                    defaultValue);
         }
         return defaultValue;
     }
@@ -450,6 +451,10 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
             return;
         }
         rawCharacteristics.put(characteristic.getClass(), characteristic);
+        // belongs on the accessory information service
+        if (characteristic.getClass() == NameCharacteristic.class) {
+            return;
+        }
         var service = getPrimaryService();
         if (service != null) {
             // find the corresponding add method at service and call it.

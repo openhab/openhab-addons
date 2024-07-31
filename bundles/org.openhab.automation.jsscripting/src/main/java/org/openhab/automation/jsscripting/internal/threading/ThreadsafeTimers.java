@@ -42,7 +42,7 @@ public class ThreadsafeTimers {
     // Mapping of positive, non-zero integer values (used as timeoutID or intervalID) and the Scheduler
     private final Map<Long, ScheduledCompletableFuture<Object>> idSchedulerMapping = new ConcurrentHashMap<>();
     private AtomicLong lastId = new AtomicLong();
-    private String identifier = "noIdentifier";
+    private String identifier = "javascript";
 
     public ThreadsafeTimers(Lock lock, ScriptExecution scriptExecution, Scheduler scheduler) {
         this.lock = lock;
@@ -99,7 +99,7 @@ public class ThreadsafeTimers {
      * @return Positive integer value which identifies the timer created; this value can be passed to
      *         <code>clearTimeout()</code> to cancel the timeout.
      */
-    public long setTimeout(Runnable callback, Long delay) {
+    public long setTimeout(Runnable callback, long delay) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             lock.lock();
@@ -113,6 +113,10 @@ public class ThreadsafeTimers {
         }, identifier + ".timeout." + id, Instant.now().plusMillis(delay));
         idSchedulerMapping.put(id, future);
         return id;
+    }
+
+    public long setTimeout(Runnable callback, double delay) {
+        return setTimeout(callback, Math.round(delay));
     }
 
     /**
@@ -138,7 +142,7 @@ public class ThreadsafeTimers {
      * @return Numeric, non-zero value which identifies the timer created; this value can be passed to
      *         <code>clearInterval()</code> to cancel the interval.
      */
-    public long setInterval(Runnable callback, Long delay) {
+    public long setInterval(Runnable callback, long delay) {
         long id = lastId.incrementAndGet();
         ScheduledCompletableFuture<Object> future = scheduler.schedule(() -> {
             lock.lock();
@@ -151,6 +155,10 @@ public class ThreadsafeTimers {
         }, identifier + ".interval." + id, new LoopingAdjuster(Duration.ofMillis(delay)));
         idSchedulerMapping.put(id, future);
         return id;
+    }
+
+    public long setInterval(Runnable callback, double delay) {
+        return setInterval(callback, Math.round(delay));
     }
 
     /**

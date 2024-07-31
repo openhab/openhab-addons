@@ -36,11 +36,16 @@ public interface FreeDeviceIntf extends ApiConsumerIntf {
     default long checkUptimeAndFirmware(long newUptime, long oldUptime, String firmwareVersion) {
         if (newUptime < oldUptime) {
             triggerChannel(getEventChannelUID(), "restarted");
+        }
+        if (oldUptime < 0 || newUptime < oldUptime) {
             Map<String, String> properties = editProperties();
-            if (!firmwareVersion.equals(properties.get(Thing.PROPERTY_FIRMWARE_VERSION))) {
+            String property = properties.get(Thing.PROPERTY_FIRMWARE_VERSION);
+            if (!firmwareVersion.equals(property)) {
                 properties.put(Thing.PROPERTY_FIRMWARE_VERSION, firmwareVersion);
                 updateProperties(properties);
-                triggerChannel(getEventChannelUID(), "firmware_updated");
+                if (property != null) {
+                    triggerChannel(getEventChannelUID(), "firmware_updated");
+                }
             }
         }
         return newUptime;

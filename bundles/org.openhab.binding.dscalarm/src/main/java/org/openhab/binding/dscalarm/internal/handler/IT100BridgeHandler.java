@@ -85,7 +85,7 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
 
         SerialPortIdentifier portIdentifier = serialPortManager.getIdentifier(serialPortName);
         if (portIdentifier == null) {
-            logger.error("openConnection(): No Such Port: {}", serialPort);
+            logger.warn("openConnection(): No Such Port: {}", serialPort);
             setConnected(false);
             return;
         }
@@ -106,18 +106,18 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
 
             setConnected(true);
         } catch (PortInUseException portInUseException) {
-            logger.error("openConnection(): Port in Use Exception: {}", portInUseException.getMessage());
+            logger.warn("openConnection(): Port in Use Exception: {}", portInUseException.getMessage());
             setConnected(false);
         } catch (UnsupportedCommOperationException unsupportedCommOperationException) {
-            logger.error("openConnection(): Unsupported Comm Operation Exception: {}",
+            logger.warn("openConnection(): Unsupported Comm Operation Exception: {}",
                     unsupportedCommOperationException.getMessage());
             setConnected(false);
         } catch (UnsupportedEncodingException unsupportedEncodingException) {
-            logger.error("openConnection(): Unsupported Encoding Exception: {}",
+            logger.warn("openConnection(): Unsupported Encoding Exception: {}",
                     unsupportedEncodingException.getMessage());
             setConnected(false);
         } catch (IOException ioException) {
-            logger.error("openConnection(): IO Exception: {}", ioException.getMessage());
+            logger.warn("openConnection(): IO Exception: {}", ioException.getMessage());
             setConnected(false);
         }
     }
@@ -129,10 +129,10 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             serialOutput.flush();
             logger.debug("write(): Message Sent: {}", doNotLog ? "***" : writeString);
         } catch (IOException ioException) {
-            logger.error("write(): {}", ioException.getMessage());
+            logger.warn("write(): {}", ioException.getMessage());
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("write(): Unable to write to serial port: {} ", exception.getMessage(), exception);
+            logger.warn("write(): Unable to write to serial port: {} ", exception.getMessage(), exception);
             setConnected(false);
         }
     }
@@ -145,10 +145,10 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             message = readLine();
             logger.debug("read(): Message Received: {}", message);
         } catch (IOException ioException) {
-            logger.error("read(): IO Exception: {} ", ioException.getMessage());
+            logger.warn("read(): IO Exception: {} ", ioException.getMessage());
             setConnected(false);
         } catch (Exception exception) {
-            logger.error("read(): Exception: {} ", exception.getMessage(), exception);
+            logger.warn("read(): Exception: {} ", exception.getMessage(), exception);
             setConnected(false);
         }
 
@@ -222,7 +222,7 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
                 String messageLine = serialInput.readLine();
                 handleIncomingMessage(messageLine);
             } catch (IOException ioException) {
-                logger.error("serialEvent(): IO Exception: {}", ioException.getMessage());
+                logger.warn("serialEvent(): IO Exception: {}", ioException.getMessage());
             }
         }
     }
@@ -238,7 +238,7 @@ public class IT100BridgeHandler extends DSCAlarmBaseBridgeHandler implements Ser
             serialPort.addEventListener(serialPortEventListenser);
             serialPort.notifyOnDataAvailable(true);
         } catch (TooManyListenersException tooManyListenersException) {
-            logger.error("setSerialEventHandler(): Too Many Listeners Exception: {}",
+            logger.warn("setSerialEventHandler(): Too Many Listeners Exception: {}",
                     tooManyListenersException.getMessage());
         }
     }

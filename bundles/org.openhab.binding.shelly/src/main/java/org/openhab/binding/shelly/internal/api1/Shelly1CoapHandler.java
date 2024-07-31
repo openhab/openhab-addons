@@ -210,7 +210,7 @@ public class Shelly1CoapHandler implements Shelly1CoapListener {
                         response.getSourceContext().getPeerAddress(), response.getMID(), response.getPayloadString());
             }
             if (thingHandler.isStopping()) {
-                logger.debug("{}: Thing is shutting down, ignore CoIOT message", thingName);
+                logger.debug("{}: Thing is not yet initialized / shutting down, ignore CoIOT message", thingName);
                 return;
             }
 

@@ -13,6 +13,18 @@
 				<label>Hostname</label>
 				<description>The hostname or IP address of the Fronius gateway/device</description>
 			</parameter>
+			<parameter name="username" type="text" required="false">
+				<label>Username</label>
+				<description>The username to access the configuration of the Fronius gateway/device, required only for battery
+					control</description>
+				<default>customer</default>
+			</parameter>
+			<parameter name="password" type="text" required="false">
+				<context>password</context>
+				<label>Password</label>
+				<description>The password to access the configuration of the Fronius gateway/device, required only for battery
+					control</description>
+			</parameter>
 			<parameter name="refreshInterval" type="integer" min="1">
 				<label>Refresh Interval</label>
 				<description>Specifies the refresh interval in seconds.</description>

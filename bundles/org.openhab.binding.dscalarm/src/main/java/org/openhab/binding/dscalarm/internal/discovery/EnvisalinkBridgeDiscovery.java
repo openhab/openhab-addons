@@ -71,10 +71,10 @@ public class EnvisalinkBridgeDiscovery {
             lowIP = convertIPToNumber(subnetInfo.getLowAddress());
             highIP = convertIPToNumber(subnetInfo.getHighAddress());
         } catch (IllegalArgumentException e) {
-            logger.error("discoverBridge(): Illegal Argument Exception - {}", e.toString());
+            logger.warn("discoverBridge(): Illegal Argument Exception - {}", e.toString());
             return;
         } catch (Exception e) {
-            logger.error("discoverBridge(): Error - Unable to get Subnet Information! {}", e.toString());
+            logger.warn("discoverBridge(): Error - Unable to get Subnet Information! {}", e.toString());
             return;
         }
 

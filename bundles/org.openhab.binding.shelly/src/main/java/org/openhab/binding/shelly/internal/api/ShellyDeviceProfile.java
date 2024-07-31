@@ -236,8 +236,9 @@ public class ShellyDeviceProfile {
 
         isSensor = isHT || isFlood || isDW || isSmoke || isGas || isButton || isUNI || isMotion || isSense || isTRV
                 || isWall;
-        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV;
-        alwaysOn = !hasBattery || isMotion || isSense; // true means: device is reachable all the time (no sleep mode)
+        hasBattery = isHT || isFlood || isDW || isSmoke || isButton || isMotion || isTRV || isBlu;
+        alwaysOn = !hasBattery || (isMotion && !isBlu) || isSense; // true means: device is reachable all the time (no
+                                                                   // sleep mode)
     }
 
     public void updateFromStatus(ShellySettingsStatus status) {
@@ -330,7 +331,7 @@ public class ShellyDeviceProfile {
         } else if (isDimmer) {
             if (settings.dimmers != null) {
                 ShellySettingsDimmer dimmer = settings.dimmers.get(0);
-                btnType = dimmer.btnType;
+                btnType = getString(dimmer.btnType);
             }
         } else if (settings.relays != null) {
             if (numRelays == 1) {
@@ -348,7 +349,7 @@ public class ShellyDeviceProfile {
             }
         } else if (isRGBW2 && (settings.lights != null) && (idx < settings.lights.size())) {
             ShellySettingsRgbwLight light = settings.lights.get(idx);
-            btnType = light.btnType;
+            btnType = getString(light.btnType);
         }
 
         return btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY) || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
@@ -406,7 +407,7 @@ public class ShellyDeviceProfile {
     public static boolean isGeneration2(String thingType) {
         return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro") || thingType.contains("mini")
                 || thingType.startsWith("shellywall") || (thingType.startsWith("shelly") && thingType.contains("g3"))
-                || isBluSeries(thingType);
+                || isBluSeries(thingType) || thingType.startsWith(THING_TYPE_SHELLYBLUGW_STR);
     }
 
     public static boolean isBluSeries(String thingType) {
