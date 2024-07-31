@@ -24,7 +24,6 @@ public class TibberConfiguration {
     private String token = "";
     private String homeid = "";
     private int refresh;
-    private boolean fetchLiveMeasurements;
 
     public String getToken() {
         return token;
@@ -36,9 +35,5 @@ public class TibberConfiguration {
 
     public int getRefresh() {
         return refresh;
-    }
-
-    public boolean getFetchLiveMeasurements() {
-        return fetchLiveMeasurements;
     }
 }

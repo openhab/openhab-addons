@@ -47,7 +47,7 @@
 		</channels>
 		<properties>
 			<property name="vendor">Tibber</property>
-			<property name="thingTypeVersion">3</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 		<config-description>
 			<parameter name="token" type="text" required="true">
@@ -62,11 +62,6 @@
 				<label>Refresh Interval</label>
 				<default>1</default>
 				<description>Manually Set Polling Frequency (minutes)</description>
-			</parameter>
-			<parameter name="fetchLiveMeasurements" type="boolean">
-				<label>Get live measurements</label>
-				<default>true</default>
-				<description>Get live measurements from tibber pulse (requires a pulse connected to your home)</description>
 			</parameter>
 		</config-description>
 	</thing-type>

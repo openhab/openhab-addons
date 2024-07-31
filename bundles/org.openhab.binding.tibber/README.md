@@ -106,8 +106,6 @@ Retrieve personal token and HomeId from description above, and initialize/start 
 
 Tibber API will be auto discovered if provided input is correct.
 
-If you have a Tibber pulse, but do not wish to get the data into openhab, this can be disabled.
-
 ## Tomorrow and Today Prices
 
 The today and tomorrow prices are served as forecast on the `current_total` channel and as JSON data on the channels `today_prices` and `tomorrow_prices`.
