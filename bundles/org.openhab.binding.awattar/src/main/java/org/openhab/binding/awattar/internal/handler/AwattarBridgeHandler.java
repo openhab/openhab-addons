@@ -24,10 +24,10 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
-import org.openhab.binding.api.AwattarApi;
-import org.openhab.binding.api.AwattarApi.AwattarApiException;
 import org.openhab.binding.awattar.internal.AwattarBridgeConfiguration;
 import org.openhab.binding.awattar.internal.AwattarPrice;
+import org.openhab.binding.awattar.internal.api.AwattarApi;
+import org.openhab.binding.awattar.internal.api.AwattarApi.AwattarApiException;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
@@ -62,13 +62,14 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     private @Nullable SortedSet<AwattarPrice> prices;
     private ZoneId zone;
 
-    private AwattarApi awattarApi;
+    private @NonNullByDefault AwattarApi awattarApi;
+    private HttpClient httpClient;
 
     public AwattarBridgeHandler(Bridge thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         super(thing);
         zone = timeZoneProvider.getTimeZone();
 
-        awattarApi = new AwattarApi(httpClient, zone);
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -77,7 +78,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         AwattarBridgeConfiguration config = getConfigAs(AwattarBridgeConfiguration.class);
 
         try {
-            awattarApi.initialize(config);
+            awattarApi = new AwattarApi(httpClient, zone, config);
         } catch (IllegalArgumentException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.unsupported.country");
             return;

@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.api;
+package org.openhab.binding.awattar.internal.api;
 
 import static org.eclipse.jetty.http.HttpMethod.GET;
 import static org.eclipse.jetty.http.HttpStatus.OK_200;
@@ -78,19 +78,12 @@ public class AwattarApi {
      * @param httpClient the HTTP client to use
      * @param zone the time zone to use
      */
-    public AwattarApi(HttpClient httpClient, ZoneId zone) {
+    public AwattarApi(HttpClient httpClient, ZoneId zone, AwattarBridgeConfiguration config) {
         this.zone = zone;
         this.httpClient = httpClient;
 
         this.gson = new Gson();
-    }
 
-    /**
-     * Initialize the aWATTar API.
-     *
-     * @param config the configuration to use
-     */
-    public void initialize(AwattarBridgeConfiguration config) {
         vatFactor = 1 + (config.vatPercent / 100);
         basePrice = config.basePrice;
 
