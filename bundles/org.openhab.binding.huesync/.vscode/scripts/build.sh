@@ -1,6 +1,5 @@
 #!/usr/bin/bash
 set -e
-
 PROJECT_ROOT=$1
 POM=$PROJECT_ROOT/pom.xml
 
@@ -9,7 +8,6 @@ BINDING=`yq ".project.artifactId" $POM`
 
 MVN_OPT="--quiet -f ${POM}"
 
-clear
 echo "➡️ $BINDING-$VERSION"
 echo ""
 echo "🧹 clean"
@@ -27,7 +25,7 @@ mvn i18n:generate-default-translations $MVN_OPT
 echo "📦 package"
 mvn package $MVN_OPT
 
-DOCKER_OPENHAB_VERSION=4.1.3-debian
+DOCKER_OPENHAB_VERSION=4.2.0-debian
 DOCKER_MOUNT=$HOME/Temp/openhab/$DOCKER_OPENHAB_VERSION
 
 LOGS=$DOCKER_MOUNT/userdata/logs/*

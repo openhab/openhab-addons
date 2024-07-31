@@ -36,9 +36,29 @@
         "huesync",
         "huesyncthing",
         "iconify",
+        "mdnsdiscovery",
         "powersave",
+        "UIDS",
         "uniqueid"
     ],
     "debug.console.wordWrap": false,
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "taskExplorer.showHiddenWsTasks": false,
+    "taskExplorer.enabledTasks": {
+        "ant": false,
+        "bash": false,
+        "batch": false,
+        "composer": false,
+        "gradle": false,
+        "grunt": false,
+        "gulp": false,
+        "make": false,
+        "npm": false,
+        "tsc": false,
+        "ruby": false,
+        "python": false,
+        "powershell": false,
+        "pipenv": false,
+        "perl": false
+    }
 }
