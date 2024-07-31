@@ -148,20 +148,24 @@ public class TibberHandler extends BaseThingHandler {
                     }
                 }
 
-                if ("true".equals(rtEnabled)) {
-                    logger.debug("Pulse associated with HomeId: Live stream will be started");
-                    getSubscriptionUrl();
+                if (tibberConfig.getFetchLiveMeasurements()) {
+                    if ("true".equals(rtEnabled)) {
+                        logger.debug("Pulse associated with HomeId: Live stream will be started");
+                        getSubscriptionUrl();
 
-                    if (subscriptionURL == null || subscriptionURL.isBlank()) {
-                        logger.debug("Unexpected subscription result from the server");
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Unexpected subscription result from the server");
+                        if (subscriptionURL == null || subscriptionURL.isBlank()) {
+                            logger.debug("Unexpected subscription result from the server");
+                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                    "Unexpected subscription result from the server");
+                        } else {
+                            logger.debug("Reconnecting Subscription to: {}", subscriptionURL);
+                            open();
+                        }
                     } else {
-                        logger.debug("Reconnecting Subscription to: {}", subscriptionURL);
-                        open();
+                        logger.debug("No Pulse associated with HomeId: No live stream will be started");
                     }
                 } else {
-                    logger.debug("No Pulse associated with HomeId: No live stream will be started");
+                    logger.debug("Live measurements disabled by configuration");
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -311,7 +315,7 @@ public class TibberHandler extends BaseThingHandler {
 
     public void updateRequest() throws IOException {
         getURLInput(BASE_URL);
-        if ("true".equals(rtEnabled) && !isConnected()) {
+        if (tibberConfig.getFetchLiveMeasurements() && "true".equals(rtEnabled) && !isConnected()) {
             logger.debug("Attempting to reopen Websocket connection");
             getSubscriptionUrl();
 
