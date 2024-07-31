@@ -40,9 +40,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link AwattarBridgeHandler} is responsible for retrieving data from the aWATTar API via the {@link AwattarApi}.
+ * The {@link AwattarBridgeHandler} is responsible for retrieving data from the
+ * aWATTar API via the {@link AwattarApi}.
  *
- * The API provides hourly prices for the current day and, starting from 14:00, hourly prices for the next day.
+ * The API provides hourly prices for the current day and, starting from 14:00,
+ * hourly prices for the next day.
  * Check the documentation at <a href="https://www.awattar.de/services/api" />
  *
  *
@@ -62,7 +64,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     private @Nullable SortedSet<AwattarPrice> prices;
     private ZoneId zone;
 
-    private @NonNullByDefault AwattarApi awattarApi;
+    private @Nullable AwattarApi awattarApi;
     private HttpClient httpClient;
 
     public AwattarBridgeHandler(Bridge thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
@@ -79,13 +81,12 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
         try {
             awattarApi = new AwattarApi(httpClient, zone, config);
+
+            dataRefresher = scheduler.scheduleWithFixedDelay(this::refreshIfNeeded, 0, DATA_REFRESH_INTERVAL * 1000L,
+                    TimeUnit.MILLISECONDS);
         } catch (IllegalArgumentException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.unsupported.country");
-            return;
         }
-
-        dataRefresher = scheduler.scheduleWithFixedDelay(this::refreshIfNeeded, 0, DATA_REFRESH_INTERVAL * 1000L,
-                TimeUnit.MILLISECONDS);
     }
 
     @Override
@@ -106,9 +107,13 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
     /**
      * Refresh the data from the API.
+     *
+     *
      */
     private void refresh() {
         try {
+            // Method is private and only called when dataRefresher is initialized.
+            // DataRefresher is initialized after successful creation of AwattarApi.
             prices = awattarApi.getData();
             updateStatus(ThingStatus.ONLINE);
         } catch (AwattarApiException e) {
@@ -122,9 +127,12 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
      * The data is refreshed if:
      * - the thing is offline
      * - the local cache is empty
-     * - the current time is after 15:00 and the last refresh was more than an hour ago
-     * - the current time is after 18:00 and the last refresh was more than an hour ago
-     * - the current time is after 21:00 and the last refresh was more than an hour ago
+     * - the current time is after 15:00 and the last refresh was more than an hour
+     * ago
+     * - the current time is after 18:00 and the last refresh was more than an hour
+     * ago
+     * - the current time is after 21:00 and the last refresh was more than an hour
+     * ago
      *
      * @return true if the data needs to be refreshed
      */
@@ -139,10 +147,12 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
             return true;
         }
 
-        // Note: all this magic is made to avoid refreshing the data too often, since the API is rate-limited
+        // Note: all this magic is made to avoid refreshing the data too often, since
+        // the API is rate-limited
         // to 100 requests per day.
 
-        // do not refresh before 15:00, since the prices for the next day are available only after 14:00
+        // do not refresh before 15:00, since the prices for the next day are available
+        // only after 14:00
         ZonedDateTime now = ZonedDateTime.now(zone);
         if (now.getHour() < 15) {
             return false;
