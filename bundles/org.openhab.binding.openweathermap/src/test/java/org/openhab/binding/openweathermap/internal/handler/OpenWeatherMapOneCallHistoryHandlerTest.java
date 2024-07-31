@@ -94,7 +94,7 @@ public class OpenWeatherMapOneCallHistoryHandlerTest {
     private static OpenWeatherMapOneCallHistoryHandler createAndInitHandler(final ThingHandlerCallback callback,
             final Thing thing) {
         TimeZoneProvider timeZoneProvider = mock(TimeZoneProvider.class);
-        when(timeZoneProvider.getTimeZone()).thenReturn(ZoneId.systemDefault());
+        when(timeZoneProvider.getTimeZone()).thenReturn(ZoneId.of("UTC"));
         final OpenWeatherMapOneCallHistoryHandler handler = spy(
                 new OpenWeatherMapOneCallHistoryHandler(thing, timeZoneProvider));
 
@@ -156,10 +156,10 @@ public class OpenWeatherMapOneCallHistoryHandlerTest {
 
             assertGroupChannelStateSet(callback, uid, CHANNEL_STATION_LOCATION, new PointType("52.2297,21.0122"));
             assertGroupChannelStateSet(callback, uid, CHANNEL_TIME_STAMP,
-                    new DateTimeType("2022-02-26T16:22:56.000+0100"));
+                    new DateTimeType("2022-02-26T15:22:56.000+0000"));
             assertGroupChannelStateSet(callback, uid, CHANNEL_SUNRISE,
-                    new DateTimeType("2022-02-26T06:29:21.000+0100"));
-            assertGroupChannelStateSet(callback, uid, CHANNEL_SUNSET, new DateTimeType("2022-02-26T17:08:47.000+0100"));
+                    new DateTimeType("2022-02-26T05:29:21.000+0000"));
+            assertGroupChannelStateSet(callback, uid, CHANNEL_SUNSET, new DateTimeType("2022-02-26T16:08:47.000+0000"));
             assertGroupChannelStateSet(callback, uid, CHANNEL_CONDITION, new StringType("clear sky"));
             assertGroupChannelStateSet(callback, uid, CHANNEL_CONDITION_ID, new StringType("800"));
             // CHANNEL_CONDITION_ICON was left out of this test
@@ -212,10 +212,10 @@ public class OpenWeatherMapOneCallHistoryHandlerTest {
 
             assertGroupChannelStateSet(callback, uid, CHANNEL_STATION_LOCATION, new PointType("60.99,30.9"));
             assertGroupChannelStateSet(callback, uid, CHANNEL_TIME_STAMP,
-                    new DateTimeType("2020-04-09T23:33:47.000+0200"));
+                    new DateTimeType("2020-04-09T21:33:47.000+0000"));
             assertGroupChannelStateSet(callback, uid, CHANNEL_SUNRISE,
-                    new DateTimeType("2020-04-10T04:57:04.000+0200"));
-            assertGroupChannelStateSet(callback, uid, CHANNEL_SUNSET, new DateTimeType("2020-04-10T19:04:57.000+0200"));
+                    new DateTimeType("2020-04-10T02:57:04.000+0000"));
+            assertGroupChannelStateSet(callback, uid, CHANNEL_SUNSET, new DateTimeType("2020-04-10T17:04:57.000+0000"));
             assertGroupChannelStateSet(callback, uid, CHANNEL_CONDITION, new StringType("clear sky"));
             assertGroupChannelStateSet(callback, uid, CHANNEL_CONDITION_ID, new StringType("800"));
             // CHANNEL_CONDITION_ICON was left out of this test
