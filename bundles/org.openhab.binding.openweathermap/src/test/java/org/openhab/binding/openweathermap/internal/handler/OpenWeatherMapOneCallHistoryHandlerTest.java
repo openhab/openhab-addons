@@ -106,8 +106,8 @@ public class OpenWeatherMapOneCallHistoryHandlerTest {
         return handler;
     }
 
-    
-    private static void assertGroupChannelStateSet(ThingHandlerCallback callback, ThingUID uid, String channel, State state) {
+    private static void assertGroupChannelStateSet(ThingHandlerCallback callback, ThingUID uid, String channel,
+            State state) {
         verify(callback).stateUpdated(new ChannelUID(uid, CHANNEL_GROUP_ONECALL_HISTORY + "#" + channel), state);
     }
 
@@ -150,7 +150,6 @@ public class OpenWeatherMapOneCallHistoryHandlerTest {
         // Assert
         ThingUID uid = thing.getUID();
         try {
-
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
             verify(callback, atLeast(2)).statusUpdated(eq(thing),
                     argThat(arg -> arg.getStatus().equals(ThingStatus.ONLINE)));
