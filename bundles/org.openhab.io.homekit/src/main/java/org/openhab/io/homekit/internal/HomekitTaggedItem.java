@@ -35,6 +35,7 @@ import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescription;
 import org.slf4j.Logger;
@@ -274,6 +275,21 @@ public class HomekitTaggedItem {
             return;
         }
         logger.warn("Received StringType command for item {} that doesn't support it. This is probably a bug.",
+                getName());
+    }
+
+    /**
+     * Send UpDownType command to a RollshutterItem (or a Group:Rollershutter)
+     */
+    public void send(UpDownType command) {
+        if (getItem() instanceof GroupItem groupItem && getBaseItem() instanceof RollershutterItem) {
+            groupItem.send(command);
+            return;
+        } else if (getItem() instanceof RollershutterItem rollershutterItem) {
+            rollershutterItem.send(command);
+            return;
+        }
+        logger.warn("Received UpDownType command for item {} that doesn't support it. This is probably a bug.",
                 getName());
     }
 
