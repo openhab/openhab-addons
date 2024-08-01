@@ -28,9 +28,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gree.internal.GreeCryptoUtil;
 import org.openhab.binding.gree.internal.GreeException;
-import org.openhab.binding.gree.internal.gson.GreeScanReponsePackDTO;
 import org.openhab.binding.gree.internal.gson.GreeScanRequestDTO;
 import org.openhab.binding.gree.internal.gson.GreeScanResponseDTO;
+import org.openhab.binding.gree.internal.gson.GreeScanResponsePackDTO;
 import org.openhab.binding.gree.internal.handler.GreeAirDevice;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -103,12 +103,12 @@ public class GreeDeviceFinder {
                     }
 
                     // Decrypt message - a GreeException is thrown when something went wrong
-                    String decryptedMsg = scanResponseGson.decryptedPack = GreeCryptoUtil
-                            .decryptPack(GreeCryptoUtil.getAESGeneralKeyByteArray(), scanResponseGson.pack);
+                    String decryptedMsg = scanResponseGson.decryptedPack = GreeCryptoUtil.decrypt(scanResponseGson);
+
                     logger.debug("Response received from address {}: {}", remoteAddress.getHostAddress(), decryptedMsg);
 
                     // Create the JSON to hold the response values
-                    scanResponseGson.packJson = GSON.fromJson(decryptedMsg, GreeScanReponsePackDTO.class);
+                    scanResponseGson.packJson = GSON.fromJson(decryptedMsg, GreeScanResponsePackDTO.class);
 
                     // Now make sure the device is reported as a Gree device
                     if ("gree".equalsIgnoreCase(scanResponseGson.packJson.brand)) {
