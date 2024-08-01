@@ -249,7 +249,7 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
         } else {
             // capture in log since this is an unexpected exception
-            logger.debug("Unhandled Exception: {}", e.toString());
+            logger.warn("Unhandled Exception", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.toString());
         }
     }

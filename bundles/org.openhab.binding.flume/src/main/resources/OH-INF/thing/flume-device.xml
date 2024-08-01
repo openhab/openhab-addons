@@ -13,12 +13,12 @@
 		<description>Flume water meter device.</description>
 
 		<channels>
-			<channel id="instantUsage" typeId="instantUsage"/>
-			<channel id="cumulativeUsage" typeId="cumulativeUsage"/>
-			<channel id="batteryLevel" typeId="system.battery-level"/>
-			<channel id="lastSeen" typeId="lastSeen"/>
-			<channel id="lowBattery" typeId="system.low-battery"/>
-			<channel id="usageAlert" typeId="usageAlert"/>
+			<channel id="instant-usage" typeId="instant-usage"/>
+			<channel id="cumulative-usage" typeId="cumulative-usage"/>
+			<channel id="battery-level" typeId="system.battery-level"/>
+			<channel id="last-seen" typeId="last-seen"/>
+			<channel id="low-battery" typeId="system.low-battery"/>
+			<channel id="usage-alert" typeId="usage-alert"/>
 		</channels>
 
 		<representation-property>id</representation-property>
@@ -32,28 +32,28 @@
 		</config-description>
 	</thing-type>
 
-	<channel-type id="cumulativeUsage">
+	<channel-type id="cumulative-usage">
 		<item-type>Number:Volume</item-type>
 		<label>Cumulative Used</label>
 		<description>Cumulative water used (volume)</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
-	<channel-type id="instantUsage">
+	<channel-type id="instant-usage">
 		<item-type>Number:VolumetricFlowRate</item-type>
 		<label>Instant Water Usage</label>
 		<description>Instantaneous water flow rate (volume / minute)</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="lastSeen">
+	<channel-type id="last-seen">
 		<item-type>DateTime</item-type>
 		<label>Last Seen</label>
 		<description>Date/Time when device was last seen</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="usageAlert">
+	<channel-type id="usage-alert">
 		<kind>trigger</kind>
 		<label>Usage Alert</label>
 		<description>Trigger of a usage alert</description>

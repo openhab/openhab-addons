@@ -39,12 +39,12 @@ public class FlumeBindingConstants {
     public static final String PARAM_REFRESH_INTERVAL_CUMULATIVE = "refreshIntervalCumulative";
 
     // List of all Device Channel ids
-    public static final String CHANNEL_DEVICE_CUMULATIVEUSAGE = "cumulativeUsage";
-    public static final String CHANNEL_DEVICE_INSTANTUSAGE = "instantUsage";
-    public static final String CHANNEL_DEVICE_BATTERYLEVEL = "batteryLevel";
-    public static final String CHANNEL_DEVICE_LOWBATTERY = "lowBattery";
-    public static final String CHANNEL_DEVICE_LASTSEEN = "lastSeen";
-    public static final String CHANNEL_DEVICE_USAGEALERT = "usageAlert";
+    public static final String CHANNEL_DEVICE_CUMULATIVEUSAGE = "cumulative-usage";
+    public static final String CHANNEL_DEVICE_INSTANTUSAGE = "instant-usage";
+    public static final String CHANNEL_DEVICE_BATTERYLEVEL = "battery-level";
+    public static final String CHANNEL_DEVICE_LOWBATTERY = "low-battery";
+    public static final String CHANNEL_DEVICE_LASTSEEN = "last-seen";
+    public static final String CHANNEL_DEVICE_USAGEALERT = "usage-alert";
 
     // Properties
     public static final String PROPERTY_ID = "id";
