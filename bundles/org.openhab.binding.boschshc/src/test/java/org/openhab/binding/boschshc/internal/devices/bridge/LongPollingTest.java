@@ -24,6 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -465,6 +466,32 @@ class LongPollingTest {
                 "Could not deserialize long poll response: '<HTML><HEAD><TITLE>400</TITLE></HEAD><BODY><H1>400 Unsupported HTTP Protocol Version: /remote/json-rpcHTTP/1.1</H1></BODY></HTML>'",
                 t.getMessage());
         assertTrue(t.getCause() instanceof JsonSyntaxException);
+    }
+
+    @Test
+    void testHandleLongPollResponseNPE() {
+        doThrow(NullPointerException.class).when(longPollHandler).accept(any());
+
+        var resultJson = """
+                {
+                    "result": [
+                        {
+                            "@type": "DeviceServiceData",
+                            "deleted": true,
+                            "id": "CommunicationQuality",
+                            "deviceId": "hdm:ZigBee:30fb10fffe46d732"
+                        }
+                    ],
+                    "jsonrpc":"2.0"
+                }
+                """;
+        fixture.handleLongPollResponse(httpClient, "subscriptionId", resultJson);
+
+        ArgumentCaptor<Throwable> throwableCaptor = ArgumentCaptor.forClass(Throwable.class);
+        verify(failureHandler).accept(throwableCaptor.capture());
+        Throwable t = throwableCaptor.getValue();
+        assertEquals("Error while handling long poll response: '" + resultJson + "'", t.getMessage());
+        assertTrue(t.getCause() instanceof NullPointerException);
     }
 
     @AfterEach

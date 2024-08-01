@@ -37,7 +37,7 @@ public class UserDefinedState extends BoschSHCServiceState {
     private boolean state;
 
     public UserDefinedState() {
-        super("UserDefinedState");
+        super("userDefinedState");
     }
 
     public String getId() {
