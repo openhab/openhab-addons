@@ -234,7 +234,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
         } else {
             // capture in log since this is an unexpected exception
-            logger.debug("Unhandled Exception: {}", e.toString());
+            logger.warn("Unhandled Exception", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.NONE, e.getLocalizedMessage());
         }
     }
@@ -398,6 +398,8 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         if (alert.triggeredDateTime.isBefore(this.lastUsageAlert)) {
             return;
         }
+
+        lastUsageAlert = alert.triggeredDateTime;
 
         String stringAlertFormat = Objects.requireNonNull(getBridgeHandler())
                 .getLocaleString("trigger.high-flow-alert");
