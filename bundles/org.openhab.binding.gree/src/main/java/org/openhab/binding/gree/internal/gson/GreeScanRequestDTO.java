@@ -14,7 +14,7 @@ package org.openhab.binding.gree.internal.gson;
 
 /**
  *
- * The GreeScanRequest4Gson class is used by Gson to hold values sent to
+ * The GreeScanRequestDTO class is used by Gson to hold values sent to
  * the Air Conditioner during Scan Requests to the Air Conditioner.
  *
  * @author John Cunha - Initial contribution

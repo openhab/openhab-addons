@@ -14,14 +14,13 @@ package org.openhab.binding.gree.internal.gson;
 
 /**
  *
- * The GreeReqStatusPack4Gson class is used by Gson to hold values to be send to
+ * The GreeReqStatusPackDTO class is used by Gson to hold values to be send to
  * the Air Conditioner during requests for Status Updates to the
  * Air Conditioner.
  *
  * @author John Cunha - Initial contribution
  */
 public class GreeReqStatusPackDTO {
-
     public String t = null;
     public String[] cols = null;
     public String mac = null;

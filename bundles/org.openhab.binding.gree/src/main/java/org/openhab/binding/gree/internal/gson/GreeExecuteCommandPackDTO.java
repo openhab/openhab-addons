@@ -14,7 +14,7 @@ package org.openhab.binding.gree.internal.gson;
 
 /**
  *
- * The GreeExecuteCommandPack4Gson class is used by Gson to hold values to be send to
+ * The GreeExecuteCommandPackDTO class is used by Gson to hold values to be send to
  * the Air Conditioner during requests for Execution of Commands to the
  * Air Conditioner.
  *
