@@ -14,7 +14,7 @@ package org.openhab.binding.gree.internal.gson;
 
 /**
  *
- * The GreeResponseBase class is used as a base class for response classes
+ * The GreeResponseBaseDTO class is used as a base class for response classes
  *
  * @author Zhivka Dimvoa - Initial contribution
  */

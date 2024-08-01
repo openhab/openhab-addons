@@ -464,7 +464,7 @@ public class GreeAirDevice {
             if (data.length > 1) {
                 request.tag = data[1];
             } else {
-                logger.error("Missing string for tag property for GCM encryption data");
+                logger.warn("Missing string for tag property for GCM encryption data");
             }
         }
         byte[] sendData = GSON.toJson(request).getBytes(StandardCharsets.UTF_8);

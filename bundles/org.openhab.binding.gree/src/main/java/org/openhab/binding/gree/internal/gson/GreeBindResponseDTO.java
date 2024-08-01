@@ -14,7 +14,7 @@ package org.openhab.binding.gree.internal.gson;
 
 /**
  *
- * The GreeBindResponse4Gson class is used by Gson to hold values returned from
+ * The GreeBindResponseDTO class is used by Gson to hold values returned from
  * the Air Conditioner during Binding
  *
  * @author John Cunha - Initial contribution
