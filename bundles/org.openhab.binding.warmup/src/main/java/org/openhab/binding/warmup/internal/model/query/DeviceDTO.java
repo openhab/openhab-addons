@@ -15,16 +15,5 @@ package org.openhab.binding.warmup.internal.model.query;
 /**
  * @author James Melville - Initial contribution
  */
-public class DeviceDTO {
-
-    private String deviceSN;
-    private int lastPoll;
-
-    public String getDeviceSN() {
-        return deviceSN;
-    }
-
-    public int getLastPoll() {
-        return lastPoll;
-    }
+public record DeviceDTO(String deviceSN, String airTemp, String floor1Temp, String floor2Temp, int lastPoll) {
 }

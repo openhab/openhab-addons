@@ -15,16 +15,5 @@ package org.openhab.binding.warmup.internal.model.auth;
 /**
  * @author James Melville - Initial contribution
  */
-public class AuthResponseDTO {
-
-    private AuthResponseStatusDTO status;
-    private AuthResponseDataDTO response;
-
-    public AuthResponseStatusDTO getStatus() {
-        return status;
-    }
-
-    public AuthResponseDataDTO getResponse() {
-        return response;
-    }
+public record AuthResponseDTO(AuthResponseStatusDTO status, AuthResponseDataDTO response) {
 }
