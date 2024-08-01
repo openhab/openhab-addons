@@ -296,7 +296,6 @@ The binding sets the following Thing status depending on the device status:
 | FIRMWARE_UPDATING     | Device firmware is updating, just wait. The device should come back to ONLINE within 2 minutes.                              |
 | DUTY_CYCLE            | The device is re-initializing and reported a restart event, e.g. after a firmware update or manual reboot.                   |
 
-
 `Note:`
 For more details see  [Thing Concept](https://www.openhab.org/docs/concepts/things.html#status-details) in openHAB documentation.
 
