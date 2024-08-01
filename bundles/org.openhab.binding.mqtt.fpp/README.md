@@ -43,21 +43,20 @@ The binding supports one Thing `player` that represents the Falcon Player.
 | `scheduler-next-playlist` | String (read only) | Next Scheduled Playlist. |
 | `scheduler-next-playlist-start` | String (read only) | Next Scheduled Start Time. |
 
-
 ## Full Example
 
 To use these examples for textual configuration, you must already have a configured MQTT `broker` thing, and know its unique ID.
 This UID will be used in the things file and will replace the text `myBroker`.
 The first line in the things file will create a `broker` thing and this can be removed if you have already setup a broker in another file or via the UI already.
 
-*.things
+### fpp.things
 
 ```java
 Bridge mqtt:broker:myBroker [ host="localhost", secure=false, password="*******", qos=1, username="user"]
 Thing mqtt:player:myBroker:mainPlayer "Main Player" (mqtt:broker:myBroker) @ "MQTT"
 ```
 
-*.items
+### fpp.items
 
 ```java
 Player FPP_Player "FPP Player" {channel="mqtt:player:myBroker:mainPlayer:player"}
@@ -75,7 +74,7 @@ Switch Testing "Testing Mode" {channel="mqtt:player:myBroker:mainPlayer:testing-
 Switch Multisync "Multisync" {channel="mqtt:player:myBroker:mainPlayer:multisync-enabled"}
 ```
 
-*.sitemap
+### fpp.sitemap
 
 ```perl
 Text label="Main Player"

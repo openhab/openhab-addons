@@ -56,7 +56,7 @@ public class FPPBindingConstants {
     public static final String CHANNEL_TESTING = "testing-enabled";
     public static final String CHANNEL_LAST_PLAYLIST = "last-playlist";
 
-    public static final String CHANNEL_SCHEDULERSTATUS = "scheduler-status";
+    public static final String CHANNEL_SCHEDULER_STATUS = "scheduler-status";
     public static final String CHANNEL_SCHEDULERCURRENTPLAYLIST = "scheduler-current-playlist";
     public static final String CHANNEL_SCHEDULERCURRENTPLAYLISTSTART = "scheduler-current-playlist-start";
     public static final String CHANNEL_SCHEDULERCURRENTPLAYLISTEND = "scheduler-current-playlist-end";
@@ -66,7 +66,7 @@ public class FPPBindingConstants {
 
     // Status
     public static final String CONNECTED = "connected";
-    public static final String CHANNEL_STATUS_NAME = "status_name";
+    public static final String CHANNEL_STATUS_NAME = "status-name";
 
     public static final String TESTING = "testing";
 }

@@ -154,11 +154,4 @@ public class FPPStatus {
     @Expose
     public FPPScheduler scheduler;
 
-    // public String getStatus() {
-    // return status_name;
-    // }
-
-    // public String getMode() {
-    // return mode_name;
-    // }
 }

@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 
-import tech.units.indriya.unit.Units;
+import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link FPPPlayerHandler} is responsible for handling commands of the globes, which are then
@@ -198,7 +198,7 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
     }
 
     public ThingStatusInfo getBridgeStatus() {
-        Bridge b = getBridge();
+        Bridge bridge = getBridge();
         if (b != null) {
             return b.getStatusInfo();
         } else {
@@ -211,10 +211,6 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
         if (bridgeStatusInfo.getStatus() == ThingStatus.OFFLINE) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             connection = null;
-            return;
-        }
-        if (bridgeStatusInfo.getStatus() != ThingStatus.ONLINE) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             return;
         }
 
@@ -235,8 +231,7 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
                 return;
             }
             this.connection = connection;
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                    "Waiting for 'fpp/status: connected' MQTT message to be received. Check hub has 'MQTT Client Status Topic' configured.");
+            updateStatus(ThingStatus.UNKNOWN);
             connection.subscribe(fullStatusTopic, this);
             connection.subscribe(fullVersionTopic, this);
         }
@@ -248,8 +243,8 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
         try {
             response = HttpUtil.executeUrl("GET", "http://" + config.playerIP + url, 5000);
 
-        } catch (Exception e) {
-            logger.error("Failed HTTP Post", e);
+        } catch (IOException e) {
+            logger.warn("Failed HTTP Post", e);
         }
         return response;
     }
@@ -263,8 +258,8 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
                     new ByteArrayInputStream(json.getBytes()), "application/json", 5000);
 
             return !response.isEmpty();
-        } catch (Exception e) {
-            logger.error("Failed HTTP Post", e);
+        } catch (IOException e) {
+            logger.warn("Failed HTTP Post", e);
         }
         return false;
     }
