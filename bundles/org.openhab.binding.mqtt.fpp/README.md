@@ -1,6 +1,6 @@
 # FPP Binding
 
-Binding to Controls Falcon Player (FPP) Devices. Uses MQTT to update status. Manually add an 'player' thing to get status.
+Binding to control Falcon Player (FPP) Devices using MQTT.
 
 ## Discovery
 
