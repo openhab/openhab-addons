@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -340,18 +341,9 @@ public class DenonMarantzHttpConnector extends DenonMarantzConnector {
                 return;
             }
             CommandRx titleInfo = response.getCommands().get(0);
-            String artist = titleInfo.getText("artist");
-            if (artist != null) {
-                state.setNowPlayingArtist(artist);
-            }
-            String album = titleInfo.getText("album");
-            if (album != null) {
-                state.setNowPlayingAlbum(album);
-            }
-            String track = titleInfo.getText("track");
-            if (track != null) {
-                state.setNowPlayingTrack(track);
-            }
+            state.setNowPlayingArtist(Objects.requireNonNullElse(titleInfo.getText("artist"), ""));
+            state.setNowPlayingAlbum(Objects.requireNonNullElse(titleInfo.getText("album"), ""));
+            state.setNowPlayingTrack(Objects.requireNonNullElse(titleInfo.getText("track"), ""));
         } catch (HttpCommunicationException e) {
             logger.debug("Failed to update display info: {}", e.getMessage());
         }
