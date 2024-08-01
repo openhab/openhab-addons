@@ -13,7 +13,9 @@
 package org.openhab.binding.boschshc.internal.devices;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -21,6 +23,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.core.library.types.DecimalType;
@@ -45,14 +48,15 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
 
     @BeforeEach
     @Override
-    public void beforeEach() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    public void beforeEach(TestInfo testInfo)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         DeviceServiceData deviceServiceData = new DeviceServiceData();
         deviceServiceData.path = "/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel";
         deviceServiceData.id = "BatteryLevel";
         deviceServiceData.deviceId = "hdm:ZigBee:000d6f0004b93361";
         when(getBridgeHandler().getServiceData(anyString(), anyString())).thenReturn(deviceServiceData);
 
-        super.beforeEach();
+        super.beforeEach(testInfo);
     }
 
     @Test
