@@ -50,6 +50,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -855,11 +856,23 @@ public class HomekitCharacteristicFactory {
 
     private static CurrentDoorStateCharacteristic createCurrentDoorStateCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        List<CurrentDoorStateEnum> validValues = new ArrayList<>();
-        var map = createMapping(taggedItem, CurrentDoorStateEnum.class, validValues, true);
-        return new CurrentDoorStateCharacteristic(() -> getEnumFromItem(taggedItem, map, CurrentDoorStateEnum.CLOSED),
-                getSubscriber(taggedItem, CURRENT_DOOR_STATE, updater),
-                getUnsubscriber(taggedItem, CURRENT_DOOR_STATE, updater));
+        if (taggedItem.getBaseItem() instanceof RollershutterItem) {
+            return new CurrentDoorStateCharacteristic(() -> {
+                if (taggedItem.getItem().getState() instanceof PercentType percentType
+                        && percentType.equals(PercentType.HUNDRED)) {
+                    return CompletableFuture.completedFuture(CurrentDoorStateEnum.CLOSED);
+                }
+                return CompletableFuture.completedFuture(CurrentDoorStateEnum.OPEN);
+            }, getSubscriber(taggedItem, CURRENT_DOOR_STATE, updater),
+                    getUnsubscriber(taggedItem, CURRENT_DOOR_STATE, updater));
+        } else {
+            List<CurrentDoorStateEnum> validValues = new ArrayList<>();
+            var map = createMapping(taggedItem, CurrentDoorStateEnum.class, validValues, true);
+            return new CurrentDoorStateCharacteristic(
+                    () -> getEnumFromItem(taggedItem, map, CurrentDoorStateEnum.CLOSED),
+                    getSubscriber(taggedItem, CURRENT_DOOR_STATE, updater),
+                    getUnsubscriber(taggedItem, CURRENT_DOOR_STATE, updater));
+        }
     }
 
     private static CurrentHeatingCoolingStateCharacteristic createCurrentHeatingCoolingStateCharacteristic(
@@ -1426,12 +1439,25 @@ public class HomekitCharacteristicFactory {
 
     private static TargetDoorStateCharacteristic createTargetDoorStateCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
-        List<TargetDoorStateEnum> validValues = new ArrayList<>();
-        var map = createMapping(taggedItem, TargetDoorStateEnum.class, validValues, true);
-        return new TargetDoorStateCharacteristic(() -> getEnumFromItem(taggedItem, map, TargetDoorStateEnum.CLOSED),
-                (targetState) -> setValueFromEnum(taggedItem, targetState, map),
-                getSubscriber(taggedItem, TARGET_DOOR_STATE, updater),
-                getUnsubscriber(taggedItem, TARGET_DOOR_STATE, updater));
+        if (taggedItem.getBaseItem() instanceof RollershutterItem) {
+            return new TargetDoorStateCharacteristic(() -> {
+                if (taggedItem.getItem().getState() instanceof PercentType percentType
+                        && percentType.equals(PercentType.HUNDRED)) {
+                    return CompletableFuture.completedFuture(TargetDoorStateEnum.CLOSED);
+                }
+                return CompletableFuture.completedFuture(TargetDoorStateEnum.OPEN);
+            }, (targetState) -> taggedItem
+                    .send(targetState.equals(TargetDoorStateEnum.OPEN) ? UpDownType.UP : UpDownType.DOWN),
+                    getSubscriber(taggedItem, TARGET_DOOR_STATE, updater),
+                    getUnsubscriber(taggedItem, TARGET_DOOR_STATE, updater));
+        } else {
+            List<TargetDoorStateEnum> validValues = new ArrayList<>();
+            var map = createMapping(taggedItem, TargetDoorStateEnum.class, validValues, true);
+            return new TargetDoorStateCharacteristic(() -> getEnumFromItem(taggedItem, map, TargetDoorStateEnum.CLOSED),
+                    (targetState) -> setValueFromEnum(taggedItem, targetState, map),
+                    getSubscriber(taggedItem, TARGET_DOOR_STATE, updater),
+                    getUnsubscriber(taggedItem, TARGET_DOOR_STATE, updater));
+        }
     }
 
     private static TargetFanStateCharacteristic createTargetFanStateCharacteristic(HomekitTaggedItem taggedItem,
