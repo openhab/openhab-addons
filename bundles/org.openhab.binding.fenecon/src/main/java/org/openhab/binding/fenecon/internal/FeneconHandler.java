@@ -83,7 +83,7 @@ public class FeneconHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         baseHttpRequest = createBaseHttpRequest(config);
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 5, config.refreshInterval, TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
     private static final String getBasicAuthHeader(String username, String password) {
