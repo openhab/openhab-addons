@@ -1,6 +1,6 @@
 # FPP Binding
 
-Binding to control Falcon Player (FPP) Devices using MQTT.
+Binding to control Falcon Player (FPP) Devices using MQTT and HTTP. Status messages are recieved over MQTT and Commands are HTTP Commands.
 
 ## Discovery
 
@@ -11,37 +11,38 @@ Autodiscovering is not supported. We have to define the things manually.
 The binding supports one Thing `player` that represents the Falcon Player.
 ## Thing Configuration
 
-| Parameter | Description | Required | Default |
-|-|-|-|-|
-| `playerIP` | IP Address of FPP Devive | Y | |
-| `playerMQTT` | MQTT Topic of FPP Devive Status | Y | |
+| Parameter    | Description                             | Required | Default |
+|--------------|-----------------------------------------|----------|---------|
+| `playerIP`   | IP Address or Host Name of FPP Devive   | Y        |         |
+| `playerMQTT` | MQTT Topic of FPP Devive Status Updates | Y        |         |
 
 ## Channels
 
-| Channel | Type | Description |
-|-|-|-|
-| `player` | Player | Play/Stop Current Playlist. |
-| `volume` | Dimmer | Playback Audio Volume. |
-| `status` | String | Playback Status. |
-| `version` | String | Software Version. |
-| `mode` | String | Playback Mode. |
-| `uptime` | Number:Time | Device Uptime. |
-| `testing-enabled` | Switch | Device is in Testing Mode. |
-| `current-sequence` | String (read only) | Currently Playing Sequence File. |
-| `current-song` | String (read only) | Currently Playing Audio/Media File. |
-| `current-playlist` | String (read only) | Currently Playing Playlist. |
-| `seconds-played` | Number:Time | Sequence Playback time in secs. |
-| `seconds-remaining` | Number:Time | Sequence Playback time remaining in secs. |
-| `last-playlist` | String | Lasted Played Playlist. |
-| `uuid` | String | Device UUID. |
-| `bridging-enabled` | Switch | Is Recieving Bridge Data. |
-| `multisync-enabled` | Switch | Multisync Mode Enabled. |
-| `scheduler-current-playlist` | String (read only) | Scheduler Current Playlist. |
-| `scheduler-current-playlist-start` | String (read only) | Scheduler Current Playlist Start Time. |
-| `scheduler-current-playlist-end` | String (read only) | Scheduler Current Playlist End Time. |
-| `scheduler-current-playlist-stop-type` | String (read only) | Scheduler Current Playlist End Type. |
-| `scheduler-next-playlist` | String (read only) | Next Scheduled Playlist. |
-| `scheduler-next-playlist-start` | String (read only) | Next Scheduled Start Time. |
+| Channel                                | Type               | Description                               |
+|----------------------------------------|--------------------|-------------------------------------------|
+| `player`                               | Player             | Play/Stop Current Playlist.               |
+| `volume`                               | Dimmer             | Playback Audio Volume.                    |
+| `status`                               | String             | Playback Status.                          |
+| `version`                              | String             | Software Version.                         |
+| `mode`                                 | String             | Playback Mode.                            |
+| `uptime`                               | Number:Time        | Device Uptime.                            |
+| `testing-enabled`                      | Switch             | Device is in Testing Mode.                |
+| `current-sequence`                     | String (read only) | Currently Playing Sequence File.          |
+| `current-song`                         | String (read only) | Currently Playing Audio/Media File.       |
+| `current-playlist`                     | String (read only) | Currently Playing Playlist.               |
+| `seconds-played`                       | Number:Time        | Sequence Playback time in secs.           |
+| `seconds-remaining`                    | Number:Time        | Sequence Playback time remaining in secs. |
+| `last-playlist`                        | String             | Lasted Played Playlist.                   |
+| `uuid`                                 | String (read only) | Device UUID.                              |
+| `bridging-enabled`                     | Switch             | Is Recieving Bridge Data.                 |
+| `multisync-enabled`                    | Switch             | Multisync Mode Enabled.                   |
+| `scheduler-current-playlist`           | String (read only) | Scheduler Current Playlist.               |
+| `scheduler-current-playlist-start`     | String (read only) | Scheduler Current Playlist Start Time.    |
+| `scheduler-current-playlist-end`       | String (read only) | Scheduler Current Playlist End Time.      |
+| `scheduler-current-playlist-stop-type` | String (read only) | Scheduler Current Playlist End Type.      |
+| `scheduler-next-playlist`              | String (read only) | Next Scheduled Playlist.                  |
+| `scheduler-next-playlist-start`        | String (read only) | Next Scheduled Start Time.                |
+
 
 ## Full Example
 

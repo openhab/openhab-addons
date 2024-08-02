@@ -8,13 +8,12 @@
 		<parameter name="playerIP" type="text" required="true">
 			<context>network-address</context>
 			<label>IP Address</label>
-			<description>Player IP Address</description>
+			<description>Player IP Address or Host Name</description>
 		</parameter>
 		<parameter name="playerMQTT" type="text" required="true">
 			<context>name</context>
 			<label>MQTT Topic</label>
 			<description>MQTT Player Status Topic</description>
-			<default/>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>

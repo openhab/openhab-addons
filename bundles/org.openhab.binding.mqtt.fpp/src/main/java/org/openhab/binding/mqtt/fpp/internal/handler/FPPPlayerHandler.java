@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.fpp.internal.handler;
 import static org.openhab.binding.mqtt.fpp.internal.FPPBindingConstants.*;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
@@ -37,6 +38,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.PlayPauseType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -52,8 +54,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-
-import org.openhab.core.library.unit.Units;
 
 /**
  * The {@link FPPPlayerHandler} is responsible for handling commands of the globes, which are then
@@ -96,18 +96,19 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
         updateState(CHANNEL_MULTISYNC, OnOffType.from(data.multisync));
         updateState(CHANNEL_TESTING, data.status_name.equals(TESTING) ? OnOffType.ON : OnOffType.OFF);
 
-        updateState(CHANNEL_SCHEDULERSTATUS, new StringType(data.scheduler.status));
-        updateState(CHANNEL_SCHEDULERNEXTPLAYLIST, new StringType(data.scheduler.nextPlaylist.playlistName));
-        updateState(CHANNEL_SCHEDULERNEXTPLAYLISTSTART,
+        updateState(CHANNEL_SCHEDULER_STATUS, new StringType(data.scheduler.status));
+        updateState(CHANNEL_SCHEDULER_NEXT_PLAYLIST, new StringType(data.scheduler.nextPlaylist.playlistName));
+        updateState(CHANNEL_SCHEDULER_NEXT_PLAYLIST_START,
                 new StringType(data.scheduler.nextPlaylist.scheduledStartTimeStr));
 
         if (data.scheduler.currentPlaylist != null) {
-            updateState(CHANNEL_SCHEDULERCURRENTPLAYLIST, new StringType(data.scheduler.currentPlaylist.playlistName));
-            updateState(CHANNEL_SCHEDULERCURRENTPLAYLISTSTART,
+            updateState(CHANNEL_SCHEDULER_CURRENT_PLAYLIST,
                     new StringType(data.scheduler.currentPlaylist.playlistName));
-            updateState(CHANNEL_SCHEDULERCURRENTPLAYLISTEND,
+            updateState(CHANNEL_SCHEDULER_CURRENT_PLAYLIST_START,
                     new StringType(data.scheduler.currentPlaylist.playlistName));
-            updateState(CHANNEL_SCHEDULERCURRENTPLAYLISTSTOPTYPE,
+            updateState(CHANNEL_SCHEDULER_CURRENT_PLAYLIST_END,
+                    new StringType(data.scheduler.currentPlaylist.playlistName));
+            updateState(CHANNEL_SCHEDULER_CURRENT_PLAYLIST_STOP_TYPE,
                     new StringType(data.scheduler.currentPlaylist.playlistName));
         }
 
@@ -177,11 +178,14 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
 
     @Override
     public void initialize() {
+        updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(ConfigOptions.class);
-
-        fullStatusTopic = config.playerMQTT + "/" + STATUS_TOPIC;
-        fullVersionTopic = config.playerMQTT + "/" + VERSION_TOPIC;
-        bridgeStatusChanged(getBridgeStatus());
+        if (!config.playerMQTT.isEmpty()) {
+            fullStatusTopic = config.playerMQTT + "/" + STATUS_TOPIC;
+            fullVersionTopic = config.playerMQTT + "/" + VERSION_TOPIC;
+            bridgeStatusChanged(getBridgeStatus());
+            updateStatus(ThingStatus.ONLINE);
+        }
     }
 
     @Override
@@ -198,7 +202,7 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
     }
 
     public ThingStatusInfo getBridgeStatus() {
-        Bridge bridge = getBridge();
+        Bridge b = getBridge();
         if (b != null) {
             return b.getStatusInfo();
         } else {
@@ -224,7 +228,7 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
         if (handler instanceof AbstractBrokerHandler abh) {
             final MqttBrokerConnection connection;
             try {
-                connection = abh.getConnectionAsync().get(500, TimeUnit.MILLISECONDS);
+                connection = abh.getConnectionAsync().get(5000, TimeUnit.MILLISECONDS);
             } catch (InterruptedException | ExecutionException | TimeoutException ignored) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED,
                         "Bridge handler has no valid broker connection!");
@@ -232,8 +236,10 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
             }
             this.connection = connection;
             updateStatus(ThingStatus.UNKNOWN);
-            connection.subscribe(fullStatusTopic, this);
-            connection.subscribe(fullVersionTopic, this);
+            if (!fullStatusTopic.isEmpty()) {
+                connection.subscribe(fullStatusTopic, this);
+                connection.subscribe(fullVersionTopic, this);
+            }
         }
         return;
     }

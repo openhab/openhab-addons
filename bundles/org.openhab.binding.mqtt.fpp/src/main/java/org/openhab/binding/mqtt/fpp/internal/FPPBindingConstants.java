@@ -57,12 +57,12 @@ public class FPPBindingConstants {
     public static final String CHANNEL_LAST_PLAYLIST = "last-playlist";
 
     public static final String CHANNEL_SCHEDULER_STATUS = "scheduler-status";
-    public static final String CHANNEL_SCHEDULERCURRENTPLAYLIST = "scheduler-current-playlist";
-    public static final String CHANNEL_SCHEDULERCURRENTPLAYLISTSTART = "scheduler-current-playlist-start";
-    public static final String CHANNEL_SCHEDULERCURRENTPLAYLISTEND = "scheduler-current-playlist-end";
-    public static final String CHANNEL_SCHEDULERCURRENTPLAYLISTSTOPTYPE = "scheduler-current-playlist-stop-type";
-    public static final String CHANNEL_SCHEDULERNEXTPLAYLIST = "scheduler-next-playlist";
-    public static final String CHANNEL_SCHEDULERNEXTPLAYLISTSTART = "scheduler-next-playlist-start";
+    public static final String CHANNEL_SCHEDULER_CURRENT_PLAYLIST = "scheduler-current-playlist";
+    public static final String CHANNEL_SCHEDULER_CURRENT_PLAYLIST_START = "scheduler-current-playlist-start";
+    public static final String CHANNEL_SCHEDULER_CURRENT_PLAYLIST_END = "scheduler-current-playlist-end";
+    public static final String CHANNEL_SCHEDULER_CURRENT_PLAYLIST_STOP_TYPE = "scheduler-current-playlist-stop-type";
+    public static final String CHANNEL_SCHEDULER_NEXT_PLAYLIST = "scheduler-next-playlist";
+    public static final String CHANNEL_SCHEDULER_NEXT_PLAYLIST_START = "scheduler-next-playlist-start";
 
     // Status
     public static final String CONNECTED = "connected";

@@ -153,5 +153,4 @@ public class FPPStatus {
     @SerializedName("scheduler")
     @Expose
     public FPPScheduler scheduler;
-
 }
