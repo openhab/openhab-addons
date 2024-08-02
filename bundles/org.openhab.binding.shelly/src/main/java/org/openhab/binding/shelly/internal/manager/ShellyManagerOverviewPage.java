@@ -263,7 +263,7 @@ public class ShellyManagerOverviewPage extends ShellyManagerPage {
         ShellyThingConfiguration config = thing.getConfiguration().as(ShellyThingConfiguration.class);
         TreeMap<String, String> result = new TreeMap<>();
 
-        if ((status != ThingStatus.ONLINE) && (status != ThingStatus.UNKNOWN)) {
+        if (status != ThingStatus.ONLINE && status != ThingStatus.UNKNOWN) {
             result.put("Thing Status", status.toString());
         }
         State wifiSignal = handler.getChannelValue(CHANNEL_GROUP_DEV_STATUS, CHANNEL_DEVST_RSSI);
