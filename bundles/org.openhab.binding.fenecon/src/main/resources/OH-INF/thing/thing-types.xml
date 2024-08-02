@@ -71,7 +71,7 @@
 		<state readOnly="true"></state>
 	</channel-type>
 	<channel-type id="essSoc">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery State</label>
 		<description>Battery state of charge in percent</description>
 		<category>BatteryLevel</category>
