@@ -27,5 +27,5 @@ public class FeneconBindingConstants {
     private static final String BINDING_ID = "fenecon";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "fenecon");
+    public static final ThingTypeUID THING_TYPE_SAMPLE = new ThingTypeUID(BINDING_ID, "rest-api");
 }
