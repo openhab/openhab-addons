@@ -101,7 +101,7 @@
 	<channel-type id="emergency-power-mode">
 		<item-type>Switch</item-type>
 		<label>Emergency Power Mode</label>
-		<description>Indicates if there is grid power is off and the emergency power mode is on.</description>
+		<description>Indicates if there is no power from the grid and the emergency power mode is on.</description>
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
