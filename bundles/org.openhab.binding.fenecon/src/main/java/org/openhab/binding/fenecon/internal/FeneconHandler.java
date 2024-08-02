@@ -135,7 +135,7 @@ public class FeneconHandler extends BaseThingHandler {
         }
 
         // Set last successful update cycle
-        updateState("lastUpdate", new DateTimeType());
+        updateState("last-update", new DateTimeType());
     }
 
     private void processDataPoint(JsonObject response) {
@@ -154,13 +154,13 @@ public class FeneconHandler extends BaseThingHandler {
                 updateState("state", new StringType(text.substring(begin + 2, end)));
                 break;
             case "_sum/EssSoc":
-                updateState("essSoc", new QuantityType<>(Integer.valueOf(value), Units.PERCENT));
+                updateState("ess-soc", new QuantityType<>(Integer.valueOf(value), Units.PERCENT));
                 break;
             case "_sum/ConsumptionActivePower":
-                updateState("consumptionActivePower", new QuantityType<>(Integer.valueOf(value), Units.WATT));
+                updateState("consumption-active-power", new QuantityType<>(Integer.valueOf(value), Units.WATT));
                 break;
             case "_sum/ProductionActivePower":
-                updateState("productionActivePower", new QuantityType<>(Integer.valueOf(value), Units.WATT));
+                updateState("production-active-power", new QuantityType<>(Integer.valueOf(value), Units.WATT));
                 break;
             case "_sum/GridActivePower":
                 // Grid exchange power. Negative values for sell-to-grid; positive for buy-from-grid"
@@ -172,8 +172,8 @@ public class FeneconHandler extends BaseThingHandler {
                 } else {
                     buyFromGridPower = gridValue;
                 }
-                updateState("sellToGridPower", new QuantityType<>(selltoGridPower, Units.WATT));
-                updateState("buyFromGridPower", new QuantityType<>(buyFromGridPower, Units.WATT));
+                updateState("export-to-grid-power", new QuantityType<>(selltoGridPower, Units.WATT));
+                updateState("import-from-grid-power", new QuantityType<>(buyFromGridPower, Units.WATT));
                 break;
             case "_sum/EssDischargePower":
                 // Actual AC-side battery discharge power of Energy Storage System.
@@ -186,21 +186,21 @@ public class FeneconHandler extends BaseThingHandler {
                 } else {
                     dischargerPower = powerValue;
                 }
-                updateState("chargerPower", new QuantityType<>(chargerPower, Units.WATT));
-                updateState("dischargerPower", new QuantityType<>(dischargerPower, Units.WATT));
+                updateState("charger-power", new QuantityType<>(chargerPower, Units.WATT));
+                updateState("discharger-power", new QuantityType<>(dischargerPower, Units.WATT));
                 break;
             case "_sum/GridMode":
                 // text":"1:On-Grid, 2:Off-Grid","unit":"","value":1
                 Integer gridMod = Integer.valueOf(value);
-                updateState("emergencyPowerMode", gridMod == 2 ? OnOffType.ON : OnOffType.OFF);
+                updateState("emergency-power-mode", gridMod == 2 ? OnOffType.ON : OnOffType.OFF);
                 break;
             case "_sum/GridSellActiveEnergy":
                 // {"address":"_sum/GridSellActiveEnergy","type":"LONG","accessMode":"RO","text":"","unit":"Wh_Σ","value":374242}
-                updateState("sellToGridEnergy", new QuantityType<>(Integer.valueOf(value), Units.WATT_HOUR));
+                updateState("exported-to-grid-energy", new QuantityType<>(Integer.valueOf(value), Units.WATT_HOUR));
                 break;
             case "_sum/GridBuyActiveEnergy":
                 // "address":"_sum/GridBuyActiveEnergy","type":"LONG","accessMode":"RO","text":"","unit":"Wh_Σ","value":1105}
-                updateState("buyFromGridEnergy", new QuantityType<>(Integer.valueOf(value), Units.WATT_HOUR));
+                updateState("imported-from-grid-energy", new QuantityType<>(Integer.valueOf(value), Units.WATT_HOUR));
                 break;
         }
     }

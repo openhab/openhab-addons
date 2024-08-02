@@ -32,20 +32,20 @@ The FENECON Thing only needs to be configured with the `hostname`, all other par
 
 The FENECON binding currently only provides access to read out the values from the energy storage system. 
 
-| Channel                  | Type                 | Read/Write | Description                                                                 |
-|--------------------------|----------------------|------------|-----------------------------------------------------------------------------|
-| state                    | String               | R          | FENECON system state: Ok, Info, Warning or Fault                            |
-| last-update              | DateTime             | R          | Last successful update via REST-API from the FENECON system                 |
-| ess-soc                  | Number:Dimensionless | R          | Battery state of charge in percent                                          |
-| charger-power            | Number:Power         | R          | Current charger power of energy storage system in watt.                     |
-| discharger-power         | Number:Power         | R          | Current discharger power of energy storage system in watt.                  |
-| emergency-power-mode     | Switch               | R          | Indicates if there is grid power is off and the emergency power mode is on. |
-| production-active-power  | Number:Power         | R          | Current active power producer load in watt.                                 |
-| sell-to-grid-power       | Number:Power         | R          | Current sell to grid exchange power in watt.                                |
-| sell-to-grid-energy      | Number:Energy        | R          | Total energy exported to the grid in watt per hour.                         |
-| consumption-active-power | Number:Power         | R          | Current active power consumer load in watt.                                 |
-| buy-from-grid-power      | Number:Power         | R          | Current buy from grid exchange power in watt.                               |
-| buy-from-grid-energy     | Number:Energy        | R          | Total energy imported from the grid in watt per hour.                       |
+| Channel                   | Type                 | Read/Write | Description                                                                 |
+|---------------------------|----------------------|------------|-----------------------------------------------------------------------------|
+| state                     | String               | R          | FENECON system state: Ok, Info, Warning or Fault                            |
+| last-update               | DateTime             | R          | Last successful update via REST-API from the FENECON system                 |
+| ess-soc                   | Number:Dimensionless | R          | Battery state of charge in percent                                          |
+| charger-power             | Number:Power         | R          | Current charger power of energy storage system in watt.                     |
+| discharger-power          | Number:Power         | R          | Current discharger power of energy storage system in watt.                  |
+| emergency-power-mode      | Switch               | R          | Indicates if there is grid power is off and the emergency power mode is on. |
+| production-active-power   | Number:Power         | R          | Current active power producer load in watt.                                 |
+| export-to-grid-power      | Number:Power         | R          | Current export power to grid in watt.                                       |
+| exported-to-grid-energy   | Number:Energy        | R          | Total energy exported to the grid in watt per hour.                         |
+| consumption-active-power  | Number:Power         | R          | Current active power consumer load in watt.                                 |
+| import-from-grid-power    | Number:Power         | R          | Current import power from grid in watt.                                     |
+| imported-from-grid-energy | Number:Energy        | R          | Total energy imported from the grid in watt per hour.                       |
 
 
 ## Full Example
@@ -68,23 +68,24 @@ Group   GF_UtilityRoomSolar     "Utility room solar"  <solarplant>           (GF
 
 // FENECON items
 String               EssState               <text>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:fenecon:1:state"}
-DateTime             LastFeneconUpdate      <time>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:fenecon:1:lastUpdate"}
-Number:Dimensionless EssSoc                 <batterylevel> (GF_UtilityRoomSolar) ["Measurement"]           {unit="%", channel="fenecon:fenecon:1:essSoc"}
-Number:Power         ChargerPower           <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:fenecon:1:chargerPower"}
-Number:Power         DischargerPower        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:fenecon:1:dischargerPower"}
-Switch               EmergencyPowerMode     <switch>       (GF_UtilityRoomSolar) ["Switch"]                {channel="fenecon:fenecon:1:emergencyPowerMode"}
+DateTime             LastFeneconUpdate      <time>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:fenecon:1:last-update"}
+Number:Dimensionless EssSoc                 <batterylevel> (GF_UtilityRoomSolar) ["Measurement"]           {unit="%", channel="fenecon:fenecon:1:ess-soc"}
+Number:Power         ChargerPower           <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:fenecon:1:charger-power"}
+Number:Power         DischargerPower        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:fenecon:1:discharger-power"}
+Switch               EmergencyPowerMode     <switch>       (GF_UtilityRoomSolar) ["Switch"]                {channel="fenecon:fenecon:1:emergency-power-mode"}
 
-Number:Power         ProductionActivePower  <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:fenecon:1:productionActivePower"}
-Number:Power         SellToGridPower        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:fenecon:1:sellToGridPower"}
-Number:Energy        TotalSellEnergy        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:fenecon:1:sellToGridEnergy"}
+Number:Power         ProductionActivePower  <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:fenecon:1:production-active-power"}
+Number:Power         SellToGridPower        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:fenecon:1:export-to-grid-power"}
+Number:Energy        TotalSellEnergy        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:fenecon:1:exported-to-grid-energy"}
 
-Number:Power         ConsumptionActivePower <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:fenecon:1:consumptionActivePower"}
-Number:Power         BuyFromGridPower       <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:fenecon:1:buyFromGridPower"}
-Number:Energy        TotalBuyEnergy         <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:fenecon:1:buyFromGridEnergy"}
+Number:Power         ConsumptionActivePower <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:fenecon:1:consumption-active-power"}
+Number:Power         BuyFromGridPower       <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:fenecon:1:import-from-grid-power"}
+Number:Energy        TotalBuyEnergy         <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:fenecon:1:imported-from-grid-energy"}
 
-// Examples of items for calculating the energy purchased and sold. Look at the demo.rules section. 
+// Examples of items for calculating the energy purchased and sold. Look at the demo.rules section.
 Number:Currency      SoldEnergy "Total sold energy [%.2f €]"           <price> (GF_UtilityRoomSolar)
 Number:Currency      PurchasedEnergy "Total purchased energy [%.2f €]" <price> (GF_UtilityRoomSolar)
+
 
 
 ```

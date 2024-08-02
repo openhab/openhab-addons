@@ -20,10 +20,10 @@
 			<channel id="emergency-power-mode" typeId="emergency-power-mode"/>
 			<channel id="consumption-active-power" typeId="consumption-active-power"/>
 			<channel id="production-active-power" typeId="production-active-power"/>
-			<channel id="sell-to-grid-power" typeId="sell-to-grid-power"/>
-			<channel id="sell-to-grid-energy" typeId="sell-to-grid-energy"/>
-			<channel id="buy-from-grid-power" typeId="buy-from-grid-power"/>
-			<channel id="buy-from-grid-energy" typeId="buy-from-grid-energy"/>
+			<channel id="export-to-grid-power" typeId="export-to-grid-power"/>
+			<channel id="exported-to-grid-energy" typeId="exported-to-grid-energy"/>
+			<channel id="import-from-grid-power" typeId="import-from-grid-power"/>
+			<channel id="imported-from-grid-energy" typeId="imported-from-grid-energy"/>
 		</channels>
 
 		<config-description>
@@ -112,16 +112,16 @@
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-	<channel-type id="sell-to-grid-power">
+	<channel-type id="export-to-grid-power">
 		<item-type>Number:Power</item-type>
-		<label>Sell Grid Power</label>
-		<description>Current sell to grid exchange power in watt.</description>
+		<label>Export Grid Power</label>
+		<description>Current export power to grid in watt.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-	<channel-type id="sell-to-grid-energy">
+	<channel-type id="exported-to-grid-energy">
 		<item-type>Number:Energy</item-type>
-		<label>Sell Grid Energy</label>
+		<label>Exported Grid Energy</label>
 		<description>Total energy exported to the grid in watt per hour.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
@@ -133,16 +133,16 @@
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-	<channel-type id="buy-from-grid-power">
+	<channel-type id="import-from-grid-power">
 		<item-type>Number:Power</item-type>
-		<label>Buy Grid Power</label>
-		<description>Current buy from grid exchange power in watt.</description>
+		<label>Import Grid Power</label>
+		<description>Current import power from grid in watt.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
-	<channel-type id="buy-from-grid-energy">
+	<channel-type id="imported-from-grid-energy">
 		<item-type>Number:Energy</item-type>
-		<label>Buy Grid Energy</label>
+		<label>Imported Grid Energy</label>
 		<description>Total energy imported from the grid in watt per hour.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
