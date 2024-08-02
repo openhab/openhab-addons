@@ -15,6 +15,7 @@ package org.openhab.binding.awattar.internal.api;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -50,7 +51,8 @@ import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.test.java.JavaTest;
 
 /**
- * The {@link AwattarBridgeHandlerTest} contains tests for the {@link AwattarBridgeHandler}
+ * The {@link AwattarBridgeHandlerTest} contains tests for the
+ * {@link AwattarBridgeHandler}
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -96,6 +98,32 @@ class AwattarApiTest extends JavaTest {
     }
 
     @Test
+    void testDeUrl() throws AwattarApiException {
+        api.getData();
+
+        assertThat(httpClientMock.newRequest("https://api.awattar.de/v1/marketdata"), is(requestMock));
+    }
+
+    @Test
+    void testAtUrl() throws AwattarApiException {
+        config.country = "AT";
+        api = new AwattarApi(httpClientMock, ZoneId.of("GMT+2"), config);
+
+        api.getData();
+
+        assertThat(httpClientMock.newRequest("https://api.awattar.at/v1/marketdata"), is(requestMock));
+    }
+
+    @Test
+    void testInvalidCountry() {
+        config.country = "CH";
+
+        IllegalArgumentException thrown = assertThrows(IllegalArgumentException.class,
+                () -> new AwattarApi(httpClientMock, ZoneId.of("GMT+2"), config));
+        assertThat(thrown.getMessage(), is("Country code must be 'DE' or 'AT'"));
+    }
+
+    @Test
     void testPricesRetrieval() throws AwattarApiException {
         SortedSet<AwattarPrice> prices = api.getData();
 
@@ -106,5 +134,22 @@ class AwattarApiTest extends JavaTest {
         // check if first and last element are correct
         assertThat(prices.first().timerange().start(), is(1718316000000L));
         assertThat(prices.last().timerange().end(), is(1718575200000L));
+    }
+
+    @Test
+    void testPricesRetrievalEmptyResponse() {
+        when(contentResponseMock.getContentAsString()).thenReturn(null);
+        when(contentResponseMock.getStatus()).thenReturn(HttpStatus.OK_200);
+
+        AwattarApiException thrown = assertThrows(AwattarApiException.class, () -> api.getData());
+        assertThat(thrown.getMessage(), is("@text/error.invalid.data"));
+    }
+
+    @Test
+    void testPricesReturnNot200() {
+        when(contentResponseMock.getStatus()).thenReturn(HttpStatus.BAD_REQUEST_400);
+
+        AwattarApiException thrown = assertThrows(AwattarApiException.class, () -> api.getData());
+        assertThat(thrown.getMessage(), is("@text/warn.awattar.statuscode400"));
     }
 }

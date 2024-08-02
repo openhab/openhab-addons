@@ -128,7 +128,7 @@ public class AwattarApi {
             logger.trace("aWATTar API response: status = {}, content = '{}'", httpStatus, content);
 
             if (content == null) {
-                throw new AwattarApiException("@text/error.empty.data");
+                throw new AwattarApiException("@text/error.invalid.data");
             } else if (httpStatus == OK_200) {
                 SortedSet<AwattarPrice> result = new TreeSet<>(Comparator.comparing(AwattarPrice::timerange));
 
