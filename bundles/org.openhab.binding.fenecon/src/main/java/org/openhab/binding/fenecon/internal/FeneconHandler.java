@@ -77,7 +77,7 @@ public class FeneconHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(FeneconConfiguration.class);
 
-        logger.info("FENECON: initialize REST-API connection to {} with polling interval: {} sec", getBaseUrl(config),
+        logger.debug("FENECON: initialize REST-API connection to {} with polling interval: {} sec", getBaseUrl(config),
                 config.refreshInterval);
 
         updateStatus(ThingStatus.UNKNOWN);
