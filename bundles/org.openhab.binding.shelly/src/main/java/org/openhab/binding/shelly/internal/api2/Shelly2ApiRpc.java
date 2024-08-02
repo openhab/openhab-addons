@@ -85,6 +85,7 @@ import org.openhab.binding.shelly.internal.handler.ShellyThingInterface;
 import org.openhab.binding.shelly.internal.handler.ShellyThingTable;
 import org.openhab.binding.shelly.internal.util.ShellyVersionDTO;
 import org.openhab.core.library.unit.SIUnits;
+import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -171,7 +172,6 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         }
 
         Shelly2GetConfigResult dc = apiRequest(SHELLYRPC_METHOD_GETCONFIG, null, Shelly2GetConfigResult.class);
-        profile.isGen2 = true;
         profile.settingsJson = gson.toJson(dc);
         profile.thingName = thingName;
         profile.settings.name = profile.status.name = dc.sys.device.name;
@@ -684,19 +684,22 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
                     case SHELLY2_EVENT_OTASTART:
                         logger.debug("{}: Firmware update started: {}", thingName, getString(e.msg));
-                        getThing().postEvent(e.event, true);
-                        getThing().setThingOffline(ThingStatusDetail.FIRMWARE_UPDATING,
+                        getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.FIRMWARE_UPDATING,
                                 "offline.status-error-fwupgrade");
                         break;
                     case SHELLY2_EVENT_OTAPROGRESS:
                         logger.debug("{}: Firmware update in progress: {}", thingName, getString(e.msg));
-                        getThing().postEvent(e.event, false);
                         break;
                     case SHELLY2_EVENT_OTADONE:
-                        logger.debug("{}: Firmware update completed: {}", thingName, getString(e.msg));
-                        getThing().setThingOffline(ThingStatusDetail.CONFIGURATION_PENDING,
+                        logger.debug("{}: Firmware update completed with status {}", thingName, getString(e.msg));
+                        getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
+                                "message.offline.status-error-fwcompleted");
+                        break;
+                    case SHELLY2_EVENT_RESTART:
+                        logger.debug("{}: Device was restarted: {}", thingName, getString(e.msg));
+                        getThing().setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.DUTY_CYCLE,
                                 "offline.status-error-restarted");
-                        getThing().requestUpdates(1, true); // refresh config
+                        getThing().postEvent(ALARM_TYPE_RESTARTED, true);
                         break;
                     case SHELLY2_EVENT_SLEEP:
                         logger.debug("{}: Connection terminated, e.g. device in sleep mode", thingName);
@@ -732,10 +735,12 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
             String reason = getString(description);
             logger.debug("{}: WebSocket connection closed, status = {}/{}", thingName, statusCode, reason);
             if ("Bye".equalsIgnoreCase(reason)) {
-                logger.debug("{}: Device went to sleep mode", thingName);
+                logger.debug("{}: Device went to sleep mode or was restarted", thingName);
             } else if (statusCode == StatusCode.ABNORMAL && !discovery && getProfile().alwaysOn) {
                 // e.g. device rebooted
-                thingOffline("WebSocket connection closed abnormal");
+                if (getThing().getThingStatusDetail() != ThingStatusDetail.DUTY_CYCLE) {
+                    thingOffline("WebSocket connection closed abnormally");
+                }
             }
         } catch (ShellyApiException e) {
             logger.debug("{}: Exception on onClose()", thingName, e);
@@ -753,8 +758,8 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
 
     private void thingOffline(String reason) {
         if (thing != null) { // do not reinit of battery powered devices with sleep mode
-            thing.setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "offline.status-error-unexpected-error",
-                    reason);
+            thing.setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR,
+                    "offline.status-error-unexpected-error", reason);
         }
     }
 
