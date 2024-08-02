@@ -133,6 +133,8 @@ actions.sendMessage("Boost has been activated", "Recuperator", Duration.ofHours(
 var pushoverActions = actions.thingActions('pushover', 'pushover:pushover-account:account');
 // send expiring message
 pushoverActions.sendMessage("Boost has been activated", "Recuperator", time.Duration.ofHours(1));
+// in case you want to send the content of an Image Item (RawType)
+pushoverActions.sendAttachmentMessage("Hello World!", "openHAB", myImageItem.rawState.toFullString(), null);
 ```
 
 :::
