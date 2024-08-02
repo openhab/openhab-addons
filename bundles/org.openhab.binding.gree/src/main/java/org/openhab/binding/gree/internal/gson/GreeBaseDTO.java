@@ -14,12 +14,16 @@ package org.openhab.binding.gree.internal.gson;
 
 /**
  *
- * The GreeExecResponseDTO class is used by Gson to hold values returned from
- * the Air Conditioner during requests for Execution of Commands to the
- * Air Conditioner.
+ * The GreeBaseDTO class is used as a base class for request and response classes
  *
- * @author John Cunha - Initial contribution
+ * @author Zhivka Dimvoa - Initial contribution
  */
-public class GreeExecResponseDTO extends GreeResponseBaseDTO {
-    public transient GreeExecResponsePackDTO packJson = null;
+public class GreeBaseDTO {
+    public String t = null;
+    public int i = 0;
+    public int uid = 0;
+    public String cid = null;
+    public String tcid = null;
+    public String tag = null;
+    public String pack = null;
 }
