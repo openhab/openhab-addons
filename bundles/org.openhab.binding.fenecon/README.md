@@ -32,20 +32,20 @@ The FENECON Thing only needs to be configured with the `hostname`, all other par
 
 The FENECON binding currently only provides access to read out the values from the energy storage system. 
 
-| Channel                | Type                 | Read/Write | Description                                                                 |
-|------------------------|----------------------|------------|-----------------------------------------------------------------------------|
-| state                  | String               | R          | FENECON system state: Ok, Info, Warning or Fault                            |
-| lastUpdate             | DateTime             | R          | Last successful update via REST-API from the FENECON system                 |
-| essSoc                 | Number:Dimensionless | R          | Battery state of charge in percent                                          |
-| chargerPower           | Number:Power         | R          | Current charger power of energy storage system in watt.                     |
-| dischargerPower        | Number:Power         | R          | Current discharger power of energy storage system in watt.                  |
-| emergencyPowerMode     | Switch               | R          | Indicates if there is grid power is off and the emergency power mode is on. |
-| productionActivePower  | Number:Power         | R          | Current active power producer load in watt.                                 |
-| sellToGridPower        | Number:Power         | R          | Current sell to grid exchange power in watt.                                |
-| sellToGridEnergy       | Number:Energy        | R          | Total energy exported to the grid in watt per hour.                         |
-| consumptionActivePower | Number:Power         | R          | Current active power consumer load in watt.                                 |
-| buyFromGridPower       | Number:Power         | R          | Current buy from grid exchange power in watt.                               |
-| buyFromGridEnergy      | Number:Energy        | R          | Total energy imported from the grid in watt per hour.                       |
+| Channel                  | Type                 | Read/Write | Description                                                                 |
+|--------------------------|----------------------|------------|-----------------------------------------------------------------------------|
+| state                    | String               | R          | FENECON system state: Ok, Info, Warning or Fault                            |
+| last-update              | DateTime             | R          | Last successful update via REST-API from the FENECON system                 |
+| ess-soc                  | Number:Dimensionless | R          | Battery state of charge in percent                                          |
+| charger-power            | Number:Power         | R          | Current charger power of energy storage system in watt.                     |
+| discharger-power         | Number:Power         | R          | Current discharger power of energy storage system in watt.                  |
+| emergency-power-mode     | Switch               | R          | Indicates if there is grid power is off and the emergency power mode is on. |
+| production-active-power  | Number:Power         | R          | Current active power producer load in watt.                                 |
+| sell-to-grid-power       | Number:Power         | R          | Current sell to grid exchange power in watt.                                |
+| sell-to-grid-energy      | Number:Energy        | R          | Total energy exported to the grid in watt per hour.                         |
+| consumption-active-power | Number:Power         | R          | Current active power consumer load in watt.                                 |
+| buy-from-grid-power      | Number:Power         | R          | Current buy from grid exchange power in watt.                               |
+| buy-from-grid-energy     | Number:Energy        | R          | Total energy imported from the grid in watt per hour.                       |
 
 
 ## Full Example
@@ -100,6 +100,7 @@ sitemap demo label="FENECON Example Sitemap" {
 ```
 
 ### demo.rules
+
 
 ```java
 rule "Blackout detection"
