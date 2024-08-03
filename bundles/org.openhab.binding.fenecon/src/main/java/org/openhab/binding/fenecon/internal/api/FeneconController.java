@@ -23,6 +23,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.util.Base64;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.fenecon.internal.FeneconConfiguration;
 import org.openhab.binding.fenecon.internal.exception.FeneconAuthenticationException;
 import org.openhab.binding.fenecon.internal.exception.FeneconCommunicationException;
@@ -39,6 +40,7 @@ import com.google.gson.JsonSyntaxException;
  *
  * @author Philipp Schneider - Initial contribution
  */
+@NonNullByDefault
 public class FeneconController {
 
     private final Logger logger = LoggerFactory.getLogger(FeneconController.class);
