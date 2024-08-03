@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.fenecon.internal;
 
-import static org.openhab.binding.fenecon.internal.FeneconBindingConstants.THING_TYPE_RESTAPI;
+import static org.openhab.binding.fenecon.internal.FeneconBindingConstants.THING_TYPE_HOME_DEVICE;
 
 import java.util.Set;
 
@@ -35,7 +35,7 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.fenecon", service = ThingHandlerFactory.class)
 public class FeneconHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_RESTAPI);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_HOME_DEVICE);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -46,7 +46,7 @@ public class FeneconHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_RESTAPI.equals(thingTypeUID)) {
+        if (THING_TYPE_HOME_DEVICE.equals(thingTypeUID)) {
             return new FeneconHandler(thing);
         }
 

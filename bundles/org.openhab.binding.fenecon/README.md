@@ -53,7 +53,7 @@ The FENECON binding currently only provides access to read out the values from t
 ### fenecon.things
 
 ```java
-Thing fenecon:rest-api:local "FENECON Home" [hostname="192.168.1.11", refreshInterval=5]
+Thing fenecon:home-device:local "FENECON Home" [hostname="192.168.1.11", refreshInterval=5]
 ```
 
 ### demo.items
@@ -67,20 +67,20 @@ Group   GF_UtilityRoom          "Utility room"        <energy>               (Ho
 Group   GF_UtilityRoomSolar     "Utility room solar"  <solarplant>           (GF_UtilityRoom) ["Inverter"]
 
 // FENECON items
-String               EssState               <text>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:rest-api:local:state"}
-DateTime             LastFeneconUpdate      <time>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:rest-api:local:last-update"}
-Number:Dimensionless EssSoc                 <batterylevel> (GF_UtilityRoomSolar) ["Measurement"]           {unit="%", channel="fenecon:rest-api:local:ess-soc"}
-Number:Power         ChargerPower           <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:rest-api:local:charger-power"}
-Number:Power         DischargerPower        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:rest-api:local:discharger-power"}
-Switch               EmergencyPowerMode     <switch>       (GF_UtilityRoomSolar) ["Switch"]                {channel="fenecon:rest-api:local:emergency-power-mode"}
+String               EssState               <text>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:home-device:local:state"}
+DateTime             LastFeneconUpdate      <time>         (GF_UtilityRoomSolar) ["Status"]                {channel="fenecon:home-device:local:last-update"}
+Number:Dimensionless EssSoc                 <batterylevel> (GF_UtilityRoomSolar) ["Measurement"]           {unit="%", channel="fenecon:home-device:local:ess-soc"}
+Number:Power         ChargerPower           <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:charger-power"}
+Number:Power         DischargerPower        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:discharger-power"}
+Switch               EmergencyPowerMode     <switch>       (GF_UtilityRoomSolar) ["Switch"]                {channel="fenecon:home-device:local:emergency-power-mode"}
 
-Number:Power         ProductionActivePower  <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:rest-api:local:production-active-power"}
-Number:Power         SellToGridPower        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:rest-api:local:export-to-grid-power"}
-Number:Energy        TotalSellEnergy        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:rest-api:local:exported-to-grid-energy"}
+Number:Power         ProductionActivePower  <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:production-active-power"}
+Number:Power         SellToGridPower        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:export-to-grid-power"}
+Number:Energy        TotalSellEnergy        <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:home-device:local:exported-to-grid-energy"}
 
-Number:Power         ConsumptionActivePower <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:rest-api:local:consumption-active-power"}
-Number:Power         BuyFromGridPower       <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:rest-api:local:import-from-grid-power"}
-Number:Energy        TotalBuyEnergy         <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:rest-api:local:imported-from-grid-energy"}
+Number:Power         ConsumptionActivePower <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power"}
+Number:Power         BuyFromGridPower       <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:import-from-grid-power"}
+Number:Energy        TotalBuyEnergy         <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:home-device:local:imported-from-grid-energy"}
 
 // Examples of items for calculating the energy purchased and sold. Look at the demo.rules section.
 Number:Currency      SoldEnergy "Total sold energy [%.2f €]"           <price> (GF_UtilityRoomSolar)

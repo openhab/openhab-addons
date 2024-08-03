@@ -29,7 +29,7 @@ public class FeneconBindingConstants {
     private static final String BINDING_ID = "fenecon";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_RESTAPI = new ThingTypeUID(BINDING_ID, "rest-api");
+    public static final ThingTypeUID THING_TYPE_HOME_DEVICE = new ThingTypeUID(BINDING_ID, "home-device");
 
     // List of all FENECON Addresses
     public static final String STATE_ADDRESS = "_sum/State";
