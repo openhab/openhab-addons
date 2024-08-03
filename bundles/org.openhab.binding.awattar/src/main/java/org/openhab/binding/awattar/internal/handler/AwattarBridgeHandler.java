@@ -160,9 +160,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
                 AwattarApiData apiData = gson.fromJson(content, AwattarApiData.class);
                 if (apiData != null) {
                     TimeSeries netMarketSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
-                    TimeSeries grossMarketSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
                     TimeSeries netTotalSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
-                    TimeSeries grossTotalSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
 
                     Unit<?> priceUnit = getPriceUnit();
 
@@ -174,9 +172,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
                         Instant timestamp = Instant.ofEpochMilli(d.startTimestamp);
 
                         netMarketSeries.add(timestamp, new QuantityType<>(netMarket / 100.0, priceUnit));
-                        grossMarketSeries.add(timestamp, new QuantityType<>(grossMarket / 100.0, priceUnit));
                         netTotalSeries.add(timestamp, new QuantityType<>(netTotal / 100.0, priceUnit));
-                        grossTotalSeries.add(timestamp, new QuantityType<>(grossTotal / 100.0, priceUnit));
 
                         result.add(new AwattarPrice(netMarket, grossMarket, netTotal, grossTotal,
                                 new TimeRange(d.startTimestamp, d.endTimestamp)));
@@ -185,9 +181,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
                     // update channels
                     sendTimeSeries(CHANNEL_MARKET_NET, netMarketSeries);
-                    sendTimeSeries(CHANNEL_MARKET_GROSS, grossMarketSeries);
                     sendTimeSeries(CHANNEL_TOTAL_NET, netTotalSeries);
-                    sendTimeSeries(CHANNEL_TOTAL_GROSS, grossMarketSeries);
 
                     updateStatus(ThingStatus.ONLINE);
                 } else {
@@ -308,9 +302,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
         if (command instanceof RefreshType) {
             switch (channelUID.getId()) {
                 case CHANNEL_MARKET_NET -> createAndSendTimeSeries(CHANNEL_MARKET_NET, AwattarPrice::netPrice);
-                case CHANNEL_MARKET_GROSS -> createAndSendTimeSeries(CHANNEL_MARKET_GROSS, AwattarPrice::grossPrice);
                 case CHANNEL_TOTAL_NET -> createAndSendTimeSeries(CHANNEL_TOTAL_NET, AwattarPrice::netTotal);
-                case CHANNEL_TOTAL_GROSS -> createAndSendTimeSeries(CHANNEL_TOTAL_GROSS, AwattarPrice::grossTotal);
             }
         }
     }
