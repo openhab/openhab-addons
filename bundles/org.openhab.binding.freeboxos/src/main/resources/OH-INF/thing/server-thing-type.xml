@@ -22,6 +22,8 @@
 			<channel-group typeId="connection-status" id="connection-status"/>
 		</channel-groups>
 
+		<representation-property>macAddress</representation-property>
+
 		<config-description-ref uri="thing-type:freeboxos:server"/>
 	</thing-type>
 
@@ -41,6 +43,8 @@
 			<channel-group typeId="actions" id="actions"/>
 			<channel-group typeId="connection-status" id="connection-status"/>
 		</channel-groups>
+
+		<representation-property>macAddress</representation-property>
 
 		<config-description-ref uri="thing-type:freeboxos:server"/>
 	</thing-type>

@@ -14,6 +14,8 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
+import java.util.Map;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.VmManager;
@@ -38,6 +40,15 @@ public class VmHandler extends HostHandler {
 
     public VmHandler(Thing thing) {
         super(thing);
+    }
+
+    @Override
+    void initializeProperties(Map<String, String> properties) throws FreeboxException {
+        // We need to get and set the MAC address before calling super.initializeProperties
+        VirtualMachine vm = getManager(VmManager.class).getDevice(getClientId());
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, vm.mac().toColonDelimitedString());
+        updateProperties(properties);
+        super.initializeProperties(properties);
     }
 
     @Override

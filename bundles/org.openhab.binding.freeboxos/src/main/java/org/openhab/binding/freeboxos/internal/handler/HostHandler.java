@@ -32,6 +32,8 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import inet.ipaddr.mac.MACAddress;
+
 /**
  * The {@link HostHandler} is responsible for all network equipments hosted on the network
  *
@@ -63,9 +65,10 @@ public class HostHandler extends ApiConsumerHandler {
     }
 
     protected void cancelPushSubscription() {
-        if (pushSubscribed) {
+        MACAddress mac = getMac();
+        if (pushSubscribed && mac != null) {
             try {
-                getManager(WebSocketManager.class).unregisterListener(getMac());
+                getManager(WebSocketManager.class).unregisterListener(mac);
             } catch (FreeboxException e) {
                 logger.warn("Error unregistering host from the websocket: {}", e.getMessage());
             }
@@ -92,7 +95,12 @@ public class HostHandler extends ApiConsumerHandler {
     }
 
     protected LanHost getLanHost() throws FreeboxException {
-        return getManager(LanBrowserManager.class).getHost(getMac()).map(hostIntf -> hostIntf.host())
+        MACAddress mac = getMac();
+        if (mac == null) {
+            throw new FreeboxException(
+                    "getLanHost is not possible because MAC address is undefined for the thing " + thing.getUID());
+        }
+        return getManager(LanBrowserManager.class).getHost(mac).map(hostIntf -> hostIntf.host())
                 .orElseThrow(() -> new FreeboxException("Host data not found"));
     }
 
@@ -104,9 +112,14 @@ public class HostHandler extends ApiConsumerHandler {
     }
 
     public void wol() {
+        MACAddress mac = getMac();
+        if (mac == null) {
+            logger.warn("Waking up host is not possible because MAC address is undefined for the thing {}",
+                    thing.getUID());
+            return;
+        }
         try {
-            getManager(LanBrowserManager.class).wakeOnLan(getMac(),
-                    getConfigAs(ApiConsumerConfiguration.class).password);
+            getManager(LanBrowserManager.class).wakeOnLan(mac, getConfigAs(ApiConsumerConfiguration.class).password);
         } catch (FreeboxException e) {
             logger.warn("Error waking up host: {}", e.getMessage());
         }

@@ -53,12 +53,14 @@ public class RepeaterHandler extends HostHandler implements FreeDeviceIntf {
 
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
-        super.initializeProperties(properties);
-
+        // We need to get and set the MAC address before calling super.initializeProperties
         Repeater repeater = getManager(RepeaterManager.class).getDevice(getClientId());
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, repeater.mainMac().toColonDelimitedString());
         properties.put(Thing.PROPERTY_SERIAL_NUMBER, repeater.sn());
         properties.put(Thing.PROPERTY_FIRMWARE_VERSION, repeater.firmwareVersion());
         properties.put(Thing.PROPERTY_MODEL_ID, repeater.model().name());
+        updateProperties(properties);
+        super.initializeProperties(properties);
     }
 
     @Override
