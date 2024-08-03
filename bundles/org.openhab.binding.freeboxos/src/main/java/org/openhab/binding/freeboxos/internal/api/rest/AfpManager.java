@@ -31,22 +31,8 @@ public class AfpManager extends ConfigurableRest<AfpManager.Afp, AfpManager.Conf
     protected static class ConfigResponse extends Response<Afp> {
     }
 
-    protected static record Afp(boolean enabled, boolean guestAllow, ServerType serverType, @Nullable String loginName,
+    protected static record Afp(boolean enabled, boolean guestAllow, String serverType, @Nullable String loginName,
             @Nullable String loginPassword) {
-        private enum ServerType {
-            POWERBOOK,
-            POWERMAC,
-            MACMINI,
-            IMAC,
-            MACBOOK,
-            MACBOOKPRO,
-            MACBOOKAIR,
-            MACPRO,
-            APPLETV,
-            AIRPORT,
-            XSERVE,
-            UNKNOWN
-        }
     }
 
     public AfpManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
