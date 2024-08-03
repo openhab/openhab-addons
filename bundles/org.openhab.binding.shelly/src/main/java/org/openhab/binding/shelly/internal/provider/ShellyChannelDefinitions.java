@@ -360,7 +360,7 @@ public class ShellyChannelDefinitions {
         Map<String, Channel> add = new LinkedHashMap<>();
         String group = profile.getControlGroup(idx);
 
-        ArrayList<ShellySettingsRelay> relays = profile.settings.relays;
+        List<ShellySettingsRelay> relays = profile.settings.relays;
         if (relays != null) {
             ShellySettingsRelay rs = relays.get(idx);
             addChannel(thing, add, rs.ison != null, group, CHANNEL_OUTPUT);
@@ -409,7 +409,7 @@ public class ShellyChannelDefinitions {
         // Shelly Dimmer has an additional brightness channel
         addChannel(thing, add, profile.isDimmer, group, CHANNEL_BRIGHTNESS);
 
-        ArrayList<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
+        List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
         if (dimmers != null) {
             ShellySettingsDimmer ds = dimmers.get(idx);
             addChannel(thing, add, ds.name != null, group, CHANNEL_OUTPUT_NAME);
@@ -426,7 +426,7 @@ public class ShellyChannelDefinitions {
         Map<String, Channel> add = new LinkedHashMap<>();
         String group = profile.getControlGroup(idx);
 
-        ArrayList<ShellySettingsRgbwLight> lights = profile.settings.lights;
+        List<ShellySettingsRgbwLight> lights = profile.settings.lights;
         if (lights != null) {
             ShellySettingsRgbwLight light = lights.get(idx);
             String whiteGroup = profile.isRGBW2 ? group : CHANNEL_GROUP_WHITE_CONTROL;

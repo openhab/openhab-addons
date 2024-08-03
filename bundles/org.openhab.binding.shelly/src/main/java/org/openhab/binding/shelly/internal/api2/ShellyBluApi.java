@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -154,7 +155,7 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             profile.numInputs = 1;
             settings.btnType = SHELLY_BTNT_MOMENTARY;
 
-            ArrayList<ShellySettingsInput> inputs = profile.settings.inputs;
+            List<ShellySettingsInput> inputs = profile.settings.inputs;
             if (inputs != null) {
                 inputs.set(0, settings);
             } else {

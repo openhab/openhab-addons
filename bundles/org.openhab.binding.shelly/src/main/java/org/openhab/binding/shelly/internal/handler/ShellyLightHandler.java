@@ -16,7 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -336,7 +336,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             ShellyColorUtils col = getCurrentColors(lightId);
             col.power = getOnOff(light.ison);
 
-            ArrayList<ShellySettingsRgbwLight> lights = profile.settings.lights;
+            List<ShellySettingsRgbwLight> lights = profile.settings.lights;
             if (lights != null) {
                 // Channel control/timer
                 ShellySettingsRgbwLight ls = lights.get(lightId);

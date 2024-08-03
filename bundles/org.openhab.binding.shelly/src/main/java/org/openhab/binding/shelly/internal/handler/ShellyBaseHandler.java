@@ -21,7 +21,6 @@ import static org.openhab.core.thing.Thing.*;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -456,7 +455,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         id = getNumber(command).intValue();
                     } else {
                         String cmd = command.toString();
-                        ArrayList<ShellyThermnostat> thermostats = profile.settings.thermostats;
+                        List<ShellyThermnostat> thermostats = profile.settings.thermostats;
                         if (isDigit(cmd.charAt(0))) {
                             id = Integer.parseInt(cmd);
                         } else if (thermostats != null) {

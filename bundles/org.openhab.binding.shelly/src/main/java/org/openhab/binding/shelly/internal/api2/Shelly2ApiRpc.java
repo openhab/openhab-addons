@@ -198,13 +198,13 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
         profile.settings.rollers = fillRollerSettings(profile, dc);
 
         profile.isEMeter = true;
-        ArrayList<ShellySettingsInput> inputs = profile.settings.inputs;
+        List<ShellySettingsInput> inputs = profile.settings.inputs;
         profile.numInputs = inputs != null ? inputs.size() : 0;
 
-        ArrayList<ShellySettingsRelay> relays = profile.settings.relays;
+        List<ShellySettingsRelay> relays = profile.settings.relays;
         profile.numRelays = relays != null ? relays.size() : 0;
 
-        ArrayList<ShellySettingsRoller> rollers = profile.settings.rollers;
+        List<ShellySettingsRoller> rollers = profile.settings.rollers;
         profile.numRollers = rollers != null ? rollers.size() : 0;
 
         profile.hasRelays = profile.numRelays > 0 || profile.numRollers > 0;
@@ -873,7 +873,7 @@ public class Shelly2ApiRpc extends Shelly2ApiClient implements ShellyApiInterfac
     public void setRelayTurn(int id, String turnMode) throws ShellyApiException {
         ShellyDeviceProfile profile = getProfile();
         int rIdx = id;
-        ArrayList<ShellySettingsRelay> relays = profile.settings.relays;
+        List<ShellySettingsRelay> relays = profile.settings.relays;
         if (relays != null) {
             Integer rid = relays.get(id).id;
             if (rid != null) {

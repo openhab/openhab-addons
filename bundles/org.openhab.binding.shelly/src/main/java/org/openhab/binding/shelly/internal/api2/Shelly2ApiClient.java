@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -296,7 +297,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     private int getRelayIdx(ShellyDeviceProfile profile, @Nullable Integer id) {
-        ArrayList<ShellySettingsRelay> relays = profile.settings.relays;
+        List<ShellySettingsRelay> relays = profile.settings.relays;
         if (id != null && relays != null) {
             int idx = 0;
             for (ShellySettingsRelay relay : relays) {
@@ -562,7 +563,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             return;
         }
 
-        ArrayList<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
+        List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
         if (dimmers != null) {
             ShellySettingsDimmer ds = dimmers.get(0);
             ds.autoOn = dc.light0.autoOnDelay;
@@ -722,10 +723,11 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         addInputSettings(inputs, dc.input1);
         addInputSettings(inputs, dc.input2);
         addInputSettings(inputs, dc.input3);
+
         return inputs;
     }
 
-    private void addInputSettings(ArrayList<@Nullable ShellySettingsInput> inputs, @Nullable Shelly2DevConfigInput ic) {
+    private void addInputSettings(List<@Nullable ShellySettingsInput> inputs, @Nullable Shelly2DevConfigInput ic) {
         if (ic == null) {
             return;
         }

@@ -17,8 +17,8 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.discovery.ShellyThingCreator.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -164,7 +164,7 @@ public class ShellyDeviceProfile {
         }
         hasRelays = (numRelays > 0) || isDimmer;
         numRollers = getInteger(device.numRollers);
-        ArrayList<ShellySettingsInput> inputs = settings.inputs;
+        List<ShellySettingsInput> inputs = settings.inputs;
         numInputs = inputs != null ? inputs.size() : hasRelays ? isRoller ? 2 : 1 : 0;
 
         isEMeter = settings.emeters != null;
@@ -269,7 +269,7 @@ public class ShellyDeviceProfile {
         } else if (hasRelays) {
             return numRelays <= 1 ? CHANNEL_GROUP_RELAY_CONTROL : CHANNEL_GROUP_RELAY_CONTROL + idx;
         } else if (isRGBW2) {
-            ArrayList<ShellySettingsRgbwLight> lights = settings.lights;
+            List<ShellySettingsRgbwLight> lights = settings.lights;
             return lights == null || lights.size() <= 1 ? CHANNEL_GROUP_LIGHT_CONTROL
                     : CHANNEL_GROUP_LIGHT_CHANNEL + idx;
         } else if (isLight) {
@@ -323,10 +323,10 @@ public class ShellyDeviceProfile {
             return false;
         }
         String btnType = "";
-        ArrayList<ShellySettingsInput> inputs = settings.inputs;
-        ArrayList<ShellySettingsDimmer> dimmers = settings.dimmers;
-        ArrayList<ShellySettingsRelay> relays = settings.relays;
-        ArrayList<ShellySettingsRgbwLight> lights = settings.lights;
+        List<ShellySettingsInput> inputs = settings.inputs;
+        List<ShellySettingsDimmer> dimmers = settings.dimmers;
+        List<ShellySettingsRelay> relays = settings.relays;
+        List<ShellySettingsRgbwLight> lights = settings.lights;
         if (isButton) {
             return true;
         } else if (isIX && inputs != null && idx < inputs.size()) {
@@ -370,7 +370,7 @@ public class ShellyDeviceProfile {
     }
 
     public String[] getValveProfileList(int valveId) {
-        ArrayList<ShellyThermnostat> thermostats = settings.thermostats;
+        List<ShellyThermnostat> thermostats = settings.thermostats;
         if (isTRV && thermostats != null) {
             int sz = thermostats.size();
             if (valveId <= sz) {
@@ -383,7 +383,7 @@ public class ShellyDeviceProfile {
 
     public String getValueProfile(int valveId, int profileId) {
         int id = profileId;
-        ArrayList<ShellyThermnostat> thermostats = settings.thermostats;
+        List<ShellyThermnostat> thermostats = settings.thermostats;
         if (id <= 0 && thermostats != null) {
             id = thermostats.get(0).profile;
         }

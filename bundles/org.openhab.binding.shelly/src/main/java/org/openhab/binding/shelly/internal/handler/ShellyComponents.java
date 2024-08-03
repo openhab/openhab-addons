@@ -17,6 +17,7 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -102,7 +103,7 @@ public class ShellyComponents {
         ShellyDeviceProfile profile = thingHandler.getProfile();
         ShellySettingsRelay relay = status.relays.get(id);
         ShellySettingsRelay rsettings;
-        ArrayList<ShellySettingsRelay> relays = profile.settings.relays;
+        List<ShellySettingsRelay> relays = profile.settings.relays;
         if (relays != null) {
             rsettings = relays.get(id);
         } else {
@@ -590,7 +591,7 @@ public class ShellyComponents {
                             .createDimmerChannels(thingHandler.getThing(), profile, dstatus, l));
                 }
 
-                ArrayList<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
+                List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
                 if (dimmers != null) {
                     ShellySettingsDimmer ds = dimmers.get(l);
                     if (ds.name != null) {

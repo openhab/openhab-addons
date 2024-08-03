@@ -17,9 +17,9 @@ import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -280,7 +280,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     @Override
     public void setValveMode(int valveId, boolean auto) throws ShellyApiException {
         String uri = "/settings/thermostat/" + valveId + "?target_t_enabled=" + (auto ? "1" : "0");
-        ArrayList<ShellyThermnostat> thermostats = profile.settings.thermostats;
+        List<ShellyThermnostat> thermostats = profile.settings.thermostats;
         if (auto && thermostats != null) {
             uri = uri + "&target_t=" + getDouble(thermostats.get(0).targetTemp.value);
         }
@@ -305,7 +305,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
 
     @Override
     public void startValveBoost(int valveId, int value) throws ShellyApiException {
-        ArrayList<ShellyThermnostat> thermostats = profile.settings.thermostats;
+        List<ShellyThermnostat> thermostats = profile.settings.thermostats;
         if (thermostats != null) {
             ShellyThermnostat t = thermostats.get(0);
             int minutes = value != -1 ? value : getInteger(t.boostMinutes);
@@ -544,7 +544,7 @@ public class Shelly1HttpApi extends ShellyHttpClient implements ShellyApiInterfa
     }
 
     private void setDimmerEvents() throws ShellyApiException {
-        ArrayList<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
+        List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
         if (dimmers != null) {
             int sz = dimmers.size();
             for (int i = 0; i < sz; i++) {
