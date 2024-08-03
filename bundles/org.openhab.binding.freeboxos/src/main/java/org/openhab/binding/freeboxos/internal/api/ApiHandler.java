@@ -35,6 +35,7 @@ import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.freeboxos.internal.api.deserialization.ForegroundAppDeserializer;
 import org.openhab.binding.freeboxos.internal.api.deserialization.ListDeserializer;
 import org.openhab.binding.freeboxos.internal.api.deserialization.StrictEnumTypeAdapterFactory;
+import org.openhab.binding.freeboxos.internal.api.rest.LoginManager;
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.ForegroundApp;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.slf4j.Logger;
@@ -121,7 +122,12 @@ public class ApiHandler {
             } else if (statusCode == Code.FORBIDDEN) {
                 logger.debug("Fobidden, serviceReponse was {}, ", content);
                 if (result instanceof Response<?> errorResponse) {
-                    throw new FreeboxException(errorResponse.getErrorCode(), errorResponse.getMsg());
+                    if (errorResponse.getMissingRight() != LoginManager.Permission.NONE) {
+                        throw new PermissionException(errorResponse.getMissingRight(), errorResponse.getErrorCode(),
+                                errorResponse.getMsg());
+                    } else {
+                        throw new FreeboxException(errorResponse.getErrorCode(), errorResponse.getMsg());
+                    }
                 }
             }
 
