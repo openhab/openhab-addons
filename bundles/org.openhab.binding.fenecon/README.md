@@ -8,7 +8,7 @@ This makes it possible, for example, to switch on other consumers such as the di
 
 ## Supported Things
 
-Currently only one Thing is supported: The `rest-api` device connection to the FENECON energy storage system.
+Currently only one Thing is supported: The `home-device` connection to the FENECON energy storage system.
 
 This Binding was tested with an [FENECON HOME 10](https://fenecon.de/fenecon-home-10/) device.
 
