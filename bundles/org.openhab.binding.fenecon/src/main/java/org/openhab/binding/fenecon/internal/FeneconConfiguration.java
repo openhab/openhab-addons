@@ -22,9 +22,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class FeneconConfiguration {
 
-    /**
-     * Sample configuration parameters. Replace with your own.
-     */
     public String hostname = "";
     public String password = "user";
     public int port = 8084;
