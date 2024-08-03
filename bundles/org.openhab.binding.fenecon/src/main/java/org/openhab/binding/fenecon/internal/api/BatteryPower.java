@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.fenecon.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link BatteryPower} is a small helper class to convert the power value from battery.
  *
  * @author Philipp Schneider - Initial contribution
  */
+@NonNullByDefault
 public record BatteryPower(int chargerPower, int dischargerPower) {
 
     public static BatteryPower get(FeneconResponse response) {

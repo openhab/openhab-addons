@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.fenecon.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link GridPower} is a small helper class to convert the grid value.
  *
  * @author Philipp Schneider - Initial contribution
  */
+@NonNullByDefault
 public record GridPower(int sellTo, int buyFrom) {
 
     public static GridPower get(FeneconResponse response) {

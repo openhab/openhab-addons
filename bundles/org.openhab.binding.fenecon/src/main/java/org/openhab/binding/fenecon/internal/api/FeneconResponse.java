@@ -12,10 +12,13 @@
  */
 package org.openhab.binding.fenecon.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link FeneconResponse} class provides the response from the FENECON system.
  *
  * @author Philipp Schneider - Initial contribution
  */
+@NonNullByDefault
 public record FeneconResponse(String address, String text, String value) {
 };

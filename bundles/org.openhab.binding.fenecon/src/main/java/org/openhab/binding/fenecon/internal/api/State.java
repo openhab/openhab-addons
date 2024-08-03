@@ -12,18 +12,32 @@
  */
 package org.openhab.binding.fenecon.internal.api;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link State} is a small helper class to convert the state value.
  *
  * @author Philipp Schneider - Initial contribution
  */
+@NonNullByDefault
 public record State(String state) {
 
     public static State get(FeneconResponse response) {
         // {"address":"_sum/State","type":"INTEGER","accessMode":"RO","text":"0:Ok, 1:Info, 2:Warning,
         // 3:Fault","unit":"","value":0}
-        int begin = response.text().indexOf(response.value() + ":");
-        int end = response.text().indexOf(",", begin);
-        return new State(response.text().substring(begin + 2, end));
+        String text = response.text();
+        int begin = text.indexOf(response.value() + ":");
+        int end = text.indexOf(",", begin);
+
+        // No value to text mapping
+        if (begin < 0) {
+            return new State("Unknown");
+        }
+
+        // Last text
+        if (end < 0) {
+            end = text.length();
+        }
+        return new State(text.substring(begin + 2, end));
     }
 }

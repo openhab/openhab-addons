@@ -59,14 +59,4 @@ public class FeneconBindingConstants {
     public static final String EXPORTED_TO_GRID_ENERGY_CHANNEL = "exported-to-grid-energy";
     public static final String IMPORTED_FROM_GRID_ENERGY_CHANNEL = "imported-from-grid-energy";
     public static final String LAST_UPDATE_CHANNEL = "last-update";
-
-    /*
-     * <channel id="charger-power" typeId="charger-power"/>
-     * <channel id="discharger-power" typeId="discharger-power"/>
-     * <channel id="emergency-power-mode" typeId="emergency-power-mode"/>
-     * <channel id="export-to-grid-power" typeId="export-to-grid-power"/>
-     * <channel id="exported-to-grid-energy" typeId="exported-to-grid-energy"/>
-     * <channel id="import-from-grid-power" typeId="import-from-grid-power"/>
-     * <channel id="imported-from-grid-energy" typeId="imported-from-grid-energy"/>
-     */
 }
