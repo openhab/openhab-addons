@@ -55,8 +55,11 @@ public interface ApiConsumerIntf extends ThingHandler {
         return ((BigDecimal) getConfig().get(ClientConfiguration.ID)).intValue();
     }
 
-    default MACAddress getMac() {
+    default @Nullable MACAddress getMac() {
         String mac = (String) getConfig().get(Thing.PROPERTY_MAC_ADDRESS);
-        return new MACAddressString(mac).getAddress();
+        if (mac == null) {
+            mac = editProperties().get(Thing.PROPERTY_MAC_ADDRESS);
+        }
+        return mac == null ? null : new MACAddressString(mac).getAddress();
     }
 }

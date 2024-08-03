@@ -57,9 +57,12 @@ public class PlayerHandler extends HostHandler {
 
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
-        super.initializeProperties(properties);
+        // We need to get and set the MAC address before calling super.initializeProperties
         Player player = getManager(PlayerManager.class).getDevice(getClientId());
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, player.mac().toColonDelimitedString());
         properties.put(Thing.PROPERTY_MODEL_ID, player.deviceModel().name());
+        updateProperties(properties);
+        super.initializeProperties(properties);
     }
 
     @Override
