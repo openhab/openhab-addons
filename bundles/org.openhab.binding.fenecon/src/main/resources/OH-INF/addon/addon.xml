@@ -6,5 +6,6 @@
 	<type>binding</type>
 	<name>FENECON Home Binding</name>
 	<description>This is the binding for FENECON Home.</description>
+	<connection>local</connection>
 
 </addon:addon>
