@@ -39,7 +39,6 @@ import org.openhab.binding.freeboxos.internal.api.rest.SystemManager;
 import org.openhab.binding.freeboxos.internal.api.rest.SystemManager.Config;
 import org.openhab.binding.freeboxos.internal.api.rest.UPnPAVManager;
 import org.openhab.binding.freeboxos.internal.api.rest.WifiManager;
-import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -84,15 +83,20 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         List<Channel> channels = new ArrayList<>(getThing().getChannels());
         config.sensors().forEach(sensor -> {
             ChannelUID sensorId = new ChannelUID(thing.getUID(), GROUP_SENSORS, sensor.id());
-            channels.add(
-                    ChannelBuilder.create(sensorId).withLabel(sensor.name()).withAcceptedItemType("Number:Temperature")
-                            .withType(new ChannelTypeUID(BINDING_ID + ":temperature")).build());
+            String label = sensor.name();
+            // For revolution, API returns only "Disque dur" so we patch it to have naming consistency with other
+            // temperature sensors
+            if ("Disque dur".equals(label)) {
+                label = "Température " + label;
+            }
+            channels.add(ChannelBuilder.create(sensorId).withLabel(label).withAcceptedItemType("Number:Temperature")
+                    .withType(new ChannelTypeUID(BINDING_ID, "temperature")).build());
         });
         config.fans().forEach(sensor -> {
             ChannelUID sensorId = new ChannelUID(thing.getUID(), GROUP_FANS, sensor.id());
-            channels.add(ChannelBuilder.create(sensorId).withLabel(sensor.name())
-                    .withAcceptedItemType(CoreItemFactory.NUMBER).withType(new ChannelTypeUID(BINDING_ID + ":fanspeed"))
-                    .build());
+            channels.add(
+                    ChannelBuilder.create(sensorId).withLabel(sensor.name()).withAcceptedItemType("Number:Frequency")
+                            .withType(new ChannelTypeUID(BINDING_ID, "fanspeed")).build());
         });
         updateThing(editThing().withChannels(channels).build());
     }
