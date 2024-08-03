@@ -17,8 +17,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.fenecon.internal.api.BatteryPower;
 import org.openhab.binding.fenecon.internal.api.FeneconController;
 import org.openhab.binding.fenecon.internal.api.FeneconResponse;
+import org.openhab.binding.fenecon.internal.api.GridPower;
+import org.openhab.binding.fenecon.internal.api.State;
 import org.openhab.binding.fenecon.internal.exception.FeneconException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -89,10 +92,8 @@ public class FeneconHandler extends BaseThingHandler {
             case FeneconBindingConstants.STATE_ADDRESS:
                 // {"address":"_sum/State","type":"INTEGER","accessMode":"RO","text":"0:Ok, 1:Info, 2:Warning,
                 // 3:Fault","unit":"","value":0}
-                int begin = response.text().indexOf(response.value() + ":");
-                int end = response.text().indexOf(",", begin);
-                updateState(FeneconBindingConstants.STATE_CHANNEL,
-                        new StringType(response.text().substring(begin + 2, end)));
+                State state = State.get(response);
+                updateState(FeneconBindingConstants.STATE_CHANNEL, new StringType(state.state()));
                 break;
             case FeneconBindingConstants.ESS_SOC_ADDRESS:
                 updateState(FeneconBindingConstants.ESS_SOC_CHANNEL,
@@ -108,34 +109,22 @@ public class FeneconHandler extends BaseThingHandler {
                 break;
             case FeneconBindingConstants.GRID_ACTIVE_POWER_ADDRESS:
                 // Grid exchange power. Negative values for sell-to-grid; positive for buy-from-grid"
-                Integer gridValue = Integer.valueOf(response.value());
-                int selltoGridPower = 0;
-                int buyFromGridPower = 0;
-                if (gridValue < 0) {
-                    selltoGridPower = gridValue * -1;
-                } else {
-                    buyFromGridPower = gridValue;
-                }
+                GridPower gridPower = GridPower.get(response);
+
                 updateState(FeneconBindingConstants.EXPORT_TO_GRID_POWER_CHANNEL,
-                        new QuantityType<>(selltoGridPower, Units.WATT));
+                        new QuantityType<>(gridPower.sellTo(), Units.WATT));
                 updateState(FeneconBindingConstants.IMPORT_FROM_GRID_POWER_CHANNEL,
-                        new QuantityType<>(buyFromGridPower, Units.WATT));
+                        new QuantityType<>(gridPower.buyFrom(), Units.WATT));
                 break;
             case FeneconBindingConstants.ESS_DISCHARGE_POWER_ADDRESS:
                 // Actual AC-side battery discharge power of Energy Storage System.
                 // Negative values for charge; positive for discharge
-                Integer powerValue = Integer.valueOf(response.value());
-                int chargerPower = 0;
-                int dischargerPower = 0;
-                if (powerValue < 0) {
-                    chargerPower = powerValue * -1;
-                } else {
-                    dischargerPower = powerValue;
-                }
+                BatteryPower batteryPower = BatteryPower.get(response);
+
                 updateState(FeneconBindingConstants.ESS_CHARGER_POWER_CHANNEL,
-                        new QuantityType<>(chargerPower, Units.WATT));
+                        new QuantityType<>(batteryPower.chargerPower(), Units.WATT));
                 updateState(FeneconBindingConstants.ESS_DISCHARGER_POWER_CHANNEL,
-                        new QuantityType<>(dischargerPower, Units.WATT));
+                        new QuantityType<>(batteryPower.dischargerPower(), Units.WATT));
                 break;
             case FeneconBindingConstants.GRID_MODE_ADDRESS:
                 // text":"1:On-Grid, 2:Off-Grid","unit":"","value":1
@@ -154,7 +143,7 @@ public class FeneconHandler extends BaseThingHandler {
                         new QuantityType<>(Integer.valueOf(response.value()), Units.WATT_HOUR));
                 break;
             default:
-                logger.trace("FENECON - No channel id to address {} found.", response.address());
+                logger.trace("FENECON - No channel ID to address {} found.", response.address());
                 break;
         }
     }
