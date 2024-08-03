@@ -100,6 +100,9 @@ sitemap demo label="FENECON Example Sitemap" {
 
 ### demo.rules
 
+:::: tabs
+
+::: tab DSL
 
 ```java
 rule "Blackout detection"
@@ -144,3 +147,6 @@ then
 end
 ```
 
+:::
+
+::::
