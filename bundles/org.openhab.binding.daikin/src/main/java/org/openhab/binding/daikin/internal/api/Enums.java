@@ -138,15 +138,6 @@ public class Enums {
         public String getValue() {
             return value;
         }
-
-        public static HomekitMode fromValue(String value) throws IllegalArgumentException {
-            for (HomekitMode m : HomekitMode.values()) {
-                if (m.getValue().equals(value)) {
-                    return m;
-                }
-            }
-            throw new IllegalArgumentException("Unexpected HomekitMode value of \"" + value + "\"");
-        }
     }
 
     public enum AdvancedMode {

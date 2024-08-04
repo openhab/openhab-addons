@@ -235,7 +235,7 @@ public abstract class DaikinBaseHandler extends BaseThingHandler {
 
     private boolean changeHomekitMode(String homekitmode) throws DaikinCommunicationException {
         try {
-            HomekitMode mode = HomekitMode.fromValue(homekitmode);
+            HomekitMode mode = HomekitMode.valueOf(homekitmode.toUpperCase());
             boolean power = mode != HomekitMode.OFF;
             if (!changePower(power)) {
                 return false;
