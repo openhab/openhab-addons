@@ -56,6 +56,7 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     private static final int DATA_REFRESH_INTERVAL = 60;
 
     private final Logger logger = LoggerFactory.getLogger(AwattarBridgeHandler.class);
+    private final HttpClient httpClient;
 
     private @Nullable ScheduledFuture<?> dataRefresher;
     private Instant lastRefresh = Instant.EPOCH;
@@ -65,13 +66,11 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
     private ZoneId zone;
 
     private @Nullable AwattarApi awattarApi;
-    private HttpClient httpClient;
 
     public AwattarBridgeHandler(Bridge thing, HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
         super(thing);
-        zone = timeZoneProvider.getTimeZone();
-
         this.httpClient = httpClient;
+        zone = timeZoneProvider.getTimeZone();
     }
 
     @Override
@@ -127,12 +126,9 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
      * The data is refreshed if:
      * - the thing is offline
      * - the local cache is empty
-     * - the current time is after 15:00 and the last refresh was more than an hour
-     * ago
-     * - the current time is after 18:00 and the last refresh was more than an hour
-     * ago
-     * - the current time is after 21:00 and the last refresh was more than an hour
-     * ago
+     * - the current time is after 15:00 and the last refresh was more than an hour ago
+     * - the current time is after 18:00 and the last refresh was more than an hour ago
+     * - the current time is after 21:00 and the last refresh was more than an hour ago
      *
      * @return true if the data needs to be refreshed
      */
