@@ -27,8 +27,8 @@ public class PermissionException extends FreeboxException {
 
     private final LoginManager.Permission permission;
 
-    public PermissionException(LoginManager.Permission permission, ErrorCode errorCode, String message) {
-        super(errorCode, message);
+    public PermissionException(LoginManager.Permission permission, String message) {
+        super(ErrorCode.INSUFFICIENT_RIGHTS, message);
         this.permission = permission;
     }
 
