@@ -142,7 +142,7 @@ class AwattarApiTest extends JavaTest {
         when(contentResponseMock.getStatus()).thenReturn(HttpStatus.OK_200);
 
         AwattarApiException thrown = assertThrows(AwattarApiException.class, () -> api.getData());
-        assertThat(thrown.getMessage(), is("@text/error.invalid.data"));
+        assertThat(thrown.getMessage(), is("@text/error.empty.data"));
     }
 
     @Test

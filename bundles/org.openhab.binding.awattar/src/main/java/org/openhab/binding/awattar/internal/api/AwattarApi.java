@@ -40,7 +40,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * The {@link AwattarApi} class is responsible for encapsulating the aWATTar API and providing the data to the bridge.
+ * The {@link AwattarApi} class is responsible for encapsulating the aWATTar API
+ * and providing the data to the bridge.
  *
  * @author Thomas Leber - Initial contribution
  */
@@ -128,12 +129,13 @@ public class AwattarApi {
             logger.trace("aWATTar API response: status = {}, content = '{}'", httpStatus, content);
 
             if (content == null) {
-                throw new AwattarApiException("@text/error.invalid.data");
+                throw new AwattarApiException("@text/error.empty.data");
             } else if (httpStatus == OK_200) {
                 SortedSet<AwattarPrice> result = new TreeSet<>(Comparator.comparing(AwattarPrice::timerange));
 
                 AwattarApiData apiData = gson.fromJson(content, AwattarApiData.class);
                 for (Datum d : apiData.data) {
+                    // the API returns prices in €/MWh, we need €ct/kWh -> divide by 10 (100/1000)
                     double netPrice = d.marketprice / 10.0;
                     TimeRange timeRange = new TimeRange(d.startTimestamp, d.endTimestamp);
 
