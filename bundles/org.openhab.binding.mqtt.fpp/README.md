@@ -23,17 +23,15 @@ The binding supports one Thing `player` that represents the Falcon Player.
 | `player`                               | Player             | Play/Stop Current Playlist.               |
 | `volume`                               | Dimmer             | Playback Audio Volume.                    |
 | `status`                               | String             | Playback Status.                          |
-| `version`                              | String             | Software Version.                         |
 | `mode`                                 | String             | Playback Mode.                            |
 | `uptime`                               | Number:Time        | Device Uptime.                            |
-| `testing-enabled`                      | Switch             | Device is in Testing Mode.                |
+| `testing-enabled`                      | Switch             | Enabled/Disable Sending Testing Data.     |
 | `current-sequence`                     | String (read only) | Currently Playing Sequence File.          |
 | `current-song`                         | String (read only) | Currently Playing Audio/Media File.       |
 | `current-playlist`                     | String (read only) | Currently Playing Playlist.               |
 | `seconds-played`                       | Number:Time        | Sequence Playback time in secs.           |
 | `seconds-remaining`                    | Number:Time        | Sequence Playback time remaining in secs. |
 | `last-playlist`                        | String             | Lasted Played Playlist.                   |
-| `uuid`                                 | String (read only) | Device UUID.                              |
 | `bridging-enabled`                     | Switch             | Is Recieving Bridge Data.                 |
 | `multisync-enabled`                    | Switch             | Multisync Mode Enabled.                   |
 | `scheduler-current-playlist`           | String (read only) | Scheduler Current Playlist.               |
@@ -66,7 +64,6 @@ String Current_Sequence "Current Sequence" {channel="mqtt:player:myBroker:mainPl
 String Current_Song "Current Song" {channel="mqtt:player:myBroker:mainPlayer:current-song"}
 String Current_Playlist "Current Playlist" {channel="mqtt:player:myBroker:mainPlayer:current-playlist"}
 String Status "FPP Status" {channel="mqtt:player:myBroker:mainPlayer:status"}
-String Version "FPP Version" {channel="mqtt:player:myBroker:mainPlayer:version"}
 String Mode "FPP Mode" {channel="mqtt:player:myBroker:mainPlayer:mode"}
 String Last_Playlist "Last Playlist" {channel="mqtt:player:myBroker:mainPlayer:last-playlist"}
 Number:Time Seconds_Played "Seconds Played [%d %unit%]" {channel="mqtt:player:myBroker:mainPlayer:seconds-played"}
@@ -87,7 +84,6 @@ Text label="Main Player"
     Text        item=Current_Song
     Text        item=Current_Playlist
     Text        item=Status
-    Text        item=Version
     Text        item=Mode
     Selection   item=Last_Playlist
     Switch      item=Testing

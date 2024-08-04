@@ -35,18 +35,18 @@
 			<channel id="scheduler-next-playlist" typeId="scheduler-next-playlist"/>
 			<channel id="scheduler-next-playlist-start" typeId="scheduler-next-playlist-start"/>
 		</channels>
+
+		<properties>
+			<property name="Software Version">unknown</property>
+			<property name="uuid">unknown</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:mqtt:player"/>
 	</thing-type>
 	<channel-type id="status">
 		<item-type>String</item-type>
 		<label>Status</label>
 		<description>FPP Player Status</description>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="version" advanced="true">
-		<item-type>String</item-type>
-		<label>Version</label>
-		<description>FPP Version</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="mode" advanced="true">
@@ -90,12 +90,6 @@
 		<label>FPP Uptime</label>
 		<description>FPP uptime (time after start)</description>
 		<state readOnly="true" pattern="%.1f sec"/>
-	</channel-type>
-	<channel-type id="uuid" advanced="true">
-		<item-type>String</item-type>
-		<label>UUID</label>
-		<description>FPP Hardware UUID</description>
-		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="player">
 		<item-type>Player</item-type>

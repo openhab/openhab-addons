@@ -88,7 +88,6 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
         updateState(CHANNEL_CURRENT_SEQUENCE, new StringType(data.current_sequence));
         updateState(CHANNEL_CURRENT_SONG, new StringType(data.current_song));
         updateState(CHANNEL_CURRENT_PLAYLIST, new StringType(data.current_playlist.playlist));
-        updateState(CHANNEL_UUID, new StringType(data.uuid));
         updateState(CHANNEL_SEC_PLAYED, new QuantityType<>(new BigDecimal(data.seconds_played), Units.SECOND));
         updateState(CHANNEL_SEC_REMAINING, new QuantityType<>(new BigDecimal(data.seconds_remaining), Units.SECOND));
         updateState(CHANNEL_UPTIME, new QuantityType<>(new BigDecimal(data.uptimeTotalSeconds), Units.SECOND));
@@ -116,6 +115,8 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
             lastPlaylist = data.current_playlist.playlist;
             updateState(CHANNEL_LAST_PLAYLIST, new StringType(lastPlaylist));
         }
+
+        thing.setProperty(PROPERTY_UUID, data.uuid);
     }
 
     @Override
@@ -196,7 +197,7 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
         if (topic.endsWith(STATUS_TOPIC)) {
             processIncomingState(state);
         } else if (topic.endsWith(VERSION_TOPIC)) {
-            updateState(CHANNEL_VERSION, new StringType(state));
+            thing.setProperty(PROPERTY_SOFTWARE_VERSION, state);
             updateStatus(ThingStatus.ONLINE);
         }
     }

@@ -49,8 +49,6 @@ public class FPPBindingConstants {
     public static final String CHANNEL_SEC_PLAYED = "seconds-played";
     public static final String CHANNEL_SEC_REMAINING = "seconds-remaining";
     public static final String CHANNEL_UPTIME = "uptime";
-    public static final String CHANNEL_UUID = "uuid";
-    public static final String CHANNEL_VERSION = "version";
     public static final String CHANNEL_BRIDGING = "bridging-enabled";
     public static final String CHANNEL_MULTISYNC = "multisync-enabled";
     public static final String CHANNEL_TESTING = "testing-enabled";
@@ -63,6 +61,9 @@ public class FPPBindingConstants {
     public static final String CHANNEL_SCHEDULER_CURRENT_PLAYLIST_STOP_TYPE = "scheduler-current-playlist-stop-type";
     public static final String CHANNEL_SCHEDULER_NEXT_PLAYLIST = "scheduler-next-playlist";
     public static final String CHANNEL_SCHEDULER_NEXT_PLAYLIST_START = "scheduler-next-playlist-start";
+
+    public static final String PROPERTY_UUID = "uuid";
+    public static final String PROPERTY_SOFTWARE_VERSION = "Software Version";
 
     // Status
     public static final String CONNECTED = "connected";
