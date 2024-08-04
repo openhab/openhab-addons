@@ -33,6 +33,8 @@ import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import inet.ipaddr.mac.MACAddress;
+
 /**
  * The {@link FreeplugHandler} is responsible for handling everything associated to a
  * powerline gateway managed by the freebox server
@@ -49,7 +51,13 @@ public class FreeplugHandler extends ApiConsumerHandler {
 
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
-        getManager(FreeplugManager.class).getPlug(getMac()).ifPresent(plug -> {
+        MACAddress mac = getMac();
+        if (mac == null) {
+            throw new FreeboxException(
+                    "initializeProperties is not possible because MAC address is undefined for the thing "
+                            + thing.getUID());
+        }
+        getManager(FreeplugManager.class).getPlug(mac).ifPresent(plug -> {
             properties.put(Thing.PROPERTY_MODEL_ID, plug.model());
             properties.put(ROLE, plug.netRole().name());
             properties.put(NET_ID, plug.netId());
@@ -59,15 +67,23 @@ public class FreeplugHandler extends ApiConsumerHandler {
 
             if (plug.local()) { // Plug connected to the freebox does not provide rate up or down
                 List<Channel> channels = new ArrayList<>(getThing().getChannels());
+                int nbInit = channels.size();
                 channels.removeIf(channel -> channel.getUID().getId().contains(RATE));
-                updateThing(editThing().withChannels(channels).build());
+                if (nbInit != channels.size()) {
+                    updateThing(editThing().withChannels(channels).build());
+                }
             }
         });
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
-        getManager(FreeplugManager.class).getPlug(getMac()).ifPresent(plug -> {
+        MACAddress mac = getMac();
+        if (mac == null) {
+            throw new FreeboxException(
+                    "internalPoll is not possible because MAC address is undefined for the thing " + thing.getUID());
+        }
+        getManager(FreeplugManager.class).getPlug(mac).ifPresent(plug -> {
             updateChannelDateTimeState(LAST_SEEN, ZonedDateTime.now().minusSeconds(plug.inactive()));
 
             updateChannelString(LINE_STATUS, plug.ethPortStatus());
@@ -84,11 +100,17 @@ public class FreeplugHandler extends ApiConsumerHandler {
     }
 
     public void reset() {
+        MACAddress mac = getMac();
+        if (mac == null) {
+            logger.warn("Freeplug restart is not possible because MAC address is undefined for the thing {}",
+                    thing.getUID());
+            return;
+        }
         try {
-            getManager(FreeplugManager.class).reboot(getMac());
-            logger.debug("Freeplug {} succesfully restarted", getMac());
+            getManager(FreeplugManager.class).reboot(mac);
+            logger.debug("Freeplug {} succesfully restarted", mac);
         } catch (FreeboxException e) {
-            logger.warn("Error restarting freeplug {}: {}", getMac(), e.getMessage());
+            logger.warn("Error restarting freeplug {}: {}", mac, e.getMessage());
         }
     }
 
