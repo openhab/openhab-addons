@@ -47,10 +47,10 @@ import org.xml.sax.SAXException;
  */
 public class XmlRpcClient extends RpcClient<String> {
     private final Logger logger = LoggerFactory.getLogger(XmlRpcClient.class);
-    private HttpClient httpClient;
+    private final HttpClient httpClient;
     private AuthenticationHandler authenticationHandler;
 
-    public XmlRpcClient(HomematicConfig config, HttpClient httpClient) throws IOException, ConfigurationException {
+    public XmlRpcClient(HomematicConfig config, HttpClient httpClient) throws ConfigurationException {
         super(config);
         this.httpClient = httpClient;
     }
@@ -65,7 +65,9 @@ public class XmlRpcClient extends RpcClient<String> {
      */
     @Override
     protected String getRpcCallbackUrl() {
-        return "http://" + config.getCallbackHost() + ":" + config.getXmlCallbackPort();
+        String callbackUrl = "http://" + config.getCallbackHost() + ":" + config.getXmlCallbackPort();
+        callbackUrl = callbackUrl.replaceAll("\s", "");
+        return callbackUrl;
     }
 
     @Override
