@@ -21,6 +21,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class ConfigOptions {
-    public String playerIP = "";
-    public String playerMQTT = "";
+    public String playerAddress = "";
+    public String playerMQTTTopic = "";
 }

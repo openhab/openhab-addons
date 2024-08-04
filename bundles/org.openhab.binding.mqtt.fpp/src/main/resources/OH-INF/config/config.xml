@@ -5,14 +5,14 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="thing-type:mqtt:player">
-		<parameter name="playerIP" type="text" required="true">
+		<parameter name="playerAddress" type="text" required="true">
 			<context>network-address</context>
-			<label>IP Address</label>
+			<label>Player Address</label>
 			<description>Player IP Address or Host Name</description>
 		</parameter>
-		<parameter name="playerMQTT" type="text" required="true">
+		<parameter name="playerMQTTTopic" type="text" required="true">
 			<context>name</context>
-			<label>MQTT Topic</label>
+			<label>MQTT Player Topic</label>
 			<description>MQTT Player Status Topic</description>
 		</parameter>
 	</config-description>

@@ -181,9 +181,9 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
         config = getConfigAs(ConfigOptions.class);
-        if (!config.playerMQTT.isEmpty()) {
-            fullStatusTopic = config.playerMQTT + "/" + STATUS_TOPIC;
-            fullVersionTopic = config.playerMQTT + "/" + VERSION_TOPIC;
+        if (!config.playerMQTTTopic.isEmpty()) {
+            fullStatusTopic = config.playerMQTTTopic + "/" + STATUS_TOPIC;
+            fullVersionTopic = config.playerMQTTTopic + "/" + VERSION_TOPIC;
             bridgeStatusChanged(getBridgeStatus());
             updateStatus(ThingStatus.ONLINE);
         }
@@ -248,7 +248,7 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
     private @Nullable String executeGet(String url) {
         String response = null;
         try {
-            response = HttpUtil.executeUrl("GET", "http://" + config.playerIP + url, 5000);
+            response = HttpUtil.executeUrl("GET", "http://" + config.playerAddress + url, 5000);
 
         } catch (IOException e) {
             logger.warn("Failed HTTP Post", e);
@@ -261,7 +261,7 @@ public class FPPPlayerHandler extends BaseThingHandler implements MqttMessageSub
             Properties header = new Properties();
             header.put("Accept", "application/json");
             header.put("Content-Type", "application/json");
-            String response = HttpUtil.executeUrl("POST", "http://" + config.playerIP + url, header,
+            String response = HttpUtil.executeUrl("POST", "http://" + config.playerAddress + url, header,
                     new ByteArrayInputStream(json.getBytes()), "application/json", 5000);
 
             return !response.isEmpty();
