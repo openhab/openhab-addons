@@ -69,7 +69,9 @@ public class PicoKeypadHandler extends BaseKeypadHandler {
                 leapButtonMap = KeypadConfigPico.LEAPBUTTONS_3BRL;
                 break;
         }
-        leapButtonInverseMap = leapButtonMap.entrySet().stream()
-                .collect(Collectors.toMap(Entry::getValue, Entry::getKey));
+        if (getBridgeHandler() instanceof LeapBridgeHandler) {
+            leapButtonInverseMap = leapButtonMap.entrySet().stream()
+                    .collect(Collectors.toMap(Entry::getValue, Entry::getKey));
+        }
     }
 }
