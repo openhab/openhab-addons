@@ -413,7 +413,7 @@ public class ShellyComponents {
                         temp.doubleValue(), getString(sdata.tmp.units));
             } else if (status.thermostats != null) {
                 // Shelly TRV
-                ArrayList<ShellyThermnostat> thermostats = profile.settings.thermostats;
+                List<ShellyThermnostat> thermostats = profile.settings.thermostats;
                 if (thermostats != null) {
                     ShellyThermnostat ps = thermostats.get(0);
                     ShellyThermnostat t = status.thermostats.get(0);
