@@ -10,11 +10,6 @@
 			<description>Id of the player</description>
 			<default>1</default>
 		</parameter>
-		<parameter name="port" type="integer">
-			<label>Player port</label>
-			<default>24322</default>
-			<advanced>true</advanced>
-		</parameter>
 		<parameter name="password" type="text" required="false">
 			<context>password</context>
 			<label>Password</label>
