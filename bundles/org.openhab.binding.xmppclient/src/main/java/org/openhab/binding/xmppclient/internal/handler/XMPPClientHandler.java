@@ -12,17 +12,20 @@
  */
 package org.openhab.binding.xmppclient.internal.handler;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.jivesoftware.smack.SmackException;
-import org.jivesoftware.smack.XMPPException;
-import org.openhab.binding.xmppclient.internal.XMPPClient;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.jivesoftware.smack.ConnectionConfiguration.SecurityMode;
 import org.openhab.binding.xmppclient.internal.action.XMPPActions;
+import org.openhab.binding.xmppclient.internal.client.XMPPClient;
+import org.openhab.binding.xmppclient.internal.client.XMPPClientConfigException;
+import org.openhab.binding.xmppclient.internal.client.XMPPClientEventlistener;
+import org.openhab.binding.xmppclient.internal.client.XMPPClientException;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
@@ -40,15 +43,15 @@ import org.slf4j.LoggerFactory;
  *
  * @author Pavel Gololobov - Initial contribution
  */
-
-public class XMPPClientHandler extends BaseBridgeHandler {
+@NonNullByDefault
+public class XMPPClientHandler extends BaseBridgeHandler implements XMPPClientEventlistener {
     private final Logger logger = LoggerFactory.getLogger(XMPPClientHandler.class);
     private XMPPClient xmppClient;
-    private XMPPClientConfiguration config;
     private final Map<ChannelUID, PublishTriggerChannel> channelStateByChannelUID = new HashMap<>();
 
     public XMPPClientHandler(Bridge thing) {
         super(thing);
+        xmppClient = new XMPPClient(this);
     }
 
     public XMPPClient getXMPPClient() {
@@ -85,12 +88,22 @@ public class XMPPClientHandler extends BaseBridgeHandler {
     }
 
     private void doConnect() {
-        config = getConfigAs(XMPPClientConfiguration.class);
-        xmppClient = new XMPPClient();
+        XMPPClientConfiguration config = getConfigAs(XMPPClientConfiguration.class);
+        if (!config.isValid()) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Please check configuration");
+            return;
+        }
+
         try {
-            xmppClient.connect(config.host, config.port, config.username, config.domain, config.password);
-        } catch (SmackException | IOException | XMPPException e) {
-            logger.info("XMPP connection error", e);
+            xmppClient.connect(Objects.requireNonNullElse(config.host, ""), config.port, config.username, config.domain,
+                    config.password, SecurityMode.valueOf(config.securityMode));
+            updateStatus(ThingStatus.ONLINE);
+        } catch (XMPPClientConfigException e) {
+            logger.debug("XMPP connection error", e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        } catch (XMPPClientException e) {
+            logger.debug("XMPP connection error", e);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             return;
         }
@@ -103,7 +116,15 @@ public class XMPPClientHandler extends BaseBridgeHandler {
             logger.info("XMPP added channel {} payload {}", channel.getUID().toString(), channelConfig.payload);
         }
         channelStateByChannelUID.values().forEach(c -> c.start());
+    }
 
+    @Override
+    public void onErrorEvent(String errorMessage) {
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, errorMessage);
+    }
+
+    @Override
+    public void onAllOk() {
         updateStatus(ThingStatus.ONLINE);
     }
 }
