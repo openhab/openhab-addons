@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2010-2026 Contributors to the openHAB project
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,17 +12,24 @@
  */
 package org.openhab.binding.vigicrues.internal.dto.vigicrues;
 
-import java.util.List;
+import java.time.ZonedDateTime;
 
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link TerEntVigiCru} is the Java class used to map the JSON
+ * The {@link ObssHydro} is the Java class used to map the JSON
  * response to a vigicrue api endpoint request.
  *
  * @author Gaël L'hopital - Initial contribution
  */
-public class TerEntVigiCru {
-    @SerializedName("ListEntVigiCru")
-    public List<ListEntVigiCru> listEntVigiCru;
+public class ObssHydro {
+    @SerializedName("DtObsHydro")
+    public ZonedDateTime timestamp;
+
+    @SerializedName("ResObsHydro")
+    public double measure;
+
+    public ZonedDateTime getTimeStamp() {
+        return timestamp;
+    }
 }

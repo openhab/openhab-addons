@@ -18,13 +18,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.measure.Unit;
 
@@ -35,12 +35,13 @@ import org.openhab.binding.vigicrues.internal.api.ApiHandler;
 import org.openhab.binding.vigicrues.internal.api.VigiCruesException;
 import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse;
 import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse.StationData;
-import org.openhab.binding.vigicrues.internal.dto.opendatasoft.OpenDatasoftResponse;
+import org.openhab.binding.vigicrues.internal.dto.vigicrues.ANMoinsUn;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.CdStationHydro;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.InfoVigiCru;
+import org.openhab.binding.vigicrues.internal.dto.vigicrues.ObservationAnswer;
+import org.openhab.binding.vigicrues.internal.dto.vigicrues.ObssHydro;
+import org.openhab.binding.vigicrues.internal.dto.vigicrues.StaEntVigiCruAnswer;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.TerEntVigiCru;
-import org.openhab.binding.vigicrues.internal.dto.vigicrues.TronEntVigiCru;
-import org.openhab.binding.vigicrues.internal.dto.vigicrues.VicANMoinsUn;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
@@ -117,8 +118,8 @@ public class VigiCruesHandler extends BaseThingHandler {
                 }
             }
         });
-        referenceHeights = heights.stream().distinct().sorted().collect(Collectors.toList());
-        referenceFlows = flows.stream().distinct().sorted().collect(Collectors.toList());
+        referenceHeights = heights.stream().distinct().sorted().toList();
+        referenceFlows = flows.stream().distinct().sorted().toList();
         portion = thing.getProperties().get(TRONCON);
     }
 
@@ -147,27 +148,28 @@ public class VigiCruesHandler extends BaseThingHandler {
                 throw new VigiCruesException("No stations provided");
             }
         } catch (VigiCruesException e) {
-            logger.info("Unable to retrieve station location details {} : {}", config.id, e.getMessage());
+            logger.info("Unable to retrieve station location details {}: {}", config.id, e.getMessage());
         }
 
         try {
             CdStationHydro refineStation = apiHandler.getStationDetails(config.id);
             if (refineStation.vigilanceCrues.cruesHistoriques == null) {
-                throw new VigiCruesException("No historical data available");
+                throw new VigiCruesException("No historical data available for this station");
             }
             refineStation.vigilanceCrues.cruesHistoriques.stream()
                     .forEach(crue -> properties.putAll(crue.getDescription()));
             String codeTerritoire = refineStation.vigilanceCrues.pereBoitEntVigiCru.cdEntVigiCru;
             TerEntVigiCru territoire = apiHandler.getTerritoire(codeTerritoire);
-            for (VicANMoinsUn troncon : territoire.vicTerEntVigiCru.vicANMoinsUn) {
-                TronEntVigiCru detail = apiHandler.getTroncon(troncon.vicCdEntVigiCru);
-                if (detail.getStations().anyMatch(s -> config.id.equalsIgnoreCase(s.vicCdEntVigiCru))) {
-                    properties.put(TRONCON, troncon.vicCdEntVigiCru);
+            for (ANMoinsUn troncon : territoire.listEntVigiCru.get(0).aNMoinsUn) {
+                TerEntVigiCru detail = apiHandler.getTroncon(troncon.cdEntVigiCruInferieur);
+                if (detail.listEntVigiCru.get(0).aNMoinsUn.stream()
+                        .anyMatch(s -> config.id.equalsIgnoreCase(s.cdEntVigiCruInferieur))) {
+                    properties.put(TRONCON, troncon.cdEntVigiCruInferieur);
                     break;
                 }
             }
         } catch (VigiCruesException e) {
-            logger.info("Historical flooding data are not available {} : {}", config.id, e.getMessage());
+            logger.info("Historical flooding data are not available {}: {}", config.id, e.getMessage());
             channels.removeIf(channel -> channel.getUID().getId().contains(RELATIVE_PREFIX));
         }
 
@@ -177,17 +179,17 @@ public class VigiCruesHandler extends BaseThingHandler {
         }
 
         try {
-            OpenDatasoftResponse measures = apiHandler.getMeasures(config.id);
-            measures.getFirstRecord().ifPresent(field -> {
-                if (field.getHeight() == -1) {
-                    channels.removeIf(channel -> (channel.getUID().getId().contains(HEIGHT)));
-                }
-                if (field.getFlow() == -1) {
-                    channels.removeIf(channel -> (channel.getUID().getId().contains(FLOW)));
-                }
-            });
+            StaEntVigiCruAnswer feeds = apiHandler.getStationFeeds(config.id);
+            String debit = feeds.listEntVigiCru.get(0).vigilanceCrues.fluxDonnees.observations.debits;
+            String hauteur = feeds.listEntVigiCru.get(0).vigilanceCrues.fluxDonnees.observations.hauteurs;
+            if (hauteur == null || hauteur.isBlank()) {
+                channels.removeIf(channel -> (channel.getUID().getId().contains(HEIGHT)));
+            }
+            if (debit == null || debit.isBlank()) {
+                channels.removeIf(channel -> (channel.getUID().getId().contains(FLOW)));
+            }
         } catch (VigiCruesException e) {
-            logger.warn("Unable to read measurements data {} : {}", config.id, e.getMessage());
+            logger.warn("Unable to read station {} capabilities: {}", config.id, e.getMessage());
         }
 
         thingBuilder.withChannels(channels);
@@ -217,22 +219,24 @@ public class VigiCruesHandler extends BaseThingHandler {
     private void updateAndPublish() {
         StationConfiguration config = getConfigAs(StationConfiguration.class);
         try {
-            OpenDatasoftResponse measures = apiHandler.getMeasures(config.id);
-            measures.getFirstRecord().ifPresent(field -> {
-                double height = field.getHeight();
-                if (height != -1) {
-                    updateQuantity(HEIGHT, height, SIUnits.METRE);
-                    updateRelativeMeasure(RELATIVE_HEIGHT, referenceHeights, height);
-                }
-
-                double flow = field.getFlow();
-                if (flow != -1) {
-                    updateQuantity(FLOW, flow, Units.CUBICMETRE_PER_SECOND);
-                    updateRelativeMeasure(RELATIVE_FLOW, referenceFlows, flow);
-                }
-
-                field.getTimestamp().ifPresent(date -> updateDate(OBSERVATION_TIME, date));
-            });
+            ObservationAnswer heights = apiHandler.getHeights(config.id);
+            heights.serie.obssHydro.stream().sorted(Comparator.comparing(ObssHydro::getTimeStamp).reversed())
+                    .findFirst().ifPresent(observation -> {
+                        double height = observation.measure;
+                        if (height != -1) {
+                            updateQuantity(HEIGHT, height, SIUnits.METRE);
+                            updateRelativeMeasure(RELATIVE_HEIGHT, referenceHeights, height);
+                        }
+                        updateDate(OBSERVATION_TIME, observation.timestamp);
+                    });
+            ObservationAnswer flows = apiHandler.getFlows(config.id);
+            flows.serie.obssHydro.stream().sorted(Comparator.comparing(ObssHydro::getTimeStamp).reversed()).findFirst()
+                    .map(m -> m.measure).ifPresent(flow -> {
+                        if (flow != -1) {
+                            updateQuantity(FLOW, flow, Units.CUBICMETRE_PER_SECOND);
+                            updateRelativeMeasure(RELATIVE_FLOW, referenceFlows, flow);
+                        }
+                    });
             String currentPortion = portion;
             if (currentPortion != null) {
                 InfoVigiCru status = apiHandler.getTronconStatus(currentPortion);
