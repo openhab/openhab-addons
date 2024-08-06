@@ -69,7 +69,7 @@ The bridge has two channels which support a time-series:
 | market-net   | Number:EnergyPrice | This net market price per kWh. This is directly taken from the price the aWATTar API delivers.                                          |
 | total-net    | Number:EnergyPrice | Sum of net market price and configured base price                                                                                       |
 
-If you need gross prices, please use the VAT profile.
+If you need gross prices, please use the [VAT profile](https://www.openhab.org/addons/transformations/vat/).
 
 ### Prices Thing
 
