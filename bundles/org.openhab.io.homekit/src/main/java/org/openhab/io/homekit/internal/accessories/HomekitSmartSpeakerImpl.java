@@ -36,8 +36,8 @@ import io.github.hapjava.services.impl.SmartSpeakerService;
  * @author Eugen Freiter - Initial contribution
  */
 public class HomekitSmartSpeakerImpl extends AbstractHomekitAccessoryImpl implements SmartSpeakerAccessory {
-    private final Map<CurrentMediaStateEnum, String> currentMediaState;
-    private final Map<TargetMediaStateEnum, String> targetMediaState;
+    private final Map<CurrentMediaStateEnum, Object> currentMediaState;
+    private final Map<TargetMediaStateEnum, Object> targetMediaState;
 
     public HomekitSmartSpeakerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,

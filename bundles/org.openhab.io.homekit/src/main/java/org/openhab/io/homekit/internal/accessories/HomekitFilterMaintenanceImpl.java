@@ -35,7 +35,7 @@ import io.github.hapjava.services.impl.FilterMaintenanceService;
  * @author Eugen Freiter - Initial contribution
  */
 public class HomekitFilterMaintenanceImpl extends AbstractHomekitAccessoryImpl implements FilterMaintenanceAccessory {
-    private final Map<FilterChangeIndicationEnum, String> mapping;
+    private final Map<FilterChangeIndicationEnum, Object> mapping;
 
     public HomekitFilterMaintenanceImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
