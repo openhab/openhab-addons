@@ -50,7 +50,7 @@ import software.amazon.awssdk.crt.mqtt.MqttMessage;
 @NonNullByDefault
 public abstract class AWSClientThingHandler extends BaseThingHandler
         implements AWSClientCallbackI, ThingHandlerHelper, AccessTokenRefreshListener {
-    private static Duration MIN_PUBLISH_DELAY_S = Duration.ofSeconds(2);
+    private static final Duration MIN_PUBLISH_DELAY_S = Duration.ofSeconds(2);
 
     private final Logger logger = LoggerFactory.getLogger(AWSClientThingHandler.class);
     private final AWSClient awsClient;
