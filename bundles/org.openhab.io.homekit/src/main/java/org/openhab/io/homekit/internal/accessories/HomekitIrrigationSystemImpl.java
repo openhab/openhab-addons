@@ -46,8 +46,8 @@ import io.github.hapjava.services.impl.ServiceLabelService;
  */
 @NonNullByDefault({})
 public class HomekitIrrigationSystemImpl extends AbstractHomekitAccessoryImpl implements IrrigationSystemAccessory {
-    private Map<InUseEnum, String> inUseMapping;
-    private Map<ProgramModeEnum, String> programModeMap;
+    private Map<InUseEnum, Object> inUseMapping;
+    private Map<ProgramModeEnum, Object> programModeMap;
 
     public HomekitIrrigationSystemImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)

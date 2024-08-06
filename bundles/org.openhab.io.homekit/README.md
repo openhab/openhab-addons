@@ -724,6 +724,25 @@ All enum values can be customized via item metadata. I.e. `HEAT="heating", COOL=
 They are appropriately marked.
 Enums that are linked to Switches or Contacts have an `inverted` param that will reverse the sense of `ON`/`OFF` or `OPEN`/`CLOSED`.
 
+Enum mappings can have multiple values for a single key.
+These must be an array, not a comma separated string.
+If the characteristic can be set by HomeKit, the first value will be used when sending the command to the linked item.
+Such a mapping can be configured manually in MainUI on HomeKit metadata in the Code editor:
+```yaml
+value: "Lock"
+config:
+  SECURE:
+    - LOCK
+    - LOCKED
+  UNSECURE:
+    - UNLOCK
+    - UNLOCKED
+```
+Or in a `.items` file:
+```java
+String MyLock "My Lock" { homekit="Lock"[SECURE="LOCK","LOCKED", UNSECURE="UNLOCK","UNLOCKED"] }
+```
+
 All accessories support the following characteristics that can be set via metadata or linked to a String item:
  * Name (defaults to item's label)
  * Manufacturer (defaults to "none")

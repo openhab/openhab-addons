@@ -35,7 +35,7 @@ import io.github.hapjava.services.impl.CarbonMonoxideSensorService;
  */
 public class HomekitCarbonMonoxideSensorImpl extends AbstractHomekitAccessoryImpl
         implements CarbonMonoxideSensorAccessory {
-    private final Map<CarbonMonoxideDetectedEnum, String> mapping;
+    private final Map<CarbonMonoxideDetectedEnum, Object> mapping;
 
     public HomekitCarbonMonoxideSensorImpl(HomekitTaggedItem taggedItem,
             List<HomekitTaggedItem> mandatoryCharacteristics, List<Characteristic> mandatoryRawCharacteristics,

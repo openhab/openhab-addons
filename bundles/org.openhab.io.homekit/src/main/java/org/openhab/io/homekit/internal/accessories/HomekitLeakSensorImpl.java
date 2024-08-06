@@ -34,7 +34,7 @@ import io.github.hapjava.services.impl.LeakSensorService;
  * @author Tim Harper - Initial contribution
  */
 public class HomekitLeakSensorImpl extends AbstractHomekitAccessoryImpl implements LeakSensorAccessory {
-    private final Map<LeakDetectedStateEnum, String> mapping;
+    private final Map<LeakDetectedStateEnum, Object> mapping;
 
     public HomekitLeakSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
