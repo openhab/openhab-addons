@@ -1,20 +1,7 @@
 package org.openhab.binding.salus.internal;
 
-
-import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.http2.client.HTTP2Client;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.junit.jupiter.api.Test;
-import org.openhab.binding.salus.internal.aws.http.AwsSalusApi;
-import org.openhab.binding.salus.internal.cloud.rest.HttpSalusApi;
-import org.openhab.binding.salus.internal.rest.Device;
-import org.openhab.binding.salus.internal.rest.DeviceProperty;
-import org.openhab.binding.salus.internal.rest.GsonMapper;
-import org.openhab.binding.salus.internal.rest.HttpClient;
-import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
-import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
-import org.openhab.core.io.net.http.HttpClientFactory;
+import static java.lang.Math.max;
+import static java.util.Objects.requireNonNull;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,15 +19,29 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static java.lang.Math.max;
-import static java.util.Objects.requireNonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.http2.client.HTTP2Client;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.junit.jupiter.api.Test;
+import org.openhab.binding.salus.internal.aws.http.AwsSalusApi;
+import org.openhab.binding.salus.internal.cloud.rest.HttpSalusApi;
+import org.openhab.binding.salus.internal.rest.Device;
+import org.openhab.binding.salus.internal.rest.DeviceProperty;
+import org.openhab.binding.salus.internal.rest.GsonMapper;
+import org.openhab.binding.salus.internal.rest.HttpClient;
+import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
+import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
+import org.openhab.core.io.net.http.HttpClientFactory;
 
 @NonNullByDefault
 public class ReverseEngineerProtocol implements AutoCloseable {
-    final List<String> methods = List.of("findDevices", "findDeviceProperties", "findDeltaInProperties", "monitorProperty");
+    final List<String> methods = List.of("findDevices", "findDeviceProperties", "findDeltaInProperties",
+            "monitorProperty");
     final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     final String baseUrl = "https://service-api.eu.premium.salusconnect.io";
-    final org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient(new SslContextFactory.Client());
+    final org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient(
+            new SslContextFactory.Client());
     final HttpClientFactory httpClientFactory = new HttpClientFactory() {
 
         @Override
@@ -49,8 +50,10 @@ public class ReverseEngineerProtocol implements AutoCloseable {
         }
 
         @Override
-        public org.eclipse.jetty.client.HttpClient createHttpClient(String consumerName, @Nullable SslContextFactory sslContextFactory) {
-            throw new UnsupportedOperationException("ReverseEngineerProtocol.createHttpClient(consumerName, sslContextFactory)");
+        public org.eclipse.jetty.client.HttpClient createHttpClient(String consumerName,
+                @Nullable SslContextFactory sslContextFactory) {
+            throw new UnsupportedOperationException(
+                    "ReverseEngineerProtocol.createHttpClient(consumerName, sslContextFactory)");
         }
 
         @Override
@@ -65,7 +68,8 @@ public class ReverseEngineerProtocol implements AutoCloseable {
 
         @Override
         public HTTP2Client createHttp2Client(String consumerName, @Nullable SslContextFactory sslContextFactory) {
-            throw new UnsupportedOperationException("ReverseEngineerProtocol.createHttp2Client(consumerName, sslContextFactory)");
+            throw new UnsupportedOperationException(
+                    "ReverseEngineerProtocol.createHttp2Client(consumerName, sslContextFactory)");
         }
     };
     final SalusApi api;
@@ -79,15 +83,12 @@ public class ReverseEngineerProtocol implements AutoCloseable {
         var restClient = new HttpClient(client);
         var gsonMapper = new GsonMapper();
         if (apiType.equals(AwsSalusApi.class.getSimpleName())) {
-            api = new AwsSalusApi(httpClientFactory, username, password.getBytes(StandardCharsets.UTF_8),
-                    baseUrl, restClient, gsonMapper, "eu-central-1_XGRz3CgoY", "60912c00-287d-413b-a2c9-ece3ccef9230",
+            api = new AwsSalusApi(httpClientFactory, username, password.getBytes(StandardCharsets.UTF_8), baseUrl,
+                    restClient, gsonMapper, "eu-central-1_XGRz3CgoY", "60912c00-287d-413b-a2c9-ece3ccef9230",
                     "4pk5efh3v84g5dav43imsv4fbj", "eu-central-1", "salus-eu", "a24u3z7zzwrtdl-ats");
         } else if (apiType.equals(HttpSalusApi.class.getSimpleName())) {
-            api = new HttpSalusApi
-                    (username,
-                            password.getBytes(StandardCharsets.UTF_8),
-                            baseUrl,
-                            restClient, gsonMapper, Clock.systemDefaultZone());
+            api = new HttpSalusApi(username, password.getBytes(StandardCharsets.UTF_8), baseUrl, restClient, gsonMapper,
+                    Clock.systemDefaultZone());
         } else {
             printUsage();
             throw new IllegalStateException("Invalid api type: " + apiType);
@@ -105,8 +106,9 @@ public class ReverseEngineerProtocol implements AutoCloseable {
             System.out.println("Will run indefinitely, use ctrl-C to exit");
         }
         var queue = newQueue(args);
-        try (var reverseProtocol = new ReverseEngineerProtocol(requireNonNull(queue.poll()), requireNonNull(queue.poll()), requireNonNull(queue.poll()))) {
-            //noinspection LoopConditionNotUpdatedInsideLoop
+        try (var reverseProtocol = new ReverseEngineerProtocol(requireNonNull(queue.poll()),
+                requireNonNull(queue.poll()), requireNonNull(queue.poll()))) {
+            // noinspection LoopConditionNotUpdatedInsideLoop
             do {
                 reverseProtocol.run(queue);
             } while (runIndefinitely);
@@ -214,12 +216,11 @@ public class ReverseEngineerProtocol implements AutoCloseable {
                 """);
     }
 
-
     @Test
     void findDevices() throws AuthSalusApiException, SalusApiException {
         var devices = api.findDevices();
         System.out.printf("Your devices (%s):%n", api.getClass().getSimpleName());
-       printDevices(devices);
+        printDevices(devices);
     }
 
     @Test
@@ -228,7 +229,6 @@ public class ReverseEngineerProtocol implements AutoCloseable {
         System.out.printf("Properties for device %s (%s):%n", dsn, api.getClass().getSimpleName());
         printDevicesProperties(properties);
     }
-
 
     void findDeltaInProperties(String dsn) throws AuthSalusApiException, SalusApiException, IOException {
         requireNonNull(dsn);
@@ -242,7 +242,8 @@ public class ReverseEngineerProtocol implements AutoCloseable {
             }
             printDevicesProperties(differentProperties);
 
-            System.out.println("Read one more time and leave properties that changed (x) / not changed (q) or finish (f):");
+            System.out.println(
+                    "Read one more time and leave properties that changed (x) / not changed (q) or finish (f):");
             answer = reader.readLine();
             if (answer.equalsIgnoreCase("f")) {
                 break;
@@ -268,17 +269,19 @@ public class ReverseEngineerProtocol implements AutoCloseable {
         if (differentProperties.isEmpty()) {
             System.out.println("None 😬...");
         } else {
-          printDevicesProperties(differentProperties);
+            printDevicesProperties(differentProperties);
         }
     }
 
-    private boolean filterProperties(SortedSet<DeviceProperty<?>> oldProps, DeviceProperty<?> currentProp, boolean changed) {
+    private boolean filterProperties(SortedSet<DeviceProperty<?>> oldProps, DeviceProperty<?> currentProp,
+            boolean changed) {
         return oldProps.stream()//
                 .filter(p -> p.getName().equals(currentProp.getName()))//
                 .anyMatch(p -> changed != Objects.equals(p.getValue(), currentProp.getValue()));
     }
 
-    void monitorProperty(String dsn, String propertyName, @Nullable Long sleep) throws AuthSalusApiException, SalusApiException, InterruptedException {
+    void monitorProperty(String dsn, String propertyName, @Nullable Long sleep)
+            throws AuthSalusApiException, SalusApiException, InterruptedException {
         requireNonNull(dsn);
         requireNonNull(propertyName);
         if (sleep == null) {
@@ -287,8 +290,7 @@ public class ReverseEngineerProtocol implements AutoCloseable {
 
         System.out.println("Finish loop by ctrl+c");
         while (true) {
-            var deviceProperty = api.findDeviceProperties(dsn)
-                    .stream()//
+            var deviceProperty = api.findDeviceProperties(dsn).stream()//
                     .filter(p -> p.getName().equals(propertyName))//
                     .findAny();
             if (deviceProperty.isPresent()) {
@@ -303,46 +305,58 @@ public class ReverseEngineerProtocol implements AutoCloseable {
 
     private void printDevices(Collection<Device> devices) {
         var sizeLength = String.valueOf(devices.size()).length();
-        var longestDsn = max("dsn".length(), devices.stream().map(Device::dsn).mapToInt(String::length).max().orElse(0));
-        var longestName = max("name".length(), devices.stream().map(Device::name).map(String::valueOf).mapToInt(String::length).max().orElse(0));
+        var longestDsn = max("dsn".length(),
+                devices.stream().map(Device::dsn).mapToInt(String::length).max().orElse(0));
+        var longestName = max("name".length(),
+                devices.stream().map(Device::name).map(String::valueOf).mapToInt(String::length).max().orElse(0));
         var margins = 8;
         var pipe = "═".repeat(sizeLength + longestDsn + longestName + margins);
-        System.out.printf("╔%s╦%s╦%s╗%n",  "═".repeat(sizeLength+2), "═".repeat(longestDsn+2), "═".repeat(longestName+2));
-        System.out.printf("║ %s ║ %s ║ %s ║%n", rightAlign("#", sizeLength), leftAlign("name", longestDsn), leftAlign("value",longestName));
-        System.out.printf("╠%s╬%s╬%s╣%n", "═".repeat(sizeLength+2), "═".repeat(longestDsn+2), "═".repeat(longestName+2));
+        System.out.printf("╔%s╦%s╦%s╗%n", "═".repeat(sizeLength + 2), "═".repeat(longestDsn + 2),
+                "═".repeat(longestName + 2));
+        System.out.printf("║ %s ║ %s ║ %s ║%n", rightAlign("#", sizeLength), leftAlign("name", longestDsn),
+                leftAlign("value", longestName));
+        System.out.printf("╠%s╬%s╬%s╣%n", "═".repeat(sizeLength + 2), "═".repeat(longestDsn + 2),
+                "═".repeat(longestName + 2));
 
         var idx = 1;
         for (var device : devices) {
             System.out.printf("║ %s ║ %s ║ %s ║%n", //
-                    rightAlign(String.valueOf(idx), sizeLength),//
-                    leftAlign(device.dsn(), longestDsn),//
+                    rightAlign(String.valueOf(idx), sizeLength), //
+                    leftAlign(device.dsn(), longestDsn), //
                     leftAlign(device.name(), longestName));
             idx++;
         }
 
-        System.out.printf("╚%s╩%s╩%s╝%n",  "═".repeat(sizeLength+2), "═".repeat(longestDsn+2), "═".repeat(longestName+2));
+        System.out.printf("╚%s╩%s╩%s╝%n", "═".repeat(sizeLength + 2), "═".repeat(longestDsn + 2),
+                "═".repeat(longestName + 2));
     }
 
     private void printDevicesProperties(Collection<DeviceProperty<?>> properties) {
         var sizeLength = String.valueOf(properties.size()).length();
-        var longestName = max("name".length(), properties.stream().map(DeviceProperty::getName).mapToInt(String::length).max().orElse(0));
-        var longestValue = max("value".length(), properties.stream().map(DeviceProperty::getValue).map(String::valueOf).mapToInt(String::length).max().orElse(0));
+        var longestName = max("name".length(),
+                properties.stream().map(DeviceProperty::getName).mapToInt(String::length).max().orElse(0));
+        var longestValue = max("value".length(), properties.stream().map(DeviceProperty::getValue).map(String::valueOf)
+                .mapToInt(String::length).max().orElse(0));
         var margins = 8;
         var pipe = "═".repeat(sizeLength + longestName + longestValue + margins);
-        System.out.printf("╔%s╦%s╦%s╗%n",  "═".repeat(sizeLength+2), "═".repeat(longestName+2), "═".repeat(longestValue+2));
-        System.out.printf("║ %s ║ %s ║ %s ║%n", rightAlign("#", sizeLength), leftAlign("name", longestName), leftAlign("value",longestValue));
-        System.out.printf("╠%s╬%s╬%s╣%n", "═".repeat(sizeLength+2), "═".repeat(longestName+2), "═".repeat(longestValue+2));
+        System.out.printf("╔%s╦%s╦%s╗%n", "═".repeat(sizeLength + 2), "═".repeat(longestName + 2),
+                "═".repeat(longestValue + 2));
+        System.out.printf("║ %s ║ %s ║ %s ║%n", rightAlign("#", sizeLength), leftAlign("name", longestName),
+                leftAlign("value", longestValue));
+        System.out.printf("╠%s╬%s╬%s╣%n", "═".repeat(sizeLength + 2), "═".repeat(longestName + 2),
+                "═".repeat(longestValue + 2));
 
         var idx = 1;
         for (var property : properties) {
             System.out.printf("║ %s ║ %s ║ %s ║%n", //
-                    rightAlign(String.valueOf(idx), sizeLength),//
-                    leftAlign(property.getName(), longestName),//
+                    rightAlign(String.valueOf(idx), sizeLength), //
+                    leftAlign(property.getName(), longestName), //
                     leftAlign(property.getValue(), longestValue));
             idx++;
         }
 
-        System.out.printf("╚%s╩%s╩%s╝%n",  "═".repeat(sizeLength+2), "═".repeat(longestName+2), "═".repeat(longestValue+2));
+        System.out.printf("╚%s╩%s╩%s╝%n", "═".repeat(sizeLength + 2), "═".repeat(longestName + 2),
+                "═".repeat(longestValue + 2));
     }
 
     private String rightAlign(String inputString, int length) {
