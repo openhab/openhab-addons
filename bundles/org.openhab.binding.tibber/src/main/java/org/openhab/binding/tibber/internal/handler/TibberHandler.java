@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Properties;
@@ -86,6 +87,7 @@ public class TibberHandler extends BaseThingHandler {
     private String rtEnabled = "false";
     private @Nullable String subscriptionURL;
     private @Nullable String versionString;
+    private @Nullable LocalDateTime lastWebSocketMessage;
 
     public TibberHandler(Thing thing) {
         super(thing);
@@ -150,16 +152,7 @@ public class TibberHandler extends BaseThingHandler {
 
                 if ("true".equals(rtEnabled)) {
                     logger.debug("Pulse associated with HomeId: Live stream will be started");
-                    getSubscriptionUrl();
-
-                    if (subscriptionURL == null || subscriptionURL.isBlank()) {
-                        logger.debug("Unexpected subscription result from the server");
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Unexpected subscription result from the server");
-                    } else {
-                        logger.debug("Reconnecting Subscription to: {}", subscriptionURL);
-                        open();
-                    }
+                    connectWebSocket();
                 } else {
                     logger.debug("No Pulse associated with HomeId: No live stream will be started");
                 }
@@ -311,18 +304,27 @@ public class TibberHandler extends BaseThingHandler {
 
     public void updateRequest() throws IOException {
         getURLInput(BASE_URL);
-        if ("true".equals(rtEnabled) && !isConnected()) {
-            logger.debug("Attempting to reopen Websocket connection");
-            getSubscriptionUrl();
+        if(lastWebSocketMessage != null && lastWebSocketMessage.plusMinutes(1).isBefore(LocalDateTime.now())) {
+            logger.info("Got no data for 1 minute from tibber. Last data from tibber on {}", lastWebSocketMessage);
+            close();
+            connectWebSocket();
+        }
+        else if ("true".equals(rtEnabled) && !isConnected()) {
+            logger.info("Attempting to reopen Websocket connection");
+            connectWebSocket();
+        }
+    }
 
-            if (subscriptionURL == null || subscriptionURL.isBlank()) {
-                logger.debug("Unexpected subscription result from the server");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unexpected subscription result from the server");
-            } else {
-                logger.debug("Reconnecting Subscription to: {}", subscriptionURL);
-                open();
-            }
+    private void connectWebSocket() throws IOException {
+        getSubscriptionUrl();
+
+        if (subscriptionURL == null || subscriptionURL.isBlank()) {
+            logger.debug("Unexpected subscription result from the server");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unexpected subscription result from the server");
+        } else {
+            logger.debug("Reconnecting Subscription to: {}", subscriptionURL);
+            open();
         }
     }
 
@@ -534,7 +536,7 @@ public class TibberHandler extends BaseThingHandler {
         @OnWebSocketError
         public void onWebSocketError(Throwable e) {
             String message = e.getMessage();
-            logger.debug("Error during websocket communication: {}", message);
+            logger.error("Error during websocket communication: {}", message);
             close();
         }
 
@@ -544,9 +546,10 @@ public class TibberHandler extends BaseThingHandler {
                 logger.debug("Connected to Server");
                 startSubscription();
             } else if (message.contains("error") || message.contains("terminate")) {
-                logger.debug("Error/terminate received from server: {}", message);
+                logger.warn("Error/terminate received from server: {}", message);
                 close();
             } else if (message.contains("liveMeasurement")) {
+                lastWebSocketMessage = LocalDateTime.now();
                 JsonObject object = (JsonObject) JsonParser.parseString(message);
                 JsonObject myObject = object.getAsJsonObject("payload").getAsJsonObject("data")
                         .getAsJsonObject("liveMeasurement");
@@ -623,7 +626,7 @@ public class TibberHandler extends BaseThingHandler {
                     updateChannel(LIVE_MAXPOWERPRODUCTION, myObject.get("maxPowerProduction").toString());
                 }
             } else {
-                logger.debug("Unknown live response from Tibber");
+                logger.debug("Unknown live response from Tibber. Message: {}", message);
             }
         }
 
