@@ -53,7 +53,7 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
     private final Logger logger = LoggerFactory.getLogger(AbstractHomekitPositionAccessoryImpl.class);
     protected int closedPosition;
     protected int openPosition;
-    private final Map<PositionStateEnum, String> positionStateMapping;
+    private final Map<PositionStateEnum, Object> positionStateMapping;
     protected boolean emulateState;
     protected boolean emulateStopSameDirection;
     protected boolean sendUpDownForExtents;

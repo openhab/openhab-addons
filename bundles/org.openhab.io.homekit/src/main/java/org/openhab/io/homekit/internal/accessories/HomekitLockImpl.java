@@ -36,8 +36,8 @@ import io.github.hapjava.services.impl.LockMechanismService;
  *
  */
 public class HomekitLockImpl extends AbstractHomekitAccessoryImpl implements LockMechanismAccessory {
-    final Map<LockCurrentStateEnum, String> currentStateMapping;
-    final Map<LockTargetStateEnum, String> targetStateMapping;
+    final Map<LockCurrentStateEnum, Object> currentStateMapping;
+    final Map<LockTargetStateEnum, Object> targetStateMapping;
 
     public HomekitLockImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
