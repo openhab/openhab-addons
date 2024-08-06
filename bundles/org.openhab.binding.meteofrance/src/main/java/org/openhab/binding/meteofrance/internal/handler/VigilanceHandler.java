@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.meteofrance.internal.MeteoFranceIconProvider;
 import org.openhab.binding.meteofrance.internal.config.DepartmentConfiguration;
 import org.openhab.binding.meteofrance.internal.dto.BlocType;
@@ -47,7 +48,6 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
-import org.openhab.core.thing.binding.BridgeHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
@@ -62,7 +62,7 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class VigilanceHandler extends BaseThingHandler {
+public class VigilanceHandler extends BaseThingHandler implements MeteoFranceChildHandler {
     private final Logger logger = LoggerFactory.getLogger(VigilanceHandler.class);
     private final MeteoFranceIconProvider iconProvider;
     private final ZoneId zoneId;
@@ -75,6 +75,11 @@ public class VigilanceHandler extends BaseThingHandler {
         super(thing);
         this.iconProvider = iconProvider;
         this.zoneId = zoneId;
+    }
+
+    @Override
+    public @Nullable Bridge getBridge() {
+        return super.getBridge();
     }
 
     @Override
@@ -113,17 +118,6 @@ public class VigilanceHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             updateAndPublish();
         }
-    }
-
-    private Optional<MeteoFranceBridgeHandler> getBridgeHandler() {
-        Bridge bridge = getBridge();
-        if (bridge != null) {
-            BridgeHandler handler = bridge.getHandler();
-            if (handler instanceof MeteoFranceBridgeHandler maHandler) {
-                return Optional.of(maHandler);
-            }
-        }
-        return Optional.empty();
     }
 
     private void updateAndPublish() {

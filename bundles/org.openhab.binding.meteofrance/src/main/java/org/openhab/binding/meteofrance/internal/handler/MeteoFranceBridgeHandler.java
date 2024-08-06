@@ -34,9 +34,11 @@ import org.openhab.binding.meteofrance.internal.dto.MeteoFrance.Period;
 import org.openhab.binding.meteofrance.internal.dto.MeteoFrance.Product;
 import org.openhab.binding.meteofrance.internal.dto.MeteoFrance.TextBlocItem;
 import org.openhab.binding.meteofrance.internal.dto.MeteoFrance.VigilanceEnCours;
+import org.openhab.binding.meteofrance.internal.dto.RainForecast;
 import org.openhab.binding.meteofrance.internal.dto.Term;
 import org.openhab.core.cache.ExpiringCache;
 import org.openhab.core.io.net.http.HttpUtil;
+import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -58,6 +60,9 @@ public class MeteoFranceBridgeHandler extends BaseBridgeHandler {
     private static final String PORTAIL_API_BASE_URL = "https://public-api.meteofrance.fr/public/DPVigilance/v1/%s/encours";
     private static final String TEXTE_VIGILANCE_URL = PORTAIL_API_BASE_URL.formatted("textesvigilance");
     private static final String CARTE_VIGILANCE_URL = PORTAIL_API_BASE_URL.formatted("cartevigilance");
+
+    private static final String RAIN_FORECAST_BASE_URL = "https://rpcache-aa.meteofrance.com/internet2018client/2.0/nowcast/rain?lat=%.4f&lon=%.4f&token=__Wj7dVSTjV9YGu1guveLyDq0g7S7TfTjaHBTPTpO0kj8__";
+
     private static final long CACHE_EXPIRY = TimeUnit.MINUTES.toMillis(10);
 
     private final Logger logger = LoggerFactory.getLogger(MeteoFranceBridgeHandler.class);
@@ -108,16 +113,13 @@ public class MeteoFranceBridgeHandler extends BaseBridgeHandler {
             VigilanceEnCours vigilance = deserializer.deserialize(MeteoFrance.VigilanceEnCours.class, answer);
             if (vigilance.code() != 0) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, vigilance.message());
-            } else if (vigilance.detail() != null) {
-                // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, vigilance.detail());
             } else {
                 updateStatus(ThingStatus.ONLINE);
                 return vigilance;
             }
-        } catch (
-
-        MeteoFranceException e) {
-            logger.warn("Exception deserializing API answer: {}", e.getMessage());
+        } catch (MeteoFranceException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Exception deserializing API answer: %s".formatted(e.getMessage()));
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
         }
@@ -154,5 +156,17 @@ public class MeteoFranceBridgeHandler extends BaseBridgeHandler {
     public Optional<Meta> getMeta() {
         VigilanceEnCours local = vigilanceText.getValue();
         return Optional.ofNullable(local != null ? local.meta() : null);
+    }
+
+    public @Nullable RainForecast getRainForecast(PointType location) {
+        String url = RAIN_FORECAST_BASE_URL.formatted(location.getLatitude().doubleValue(),
+                location.getLongitude().doubleValue());
+        try {
+            String answer = HttpUtil.executeUrl(HttpMethod.GET, url, REQUEST_TIMEOUT_MS);
+            return deserializer.deserialize(RainForecast.class, answer);
+        } catch (IOException | MeteoFranceException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+        }
+        return null;
     }
 }

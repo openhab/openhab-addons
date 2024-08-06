@@ -15,7 +15,6 @@ package org.openhab.binding.meteofrance.internal.handler;
 import static org.openhab.binding.meteofrance.internal.MeteoFranceBindingConstants.*;
 import static org.openhab.core.types.TimeSeries.Policy.REPLACE;
 
-import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -24,25 +23,20 @@ import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import javax.ws.rs.HttpMethod;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.meteofrance.internal.MeteoFranceException;
 import org.openhab.binding.meteofrance.internal.config.ForecastConfiguration;
-import org.openhab.binding.meteofrance.internal.deserialization.MeteoFranceDeserializer;
 import org.openhab.binding.meteofrance.internal.dto.RainForecast;
 import org.openhab.binding.meteofrance.internal.dto.RainForecast.Forecast;
 import org.openhab.binding.meteofrance.internal.dto.RainForecast.Properties;
 import org.openhab.binding.meteofrance.internal.dto.RainForecast.RainIntensity;
-import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PointType;
+import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -59,19 +53,21 @@ import org.slf4j.LoggerFactory;
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class RainForecastHandler extends BaseThingHandler {
-    private static final String URL = "https://rpcache-aa.meteofrance.com/internet2018client/2.0/nowcast/rain?lat=%.4f&lon=%.4f&token=__Wj7dVSTjV9YGu1guveLyDq0g7S7TfTjaHBTPTpO0kj8__";
-
+public class RainForecastHandler extends BaseThingHandler implements MeteoFranceChildHandler {
     private final Logger logger = LoggerFactory.getLogger(RainForecastHandler.class);
-    private final MeteoFranceDeserializer deserializer;
-    private final ChannelUID intensityUID;
+    private final ChannelUID intensityChannelUID;
 
     private Optional<ScheduledFuture<?>> refreshJob = Optional.empty();
+    private Optional<PointType> location = Optional.empty();
 
-    public RainForecastHandler(Thing thing, MeteoFranceDeserializer deserializer) {
+    public RainForecastHandler(Thing thing) {
         super(thing);
-        this.deserializer = deserializer;
-        this.intensityUID = new ChannelUID(getThing().getUID(), INTENSITY);
+        this.intensityChannelUID = new ChannelUID(getThing().getUID(), INTENSITY);
+    }
+
+    @Override
+    public @Nullable Bridge getBridge() {
+        return super.getBridge();
     }
 
     @Override
@@ -80,6 +76,10 @@ public class RainForecastHandler extends BaseThingHandler {
         disposeJob();
 
         updateStatus(ThingStatus.UNKNOWN);
+
+        ForecastConfiguration config = getConfigAs(ForecastConfiguration.class);
+        location = Optional.of(new PointType(config.location));
+
         refreshJob = Optional.of(scheduler.schedule(this::updateAndPublish, 2, TimeUnit.SECONDS));
     }
 
@@ -102,22 +102,16 @@ public class RainForecastHandler extends BaseThingHandler {
     }
 
     private void updateAndPublish() {
-        ForecastConfiguration config = getConfigAs(ForecastConfiguration.class);
-        PointType location = new PointType(config.location);
-        String url = URL.formatted(location.getLatitude().doubleValue(), location.getLongitude().doubleValue());
-
-        try {
-            String answer = HttpUtil.executeUrl(HttpMethod.GET, url, REQUEST_TIMEOUT_MS);
-            logger.trace(answer);
-            RainForecast forecast = deserializer.deserialize(RainForecast.class, answer);
-            setProperties(forecast.properties);
-            updateDate(UPDATE_TIME, forecast.updateTime);
-            updateStatus(ThingStatus.ONLINE);
-        } catch (IOException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
-        } catch (MeteoFranceException e) {
-            logger.warn("Exception deserializing API answer: {}", e.getMessage());
-        }
+        getBridgeHandler().ifPresentOrElse(handler -> {
+            location.ifPresent(loc -> {
+                RainForecast forecast = handler.getRainForecast(loc);
+                if (forecast != null) {
+                    setProperties(forecast.properties);
+                    updateDate(UPDATE_TIME, forecast.updateTime);
+                    updateStatus(ThingStatus.ONLINE);
+                }
+            });
+        }, () -> logger.warn("No viable bridge"));
     }
 
     private void setProperties(@Nullable Properties forecastProps) {
@@ -145,7 +139,7 @@ public class RainForecastHandler extends BaseThingHandler {
                     : UnDefType.UNDEF;
             timeSeries.add(prevision.time().toInstant(), state);
         });
-        sendTimeSeries(intensityUID, timeSeries);
+        sendTimeSeries(intensityChannelUID, timeSeries);
 
         Forecast current = forecast.get(0);
         long until = ZonedDateTime.now().until(current.time(), ChronoUnit.SECONDS);
