@@ -408,6 +408,6 @@ public class Mower {
     }
 
     public Optional<Ots> getOneTimeSchedule() {
-        return getSchedule().map(sc -> Optional.ofNullable(sc.ots)).orElse(Optional.empty());
+        return getSchedule().isPresent() ? Optional.ofNullable(getSchedule().get().ots) : Optional.empty();
     }
 }
