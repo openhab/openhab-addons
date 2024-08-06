@@ -23,7 +23,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class UsersMeResponse {
     public String id = "";
-    public String user_type = "";
+    public String userType = "";
     public boolean pushNotifications;
     public String location = "";
     public String actionsOnGooglePinCode = "";
