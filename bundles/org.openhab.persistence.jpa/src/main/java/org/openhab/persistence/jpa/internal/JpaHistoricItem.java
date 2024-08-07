@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.measure.Unit;
@@ -39,6 +40,7 @@ import org.openhab.core.library.types.PointType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringListType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -105,8 +107,21 @@ public class JpaHistoricItem implements HistoricItem {
         State state;
         if (item instanceof NumberItem numberItem) {
             Unit<?> unit = numberItem.getUnit();
-            double value = Double.parseDouble(pItem.getValue());
-            state = (unit == null) ? new DecimalType(value) : new QuantityType<>(value, unit);
+            QuantityType<?> value = QuantityType.valueOf(pItem.getValue());
+            if (unit == null) {
+                // Item has no unit; drop any persisted unit
+                state = Objects.requireNonNull(value.as(DecimalType.class));
+            } else if (value.getUnit() == Units.ONE) {
+                // No persisted unit; assume the item's unit
+                state = new QuantityType<>(value.toBigDecimal(), unit);
+            } else {
+                // Ensure we return in the item's unit
+                state = value.toUnit(unit);
+                if (state == null) {
+                    // Incompatible units? drop the persisted unit, and assume the item's unit
+                    state = new QuantityType<>(value.toBigDecimal(), unit);
+                }
+            }
         } else if (item instanceof DimmerItem) {
             state = new PercentType(Integer.parseInt(pItem.getValue()));
         } else if (item instanceof SwitchItem) {
