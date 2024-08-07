@@ -51,7 +51,9 @@ public class BinRpcClient extends RpcClient<byte[]> {
 
     @Override
     protected String getRpcCallbackUrl() {
-        return "binary://" + config.getCallbackHost() + ":" + config.getBinCallbackPort();
+        String callbackUrl = "binary://" + config.getCallbackHost() + ":" + config.getXmlCallbackPort();
+        callbackUrl = callbackUrl.replaceAll("\s", "");
+        return callbackUrl;
     }
 
     @Override
