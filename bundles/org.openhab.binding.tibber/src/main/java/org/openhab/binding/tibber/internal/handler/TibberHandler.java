@@ -335,7 +335,8 @@ public class TibberHandler extends BaseThingHandler {
             }
         }
         if (lastWebSocketMessage != null && lastWebSocketMessage.plusMinutes(5).isBefore(LocalDateTime.now())) {
-            logger.info("Got no data for 5 minutes from tibber. Last data from tibber on {}. Reconnect WebSocket.", lastWebSocketMessage);
+            logger.info("Got no data for 5 minutes from tibber. Last data from tibber on {}. Reconnect WebSocket.",
+                    lastWebSocketMessage);
             close();
             startLiveStream();
         } else if (liveChannelsLinked() && "true".equals(rtEnabled) && !isConnected()) {
