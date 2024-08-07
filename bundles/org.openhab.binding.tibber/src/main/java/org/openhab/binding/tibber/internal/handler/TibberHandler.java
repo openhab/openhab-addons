@@ -305,7 +305,8 @@ public class TibberHandler extends BaseThingHandler {
     public void updateRequest() throws IOException {
         getURLInput(BASE_URL);
         if (lastWebSocketMessage != null && lastWebSocketMessage.plusMinutes(5).isBefore(LocalDateTime.now())) {
-            logger.info("Got no data for 5 minutes from tibber. Last data from tibber on {}. Reconnect WebSocket.", lastWebSocketMessage);
+            logger.info("Got no data for 5 minutes from tibber. Last data from tibber on {}. Reconnect WebSocket.",
+                    lastWebSocketMessage);
             close();
             connectWebSocket();
         } else if ("true".equals(rtEnabled) && !isConnected()) {
