@@ -45,7 +45,8 @@ public final class CloudBridgeHandler extends AbstractBridgeHandler<CloudBridgeC
     @Override
     public Set<String> it600RequiredChannels() {
         return Set.of("ep_9:sIT600TH:LocalTemperature_x100", "ep_9:sIT600TH:HeatingSetpoint_x100",
-                "ep_9:sIT600TH:SetHeatingSetpoint_x100", "ep_9:sIT600TH:HoldType", "ep_9:sIT600TH:SetHoldType");
+                "ep_9:sIT600TH:SetHeatingSetpoint_x100", "ep_9:sIT600TH:HoldType", "ep_9:sIT600TH:SetHoldType",
+                "ep_9:sIT600TH:RunningState");
     }
 
     @Override

@@ -18,9 +18,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
 /**
- * @author Martin Grześlowski - Initial contribution
- */
-/**
  * The {@link SalusBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
@@ -65,6 +62,7 @@ public class SalusBindingConstants {
             public static final String TEMPERATURE = "temperature";
             public static final String EXPECTED_TEMPERATURE = "expected-temperature";
             public static final String WORK_TYPE = "work-type";
+            public static final String RUNNING_STATE = "running-state";
         }
 
         public static final String GENERIC_OUTPUT_CHANNEL = "generic-output-channel";

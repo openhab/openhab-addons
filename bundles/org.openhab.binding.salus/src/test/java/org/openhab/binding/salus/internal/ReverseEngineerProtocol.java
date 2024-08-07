@@ -1,3 +1,15 @@
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
+ *
+ * See the NOTICE file(s) distributed with this work for additional
+ * information.
+ *
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License 2.0 which is available at
+ * http://www.eclipse.org/legal/epl-2.0
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ */
 package org.openhab.binding.salus.internal;
 
 import static java.lang.Math.max;
@@ -33,9 +45,15 @@ import org.openhab.binding.salus.internal.rest.HttpClient;
 import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * @author Martin Grześlowski - Initial contribution
+ */
 @NonNullByDefault
 public class ReverseEngineerProtocol implements AutoCloseable {
+    static final Logger logger = LoggerFactory.getLogger(ReverseEngineerProtocol.class);
     final List<String> methods = List.of("findDevices", "findDeviceProperties", "findDeltaInProperties",
             "monitorProperty");
     final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -103,7 +121,7 @@ public class ReverseEngineerProtocol implements AutoCloseable {
 
         var runIndefinitely = args.length == 3;
         if (runIndefinitely) {
-            System.out.println("Will run indefinitely, use ctrl-C to exit");
+            logger.info("Will run indefinitely, use ctrl-C to exit");
         }
         var queue = newQueue(args);
         try (var reverseProtocol = new ReverseEngineerProtocol(requireNonNull(queue.poll()),
@@ -113,7 +131,7 @@ public class ReverseEngineerProtocol implements AutoCloseable {
                 reverseProtocol.run(queue);
             } while (runIndefinitely);
         }
-        System.out.println("Bye bye 👋");
+        logger.info("Bye bye 👋");
     }
 
     private static Queue<String> newQueue(String[] args) {
@@ -124,7 +142,7 @@ public class ReverseEngineerProtocol implements AutoCloseable {
 
     private void run(Queue<String> queue) throws Exception {
         var method = findMethod(queue);
-        System.out.println("Will invoke method [" + method + "]");
+        logger.info("Will invoke method [" + method + "]");
         switch (method) {
             case "findDevices":
                 findDevices();
@@ -152,14 +170,14 @@ public class ReverseEngineerProtocol implements AutoCloseable {
 
         int response = 0;
         while (response < 1 || response > methods.size()) {
-            System.out.printf("Please choose [method] 1-%d:%n", methods.size());
+            logger.info(String.format("Please choose [method] 1-%d:", methods.size()));
             for (int i = 0; i < methods.size(); i++) {
-                System.out.printf("\t[%d]: %s%n", i + 1, methods.get(i));
+                logger.info(String.format("\t[%d]: %s", i + 1, methods.get(i)));
             }
             try {
                 response = Integer.parseInt(reader.readLine());
             } catch (NumberFormatException e) {
-                System.out.println(e.getMessage());
+                logger.info(e.getMessage());
             }
         }
         return methods.get(response - 1);
@@ -170,7 +188,7 @@ public class ReverseEngineerProtocol implements AutoCloseable {
         if (item != null) {
             return item;
         }
-        System.out.println("Please pass [dsn]:");
+        logger.info("Please pass [dsn]:");
         var line = "";
         while (line == null || line.isEmpty()) {
             line = reader.readLine();
@@ -183,7 +201,7 @@ public class ReverseEngineerProtocol implements AutoCloseable {
         if (item != null) {
             return item;
         }
-        System.out.println("Please pass [propertyName]:");
+        logger.info("Please pass [propertyName]:");
         var line = "";
         while (line == null || line.isEmpty()) {
             line = reader.readLine();
@@ -205,7 +223,7 @@ public class ReverseEngineerProtocol implements AutoCloseable {
     }
 
     private static void printUsage() {
-        System.out.println("""
+        logger.info("""
                 Usage:
                 \tReverseEngineerProtocol <username> <password> <apiType> <method-name?> <params...>
                 \tSupported method types:
@@ -219,14 +237,14 @@ public class ReverseEngineerProtocol implements AutoCloseable {
     @Test
     void findDevices() throws AuthSalusApiException, SalusApiException {
         var devices = api.findDevices();
-        System.out.printf("Your devices (%s):%n", api.getClass().getSimpleName());
+        logger.info(String.format("Your devices (%s):", api.getClass().getSimpleName()));
         printDevices(devices);
     }
 
     @Test
     void findDeviceProperties(String dsn) throws AuthSalusApiException, SalusApiException {
         var properties = api.findDeviceProperties(dsn);
-        System.out.printf("Properties for device %s (%s):%n", dsn, api.getClass().getSimpleName());
+        logger.info(String.format("Properties for device %s (%s):", dsn, api.getClass().getSimpleName()));
         printDevicesProperties(properties);
     }
 
@@ -237,19 +255,18 @@ public class ReverseEngineerProtocol implements AutoCloseable {
         var answer = "";
         while (true) {
             if (differentProperties.isEmpty()) {
-                System.out.println("There are no more properties 😬...");
+                logger.info("There are no more properties 😬...");
                 break;
             }
             printDevicesProperties(differentProperties);
 
-            System.out.println(
-                    "Read one more time and leave properties that changed (x) / not changed (q) or finish (f):");
+            logger.info("Read one more time and leave properties that changed (x) / not changed (q) or finish (f):");
             answer = reader.readLine();
             if (answer.equalsIgnoreCase("f")) {
                 break;
             }
             if (!answer.equalsIgnoreCase("x") && !answer.equalsIgnoreCase("q")) {
-                System.out.println("Wrong answer: " + answer);
+                logger.info("Wrong answer: " + answer);
                 continue;
             }
             var changed = answer.equalsIgnoreCase("x");
@@ -262,12 +279,12 @@ public class ReverseEngineerProtocol implements AutoCloseable {
                     .collect(Collectors.toCollection(TreeSet::new));
             var currentSize = differentProperties.size();
             var delta = beforeSize - currentSize;
-            System.out.printf("Current size: %d, beforeSize: %d, Δ: %d%n", currentSize, beforeSize, delta);
+            logger.info(String.format("Current size: %d, beforeSize: %d, Δ: %d", currentSize, beforeSize, delta));
         }
 
-        System.out.printf("Properties for device %s (%s):%n", dsn, api.getClass().getSimpleName());
+        logger.info(String.format("Properties for device %s (%s):", dsn, api.getClass().getSimpleName()));
         if (differentProperties.isEmpty()) {
-            System.out.println("None 😬...");
+            logger.info("None 😬...");
         } else {
             printDevicesProperties(differentProperties);
         }
@@ -288,15 +305,15 @@ public class ReverseEngineerProtocol implements AutoCloseable {
             sleep = 1L;
         }
 
-        System.out.println("Finish loop by ctrl+c");
+        logger.info("Finish loop by ctrl+c");
         while (true) {
             var deviceProperty = api.findDeviceProperties(dsn).stream()//
                     .filter(p -> p.getName().equals(propertyName))//
                     .findAny();
             if (deviceProperty.isPresent()) {
-                System.out.println(deviceProperty.get());
+                logger.info(deviceProperty.get() + "");
             } else {
-                System.out.println("Property does not exists!");
+                logger.info("Property does not exists!");
                 break;
             }
             TimeUnit.SECONDS.sleep(sleep);
@@ -311,23 +328,23 @@ public class ReverseEngineerProtocol implements AutoCloseable {
                 devices.stream().map(Device::name).map(String::valueOf).mapToInt(String::length).max().orElse(0));
         var margins = 8;
         var pipe = "═".repeat(sizeLength + longestDsn + longestName + margins);
-        System.out.printf("╔%s╦%s╦%s╗%n", "═".repeat(sizeLength + 2), "═".repeat(longestDsn + 2),
+        System.out.printf("╔%s╦%s╦%s╗", "═".repeat(sizeLength + 2), "═".repeat(longestDsn + 2),
                 "═".repeat(longestName + 2));
-        System.out.printf("║ %s ║ %s ║ %s ║%n", rightAlign("#", sizeLength), leftAlign("name", longestDsn),
+        System.out.printf("║ %s ║ %s ║ %s ║", rightAlign("#", sizeLength), leftAlign("name", longestDsn),
                 leftAlign("value", longestName));
-        System.out.printf("╠%s╬%s╬%s╣%n", "═".repeat(sizeLength + 2), "═".repeat(longestDsn + 2),
+        System.out.printf("╠%s╬%s╬%s╣", "═".repeat(sizeLength + 2), "═".repeat(longestDsn + 2),
                 "═".repeat(longestName + 2));
 
         var idx = 1;
         for (var device : devices) {
-            System.out.printf("║ %s ║ %s ║ %s ║%n", //
+            System.out.printf("║ %s ║ %s ║ %s ║", //
                     rightAlign(String.valueOf(idx), sizeLength), //
                     leftAlign(device.dsn(), longestDsn), //
                     leftAlign(device.name(), longestName));
             idx++;
         }
 
-        System.out.printf("╚%s╩%s╩%s╝%n", "═".repeat(sizeLength + 2), "═".repeat(longestDsn + 2),
+        System.out.printf("╚%s╩%s╩%s╝", "═".repeat(sizeLength + 2), "═".repeat(longestDsn + 2),
                 "═".repeat(longestName + 2));
     }
 
@@ -339,23 +356,23 @@ public class ReverseEngineerProtocol implements AutoCloseable {
                 .mapToInt(String::length).max().orElse(0));
         var margins = 8;
         var pipe = "═".repeat(sizeLength + longestName + longestValue + margins);
-        System.out.printf("╔%s╦%s╦%s╗%n", "═".repeat(sizeLength + 2), "═".repeat(longestName + 2),
+        System.out.printf("╔%s╦%s╦%s╗", "═".repeat(sizeLength + 2), "═".repeat(longestName + 2),
                 "═".repeat(longestValue + 2));
-        System.out.printf("║ %s ║ %s ║ %s ║%n", rightAlign("#", sizeLength), leftAlign("name", longestName),
+        System.out.printf("║ %s ║ %s ║ %s ║", rightAlign("#", sizeLength), leftAlign("name", longestName),
                 leftAlign("value", longestValue));
-        System.out.printf("╠%s╬%s╬%s╣%n", "═".repeat(sizeLength + 2), "═".repeat(longestName + 2),
+        System.out.printf("╠%s╬%s╬%s╣", "═".repeat(sizeLength + 2), "═".repeat(longestName + 2),
                 "═".repeat(longestValue + 2));
 
         var idx = 1;
         for (var property : properties) {
-            System.out.printf("║ %s ║ %s ║ %s ║%n", //
+            System.out.printf("║ %s ║ %s ║ %s ║", //
                     rightAlign(String.valueOf(idx), sizeLength), //
                     leftAlign(property.getName(), longestName), //
                     leftAlign(property.getValue(), longestValue));
             idx++;
         }
 
-        System.out.printf("╚%s╩%s╩%s╝%n", "═".repeat(sizeLength + 2), "═".repeat(longestName + 2),
+        System.out.printf("╚%s╩%s╩%s╝", "═".repeat(sizeLength + 2), "═".repeat(longestName + 2),
                 "═".repeat(longestValue + 2));
     }
 
