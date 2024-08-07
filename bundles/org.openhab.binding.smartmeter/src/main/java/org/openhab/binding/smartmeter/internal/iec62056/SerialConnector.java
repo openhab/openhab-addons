@@ -40,17 +40,17 @@ import io.reactivex.FlowableEmitter;
  *
  */
 @NonNullByDefault
-public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
+public class SerialConnector extends ConnectorBase<DataMessage> {
 
-    private final Logger logger = LoggerFactory.getLogger(Iec62056_21SerialConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(SerialConnector.class);
     private int baudrate;
     private int baudrateChangeDelay;
     private ProtocolMode protocolMode;
     @Nullable
     private Iec21Port iec21Port;
 
-    public Iec62056_21SerialConnector(Supplier<SerialPortManager> serialPortManagerSupplier, String portName,
-            int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
+    public SerialConnector(Supplier<SerialPortManager> serialPortManagerSupplier, String portName, int baudrate,
+            int baudrateChangeDelay, ProtocolMode protocolMode) {
         super(portName);
         this.baudrate = baudrate;
         this.baudrateChangeDelay = baudrateChangeDelay;
@@ -78,6 +78,7 @@ public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
 
     @Override
     protected DataMessage readNext(byte @Nullable [] initMessage) throws IOException {
+        Iec21Port iec21Port = this.iec21Port;
         if (iec21Port != null) {
             DataMessage dataMessage = iec21Port.read();
             logger.debug("Datamessage read: {}", dataMessage);
@@ -94,6 +95,7 @@ public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
                 super.emitValues(initMessage, emitter);
                 break;
             case D:
+                Iec21Port iec21Port = this.iec21Port;
                 if (iec21Port != null) {
                     iec21Port.listen(new ModeDListener() {
 
@@ -108,6 +110,7 @@ public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
                             logger.warn("Exception while listening for mode D data message", e);
                         }
                     });
+                    this.iec21Port = iec21Port;
                 }
                 break;
             case SML:
@@ -128,6 +131,7 @@ public class Iec62056_21SerialConnector extends ConnectorBase<DataMessage> {
 
     @Override
     public void closeConnection() {
+        Iec21Port iec21Port = this.iec21Port;
         if (iec21Port != null) {
             iec21Port.close();
         }

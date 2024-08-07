@@ -16,7 +16,6 @@ import java.util.function.Supplier;
 
 import javax.measure.Quantity;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smartmeter.connectors.IMeterReaderConnector;
@@ -34,11 +33,10 @@ import org.openmuc.j62056.DataSet;
  *
  */
 @NonNullByDefault
-public class Iec62056_21MeterReader extends MeterDevice<DataMessage> {
+public class MeterReader extends MeterDevice<DataMessage> {
 
-    public Iec62056_21MeterReader(Supplier<SerialPortManager> serialPortManagerSupplier, String deviceId,
-            String serialPort, byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay,
-            ProtocolMode protocolMode) {
+    public MeterReader(Supplier<SerialPortManager> serialPortManagerSupplier, String deviceId, String serialPort,
+            byte @Nullable [] initMessage, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
         super(serialPortManagerSupplier, deviceId, serialPort, initMessage, baudrate, baudrateChangeDelay,
                 protocolMode);
     }
@@ -46,17 +44,15 @@ public class Iec62056_21MeterReader extends MeterDevice<DataMessage> {
     @Override
     protected IMeterReaderConnector<DataMessage> createConnector(Supplier<SerialPortManager> serialPortManagerSupplier,
             String serialPort, int baudrate, int baudrateChangeDelay, ProtocolMode protocolMode) {
-        return new Iec62056_21SerialConnector(serialPortManagerSupplier, serialPort, baudrate, baudrateChangeDelay,
-                protocolMode);
+        return new SerialConnector(serialPortManagerSupplier, serialPort, baudrate, baudrateChangeDelay, protocolMode);
     }
 
     @Override
-    protected <Q extends @NonNull Quantity<Q>> void populateValueCache(DataMessage smlFile) {
+    protected <Q extends Quantity<Q>> void populateValueCache(DataMessage smlFile) {
         for (DataSet dataSet : smlFile.getDataSets()) {
             String address = dataSet.getAddress();
             if (address != null && !address.isEmpty()) {
-                addObisCache(new MeterValue<Q>(address, dataSet.getValue(),
-                        Iec62056_21UnitConversion.getUnit(dataSet.getUnit())));
+                addObisCache(new MeterValue<Q>(address, dataSet.getValue(), UnitConversion.getUnit(dataSet.getUnit())));
             }
         }
     }
