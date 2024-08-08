@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
 import org.openhab.core.library.items.ContactItem;
 import org.openhab.core.library.items.DateTimeItem;
@@ -45,6 +46,8 @@ import org.openhab.core.persistence.HistoricItem;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 import org.openhab.persistence.jpa.internal.model.JpaPersistentItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The historic item as returned when querying the service.
@@ -54,6 +57,7 @@ import org.openhab.persistence.jpa.internal.model.JpaPersistentItem;
  */
 @NonNullByDefault
 public class JpaHistoricItem implements HistoricItem {
+    private static final Logger logger = LoggerFactory.getLogger(JpaHistoricItem.class);
 
     private final String name;
     private final State state;
@@ -93,7 +97,8 @@ public class JpaHistoricItem implements HistoricItem {
      * @return list of historic items
      */
     public static List<HistoricItem> fromResultList(List<JpaPersistentItem> jpaQueryResult, Item item) {
-        return jpaQueryResult.stream().map(pItem -> fromPersistedItem(pItem, item)).collect(Collectors.toList());
+        return jpaQueryResult.stream().map(pItem -> fromPersistedItem(pItem, item)).filter(Objects::nonNull)
+                .map(Objects::requireNonNull).collect(Collectors.toList());
     }
 
     /**
@@ -103,7 +108,7 @@ public class JpaHistoricItem implements HistoricItem {
      * @param item the source reference Item
      * @return historic item
      */
-    public static HistoricItem fromPersistedItem(JpaPersistentItem pItem, Item item) {
+    public static @Nullable HistoricItem fromPersistedItem(JpaPersistentItem pItem, Item item) {
         State state;
         if (item instanceof NumberItem numberItem) {
             Unit<?> unit = numberItem.getUnit();
@@ -118,8 +123,9 @@ public class JpaHistoricItem implements HistoricItem {
                 // Ensure we return in the item's unit
                 state = value.toUnit(unit);
                 if (state == null) {
-                    // Incompatible units? drop the persisted unit, and assume the item's unit
-                    state = new QuantityType<>(value.toBigDecimal(), unit);
+                    logger.warn("Persisted state {} for item {} is incompatible with item's unit {}; ignoring", value,
+                            item.getName(), unit);
+                    return null;
                 }
             }
         } else if (item instanceof DimmerItem) {
