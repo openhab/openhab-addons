@@ -85,8 +85,9 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
         stopBackgroundDiscovery();
         int interval = thingHandler.getConfiguration().discoveryInterval;
         if (interval > 0) {
-            backgroundFuture = Optional
-                    .of(scheduler.scheduleWithFixedDelay(this::startScan, 1, interval, TimeUnit.MINUTES));
+            backgroundFuture = Optional.of(scheduler.scheduleWithFixedDelay(() -> {
+                scan(true);
+            }, 1, interval, TimeUnit.MINUTES));
         }
     }
 
@@ -98,6 +99,10 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
 
     @Override
     protected void startScan() {
+        scan(false);
+    }
+
+    private void scan(boolean lowLogLevel) {
         logger.debug("Starting Freebox discovery scan");
         if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
@@ -106,50 +111,66 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 List<LanHost> lanHosts = new ArrayList<>(thingHandler.getManager(LanBrowserManager.class).getHosts()
                         .stream().filter(LanHost::reachable).toList());
 
-                discoverServer(bridgeUID);
-                discoverPhone(bridgeUID);
-                discoverPlugs(bridgeUID);
-                discoverRepeater(bridgeUID, lanHosts);
-                discoverPlayer(bridgeUID, lanHosts);
-                discoverVM(bridgeUID, lanHosts);
-                discoverHome(bridgeUID);
+                discoverServer(bridgeUID, lowLogLevel);
+                discoverPhone(bridgeUID, lowLogLevel);
+                discoverPlugs(bridgeUID, lowLogLevel);
+                discoverRepeater(bridgeUID, lanHosts, lowLogLevel);
+                discoverPlayer(bridgeUID, lanHosts, lowLogLevel);
+                discoverVM(bridgeUID, lanHosts, lowLogLevel);
+                discoverHome(bridgeUID, lowLogLevel);
                 if (thingHandler.getConfiguration().discoverNetDevice) {
-                    discoverHosts(bridgeUID, lanHosts);
+                    discoverHosts(bridgeUID, lanHosts, lowLogLevel);
                 }
             } catch (FreeboxException e) {
-                logger.warn("Error while requesting data for things discovery: {}", e.getMessage());
+                if (lowLogLevel) {
+                    logger.debug("Error while requesting data for things discovery: {}", e.getMessage());
+                } else {
+                    logger.warn("Error while requesting data for things discovery: {}", e.getMessage());
+                }
             }
         }
     }
 
-    private void discoverHome(ThingUID bridgeUID) {
+    private void discoverHome(ThingUID bridgeUID, boolean lowLogLevel) {
         NodeConfigurationBuilder builder = NodeConfigurationBuilder.getInstance();
         try {
             thingHandler.getManager(HomeManager.class).getHomeNodes().forEach(
                     node -> builder.configure(bridgeUID, node).ifPresent(result -> thingDiscovered(result.build())));
         } catch (FreeboxException e) {
-            logger.warn("Error discovering Home: {}", e.getMessage());
+            if (lowLogLevel) {
+                logger.debug("Error discovering Home: {}", e.getMessage());
+            } else {
+                logger.warn("Error discovering Home: {}", e.getMessage());
+            }
         }
     }
 
-    private void discoverPlugs(ThingUID bridgeUID) {
+    private void discoverPlugs(ThingUID bridgeUID, boolean lowLogLevel) {
         FreeplugConfigurationBuilder builder = FreeplugConfigurationBuilder.getInstance();
         try {
             thingHandler.getManager(FreeplugManager.class).getPlugs()
                     .forEach(plug -> thingDiscovered(builder.configure(bridgeUID, plug).build()));
         } catch (FreeboxException e) {
-            logger.warn("Error discovering freeplugs: {}", e.getMessage());
+            if (lowLogLevel) {
+                logger.debug("Error discovering freeplugs: {}", e.getMessage());
+            } else {
+                logger.warn("Error discovering freeplugs: {}", e.getMessage());
+            }
         }
     }
 
-    private void discoverPhone(ThingUID bridgeUID) {
+    private void discoverPhone(ThingUID bridgeUID, boolean lowLogLevel) {
         PhoneConfigurationBuilder builder = PhoneConfigurationBuilder.getInstance();
         List<Status> statuses = List.of();
         try {
             statuses = thingHandler.getManager(PhoneManager.class).getPhoneStatuses();
             statuses.forEach(phone -> thingDiscovered(builder.configure(bridgeUID, phone).build()));
         } catch (FreeboxException e) {
-            logger.warn("Error discovering phones: {}", e.getMessage());
+            if (lowLogLevel) {
+                logger.debug("Error discovering phones: {}", e.getMessage());
+            } else {
+                logger.warn("Error discovering phones: {}", e.getMessage());
+            }
         }
         if (!statuses.isEmpty()) {
             ThingUID thingUID = new ThingUID(THING_TYPE_CALL, bridgeUID, "landline");
@@ -160,7 +181,7 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
         }
     }
 
-    private void discoverHosts(ThingUID bridgeUID, List<LanHost> lanHosts) {
+    private void discoverHosts(ThingUID bridgeUID, List<LanHost> lanHosts, boolean lowLogLevel) {
         try {
             List<MACAddress> wifiMacs = new ArrayList<>();
             wifiMacs.addAll(thingHandler.getManager(APManager.class).getStations().stream().map(Station::mac).toList());
@@ -180,11 +201,15 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 thingDiscovered(builder.build());
             });
         } catch (FreeboxException e) {
-            logger.warn("Error discovering Hosts: {}", e.getMessage());
+            if (lowLogLevel) {
+                logger.debug("Error discovering Hosts: {}", e.getMessage());
+            } else {
+                logger.warn("Error discovering Hosts: {}", e.getMessage());
+            }
         }
     }
 
-    private void discoverVM(ThingUID bridgeUID, List<LanHost> lanHosts) {
+    private void discoverVM(ThingUID bridgeUID, List<LanHost> lanHosts, boolean lowLogLevel) {
         try {
             thingHandler.getManager(VmManager.class).getDevices().forEach(vm -> {
                 MACAddress mac = vm.mac();
@@ -199,11 +224,15 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 thingDiscovered(discoveryResult);
             });
         } catch (FreeboxException e) {
-            logger.warn("Error discovering VM: {}", e.getMessage());
+            if (lowLogLevel) {
+                logger.debug("Error discovering VM: {}", e.getMessage());
+            } else {
+                logger.warn("Error discovering VM: {}", e.getMessage());
+            }
         }
     }
 
-    private void discoverRepeater(ThingUID bridgeUID, List<LanHost> lanHosts) {
+    private void discoverRepeater(ThingUID bridgeUID, List<LanHost> lanHosts, boolean lowLogLevel) {
         try {
             List<Repeater> repeaters = thingHandler.getManager(RepeaterManager.class).getDevices();
             repeaters.forEach(repeater -> {
@@ -219,11 +248,15 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 thingDiscovered(discoveryResult);
             });
         } catch (FreeboxException e) {
-            logger.warn("Error discovering Repeater: {}", e.getMessage());
+            if (lowLogLevel) {
+                logger.debug("Error discovering Repeater: {}", e.getMessage());
+            } else {
+                logger.warn("Error discovering Repeater: {}", e.getMessage());
+            }
         }
     }
 
-    private void discoverServer(ThingUID bridgeUID) {
+    private void discoverServer(ThingUID bridgeUID, boolean lowLogLevel) {
         try {
             Config config = thingHandler.getManager(SystemManager.class).getConfig();
 
@@ -237,11 +270,15 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                     .withProperty(Thing.PROPERTY_MAC_ADDRESS, config.mac().toColonDelimitedString()).build();
             thingDiscovered(discoveryResult);
         } catch (FreeboxException e) {
-            logger.warn("Error discovering Server: {}", e.getMessage());
+            if (lowLogLevel) {
+                logger.debug("Error discovering Server: {}", e.getMessage());
+            } else {
+                logger.warn("Error discovering Server: {}", e.getMessage());
+            }
         }
     }
 
-    private void discoverPlayer(ThingUID bridgeUID, List<LanHost> lanHosts) {
+    private void discoverPlayer(ThingUID bridgeUID, List<LanHost> lanHosts, boolean lowLogLevel) {
         try {
             for (Player player : thingHandler.getManager(PlayerManager.class).getDevices()) {
                 lanHosts.removeIf(host -> host.getMac().equals(player.mac()));
@@ -254,7 +291,11 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 thingDiscovered(discoveryResult);
             }
         } catch (FreeboxException e) {
-            logger.warn("Error discovering Player: {}", e.getMessage());
+            if (lowLogLevel) {
+                logger.debug("Error discovering Player: {}", e.getMessage());
+            } else {
+                logger.warn("Error discovering Player: {}", e.getMessage());
+            }
         }
     }
 }
