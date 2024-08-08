@@ -21,7 +21,7 @@ This binding support several devices from the LG ThinQ Devices V1 & V2 line. Se 
 
 ## Discovery
 
-This binding bas auto-discovering for the supported devices  
+This binding has auto-discovering for the supported devices.
 
 ## Binding Configuration
 
