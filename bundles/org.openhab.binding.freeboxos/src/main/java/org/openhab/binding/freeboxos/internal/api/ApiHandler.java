@@ -32,11 +32,13 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.HttpStatus.Code;
+import org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants;
 import org.openhab.binding.freeboxos.internal.api.deserialization.ForegroundAppDeserializer;
 import org.openhab.binding.freeboxos.internal.api.deserialization.ListDeserializer;
 import org.openhab.binding.freeboxos.internal.api.deserialization.StrictEnumTypeAdapterFactory;
 import org.openhab.binding.freeboxos.internal.api.rest.PlayerManager.ForegroundApp;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,8 +70,17 @@ public class ApiHandler {
 
     private long timeoutInMs = TimeUnit.SECONDS.toMillis(8);
 
-    public ApiHandler(HttpClient httpClient, TimeZoneProvider timeZoneProvider) {
-        this.httpClient = httpClient;
+    public ApiHandler(HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider) {
+        this.httpClient = httpClientFactory.createHttpClient(FreeboxOsBindingConstants.BINDING_ID);
+        logger.info("{}", httpClient.getResponseBufferSize());
+        httpClient.setResponseBufferSize(httpClient.getResponseBufferSize() * 4);
+        logger.info("{}", httpClient.getResponseBufferSize());
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         this.gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(ZonedDateTime.class,
                         (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {

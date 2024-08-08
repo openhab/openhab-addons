@@ -20,6 +20,23 @@
 
 		<config-description-ref uri="thing-type:freeboxos:home-node"/>
 	</thing-type>
+	
+    <thing-type id="pir">
+        <supported-bridge-type-refs>
+            <bridge-type-ref id="api"/>
+        </supported-bridge-type-refs>
+
+        <label>Freebox Home PIR</label>
+        <description>A motion Sensor</description>
+
+        <channels>
+            <channel id="battery" typeId="system.battery-level"/>
+        </channels>
+
+        <representation-property>id</representation-property>
+
+        <config-description-ref uri="thing-type:freeboxos:home-node"/>
+    </thing-type>
 
 	<thing-type id="alarm">
 		<supported-bridge-type-refs>

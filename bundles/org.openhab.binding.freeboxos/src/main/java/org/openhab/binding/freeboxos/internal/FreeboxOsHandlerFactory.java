@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.freeboxos.internal.api.ApiHandler;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeboxOsSession;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.Category;
@@ -35,6 +34,7 @@ import org.openhab.binding.freeboxos.internal.handler.FreeplugHandler;
 import org.openhab.binding.freeboxos.internal.handler.FxsHandler;
 import org.openhab.binding.freeboxos.internal.handler.HostHandler;
 import org.openhab.binding.freeboxos.internal.handler.KeyfobHandler;
+import org.openhab.binding.freeboxos.internal.handler.PirHandler;
 import org.openhab.binding.freeboxos.internal.handler.PlayerHandler;
 import org.openhab.binding.freeboxos.internal.handler.RepeaterHandler;
 import org.openhab.binding.freeboxos.internal.handler.RevolutionHandler;
@@ -76,7 +76,6 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
 
     private final NetworkAddressService networkAddressService;
     private final AudioHTTPServer audioHTTPServer;
-    private final HttpClient httpClient;
     private final ApiHandler apiHandler;
     private String callbackURL = "";
 
@@ -88,9 +87,8 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
         super.activate(componentContext);
 
         this.audioHTTPServer = audioHTTPServer;
-        this.httpClient = httpClientFactory.getCommonHttpClient();
         this.networkAddressService = networkAddressService;
-        this.apiHandler = new ApiHandler(httpClient, timeZoneProvider);
+        this.apiHandler = new ApiHandler(httpClientFactory, timeZoneProvider);
 
         configChanged(config);
     }
@@ -159,6 +157,8 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
             return new KeyfobHandler(thing);
         } else if (Category.CAMERA.getThingTypeUID().equals(thingTypeUID)) {
             return new CameraHandler(thing);
+        } else if (Category.PIR.getThingTypeUID().equals(thingTypeUID)) {
+            return new PirHandler(thing);
         }
 
         return null;

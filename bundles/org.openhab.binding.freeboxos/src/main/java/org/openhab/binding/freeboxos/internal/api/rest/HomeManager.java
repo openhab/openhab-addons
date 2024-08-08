@@ -61,7 +61,7 @@ public class HomeManager extends RestManager {
         UNKNOWN
     }
 
-    private static record EndpointValue<T> (T value) {
+    private static record EndpointValue<T>(T value) {
     }
 
     private static record EndpointUi(AccessType access, DisplayType display, String iconUrl, @Nullable String unit) {
@@ -129,6 +129,7 @@ public class HomeManager extends RestManager {
         ALARM,
         KFB,
         CAMERA,
+        PIR,
         UNKNOWN;
 
         private final ThingTypeUID thingTypeUID;
