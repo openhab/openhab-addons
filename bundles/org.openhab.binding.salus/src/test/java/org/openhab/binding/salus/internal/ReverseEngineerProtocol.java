@@ -53,7 +53,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class ReverseEngineerProtocol implements AutoCloseable {
-    static final Logger logger = LoggerFactory.getLogger(ReverseEngineerProtocol.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(ReverseEngineerProtocol.class);
     final List<String> methods = List.of("findDevices", "findDeviceProperties", "findDeltaInProperties",
             "monitorProperty");
     final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
@@ -121,7 +121,7 @@ public class ReverseEngineerProtocol implements AutoCloseable {
 
         var runIndefinitely = args.length == 3;
         if (runIndefinitely) {
-            logger.info("Will run indefinitely, use ctrl-C to exit");
+            LOGGER.info("Will run indefinitely, use ctrl-C to exit");
         }
         var queue = newQueue(args);
         try (var reverseProtocol = new ReverseEngineerProtocol(requireNonNull(queue.poll()),
@@ -131,7 +131,7 @@ public class ReverseEngineerProtocol implements AutoCloseable {
                 reverseProtocol.run(queue);
             } while (runIndefinitely);
         }
-        logger.info("Bye bye 👋");
+        LOGGER.info("Bye bye 👋");
     }
 
     private static Queue<String> newQueue(String[] args) {
@@ -142,19 +142,19 @@ public class ReverseEngineerProtocol implements AutoCloseable {
 
     private void run(Queue<String> queue) throws Exception {
         var method = findMethod(queue);
-        logger.info("Will invoke method [" + method + "]");
+        LOGGER.info("Will invoke method [" + method + "]");
         switch (method) {
             case "findDevices":
                 findDevices();
                 break;
             case "findDeviceProperties":
-                findDeviceProperties(findDsn(queue, 5));
+                findDeviceProperties(findDsn(queue));
                 break;
             case "findDeltaInProperties":
-                findDeltaInProperties(findDsn(queue, 5));
+                findDeltaInProperties(findDsn(queue));
                 break;
             case "monitorProperty":
-                monitorProperty(findDsn(queue, 5), findPropertyName(queue, 6), findSleep(queue, 7));
+                monitorProperty(findDsn(queue), findPropertyName(queue, 6), findSleep(queue, 7));
                 break;
             default:
                 printUsage();
@@ -170,25 +170,25 @@ public class ReverseEngineerProtocol implements AutoCloseable {
 
         int response = 0;
         while (response < 1 || response > methods.size()) {
-            logger.info(String.format("Please choose [method] 1-%d:", methods.size()));
+            LOGGER.info(String.format("Please choose [method] 1-%d:", methods.size()));
             for (int i = 0; i < methods.size(); i++) {
-                logger.info(String.format("\t[%d]: %s", i + 1, methods.get(i)));
+                LOGGER.info(String.format("\t[%d]: %s", i + 1, methods.get(i)));
             }
             try {
                 response = Integer.parseInt(reader.readLine());
             } catch (NumberFormatException e) {
-                logger.info(e.getMessage());
+                LOGGER.info(e.getMessage());
             }
         }
         return methods.get(response - 1);
     }
 
-    private String findDsn(Queue<String> args, int idx) throws IOException {
+    private String findNextElement(String name, Queue<String> args) throws IOException {
         var item = args.poll();
         if (item != null) {
             return item;
         }
-        logger.info("Please pass [dsn]:");
+        LOGGER.info("Please pass [{}]:", name);
         var line = "";
         while (line == null || line.isEmpty()) {
             line = reader.readLine();
@@ -196,17 +196,12 @@ public class ReverseEngineerProtocol implements AutoCloseable {
         return line;
     }
 
+    private String findDsn(Queue<String> args) throws IOException {
+        return findNextElement("dsn", args);
+    }
+
     private String findPropertyName(Queue<String> args, int idx) throws IOException {
-        var item = args.poll();
-        if (item != null) {
-            return item;
-        }
-        logger.info("Please pass [propertyName]:");
-        var line = "";
-        while (line == null || line.isEmpty()) {
-            line = reader.readLine();
-        }
-        return line;
+        return findNextElement("propertyName", args);
     }
 
     @Nullable
@@ -223,7 +218,7 @@ public class ReverseEngineerProtocol implements AutoCloseable {
     }
 
     private static void printUsage() {
-        logger.info("""
+        LOGGER.info("""
                 Usage:
                 \tReverseEngineerProtocol <username> <password> <apiType> <method-name?> <params...>
                 \tSupported method types:
@@ -237,14 +232,14 @@ public class ReverseEngineerProtocol implements AutoCloseable {
     @Test
     void findDevices() throws AuthSalusApiException, SalusApiException {
         var devices = api.findDevices();
-        logger.info(String.format("Your devices (%s):", api.getClass().getSimpleName()));
+        LOGGER.info(String.format("Your devices (%s):", api.getClass().getSimpleName()));
         printDevices(devices);
     }
 
     @Test
     void findDeviceProperties(String dsn) throws AuthSalusApiException, SalusApiException {
         var properties = api.findDeviceProperties(dsn);
-        logger.info(String.format("Properties for device %s (%s):", dsn, api.getClass().getSimpleName()));
+        LOGGER.info(String.format("Properties for device %s (%s):", dsn, api.getClass().getSimpleName()));
         printDevicesProperties(properties);
     }
 
@@ -255,18 +250,18 @@ public class ReverseEngineerProtocol implements AutoCloseable {
         var answer = "";
         while (true) {
             if (differentProperties.isEmpty()) {
-                logger.info("There are no more properties 😬...");
+                LOGGER.info("There are no more properties 😬...");
                 break;
             }
             printDevicesProperties(differentProperties);
 
-            logger.info("Read one more time and leave properties that changed (x) / not changed (q) or finish (f):");
+            LOGGER.info("Read one more time and leave properties that changed (x) / not changed (q) or finish (f):");
             answer = reader.readLine();
             if (answer.equalsIgnoreCase("f")) {
                 break;
             }
             if (!answer.equalsIgnoreCase("x") && !answer.equalsIgnoreCase("q")) {
-                logger.info("Wrong answer: " + answer);
+                LOGGER.info("Wrong answer: " + answer);
                 continue;
             }
             var changed = answer.equalsIgnoreCase("x");
@@ -279,12 +274,12 @@ public class ReverseEngineerProtocol implements AutoCloseable {
                     .collect(Collectors.toCollection(TreeSet::new));
             var currentSize = differentProperties.size();
             var delta = beforeSize - currentSize;
-            logger.info(String.format("Current size: %d, beforeSize: %d, Δ: %d", currentSize, beforeSize, delta));
+            LOGGER.info(String.format("Current size: %d, beforeSize: %d, Δ: %d", currentSize, beforeSize, delta));
         }
 
-        logger.info(String.format("Properties for device %s (%s):", dsn, api.getClass().getSimpleName()));
+        LOGGER.info(String.format("Properties for device %s (%s):", dsn, api.getClass().getSimpleName()));
         if (differentProperties.isEmpty()) {
-            logger.info("None 😬...");
+            LOGGER.info("None 😬...");
         } else {
             printDevicesProperties(differentProperties);
         }
@@ -305,15 +300,15 @@ public class ReverseEngineerProtocol implements AutoCloseable {
             sleep = 1L;
         }
 
-        logger.info("Finish loop by ctrl+c");
+        LOGGER.info("Finish loop by ctrl+c");
         while (true) {
             var deviceProperty = api.findDeviceProperties(dsn).stream()//
                     .filter(p -> p.getName().equals(propertyName))//
                     .findAny();
             if (deviceProperty.isPresent()) {
-                logger.info(deviceProperty.get() + "");
+                LOGGER.info(deviceProperty.get() + "");
             } else {
-                logger.info("Property does not exists!");
+                LOGGER.info("Property does not exists!");
                 break;
             }
             TimeUnit.SECONDS.sleep(sleep);
