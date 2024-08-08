@@ -10,25 +10,18 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.linky.internal;
+package org.openhab.binding.linky.internal.dto;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
+import java.util.HashMap;
 
 /**
- * The {@link LinkyConfiguration} is the class used to match the
- * thing configuration.
+ * The {@link UserInfo} holds informations about energy delivery point
  *
  * @author Gaël L'hopital - Initial contribution
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
-@NonNullByDefault
-public class LinkyConfiguration {
-    public String token = "";
-    public String prmId = "";
-    public String clientId = "";
-    public String clientSecret = "";
 
-    public boolean seemsValid() {
-        return !prmId.isBlank();
-    }
+public class TempoResponse extends HashMap<String, String> {
+    @java.io.Serial
+    private static final long serialVersionUID = 362498820763181264L;
 }

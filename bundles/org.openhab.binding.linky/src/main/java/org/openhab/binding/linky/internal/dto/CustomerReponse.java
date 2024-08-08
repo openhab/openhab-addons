@@ -12,13 +12,15 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import org.eclipse.jetty.jaas.spi.UserInfo;
+
 /**
- * The {@link AuthResult} holds informations about the ongoing authentication process
+ * The {@link UserInfo} holds informations about energy delivery point
  *
  * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class AuthResult {
-    public String successUrl;
-    public String tokenId;
+public class CustomerReponse {
+    public Customer customer;
 }

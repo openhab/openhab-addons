@@ -17,17 +17,10 @@ import org.eclipse.jetty.jaas.spi.UserInfo;
 /**
  * The {@link UserInfo} holds informations about energy delivery point
  *
- * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - Rewrite addon to use official dataconect API
+ * @author Laurent Arnal - Initial contribution
  */
 
-public class PrmInfo {
-    public String prmId;
-    public String customerId;
-
-    public Contracts contractInfo;
-    public UsagePointDetails usagePointInfo;
-    public ContactInfo contactInfo;
-    public AddressInfo addressInfo;
-    public IdentityInfo identityInfo;
+public class ContactInfo {
+    public String phone;
+    public String email;
 }
