@@ -62,7 +62,7 @@
 				<context>password</context>
 			</parameter>
 			<parameter name="poolingIntervalSec" type="integer">
-				<label>Pooling Discovery Interval in Seconds (>300) (0 disabled)</label>
+				<label>Discovery Polling Interval</label>
 				<description>Pooling interval to discover new devices from LG Account.</description>
 				<default>86400</default>
 			</parameter>
