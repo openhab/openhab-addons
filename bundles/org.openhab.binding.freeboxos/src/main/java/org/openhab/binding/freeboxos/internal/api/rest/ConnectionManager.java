@@ -95,15 +95,15 @@ public class ConnectionManager extends ConfigurableRest<ConnectionManager.Status
             int rate, // ATM rate in kbit/s
             int snr, // in dB
             int attn, // in dB
-            int snr_10, // in dB/10
-            int attn_10, // in dB/10
+            int snr10, // in dB/10
+            int attn10, // in dB/10
             int fec, int crc, int hec, int es, int ses, boolean phyr, boolean ginp, boolean nitro, //
             int rxmt, // only available when phyr is on
-            int rxmt_corr, // only available when phyr is on
-            int rxmt_uncorr, // only available when phyr is on
-            int rtx_tx, // only available when ginp is on
-            int rtx_c, // only available when ginp is on
-            int rtx_uc// only available when ginp is on
+            int rxmtCorr, // only available when phyr is on
+            int rxmtUncorr, // only available when phyr is on
+            int rtxTx, // only available when ginp is on
+            int rtxC, // only available when ginp is on
+            int rtxUc// only available when ginp is on
     ) {
     }
 
