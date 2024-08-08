@@ -190,7 +190,6 @@
 /bundles/org.openhab.binding.lghombot/ @FluBBaOfWard
 /bundles/org.openhab.binding.lgthinq/ @nemerdaud
 /bundles/org.openhab.binding.lgtvserial/ @fa2k
-/bundles/org.openhab.binding.lgthinq/ @nemerdaud
 /bundles/org.openhab.binding.lgwebos/ @sprehn
 /bundles/org.openhab.binding.lifx/ @wborn
 /bundles/org.openhab.binding.linky/ @clinique @lolodomo
