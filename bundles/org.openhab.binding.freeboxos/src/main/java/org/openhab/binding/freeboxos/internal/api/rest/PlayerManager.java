@@ -246,7 +246,7 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         }
         try {
             session.execute(uriBuilder.build(), HttpMethod.GET, GenericResponse.class, null);
-        } catch (FreeboxException ignore) {
+        } catch (IllegalArgumentException | FreeboxException ignore) {
             // This call does not return anything, we can safely ignore
         }
     }
