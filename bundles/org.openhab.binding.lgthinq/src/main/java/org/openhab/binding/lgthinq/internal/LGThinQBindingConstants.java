@@ -149,7 +149,7 @@ public class LGThinQBindingConstants {
     public static final String FR_CHANNEL_SMART_SAVING_MODE_V2 = "fr-smart-saving-mode";
     public static final String FR_CHANNEL_SMART_SAVING_SWITCH_V1 = "fr-smart-saving-switch";
     public static final String FR_CHANNEL_ACTIVE_SAVING = "fr-active-saving";
-    public static final String FR_CHANNEL_FRESH_AIR_FILTER = "fr_fresh_air_filter";
+    public static final String FR_CHANNEL_FRESH_AIR_FILTER = "fr-fresh-air-filter";
     public static final String FR_CHANNEL_WATER_FILTER = "fr_water_filter";
     public static final Set<String> CELSIUS_UNIT_VALUES = Set.of("01", "1", "C", "CELSIUS", TEMP_UNIT_CELSIUS_SYMBOL);
     public static final Set<String> FAHRENHEIT_UNIT_VALUES = Set.of("02", "2", "F", "FAHRENHEIT",
