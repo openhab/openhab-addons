@@ -132,14 +132,10 @@ public class HomeManager extends RestManager {
         PIR,
         UNKNOWN;
 
-        private final ThingTypeUID thingTypeUID;
+        public final ThingTypeUID thingTypeUID;
 
         Category() {
-            thingTypeUID = new ThingTypeUID(BINDING_ID, name().toLowerCase());
-        }
-
-        public ThingTypeUID getThingTypeUID() {
-            return thingTypeUID;
+            thingTypeUID = new ThingTypeUID(BINDING_ID, name().toLowerCase().replace('_', '-'));
         }
     }
 

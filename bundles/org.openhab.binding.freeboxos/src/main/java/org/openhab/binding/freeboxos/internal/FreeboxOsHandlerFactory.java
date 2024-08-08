@@ -147,17 +147,17 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
             return new ActivePlayerHandler(thing);
         } else if (THING_TYPE_PLAYER.equals(thingTypeUID)) {
             return new PlayerHandler(thing);
-        } else if (Category.BASIC_SHUTTER.getThingTypeUID().equals(thingTypeUID)) {
+        } else if (Category.BASIC_SHUTTER.thingTypeUID.equals(thingTypeUID)) {
             return new BasicShutterHandler(thing);
-        } else if (Category.SHUTTER.getThingTypeUID().equals(thingTypeUID)) {
+        } else if (Category.SHUTTER.thingTypeUID.equals(thingTypeUID)) {
             return new ShutterHandler(thing);
-        } else if (Category.ALARM.getThingTypeUID().equals(thingTypeUID)) {
+        } else if (Category.ALARM.thingTypeUID.equals(thingTypeUID)) {
             return new AlarmHandler(thing);
-        } else if (Category.KFB.getThingTypeUID().equals(thingTypeUID)) {
+        } else if (Category.KFB.thingTypeUID.equals(thingTypeUID)) {
             return new KeyfobHandler(thing);
-        } else if (Category.CAMERA.getThingTypeUID().equals(thingTypeUID)) {
+        } else if (Category.CAMERA.thingTypeUID.equals(thingTypeUID)) {
             return new CameraHandler(thing);
-        } else if (Category.PIR.getThingTypeUID().equals(thingTypeUID)) {
+        } else if (Category.PIR.thingTypeUID.equals(thingTypeUID)) {
             return new PirHandler(thing);
         }
 

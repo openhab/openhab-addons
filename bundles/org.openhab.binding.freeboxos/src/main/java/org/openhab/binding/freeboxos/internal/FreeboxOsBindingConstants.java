@@ -71,9 +71,9 @@ public class FreeboxOsBindingConstants {
     public static final Set<ThingTypeUID> THINGS_TYPES_UIDS = Set.of(THING_TYPE_FXS, THING_TYPE_DECT, THING_TYPE_CALL,
             THING_TYPE_HOST, THING_TYPE_VM, THING_TYPE_PLAYER, THING_TYPE_ACTIVE_PLAYER, THING_TYPE_DELTA,
             THING_TYPE_REVOLUTION, THING_TYPE_REPEATER, THING_TYPE_WIFI_HOST, THING_TYPE_FREEPLUG);
-    public static final Set<ThingTypeUID> HOME_TYPES_UIDS = Set.of(Category.BASIC_SHUTTER.getThingTypeUID(),
-            Category.SHUTTER.getThingTypeUID(), Category.KFB.getThingTypeUID(), Category.CAMERA.getThingTypeUID(),
-            Category.ALARM.getThingTypeUID(), Category.PIR.getThingTypeUID());
+    public static final Set<ThingTypeUID> HOME_TYPES_UIDS = Set.of(Category.BASIC_SHUTTER.thingTypeUID,
+            Category.SHUTTER.thingTypeUID, Category.KFB.thingTypeUID, Category.CAMERA.thingTypeUID,
+            Category.ALARM.thingTypeUID, Category.PIR.thingTypeUID);
 
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(BRIDGE_TYPE_UIDS, THINGS_TYPES_UIDS, HOME_TYPES_UIDS).flatMap(Set::stream).collect(Collectors.toSet());
