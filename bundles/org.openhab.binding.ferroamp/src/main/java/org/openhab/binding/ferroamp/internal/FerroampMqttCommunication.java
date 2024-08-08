@@ -62,8 +62,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
             try {
                 TimeUnit.SECONDS.sleep(10);
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.debug("Failed during waiting for connection to setup");
             }
         }
 
@@ -659,8 +658,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         try {
             return ehubChannelsUpdateValues;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at update of Ehub channel values");
         }
         return ehubChannelsUpdateValues;
     }
@@ -669,8 +667,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         try {
             return ssoS0ChannelsUpdateValues;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at update of SsoS0 channel values");
         }
         return ssoS0ChannelsUpdateValues;
     }
@@ -679,8 +676,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         try {
             return ssoS1ChannelsUpdateValues;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at update of SsoS1 channel values");
         }
         return ssoS1ChannelsUpdateValues;
     }
@@ -689,8 +685,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         try {
             return ssoS2ChannelsUpdateValues;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at update of SsoS2 channel values");
         }
         return ssoS2ChannelsUpdateValues;
     }
@@ -699,8 +694,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         try {
             return ssoS3ChannelsUpdateValues;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at update of SsoS3 channel values");
         }
         return ssoS3ChannelsUpdateValues;
     }
@@ -709,8 +703,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         try {
             return isEsoAvailable;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at check of available Eso");
         }
         return isEsoAvailable;
     }
@@ -719,8 +712,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         try {
             return esoChannelsUpdateValues;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at update of Eso channel values");
         }
         return esoChannelsUpdateValues;
     }
@@ -729,8 +721,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         try {
             return isEsmAvailable;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at check of available Esm");
         }
         return isEsmAvailable;
     }
@@ -739,8 +730,7 @@ public class FerroampMqttCommunication implements MqttMessageSubscriber {
         try {
             return esmChannelsUpdateValues;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at update of Esm channel values");
         }
         return esmChannelsUpdateValues;
     }

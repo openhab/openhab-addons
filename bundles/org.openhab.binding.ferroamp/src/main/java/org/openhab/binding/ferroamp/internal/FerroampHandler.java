@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class FerroampHandler extends BaseThingHandler implements MqttMessageSubscriber {
-    private final Logger logger = LoggerFactory.getLogger(FerroampHandler.class);
+    private final static Logger logger = LoggerFactory.getLogger(FerroampHandler.class);
 
     private static @Nullable FerroampConfiguration ferroampConfig;
     private @Nullable static MqttBrokerConnection ferroampConnection;
@@ -113,8 +113,7 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
                 try {
                     startMqttConnection();
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    logger.debug("Connection to MqttBroker disturbed during configuration");
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE);
@@ -139,8 +138,7 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         try {
             TimeUnit.SECONDS.sleep(10);
         } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Connection to MqttBroker disturbed during startup of MqttConnection");
         }
         ferroampMqttCommunication.getMQTT("ehubTopic", ferroampConfig);
         ferroampMqttCommunication.getMQTT("ssoTopic", ferroampConfig);
@@ -248,8 +246,7 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         try {
             return ferroampConnection;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Connection to MqttBroker disturbed during startup of MqttConnection");
         }
         return ferroampConnection;
     }
@@ -264,8 +261,7 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
         try {
             return ferroampConfig.hasBattery;
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at check of configuration-parameter, hasBattery");
         }
         return ferroampConfig.hasBattery;
     }
@@ -275,12 +271,10 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
             try {
                 return channelConfigSsoS0;
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.debug("Failed at reading parameters for SsoS0");
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at reading parameters for SsoS0");
         }
         return channelConfigSsoS0;
     }
@@ -290,12 +284,10 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
             try {
                 return channelConfigSsoS1;
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.debug("Failed at reading parameters for SsoS1");
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at reading parameters for SsoS1");
         }
         return channelConfigSsoS1;
     }
@@ -305,12 +297,10 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
             try {
                 return channelConfigSsoS2;
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.debug("Failed at reading parameters for SsoS2");
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at reading parameters for SsoS2");
         }
         return channelConfigSsoS2;
     }
@@ -320,12 +310,10 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
             try {
                 return channelConfigSsoS3;
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.debug("Failed at reading parameters for SsoS3");
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at reading parameters for SsoS3");
         }
         return channelConfigSsoS3;
     }
@@ -335,12 +323,10 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
             try {
                 return channelConfigEso;
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.debug("Failed at reading parameters for Eso");
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at reading parameters for Eso");
         }
         return channelConfigEso;
     }
@@ -350,12 +336,10 @@ public class FerroampHandler extends BaseThingHandler implements MqttMessageSubs
             try {
                 return channelConfigEsm;
             } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                logger.debug("Failed at reading parameters for Esm");
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.debug("Failed at reading parameters for Esm");
         }
         return channelConfigEsm;
     }
