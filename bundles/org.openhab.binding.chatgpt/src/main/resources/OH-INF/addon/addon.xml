@@ -8,4 +8,8 @@
 	<description>This binding allows interaction with OpenAI's ChatGPT.</description>
 	<connection>cloud</connection>
 
+	<service-id>org.openhab.voice.chatgpthli</service-id>
+
+	<config-description-ref uri="voice:chatgpthli"/>
+
 </addon:addon>

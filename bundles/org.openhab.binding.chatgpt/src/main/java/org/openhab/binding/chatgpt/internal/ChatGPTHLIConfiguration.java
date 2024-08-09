@@ -15,20 +15,16 @@ package org.openhab.binding.chatgpt.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link ChatGPTChannelConfiguration} class contains fields mapping chat channel configuration parameters.
- *
- * @author Kai Kreuzer - Initial contribution
+ * @author Artur Fedjukevits - Initial contribution
  */
 @NonNullByDefault
-public class ChatGPTChannelConfiguration {
+public class ChatGPTHLIConfiguration {
 
-    public String model = "gpt-3.5-turbo";
-
-    public Double temperature = 0.5;
-
+    public String chatGPTModel = "";
+    public Double temperature = 1.0;
+    public Integer maxTokens = 1000;
     public Double topP = 1.0;
-
     public String systemMessage = "";
-
-    public int maxTokens = 500;
+    public Integer keepContext = 2;
+    public Integer contextTreshold = 10000;
 }

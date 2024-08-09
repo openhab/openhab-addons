@@ -52,7 +52,7 @@
 				<label>Model</label>
 				<description>The model to be used for the responses</description>
 				<limitToOptions>false</limitToOptions>
-				<default>gpt-3.5-turbo</default>
+				<default>gpt-4o</default>
 			</parameter>
 			<parameter name="temperature" type="decimal" min="0" max="2">
 				<label>Temperature</label>
@@ -67,7 +67,23 @@
 			<parameter name="maxTokens" type="decimal">
 				<label>Maximum Number of Tokens</label>
 				<description>The maximum number of tokens to generate in the completion.</description>
-				<default>500</default>
+				<default>1000</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="topP" type="decimal" min="0" max="1">
+				<label>TopP</label>
+
+				<description>An alternative to sampling with temperature, called nucleus sampling, where the model considers the
+					results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability
+					mass are considered. We generally recommend altering this or temperature but not both.</description>
+
+				<default>1</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="type" type="text">
+				<label>Type</label>
+				<description>Use 'chat' to keep the context and let it control your OpenHAB </description>
+				<default>notification</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
