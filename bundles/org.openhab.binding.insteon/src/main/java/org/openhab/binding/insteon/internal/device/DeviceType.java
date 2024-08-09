@@ -14,135 +14,123 @@ package org.openhab.binding.insteon.internal.device;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.insteon.internal.transport.message.FieldException;
+import org.openhab.binding.insteon.internal.transport.message.InvalidMessageTypeException;
+import org.openhab.binding.insteon.internal.transport.message.Msg;
+import org.openhab.binding.insteon.internal.utils.HexUtils;
 
 /**
- * The DeviceType class holds device type definitions that are read from
- * an xml file.
+ * The {@link DeviceType} represents a device type
  *
  * @author Bernd Pfrommer - Initial contribution
  * @author Rob Nielsen - Port to openHAB 2 insteon binding
+ * @author Jeremy Setton - Rewrite insteon binding
  */
 @NonNullByDefault
 public class DeviceType {
-    private String productKey;
-    private String model = "";
-    private String description = "";
-    private Map<String, String> features = new HashMap<>();
-    private Map<String, FeatureGroup> featureGroups = new HashMap<>();
+    private String name;
+    private Map<String, Boolean> flags = new HashMap<>();
+    private Map<String, FeatureEntry> features = new LinkedHashMap<>();
+    private Map<String, DefaultLinkEntry> links = new LinkedHashMap<>();
 
     /**
      * Constructor
      *
-     * @param aProductKey the product key for this device type
+     * @param name the name for this device type
+     * @param flags the flags for this device type
+     * @param features the features for this device type
+     * @param links the default links for this device type
      */
-    public DeviceType(String aProductKey) {
-        productKey = aProductKey;
+    public DeviceType(String name, Map<String, Boolean> flags, Map<String, FeatureEntry> features,
+            Map<String, DefaultLinkEntry> links) {
+        this.name = name;
+        this.flags = flags;
+        this.features = features;
+        this.links = links;
     }
 
     /**
-     * Get supported features
+     * Returns name
+     *
+     * @return the name for this device type
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Returns flags
+     *
+     * @return all flags for this device type
+     */
+    public Map<String, Boolean> getFlags() {
+        return flags;
+    }
+
+    /**
+     * Returns supported features
      *
      * @return all features that this device type supports
      */
-    public Map<String, String> getFeatures() {
-        return features;
+    public List<FeatureEntry> getFeatures() {
+        return features.values().stream().toList();
     }
 
     /**
-     * Get all feature groups
+     * Returns supported feature groups
      *
-     * @return all feature groups of this device type
+     * @return all feature groups that this device type supports
      */
-    public Map<String, FeatureGroup> getFeatureGroups() {
-        return featureGroups;
+    public List<FeatureEntry> getFeatureGroups() {
+        return features.values().stream().filter(FeatureEntry::hasConnectedFeatures).toList();
     }
 
     /**
-     * Sets the descriptive model string
+     * Returns default links
      *
-     * @param aModel descriptive model string
+     * @return all default links for this device type
      */
-    public void setModel(String aModel) {
-        model = aModel;
-    }
-
-    /**
-     * Sets free text description
-     *
-     * @param aDesc free text description
-     */
-    public void setDescription(String aDesc) {
-        description = aDesc;
-    }
-
-    /**
-     * Adds feature to this device type
-     *
-     * @param aKey the key (e.g. "switch") under which this feature can be referenced in the item binding config
-     * @param aFeatureName the name (e.g. "GenericSwitch") under which the feature has been defined
-     * @return false if feature was already there
-     */
-    public boolean addFeature(String aKey, String aFeatureName) {
-        if (features.containsKey(aKey)) {
-            return false;
-        }
-        features.put(aKey, aFeatureName);
-        return true;
-    }
-
-    /**
-     * Adds feature group to device type
-     *
-     * @param aKey name of the feature group, which acts as key for lookup later
-     * @param fg feature group to add
-     * @return true if add succeeded, false if group was already there
-     */
-    public boolean addFeatureGroup(String aKey, FeatureGroup fg) {
-        if (features.containsKey(aKey)) {
-            return false;
-        }
-        featureGroups.put(aKey, fg);
-        return true;
+    public Map<String, DefaultLinkEntry> getDefaultLinks() {
+        return links;
     }
 
     @Override
     public String toString() {
-        String s = "pk:" + productKey + "|model:" + model + "|desc:" + description + "|features";
-        for (Entry<String, String> f : features.entrySet()) {
-            s += ":" + f.getKey() + "=" + f.getValue();
+        String s = "name:" + name;
+        if (!features.isEmpty()) {
+            s += "|features:" + features.values().stream().map(FeatureEntry::toString).collect(Collectors.joining(","));
         }
-        s += "|groups";
-        for (Entry<String, FeatureGroup> f : featureGroups.entrySet()) {
-            s += ":" + f.getKey() + "=" + f.getValue();
+        if (!flags.isEmpty()) {
+            s += "|flags:" + flags.entrySet().stream().map(Entry::toString).collect(Collectors.joining(","));
+        }
+        if (!links.isEmpty()) {
+            s += "|default-links:"
+                    + links.values().stream().map(DefaultLinkEntry::toString).collect(Collectors.joining(","));
         }
         return s;
     }
 
     /**
-     * Class that reflects feature group association
-     *
-     * @author Bernd Pfrommer - Initial contribution
+     * Class that reflects a feature entry
      */
-    public static class FeatureGroup {
+    public static class FeatureEntry {
         private String name;
         private String type;
-        private ArrayList<String> fgFeatures = new ArrayList<>();
+        private Map<String, String> parameters;
+        private List<String> connectedFeatures = new ArrayList<>();
 
-        FeatureGroup(String name, String type) {
+        public FeatureEntry(String name, String type, Map<String, String> parameters) {
             this.name = name;
             this.type = type;
-        }
-
-        public void addFeature(String f) {
-            fgFeatures.add(f);
-        }
-
-        public ArrayList<String> getFeatures() {
-            return fgFeatures;
+            this.parameters = parameters;
         }
 
         public String getName() {
@@ -153,13 +141,127 @@ public class DeviceType {
             return type;
         }
 
+        public Map<String, String> getParameters() {
+            return parameters;
+        }
+
+        public List<String> getConnectedFeatures() {
+            return connectedFeatures;
+        }
+
+        public boolean hasConnectedFeatures() {
+            return !connectedFeatures.isEmpty();
+        }
+
+        public void addConnectedFeature(String name) {
+            connectedFeatures.add(name);
+        }
+
         @Override
         public String toString() {
-            String s = "";
-            for (String g : fgFeatures) {
-                s += g + ",";
+            String s = name + "->" + type;
+            if (!connectedFeatures.isEmpty()) {
+                s += "|connectedFeatures:" + connectedFeatures;
             }
-            return (s.replaceAll(",$", ""));
+            return s;
+        }
+    }
+
+    /**
+     * Class that reflects a default link entry
+     */
+    public static class DefaultLinkEntry {
+        private String name;
+        private boolean controller;
+        private int group;
+        private byte[] data;
+        private List<CommandEntry> commands = new ArrayList<>();
+
+        public DefaultLinkEntry(String name, boolean controller, int group, byte[] data) {
+            this.name = name;
+            this.controller = controller;
+            this.group = group;
+            this.data = data;
+        }
+
+        public boolean isController() {
+            return controller;
+        }
+
+        public int getGroup() {
+            return group;
+        }
+
+        public byte[] getData() {
+            return data;
+        }
+
+        public List<CommandEntry> getCommands() {
+            return commands;
+        }
+
+        public void addCommand(CommandEntry command) {
+            commands.add(command);
+        }
+
+        @Override
+        public String toString() {
+            String s = name + "->";
+            s += controller ? "CTRL" : "RESP";
+            s += "|group:" + group;
+            s += "|data1:" + HexUtils.getHexString(data[0]);
+            s += "|data2:" + HexUtils.getHexString(data[1]);
+            s += "|data3:" + HexUtils.getHexString(data[2]);
+            if (!commands.isEmpty()) {
+                s += "|commands:" + commands;
+            }
+            return s;
+        }
+    }
+
+    /**
+     * Class that reflects a command entry
+     */
+    public static class CommandEntry {
+        private String name;
+        private int ext;
+        private byte cmd1;
+        private byte cmd2;
+        private byte[] data;
+
+        public CommandEntry(String name, int ext, byte cmd1, byte cmd2, byte[] data) {
+            this.name = name;
+            this.ext = ext;
+            this.cmd1 = cmd1;
+            this.cmd2 = cmd2;
+            this.data = data;
+        }
+
+        public @Nullable Msg getMessage(InsteonDevice device) {
+            try {
+                if (ext == 0) {
+                    return Msg.makeStandardMessage(device.getAddress(), cmd1, cmd2);
+                } else if (ext == 1) {
+                    return Msg.makeExtendedMessage(device.getAddress(), cmd1, cmd2, data,
+                            device.getInsteonEngine().supportsChecksum());
+                } else if (ext == 2) {
+                    return Msg.makeExtendedMessageCRC2(device.getAddress(), cmd1, cmd2, data);
+                }
+            } catch (FieldException | InvalidMessageTypeException e) {
+            }
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            String s = name + "->";
+            s += "ext:" + ext;
+            s += "|cmd1:" + HexUtils.getHexString(cmd1);
+            s += "|cmd2:" + HexUtils.getHexString(cmd2);
+            s += "|data1:" + HexUtils.getHexString(data[0]);
+            s += "|data2:" + HexUtils.getHexString(data[1]);
+            s += "|data3:" + HexUtils.getHexString(data[2]);
+            return s;
         }
     }
 }
