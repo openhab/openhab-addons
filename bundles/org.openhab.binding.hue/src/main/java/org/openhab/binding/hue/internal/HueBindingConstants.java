@@ -17,6 +17,7 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
  * The {@link HueBindingConstants} class defines common constants, which are
@@ -200,4 +201,7 @@ public class HueBindingConstants {
             Map.entry(CHANNEL_LAST_UPDATED, CHANNEL_2_LAST_UPDATED));
 
     public static final String ALL_LIGHTS_KEY = "discovery.group.all-lights.label";
+
+    public static final String CHANNEL_GROUP_AUTOMATION = "automation";
+    public static final ChannelTypeUID CHANNEL_TYPE_AUTOMATION = new ChannelTypeUID(BINDING_ID, "automation-enable");
 }

@@ -905,4 +905,14 @@ class Clip2DtoTest {
         assertTrue(resultEffect instanceof TimedEffects);
         assertEquals(Duration.ofMillis(44), ((TimedEffects) resultEffect).getDuration());
     }
+
+    @Test
+    void testBehaviorInstance() {
+        String json = load(ResourceType.BEHAVIOR_INSTANCE.name().toLowerCase());
+        Resources resources = GSON.fromJson(json, Resources.class);
+        assertNotNull(resources);
+        List<Resource> list = resources.getResources();
+        assertNotNull(list);
+        assertEquals(2, list.size());
+    }
 }
