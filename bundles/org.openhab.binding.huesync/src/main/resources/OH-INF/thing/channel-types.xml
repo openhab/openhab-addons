@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="huesync"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="device-info-firmware">
+		<item-type>String</item-type>
+		<label>Firmware Version</label>
+		<description>Installed firmware version</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="device-info-firmware-available">
+		<item-type>String</item-type>
+		<label>Latest Firmware Version</label>
+		<description>Latest available firmware version</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="connection-name">
+		<item-type>String</item-type>
+		<label>Friendly name</label>
+		<description>Friendly name of the HDMI connection</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="connection-status">
+		<item-type>String</item-type>
+		<label>HDMI connection Status</label>
+		<description>Status of the HDMI input</description>
+		<state readOnly="true"></state>
+		<command>
+			<options>
+				<option value="unplugged"></option>
+				<option value="plugged"></option>
+				<option value="linked"></option>
+				<option value="unknown"></option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="connection-type">
+		<item-type>String</item-type>
+		<label>Friendly type</label>
+		<description>Type of the connected HDMI device</description>
+		<state readOnly="true"></state>
+		<command>
+			<options>
+				<option value="generic"></option>
+				<option value="video"></option>
+				<option value="game"></option>
+				<option value="music"></option>
+				<option value="xbox"></option>
+				<option value="playstation"></option>
+				<option value="nintendoswitch"></option>
+				<option value="phone"></option>
+				<option value="desktop"></option>
+				<option value="laptop"></option>
+				<option value="appletv"></option>
+				<option value="roku"></option>
+				<option value="shield"></option>
+				<option value="chromecast"></option>
+				<option value="firetv"></option>
+				<option value="diskplayer"></option>
+				<option value="settopbox"></option>
+				<option value="satellite"></option>
+				<option value="avreceiver"></option>
+				<option value="soundbar"></option>
+				<option value="hdmiswitch"></option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="connection-lastSyncMode">
+		<item-type>String</item-type>
+		<label>Last sync mode</label>
+		<description>Last sync mode used for this channel</description>
+		<state readOnly="true"></state>
+		<command>
+			<options>
+				<option value="video"></option>
+				<option value="game"></option>
+				<option value="music"></option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="execution-mode">
+		<item-type>String</item-type>
+		<label>Hue Sync operation mode</label>
+		<description>
+			<![CDATA[
+			<p>
+				<ul>
+				  <li>
+				  	<b>"video":</b>
+					<p>
+					  Analyzes the on-screen visuals, translating colors and brightness into corresponding light
+					  effects for an immersive movie-watching experience.
+					</p>
+				 </li>
+				 <li>
+				  	<b>"music":</b>
+					<p>
+					  Analyzes the rhythm and beat of your music, creating
+					  dynamic light along to your tunes.
+					</p>
+				</li>
+				<li>
+				  <b>"game":</b>
+				  <p>
+				    Reacts to the action on your screen, intensifying the in-game atmosphere
+				    with bursts of light that correspond to explosions, gunfire, and other gameplay events.\n
+                  </p>
+				</li>
+				<li><b>"passthrough"</b></li>
+				<li><b>"powersave"</b></li>
+			  </ul>
+			</p>
+			]]>
+		</description>
+		<command>
+			<options>
+				<option value="powersave"></option>
+				<option value="passthrough"></option>
+				<option value="video"></option>
+				<option value="game"></option>
+				<option value="music"></option>
+			</options>
+		</command>
+	</channel-type>
+
+	<channel-type id="execution-syncActive">
+		<item-type>Switch</item-type>
+		<label>Synchronization Active</label>
+		<description>
+			<![CDATA[
+			  <p>
+			    <b>OFF</b> in case of powersave or passthrough mode, and <b>ON</b> in case of video, game or music mode.
+			  </p>
+			  <p>
+			    When changed from OFF to ON, it will start syncing in last used mode for current source. When changed from ON to OFF, will set passthrough mode.
+			  </p>
+			]]>
+		</description>
+	</channel-type>
+
+	<channel-type id="execution-hdmiSource">
+		<item-type>String</item-type>
+		<label>HDMI input</label>
+		<description>
+			<![CDATA[
+			  <p>
+				<ul>
+				  <li>input1</li>
+				  <li>input2</li>
+				  <li>input3</li>
+				  <li>input4</li>
+				</ul>
+		      </p>
+			]]>
+		</description>
+		<command>
+			<options>
+				<option value="input1"></option>
+				<option value="input2"></option>
+				<option value="input3"></option>
+				<option value="input4"></option>
+			</options>
+		</command>
+	</channel-type>
+
+</thing:thing-descriptions>
