@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="lgthinq"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- LG Device Type relative to Air Conditioners -->
+	<thing-type id="401">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>LG ThinQ Air Conditioner</label>
+		<description>LG ThinQ Air Conditioner</description>
+
+		<channel-groups>
+			<channel-group id="dashboard" typeId="ac-dashboard"/>
+			<channel-group id="extended-information" typeId="ac-extended-information"/>
+		</channel-groups>
+		<config-description>
+			<parameter-group name="Settings">
+				<label>Polling</label>
+				<description>Settings required to optimize the polling behaviour.</description>
+				<advanced>false</advanced>
+			</parameter-group>
+			<parameter name="polling-period-poweroff-seconds" type="integer" min="10" required="true"
+				groupName="Settings">
+				<label>Polling period in seconds when the device is off</label>
+				<description>Seconds to wait to the next polling when device is off. Useful to save up
+					i/o and cpu when your
+					device is
+					not working. If you use only this binding to control the
+					device, you can put higher values here.
+				</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="polling-period-poweron-seconds" type="integer" min="10" required="true"
+				groupName="Settings">
+				<label>Polling period in seconds for Device States when device is on</label>
+				<description>Seconds to wait to the next polling for device state (dashboard channels)
+				</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="polling-extra-info-period-seconds" type="integer" min="10" required="true"
+				groupName="Settings">
+				<label>Polling period in seconds for Extra Info</label>
+				<description>Seconds to wait to the next polling for Device's Extra Info (energy consumption,
+					remaining filter, etc)
+				</description>
+				<default>60</default>
+			</parameter>
+			<parameter name="poll-extra-info-on-power-off" type="boolean" required="true" groupName="Settings">
+				<label>Enable Extra Info Polling on powered off device</label>
+				<description>If enables, extra info will be fetched even when the device is powered off.
+					It's not so common, since
+					extra info are normally changed only when the device is running.
+				</description>
+				<default>false</default>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-group-type id="ac-dashboard">
+		<label>Dashboard</label>
+		<description>This is the Displayed Information.</description>
+		<channels>
+			<channel id="power" typeId="system.power"/>
+			<channel id="op_mode" typeId="operation-mode"/>
+			<channel id="target_temperature" typeId="target-temperature"/>
+			<channel id="current_temperature" typeId="current-temperature"/>
+			<channel id="fan_speed" typeId="fan-speed"/>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="ac-extended-information">
+		<label>More Information</label>
+		<description>Show more information about the device.</description>
+		<channels>
+			<channel id="extended_info_collector" typeId="extended_info_collector"/>
+			<channel id="current_power" typeId="current_power"/>
+			<channel id="remaining_filter" typeId="remaining_filter"/>
+		</channels>
+	</channel-group-type>
+
+</thing:thing-descriptions>
