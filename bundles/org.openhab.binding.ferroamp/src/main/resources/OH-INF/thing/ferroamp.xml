@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="ferroamp"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<thing-type id="energyhub">
+		<label>Ferroamp EnergyHub</label>
+		<description>Represents the Ferroamp EnergyHub</description>
+		<category>Energy</category>
+		<channels>
+			<channel id="ehubwloadconsql1" typeId="ehub-wloadconsq">
+				<label>WLoadConsq L1</label>
+			</channel>
+			<channel id="ehubwloadconsql2" typeId="ehub-wloadconsq">
+				<label>WLoadConsq L2</label>
+			</channel>
+			<channel id="ehubwloadconsql3" typeId="ehub-wloadconsq">
+				<label>WLoadConsq L3</label>
+			</channel>
+			<channel id="ehubiloaddl1" typeId="ehub-iloadd">
+				<label>ILoadd L1</label>
+			</channel>
+			<channel id="ehubiloaddl2" typeId="ehub-iloadd">
+				<label>ILoadd L2</label>
+			</channel>
+			<channel id="ehubiloaddl3" typeId="ehub-iloadd">
+				<label>ILoadd L3</label>
+			</channel>
+			<channel id="ehubwinvconsq_3p" typeId="ehub-winvconsq_3p">
+				<label>WInvConsq_3p</label>
+			</channel>
+			<channel id="ehubwextconsql1" typeId="ehub-wextconsq">
+				<label>WExtConsq L1</label>
+			</channel>
+			<channel id="ehubwextconsql2" typeId="ehub-wextconsq">
+				<label>WExtConsq L2</label>
+			</channel>
+			<channel id="ehubwextconsql3" typeId="ehub-wextconsq">
+				<label>WExtConsq L3</label>
+			</channel>
+			<channel id="ehubwinvprodq_3p" typeId="ehub-winvprodq_3p">
+				<label>WInvProdq_3p</label>
+			</channel>
+			<channel id="ehubwinvconsql1" typeId="ehub-winvconsq">
+				<label>WInvConsq L1</label>
+			</channel>
+			<channel id="ehubwinvconsql2" typeId="ehub-winvconsq">
+				<label>WInvConsq L2</label>
+			</channel>
+			<channel id="ehubwinvconsql3" typeId="ehub-winvconsq">
+				<label>WInvConsq L3</label>
+			</channel>
+			<channel id="ehubiextl1" typeId="ehub-iext">
+				<label>External/Grid RMS Current L1</label>
+			</channel>
+			<channel id="ehubiextl2" typeId="ehub-iext">
+				<label>External/Grid RMS Current L2</label>
+			</channel>
+			<channel id="ehubiextl3" typeId="ehub-iext">
+				<label>External/Grid RMS Current L3</label>
+			</channel>
+			<channel id="ehubiloadql1" typeId="ehub-iloadq">
+				<label>ILoadq L1</label>
+			</channel>
+			<channel id="ehubiloadql2" typeId="ehub-iloadq">
+				<label>ILoadq L2</label>
+			</channel>
+			<channel id="ehubiloadql3" typeId="ehub-iloadq">
+				<label>ILoadq L3</label>
+			</channel>
+			<channel id="ehubwloadprodq_3p" typeId="ehub-wloadprodq_3p">
+				<label>WLoadProdq_3p</label>
+			</channel>
+			<channel id="ehubiacel1" typeId="ehub-iace">
+				<label>ACE Equalization Current Set-points in Arms L1</label>
+			</channel>
+			<channel id="ehubiacel2" typeId="ehub-iace">
+				<label>ACE Equalization Current Set-points in Arms L2</label>
+			</channel>
+			<channel id="ehubiacel3" typeId="ehub-iace">
+				<label>ACE Equalization Current Set-points in Arms L3</label>
+			</channel>
+			<channel id="ehubploadl1" typeId="ehub-pload">
+				<label>PLoad L1</label>
+			</channel>
+			<channel id="ehubploadl2" typeId="ehub-pload">
+				<label>PLoad L2</label>
+			</channel>
+			<channel id="ehubploadl3" typeId="ehub-pload">
+				<label>PLoad L3</label>
+			</channel>
+			<channel id="ehubpinvreactivel1" typeId="ehub-pinvreactive">
+				<label>Inverter Power, Reactive L1</label>
+			</channel>
+			<channel id="ehubpinvreactivel2" typeId="ehub-pinvreactive">
+				<label>Inverter Power, Reactive L2</label>
+			</channel>
+			<channel id="ehubpinvreactivel3" typeId="ehub-pinvreactive">
+				<label>Inverter Power, Reactive L3</label>
+			</channel>
+			<channel id="ehubts" typeId="ehub-sso-eso-ts">
+				<label>Time stamp when message was published</label>
+			</channel>
+			<channel id="ehubploadreactivel1" typeId="ehub-ploadreactive">
+				<label>PLoadReactive L1</label>
+			</channel>
+			<channel id="ehubploadreactivel2" typeId="ehub-ploadreactive">
+				<label>PLoadReactive L2</label>
+			</channel>
+			<channel id="ehubploadreactivel3" typeId="ehub-ploadreactive">
+				<label>PLoadReactive L3</label>
+			</channel>
+			<channel id="ehubstate" typeId="ehub-state">
+				<label>State of the system</label>
+			</channel>
+			<channel id="ehubwloadprodql1" typeId="ehub-wloadprodq">
+				<label>WLoadProdq L1</label>
+			</channel>
+			<channel id="ehubwloadprodql2" typeId="ehub-wloadprodq">
+				<label>WLoadProdq L2</label>
+			</channel>
+			<channel id="ehubwloadprodql3" typeId="ehub-wloadprodq">
+				<label>WLoadProdq L3</label>
+			</channel>
+			<channel id="ehubppv" typeId="ehub-ppv">
+				<label>Only Sent when System has PV</label>
+			</channel>
+			<channel id="ehubpinvl1" typeId="ehub-pinv">
+				<label>Inverter power, active L1</label>
+			</channel>
+			<channel id="ehubpinvl2" typeId="ehub-pinv">
+				<label>Inverter power, active L2</label>
+			</channel>
+			<channel id="ehubpinvl3" typeId="ehub-pinv">
+				<label>Inverter power, active L3</label>
+			</channel>
+			<channel id="ehubiextql1" typeId="ehub-iextq">
+				<label>External/Grid Active Current L1</label>
+			</channel>
+			<channel id="ehubiextql2" typeId="ehub-iextq">
+				<label>External/Grid Active Current L2</label>
+			</channel>
+			<channel id="ehubiextql3" typeId="ehub-iextq">
+				<label>External/Grid Active Current L3</label>
+			</channel>
+			<channel id="ehubpextl1" typeId="ehub-pext">
+				<label>External/Grid Power,Active L1</label>
+			</channel>
+			<channel id="ehubpextl2" typeId="ehub-pext">
+				<label>External/Grid Power,Active L2</label>
+			</channel>
+			<channel id="ehubpextl3" typeId="ehub-pext">
+				<label>External/Grid Power,Active L3</label>
+			</channel>
+			<channel id="ehubwextprodql1" typeId="ehub-wextprodq">
+				<label>WExtProdq L1</label>
+			</channel>
+			<channel id="ehubwextprodql2" typeId="ehub-wextprodq">
+				<label>WExtProdq L2</label>
+			</channel>
+			<channel id="ehubwextprodql3" typeId="ehub-wextprodq">
+				<label>WExtProdq L3</label>
+			</channel>
+			<channel id="ehubwpv" typeId="ehub-sso-wpv">
+				<label>Only Sent when System has PV</label>
+			</channel>
+			<channel id="ehubpextreactivel1" typeId="ehub-pextreactive">
+				<label>External/Grid Power, Reactive L1</label>
+			</channel>
+			<channel id="ehubpextreactivel2" typeId="ehub-pextreactive">
+				<label>External/Grid Power, Reactive L2</label>
+			</channel>
+			<channel id="ehubpextreactivel3" typeId="ehub-pextreactive">
+				<label>External/Grid Power, Reactive L3</label>
+			</channel>
+			<channel id="ehubudcpos" typeId="ehub-udcpos">
+				<label>Positive DC Link Voltage</label>
+			</channel>
+			<channel id="ehubudcneg" typeId="ehub-udcneg">
+				<label>Negative DC Link Voltage</label>
+			</channel>
+			<channel id="ehubsext" typeId="ehub-sext">
+				<label>Apparent Power</label>
+			</channel>
+			<channel id="ehubiextd" typeId="ehub-iextd">
+				<label>External/Grid Reactive Current</label>
+			</channel>
+			<channel id="ehubiextdl1" typeId="ehub-iextd">
+				<label>IExtd L1</label>
+			</channel>
+			<channel id="ehubiextdl2" typeId="ehub-iextd">
+				<label>IExtd L2</label>
+				<description>External/grid Reactive current L2 </description>
+			</channel>
+			<channel id="ehubiextdl3" typeId="ehub-iextd">
+				<label>IExtd L3</label>
+				<description>External/grid Reactive current L3 </description>
+			</channel>
+			<channel id="ehubwextconsq_3p" typeId="ehub-wextconsq_3p">
+				<label>WExtConsq_3p</label>
+			</channel>
+			<channel id="ehubildl1" typeId="ehub-ild">
+				<label>Inverter Reactive Current L1</label>
+			</channel>
+			<channel id="ehubildl2" typeId="ehub-ild">
+				<label>Inverter Reactive Current L2</label>
+			</channel>
+			<channel id="ehubildl3" typeId="ehub-ild">
+				<label>Inverter Reactive Current L3</label>
+			</channel>
+			<channel id="ehubgridfreq" typeId="ehub-gridfreq">
+				<label>GridFrequency</label>
+			</channel>
+			<channel id="ehubwloadconsq_3p" typeId="ehub-wloadconsq_3p">
+				<label>EHUB, WLoadConsq_3p</label>
+			</channel>
+			<channel id="ehubull1" typeId="ehub-ul">
+				<label>External Voltage L1</label>
+			</channel>
+			<channel id="ehubull2" typeId="ehub-ul">
+				<label>External Voltage L2</label>
+			</channel>
+			<channel id="ehubull3" typeId="ehub-ul">
+				<label>External Voltage L3</label>
+			</channel>
+			<channel id="ehubwextprodq_3p" typeId="ehub-wextprodq_3p">
+				<label>WExtProdq_3p</label>
+			</channel>
+			<channel id="ehubilql1" typeId="ehub-ilq">
+				<label>Inverter Active Current L1</label>
+			</channel>
+			<channel id="ehubilql2" typeId="ehub-ilq">
+				<label>Inverter Active Current L2</label>
+			</channel>
+			<channel id="ehubilql3" typeId="ehub-ilq">
+				<label>Inverter Active Current L3</label>
+			</channel>
+			<channel id="ehubwinvprodql1" typeId="ehub-winvprodq">
+				<label>WInvProdq L1</label>
+			</channel>
+			<channel id="ehubwinvprodql2" typeId="ehub-winvprodq">
+				<label>WInvProdq L2</label>
+			</channel>
+			<channel id="ehubwinvprodql3" typeId="ehub-winvprodq">
+				<label>WInvProdq L3</label>
+			</channel>
+			<channel id="ehubill1" typeId="ehub-il">
+				<label>Inverter RMS Current L1</label>
+			</channel>
+			<channel id="ehubill2" typeId="ehub-il">
+				<label>Inverter RMS Current L2</label>
+			</channel>
+			<channel id="ehubill3" typeId="ehub-il">
+				<label>Inverter RMS Current L3</label>
+			</channel>
+			<channel id="ehubwbatprod" typeId="ehub-eso-wbatprod">
+				<label>Only Sent When System has Batteries</label>
+			</channel>
+			<channel id="ehubwpbatcons" typeId="ehub-wpbatcons">
+				<label>Only Sent When System has Batteries</label>
+			</channel>
+			<channel id="ehubsoc" typeId="ehub-eso-esm-soc">
+				<label>State of Charge</label>
+			</channel>
+			<channel id="ehubsoh" typeId="ehub-esm-soh">
+				<label>State of Health</label>
+			</channel>
+			<channel id="ehubpbat" typeId="ehub-pbat">
+				<label>Only Sent When System has Batteries</label>
+			</channel>
+			<channel id="ssos0relaystatus" typeId="sso-eso-relaystatus">
+				<label>RelayStatus</label>
+			</channel>
+			<channel id="ssos0temp" typeId="sso-eso-temp">
+				<label>Temperature Measured on PCB</label>
+			</channel>
+			<channel id="ssos0wpv" typeId="ehub-sso-wpv">
+				<label>Only sent when system has PV</label>
+			</channel>
+			<channel id="ssos0ts" typeId="ehub-sso-eso-ts">
+				<label>Time stamp when message was published</label>
+			</channel>
+			<channel id="ssos0udc" typeId="sso-eso-udc">
+				<label>DC Link Voltage as Measured by SSO</label>
+			</channel>
+			<channel id="ssos0faultcode" typeId="sso-eso-faultcode">
+				<label>FaultCode</label>
+			</channel>
+			<channel id="ssos0ipv" typeId="sso-ipv">
+				<label>Measured Current on PV String Side</label>
+			</channel>
+			<channel id="ssos0upv" typeId="sso-upv">
+				<label>Measured Voltage on PV String Side</label>
+			</channel>
+			<channel id="ssos0id" typeId="sso-eso-esm-id">
+				<label>Unique Identifier</label>
+			</channel>
+			<channel id="ssos1relaystatus" typeId="sso-eso-relaystatus">
+				<label>RelayStatus</label>
+			</channel>
+			<channel id="ssos1temp" typeId="sso-eso-temp">
+				<label>Temperature Measured on PCB</label>
+			</channel>
+			<channel id="ssos1wpv" typeId="ehub-sso-wpv">
+				<label>Only sent when system has PV</label>
+			</channel>
+			<channel id="ssos1ts" typeId="ehub-sso-eso-ts">
+				<label>Time stamp when message was published</label>
+			</channel>
+			<channel id="ssos1udc" typeId="sso-eso-udc">
+				<label>DC Link Voltage as Measured by SSO</label>
+			</channel>
+			<channel id="ssos1faultcode" typeId="sso-eso-faultcode">
+				<label>FaultCode</label>
+			</channel>
+			<channel id="ssos1ipv" typeId="sso-ipv">
+				<label>Measured Current on PV String Side</label>
+			</channel>
+			<channel id="ssos1upv" typeId="sso-upv">
+				<label>Measured Voltage on PV String Side</label>
+			</channel>
+			<channel id="ssos1id" typeId="sso-eso-esm-id">
+				<label>Unique Identifier</label>
+			</channel>
+			<channel id="ssos2relaystatus" typeId="sso-eso-relaystatus">
+				<label>RelayStatus</label>
+			</channel>
+			<channel id="ssos2temp" typeId="sso-eso-temp">
+				<label>Temperature Measured on PCB</label>
+			</channel>
+			<channel id="ssos2wpv" typeId="ehub-sso-wpv">
+				<label>Only sent when system has PV</label>
+			</channel>
+			<channel id="ssos2ts" typeId="ehub-sso-eso-ts">
+				<label>Time stamp when message was published</label>
+			</channel>
+			<channel id="ssos2udc" typeId="sso-eso-udc">
+				<label>DC Link Voltage as Measured by SSO</label>
+			</channel>
+			<channel id="ssos2faultcode" typeId="sso-eso-faultcode">
+				<label>FaultCode</label>
+			</channel>
+			<channel id="ssos2ipv" typeId="sso-ipv">
+				<label>Measured Current on PV String Side</label>
+			</channel>
+			<channel id="ssos2upv" typeId="sso-upv">
+				<label>Measured Voltage on PV String Side</label>
+			</channel>
+			<channel id="ssos2id" typeId="sso-eso-esm-id">
+				<label>Unique Identifier</label>
+			</channel>
+			<channel id="ssos3relaystatus" typeId="sso-eso-relaystatus">
+				<label>RelayStatus</label>
+			</channel>
+			<channel id="ssos3temp" typeId="sso-eso-temp">
+				<label>Temperature Measured on PCB</label>
+			</channel>
+			<channel id="ssos3wpv" typeId="ehub-sso-wpv">
+				<label>Only sent when system has PV</label>
+			</channel>
+			<channel id="ssos3ts" typeId="ehub-sso-eso-ts">
+				<label>Time stamp when message was published</label>
+			</channel>
+			<channel id="ssos3udc" typeId="sso-eso-udc">
+				<label>DC Link Voltage as Measured by SSO</label>
+			</channel>
+			<channel id="ssos3faultcode" typeId="sso-eso-faultcode">
+				<label>FaultCode</label>
+			</channel>
+			<channel id="ssos3ipv" typeId="sso-ipv">
+				<label>Measured Current on PV String Side</label>
+			</channel>
+			<channel id="ssos3upv" typeId="sso-upv">
+				<label>Measured Voltage on PV String Side</label>
+			</channel>
+			<channel id="ssos3id" typeId="sso-eso-esm-id">
+				<label>Unique Identifier</label>
+			</channel>
+			<channel id="esofaultcode" typeId="sso-eso-faultcode">
+				<label>FaultCode</label>
+			</channel>
+			<channel id="esoudc" typeId="sso-eso-udc">
+				<label>DC Link Voltage as Measured by ESO</label>
+			</channel>
+			<channel id="esoid" typeId="sso-eso-esm-id">
+				<label>Unique Identifier</label>
+			</channel>
+			<channel id="esoibat" typeId="eso-ibat">
+				<label>Measured on Battery Side</label>
+			</channel>
+			<channel id="esoubat" typeId="eso-ubat">
+				<label>Voltage Measured on Battery Side</label>
+			</channel>
+			<channel id="esorelaystatus" typeId="sso-eso-relaystatus">
+				<label>RelayStatus</label>
+			</channel>
+			<channel id="esosoc" typeId="ehub-eso-esm-soc">
+				<label>State of Charge</label>
+			</channel>
+			<channel id="eso-temp" typeId="sso-eso-temp">
+				<label>Temperature Measured on PCB</label>
+			</channel>
+			<channel id="esowbatprod" typeId="ehub-eso-wbatprod">
+				<label>Only Sent when System has Batteries</label>
+			</channel>
+			<channel id="esmsoh" typeId="ehub-esm-soh">
+				<label>State of Health</label>
+			</channel>
+			<channel id="esmsoc" typeId="ehub-eso-esm-soc">
+				<label>State of Charge</label>
+			</channel>
+			<channel id="esmratedcapacity" typeId="esm-rated-capacity">
+				<label>RatedCapacity</label>
+			</channel>
+			<channel id="esmid" typeId="sso-eso-esm-id">
+				<label>Unique Identifier</label>
+			</channel>
+			<channel id="esmratedpower" typeId="esm-rated-power">
+				<label>Rated Power of Battery</label>
+			</channel>
+			<channel id="esmstatus" typeId="esm-status">
+				<label>Status</label>
+			</channel>
+			<channel id="esmts" typeId="ehub-sso-eso-ts">
+				<label>Time stamp when message was published</label>
+			</channel>
+			<channel id="requestcharge" typeId="request-charge">
+				<label>RequestCharge</label>
+			</channel>
+			<channel id="requestdischarge" typeId="request-discharge">
+				<label>RequestDischarge</label>
+			</channel>
+			<channel id="requestauto" typeId="request-auto">
+				<label>RequestAuto</label>
+			</channel>
+			<channel id="requestextapiversion" typeId="request-extapiversion">
+				<label>RequestExtapiVersion</label>
+			</channel>
+		</channels>
+		<properties>
+			<property name="vendor">Ferroamp</property>
+		</properties>
+		<config-description-ref uri="thing-type:ferroamp:energyhub"/>
+	</thing-type>
+</thing:thing-descriptions>
