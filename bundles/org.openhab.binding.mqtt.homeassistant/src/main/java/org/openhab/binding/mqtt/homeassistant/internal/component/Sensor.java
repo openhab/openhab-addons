@@ -21,8 +21,10 @@ import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.NumberValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
+import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.listener.ExpireUpdateStateListener;
+import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.util.UnitUtils;
 
 import com.google.gson.annotations.SerializedName;
@@ -67,28 +69,32 @@ public class Sensor extends AbstractComponent<Sensor.ChannelConfiguration> {
         protected @Nullable List<String> jsonAttributes;
     }
 
-    public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Sensor(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
 
         Value value;
         String uom = channelConfiguration.unitOfMeasurement;
         String sc = channelConfiguration.stateClass;
+        ChannelTypeUID type;
 
         if (uom != null && !uom.isBlank()) {
             value = new NumberValue(null, null, null, UnitUtils.parseUnit(uom));
+            type = MqttBindingConstants.CHANNEL_TYPE_UID_NUMBER;
         } else if (sc != null && !sc.isBlank()) {
             // see state_class at https://developers.home-assistant.io/docs/core/entity/sensor#properties
             // > If not None, the sensor is assumed to be numerical
             value = new NumberValue(null, null, null, null);
+            type = MqttBindingConstants.CHANNEL_TYPE_UID_NUMBER;
         } else {
             value = new TextValue();
+            type = MqttBindingConstants.CHANNEL_TYPE_UID_STRING;
         }
 
         String icon = channelConfiguration.getIcon();
 
         boolean trigger = TRIGGER_ICONS.matcher(icon).matches();
 
-        buildChannel(SENSOR_CHANNEL_ID, value, getName(), getListener(componentConfiguration, value))
+        buildChannel(SENSOR_CHANNEL_ID, type, value, getName(), getListener(componentConfiguration, value))
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
                 .trigger(trigger).build();
     }

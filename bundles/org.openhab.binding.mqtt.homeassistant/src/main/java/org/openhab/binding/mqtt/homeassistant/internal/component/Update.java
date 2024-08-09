@@ -20,6 +20,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -142,14 +143,15 @@ public class Update extends AbstractComponent<Update.ChannelConfiguration> imple
     private ReleaseState state = new ReleaseState();
     private @Nullable ReleaseStateListener listener = null;
 
-    public Update(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Update(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         TextValue value = new TextValue();
         String commandTopic = channelConfiguration.commandTopic;
         String payloadInstall = channelConfiguration.payloadInstall;
 
-        var builder = buildChannel(UPDATE_CHANNEL_ID, value, getName(), this);
+        var builder = buildChannel(UPDATE_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_STRING, value, getName(),
+                this);
         if (channelConfiguration.stateTopic != null) {
             builder.stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate());
         }
@@ -162,7 +164,8 @@ public class Update extends AbstractComponent<Update.ChannelConfiguration> imple
 
         if (channelConfiguration.latestVersionTopic != null) {
             value = new TextValue();
-            latestVersionChannel = buildChannel(LATEST_VERSION_CHANNEL_ID, value, getName(), this)
+            latestVersionChannel = buildChannel(LATEST_VERSION_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_STRING,
+                    value, getName(), this)
                     .stateTopic(channelConfiguration.latestVersionTopic, channelConfiguration.latestVersionTemplate)
                     .build(false);
         }

@@ -245,21 +245,22 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
 
     protected final ChannelStateUpdateListener channelStateUpdateListener;
 
-    public static Light create(ComponentFactory.ComponentConfiguration builder) throws UnsupportedComponentException {
+    public static Light create(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels)
+            throws UnsupportedComponentException {
         String schema = builder.getConfig(ChannelConfiguration.class).schema;
         switch (schema) {
             case DEFAULT_SCHEMA:
-                return new DefaultSchemaLight(builder);
+                return new DefaultSchemaLight(builder, newStyleChannels);
             case JSON_SCHEMA:
-                return new JSONSchemaLight(builder);
+                return new JSONSchemaLight(builder, newStyleChannels);
             default:
                 throw new UnsupportedComponentException(
                         "Component '" + builder.getHaID() + "' of schema '" + schema + "' is not supported!");
         }
     }
 
-    protected Light(ComponentFactory.ComponentConfiguration builder) {
-        super(builder, ChannelConfiguration.class);
+    protected Light(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
+        super(builder, ChannelConfiguration.class, newStyleChannels);
         this.channelStateUpdateListener = builder.getUpdateListener();
 
         @Nullable

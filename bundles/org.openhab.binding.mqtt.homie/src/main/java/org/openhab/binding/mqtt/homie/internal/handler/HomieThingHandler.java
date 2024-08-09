@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.homie.internal.handler;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -140,6 +142,8 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         if (config.removetopics) {
             this.removeRetainedTopics();
         }
+        channelTypeProvider.removeThingType(thing.getThingTypeUID());
+        channelTypeProvider.removeChannelGroupTypesForPrefix(thing.getThingTypeUID().getId());
         super.handleRemoval();
     }
 
@@ -169,7 +173,6 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
         }
         delayedProcessing.join();
         device.stop();
-        channelTypeProvider.removeThingType(device.thingTypeUID);
         super.stop();
     }
 
@@ -216,7 +219,6 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
 
     @Override
     public void nodeRemoved(Node node) {
-        channelTypeProvider.removeChannelGroupType(node.channelGroupTypeUID);
         delayedProcessing.accept(node);
     }
 
@@ -228,7 +230,6 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
 
     @Override
     public void nodeAddedOrChanged(Node node) {
-        channelTypeProvider.setChannelGroupType(node.channelGroupTypeUID, node.type());
         delayedProcessing.accept(node);
     }
 
@@ -288,27 +289,42 @@ public class HomieThingHandler extends AbstractMQTTThingHandler implements Devic
     private void updateThingType() {
         // Make sure any dynamic channel types exist (i.e. ones created for a number channel with a specific dimension)
         device.nodes.stream().flatMap(n -> n.properties.stream()).map(Property::getChannelType).filter(Objects::nonNull)
-                .forEach(ct -> channelTypeProvider.setChannelType(ct.getUID(), ct));
+                .forEach(ct -> channelTypeProvider.putChannelType(Objects.requireNonNull(ct)));
 
         // if this is a dynamic type, then we update the type
         ThingTypeUID typeID = device.thingTypeUID;
         if (!MqttBindingConstants.HOMIE300_MQTT_THING.equals(typeID)) {
-            device.nodes.stream()
-                    .forEach(n -> channelTypeProvider.setChannelGroupType(n.channelGroupTypeUID, n.type()));
+            channelTypeProvider.updateChannelGroupTypesForPrefix(thing.getThingTypeUID().getId(), device.nodes.stream()
+                    .map(n -> n.type(thing.getThingTypeUID().getId(), channelTypeProvider)).toList());
 
-            List<ChannelGroupDefinition> groupDefs = device.nodes().stream().map(Node::getChannelGroupDefinition)
-                    .collect(Collectors.toList());
+            List<ChannelGroupDefinition> groupDefs = device.nodes.stream(nodeOrder())
+                    .map(n -> n.getChannelGroupDefinition(thing.getThingTypeUID().getId())).toList();
             var builder = channelTypeProvider.derive(typeID, MqttBindingConstants.HOMIE300_MQTT_THING)
                     .withChannelGroupDefinitions(groupDefs);
-            ThingType thingType = builder.build();
 
-            channelTypeProvider.setThingType(typeID, thingType);
+            channelTypeProvider.putThingType(builder.build());
         }
     }
 
     private void updateChannels() {
-        List<Channel> channels = device.nodes().stream().flatMap(n -> n.properties.stream())
-                .map(p -> p.getChannel(channelTypeRegistry)).collect(Collectors.toList());
+        List<Channel> channels = device.nodes.stream(nodeOrder())
+                .flatMap(node -> node.properties
+                        .stream(node.propertyOrder(thing.getThingTypeUID().getId(), channelTypeProvider))
+                        .map(p -> p.getChannel(channelTypeRegistry)))
+                .toList();
         updateThing(editThing().withChannels(channels).build());
+    }
+
+    private Collection<String> nodeOrder() {
+        String[] nodes = device.attributes.nodes;
+        if (nodes != null) {
+            return Stream.of(nodes).toList();
+        }
+        ThingType thingType = channelTypeProvider.getThingType(thing.getThingTypeUID(), null);
+        if (thingType != null) {
+            return thingType.getChannelGroupDefinitions().stream().map(ChannelGroupDefinition::getId).toList();
+        }
+
+        return device.nodes.keySet();
     }
 }

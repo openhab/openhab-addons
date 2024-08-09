@@ -35,12 +35,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.handler.BrokerHandler;
+import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.io.transport.mqtt.MqttMessageSubscriber;
 import org.openhab.core.test.java.JavaTest;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -50,6 +53,8 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.builder.BridgeBuilder;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.transform.jinja.internal.JinjaTransformationService;
@@ -72,17 +77,20 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
     public static final String BRIDGE_ID = UUID.randomUUID().toString();
     public static final ThingUID BRIDGE_UID = new ThingUID(BRIDGE_TYPE_UID, BRIDGE_ID);
 
-    public static final String HA_TYPE_ID = "homeassistant";
-    public static final String HA_TYPE_LABEL = "Homeassistant";
-    public static final ThingTypeUID HA_TYPE_UID = new ThingTypeUID(BINDING_ID, HA_TYPE_ID);
+    public static final String HA_TYPE_LABEL = "Home Assistant Thing";
+    public static final ThingTypeUID HA_TYPE_UID = new ThingTypeUID(BINDING_ID, "homeassistant_dynamic_type");
     public static final String HA_ID = UUID.randomUUID().toString();
-    public static final ThingUID HA_UID = new ThingUID(HA_TYPE_UID, HA_ID);
+    public static final ThingUID HA_UID = new ThingUID(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, HA_ID);
+    public static final ThingType HA_THING_TYPE = ThingTypeBuilder
+            .instance(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, HA_TYPE_LABEL).build();
 
     protected @Mock @NonNullByDefault({}) MqttBrokerConnection bridgeConnection;
     protected @Mock @NonNullByDefault({}) ThingTypeRegistry thingTypeRegistry;
     protected @Mock @NonNullByDefault({}) TransformationServiceProvider transformationServiceProvider;
 
     protected @NonNullByDefault({}) MqttChannelTypeProvider channelTypeProvider;
+    protected @NonNullByDefault({}) MqttChannelStateDescriptionProvider stateDescriptionProvider;
+    protected @NonNullByDefault({}) ChannelTypeRegistry channelTypeRegistry;
 
     protected final Bridge bridgeThing = BridgeBuilder.create(BRIDGE_TYPE_UID, BRIDGE_UID).build();
     protected final BrokerHandler bridgeHandler = spy(new BrokerHandler(bridgeThing));
@@ -95,13 +103,14 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
     public void beforeEachAbstractHomeAssistantTests() {
         when(thingTypeRegistry.getThingType(BRIDGE_TYPE_UID))
                 .thenReturn(ThingTypeBuilder.instance(BRIDGE_TYPE_UID, BRIDGE_TYPE_LABEL).build());
-        when(thingTypeRegistry.getThingType(HA_TYPE_UID))
-                .thenReturn(ThingTypeBuilder.instance(HA_TYPE_UID, HA_TYPE_LABEL).build());
+        when(thingTypeRegistry.getThingType(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)).thenReturn(HA_THING_TYPE);
         when(transformationServiceProvider
                 .getTransformationService(JinjaTransformationProfile.PROFILE_TYPE_UID.getId()))
                 .thenReturn(jinjaTransformationService);
 
-        channelTypeProvider = spy(new MqttChannelTypeProvider(thingTypeRegistry));
+        channelTypeProvider = spy(new MqttChannelTypeProvider(thingTypeRegistry, new VolatileStorageService()));
+        stateDescriptionProvider = spy(new MqttChannelStateDescriptionProvider());
+        channelTypeRegistry = spy(new ChannelTypeRegistry());
 
         setupConnection();
 

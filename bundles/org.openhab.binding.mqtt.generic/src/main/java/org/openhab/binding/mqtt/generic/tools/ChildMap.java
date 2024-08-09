@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.mqtt.generic.tools;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
@@ -62,6 +65,24 @@ public class ChildMap<T> {
 
     public Stream<T> stream() {
         return map.values().stream();
+    }
+
+    /**
+     * Streams the objects in this map in the order of the given keys.
+     * 
+     * Extraneous keys are ignored, and missing keys are included at the end in unspecified order.
+     * 
+     * @param order The keys in the order they should be streamed
+     */
+    public Stream<T> stream(Collection<String> order) {
+        // need to make a copy to avoid editing `map` itself
+        Set<String> missingKeys = new HashSet<>(map.keySet());
+        missingKeys.removeAll(order);
+        Stream<T> result = order.stream().map(k -> map.get(k)).filter(Objects::nonNull).map(Objects::requireNonNull);
+        if (!missingKeys.isEmpty()) {
+            result = Stream.concat(result, missingKeys.stream().map(k -> map.get(k)).map(Objects::requireNonNull));
+        }
+        return result;
     }
 
     /**
@@ -133,5 +154,9 @@ public class ChildMap<T> {
      */
     public void put(String key, T value) {
         map.put(key, value);
+    }
+
+    public Set<String> keySet() {
+        return map.keySet();
     }
 }

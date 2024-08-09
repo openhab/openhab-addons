@@ -14,6 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -31,11 +32,12 @@ abstract class AbstractRawSchemaLight extends Light {
 
     protected ComponentChannel rawChannel;
 
-    public AbstractRawSchemaLight(ComponentFactory.ComponentConfiguration builder) {
-        super(builder);
-        hiddenChannels.add(rawChannel = buildChannel(RAW_CHANNEL_ID, new TextValue(), "Raw state", this)
-                .stateTopic(channelConfiguration.stateTopic).commandTopic(channelConfiguration.commandTopic,
-                        channelConfiguration.isRetain(), channelConfiguration.getQos())
+    public AbstractRawSchemaLight(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
+        super(builder, newStyleChannels);
+        hiddenChannels.add(rawChannel = buildChannel(RAW_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_STRING,
+                new TextValue(), "Raw state", this).stateTopic(channelConfiguration.stateTopic)
+                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
+                        channelConfiguration.getQos())
                 .build(false));
     }
 
