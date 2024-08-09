@@ -594,14 +594,16 @@ public class ShellyComponents {
                 // On a status update we map a dimmer.ison = false to brightness 0 rather than the device's brightness
                 // and send an OFF status to the same channel.
                 // When the device's brightness is > 0 we send the new value to the channel and an ON command
-                if (dimmer.ison) {
-                    updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
-                    updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
-                            toQuantityType((double) getInteger(dimmer.brightness), DIGITS_NONE, Units.PERCENT));
-                } else {
-                    updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.OFF);
-                    updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
-                            toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
+                if (dimmer.ison != null) {
+                    if (dimmer.ison) {
+                        updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.ON);
+                        updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
+                                toQuantityType((double) getInteger(dimmer.brightness), DIGITS_NONE, Units.PERCENT));
+                    } else {
+                        updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Switch", OnOffType.OFF);
+                        updated |= thingHandler.updateChannel(groupName, CHANNEL_BRIGHTNESS + "$Value",
+                                toQuantityType(0.0, DIGITS_NONE, Units.PERCENT));
+                    }
                 }
 
                 if (profile.settings.dimmers != null) {

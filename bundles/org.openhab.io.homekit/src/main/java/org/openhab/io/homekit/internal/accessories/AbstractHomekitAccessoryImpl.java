@@ -372,19 +372,19 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
     }
 
     @NonNullByDefault
-    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(
             HomekitCharacteristicType characteristicType, Class<T> klazz) {
         return createMapping(characteristicType, klazz, null, false);
     }
 
     @NonNullByDefault
-    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(
             HomekitCharacteristicType characteristicType, Class<T> klazz, boolean inverted) {
         return createMapping(characteristicType, klazz, null, inverted);
     }
 
     @NonNullByDefault
-    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(
             HomekitCharacteristicType characteristicType, Class<T> klazz, @Nullable List<T> customEnumList) {
         return createMapping(characteristicType, klazz, customEnumList, false);
     }
@@ -398,7 +398,7 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @return mapping of enum values to custom string values
      */
     @NonNullByDefault
-    protected <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(
+    protected <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(
             HomekitCharacteristicType characteristicType, Class<T> klazz, @Nullable List<T> customEnumList,
             boolean inverted) {
         HomekitTaggedItem item = getCharacteristic(characteristicType).get();
@@ -416,11 +416,12 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
      * @return key for the value
      */
     @NonNullByDefault
-    public <T> T getKeyFromMapping(HomekitCharacteristicType characteristicType, Map<T, String> mapping,
+    public <T> T getKeyFromMapping(HomekitCharacteristicType characteristicType, Map<T, Object> mapping,
             T defaultValue) {
         final Optional<HomekitTaggedItem> c = getCharacteristic(characteristicType);
         if (c.isPresent()) {
-            return HomekitCharacteristicFactory.getKeyFromMapping(c.get(), mapping, defaultValue);
+            return HomekitCharacteristicFactory.getKeyFromMapping(c.get(), c.get().getItem().getState(), mapping,
+                    defaultValue);
         }
         return defaultValue;
     }
@@ -450,6 +451,10 @@ public abstract class AbstractHomekitAccessoryImpl implements HomekitAccessory {
             return;
         }
         rawCharacteristics.put(characteristic.getClass(), characteristic);
+        // belongs on the accessory information service
+        if (characteristic.getClass() == NameCharacteristic.class) {
+            return;
+        }
         var service = getPrimaryService();
         if (service != null) {
             // find the corresponding add method at service and call it.

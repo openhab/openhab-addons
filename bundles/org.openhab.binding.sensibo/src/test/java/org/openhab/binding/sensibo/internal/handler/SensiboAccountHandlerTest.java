@@ -89,14 +89,9 @@ public class SensiboAccountHandlerTest {
         // Setup initial response
         final String getPodsResponse = new String(getClass().getResourceAsStream(podsResponse).readAllBytes(),
                 StandardCharsets.UTF_8);
-        stubFor(get(urlEqualTo("/api/v2/users/me/pods?apiKey=APIKEY"))
+        stubFor(get(urlEqualTo("/api/v2/users/me/pods?fields=*&apiKey=APIKEY"))
+                .withHeader("Accept-Encoding", equalTo("gzip"))
                 .willReturn(aResponse().withStatus(200).withBody(getPodsResponse)));
-
-        // Setup 2nd response with details
-        final String getPodDetailsResponse = new String(
-                getClass().getResourceAsStream(podDetailsResponse).readAllBytes(), StandardCharsets.UTF_8);
-        stubFor(get(urlEqualTo("/api/v2/pods/PODID?apiKey=APIKEY&fields=*"))
-                .willReturn(aResponse().withStatus(200).withBody(getPodDetailsResponse)));
 
         when(sensiboAccountMock.getConfiguration()).thenReturn(configuration);
         when(sensiboAccountMock.getUID()).thenReturn(new ThingUID("sensibo:account:thinguid"));

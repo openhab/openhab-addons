@@ -46,9 +46,8 @@ import io.github.hapjava.services.impl.ServiceLabelService;
  */
 @NonNullByDefault({})
 public class HomekitIrrigationSystemImpl extends AbstractHomekitAccessoryImpl implements IrrigationSystemAccessory {
-    private Map<InUseEnum, String> inUseMapping;
-    private Map<ProgramModeEnum, String> programModeMap;
-    private static final String SERVICE_LABEL = "ServiceLabel";
+    private Map<InUseEnum, Object> inUseMapping;
+    private Map<ProgramModeEnum, Object> programModeMap;
 
     public HomekitIrrigationSystemImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
@@ -64,17 +63,9 @@ public class HomekitIrrigationSystemImpl extends AbstractHomekitAccessoryImpl im
     public void init() throws HomekitException {
         super.init();
 
-        String serviceLabelNamespaceConfig = getAccessoryConfiguration(SERVICE_LABEL, "ARABIC_NUMERALS");
-        ServiceLabelNamespaceEnum serviceLabelEnum;
-
-        try {
-            serviceLabelEnum = ServiceLabelNamespaceEnum.valueOf(serviceLabelNamespaceConfig.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            serviceLabelEnum = ServiceLabelNamespaceEnum.ARABIC_NUMERALS;
-        }
-        final var finalEnum = serviceLabelEnum;
-        var serviceLabelNamespace = getCharacteristic(ServiceLabelNamespaceCharacteristic.class).orElseGet(
-                () -> new ServiceLabelNamespaceCharacteristic(() -> CompletableFuture.completedFuture(finalEnum)));
+        var serviceLabelNamespace = getCharacteristic(ServiceLabelNamespaceCharacteristic.class)
+                .orElseGet(() -> new ServiceLabelNamespaceCharacteristic(
+                        () -> CompletableFuture.completedFuture(ServiceLabelNamespaceEnum.ARABIC_NUMERALS)));
         addService(new ServiceLabelService(serviceLabelNamespace));
     }
 

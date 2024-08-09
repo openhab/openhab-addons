@@ -85,14 +85,12 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
 
     private void initializeOnceBridgeOnline(FreeboxOsHandler bridgeHandler) {
         Map<String, String> properties = editProperties();
-        if (properties.isEmpty()) {
-            try {
-                initializeProperties(properties);
-                checkAirMediaCapabilities(properties);
-                updateProperties(properties);
-            } catch (FreeboxException e) {
-                logger.warn("Error getting thing {} properties: {}", thing.getUID(), e.getMessage());
-            }
+        try {
+            initializeProperties(properties);
+            checkAirMediaCapabilities(properties);
+            updateProperties(properties);
+        } catch (FreeboxException e) {
+            logger.warn("Error getting thing {} properties: {}", thing.getUID(), e.getMessage());
         }
 
         boolean isAudioReceiver = Boolean.parseBoolean(properties.get(MediaType.AUDIO.name()));
@@ -151,7 +149,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
         try {
             if (checkBridgeHandler() != null) {
                 if (command instanceof RefreshType) {
-                    internalPoll();
+                    internalForcePoll();
                 } else if (!internalHandleCommand(channelUID.getIdWithoutGroup(), command)) {
                     logger.debug("Unexpected command {} on channel {}", command, channelUID.getId());
                 }
@@ -257,6 +255,10 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
     }
 
     protected abstract void internalPoll() throws FreeboxException;
+
+    protected void internalForcePoll() throws FreeboxException {
+        internalPoll();
+    }
 
     private void updateIfActive(String group, String channelId, State state) {
         ChannelUID id = new ChannelUID(getThing().getUID(), group, channelId);

@@ -461,6 +461,26 @@
 		<config-description-ref uri="thing-type:boschshc:device"/>
 	</thing-type>
 
+	<thing-type id="relay">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="shc"/>
+		</supported-bridge-type-refs>
+
+		<label>Relay</label>
+		<description>The smart switching relay is your universal all-rounder for smart switching.</description>
+
+		<channels>
+			<channel id="signal-strength" typeId="system.signal-strength"/>
+			<channel id="child-protection" typeId="child-protection"/>
+			<channel id="power-switch" typeId="system.power"/>
+			<channel id="impulse-switch" typeId="impulse-switch"/>
+			<channel id="impulse-length" typeId="impulse-length"/>
+			<channel id="instant-of-last-impulse" typeId="instant-of-last-impulse"/>
+		</channels>
+
+		<config-description-ref uri="thing-type:boschshc:device"/>
+	</thing-type>
+
 	<!-- Channels -->
 
 	<channel-type id="system-availability">
@@ -843,6 +863,28 @@
 			<tag>Alarm</tag>
 			<tag>Tilt</tag>
 		</tags>
+	</channel-type>
+
+	<channel-type id="impulse-switch">
+		<item-type>Switch</item-type>
+		<label>Impulse Switch</label>
+		<description>Channel to send impulses by means of `ON` events. After the time specified by impulse-length, the relay
+			will switch off automatically and the state will be reset to `OFF`.</description>
+	</channel-type>
+
+	<channel-type id="impulse-length">
+		<item-type unitHint="ds">Number:Time</item-type>
+		<label>Impulse Length</label>
+		<description>Channel to configure how long the relay will stay on after receiving an impulse switch event. The time is
+			specified in tenth seconds (deciseconds), e.g. 15 means 1.5 seconds.</description>
+	</channel-type>
+
+	<channel-type id="instant-of-last-impulse">
+		<item-type>DateTime</item-type>
+		<label>Instant of Last Impulse</label>
+		<description>Timestamp indicating when the last impulse was triggered.</description>
+		<category>Time</category>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

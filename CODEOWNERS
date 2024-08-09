@@ -163,7 +163,7 @@
 /bundles/org.openhab.binding.icalendar/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.icloud/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.ihc/ @paulianttila
-/bundles/org.openhab.binding.insteon/ @robnielsen
+/bundles/org.openhab.binding.insteon/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.intesis/ @hmerk
 /bundles/org.openhab.binding.iotawatt/ @PRosenb
 /bundles/org.openhab.binding.ipcamera/ @Skinah
@@ -344,6 +344,7 @@
 /bundles/org.openhab.binding.solaredge/ @alexf2015
 /bundles/org.openhab.binding.solarforecast/ @weymann
 /bundles/org.openhab.binding.solarlog/ @johannrichard
+/bundles/org.openhab.binding.solarman/ @catalinsanda
 /bundles/org.openhab.binding.solarmax/ @jamietownsend
 /bundles/org.openhab.binding.solarwatt/ @sven-carstens
 /bundles/org.openhab.binding.solax/ @theater

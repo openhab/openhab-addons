@@ -18,6 +18,10 @@ The `prices` Thing provides todays and (after 14:00) tomorrows net and gross pri
 
 The `bestprice` Thing identifies the hours with the cheapest prices based on the given parameters.
 
+Note: The Thing will schedule updates of the aWATTar API at 15:00, 18:00 and 21:00.
+If late updates occur, e.g. after 21:00, there is a chance that consecutive best prices will be rescheduled.
+As a consequence, a time schedule spanning over an update slot might be interrupted and rescheduled.
+
 ## Discovery
 
 Auto discovery is not supported.
@@ -55,6 +59,17 @@ So for a bestprice thing with `[ rangeStart=5, rangeDuration=5  ]` all channels 
 Also, due to the time the aWATTar API delivers the data for the next day, it doesn't make sense to define a thing with `[ rangeStart=12, rangeDuration=20 ]` as the binding will be able to compute the channels only after 14:00.
 
 ## Channels
+
+### Bridge
+
+The bridge has two channels which support a time-series:
+
+| channel      | type               | description                                                                                                                             |
+| ------------ |--------------------| --------------------------------------------------------------------------------------------------------------------------------------- |
+| market-net   | Number:EnergyPrice | This net market price per kWh. This is directly taken from the price the aWATTar API delivers.                                          |
+| total-net    | Number:EnergyPrice | Sum of net market price and configured base price                                                                                       |
+
+If you need gross prices, please use the [VAT profile](https://www.openhab.org/addons/transformations/vat/).
 
 ### Prices Thing
 

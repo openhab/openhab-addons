@@ -18,6 +18,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,6 +29,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
@@ -36,6 +38,7 @@ import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchState;
 import org.openhab.binding.boschshc.internal.services.powerswitch.dto.PowerSwitchServiceState;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.RefreshType;
@@ -58,13 +61,14 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
 
     @BeforeEach
     @Override
-    public void beforeEach() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    public void beforeEach(TestInfo testInfo)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         PowerSwitchServiceState powerSwitchServiceState = new PowerSwitchServiceState();
         powerSwitchServiceState.switchState = PowerSwitchState.ON;
-        when(getBridgeHandler().getState(anyString(), eq("PowerSwitch"), same(PowerSwitchServiceState.class)))
+        lenient().when(getBridgeHandler().getState(anyString(), eq("PowerSwitch"), same(PowerSwitchServiceState.class)))
                 .thenReturn(powerSwitchServiceState);
 
-        super.beforeEach();
+        super.beforeEach(testInfo);
     }
 
     @Test
@@ -90,7 +94,7 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
 
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.ON);
 
-        verify(getCallback()).statusUpdated(same(getThing()),
+        verify(getCallback()).statusUpdated(any(Thing.class),
                 argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
                         && status.getStatusDetail().equals(ThingStatusDetail.COMMUNICATION_ERROR)));
     }
@@ -132,7 +136,7 @@ public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwit
 
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), RefreshType.REFRESH);
 
-        verify(getCallback()).statusUpdated(same(getThing()),
+        verify(getCallback()).statusUpdated(any(Thing.class),
                 argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
                         && status.getStatusDetail().equals(ThingStatusDetail.COMMUNICATION_ERROR)));
     }

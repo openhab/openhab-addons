@@ -198,12 +198,13 @@ public class ShellyDeviceProfile {
         }
 
         isBlu = isBluSeries(thingType); // e.g. SBBT for BLU Button
-        isGen2 = isGeneration2(thingType) || isBlu;
+        isGen2 = isGeneration2(thingType);
 
         String type = getString(device.type);
         isDimmer = type.equalsIgnoreCase(SHELLYDT_DIMMER) || type.equalsIgnoreCase(SHELLYDT_DIMMER2)
                 || type.equalsIgnoreCase(SHELLYDT_PLUSDIMMERUS)
-                || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMERUS_STR);
+                || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMERUS_STR)
+                || thingType.equalsIgnoreCase(THING_TYPE_SHELLYPLUSDIMMER10V_STR);
         isBulb = thingType.equals(THING_TYPE_SHELLYBULB_STR);
         isDuo = thingType.equals(THING_TYPE_SHELLYDUO_STR) || thingType.equals(THING_TYPE_SHELLYVINTAGE_STR)
                 || thingType.equals(THING_TYPE_SHELLYDUORGBW_STR);
@@ -331,7 +332,7 @@ public class ShellyDeviceProfile {
         } else if (isDimmer) {
             if (settings.dimmers != null) {
                 ShellySettingsDimmer dimmer = settings.dimmers.get(0);
-                btnType = dimmer.btnType;
+                btnType = getString(dimmer.btnType);
             }
         } else if (settings.relays != null) {
             if (numRelays == 1) {
@@ -349,7 +350,7 @@ public class ShellyDeviceProfile {
             }
         } else if (isRGBW2 && (settings.lights != null) && (idx < settings.lights.size())) {
             ShellySettingsRgbwLight light = settings.lights.get(idx);
-            btnType = light.btnType;
+            btnType = getString(light.btnType);
         }
 
         return btnType.equalsIgnoreCase(SHELLY_BTNT_MOMENTARY) || btnType.equalsIgnoreCase(SHELLY_BTNT_MOM_ON_RELEASE)
@@ -407,7 +408,7 @@ public class ShellyDeviceProfile {
     public static boolean isGeneration2(String thingType) {
         return thingType.startsWith("shellyplus") || thingType.startsWith("shellypro") || thingType.contains("mini")
                 || thingType.startsWith("shellywall") || (thingType.startsWith("shelly") && thingType.contains("g3"))
-                || isBluSeries(thingType);
+                || isBluSeries(thingType) || thingType.startsWith(THING_TYPE_SHELLYBLUGW_STR);
     }
 
     public static boolean isBluSeries(String thingType) {

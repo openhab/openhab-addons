@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solax"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="local-connect-charger">
+
+		<label>Local Connect Charger</label>
+		<description>The charger representation that supports local connections via HTTP</description>
+
+		<channels>
+			<channel id="eq-single-session" typeId="system.electric-energy">
+				<label>Energy This Session</label>
+				<description>The energy charged for the current session</description>
+			</channel>
+			<channel id="eq-total" typeId="system.electric-energy">
+				<label>Total Energy Charged</label>
+				<description>The total energy charged for all sessions</description>
+			</channel>
+			<channel id="charger-output-power-phase1" typeId="system.electric-power">
+				<label>Output Power Phase1</label>
+				<description>Power to/from the charger phase 1</description>
+			</channel>
+			<channel id="charger-output-power-phase2" typeId="system.electric-power">
+				<label>Output Power Phase2</label>
+				<description>Power to/from the charger phase 2</description>
+			</channel>
+			<channel id="charger-output-power-phase3" typeId="system.electric-power">
+				<label>Output Power Phase3</label>
+				<description>Power to/from the charger phase 3</description>
+			</channel>
+			<channel id="charger-total-output-power" typeId="system.electric-power">
+				<label>Output Total Power</label>
+				<description>Power from the charger on all phases</description>
+			</channel>
+			<channel id="charger-current-phase1" typeId="system.electric-current">
+				<label>Output Current Phase1</label>
+				<description>Current from the charger phase 1</description>
+			</channel>
+			<channel id="charger-current-phase2" typeId="system.electric-current">
+				<label>Output Current Phase2</label>
+				<description>Current from the charger phase 2</description>
+			</channel>
+			<channel id="charger-current-phase3" typeId="system.electric-current">
+				<label>Output Current Phase3</label>
+				<description>Current from the charger phase 3</description>
+			</channel>
+			<channel id="charger-voltage-phase1" typeId="system.electric-voltage">
+				<label>Voltage Phase1</label>
+				<description>Voltage of the charger's phase 1</description>
+			</channel>
+			<channel id="charger-voltage-phase2" typeId="system.electric-voltage">
+				<label>Voltage Phase2</label>
+				<description>Voltage of the charger's phase 2</description>
+			</channel>
+			<channel id="charger-voltage-phase3" typeId="system.electric-voltage">
+				<label>Voltage Phase3</label>
+				<description>Voltage of the charger's phase 3</description>
+			</channel>
+
+			<channel id="charger-external-current-phase1" typeId="system.electric-current">
+				<label>External Current Phase1</label>
+				<description>Current from the provider phase 1</description>
+			</channel>
+			<channel id="charger-external-current-phase2" typeId="system.electric-current">
+				<label>External Current Phase2</label>
+				<description>Current from the provider phase 2</description>
+			</channel>
+			<channel id="charger-external-current-phase3" typeId="system.electric-current">
+				<label>External Current Phase3</label>
+				<description>Current from the provider phase 3</description>
+			</channel>
+			<channel id="charger-external-power-phase1" typeId="system.electric-power">
+				<label>External Power Phase1</label>
+				<description>Power from the provider phase 1</description>
+			</channel>
+			<channel id="charger-external-power-phase2" typeId="system.electric-power">
+				<label>External Power Phase2</label>
+				<description>Power from the provider phase 2</description>
+			</channel>
+			<channel id="charger-external-power-phase3" typeId="system.electric-power">
+				<label>External Power Phase3</label>
+				<description>Power from the provider phase 3</description>
+			</channel>
+			<channel id="charger-external-total-power" typeId="system.electric-power">
+				<label>External Total Power</label>
+				<description>Total power from the provider</description>
+			</channel>
+
+			<channel id="charger-plug-temperature" typeId="charger-temperature">
+				<label>Plug Temperature</label>
+				<description>Temperature of the charger's plug</description>
+			</channel>
+			<channel id="charger-internal-temperature" typeId="charger-temperature">
+				<label>Internal Temperature</label>
+				<description>Internal temperature on the board of the charger</description>
+			</channel>
+			<channel id="charger-mode" typeId="charger-mode">
+				<label>Workmode</label>
+				<description>Charger Workmode</description>
+			</channel>
+			<channel id="charger-state" typeId="charger-state">
+				<label>State</label>
+				<description>Charger State</description>
+			</channel>
+
+			<channel id="last-update-time" typeId="last-retrieve-time-stamp"/>
+		</channels>
+
+		<config-description>
+			<parameter name="refreshInterval" type="integer" min="1" max="600">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password for accessing the Wi-Fi module (the serial number of the Wi-Fi module)</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="hostname" type="text" required="true">
+				<label>Network Address</label>
+				<description>IP address or the host name of the Wi-Fi module</description>
+				<context>network-address</context>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

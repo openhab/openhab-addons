@@ -231,7 +231,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         if (!status.isEmpty()) {
-            setThingOffline(errorCode, status, e.toString());
+            setThingOfflineAndDisconnect(errorCode, status, e.toString());
         } else {
             logger.debug("{}: Unable to initialize: {}, retrying later", thingName, e.toString());
         }
@@ -299,13 +299,17 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 thingName, getThing().getLabel(), thingType, config.deviceAddress.toUpperCase(), gen2, profile.isBlu,
                 profile.alwaysOn, profile.hasBattery, config.eventsCoIoT);
         if (config.deviceAddress.isEmpty()) {
-            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.missing-device-address");
+            setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR,
+                    "config-status.error.missing-device-address");
             return false;
         }
 
         if (profile.alwaysOn || !profile.isInitialized()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                    messages.get("status.unknown.initializing"));
+            ThingStatusDetail detail = getThingStatusDetail();
+            if (detail != ThingStatusDetail.DUTY_CYCLE) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        messages.get("status.config_pending"));
+            }
         }
 
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
@@ -319,7 +323,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         api.initialize();
         ShellySettingsDevice device = profile.device = api.getDeviceInfo();
         if (getBool(device.auth) && config.password.isEmpty()) {
-            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
+            setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
             return false;
         }
         if (config.serviceName.isEmpty()) {
@@ -328,6 +332,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         api.setConfig(thingName, config);
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingType, profile.device);
+        tmpPrf.initFromThingType(thingType);
         String mode = getString(tmpPrf.device.mode);
         if (this.getThing().getThingTypeUID().equals(THING_TYPE_SHELLYPROTECTED)) {
             changeThingType(thingName, mode);
@@ -336,7 +341,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // Validate device mode
         String reqMode = thingType.contains("-") ? substringAfter(thingType, "-") : "";
         if (!reqMode.isEmpty() && !mode.equals(reqMode)) {
-            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-wrong-mode", mode, reqMode);
+            setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-wrong-mode", mode,
+                    reqMode);
             return false;
         }
         if (!getString(tmpPrf.device.coiot).isEmpty()) {
@@ -543,7 +549,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             ThingStatus thingStatus = getThing().getStatus();
             if (refreshSettings || (scheduledUpdates > 0) || (skipUpdate % skipCount == 0)) {
                 if (!profile.isInitialized() || ((thingStatus == ThingStatus.OFFLINE))
-                        || (thingStatus == ThingStatus.UNKNOWN)) {
+                        || (getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_PENDING)) {
                     logger.debug("{}: Status update triggered thing initialization", thingName);
                     initializeThing(); // may fire an exception if initialization failed
                 }
@@ -671,7 +677,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public boolean isThingOnline() {
-        return getThingStatus() == ThingStatus.ONLINE;
+        return getThingStatus() == ThingStatus.ONLINE
+                && getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING;
     }
 
     public boolean isThingOffline() {
@@ -692,13 +699,18 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    public void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments) {
+    public void setThingOfflineAndDisconnect(ThingStatusDetail detail, String messageKey, Object... arguments) {
         if (!isThingOffline()) {
             updateStatus(ThingStatus.OFFLINE, detail, messages.get(messageKey, arguments));
-            api.close(); // Gen2: disconnect WS/close http sessions
-            watchdog = 0;
-            channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
         }
+        api.close(); // Gen2: disconnect WS/close http sessions
+        watchdog = 0;
+        channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
+    }
+
+    @Override
+    public void setThingStatus(ThingStatus status, ThingStatusDetail detail, String messageKey, Object... arguments) {
+        updateStatus(status, detail, messages.get(messageKey, arguments));
     }
 
     @Override
@@ -724,7 +736,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             logger.debug("{}: Handler is shutting down, ignore", thingName);
             return;
         }
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                 messages.get("offline.status-error-restarted"));
         requestUpdates(0, true);
     }
@@ -1025,7 +1037,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         config.localIp = bindingConfig.localIP;
         config.localPort = String.valueOf(bindingConfig.httpPort);
         if (config.localIp.startsWith("169.254")) {
-            setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "config-status.error.network-config",
+            setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR, "config-status.error.network-config",
                     config.localIp);
             return false;
         }
@@ -1159,7 +1171,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             changeThingType(thingTypeUID, getConfig());
         } else {
             logger.debug("{}:  to {}", thingName, thingType);
-            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to change thing type to " + thingType);
+            setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Unable to change thing type to " + thingType);
         }
     }
 
@@ -1481,6 +1494,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Device profile re-initialized (thingType={})", thingName, thingType);
                 }
             }
+        } catch (ShellyApiException | RuntimeException e) {
+            logger.debug("{}: Unable to initialize Device Profile", thingName, e);
         } finally {
             refreshSettings = false;
         }
