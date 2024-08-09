@@ -993,3 +993,10 @@ contact the Salus Team, but the closed-source nature of the API limited assistan
 implementation or channel visibility issues. If you encounter any issues, please report them, and efforts will be made
 to address and resolve them.
 
+## Support ❤️
+
+If you want to support the author of this binding, buy him a coffee:
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/S6S8UBWWY) <a href="https://buycoffee.to/magx2" target="_blank"><img src="https://buycoffee.to/btn/buycoffeeto-btn-primary.svg" alt="Postaw mi kawę na buycoffee.to" width="150"></a>
+
+_Note: this supports the author of this binding, not the authors of OpenHAB_
