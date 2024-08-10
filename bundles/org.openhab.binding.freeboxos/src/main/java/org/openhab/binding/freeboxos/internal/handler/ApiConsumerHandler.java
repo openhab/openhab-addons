@@ -129,7 +129,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
                                 new Hashtable<>());
                 logger.debug("Audio sink registered for {}.", receiver.name());
             } else {
-                logger.info("A password needs to be configured to enable Air Media capability.");
+                logger.warn("A password needs to be configured to enable Air Media capability.");
             }
         }
     }
