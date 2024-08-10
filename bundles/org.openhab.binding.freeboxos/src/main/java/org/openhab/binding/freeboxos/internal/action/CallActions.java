@@ -48,8 +48,8 @@ public class CallActions implements ThingActions {
         return handler;
     }
 
-    @RuleAction(label = "clear call queue", description = "Delete all call logged in the queue")
-    public void reset() {
+    @RuleAction(label = "clear call queue", description = "Deletes all calls logged in the queue")
+    public void resetCalls() {
         logger.debug("Call log clear called");
         CallHandler localHandler = handler;
         if (localHandler != null) {
@@ -57,5 +57,9 @@ public class CallActions implements ThingActions {
         } else {
             logger.warn("Call Action service ThingHandler is null");
         }
+    }
+
+    public static void resetCalls(ThingActions actions) {
+        ((CallActions) actions).resetCalls();
     }
 }

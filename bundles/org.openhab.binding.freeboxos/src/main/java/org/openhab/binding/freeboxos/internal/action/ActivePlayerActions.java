@@ -35,7 +35,7 @@ public class ActivePlayerActions extends PlayerActions {
     private final Logger logger = LoggerFactory.getLogger(ActivePlayerActions.class);
 
     @RuleAction(label = "reboot freebox player", description = "Reboots the Freebox Player")
-    public void reboot() {
+    public void rebootPlayer() {
         logger.debug("Player reboot called");
         PlayerHandler localHandler = this.handler;
         if (localHandler instanceof ActivePlayerHandler apHandler) {
@@ -45,7 +45,7 @@ public class ActivePlayerActions extends PlayerActions {
         }
     }
 
-    public static void reboot(ThingActions actions) {
-        ((ActivePlayerActions) actions).reboot();
+    public static void rebootPlayer(ThingActions actions) {
+        ((ActivePlayerActions) actions).rebootPlayer();
     }
 }

@@ -211,15 +211,15 @@ The following channels are supported:
 
 The following actions are available in rules/scripting:
 
-| Thing Type  | Action Name      | Parameters              | Description                                          | 
-|-------------|------------------|-------------------------|------------------------------------------------------|
-| host        | wol              | None                    | Sends a wake on lan packet to the lan connected host |
-| player      | reboot           | None                    | Reboots the player device                            |
-| player      | sendKey          | key: String             | Send a key (remote emulation) to the player          |
-| player      | sendLongKey      | key: String             | Sends the key emulating a longpress on the button    |
-| player      | sendMultipleKeys | keys: String            | Sends multiple keys to the player, comma separated   |
-| player      | sendKeyRepeat    | key: String, count: int | Sends the key multiple times                         |
-| server      | reboot           | None                    | Reboots the Freebox Server                           |
-| freeplug    | reset            | None                    | Resets the Freeplug                                  |
-| call        | reset            | None                    | Clears the call log queue                            |
-| repeater    | reboot           | None                    | Reboots the Repeater                                 |
+| Thing Type            | Action Name      | Parameters              | Description                                          |
+|-----------------------|------------------|-------------------------|------------------------------------------------------|
+| host, wifihost        | wol              | None                    | Sends a wake on lan packet to the lan connected host |
+| active-player         | rebootPlayer     | None                    | Reboots the Freebox Player                           |
+| active-player, player | sendKey          | key: String             | Sends a key (remote emulation) to the player         |
+| active-player, player | sendLongKey      | key: String             | Sends a key emulating a longpress on the button      |
+| active-player, player | sendMultipleKeys | keys: String            | Sends multiple keys to the player, comma separated   |
+| active-player, player | sendKeyRepeat    | key: String, count: int | Sends a key multiple times                           |
+| delta, revolution     | rebootServer     | None                    | Reboots the Freebox Server                           |
+| freeplug              | resetPlug        | None                    | Resets the Freeplug                                  |
+| call                  | resetCalls       | None                    | Deletes all calls logged in the queue                |
+| repeater              | rebootRepeater   | None                    | Reboots the Free Repeater                            |

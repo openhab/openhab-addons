@@ -92,4 +92,20 @@ public class PlayerActions implements ThingActions {
             logger.warn("Freebox Player Action service ThingHandler is null");
         }
     }
+
+    public static void sendKey(ThingActions actions, String key) {
+        ((PlayerActions) actions).sendKey(key);
+    }
+
+    public static void sendLongKey(ThingActions actions, String key) {
+        ((PlayerActions) actions).sendLongKey(key);
+    }
+
+    public static void sendMultipleKeys(ThingActions actions, String keys) {
+        ((PlayerActions) actions).sendMultipleKeys(keys);
+    }
+
+    public static void sendKeyRepeat(ThingActions actions, String key, int count) {
+        ((PlayerActions) actions).sendKeyRepeat(key, count);
+    }
 }

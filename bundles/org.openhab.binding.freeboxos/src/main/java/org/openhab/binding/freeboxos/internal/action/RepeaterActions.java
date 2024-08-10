@@ -49,7 +49,7 @@ public class RepeaterActions implements ThingActions {
     }
 
     @RuleAction(label = "reboot free repeater", description = "Reboots the Free Repeater")
-    public void reboot() {
+    public void rebootRepeater() {
         logger.debug("Repeater reboot called");
         RepeaterHandler localHandler = this.handler;
         if (localHandler != null) {
@@ -57,5 +57,9 @@ public class RepeaterActions implements ThingActions {
         } else {
             logger.warn("Repeater Action service ThingHandler is null");
         }
+    }
+
+    public static void rebootRepeater(ThingActions actions) {
+        ((RepeaterActions) actions).rebootRepeater();
     }
 }
