@@ -82,7 +82,8 @@ public class ShellyThingTable {
 
     public void startDiscoveryService(BundleContext bundleContext) {
         if (discoveryService == null) {
-            discoveryService = new ShellyBasicDiscoveryService(bundleContext, this);
+            ShellyBasicDiscoveryService discoveryService = this.discoveryService = new ShellyBasicDiscoveryService(
+                    bundleContext, this);
             discoveryService.registerDeviceDiscoveryService();
         }
     }
@@ -94,20 +95,23 @@ public class ShellyThingTable {
     }
 
     public void stopDiscoveryService() {
+        ShellyBasicDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.unregisterDeviceDiscoveryService();
-            discoveryService = null;
+            this.discoveryService = null;
         }
     }
 
     public void discoveredResult(ThingTypeUID uid, String model, String serviceName, String address,
             Map<String, Object> properties) {
+        ShellyBasicDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.discoveredResult(uid, model, serviceName, address, properties);
         }
     }
 
     public void discoveredResult(DiscoveryResult result) {
+        ShellyBasicDiscoveryService discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.discoveredResult(result);
         }
