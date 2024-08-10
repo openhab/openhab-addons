@@ -269,6 +269,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
         logger.debug("{}: Thing config updated, re-initialize", thingName);
+        Shelly1CoapHandler coap = this.coap;
         if (coap != null) {
             coap.stop();
         }
@@ -315,6 +316,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
         // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
         // Action URL does when enabled)
+        Shelly1CoapHandler coap = this.coap;
         if (coap != null && config.eventsCoIoT && !profile.alwaysOn) {
             coap.start(thingName, config);
         }
@@ -453,10 +455,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         id = getNumber(command).intValue();
                     } else {
                         String cmd = command.toString();
+                        List<ShellyThermnostat> thermostats = profile.settings.thermostats;
                         if (isDigit(cmd.charAt(0))) {
                             id = Integer.parseInt(cmd);
-                        } else if (profile.settings.thermostats != null) {
-                            ShellyThermnostat t = profile.settings.thermostats.get(0);
+                        } else if (thermostats != null) {
+                            ShellyThermnostat t = thermostats.get(0);
                             for (int i = 0; i < t.profileNames.length; i++) {
                                 if (t.profileNames[i].equalsIgnoreCase(cmd)) {
                                     id = i + 1;
@@ -1077,35 +1080,30 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private void checkVersion(ShellyDeviceProfile prf, ShellySettingsStatus status) {
-        try {
-            if (prf.fwVersion.isEmpty()) {
-                // no fw version available (e.g. BLU device)
-                return;
+        if (prf.fwVersion.isEmpty()) {
+            // no fw version available (e.g. BLU device)
+            return;
+        }
+        ShellyVersionDTO version = new ShellyVersionDTO();
+        if (version.checkBeta(getString(prf.fwVersion))) {
+            logger.info("{}: {}", prf.device.hostname, messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
+        } else {
+            String minVersion = !gen2 ? SHELLY_API_MIN_FWVERSION : SHELLY2_API_MIN_FWVERSION;
+            if (version.compare(prf.fwVersion, minVersion) < 0) {
+                logger.warn("{}: {}", prf.device.hostname,
+                        messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate, minVersion));
             }
-            ShellyVersionDTO version = new ShellyVersionDTO();
-            if (version.checkBeta(getString(prf.fwVersion))) {
-                logger.info("{}: {}", prf.device.hostname,
-                        messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
-            } else {
-                String minVersion = !gen2 ? SHELLY_API_MIN_FWVERSION : SHELLY2_API_MIN_FWVERSION;
-                if (version.compare(prf.fwVersion, minVersion) < 0) {
-                    logger.warn("{}: {}", prf.device.hostname,
-                            messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate, minVersion));
-                }
+        }
+        if (!gen2 && bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
+                || ("production_test".equalsIgnoreCase(prf.fwVersion))) {
+            if (!config.eventsCoIoT) {
+                logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
             }
-            if (!gen2 && bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
-                    || ("production_test".equalsIgnoreCase(prf.fwVersion))) {
-                if (!config.eventsCoIoT) {
-                    logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
-                }
-                autoCoIoT = true;
-            }
-            if (status.update.hasUpdate && !version.checkBeta(getString(prf.fwVersion))) {
-                logger.info("{}: {}", thingName,
-                        messages.get("versioncheck.update", status.update.oldVersion, status.update.newVersion));
-            }
-        } catch (NullPointerException e) { // could be inconsistant format of beta version
-            logger.debug("{}: {}", thingName, messages.get("versioncheck.failed", prf.fwVersion));
+            autoCoIoT = true;
+        }
+        if (Boolean.TRUE.equals(status.update.hasUpdate) && !version.checkBeta(getString(prf.fwVersion))) {
+            logger.info("{}: {}", thingName,
+                    messages.get("versioncheck.update", status.update.oldVersion, status.update.newVersion));
         }
     }
 
@@ -1148,6 +1146,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.autoCoIoT, autoCoIoT);
+        Shelly1CoapHandler coap = this.coap;
         if (coap != null) {
             coap.start(thingName, config);
         }
