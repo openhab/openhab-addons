@@ -22,6 +22,11 @@
 			<description>An MQTT topic that this thing will send a command to. If not set, this will be a read-only
 				rollershutter.</description>
 		</parameter>
+		<parameter name="stopCommandTopic" type="text">
+			<label>MQTT Stop Command Topic</label>
+			<description>An MQTT topic that this thing will send a STOP command to. If not set, it will send STOP commands to the
+				main commandTopic.</description>
+		</parameter>
 		<parameter name="transformationPattern" type="text" groupName="transformations">
 			<label>Incoming Value Transformations</label>
 			<description><![CDATA[

@@ -92,10 +92,8 @@ public class ShellyApiResult {
             httpReason = contentResponse.getReason();
 
             Request request = contentResponse.getRequest();
-            if (request != null) {
-                url = request.getURI().toString();
-                method = request.getMethod();
-            }
+            url = request.getURI().toString();
+            method = request.getMethod();
         }
     }
 }

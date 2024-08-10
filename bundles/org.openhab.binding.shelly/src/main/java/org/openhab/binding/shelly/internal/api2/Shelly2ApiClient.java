@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -296,9 +297,10 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     private int getRelayIdx(ShellyDeviceProfile profile, @Nullable Integer id) {
-        if (id != null && profile.settings.relays != null) {
+        List<ShellySettingsRelay> relays = profile.settings.relays;
+        if (id != null && relays != null) {
             int idx = 0;
-            for (ShellySettingsRelay relay : profile.settings.relays) {
+            for (ShellySettingsRelay relay : relays) {
                 if (relay.isValid && relay.id != null && relay.id.intValue() == id.intValue()) {
                     return idx;
                 }
@@ -477,7 +479,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     private void fillRollerFavorites(ShellyDeviceProfile profile, Shelly2GetConfigResult dc) {
-        if (dc.sys.uiData.cover != null) {
+        if (dc.sys.uiData.cover != null && !dc.sys.uiData.cover.isEmpty()) {
             String[] favorites = dc.sys.uiData.cover.split(",");
             profile.settings.favorites = new ArrayList<>();
             for (int i = 0; i < favorites.length; i++) {
@@ -561,12 +563,13 @@ public class Shelly2ApiClient extends ShellyHttpClient {
             return;
         }
 
-        if (profile.settings.dimmers != null) {
-            ShellySettingsDimmer ds = profile.settings.dimmers.get(0);
+        List<ShellySettingsDimmer> dimmers = profile.settings.dimmers;
+        if (dimmers != null) {
+            ShellySettingsDimmer ds = dimmers.get(0);
             ds.autoOn = dc.light0.autoOnDelay;
             ds.autoOff = dc.light0.autoOffDelay;
             ds.name = dc.light0.name;
-            profile.settings.dimmers.set(0, ds);
+            dimmers.set(0, ds);
         }
     }
 
@@ -709,21 +712,22 @@ public class Shelly2ApiClient extends ShellyHttpClient {
         }
     }
 
-    protected @Nullable ArrayList<ShellySettingsInput> fillInputSettings(ShellyDeviceProfile profile,
+    protected @Nullable ArrayList<@Nullable ShellySettingsInput> fillInputSettings(ShellyDeviceProfile profile,
             Shelly2GetConfigResult dc) {
         if (dc.input0 == null) {
             return null; // device has no input
         }
 
-        ArrayList<ShellySettingsInput> inputs = new ArrayList<>();
+        ArrayList<@Nullable ShellySettingsInput> inputs = new ArrayList<>();
         addInputSettings(inputs, dc.input0);
         addInputSettings(inputs, dc.input1);
         addInputSettings(inputs, dc.input2);
         addInputSettings(inputs, dc.input3);
+
         return inputs;
     }
 
-    private void addInputSettings(ArrayList<ShellySettingsInput> inputs, @Nullable Shelly2DevConfigInput ic) {
+    private void addInputSettings(List<@Nullable ShellySettingsInput> inputs, @Nullable Shelly2DevConfigInput ic) {
         if (ic == null) {
             return;
         }
@@ -807,6 +811,7 @@ public class Shelly2ApiClient extends ShellyHttpClient {
     }
 
     protected ShellyDeviceProfile getProfile() throws ShellyApiException {
+        ShellyThingInterface thing = this.thing;
         if (thing != null) {
             return thing.getProfile();
         }

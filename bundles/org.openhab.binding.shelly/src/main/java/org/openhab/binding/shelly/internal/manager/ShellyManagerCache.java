@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -23,6 +24,7 @@ import org.eclipse.jdt.annotation.Nullable;
  *
  * @author Markus Michels - Initial contribution
  */
+@NonNullByDefault
 public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
 
     private static final long serialVersionUID = 1L;
@@ -56,8 +58,9 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
             throw new IllegalArgumentException();
         }
         for (K key : m.keySet()) {
+            @Nullable
             V value = m.get(key);
-            if (value != null) { // don't allow null values
+            if (key != null && value != null) { // don't allow null values
                 put(key, value);
             }
         }
@@ -87,7 +90,8 @@ public class ShellyManagerCache<K, V> extends ConcurrentHashMap<K, V> {
         private void cleanMap() {
             long currentTime = new Date().getTime();
             for (K key : timeMap.keySet()) {
-                if (currentTime > (timeMap.get(key) + expiryInMillis)) {
+                Long timeValue = timeMap.get(key);
+                if (key != null && (timeValue == null || currentTime > (timeValue + expiryInMillis))) {
                     remove(key);
                     timeMap.remove(key);
                 }

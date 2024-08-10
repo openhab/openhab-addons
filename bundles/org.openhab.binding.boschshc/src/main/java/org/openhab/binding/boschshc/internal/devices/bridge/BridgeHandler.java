@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -34,6 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.api.Response;
+import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.boschshc.internal.devices.BoschDeviceIdUtils;
@@ -358,7 +358,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             Type collectionType = new TypeToken<ArrayList<Device>>() {
             }.getType();
             List<Device> nullableDevices = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content, collectionType);
-            return Optional.ofNullable(nullableDevices).orElse(Collections.emptyList());
+            return nullableDevices != null ? nullableDevices : Collections.emptyList();
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Request devices failed because of {}!", e.getMessage(), e);
             return Collections.emptyList();
@@ -391,7 +391,7 @@ public class BridgeHandler extends BaseBridgeHandler {
             }.getType();
             List<UserDefinedState> nullableUserStates = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(content,
                     collectionType);
-            return Optional.ofNullable(nullableUserStates).orElse(Collections.emptyList());
+            return nullableUserStates != null ? nullableUserStates : Collections.emptyList();
         } catch (TimeoutException | ExecutionException e) {
             logger.debug("Request user-defined states failed because of {}!", e.getMessage(), e);
             return List.of();
@@ -873,19 +873,47 @@ public class BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
-     * Sends a state change for a device to the controller
+     * Sends a state change for a device to the controller using a HTTP <code>PUT</code> request.
      *
-     * @param deviceId Id of device to change state for
-     * @param serviceName Name of service of device to change state for
-     * @param state New state data to set for service
+     * @param <T> type of the state object
+     * 
+     * @param deviceId the ID of the device for which the state should be updated
+     * @param serviceName the name of the service for which the state should be updated
+     * @param state object representing the new state data
      *
-     * @return Response of request
+     * @return the HTTP response of the Bosch Smart Home Controller
+     * 
      * @throws InterruptedException
      * @throws ExecutionException
      * @throws TimeoutException
      */
     public <T extends BoschSHCServiceState> @Nullable Response putState(String deviceId, String serviceName, T state)
             throws InterruptedException, TimeoutException, ExecutionException {
+        return sendState(deviceId, serviceName, state, PUT);
+    }
+
+    /**
+     * Sends a state change for a device to the controller using a HTTP <code>POST</code> request.
+     * 
+     * @param <T> type of the state object
+     * 
+     * @param deviceId the ID of the device for which the state should be updated
+     * @param serviceName the name of the service for which the state should be updated
+     * @param state object representing the new state data
+     * 
+     * @return the HTTP response of the Bosch Smart Home Controller
+     * 
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
+    public <T extends BoschSHCServiceState> @Nullable Response postState(String deviceId, String serviceName, T state)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        return sendState(deviceId, serviceName, state, POST);
+    }
+
+    private <T extends BoschSHCServiceState> @Nullable Response sendState(String deviceId, String serviceName, T state,
+            HttpMethod method) throws InterruptedException, TimeoutException, ExecutionException {
         @Nullable
         BoschHttpClient localHttpClient = this.httpClient;
         if (localHttpClient == null) {
@@ -895,7 +923,7 @@ public class BridgeHandler extends BaseBridgeHandler {
 
         // Create request
         String url = localHttpClient.getServiceStateUrl(serviceName, deviceId, state.getClass());
-        Request request = localHttpClient.createRequest(url, PUT, state);
+        Request request = localHttpClient.createRequest(url, method, state);
 
         // Send request
         return request.send();

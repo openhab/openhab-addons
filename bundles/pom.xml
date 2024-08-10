@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons</groupId>
     <artifactId>org.openhab.addons.reactor</artifactId>
-    <version>4.2.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.openhab.addons.bundles</groupId>
@@ -62,6 +62,7 @@
     <module>org.openhab.binding.androidtv</module>
     <module>org.openhab.binding.anel</module>
     <module>org.openhab.binding.anthem</module>
+    <module>org.openhab.binding.argoclima</module>
     <module>org.openhab.binding.astro</module>
     <module>org.openhab.binding.asuswrt</module>
     <module>org.openhab.binding.atlona</module>
@@ -315,6 +316,7 @@
     <module>org.openhab.binding.pegelonline</module>
     <module>org.openhab.binding.pentair</module>
     <module>org.openhab.binding.phc</module>
+    <module>org.openhab.binding.pihole</module>
     <module>org.openhab.binding.pilight</module>
     <module>org.openhab.binding.pioneeravr</module>
     <module>org.openhab.binding.pixometer</module>
@@ -362,6 +364,7 @@
     <module>org.openhab.binding.serialbutton</module>
     <module>org.openhab.binding.shelly</module>
     <module>org.openhab.binding.silvercrestwifisocket</module>
+    <module>org.openhab.binding.siemenshvac</module>
     <module>org.openhab.binding.siemensrds</module>
     <module>org.openhab.binding.sinope</module>
     <module>org.openhab.binding.sleepiq</module>
@@ -376,6 +379,7 @@
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarforecast</module>
     <module>org.openhab.binding.solarlog</module>
+    <module>org.openhab.binding.solarman</module>
     <module>org.openhab.binding.solarmax</module>
     <module>org.openhab.binding.solarwatt</module>
     <module>org.openhab.binding.solax</module>
@@ -402,6 +406,8 @@
     <module>org.openhab.binding.teleinfo</module>
     <module>org.openhab.binding.tellstick</module>
     <module>org.openhab.binding.tesla</module>
+    <module>org.openhab.binding.teslapowerwall</module>
+    <module>org.openhab.binding.teslascope</module>
     <module>org.openhab.binding.tibber</module>
     <module>org.openhab.binding.tivo</module>
     <module>org.openhab.binding.touchwand</module>
@@ -471,6 +477,7 @@
     <module>org.openhab.voice.voicerss</module>
     <module>org.openhab.voice.voskstt</module>
     <module>org.openhab.voice.watsonstt</module>
+    <module>org.openhab.voice.whisperstt</module>
   </modules>
 
   <properties>

@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.openhab.binding.daikin.internal.api.Enums.FanMovement;
 
 /**
- * This class provides tests for deconz lights
+ * This class provides tests for the ControlInfo class
  *
  * @author Leo Siepel - Initial contribution
  *
