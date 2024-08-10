@@ -97,6 +97,7 @@ public class ShellyBasicDiscoveryService extends AbstractDiscoveryService {
     }
 
     public void unregisterDeviceDiscoveryService() {
+        ServiceRegistration<?> discoveryService = this.discoveryService;
         if (discoveryService != null) {
             discoveryService.unregister();
         }
