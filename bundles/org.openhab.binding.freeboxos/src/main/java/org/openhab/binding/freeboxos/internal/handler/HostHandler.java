@@ -46,6 +46,10 @@ public class HostHandler extends ApiConsumerHandler {
     // We start in pull mode and switch to push after a first update...
     protected boolean pushSubscribed = false;
 
+    protected boolean reachable;
+
+    private int tryConfigureMediaSink = 1;
+
     public HostHandler(Thing thing) {
         super(thing);
         statusDrivenByBridge = false;
@@ -78,6 +82,11 @@ public class HostHandler extends ApiConsumerHandler {
 
     @Override
     protected void internalPoll() throws FreeboxException {
+        if (tryConfigureMediaSink > 0) {
+            configureMediaSink();
+            tryConfigureMediaSink--;
+        }
+
         if (pushSubscribed) {
             return;
         }
@@ -109,6 +118,13 @@ public class HostHandler extends ApiConsumerHandler {
         updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, host.getLastSeen());
         updateChannelString(CONNECTIVITY, IP_ADDRESS, host.getIpv4());
         updateStatus(host.reachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+        // We will check and configure audio sink only when the host reachability changed
+        if (reachable != host.reachable()) {
+            reachable = host.reachable();
+            // It can take time until the Media Receiver API returns the receiver after it becomes reachable.
+            // So this will be checked during the next 2 polls.
+            tryConfigureMediaSink = 2;
+        }
     }
 
     public void wol() {
