@@ -92,6 +92,7 @@ public class AwattarBridgeHandlerRefreshTest extends JavaTest {
 
         when(timeZoneProviderMock.getTimeZone()).thenReturn(ZoneId.of("GMT+2"));
 
+        when(bridgeMock.getUID()).thenReturn(BRIDGE_UID);
         bridgeHandler = new AwattarBridgeHandler(bridgeMock, httpClientMock, timeZoneProviderMock);
         bridgeHandler.setCallback(bridgeCallbackMock);
 

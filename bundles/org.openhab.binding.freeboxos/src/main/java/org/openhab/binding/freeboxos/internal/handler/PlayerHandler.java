@@ -57,9 +57,12 @@ public class PlayerHandler extends HostHandler {
 
     @Override
     void initializeProperties(Map<String, String> properties) throws FreeboxException {
-        super.initializeProperties(properties);
+        // We need to get and set the MAC address before calling super.initializeProperties
         Player player = getManager(PlayerManager.class).getDevice(getClientId());
+        properties.put(Thing.PROPERTY_MAC_ADDRESS, player.mac().toColonDelimitedString());
         properties.put(Thing.PROPERTY_MODEL_ID, player.deviceModel().name());
+        updateProperties(properties);
+        super.initializeProperties(properties);
     }
 
     @Override
@@ -85,14 +88,14 @@ public class PlayerHandler extends HostHandler {
             logger.warn("Player IP is unknown");
         } else if (VALID_REMOTE_KEYS.contains(aKey)) {
             String remoteCode = (String) getConfig().get(PlayerConfiguration.REMOTE_CODE);
-            if (remoteCode != null) {
+            if (remoteCode != null && !remoteCode.isBlank()) {
                 try {
                     getManager(PlayerManager.class).sendKey(ip.toCanonicalString(), remoteCode, aKey, longPress, count);
                 } catch (FreeboxException e) {
                     logger.warn("Error sending key: {}", e.getMessage());
                 }
             } else {
-                logger.warn("A remote code must be configured in the on the player thing.");
+                logger.warn("A remote code must be configured on the player thing.");
             }
         } else {
             logger.warn("Key '{}' is not a valid key expression", key);

@@ -34,7 +34,7 @@ import io.github.hapjava.services.impl.OccupancySensorService;
  * @author Tim Harper - Initial contribution
  */
 public class HomekitOccupancySensorImpl extends AbstractHomekitAccessoryImpl implements OccupancySensorAccessory {
-    private final Map<OccupancyDetectedEnum, String> mapping;
+    private final Map<OccupancyDetectedEnum, Object> mapping;
 
     public HomekitOccupancySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)

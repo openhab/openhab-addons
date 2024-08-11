@@ -35,7 +35,7 @@ import io.github.hapjava.services.impl.AirQualityService;
  * @author Eugen Freiter - Initial contribution
  */
 public class HomekitAirQualitySensorImpl extends AbstractHomekitAccessoryImpl implements AirQualityAccessory {
-    private final Map<AirQualityEnum, String> qualityStateMapping;
+    private final Map<AirQualityEnum, Object> qualityStateMapping;
 
     public HomekitAirQualitySensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
