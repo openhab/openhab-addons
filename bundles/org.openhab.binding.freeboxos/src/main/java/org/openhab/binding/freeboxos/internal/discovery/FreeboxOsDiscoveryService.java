@@ -72,6 +72,9 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsDiscoveryService.class);
 
+    private boolean hasVm = true;
+    private boolean hasHomeAutomation = true;
+
     private Optional<ScheduledFuture<?>> backgroundFuture = Optional.empty();
 
     public FreeboxOsDiscoveryService() {
@@ -116,8 +119,12 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 discoverPlugs(bridgeUID, lowLogLevel);
                 discoverRepeater(bridgeUID, lanHosts, lowLogLevel);
                 discoverPlayer(bridgeUID, lanHosts, lowLogLevel);
-                discoverVM(bridgeUID, lanHosts, lowLogLevel);
-                discoverHome(bridgeUID, lowLogLevel);
+                if (hasVm) {
+                    discoverVM(bridgeUID, lanHosts, lowLogLevel);
+                }
+                if (hasHomeAutomation) {
+                    discoverHome(bridgeUID, lowLogLevel);
+                }
                 if (thingHandler.getConfiguration().discoverNetDevice) {
                     discoverHosts(bridgeUID, lanHosts, lowLogLevel);
                 }
@@ -259,6 +266,9 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
     private void discoverServer(ThingUID bridgeUID, boolean lowLogLevel) {
         try {
             Config config = thingHandler.getManager(SystemManager.class).getConfig();
+
+            hasVm = config.modelInfo().hasVm();
+            hasHomeAutomation = config.modelInfo().hasHomeAutomation();
 
             ThingTypeUID targetType = config.boardName().startsWith("fbxgw7") ? THING_TYPE_DELTA
                     : THING_TYPE_REVOLUTION;
