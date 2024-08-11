@@ -355,7 +355,6 @@
 				<option value="home">Home</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="ip-address" advanced="true">
