@@ -19,6 +19,8 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -309,6 +311,9 @@ public class TibberHandler extends BaseThingHandler {
                     lastWebSocketMessage);
             close();
             connectWebSocket();
+        } else if ("true".equals(rtEnabled) && isConnected()) {
+            logger.debug("Sending Ping Message");
+            session.getRemote().sendPing(ByteBuffer.wrap("OpenHab Ping".getBytes(StandardCharsets.UTF_8)));
         } else if ("true".equals(rtEnabled) && !isConnected()) {
             logger.info("Attempting to reopen Websocket connection");
             connectWebSocket();
