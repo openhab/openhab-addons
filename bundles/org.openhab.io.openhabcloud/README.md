@@ -171,7 +171,7 @@ Examples:
 - `ui:popup:oh-clock-card`: Opens a popup with `oh-clock-card`.
 - `https://openhab.org`: Opens an embedded browser to the site `https://openhab.org`
 - `rule:02ffc3a297:prop1=foo`: Runs the rule with an id of `02ffc3a297` passing in an optional parameter named `prop1` with a value of `foo`
-- `app:android=com.sonos.acr2,ios=sonos-2://`: Opens the Spotify app depending on the device type (Android or iOS)
+- `app:android=com.sonos.acr2,ios=sonos-2://`: Opens the Sonos app depending on the device type (Android or iOS)
 
 ### Hide Notification Actions
 
