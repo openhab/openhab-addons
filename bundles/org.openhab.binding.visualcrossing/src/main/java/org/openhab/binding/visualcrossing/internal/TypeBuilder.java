@@ -167,7 +167,7 @@ class TypeBuilder {
     }
 
     private static State newSolarEnergyType(@Nullable Number solarEnergy) {
-        return solarEnergy != null ? new QuantityType<>(solarEnergy, MEGA(JOULE.divide(METRE.multiply(METRE)))) : UNDEF;
+        return solarEnergy != null ? new QuantityType<>(solarEnergy, MEGA(JOULE).divide(METRE.multiply(METRE))) : UNDEF;
     }
 
     public static <T> State newSolarEnergyType(@Nullable T obj, Function<T, @Nullable Number> function) {

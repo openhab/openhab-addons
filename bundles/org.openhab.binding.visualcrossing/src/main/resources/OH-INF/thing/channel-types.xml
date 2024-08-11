@@ -1673,7 +1673,7 @@
 	</channel-type>
 	<channel-type id="solar-energy-channel">
 		<!-- TODO Is there item-type for MJ /m^2 ? -->
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Solar Energy</label>
 		<description>(MJ /m^2) Indicates the total energy from the sun that builds up over an hour or day. See the full
 			solar
