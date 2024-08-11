@@ -151,13 +151,15 @@ These parameters may be skipped by setting them to `null`.
 
 The action syntax is a string containing the action type and the action payload separated by a colon.
 
-There are three types of actions available:
+There are several types of actions available:
 
 - `command`: Sends a command to an Item by using the following syntax: `command:$itemName:$commandString` where `$itemName` is the name of the Item and `$commandString` is the command to be sent.
 - `ui`: Controls the UI in two possible ways:
   - `ui:$path` where `$path` is either `/basicui/app?...` for navigating sitemaps (using the native renderer) or `/some/absolute/path` for navigating (using the web view).
   - `ui:$commandItemSyntax` where `$commandItemSyntax` is the same syntax as used for the [UI Command Item]({{base}}/mainui/about.html#ui-command-item).
 - `http:` or `https:` : Opens the fully qualified URL in an embedded browser on the device.
+- `rule`: Runs a rule by using the following syntax: `rule:$ruleId:$prop1Key=$prop1Value,$prop2Key=$prop2Value,...` where `$ruleId` is the id of the rule, and optional properties to send to the rule are in the format `name=value` separated by commas. Most rules can omit the properties.
+- `app`: Launches a native app when possible using the following syntax: `app:android=$appId,ios=$appId:$path` where `$appId` on Android is a qualified app id like `com.acme.app` (see [partial list of Android ids](https://github.com/petarov/google-android-app-ids)), and on iOS is the registered URL scheme along with an optional `$path` like `acme://foo` (see [partial list of iOS ids](https://github.com/bhagyas/app-urls)). Either `android` or `ios` can be omitted if that platform is not used.
 
 Examples:
 
@@ -168,6 +170,8 @@ Examples:
 - `ui:navigate:/page/my_floorplan_page`: Navigates Main UI to the page with the ID `my_floorplan_page`.
 - `ui:popup:oh-clock-card`: Opens a popup with `oh-clock-card`.
 - `https://openhab.org`: Opens an embedded browser to the site `https://openhab.org`
+- `rule:02ffc3a297:prop1=foo`: Runs the rule with an id of `02ffc3a297` passing in an optional parameter named `prop1` with a value of `foo`
+- `app:android=com.sonos.acr2,ios=sonos-2://`: Opens the Sonos app depending on the device type (Android or iOS)
 
 ### Hide Notification Actions
 
