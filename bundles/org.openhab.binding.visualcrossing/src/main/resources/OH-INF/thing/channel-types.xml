@@ -1550,7 +1550,7 @@
 
 	<!-- ✅ Channels ✅ -->
 	<channel-type id="cost-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>Current Cost</label>
 		<description>How much API tokens thing used since start</description>
 	</channel-type>
@@ -1688,7 +1688,7 @@
 	</channel-type>
 	<channel-type id="uv-index-channel">
 		<!-- TODO Is there item-type for UV? -->
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number</item-type>
 		<label>UV Index</label>
 		<description>A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day.
 			10
