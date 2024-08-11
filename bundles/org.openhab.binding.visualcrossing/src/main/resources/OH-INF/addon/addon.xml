@@ -4,7 +4,11 @@
 	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
 
 	<type>binding</type>
-	<name>VisualCrossing Binding</name>
-	<description>This is the binding for VisualCrossing.</description>
+	<name>Visual Crossing Binding</name>
+	<description>
+		Visual Crossing Weather is the easiest-to-use and lowest-cost source for historical and forecast weather
+		data. Our Weather API (https://www.visualcrossing.com/weather-api) is designed to integrate easily into any app or
+		code, and our prices are lower than any other provider in the industry.
+	</description>
 
 </addon:addon>

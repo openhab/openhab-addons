@@ -26,7 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class VisualCrossingBindingConstants {
 
-    private static final String BINDING_ID = "visualcrossing";
+    public static final String BINDING_ID = "visualcrossing";
     public static final Set<String> SUPPORTED_LANGUAGES = Set.of("ar", "bg", "cs", "da", "de", "el", "en", "es", "fa",
             "fi", "fr", "he", "hu,", "it", "ja", "ko", "nl", "pl", "pt", "ru", "sk", "sr", "sv", "tr", "uk", "vi",
             "zh");

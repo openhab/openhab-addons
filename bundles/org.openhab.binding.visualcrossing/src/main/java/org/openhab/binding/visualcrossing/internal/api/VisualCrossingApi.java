@@ -70,7 +70,7 @@ public class VisualCrossingApi {
      * Result data is provided in a common JSON format allowing you to ignore to complex underlying data sources and
      * focus entirely on your weather data use case. You can also request the result in CSV text format if you prefer.
      *
-     * @param location (required) is the address, partial address or latitude,longitude location for which to retrieve
+     * @param location (required) Is the address, partial address or latitude,longitude location for which to retrieve
      *            weather data. You can also use US ZIP Codes. If you would like to submit multiple locations in the
      *            same request, consider our Multiple Location Timeline Weather API.
      * @param unitGroup (optional) The system of units used for the output data. Supported values are us, uk, metric,
@@ -83,7 +83,7 @@ public class VisualCrossingApi {
      *            and zh (Chinese). In addition passing in ‘id’ will result in the raw descriptor IDs. See <a href=
      *            "https://www.visualcrossing.com/resources/documentation/weather-api/how-to-create-or-modify-language-files/">How
      *            to create or modify language files</a> for more information on how to help add additional languages.
-     * @param dateFrom (optional) is the start date for which to retrieve weather data. If a date2 value is also given,
+     * @param dateFrom (optional) Is the start date for which to retrieve weather data. If a date2 value is also given,
      *            then it represents the first date for which to retrieve weather data. If no date2 is specified then
      *            weather data for a single day is retrieved, and that date is specified in date1. All dates and times
      *            are in local time of the location specified. Dates should be in the format yyyy-MM-dd. For example
@@ -96,7 +96,7 @@ public class VisualCrossingApi {
      *            time into the date1 field using the format yyyy-MM-ddTHH:mm:ss. For example 2020-10-19T13:00:00.The
      *            results are returned in the ‘currentConditions’ field and are truncated to the hour requested (i.e.
      *            2020-10-19T13:59:00 will return data at 2020-10-19T13:00:00).
-     * @param dateTo (optional) is the end date for which to retrieve weather data. This value may only be used when a
+     * @param dateTo (optional) Is the end date for which to retrieve weather data. This value may only be used when a
      *            date1 value is given. When both date1 and date2 values are given, the query is inclusive of date2 and
      *            the weather data request period will end on midnight of the date2 value. All dates and times are in
      *            local time of the specified location and should be in the format yyyy-MM-dd.
@@ -113,16 +113,14 @@ public class VisualCrossingApi {
         if (unitGroup == null) {
             unitGroup = METRIC;
         }
-        if (lang == null || lang.isEmpty()) {
-            lang = "en";
-        }
         if (dateFrom == null && dateTo != null) {
             throw new VisualCrossingApiException("When passing dateTo you need to pass dateFrom!");
         }
 
         var escapedLocation = URLEncoder.encode(location, UTF_8).replaceAll("\\+", "%20");
 
-        var url = new StringBuilder(baseUrl).append("/VisualCrossingWebServices/rest/services/timeline/")//
+        var url = new StringBuilder(baseUrl)//
+                .append("/VisualCrossingWebServices/rest/services/timeline/")//
                 .append(escapedLocation);
         if (dateFrom != null) {
             url.append("/").append(dateFrom);
@@ -132,8 +130,10 @@ public class VisualCrossingApi {
         }
         url.append("?key=").append(apiKey)//
                 .append("&contentType=json")//
-                .append("&lang=").append(lang)//
                 .append("&unitGroup=").append(unitGroup.unit);
+        if (lang != null && !lang.isEmpty()) {
+            url.append("&lang=").append(lang);
+        }
         var response = restClient.get(url.toString());
 
         try {

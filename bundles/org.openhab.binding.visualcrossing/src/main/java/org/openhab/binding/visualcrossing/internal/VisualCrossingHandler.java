@@ -23,8 +23,10 @@ import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
 import static org.openhab.core.thing.ThingStatusDetail.*;
 import static org.openhab.core.types.RefreshType.REFRESH;
-import static org.openhab.core.types.UnDefType.NULL;
+import static org.openhab.core.types.UnDefType.*;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -33,6 +35,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.visualcrossing.internal.VisualCrossingBindingConstants.Channels.ChannelDay;
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingApi;
+import org.openhab.binding.visualcrossing.internal.api.VisualCrossingApi.UnitGroup;
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingApiException;
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingAuthException;
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingRateException;
@@ -88,8 +91,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
             // handling only refresh commands
             return;
         }
-        var weatherResponse = this.weatherResponse.get();
-        updateState(channelUID, findState(channelUID, weatherResponse));
+        updateState(channelUID, findState(channelUID, this.weatherResponse.get()));
     }
 
     private State findState(ChannelUID channelUID, @Nullable WeatherResponse weatherResponse) {
@@ -98,7 +100,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
             if (COST.equals(channelId)) {
                 var localApi = api;
                 if (localApi == null) {
-                    return NULL;
+                    return UNDEF;
                 }
                 return new DecimalType(localApi.getCurrentCost());
             }
@@ -111,119 +113,119 @@ public class VisualCrossingHandler extends BaseThingHandler {
             switch (channelId) {
                 case DATE_TIME -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::datetime)).orElse(NULL));
+                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::datetime)).orElse(UNDEF));
                 }
                 case TIME_STAMP -> {
                     return requireNonNull(currentConditions
-                            .map(cc -> newDecimalType(cc, CurrentConditions::datetimeEpoch)).orElse(NULL));
+                            .map(cc -> newDecimalType(cc, CurrentConditions::datetimeEpoch)).orElse(UNDEF));
                 }
                 case TEMPERATURE -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newTemperatureType(cc, CurrentConditions::temp)).orElse(NULL));
+                            currentConditions.map(cc -> newTemperatureType(cc, CurrentConditions::temp)).orElse(UNDEF));
                 }
                 case FEELS_LIKE -> {
                     return requireNonNull(currentConditions
-                            .map(cc -> newTemperatureType(cc, CurrentConditions::feelslike)).orElse(NULL));
+                            .map(cc -> newTemperatureType(cc, CurrentConditions::feelslike)).orElse(UNDEF));
                 }
                 case HUMIDITY -> {
-                    return requireNonNull(
-                            currentConditions.map(cc -> newHumidityType(cc, CurrentConditions::humidity)).orElse(NULL));
+                    return requireNonNull(currentConditions.map(cc -> newHumidityType(cc, CurrentConditions::humidity))
+                            .orElse(UNDEF));
                 }
                 case DEW -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newTemperatureType(cc, CurrentConditions::dew)).orElse(NULL));
+                            currentConditions.map(cc -> newTemperatureType(cc, CurrentConditions::dew)).orElse(UNDEF));
                 }
                 case PRECIP -> {
                     return requireNonNull(currentConditions.map(cc -> newMilliLengthType(cc, CurrentConditions::precip))
-                            .orElse(NULL));
+                            .orElse(UNDEF));
                 }
                 case PRECIP_PROB -> {
                     return requireNonNull(currentConditions.map(cc -> newDecimalType(cc, CurrentConditions::precipprob))
-                            .orElse(NULL));
+                            .orElse(UNDEF));
                 }
                 case PRECIP_TYPE -> {
-                    return requireNonNull(
-                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::preciptype)).orElse(NULL));
+                    return requireNonNull(currentConditions.map(cc -> newStringType(cc, CurrentConditions::preciptype))
+                            .orElse(UNDEF));
                 }
                 case SNOW -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newCentiLengthType(cc, CurrentConditions::snow)).orElse(NULL));
+                            currentConditions.map(cc -> newCentiLengthType(cc, CurrentConditions::snow)).orElse(UNDEF));
                 }
                 case SNOW_DEPTH -> {
                     return requireNonNull(currentConditions
-                            .map(cc -> newCentiLengthType(cc, CurrentConditions::snowdepth)).orElse(NULL));
+                            .map(cc -> newCentiLengthType(cc, CurrentConditions::snowdepth)).orElse(UNDEF));
                 }
                 case WIND_GUST -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newSpeedType(cc, CurrentConditions::windgust)).orElse(NULL));
+                            currentConditions.map(cc -> newSpeedType(cc, CurrentConditions::windgust)).orElse(UNDEF));
                 }
                 case WIND_SPEED -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newSpeedType(cc, CurrentConditions::windspeed)).orElse(NULL));
+                            currentConditions.map(cc -> newSpeedType(cc, CurrentConditions::windspeed)).orElse(UNDEF));
                 }
                 case WIND_DIR -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newAngleType(cc, CurrentConditions::winddir)).orElse(NULL));
+                            currentConditions.map(cc -> newAngleType(cc, CurrentConditions::winddir)).orElse(UNDEF));
                 }
                 case PRESSURE -> {
                     return requireNonNull(currentConditions
-                            .map(cc -> newMilliPressureType(cc, CurrentConditions::pressure)).orElse(NULL));
+                            .map(cc -> newMilliPressureType(cc, CurrentConditions::pressure)).orElse(UNDEF));
                 }
                 case VISIBILITY -> {
                     return requireNonNull(currentConditions
-                            .map(cc -> newKiloMeterType(cc, CurrentConditions::visibility)).orElse(NULL));
+                            .map(cc -> newKiloMeterType(cc, CurrentConditions::visibility)).orElse(UNDEF));
                 }
                 case CLOUD_COVER -> {
                     return requireNonNull(currentConditions.map(cc -> newDecimalType(cc, CurrentConditions::cloudcover))
-                            .orElse(NULL));
+                            .orElse(UNDEF));
                 }
                 case SOLAR_RADIATION -> {
                     return requireNonNull(currentConditions
-                            .map(cc -> newSolarRadiationType(cc, CurrentConditions::solarradiation)).orElse(NULL));
+                            .map(cc -> newSolarRadiationType(cc, CurrentConditions::solarradiation)).orElse(UNDEF));
                 }
                 case SOLAR_ENERGY -> {
                     return requireNonNull(currentConditions
-                            .map(cc -> newSolarEnergyType(cc, CurrentConditions::solarenergy)).orElse(NULL));
+                            .map(cc -> newSolarEnergyType(cc, CurrentConditions::solarenergy)).orElse(UNDEF));
                 }
                 case UV_INDEX -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newDecimalType(cc, CurrentConditions::uvindex)).orElse(NULL));
+                            currentConditions.map(cc -> newDecimalType(cc, CurrentConditions::uvindex)).orElse(UNDEF));
                 }
                 case CONDITIONS -> {
-                    return requireNonNull(
-                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::conditions)).orElse(NULL));
+                    return requireNonNull(currentConditions.map(cc -> newStringType(cc, CurrentConditions::conditions))
+                            .orElse(UNDEF));
                 }
                 case ICON -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::icon)).orElse(NULL));
+                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::icon)).orElse(UNDEF));
                 }
                 case STATIONS -> {
                     return requireNonNull(currentConditions
-                            .map(cc -> newStringCollectionType(cc, CurrentConditions::stations)).orElse(NULL));
+                            .map(cc -> newStringCollectionType(cc, CurrentConditions::stations)).orElse(UNDEF));
                 }
                 case SOURCE -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::source)).orElse(NULL));
+                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::source)).orElse(UNDEF));
                 }
                 case SUNRISE -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::sunrise)).orElse(NULL));
+                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::sunrise)).orElse(UNDEF));
                 }
                 case SUNRISE_EPOCH -> {
                     return requireNonNull(currentConditions
-                            .map(cc -> newDecimalType(cc, CurrentConditions::sunriseEpoch)).orElse(NULL));
+                            .map(cc -> newDecimalType(cc, CurrentConditions::sunriseEpoch)).orElse(UNDEF));
                 }
                 case SUNSET -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::sunset)).orElse(NULL));
+                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::sunset)).orElse(UNDEF));
                 }
                 case SUNSET_EPOCH -> {
                     return requireNonNull(currentConditions
-                            .map(cc -> newDecimalType(cc, CurrentConditions::sunsetEpoch)).orElse(NULL));
+                            .map(cc -> newDecimalType(cc, CurrentConditions::sunsetEpoch)).orElse(UNDEF));
                 }
                 case MOON_PHASE -> {
-                    return requireNonNull(
-                            currentConditions.map(cc -> newDecimalType(cc, CurrentConditions::moonphase)).orElse(NULL));
+                    return requireNonNull(currentConditions.map(cc -> newDecimalType(cc, CurrentConditions::moonphase))
+                            .orElse(UNDEF));
                 }
             }
         }
@@ -432,7 +434,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
         }
 
         logger.warn("Do not know this channel ID: {}", channelId);
-        return NULL;
+        return UNDEF;
     }
 
     @Nullable
@@ -450,6 +452,14 @@ public class VisualCrossingHandler extends BaseThingHandler {
 
         var config = getConfigAs(VisualCrossingConfiguration.class);
         var hostname = config.hostname;
+        try {
+            new URL(hostname);
+        } catch (MalformedURLException e) {
+            logger.debug("Hostname [{}] is not an URL!", hostname, e);
+            updateStatus(OFFLINE, CONFIGURATION_ERROR,
+                    "@text/addon.visualcrossing.weather.error.hostname [\"%s\"]".formatted(hostname));
+            return;
+        }
 
         var apiKey = config.apiKey;
         if (apiKey == null) {
@@ -525,5 +535,20 @@ public class VisualCrossingHandler extends BaseThingHandler {
         api = null;
         weatherResponse.set(null);
         location = null;
+    }
+
+    @Nullable
+    public WeatherResponse timeline(@Nullable String location, @Nullable UnitGroup unitGroup, @Nullable String lang,
+            @Nullable String dateFrom, @Nullable String dateTo)
+            throws VisualCrossingAuthException, VisualCrossingApiException, VisualCrossingRateException {
+        var localApi = api;
+        if (localApi == null) {
+            logger.debug("Api was null!");
+            return null;
+        }
+        if (location == null) {
+            location = this.location;
+        }
+        return localApi.timeline(requireNonNull(location), unitGroup, lang, dateFrom, dateTo);
     }
 }

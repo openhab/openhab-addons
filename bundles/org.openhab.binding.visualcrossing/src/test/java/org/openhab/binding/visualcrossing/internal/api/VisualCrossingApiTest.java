@@ -58,12 +58,12 @@ class VisualCrossingApiTest {
                         + "wroc%C5%82aw%2Cpoland"//
                         + "?key=xyz"//
                         + "&contentType=json"//
-                        + "&lang=en"//
-                        + "&unitGroup=metric"))
+                        + "&unitGroup=metric"//
+                        + "&lang=en"))
                 .willReturn(FULL_JSON);
 
         // when
-        var timeline = requireNonNull(api).timeline("wrocław,poland", METRIC, null, null, null);
+        var timeline = requireNonNull(api).timeline("wrocław,poland", METRIC, "en", null, null);
 
         // then
         assertThat(timeline).isEqualTo(FULL_JSON_RESPONSE);

@@ -32,18 +32,18 @@
 			</channel>
 			<channel id="feels-like" typeId="system.outdoor-temperature">
 				<label>Feels Like</label>
-				<description>What the temperature feels like accounting for heat index or wind chill. Daily values are
-					average values
-					(mean) for the day.
+				<description>
+					What the temperature feels like accounting for heat index or wind chill. Daily values are average
+					values (mean) for the day.
 				</description>
 			</channel>
 			<channel id="feels-like-min" typeId="system.outdoor-temperature">
 				<label>Feels Like (min)</label>
-				<description>minimum feels like temperature at the location.</description>
+				<description>Minimum feels like temperature at the location.</description>
 			</channel>
 			<channel id="feels-like-max" typeId="system.outdoor-temperature">
 				<label>Feels Like (max)</label>
-				<description>maximum feels like temperature at the location.</description>
+				<description>Maximum feels like temperature at the location.</description>
 			</channel>
 			<channel id="dew" typeId="system.outdoor-temperature">
 				<label>Dew</label>
@@ -67,8 +67,8 @@
 				</description>
 			</channel>
 			<channel id="wind-speed" typeId="system.wind-speed">
-				<description>The sustained wind speed measured as the average windspeed that occurs during the preceding one
-					to two
+				<description>
+					The sustained wind speed measured as the average windspeed that occurs during the preceding one to two
 					minutes. Daily values are the maximum hourly value for the day.
 				</description>
 			</channel>
@@ -1597,7 +1597,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="dew-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type>Number:Temperature</item-type>
 		<label>Dew</label>
 		<description>dew point temperature</description>
 		<state readOnly="true"/>
@@ -1605,8 +1605,8 @@
 	<channel-type id="precip-channel">
 		<item-type>Number:Length</item-type>
 		<label>Precip</label>
-		<description>The amount of liquid precipitation that fell or is predicted to fall in the period. This includes
-			the
+		<description>
+			The amount of liquid precipitation that fell or is predicted to fall in the period. This includes the
 			liquid-equivalent amount of any frozen precipitation such as snow or ice.
 		</description>
 		<state readOnly="true"/>
@@ -1620,8 +1620,8 @@
 	<channel-type id="precip-type-channel">
 		<item-type>String</item-type>
 		<label>Precip Type</label>
-		<description>An comma separated array indicating the type(s) of precipitation expected or that occurred.
-			Possible
+		<description>
+			An comma separated array indicating the type(s) of precipitation expected or that occurred. Possible
 			values include `rain`, `snow`, `freezingrain` and `ice`.
 		</description>
 		<state readOnly="true"/>
@@ -1690,12 +1690,10 @@
 		<!-- TODO Is there item-type for UV? -->
 		<item-type>Number</item-type>
 		<label>UV Index</label>
-		<description>A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day.
-			10
-			represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on
-			amount of short
-			wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day,
-			time of year and location
+		<description>
+			A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+			represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of short
+			wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and location
 			altitude. Daily values represent the maximum value of the hourly values.
 		</description>
 		<state readOnly="true" min="0" max="10"/>
@@ -1717,19 +1715,17 @@
 	<channel-type id="stations-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Stations</label>
-		<description>the weather stations (comma separated) used when collecting an historical observation record
+		<description>The weather stations (comma separated) used when collecting an historical observation record
 		</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="source-channel" advanced="true">
 		<item-type>String</item-type>
 		<label>Source</label>
-		<description>The type of weather data used for this weather object. – Values include historical observation
-			(“obs”),
-			forecast (“fcst”), historical forecast (“histfcst”) or statistical forecast (“stats”). If multiple
-			types are used in
-			the same day, “comb” is used. Today a combination of historical observations and forecast
-			data.
+		<description>
+			The type of weather data used for this weather object. – Values include historical observation (“obs”),
+			forecast (“fcst”), historical forecast (“histfcst”) or statistical forecast (“stats”). If multiple types are used in
+			the same day, “comb” is used. Today a combination of historical observations and forecast data.
 		</description>
 		<state readOnly="true"/>
 	</channel-type>
@@ -1755,11 +1751,10 @@
 	<channel-type id="moon-phase-channel">
 		<item-type>Number</item-type>
 		<label>Moon Phase</label>
-		<description>Represents the fractional portion through the current moon lunation cycle ranging from 0 (the new
-			moon) to
-			0.5 (the full moon) and back to 1 (the next new moon). See How to include sunrise, sunset, moon
-			phase, moonrise and
-			moonset data into your API requests
+		<description>
+			Represents the fractional portion through the current moon lunation cycle ranging from 0 (the new moon)
+			to 0.5 (the full moon) and back to 1 (the next new moon). See How to include sunrise, sunset, moon phase, moonrise
+			and moonset data into your API requests
 			(https://www.visualcrossing.com/resources/documentation/weather-api/how-to-include-sunrise-sunset-and-moon-phase-data-into-your-api-requests/)
 		</description>
 		<state readOnly="true" min="0" max="1"/>
@@ -1767,13 +1762,11 @@
 	<channel-type id="severe-risk-channel">
 		<item-type>Number</item-type>
 		<label>Severe Risk</label>
-		<description>A value between 0 and 100 representing the risk of convective storms (e.g. thunderstorms, hail and
-			tornadoes). Severe risk is a scaled measure that combines a variety of other fields such as the convective
-			availabel
-			potential energy (CAPE) and convective inhibition (CIN), predicted rain and wind. Typically, a
-			severe risk value less
-			than 30 indicates a low risk, between 30 and 70 a moderate risk and above 70 a high
-			risk.
+		<description>
+			A value between 0 and 100 representing the risk of convective storms (e.g. thunderstorms, hail and
+			tornadoes). Severe risk is a scaled measure that combines a variety of other fields such as the convective availabel
+			potential energy (CAPE) and convective inhibition (CIN), predicted rain and wind. Typically, a severe risk value less
+			than 30 indicates a low risk, between 30 and 70 a moderate risk and above 70 a high risk.
 		</description>
 		<state readOnly="true" min="0" max="100"/>
 	</channel-type>
