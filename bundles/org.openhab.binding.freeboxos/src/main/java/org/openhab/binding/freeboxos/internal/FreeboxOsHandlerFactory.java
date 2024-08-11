@@ -56,6 +56,7 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -91,6 +92,13 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
         this.apiHandler = new ApiHandler(httpClientFactory, timeZoneProvider);
 
         configChanged(config);
+    }
+
+    @Override
+    @Deactivate
+    public void deactivate(ComponentContext componentContext) {
+        super.deactivate(componentContext);
+        apiHandler.dispose();
     }
 
     @Modified

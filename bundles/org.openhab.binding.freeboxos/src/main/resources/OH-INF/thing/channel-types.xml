@@ -454,6 +454,7 @@
 		<state pattern="%s"/>
 	</channel-type>
 
+<<<<<<< Upstream, based on main
 	<channel-type id="sfp-present">
 		<item-type>Switch</item-type>
 		<label>SFP Present</label>
@@ -494,6 +495,47 @@
 		<label>Signal Level</label>
 		<category>QualityOfService</category>
 		<state readOnly="true" pattern="%.2f dBm"/>
+=======
+	<channel-type id="pir-trigger">
+		<item-type>Switch</item-type>
+		<label>Détection</label>
+		<category>oh:freeboxos:mouvement</category>
+	</channel-type>
+
+	<channel-type id="pir-cover">
+		<item-type>Contact</item-type>
+		<label>Couvercle</label>
+		<category>oh:freeboxos:warning</category>
+	</channel-type>
+
+	<channel-type id="kfb-pushed">
+		<item-type>Number</item-type>
+		<label>Key Code Pushed</label>
+		<description>Last key pushed on the remote</description>
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="1">Armed</option>
+				<option value="2">Disarmed</option>
+				<option value="3">Night-mode</option>
+				<option value="4">Point</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="alarm-state">
+		<item-type>String</item-type>
+		<label>Alarm state</label>
+		<description>Current state of the alarm system</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="idle">Désactivée</option>
+				<option value="alarm1_arming">Armement</option>
+				<option value="alarm1_armed">Activée (mode absent)</option>
+				<option value="alarm2_arming">Armement</option>
+				<option value="alarm2_armed">Activée (mode nuit)</option>
+			</options>
+		</state>
+>>>>>>> ffd03c3 Finalized integration of the alarm system Corrected bug in initialization of basic-shutter
 	</channel-type>
 
 	<channel-type id="xdsl-ready">

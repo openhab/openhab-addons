@@ -60,9 +60,10 @@ import inet.ipaddr.mac.MACAddress;
  */
 @NonNullByDefault
 public class ApiHandler {
-    public static final String AUTH_HEADER = "X-Fbx-App-Auth";
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static final String CONTENT_TYPE = "application/json; charset=" + DEFAULT_CHARSET.name();
+    private static final int RESPONSE_BUFFER_SIZE = 65536;
+    public static final String AUTH_HEADER = "X-Fbx-App-Auth";
 
     private final Logger logger = LoggerFactory.getLogger(ApiHandler.class);
     private final HttpClient httpClient;
@@ -71,16 +72,6 @@ public class ApiHandler {
     private long timeoutInMs = TimeUnit.SECONDS.toMillis(8);
 
     public ApiHandler(HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider) {
-        this.httpClient = httpClientFactory.createHttpClient(FreeboxOsBindingConstants.BINDING_ID);
-        logger.info("{}", httpClient.getResponseBufferSize());
-        httpClient.setResponseBufferSize(httpClient.getResponseBufferSize() * 4);
-        logger.info("{}", httpClient.getResponseBufferSize());
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
         this.gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
                 .registerTypeAdapter(ZonedDateTime.class,
                         (JsonDeserializer<ZonedDateTime>) (json, type, jsonDeserializationContext) -> {
@@ -97,6 +88,21 @@ public class ApiHandler {
                 .registerTypeAdapter(ForegroundApp.class, new ForegroundAppDeserializer())
                 .registerTypeAdapter(List.class, new ListDeserializer()).serializeNulls()
                 .registerTypeAdapterFactory(new StrictEnumTypeAdapterFactory()).create();
+        httpClient = httpClientFactory.createHttpClient(FreeboxOsBindingConstants.BINDING_ID);
+        httpClient.setResponseBufferSize(RESPONSE_BUFFER_SIZE);
+        try {
+            httpClient.start();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Unable to start httpClient", e);
+        }
+    }
+
+    public void dispose() {
+        try {
+            httpClient.stop();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Unable to stop httpClient", e);
+        }
     }
 
     public synchronized <T> T executeUri(URI uri, HttpMethod method, Class<T> clazz, @Nullable String sessionToken,

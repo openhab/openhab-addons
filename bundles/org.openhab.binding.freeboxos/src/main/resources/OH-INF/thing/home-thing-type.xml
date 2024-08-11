@@ -20,23 +20,33 @@
 
 		<config-description-ref uri="thing-type:freeboxos:home-node"/>
 	</thing-type>
-	
-    <thing-type id="pir">
-        <supported-bridge-type-refs>
-            <bridge-type-ref id="api"/>
-        </supported-bridge-type-refs>
 
-        <label>Freebox Home PIR</label>
-        <description>A motion Sensor</description>
+	<thing-type id="pir">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
 
-        <channels>
-            <channel id="battery" typeId="system.battery-level"/>
-        </channels>
+		<label>Freebox Home PIR</label>
+		<description>A motion Sensor</description>
 
-        <representation-property>id</representation-property>
+		<channels>
+			<channel id="trigger" typeId="pir-trigger"/>
+			<channel id="trigger-update" typeId="timestamp">
+				<label>Trigger Timestamp</label>
+				<description>Timestamp of the last trigger state change</description>
+			</channel>
+			<channel id="cover" typeId="pir-cover"/>
+			<channel id="cover-update" typeId="timestamp">
+				<label>Cover Timestamp</label>
+				<description>Timestamp of the last cover state change</description>
+			</channel>
+			<channel id="battery" typeId="system.battery-level"/>
+		</channels>
 
-        <config-description-ref uri="thing-type:freeboxos:home-node"/>
-    </thing-type>
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:freeboxos:home-node"/>
+	</thing-type>
 
 	<thing-type id="alarm">
 		<supported-bridge-type-refs>
@@ -47,6 +57,7 @@
 		<description>The Alarm system configured in your Freebox Server</description>
 
 		<channels>
+			<channel id="state" typeId="alarm-state"/>
 			<channel id="pin" typeId="alarm-pin"/>
 			<channel id="sound" typeId="alarm-volume">
 				<label>Bips Volume</label>
@@ -81,6 +92,11 @@
 		<description>A keyfob configured in your Freebox Server</description>
 
 		<channels>
+			<channel id="pushed" typeId="kfb-pushed"/>
+			<channel id="pushed-update" typeId="timestamp">
+				<label>Timestamp</label>
+				<description>Timestamp of the last action on the keyfob</description>
+			</channel>
 			<channel id="enable" typeId="keyfob-enable"/>
 			<channel id="battery" typeId="system.battery-level"/>
 		</channels>

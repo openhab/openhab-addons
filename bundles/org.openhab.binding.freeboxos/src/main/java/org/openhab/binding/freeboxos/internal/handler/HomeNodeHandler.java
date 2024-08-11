@@ -12,10 +12,12 @@
  */
 package org.openhab.binding.freeboxos.internal.handler;
 
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.UPDATE_POSTFIX;
+
 import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -53,47 +55,55 @@ public abstract class HomeNodeHandler extends ApiConsumerHandler {
         HomeNode node = getManager(HomeManager.class).getHomeNode(getClientId());
 
         // Gets the lowest refresh time or else, we'll keep configuration default
-        node.showEndpoints().stream().filter(ep -> ep.epType() == EpType.SIGNAL).filter(ep -> ep.refresh() != 0)
-                .min(Comparator.comparing(Endpoint::refresh)).map(Endpoint::refresh).ifPresent(rate -> {
-                    Configuration thingConfig = editConfiguration();
-                    thingConfig.put(ApiConsumerConfiguration.REFRESH_INTERVAL, Integer.toString(rate / 1000));
-                    updateConfiguration(thingConfig);
-                });
+        node.getMinRefresh().map(Endpoint::refresh).ifPresent(rate -> {
+            Configuration thingConfig = editConfiguration();
+            thingConfig.put(ApiConsumerConfiguration.REFRESH_INTERVAL, Integer.toString(rate / 1000));
+            updateConfiguration(thingConfig);
+        });
 
         properties.putAll(node.props());
 
         getThing().getChannels().forEach(channel -> {
             Configuration conf = channel.getConfiguration();
-            node.type().endpoints().stream().filter(ep -> ep.name().equals(channel.getUID().getIdWithoutGroup()))
+            String channelId = channel.getUID().getIdWithoutGroup();
+            node.type().endpoints().stream().filter(ep -> ep.name().equals(channelId))
                     .forEach(endPoint -> conf.put(endPoint.epType().asConfId(), endPoint.id()));
-            internalConfigureChannel(channel.getUID().getIdWithoutGroup(), conf, node.type().endpoints());
+            internalConfigureChannel(channelId, conf, node.type().endpoints());
         });
     }
 
     protected void internalConfigureChannel(String channelId, Configuration conf, List<Endpoint> endpoints) {
+        if (channelId.endsWith(UPDATE_POSTFIX)) {
+            String baseEndpoint = channelId.replace(UPDATE_POSTFIX, "");
+            endpoints.stream().filter(ep -> ep.name().equals(baseEndpoint)).forEach(ep -> {
+                conf.put(ep.name(), ep.id());
+                conf.put("signal", ep.id());
+            });
+        }
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
         HomeManager homeManager = getManager(HomeManager.class);
+        HomeNode node = homeManager.getHomeNode(getClientId());
         getThing().getChannels().stream().filter(channel -> isLinked(channel.getUID())).forEach(channel -> {
-            State result = UnDefType.UNDEF;
+            State result = null;
             Integer slotId = getSlotId(channel.getConfiguration(), EpType.SIGNAL.asConfId());
             if (slotId instanceof Integer) {
                 try {
                     EndpointState state = homeManager.getEndpointsState(getClientId(), slotId);
+                    Optional<Endpoint> endPoint = node.getEndpoint(slotId);
                     if (state != null) {
-                        result = getChannelState(homeManager, channel.getUID().getIdWithoutGroup(), state);
-                    } else {
-                        result = getChannelState(homeManager, channel.getUID().getIdWithoutGroup());
+                        result = getChannelState(channel.getUID().getIdWithoutGroup(), state, endPoint);
                     }
                 } catch (FreeboxException e) {
                     logger.warn("Error updating channel: {}", e.getMessage());
                 }
-            } else {
-                result = getChannelState(homeManager, channel.getUID().getIdWithoutGroup());
             }
-            updateState(channel.getUID(), result);
+            updateState(channel.getUID(), result != null ? result : UnDefType.UNDEF);
+        });
+        node.showEndpoints().forEach(endPoint -> {
+            logger.debug(endPoint.toString());
         });
     }
 
@@ -126,9 +136,5 @@ public abstract class HomeNodeHandler extends ApiConsumerHandler {
         return false;
     }
 
-    protected State getChannelState(HomeManager homeManager, String channelWG) {
-        return UnDefType.UNDEF;
-    }
-
-    protected abstract State getChannelState(HomeManager homeManager, String channelId, EndpointState state);
+    protected abstract State getChannelState(String channelId, EndpointState state, Optional<Endpoint> endPoint);
 }

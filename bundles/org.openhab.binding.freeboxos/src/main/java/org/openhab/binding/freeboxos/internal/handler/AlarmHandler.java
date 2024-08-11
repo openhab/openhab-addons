@@ -14,8 +14,10 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.rest.HomeManager;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.Endpoint;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
@@ -38,7 +40,7 @@ public class AlarmHandler extends HomeNodeHandler {
     }
 
     @Override
-    protected State getChannelState(HomeManager homeManager, String channelId, EndpointState state) {
+    protected State getChannelState(String channelId, EndpointState state, Optional<Endpoint> endPoint) {
         String value = state.value();
 
         if (value == null) {
@@ -46,6 +48,7 @@ public class AlarmHandler extends HomeNodeHandler {
         }
 
         return switch (channelId) {
+            case ALARM_STATE -> StringType.valueOf(value);
             case NODE_BATTERY -> DecimalType.valueOf(value);
             case ALARM_PIN -> StringType.valueOf(value);
             case ALARM_SOUND, ALARM_VOLUME -> QuantityType.valueOf(value + " %");

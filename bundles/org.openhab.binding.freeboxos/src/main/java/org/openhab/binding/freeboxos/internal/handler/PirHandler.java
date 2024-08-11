@@ -12,12 +12,21 @@
  */
 package org.openhab.binding.freeboxos.internal.handler;
 
-import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.NODE_BATTERY;
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
+
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Objects;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.freeboxos.internal.api.rest.HomeManager;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.Endpoint;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
@@ -36,12 +45,22 @@ public class PirHandler extends HomeNodeHandler {
     }
 
     @Override
-    protected State getChannelState(HomeManager homeManager, String channelId, EndpointState state) {
+    protected State getChannelState(String channelId, EndpointState state, Optional<Endpoint> endPoint) {
         String value = state.value();
         if (value != null) {
             switch (channelId) {
                 case NODE_BATTERY:
                     return DecimalType.valueOf(value);
+                case PIR_COVER:
+                    return state.asBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                case PIR_COVER_UPDATE:
+                case PIR_TRIGGER_UPDATE:
+                    return Objects.requireNonNull(endPoint.map(ep -> ep.getLastChange()
+                            .map(change -> (State) new DateTimeType(
+                                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(change.timestamp()), ZoneOffset.UTC)))
+                            .orElse(UnDefType.UNDEF)).orElse(UnDefType.UNDEF));
+                case PIR_TRIGGER:
+                    return OnOffType.from(value);
             }
         }
         return UnDefType.NULL;

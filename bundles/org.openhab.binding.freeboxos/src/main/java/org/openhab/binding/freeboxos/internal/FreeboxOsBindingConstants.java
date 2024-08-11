@@ -175,20 +175,30 @@ public class FreeboxOsBindingConstants {
     public static final String XDSL_UPTIME = "uptime";
 
     // Home channels
+    public static final String UPDATE_POSTFIX = "-update";
+
     public static final String KEYFOB_ENABLE = "enable";
+    public static final String KEYFOB_PUSHED = "pushed";
+    public static final String KEYFOB_PUSHED_UPDATE = KEYFOB_PUSHED + UPDATE_POSTFIX;
+
     public static final String NODE_BATTERY = "battery";
     public static final String SHUTTER_POSITION = "position-set";
     public static final String SHUTTER_STOP = "stop";
     public static final String BASIC_SHUTTER_STATE = "state";
     public static final String BASIC_SHUTTER_UP = "up";
     public static final String BASIC_SHUTTER_DOWN = "down";
-    // public static final String BASIC_SHUTTER_CMD = "basic-shutter";
     public static final String ALARM_PIN = "pin";
     public static final String ALARM_SOUND = "sound";
     public static final String ALARM_VOLUME = "volume";
     public static final String ALARM_TIMEOUT1 = "timeout1";
     public static final String ALARM_TIMEOUT2 = "timeout2";
     public static final String ALARM_TIMEOUT3 = "timeout3";
+    public static final String ALARM_STATE = "state";
+
+    public static final String PIR_COVER = "cover";
+    public static final String PIR_TRIGGER = "trigger";
+    public static final String PIR_COVER_UPDATE = PIR_COVER + UPDATE_POSTFIX;
+    public static final String PIR_TRIGGER_UPDATE = PIR_TRIGGER + UPDATE_POSTFIX;
 
     public static final Set<Command> TRUE_COMMANDS = Set.of(OnOffType.ON, UpDownType.UP, OpenClosedType.OPEN);
     public static final Set<Class<?>> ON_OFF_CLASSES = Set.of(OnOffType.class, UpDownType.class, OpenClosedType.class);
