@@ -16,7 +16,7 @@ import static javax.measure.MetricPrefix.MEGA;
 import static org.openhab.core.library.unit.MetricPrefix.*;
 import static org.openhab.core.library.unit.SIUnits.*;
 import static org.openhab.core.library.unit.Units.*;
-import static org.openhab.core.types.UnDefType.NULL;
+import static org.openhab.core.types.UnDefType.UNDEF;
 
 import java.util.Collection;
 import java.util.function.Function;
@@ -34,145 +34,145 @@ import org.openhab.core.types.State;
 @NonNullByDefault
 class TypeBuilder {
     private static State newStringType(@Nullable String string) {
-        return string != null ? new StringType(string) : NULL;
+        return string != null ? new StringType(string) : UNDEF;
     }
 
     public static <T> State newStringType(@Nullable T obj, Function<T, @Nullable String> function) {
         if (obj == null) {
-            return NULL;
+            return UNDEF;
         }
         return newStringType(function.apply(obj));
     }
 
     private static State newStringType(@Nullable Collection<String> strings) {
-        return strings != null ? new StringType(String.join(",", strings)) : NULL;
+        return strings != null ? new StringType(String.join(",", strings)) : UNDEF;
     }
 
     public static <T> State newStringCollectionType(@Nullable T obj,
             Function<T, @Nullable Collection<String>> function) {
         if (obj == null) {
-            return NULL;
+            return UNDEF;
         }
         return newStringType(function.apply(obj));
     }
 
     private static State newDecimalType(@Nullable Number number) {
-        return number != null ? new DecimalType(number) : NULL;
+        return number != null ? new DecimalType(number) : UNDEF;
     }
 
     public static <T> State newDecimalType(@Nullable T obj, Function<T, @Nullable Number> function) {
         if (obj == null) {
-            return NULL;
+            return UNDEF;
         }
         return newDecimalType(function.apply(obj));
     }
 
     private static State newTemperatureType(@Nullable Number temp) {
-        return temp != null ? new QuantityType<>(temp, CELSIUS) : NULL;
+        return temp != null ? new QuantityType<>(temp, CELSIUS) : UNDEF;
     }
 
     public static <T> State newTemperatureType(@Nullable T obj, Function<T, @Nullable Number> function) {
         if (obj == null) {
-            return NULL;
+            return UNDEF;
         }
         return newTemperatureType(function.apply(obj));
     }
 
     private static State newHumidityType(@Nullable Number humidity) {
-        return humidity != null ? new DecimalType(humidity) : NULL;
+        return humidity != null ? new DecimalType(humidity) : UNDEF;
     }
 
     public static <T> State newHumidityType(@Nullable T obj, Function<T, @Nullable Number> function) {
         if (obj == null) {
-            return NULL;
+            return UNDEF;
         }
         return newHumidityType(function.apply(obj));
     }
 
     private static State newMilliLengthType(@Nullable Number length) {
-        return length != null ? new QuantityType<>(length, MILLI(METRE)) : NULL;
+        return length != null ? new QuantityType<>(length, MILLI(METRE)) : UNDEF;
     }
 
     public static <T> State newMilliLengthType(@Nullable T obj, Function<T, @Nullable Number> function) {
         if (obj == null) {
-            return NULL;
+            return UNDEF;
         }
         return newMilliLengthType(function.apply(obj));
     }
 
     private static State newCentiLengthType(@Nullable Number length) {
-        return length != null ? new QuantityType<>(length, CENTI(METRE)) : NULL;
+        return length != null ? new QuantityType<>(length, CENTI(METRE)) : UNDEF;
     }
 
     public static <T> State newCentiLengthType(@Nullable T obj, Function<T, @Nullable Number> function) {
         if (obj == null) {
-            return NULL;
+            return UNDEF;
         }
         return newCentiLengthType(function.apply(obj));
     }
 
     private static State newSpeedType(@Nullable Number speed) {
-        return speed != null ? new QuantityType<>(speed, KILOMETRE_PER_HOUR) : NULL;
+        return speed != null ? new QuantityType<>(speed, KILOMETRE_PER_HOUR) : UNDEF;
     }
 
     public static <T> State newSpeedType(@Nullable T obj, Function<T, @Nullable Number> function) {
         if (obj == null) {
-            return NULL;
+            return UNDEF;
         }
         return newSpeedType(function.apply(obj));
     }
 
     private static State newAngleType(@Nullable Number angle) {
-        return angle != null ? new QuantityType<>(angle, DEGREE_ANGLE) : NULL;
+        return angle != null ? new QuantityType<>(angle, DEGREE_ANGLE) : UNDEF;
     }
 
     public static <T> State newAngleType(@Nullable T obj, Function<T, @Nullable Number> function) {
         if (obj == null) {
-            return NULL;
+            return UNDEF;
         }
         return newAngleType(function.apply(obj));
     }
 
     private static State newMilliPressureType(@Nullable Number pressure) {
-        return pressure != null ? new QuantityType<>(pressure, MILLI(BAR)) : NULL;
+        return pressure != null ? new QuantityType<>(pressure, MILLI(BAR)) : UNDEF;
     }
 
     public static <T> State newMilliPressureType(@Nullable T obj, Function<T, @Nullable Number> function) {
         if (obj == null) {
-            return NULL;
+            return UNDEF;
         }
         return newMilliPressureType(function.apply(obj));
     }
 
     private static State newKiloMeterType(@Nullable Number km) {
-        return km != null ? new QuantityType<>(km, KILO(METRE)) : NULL;
+        return km != null ? new QuantityType<>(km, KILO(METRE)) : UNDEF;
     }
 
     public static <T> State newKiloMeterType(@Nullable T obj, Function<T, @Nullable Number> function) {
         if (obj == null) {
-            return NULL;
+            return UNDEF;
         }
         return newKiloMeterType(function.apply(obj));
     }
 
     private static State newSolarRadiationType(@Nullable Number solarRadiation) {
-        return solarRadiation != null ? new QuantityType<>(solarRadiation, WATT.divide(METRE.multiply(METRE))) : NULL;
+        return solarRadiation != null ? new QuantityType<>(solarRadiation, WATT.divide(METRE.multiply(METRE))) : UNDEF;
     }
 
     public static <T> State newSolarRadiationType(@Nullable T obj, Function<T, @Nullable Number> function) {
         if (obj == null) {
-            return NULL;
+            return UNDEF;
         }
         return newSolarRadiationType(function.apply(obj));
     }
 
     private static State newSolarEnergyType(@Nullable Number solarEnergy) {
-        return solarEnergy != null ? new QuantityType<>(solarEnergy, MEGA(JOULE.divide(METRE.multiply(METRE)))) : NULL;
+        return solarEnergy != null ? new QuantityType<>(solarEnergy, MEGA(JOULE.divide(METRE.multiply(METRE)))) : UNDEF;
     }
 
     public static <T> State newSolarEnergyType(@Nullable T obj, Function<T, @Nullable Number> function) {
         if (obj == null) {
-            return NULL;
+            return UNDEF;
         }
         return newSolarEnergyType(function.apply(obj));
     }
