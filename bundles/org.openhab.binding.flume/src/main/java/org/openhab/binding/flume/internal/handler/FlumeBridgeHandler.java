@@ -280,6 +280,7 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
                 continue;
             }
 
+            @Nullable
             FlumeDeviceHandler handler = (FlumeDeviceHandler) t.getHandler();
             if (handler == null) {
                 return;

@@ -393,9 +393,9 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         }
 
         alert = resultList.get(0);
-        // alert has already been notified or it occurred before the device went online
-
-        if (alert.triggeredDateTime.isBefore(this.lastUsageAlert)) {
+        // alert has already been notified or occurred before the device went online
+        if (!alert.triggeredDateTime.isAfter(this.lastUsageAlert)) {
+            logger.trace("alert: {}, lastUsageAlert: {}", alert.triggeredDateTime, this.lastUsageAlert);
             return;
         }
 
@@ -427,7 +427,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         String stringAlert = String.format(stringAlertFormat, alert.eventRuleName, whenTriggered.toString(), minutes,
                 avgUsage, imperialUnits ? "gallons" : "liters");
 
-        logger.trace("{}", stringAlert);
+        logger.info("{}", stringAlert);
         triggerChannel(CHANNEL_DEVICE_USAGEALERT, stringAlert);
     }
 
