@@ -422,7 +422,7 @@ public class TibberHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Unexpected subscription result from the server");
         } else {
-            logger.debug("Connecting Subscription to: {}", subscriptionURL);
+            logger.debug("Reconnecting Subscription to: {}", subscriptionURL);
             open();
         }
     }
@@ -575,12 +575,13 @@ public class TibberHandler extends BaseThingHandler {
         @OnWebSocketMessage
         public void onMessage(String message) {
             if (message.contains("connection_ack")) {
-                logger.debug("Connected to Server");
+                logger.info("WebSocket connected to Server");
                 startSubscription();
             } else if (message.contains("error") || message.contains("terminate")) {
                 logger.warn("Error/terminate received from server: {}", message);
                 close();
             } else if (message.contains("liveMeasurement")) {
+                logger.debug("Received liveMeasurement message.");
                 lastWebSocketMessage = LocalDateTime.now();
                 JsonObject object = (JsonObject) JsonParser.parseString(message);
                 JsonObject myObject = object.getAsJsonObject("payload").getAsJsonObject("data")
@@ -658,7 +659,7 @@ public class TibberHandler extends BaseThingHandler {
                     updateChannel(LIVE_MAXPOWERPRODUCTION, myObject.get("maxPowerProduction").toString());
                 }
             } else {
-                logger.debug("Unknown live response from Tibber. Message: {}", message);
+                logger.warn("Unknown live response from Tibber. Message: {}", message);
             }
         }
 
