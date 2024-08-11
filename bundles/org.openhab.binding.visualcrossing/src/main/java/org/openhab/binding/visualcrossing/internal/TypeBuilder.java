@@ -12,6 +12,15 @@
  */
 package org.openhab.binding.visualcrossing.internal;
 
+import static javax.measure.MetricPrefix.MEGA;
+import static org.openhab.core.library.unit.MetricPrefix.*;
+import static org.openhab.core.library.unit.SIUnits.*;
+import static org.openhab.core.library.unit.Units.*;
+import static org.openhab.core.types.UnDefType.NULL;
+
+import java.util.Collection;
+import java.util.function.Function;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
@@ -19,14 +28,6 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
 
-import java.util.Collection;
-import java.util.function.Function;
-
-import static javax.measure.MetricPrefix.MEGA;
-import static org.openhab.core.library.unit.MetricPrefix.*;
-import static org.openhab.core.library.unit.SIUnits.*;
-import static org.openhab.core.library.unit.Units.*;
-import static org.openhab.core.types.UnDefType.NULL;
 /**
  * @author Martin Grześlowski - Initial contribution
  */

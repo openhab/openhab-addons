@@ -54,8 +54,8 @@
 				<label>Day T+14</label>
 			</channel-group>
 			<channel-group id="day15" typeId="day-channel-group">
-			<label>Day T+15</label>
-		</channel-group>
+				<label>Day T+15</label>
+			</channel-group>
 		</channel-groups>
 
 		<config-description>
@@ -66,11 +66,17 @@
 			</parameter>
 			<parameter name="location" type="text">
 				<label>Location</label>
-				<description>is the address, partial address or latitude,longitude location for which to retrieve weather data. You can also use US ZIP Codes. If you would like to submit multiple locations in the same request, consider our Multiple Location Timeline Weather API.</description>
+				<description>is the address, partial address or latitude,longitude location for which to retrieve weather data. You
+					can also use US ZIP Codes. If you would like to submit multiple locations in the same request, consider our
+					Multiple Location Timeline Weather API.</description>
 			</parameter>
 			<parameter name="lang" type="text">
 				<label>Language</label>
-				<description>Sets the language of the translatable parts of the output such as the conditions field. Available languages include: ar (Arabic), bg (Bulgiarian), cs (Czech), da (Danish), de (German), el (Greek Modern), en (English), es (Spanish) ), fa (Farsi), fi (Finnish), fr (French), he Hebrew), hu, (Hungarian), it (Italian), ja (Japanese), ko (Korean), nl (Dutch), pl (Polish), pt (Portuguese), ru (Russian), sk (Slovakian), sr (Serbian), sv (Swedish), tr (Turkish), uk (Ukranian), vi (Vietnamese) and zh (Chinese).</description>
+				<description>Sets the language of the translatable parts of the output such as the conditions field. Available
+					languages include: ar (Arabic), bg (Bulgiarian), cs (Czech), da (Danish), de (German), el (Greek Modern), en
+					(English), es (Spanish) ), fa (Farsi), fi (Finnish), fr (French), he Hebrew), hu, (Hungarian), it (Italian), ja
+					(Japanese), ko (Korean), nl (Dutch), pl (Polish), pt (Portuguese), ru (Russian), sk (Slovakian), sr (Serbian), sv
+					(Swedish), tr (Turkish), uk (Ukranian), vi (Vietnamese) and zh (Chinese).</description>
 			</parameter>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>

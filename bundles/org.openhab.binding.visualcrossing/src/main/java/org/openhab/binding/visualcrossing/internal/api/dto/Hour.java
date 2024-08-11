@@ -12,38 +12,21 @@
  */
 package org.openhab.binding.visualcrossing.internal.api.dto;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import java.util.List;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public record Hour(
-        @Nullable String datetime,
-        @Nullable Long datetimeEpoch,
-        @Nullable Double temp,
-        @Nullable Double feelslike,
-        @Nullable Double humidity,
-        @Nullable Double dew,
-        @Nullable Double precip,
-        @Nullable Double precipprob,
-        @Nullable Double snow,
-        @Nullable Double snowdepth,
-        @Nullable List<String> preciptype,
-        @Nullable Double windgust,
-        @Nullable Double windspeed,
-        @Nullable Double winddir,
-        @Nullable Double pressure,
-        @Nullable Double visibility,
-        @Nullable Double cloudcover,
-        @Nullable Double solarradiation,
-        @Nullable Double solarenergy,
-        @Nullable Double uvindex,
-        @Nullable Double severerisk,
-        @Nullable String conditions,
-        @Nullable String icon,
-        @Nullable List<String> stations,
-        @Nullable String source
-) {}
+public record Hour(@Nullable String datetime, @Nullable Long datetimeEpoch, @Nullable Double temp,
+        @Nullable Double feelslike, @Nullable Double humidity, @Nullable Double dew, @Nullable Double precip,
+        @Nullable Double precipprob, @Nullable Double snow, @Nullable Double snowdepth,
+        @Nullable List<String> preciptype, @Nullable Double windgust, @Nullable Double windspeed,
+        @Nullable Double winddir, @Nullable Double pressure, @Nullable Double visibility, @Nullable Double cloudcover,
+        @Nullable Double solarradiation, @Nullable Double solarenergy, @Nullable Double uvindex,
+        @Nullable Double severerisk, @Nullable String conditions, @Nullable String icon,
+        @Nullable List<String> stations, @Nullable String source) {
+}

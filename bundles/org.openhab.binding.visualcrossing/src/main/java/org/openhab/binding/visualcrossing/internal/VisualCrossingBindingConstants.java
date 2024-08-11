@@ -1,21 +1,21 @@
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
- * <p>
+ *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- * <p>
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.visualcrossing.internal;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
-
-import java.util.Set;
 
 /**
  * The {@link VisualCrossingBindingConstants} class defines common constants, which are
@@ -27,7 +27,9 @@ import java.util.Set;
 public class VisualCrossingBindingConstants {
 
     private static final String BINDING_ID = "visualcrossing";
-    public static final Set<String> SUPPORTED_LANGUAGES = Set.of("ar", "bg", "cs", "da", "de", "el", "en", "es", "fa", "fi", "fr", "he", "hu,", "it", "ja", "ko", "nl", "pl", "pt", "ru", "sk", "sr", "sv", "tr", "uk", "vi", "zh");
+    public static final Set<String> SUPPORTED_LANGUAGES = Set.of("ar", "bg", "cs", "da", "de", "el", "en", "es", "fa",
+            "fi", "fr", "he", "hu,", "it", "ja", "ko", "nl", "pl", "pt", "ru", "sk", "sr", "sv", "tr", "uk", "vi",
+            "zh");
     public static final ThingTypeUID WEATHER_THING_TYPE = new ThingTypeUID(BINDING_ID, "weather");
 
     public static final class Channels {

@@ -12,41 +12,21 @@
  */
 package org.openhab.binding.visualcrossing.internal.api.dto;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import java.util.List;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public record CurrentConditions (
-    @Nullable String datetime,
-    @Nullable Long datetimeEpoch,
-    @Nullable Double temp,
-    @Nullable Double feelslike,
-    @Nullable Double humidity,
-    @Nullable Double dew,
-    @Nullable Double precip,
-    @Nullable Double precipprob,
-    @Nullable Double snow,
-    @Nullable Double snowdepth,
-    @Nullable String preciptype,
-    @Nullable Double windgust,
-    @Nullable Double windspeed,
-    @Nullable Double winddir,
-    @Nullable Double pressure,
-    @Nullable Double visibility,
-    @Nullable Double cloudcover,
-    @Nullable Double solarradiation,
-    @Nullable Double solarenergy,
-    @Nullable Double uvindex,
-    @Nullable String conditions,
-    @Nullable String icon,
-    @Nullable List<String> stations,
-    @Nullable String source,
-    @Nullable String sunrise,
-    @Nullable Long sunriseEpoch,
-    @Nullable String sunset,
-    @Nullable Long sunsetEpoch,
-    @Nullable Double moonphase) {}
+public record CurrentConditions(@Nullable String datetime, @Nullable Long datetimeEpoch, @Nullable Double temp,
+        @Nullable Double feelslike, @Nullable Double humidity, @Nullable Double dew, @Nullable Double precip,
+        @Nullable Double precipprob, @Nullable Double snow, @Nullable Double snowdepth, @Nullable String preciptype,
+        @Nullable Double windgust, @Nullable Double windspeed, @Nullable Double winddir, @Nullable Double pressure,
+        @Nullable Double visibility, @Nullable Double cloudcover, @Nullable Double solarradiation,
+        @Nullable Double solarenergy, @Nullable Double uvindex, @Nullable String conditions, @Nullable String icon,
+        @Nullable List<String> stations, @Nullable String source, @Nullable String sunrise, @Nullable Long sunriseEpoch,
+        @Nullable String sunset, @Nullable Long sunsetEpoch, @Nullable Double moonphase) {
+}

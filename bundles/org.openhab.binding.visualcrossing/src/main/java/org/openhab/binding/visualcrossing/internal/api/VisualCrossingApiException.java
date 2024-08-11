@@ -12,9 +12,10 @@
  */
 package org.openhab.binding.visualcrossing.internal.api;
 
+import java.io.Serial;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
-import java.io.Serial;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
@@ -38,7 +39,8 @@ public class VisualCrossingApiException extends Exception {
         super(cause);
     }
 
-    public VisualCrossingApiException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public VisualCrossingApiException(String message, Throwable cause, boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

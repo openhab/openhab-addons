@@ -12,13 +12,14 @@
  */
 package org.openhab.binding.visualcrossing.internal.api;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.visualcrossing.internal.api.dto.CurrentConditions;
 import org.openhab.binding.visualcrossing.internal.api.dto.Day;
 import org.openhab.binding.visualcrossing.internal.api.dto.Hour;
 import org.openhab.binding.visualcrossing.internal.api.dto.WeatherResponse;
 
-import java.util.List;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
@@ -1535,8 +1536,7 @@ public class VisualCrossingApiTestConst {
               }
             }
             """;
-    public static final WeatherResponse FULL_JSON_RESPONSE = new WeatherResponse(
-            1, //
+    public static final WeatherResponse FULL_JSON_RESPONSE = new WeatherResponse(1, //
             51.1082, //
             17.0269, //
             "Wrocław, Woj. Dolnośląskie, Polska", //
@@ -2921,37 +2921,36 @@ public class VisualCrossingApiTestConst {
                                     ) //
                             ) //
                     ) //
-            ),
-            new CurrentConditions(//
-                    "15:45:00",//
-                    1723297500L,//
-                    79.7,//
-                    79.7,//
-                    53.2,//
-                    61.1,//
-                    0.0,//
-                    0.0,//
-                    0.0,//
-                    0.0,//
-                    null,//
-                    7.8,//
-                    6.0,//
-                    16.0,//
-                    1019.0,//
-                    6.2,//
-                    68.4,//
-                    321.0,//
-                    1.2,//
-                    3.0,//
-                    "Częściowe zachmurzenie",//
-                    "partly-cloudy-day",//
-                    List.of("EPWR", "E1158", "F4529"),//
-                    "obs",//
-                    "05:31:19",//
-                    1723260679L,//
-                    "20:22:08",//
-                    1723314128L,//
+            ), new CurrentConditions(//
+                    "15:45:00", //
+                    1723297500L, //
+                    79.7, //
+                    79.7, //
+                    53.2, //
+                    61.1, //
+                    0.0, //
+                    0.0, //
+                    0.0, //
+                    0.0, //
+                    null, //
+                    7.8, //
+                    6.0, //
+                    16.0, //
+                    1019.0, //
+                    6.2, //
+                    68.4, //
+                    321.0, //
+                    1.2, //
+                    3.0, //
+                    "Częściowe zachmurzenie", //
+                    "partly-cloudy-day", //
+                    List.of("EPWR", "E1158", "F4529"), //
+                    "obs", //
+                    "05:31:19", //
+                    1723260679L, //
+                    "20:22:08", //
+                    1723314128L, //
                     0.19//
             )//
-            ); //
+    ); //
 }

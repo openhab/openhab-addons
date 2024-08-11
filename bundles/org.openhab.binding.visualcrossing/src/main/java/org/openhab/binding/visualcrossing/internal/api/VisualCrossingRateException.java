@@ -12,15 +12,15 @@
  */
 package org.openhab.binding.visualcrossing.internal.api;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
-
 import java.io.Serial;
+
+import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public class VisualCrossingRateException extends Exception{
+public class VisualCrossingRateException extends Exception {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -39,7 +39,8 @@ public class VisualCrossingRateException extends Exception{
         super(cause);
     }
 
-    public VisualCrossingRateException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public VisualCrossingRateException(String message, Throwable cause, boolean enableSuppression,
+            boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

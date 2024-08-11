@@ -1,16 +1,22 @@
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
- * <p>
+ *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- * <p>
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.visualcrossing.internal.api.rest;
+
+import static java.util.Objects.requireNonNull;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -20,12 +26,6 @@ import org.eclipse.jetty.client.util.StringContentProvider;
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingApiException;
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingAuthException;
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingRateException;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
-
-import static java.util.Objects.requireNonNull;
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * @author Martin Grześlowski - Initial contribution
@@ -44,7 +44,8 @@ public class HttpClient implements RestClient {
     }
 
     @Override
-    public @Nullable String get(String url, @Nullable Header... headers) throws VisualCrossingApiException, VisualCrossingAuthException, VisualCrossingRateException {
+    public @Nullable String get(String url, @Nullable Header... headers)
+            throws VisualCrossingApiException, VisualCrossingAuthException, VisualCrossingRateException {
         var request = requireNonNull(client.newRequest(url));
         return execute(request, headers, url);
     }
@@ -60,7 +61,8 @@ public class HttpClient implements RestClient {
     }
 
     @SuppressWarnings("ConstantValue")
-    private @Nullable String execute(Request request, @Nullable Header[] headers, String url) throws VisualCrossingApiException, VisualCrossingAuthException, VisualCrossingRateException {
+    private @Nullable String execute(Request request, @Nullable Header[] headers, String url)
+            throws VisualCrossingApiException, VisualCrossingAuthException, VisualCrossingRateException {
         try {
             if (headers != null) {
                 for (var header : headers) {

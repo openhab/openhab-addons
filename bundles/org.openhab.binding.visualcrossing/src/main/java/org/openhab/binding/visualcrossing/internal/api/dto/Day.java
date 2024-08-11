@@ -12,50 +12,24 @@
  */
 package org.openhab.binding.visualcrossing.internal.api.dto;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import java.util.List;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public record Day(
-        @Nullable String datetime,
-        @Nullable Long datetimeEpoch,
-        @Nullable Double tempmax,
-        @Nullable Double tempmin,
-        @Nullable Double temp,
-        @Nullable Double feelslikemax,
-        @Nullable Double feelslikemin,
-        @Nullable Double feelslike,
-        @Nullable Double dew,
-        @Nullable Double humidity,
-        @Nullable Double precip,
-        @Nullable Double precipprob,
-        @Nullable Double precipcover,
-        @Nullable List<String> preciptype,
-        @Nullable Double snow,
-        @Nullable Double snowdepth,
-        @Nullable Double windgust,
-        @Nullable Double windspeed,
-        @Nullable Double winddir,
-        @Nullable Double pressure,
-        @Nullable Double cloudcover,
-        @Nullable Double visibility,
-        @Nullable Double solarradiation,
-        @Nullable Double solarenergy,
-        @Nullable Double uvindex,
-        @Nullable Double severerisk,
-        @Nullable String sunrise,
-        @Nullable Long sunriseEpoch,
-        @Nullable String sunset,
-        @Nullable Long sunsetEpoch,
-        @Nullable Double moonphase,
-        @Nullable String conditions,
-        @Nullable String description,
-        @Nullable String icon,
-        @Nullable List<String> stations,
-        @Nullable String source,
-        @Nullable List<Hour> hours
-) {}
+public record Day(@Nullable String datetime, @Nullable Long datetimeEpoch, @Nullable Double tempmax,
+        @Nullable Double tempmin, @Nullable Double temp, @Nullable Double feelslikemax, @Nullable Double feelslikemin,
+        @Nullable Double feelslike, @Nullable Double dew, @Nullable Double humidity, @Nullable Double precip,
+        @Nullable Double precipprob, @Nullable Double precipcover, @Nullable List<String> preciptype,
+        @Nullable Double snow, @Nullable Double snowdepth, @Nullable Double windgust, @Nullable Double windspeed,
+        @Nullable Double winddir, @Nullable Double pressure, @Nullable Double cloudcover, @Nullable Double visibility,
+        @Nullable Double solarradiation, @Nullable Double solarenergy, @Nullable Double uvindex,
+        @Nullable Double severerisk, @Nullable String sunrise, @Nullable Long sunriseEpoch, @Nullable String sunset,
+        @Nullable Long sunsetEpoch, @Nullable Double moonphase, @Nullable String conditions,
+        @Nullable String description, @Nullable String icon, @Nullable List<String> stations, @Nullable String source,
+        @Nullable List<Hour> hours) {
+}

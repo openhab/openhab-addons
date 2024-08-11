@@ -22,12 +22,13 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public class VisualCrossingConfiguration {
-    @Nullable public String apiKey ;
     @Nullable
-    public String location ;
+    public String apiKey;
     @Nullable
-    public String lang ;
+    public String location;
+    @Nullable
+    public String lang;
     public String hostname = "https://weather.visualcrossing.com";
     public int refreshInterval = 3600;
-    public int httpRetries=3;
+    public int httpRetries = 3;
 }

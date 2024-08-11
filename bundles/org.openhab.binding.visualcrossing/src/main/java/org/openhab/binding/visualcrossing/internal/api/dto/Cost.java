@@ -14,6 +14,7 @@ package org.openhab.binding.visualcrossing.internal.api.dto;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+
 /**
  * @author Martin Grześlowski - Initial contribution
  */

@@ -12,13 +12,13 @@
  */
 package org.openhab.binding.visualcrossing.internal.api.rest;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingApiException;
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingAuthException;
 import org.openhab.binding.visualcrossing.internal.api.VisualCrossingRateException;
-
-import java.util.List;
 
 /**
  * @author Martin Grześlowski - Initial contribution
@@ -33,7 +33,8 @@ public interface RestClient {
      * @return response from server
      */
     @Nullable
-    String get(String url, @Nullable Header... headers) throws VisualCrossingApiException, VisualCrossingAuthException, VisualCrossingRateException;
+    String get(String url, @Nullable Header... headers)
+            throws VisualCrossingApiException, VisualCrossingAuthException, VisualCrossingRateException;
 
     /**
      * POST request to server
@@ -44,7 +45,8 @@ public interface RestClient {
      * @return response from server
      */
     @Nullable
-    String post(String url, Content content, @Nullable Header... headers) throws  VisualCrossingApiException, VisualCrossingAuthException, VisualCrossingRateException;
+    String post(String url, Content content, @Nullable Header... headers)
+            throws VisualCrossingApiException, VisualCrossingAuthException, VisualCrossingRateException;
 
     /**
      * Represents content with a body and a type.

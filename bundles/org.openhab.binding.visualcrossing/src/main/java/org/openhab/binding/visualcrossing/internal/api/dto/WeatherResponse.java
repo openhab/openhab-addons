@@ -12,23 +12,17 @@
  */
 package org.openhab.binding.visualcrossing.internal.api.dto;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import java.util.List;
 /**
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
-public record WeatherResponse(
-        @Nullable Integer queryCost,
-        @Nullable Double latitude,
-        @Nullable Double longitude,
-        @Nullable String resolvedAddress,
-        @Nullable String address,
-        @Nullable String timezone,
-        @Nullable Double tzoffset,
-        @Nullable String description,
-        @Nullable List<Day> days,
-        @Nullable CurrentConditions currentConditions
-) implements Cost {}
+public record WeatherResponse(@Nullable Integer queryCost, @Nullable Double latitude, @Nullable Double longitude,
+        @Nullable String resolvedAddress, @Nullable String address, @Nullable String timezone,
+        @Nullable Double tzoffset, @Nullable String description, @Nullable List<Day> days,
+        @Nullable CurrentConditions currentConditions) implements Cost {
+}

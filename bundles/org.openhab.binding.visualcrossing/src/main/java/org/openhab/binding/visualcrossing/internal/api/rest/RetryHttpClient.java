@@ -38,11 +38,12 @@ public class RetryHttpClient implements RestClient {
     }
 
     @Override
-    public @Nullable String get(String url, @Nullable Header... headers) throws VisualCrossingApiException, VisualCrossingAuthException, VisualCrossingRateException {
+    public @Nullable String get(String url, @Nullable Header... headers)
+            throws VisualCrossingApiException, VisualCrossingAuthException, VisualCrossingRateException {
         for (int i = 0; i < maxRetries; i++) {
             try {
                 return restClient.get(url, headers);
-            } catch (VisualCrossingApiException  ex) {
+            } catch (VisualCrossingApiException ex) {
                 if (i < maxRetries - 1) {
                     logger.debug("Error while calling GET {}. Retrying {}/{}...", url, i + 1, maxRetries, ex);
                 } else {
@@ -54,11 +55,12 @@ public class RetryHttpClient implements RestClient {
     }
 
     @Override
-    public @Nullable String post(String url, Content content, @Nullable Header... headers) throws VisualCrossingAuthException, VisualCrossingApiException, VisualCrossingRateException {
+    public @Nullable String post(String url, Content content, @Nullable Header... headers)
+            throws VisualCrossingAuthException, VisualCrossingApiException, VisualCrossingRateException {
         for (int i = 0; i < maxRetries; i++) {
             try {
                 return restClient.post(url, content, headers);
-            } catch (VisualCrossingApiException  ex) {
+            } catch (VisualCrossingApiException ex) {
                 if (i < maxRetries - 1) {
                     logger.debug("Error while calling POST {}. Retrying {}/{}...", url, i + 1, maxRetries, ex);
                 } else {
