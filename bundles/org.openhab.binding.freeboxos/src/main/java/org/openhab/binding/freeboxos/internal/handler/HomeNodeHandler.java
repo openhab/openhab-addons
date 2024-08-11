@@ -86,25 +86,21 @@ public abstract class HomeNodeHandler extends ApiConsumerHandler {
     protected void internalPoll() throws FreeboxException {
         HomeManager homeManager = getManager(HomeManager.class);
         HomeNode node = homeManager.getHomeNode(getClientId());
-        getThing().getChannels().stream().filter(channel -> isLinked(channel.getUID())).forEach(channel -> {
+        List<Channel> linkedChannels = getThing().getChannels().stream().filter(channel -> isLinked(channel.getUID()))
+                .toList();
+
+        for (Channel channel : linkedChannels) {
             State result = null;
             Integer slotId = getSlotId(channel.getConfiguration(), EpType.SIGNAL.asConfId());
             if (slotId instanceof Integer) {
-                try {
-                    EndpointState state = homeManager.getEndpointsState(getClientId(), slotId);
-                    Optional<Endpoint> endPoint = node.getEndpoint(slotId);
-                    if (state != null) {
-                        result = getChannelState(channel.getUID().getIdWithoutGroup(), state, endPoint);
-                    }
-                } catch (FreeboxException e) {
-                    logger.warn("Error updating channel: {}", e.getMessage());
+                EndpointState state = homeManager.getEndpointsState(getClientId(), slotId);
+                Optional<Endpoint> endPoint = node.getEndpoint(slotId);
+                if (state != null) {
+                    result = getChannelState(channel.getUID().getIdWithoutGroup(), state, endPoint);
                 }
             }
             updateState(channel.getUID(), result != null ? result : UnDefType.UNDEF);
-        });
-        node.showEndpoints().forEach(endPoint -> {
-            logger.debug(endPoint.toString());
-        });
+        }
     }
 
     @Override
