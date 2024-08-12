@@ -105,7 +105,7 @@ public class FreeboxOsSession {
             vmSupported = getManager(SystemManager.class).getConfig().modelInfo().hasVm();
         }
         getManager(WebSocketManager.class).openSession(newSession.sessionToken(), wsReconnectInterval,
-                vmSupported == null ? false : vmSupported.booleanValue());
+                Boolean.TRUE.equals(vmSupported));
     }
 
     public String grant() throws FreeboxException {
