@@ -30,6 +30,7 @@ import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session;
+import org.openhab.binding.freeboxos.internal.api.rest.SystemManager.Config;
 import org.openhab.binding.freeboxos.internal.config.FreeboxOsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,8 @@ public class FreeboxOsSession {
     private @Nullable Session session;
     private String appToken = "";
     private int wsReconnectInterval;
+    @Nullable
+    private Boolean vmSupported;
 
     public enum BoxModel {
         FBXGW_R1_FULL, // Freebox Server (v6) revision 1
@@ -85,7 +88,9 @@ public class FreeboxOsSession {
                 ApiVersion.class, null, null);
         this.uriBuilder = config.getUriBuilder(version.baseUrl());
         this.wsReconnectInterval = config.wsReconnectInterval;
+        this.vmSupported = null;
         getManager(LoginManager.class);
+        getManager(SystemManager.class);
         getManager(NetShareManager.class);
         getManager(LanManager.class);
         getManager(WifiManager.class);
@@ -95,9 +100,14 @@ public class FreeboxOsSession {
 
     public void openSession(String appToken) throws FreeboxException {
         Session newSession = getManager(LoginManager.class).openSession(appToken);
-        getManager(WebSocketManager.class).openSession(newSession.sessionToken(), wsReconnectInterval);
         session = newSession;
         this.appToken = appToken;
+        if (vmSupported == null) {
+            Config config = getManager(SystemManager.class).getConfig();
+            vmSupported = config.modelInfo().hasVm();
+        }
+        getManager(WebSocketManager.class).openSession(newSession.sessionToken(), wsReconnectInterval,
+                vmSupported == null ? false : vmSupported.booleanValue());
     }
 
     public String grant() throws FreeboxException {
