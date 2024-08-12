@@ -200,14 +200,19 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         updateChannelString(CONNECTION_STATUS, LINE_MEDIA, status.media());
         switch (status.media()) {
             case FTTH:
-                FtthStatus ftthStatus = connectionManager.getFtthStatus();
-                updateChannelOnOff(GROUP_FTTH, SFP_PRESENT, ftthStatus.sfpPresent());
-                updateChannelOnOff(GROUP_FTTH, SFP_ALIM, ftthStatus.sfpAlimOk());
-                updateChannelOnOff(GROUP_FTTH, SFP_POWER, ftthStatus.sfpHasPowerReport());
-                updateChannelOnOff(GROUP_FTTH, SFP_SIGNAL, ftthStatus.sfpHasSignal());
-                updateChannelOnOff(GROUP_FTTH, SFP_LINK, ftthStatus.link());
-                updateChannelQuantity(GROUP_FTTH, SFP_PWR_TX, ftthStatus.getTransmitDBM(), Units.DECIBEL_MILLIWATTS);
-                updateChannelQuantity(GROUP_FTTH, SFP_PWR_RX, ftthStatus.getReceivedDBM(), Units.DECIBEL_MILLIWATTS);
+                if (anyChannelLinked(GROUP_FTTH,
+                        Set.of(SFP_PRESENT, SFP_ALIM, SFP_POWER, SFP_SIGNAL, SFP_LINK, SFP_PWR_TX, SFP_PWR_RX))) {
+                    FtthStatus ftthStatus = connectionManager.getFtthStatus();
+                    updateChannelOnOff(GROUP_FTTH, SFP_PRESENT, ftthStatus.sfpPresent());
+                    updateChannelOnOff(GROUP_FTTH, SFP_ALIM, ftthStatus.sfpAlimOk());
+                    updateChannelOnOff(GROUP_FTTH, SFP_POWER, ftthStatus.sfpHasPowerReport());
+                    updateChannelOnOff(GROUP_FTTH, SFP_SIGNAL, ftthStatus.sfpHasSignal());
+                    updateChannelOnOff(GROUP_FTTH, SFP_LINK, ftthStatus.link());
+                    updateChannelQuantity(GROUP_FTTH, SFP_PWR_TX, ftthStatus.getTransmitDBM(),
+                            Units.DECIBEL_MILLIWATTS);
+                    updateChannelQuantity(GROUP_FTTH, SFP_PWR_RX, ftthStatus.getReceivedDBM(),
+                            Units.DECIBEL_MILLIWATTS);
+                }
                 break;
             case XDSL:
                 XdslInfos xdslStatus = connectionManager.getXdslStatus();
@@ -216,6 +221,11 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
                 break;
 >>>>>>> 24fb551 Adding FTTH line status, initiating the addition of xDSL line status
         }
+    }
+
+    private boolean anyChannelLinked(String groupId, Set<String> channelSet) {
+        return channelSet.stream().map(id -> new ChannelUID(getThing().getUID(), groupId, id))
+                .anyMatch(uid -> isLinked(uid));
     }
 
     private void updateRateBandwidth(long rate, long bandwidth, String orientation) {

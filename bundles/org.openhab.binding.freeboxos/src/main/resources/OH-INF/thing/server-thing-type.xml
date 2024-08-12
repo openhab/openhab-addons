@@ -24,6 +24,10 @@
 			<channel-group typeId="xdsl" id="xdsl"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>macAddress</representation-property>
 
 		<config-description-ref uri="thing-type:freeboxos:server"/>
@@ -47,6 +51,10 @@
 			<channel-group typeId="ftth" id="ftth"/>
 			<channel-group typeId="xdsl" id="xdsl"/>
 		</channel-groups>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<representation-property>macAddress</representation-property>
 

@@ -491,7 +491,7 @@
 
 	<channel-type id="link">
 		<item-type>Switch</item-type>
-		<label>Link is Active</label>
+		<label>Link Is Active</label>
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
@@ -500,7 +500,7 @@
 		<item-type unitHint="dBm">Number:Power</item-type>
 		<label>Signal Level</label>
 		<category>QualityOfService</category>
-		<state readOnly="true" pattern="%.2f %unit%"/>
+		<state readOnly="true" pattern="%.2f dBm"/>
 	</channel-type>
 
 </thing:thing-descriptions>
