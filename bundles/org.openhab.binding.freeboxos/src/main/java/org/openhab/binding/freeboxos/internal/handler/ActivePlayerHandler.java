@@ -73,12 +73,14 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
             Player player = getManager(PlayerManager.class).getDevice(getClientId());
             updateStatus(player.reachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
             if (player.reachable()) {
-                Status status = getManager(PlayerManager.class).getPlayerStatus(getClientId());
-                if (status != null) {
-                    updateChannelString(PLAYER_STATUS, PLAYER_STATUS, status.powerState().name());
-                    ForegroundApp foreground = status.foregroundApp();
-                    if (foreground != null) {
-                        updateChannelString(PLAYER_STATUS, PACKAGE, foreground._package());
+                if (isLinked(PLAYER_STATUS + "#" + PLAYER_STATUS) || isLinked(PLAYER_STATUS + "#" + PACKAGE)) {
+                    Status status = getManager(PlayerManager.class).getPlayerStatus(getClientId());
+                    if (status != null) {
+                        updateChannelString(PLAYER_STATUS, PLAYER_STATUS, status.powerState().name());
+                        ForegroundApp foreground = status.foregroundApp();
+                        if (foreground != null) {
+                            updateChannelString(PLAYER_STATUS, PACKAGE, foreground._package());
+                        }
                     }
                 }
                 Configuration config = getManager(PlayerManager.class).getConfig(getClientId());

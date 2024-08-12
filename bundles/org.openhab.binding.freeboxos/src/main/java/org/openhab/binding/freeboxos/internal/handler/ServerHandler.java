@@ -115,15 +115,27 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         fetchConnectionStatus();
         fetchSystemConfig();
 
-        updateChannelOnOff(ACTIONS, WIFI_STATUS, getManager(WifiManager.class).getStatus());
-        updateChannelOnOff(ACTIONS, AIRMEDIA_STATUS, getManager(AirMediaManager.class).getStatus());
-        updateChannelOnOff(ACTIONS, UPNPAV_STATUS, getManager(UPnPAVManager.class).getStatus());
+        if (isLinked(ACTIONS + "#" + WIFI_STATUS)) {
+            updateChannelOnOff(ACTIONS, WIFI_STATUS, getManager(WifiManager.class).getStatus());
+        }
+        if (isLinked(ACTIONS + "#" + AIRMEDIA_STATUS)) {
+            updateChannelOnOff(ACTIONS, AIRMEDIA_STATUS, getManager(AirMediaManager.class).getStatus());
+        }
+        if (isLinked(ACTIONS + "#" + UPNPAV_STATUS)) {
+            updateChannelOnOff(ACTIONS, UPNPAV_STATUS, getManager(UPnPAVManager.class).getStatus());
+        }
 
-        Samba response = getManager(SambaManager.class).getConfig();
-        updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS, response.fileShareEnabled());
-        updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS, response.printShareEnabled());
-        updateChannelOnOff(FILE_SHARING, FTP_STATUS, getManager(FtpManager.class).getStatus());
-        updateChannelOnOff(FILE_SHARING, AFP_FILE_STATUS, getManager(AfpManager.class).getStatus());
+        if (isLinked(FILE_SHARING + "#" + SAMBA_FILE_STATUS) || isLinked(FILE_SHARING + "#" + SAMBA_PRINTER_STATUS)) {
+            Samba response = getManager(SambaManager.class).getConfig();
+            updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS, response.fileShareEnabled());
+            updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS, response.printShareEnabled());
+        }
+        if (isLinked(FILE_SHARING + "#" + FTP_STATUS)) {
+            updateChannelOnOff(FILE_SHARING, FTP_STATUS, getManager(FtpManager.class).getStatus());
+        }
+        if (isLinked(FILE_SHARING + "#" + AFP_FILE_STATUS)) {
+            updateChannelOnOff(FILE_SHARING, AFP_FILE_STATUS, getManager(AfpManager.class).getStatus());
+        }
     }
 
     private void fetchSystemConfig() throws FreeboxException {
@@ -135,23 +147,35 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         uptime = checkUptimeAndFirmware(config.uptimeVal(), uptime, config.firmwareVersion());
         updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
 
-        LanConfig lanConfig = getManager(LanManager.class).getConfig();
-        updateChannelString(SYS_INFO, IP_ADDRESS, lanConfig.ip());
+        if (isLinked(SYS_INFO + "#" + IP_ADDRESS)) {
+            LanConfig lanConfig = getManager(LanManager.class).getConfig();
+            updateChannelString(SYS_INFO, IP_ADDRESS, lanConfig.ip());
+        }
     }
 
     private void fetchConnectionStatus() throws FreeboxException {
-        Status status = getManager(ConnectionManager.class).getConfig();
-        updateChannelString(CONNECTION_STATUS, LINE_STATUS, status.state());
-        updateChannelString(CONNECTION_STATUS, LINE_TYPE, status.type());
-        updateChannelString(CONNECTION_STATUS, LINE_MEDIA, status.media());
-        updateChannelString(CONNECTION_STATUS, IP_ADDRESS, status.ipv4());
-        updateChannelString(CONNECTION_STATUS, IPV6_ADDRESS, status.ipv6());
+        if (isLinked(CONNECTION_STATUS + "#" + LINE_STATUS) || isLinked(CONNECTION_STATUS + "#" + LINE_TYPE)
+                || isLinked(CONNECTION_STATUS + "#" + LINE_MEDIA) || isLinked(CONNECTION_STATUS + "#" + IP_ADDRESS)
+                || isLinked(CONNECTION_STATUS + "#" + IPV6_ADDRESS) || isLinked(CONNECTION_STATUS + "#" + BYTES_UP)
+                || isLinked(CONNECTION_STATUS + "#" + BYTES_DOWN) || isLinked(CONNECTION_STATUS + "#" + RATE + "-up")
+                || isLinked(CONNECTION_STATUS + "#" + BW + "-up") || isLinked(CONNECTION_STATUS + "#" + PCT_BW + "-up")
+                || isLinked(CONNECTION_STATUS + "#" + RATE + "-down")
+                || isLinked(CONNECTION_STATUS + "#" + BW + "-down")
+                || isLinked(CONNECTION_STATUS + "#" + PCT_BW + "-down")) {
+            Status status = getManager(ConnectionManager.class).getConfig();
+            updateChannelString(CONNECTION_STATUS, LINE_STATUS, status.state());
+            updateChannelString(CONNECTION_STATUS, LINE_TYPE, status.type());
+            updateChannelString(CONNECTION_STATUS, LINE_MEDIA, status.media());
+            updateChannelString(CONNECTION_STATUS, IP_ADDRESS, status.ipv4());
+            updateChannelString(CONNECTION_STATUS, IPV6_ADDRESS, status.ipv6());
 
-        updateRateBandwidth(status.rateUp(), status.bandwidthUp(), "up");
-        updateRateBandwidth(status.rateDown(), status.bandwidthDown(), "down");
+            updateRateBandwidth(status.rateUp(), status.bandwidthUp(), "up");
+            updateRateBandwidth(status.rateDown(), status.bandwidthDown(), "down");
 
-        updateChannelQuantity(CONNECTION_STATUS, BYTES_UP, new QuantityType<>(status.bytesUp(), OCTET), GIBIOCTET);
-        updateChannelQuantity(CONNECTION_STATUS, BYTES_DOWN, new QuantityType<>(status.bytesDown(), OCTET), GIBIOCTET);
+            updateChannelQuantity(CONNECTION_STATUS, BYTES_UP, new QuantityType<>(status.bytesUp(), OCTET), GIBIOCTET);
+            updateChannelQuantity(CONNECTION_STATUS, BYTES_DOWN, new QuantityType<>(status.bytesDown(), OCTET),
+                    GIBIOCTET);
+        }
     }
 
     private void updateRateBandwidth(long rate, long bandwidth, String orientation) {

@@ -66,10 +66,13 @@ public class RevolutionHandler extends ServerHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        Config config = getManager(LcdManager.class).getConfig();
-        updateChannelQuantity(DISPLAY, LCD_BRIGHTNESS, config.brightness(), PERCENT);
-        updateChannelDecimal(DISPLAY, LCD_ORIENTATION, config.orientation());
-        updateChannelOnOff(DISPLAY, LCD_FORCED, config.orientationForced());
+        if (isLinked(DISPLAY + "#" + LCD_BRIGHTNESS) || isLinked(DISPLAY + "#" + LCD_ORIENTATION)
+                || isLinked(DISPLAY + "#" + LCD_FORCED)) {
+            Config config = getManager(LcdManager.class).getConfig();
+            updateChannelQuantity(DISPLAY, LCD_BRIGHTNESS, config.brightness(), PERCENT);
+            updateChannelDecimal(DISPLAY, LCD_ORIENTATION, config.orientation());
+            updateChannelOnOff(DISPLAY, LCD_FORCED, config.orientationForced());
+        }
     }
 
     private void setOrientation(LcdManager manager, Config config, Command command) throws FreeboxException {
