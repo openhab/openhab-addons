@@ -4,10 +4,18 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<!--
+		Documentation:
+		- https://www.openhab.org/docs/developer/addons/config-xml.html
+		- https://www.openhab.org/docs/developer/bindings/thing-xml.html
+		- https://www.openhab.org/schemas/config-description-1.0.0.xsd
+	-->
+
 	<channel-type id="device-info-firmware">
 		<item-type>String</item-type>
 		<label>Firmware Version</label>
 		<description>Installed firmware version</description>
+		<category>iconify:mdi:text</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -15,6 +23,7 @@
 		<item-type>String</item-type>
 		<label>Latest Firmware Version</label>
 		<description>Latest available firmware version</description>
+		<category>iconify:mdi:text</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -22,6 +31,7 @@
 		<item-type>String</item-type>
 		<label>Friendly name</label>
 		<description>Friendly name of the HDMI connection</description>
+		<category>iconify:mdi:label</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -29,6 +39,7 @@
 		<item-type>String</item-type>
 		<label>HDMI connection Status</label>
 		<description>Status of the HDMI input</description>
+		<category>iconify:mdi:connection</category>
 		<state readOnly="true"></state>
 		<command>
 			<options>
@@ -44,6 +55,7 @@
 		<item-type>String</item-type>
 		<label>Friendly type</label>
 		<description>Type of the connected HDMI device</description>
+		<category>iconify:mdi:multimedia</category>
 		<state readOnly="true"></state>
 		<command>
 			<options>
@@ -76,6 +88,7 @@
 		<item-type>String</item-type>
 		<label>Last sync mode</label>
 		<description>Last sync mode used for this channel</description>
+		<category>iconify:mdi:sync</category>
 		<state readOnly="true"></state>
 		<command>
 			<options>
@@ -120,6 +133,7 @@
 			</p>
 			]]>
 		</description>
+		<category>iconify:mdi:multimedia</category>
 		<command>
 			<options>
 				<option value="powersave"></option>
@@ -144,6 +158,7 @@
 			  </p>
 			]]>
 		</description>
+		<category>iconify:mdi:toggle-switch</category>
 	</channel-type>
 
 	<channel-type id="execution-hdmiSource">
@@ -161,6 +176,7 @@
 		      </p>
 			]]>
 		</description>
+		<category>iconify:mdi:video-input-hdmi</category>
 		<command>
 			<options>
 				<option value="input1"></option>
@@ -169,6 +185,35 @@
 				<option value="input4"></option>
 			</options>
 		</command>
+	</channel-type>
+
+	<!--
+		brightness:
+		- Get, Put
+		- number, uint
+		- 0 – 200 (100 = no brightness reduction/boost compared to input, 0 = max reduction, 200 = max boost)
+	-->
+	<channel-type id="execution-brightness">
+		<item-type>Dimmer</item-type>
+		<label>Brightness</label>
+		<description>
+			<![CDATA[
+			<p>
+			  0 - 200
+			  <ul>
+			    <li>0 = max reduction</li>
+				<li>100 = no brightness reduction/boost compared to input</li>
+				<li>200 = max boost</li>
+			  </ul>
+			</p>
+			]]>
+		</description>
+		<category>iconify:mdi:brightness-percent</category>
+		<tags>
+			<tag>Control</tag>
+			<tag>Light</tag>
+		</tags>
+		<state min="0" max="200" step="1" pattern="%d"/>
 	</channel-type>
 
 </thing:thing-descriptions>
