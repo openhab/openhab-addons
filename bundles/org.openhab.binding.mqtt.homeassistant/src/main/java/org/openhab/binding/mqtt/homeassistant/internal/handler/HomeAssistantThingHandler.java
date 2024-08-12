@@ -129,7 +129,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<>(attributeReceiveTimeout, this, scheduler);
 
-        Map<String, String> properties = getThing().getProperties();
         newStyleChannels = "true".equals(thing.getProperties().get("newStyleChannels"));
 
         this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this, this, gson,

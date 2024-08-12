@@ -224,7 +224,6 @@ public class ComponentChannel {
             ChannelUID channelUID;
             ChannelState channelState;
             Channel channel;
-            ChannelType type;
 
             channelUID = component.buildChannelUID(channelID);
             channelState = new HomeAssistantChannelState(
