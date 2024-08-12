@@ -30,7 +30,6 @@ import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.Response.ErrorCode;
 import org.openhab.binding.freeboxos.internal.api.rest.LoginManager.Session;
-import org.openhab.binding.freeboxos.internal.api.rest.SystemManager.Config;
 import org.openhab.binding.freeboxos.internal.config.FreeboxOsConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,8 +102,7 @@ public class FreeboxOsSession {
         session = newSession;
         this.appToken = appToken;
         if (vmSupported == null) {
-            Config config = getManager(SystemManager.class).getConfig();
-            vmSupported = config.modelInfo().hasVm();
+            vmSupported = getManager(SystemManager.class).getConfig().modelInfo().hasVm();
         }
         getManager(WebSocketManager.class).openSession(newSession.sessionToken(), wsReconnectInterval,
                 vmSupported == null ? false : vmSupported.booleanValue());
