@@ -198,7 +198,10 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
                 // @Nullable
                 String response = HttpUtil.executeUrl("GET", uri.toURL().toString(), 500);
                 properties = Optional.ofNullable(new Gson().fromJson(response, TVProperties.class));
-            } catch (JsonSyntaxException | URISyntaxException | IOException e) {
+            } catch (IOException e) {
+                logger.debug("{}: Cannot connect to TV: {}", host, e.getMessage());
+                properties = Optional.empty();
+            } catch (JsonSyntaxException | URISyntaxException e) {
                 logger.warn("{}: Cannot connect to TV: {}", host, e.getMessage());
                 properties = Optional.empty();
             }
@@ -229,7 +232,7 @@ public class SamsungTvHandler extends BaseThingHandler implements RegistryListen
         } catch (InterruptedException | ExecutionException e) {
             logger.warn("{}: Cannot get TVProperties: {}", host, e.getMessage());
         }
-        logger.warn("{}: Cannot get TVProperties, return Empty properties", host);
+        logger.debug("{}: Cannot get TVProperties, return Empty properties", host);
         return new TVProperties();
     }
 
