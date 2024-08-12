@@ -50,6 +50,7 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
 
     public ActivePlayerHandler(Thing thing) {
         super(thing);
+        statusDrivenByLanConnectivity = false;
         eventChannelUID = new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT);
     }
 
@@ -69,8 +70,19 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        if (thing.getStatus().equals(ThingStatus.ONLINE)) {
+        poll();
+    }
+
+    @Override
+    protected void internalForcePoll() throws FreeboxException {
+        super.internalForcePoll();
+        poll();
+    }
+
+    private void poll() throws FreeboxException {
+        if (reachable) {
             Player player = getManager(PlayerManager.class).getDevice(getClientId());
+            logger.debug("{}: poll with player.reachable() = {}", thing.getUID(), player.reachable());
             updateStatus(player.reachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
             if (player.reachable()) {
                 Status status = getManager(PlayerManager.class).getPlayerStatus(getClientId());
@@ -89,6 +101,9 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
                 }
             }
             updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
+        } else {
+            logger.debug("{}: poll with reachable={}", thing.getUID(), reachable);
+            updateStatus(ThingStatus.OFFLINE);
         }
     }
 

@@ -46,6 +46,8 @@ public class HostHandler extends ApiConsumerHandler {
     // We start in pull mode and switch to push after a first update...
     protected boolean pushSubscribed = false;
 
+    protected boolean statusDrivenByLanConnectivity = true;
+
     protected boolean reachable;
 
     private int tryConfigureMediaSink = 1;
@@ -93,7 +95,8 @@ public class HostHandler extends ApiConsumerHandler {
 
         LanHost host = getLanHost();
         updateConnectivityChannels(host);
-        logger.debug("Switching to push mode - refreshInterval will now be ignored for Connectivity data");
+        logger.debug("{}: switching to push mode - refreshInterval will now be ignored for Connectivity data",
+                thing.getUID());
         pushSubscribed = getManager(WebSocketManager.class).registerListener(host.getMac(), this);
     }
 
@@ -114,10 +117,13 @@ public class HostHandler extends ApiConsumerHandler {
     }
 
     public void updateConnectivityChannels(LanHost host) {
+        logger.debug("{}: updateConnectivityChannels with host.reachable() = {}", thing.getUID(), host.reachable());
         updateChannelOnOff(CONNECTIVITY, REACHABLE, host.reachable());
         updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, host.getLastSeen());
         updateChannelString(CONNECTIVITY, IP_ADDRESS, host.getIpv4());
-        updateStatus(host.reachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+        if (statusDrivenByLanConnectivity) {
+            updateStatus(host.reachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+        }
         // We will check and configure audio sink only when the host reachability changed
         if (reachable != host.reachable()) {
             reachable = host.reachable();
