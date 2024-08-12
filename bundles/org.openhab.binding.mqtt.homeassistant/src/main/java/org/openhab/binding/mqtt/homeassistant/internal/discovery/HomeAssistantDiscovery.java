@@ -145,7 +145,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypes() {
-        return typeProvider.getThingTypeUIDs();
+        return typeProvider.getThingTypes(null).stream().map(ThingType::getUID).collect(Collectors.toSet());
     }
 
     /**
@@ -206,11 +206,8 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
                     .fromString(new String(payload, StandardCharsets.UTF_8), gson);
 
             final String thingID = config.getThingId(haID.objectID);
-
-            final ThingTypeUID typeID = new ThingTypeUID(MqttBindingConstants.BINDING_ID,
-                    MqttBindingConstants.HOMEASSISTANT_MQTT_THING.getId() + "_" + thingID);
-
-            final ThingUID thingUID = new ThingUID(typeID, connectionBridge, thingID);
+            final ThingUID thingUID = new ThingUID(MqttBindingConstants.HOMEASSISTANT_MQTT_THING, connectionBridge,
+                    thingID);
 
             thingIDPerTopic.put(topic, thingUID);
 
@@ -241,6 +238,7 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
             properties = handlerConfig.appendToProperties(properties);
             properties = config.appendToProperties(properties);
             properties.put("deviceId", thingID);
+            properties.put("newStyleChannels", "true");
 
             // Because we need the new properties map with the updated "components" list
             results.put(thingUID.getAsString(),
@@ -282,10 +280,6 @@ public class HomeAssistantDiscovery extends AbstractMQTTDiscovery {
         results.clear();
         componentsPerThingID.clear();
         for (DiscoveryResult result : localResults) {
-            final ThingTypeUID typeID = result.getThingTypeUID();
-            ThingType type = typeProvider.derive(typeID, MqttBindingConstants.HOMEASSISTANT_MQTT_THING).build();
-            typeProvider.setThingTypeIfAbsent(typeID, type);
-
             thingDiscovered(result);
         }
     }

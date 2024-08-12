@@ -27,6 +27,7 @@ import org.openhab.binding.mqtt.generic.values.PercentageValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,8 +189,8 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
      *
      * @param componentConfiguration generic componentConfiguration with not parsed JSON config
      */
-    public Vacuum(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Vacuum(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
         final ChannelStateUpdateListener updateListener = componentConfiguration.getUpdateListener();
 
         final var allowedSupportedFeatures = channelConfiguration.schema == Schema.LEGACY ? LEGACY_SUPPORTED_FEATURES
@@ -226,8 +227,8 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             addPayloadToList(deviceSupportedFeatures, FEATURE_START, channelConfiguration.payloadStart, commands);
         }
 
-        buildOptionalChannel(COMMAND_CH_ID, new TextValue(commands.toArray(new String[0])), updateListener, null,
-                channelConfiguration.commandTopic, null, null);
+        buildOptionalChannel(COMMAND_CH_ID, ComponentChannelType.STRING, new TextValue(commands.toArray(new String[0])),
+                updateListener, null, channelConfiguration.commandTopic, null, null);
 
         final var fanSpeedList = channelConfiguration.fanSpeedList;
         if (deviceSupportedFeatures.contains(FEATURE_FAN_SPEED) && fanSpeedList != null && !fanSpeedList.isEmpty()) {
@@ -236,48 +237,50 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             }
             var fanSpeedValue = new TextValue(fanSpeedList.toArray(new String[0]));
             if (channelConfiguration.schema == Schema.LEGACY) {
-                buildOptionalChannel(FAN_SPEED_CH_ID, fanSpeedValue, updateListener, null,
+                buildOptionalChannel(FAN_SPEED_CH_ID, ComponentChannelType.STRING, fanSpeedValue, updateListener, null,
                         channelConfiguration.setFanSpeedTopic, channelConfiguration.fanSpeedTemplate,
                         channelConfiguration.fanSpeedTopic);
             } else if (deviceSupportedFeatures.contains(FEATURE_STATUS)) {
-                buildOptionalChannel(FAN_SPEED_CH_ID, fanSpeedValue, updateListener, null,
+                buildOptionalChannel(FAN_SPEED_CH_ID, ComponentChannelType.STRING, fanSpeedValue, updateListener, null,
                         channelConfiguration.setFanSpeedTopic, "{{ value_json.fan_speed }}",
                         channelConfiguration.stateTopic);
             } else {
                 LOGGER.info("Status feature is disabled, unable to get fan speed.");
-                buildOptionalChannel(FAN_SPEED_CH_ID, fanSpeedValue, updateListener, null,
+                buildOptionalChannel(FAN_SPEED_CH_ID, ComponentChannelType.STRING, fanSpeedValue, updateListener, null,
                         channelConfiguration.setFanSpeedTopic, null, null);
             }
         }
 
         if (deviceSupportedFeatures.contains(FEATURE_SEND_COMMAND)) {
-            buildOptionalChannel(CUSTOM_COMMAND_CH_ID, new TextValue(), updateListener, null,
-                    channelConfiguration.sendCommandTopic, null, null);
+            buildOptionalChannel(CUSTOM_COMMAND_CH_ID, ComponentChannelType.STRING, new TextValue(), updateListener,
+                    null, channelConfiguration.sendCommandTopic, null, null);
         }
 
         if (channelConfiguration.schema == Schema.LEGACY) {
             // I assume, that if these topics defined in config, then we don't need to check features
-            buildOptionalChannel(BATTERY_LEVEL_CH_ID,
+            buildOptionalChannel(BATTERY_LEVEL_CH_ID, ComponentChannelType.DIMMER,
                     new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.ONE, null, null),
                     updateListener, null, null, channelConfiguration.batteryLevelTemplate,
                     channelConfiguration.batteryLevelTopic);
-            buildOptionalChannel(CHARGING_CH_ID, new OnOffValue(TRUE, FALSE), updateListener, null, null,
-                    channelConfiguration.chargingTemplate, channelConfiguration.chargingTopic);
-            buildOptionalChannel(CLEANING_CH_ID, new OnOffValue(TRUE, FALSE), updateListener, null, null,
-                    channelConfiguration.cleaningTemplate, channelConfiguration.cleaningTopic);
-            buildOptionalChannel(DOCKED_CH_ID, new OnOffValue(TRUE, FALSE), updateListener, null, null,
-                    channelConfiguration.dockedTemplate, channelConfiguration.dockedTopic);
-            buildOptionalChannel(ERROR_CH_ID, new TextValue(), updateListener, null, null,
+            buildOptionalChannel(CHARGING_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(TRUE, FALSE),
+                    updateListener, null, null, channelConfiguration.chargingTemplate,
+                    channelConfiguration.chargingTopic);
+            buildOptionalChannel(CLEANING_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(TRUE, FALSE),
+                    updateListener, null, null, channelConfiguration.cleaningTemplate,
+                    channelConfiguration.cleaningTopic);
+            buildOptionalChannel(DOCKED_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(TRUE, FALSE), updateListener,
+                    null, null, channelConfiguration.dockedTemplate, channelConfiguration.dockedTopic);
+            buildOptionalChannel(ERROR_CH_ID, ComponentChannelType.STRING, new TextValue(), updateListener, null, null,
                     channelConfiguration.errorTemplate, channelConfiguration.errorTopic);
         } else {
             if (deviceSupportedFeatures.contains(FEATURE_STATUS)) {
                 // state key is mandatory
-                buildOptionalChannel(STATE_CH_ID,
+                buildOptionalChannel(STATE_CH_ID, ComponentChannelType.STRING,
                         new TextValue(new String[] { STATE_CLEANING, STATE_DOCKED, STATE_PAUSED, STATE_IDLE,
                                 STATE_RETURNING, STATE_ERROR }),
                         updateListener, null, null, "{{ value_json.state }}", channelConfiguration.stateTopic);
                 if (deviceSupportedFeatures.contains(FEATURE_BATTERY)) {
-                    buildOptionalChannel(BATTERY_LEVEL_CH_ID,
+                    buildOptionalChannel(BATTERY_LEVEL_CH_ID, ComponentChannelType.DIMMER,
                             new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.ONE, null, null),
                             updateListener, null, null, "{{ value_json.battery_level }}",
                             channelConfiguration.stateTopic);
@@ -285,16 +288,16 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
             }
         }
 
-        buildOptionalChannel(JSON_ATTRIBUTES_CH_ID, new TextValue(), updateListener, null, null,
-                channelConfiguration.jsonAttributesTemplate, channelConfiguration.jsonAttributesTopic);
+        buildOptionalChannel(JSON_ATTRIBUTES_CH_ID, ComponentChannelType.STRING, new TextValue(), updateListener, null,
+                null, channelConfiguration.jsonAttributesTemplate, channelConfiguration.jsonAttributesTopic);
     }
 
     @Nullable
-    private ComponentChannel buildOptionalChannel(String channelId, Value valueState,
+    private ComponentChannel buildOptionalChannel(String channelId, ComponentChannelType channelType, Value valueState,
             ChannelStateUpdateListener channelStateUpdateListener, @Nullable String commandTemplate,
             @Nullable String commandTopic, @Nullable String stateTemplate, @Nullable String stateTopic) {
         if ((commandTopic != null && !commandTopic.isBlank()) || (stateTopic != null && !stateTopic.isBlank())) {
-            return buildChannel(channelId, valueState, getName(), channelStateUpdateListener)
+            return buildChannel(channelId, channelType, valueState, getName(), channelStateUpdateListener)
                     .stateTopic(stateTopic, stateTemplate, channelConfiguration.getValueTemplate())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos(),
                             commandTemplate)

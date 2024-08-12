@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
 import com.google.gson.annotations.SerializedName;
@@ -68,28 +69,30 @@ public class AlarmControlPanel extends AbstractComponent<AlarmControlPanel.Chann
         protected String payloadArmAway = "ARM_AWAY";
     }
 
-    public AlarmControlPanel(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public AlarmControlPanel(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         final String[] stateEnum = { channelConfiguration.stateDisarmed, channelConfiguration.stateArmedHome,
                 channelConfiguration.stateArmedAway, channelConfiguration.statePending,
                 channelConfiguration.stateTriggered };
-        buildChannel(STATE_CHANNEL_ID, new TextValue(stateEnum), getName(), componentConfiguration.getUpdateListener())
+        buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(stateEnum), getName(),
+                componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())//
                 .build();
 
         String commandTopic = channelConfiguration.commandTopic;
         if (commandTopic != null) {
-            buildChannel(SWITCH_DISARM_CHANNEL_ID, new TextValue(new String[] { channelConfiguration.payloadDisarm }),
-                    getName(), componentConfiguration.getUpdateListener())
+            buildChannel(SWITCH_DISARM_CHANNEL_ID, ComponentChannelType.STRING,
+                    new TextValue(new String[] { channelConfiguration.payloadDisarm }), getName(),
+                    componentConfiguration.getUpdateListener())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos()).build();
 
-            buildChannel(SWITCH_ARM_HOME_CHANNEL_ID,
+            buildChannel(SWITCH_ARM_HOME_CHANNEL_ID, ComponentChannelType.STRING,
                     new TextValue(new String[] { channelConfiguration.payloadArmHome }), getName(),
                     componentConfiguration.getUpdateListener())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos()).build();
 
-            buildChannel(SWITCH_ARM_AWAY_CHANNEL_ID,
+            buildChannel(SWITCH_ARM_AWAY_CHANNEL_ID, ComponentChannelType.STRING,
                     new TextValue(new String[] { channelConfiguration.payloadArmAway }), getName(),
                     componentConfiguration.getUpdateListener())
                     .commandTopic(commandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos()).build();
