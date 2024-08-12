@@ -7,7 +7,7 @@
 	<config-description uri="channel-type:mqtt:ha-channel">
 		<parameter name="component" type="text" readOnly="true" required="true">
 			<label>Component</label>
-			<description>HomeAssistant component type (e.g. binary_sensor, switch, light)</description>
+			<description>Home Assistant component type (e.g. binary_sensor, switch, light)</description>
 			<default></default>
 		</parameter>
 		<parameter name="nodeid" type="text" readOnly="true">
@@ -17,12 +17,12 @@
 		</parameter>
 		<parameter name="objectid" type="text" readOnly="true" required="true">
 			<label>Object ID</label>
-			<description>Object id of the component</description>
+			<description>Object ID of the component</description>
 			<default></default>
 		</parameter>
 		<parameter name="config" type="text" readOnly="true" required="true">
-			<label>Json Configuration</label>
-			<description>The json configuration string received by the component via MQTT.</description>
+			<label>JSON Configuration</label>
+			<description>The JSON configuration string received by the component via MQTT.</description>
 			<default></default>
 		</parameter>
 	</config-description>
