@@ -15,7 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.TextValue;
-import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 
@@ -66,7 +66,7 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
             value = new TextValue();
         }
 
-        buildChannel(channelConfiguration.type, MqttBindingConstants.CHANNEL_TYPE_UID_TRIGGER, value, getName(),
+        buildChannel(channelConfiguration.type, ComponentChannelType.TRIGGER, value, getName(),
                 componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.topic, channelConfiguration.getValueTemplate()).trigger(true).build();
     }

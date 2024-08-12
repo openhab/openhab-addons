@@ -16,8 +16,8 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.RollershutterValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
-import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
@@ -96,17 +96,16 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
             TextValue value = new TextValue(new String[] { channelConfiguration.stateClosed,
                     channelConfiguration.stateClosing, channelConfiguration.stateOpen,
                     channelConfiguration.stateOpening, channelConfiguration.stateStopped });
-            buildChannel(STATE_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_STRING, value, "State",
+            buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING, value, "State",
                     componentConfiguration.getUpdateListener()).stateTopic(stateTopic).isAdvanced(true).build();
         }
 
         if (channelConfiguration.commandTopic != null) {
-            hiddenChannels
-                    .add(stateChannel = buildChannel(STATE_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_STRING,
-                            new TextValue(), "State", componentConfiguration.getUpdateListener())
-                            .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                                    channelConfiguration.getQos())
-                            .build(false));
+            hiddenChannels.add(stateChannel = buildChannel(STATE_CHANNEL_ID, ComponentChannelType.STRING,
+                    new TextValue(), "State", componentConfiguration.getUpdateListener())
+                    .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
+                            channelConfiguration.getQos())
+                    .build(false));
         } else {
             // no command topic. we need to make sure we send
             // integers for open and close
@@ -134,7 +133,7 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
                 channelConfiguration.payloadClose, channelConfiguration.payloadStop, channelConfiguration.stateOpen,
                 channelConfiguration.stateClosed, inverted, channelConfiguration.setPositionTopic == null);
 
-        buildChannel(COVER_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_ROLLERSHUTTER, value, "Cover",
+        buildChannel(COVER_CHANNEL_ID, ComponentChannelType.ROLLERSHUTTER, value, "Cover",
                 componentConfiguration.getUpdateListener()).stateTopic(rollershutterStateTopic, stateTemplate)
                 .commandTopic(rollershutterCommandTopic, channelConfiguration.isRetain(), channelConfiguration.getQos())
                 .commandFilter(command -> {

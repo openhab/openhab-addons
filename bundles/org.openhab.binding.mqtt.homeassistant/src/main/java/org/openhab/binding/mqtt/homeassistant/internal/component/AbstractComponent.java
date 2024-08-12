@@ -30,6 +30,7 @@ import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.component.ComponentFactory.ComponentConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
@@ -45,7 +46,6 @@ import org.openhab.core.thing.type.ChannelGroupDefinition;
 import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeBuilder;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
-import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.StateDescription;
 
@@ -154,12 +154,12 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
         }
     }
 
-    protected ComponentChannel.Builder buildChannel(String channelID, ChannelTypeUID channelTypeUID, Value valueState,
-            String label, ChannelStateUpdateListener channelStateUpdateListener) {
+    protected ComponentChannel.Builder buildChannel(String channelID, ComponentChannelType channelType,
+            Value valueState, String label, ChannelStateUpdateListener channelStateUpdateListener) {
         if (singleChannelComponent) {
             channelID = groupId;
         }
-        return new ComponentChannel.Builder(this, channelID, channelTypeUID, valueState, label,
+        return new ComponentChannel.Builder(this, channelID, channelType.getChannelTypeUID(), valueState, label,
                 channelStateUpdateListener);
     }
 

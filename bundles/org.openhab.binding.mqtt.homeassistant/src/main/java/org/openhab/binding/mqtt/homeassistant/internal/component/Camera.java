@@ -14,7 +14,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.values.ImageValue;
-import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
 /**
@@ -44,7 +44,7 @@ public class Camera extends AbstractComponent<Camera.ChannelConfiguration> {
 
         ImageValue value = new ImageValue();
 
-        buildChannel(CAMERA_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_IMAGE, value, getName(),
+        buildChannel(CAMERA_CHANNEL_ID, ComponentChannelType.IMAGE, value, getName(),
                 componentConfiguration.getUpdateListener()).stateTopic(channelConfiguration.topic).build();
     }
 }

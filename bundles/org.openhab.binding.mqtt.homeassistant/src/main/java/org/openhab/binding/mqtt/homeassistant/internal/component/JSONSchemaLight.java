@@ -21,7 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.TextValue;
-import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
@@ -85,8 +85,8 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         if (supportedColorModes != null && supportedColorModes.contains(LightColorMode.COLOR_MODE_COLOR_TEMP)) {
             colorModeValue = new TextValue(
                     supportedColorModes.stream().map(LightColorMode::serializedName).toArray(String[]::new));
-            buildChannel(COLOR_MODE_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_STRING, colorModeValue,
-                    "Color Mode", this).isAdvanced(true).build();
+            buildChannel(COLOR_MODE_CHANNEL_ID, ComponentChannelType.STRING, colorModeValue, "Color Mode", this)
+                    .isAdvanced(true).build();
         }
 
         if (channelConfiguration.colorMode) {
@@ -100,27 +100,26 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
             }
 
             if (supportedColorModes.contains(LightColorMode.COLOR_MODE_COLOR_TEMP)) {
-                buildChannel(COLOR_TEMP_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_NUMBER, colorTempValue,
-                        "Color Temperature", this).commandTopic(DUMMY_TOPIC, true, 1)
+                buildChannel(COLOR_TEMP_CHANNEL_ID, ComponentChannelType.NUMBER, colorTempValue, "Color Temperature",
+                        this).commandTopic(DUMMY_TOPIC, true, 1)
                         .commandFilter(command -> handleColorTempCommand(command)).build();
             }
         }
 
         if (hasColorChannel) {
-            buildChannel(COLOR_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_COLOR, colorValue, "Color", this)
+            buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
                     .commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
         } else if (channelConfiguration.brightness) {
-            brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_DIMMER,
-                    brightnessValue, "Brightness", this).commandTopic(DUMMY_TOPIC, true, 1)
-                    .commandFilter(this::handleCommand).build();
+            brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, ComponentChannelType.DIMMER, brightnessValue,
+                    "Brightness", this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
         } else {
-            onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_SWITCH, onOffValue,
-                    "On/Off State", this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
+            onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue, "On/Off State",
+                    this).commandTopic(DUMMY_TOPIC, true, 1).commandFilter(this::handleCommand).build();
         }
 
         if (effectValue != null) {
-            buildChannel(EFFECT_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_STRING,
-                    Objects.requireNonNull(effectValue), "Lighting Effect", this).commandTopic(DUMMY_TOPIC, true, 1)
+            buildChannel(EFFECT_CHANNEL_ID, ComponentChannelType.STRING, Objects.requireNonNull(effectValue),
+                    "Lighting Effect", this).commandTopic(DUMMY_TOPIC, true, 1)
                     .commandFilter(command -> handleEffectCommand(command)).build();
 
         }

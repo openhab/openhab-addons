@@ -15,7 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
-import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
 import com.google.gson.annotations.SerializedName;
@@ -55,7 +55,7 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
         super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
-        buildChannel(SWITCH_CHANNEL_ID, MqttBindingConstants.CHANNEL_TYPE_UID_SWITCH, value, getName(),
+        buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, value, getName(),
                 componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
