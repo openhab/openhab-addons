@@ -73,7 +73,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
     @Nullable
     private String sessionToken;
     private int reconnectInterval;
-    private boolean vmSupported = true;
+    private boolean vmSupported;
 
     private record Register(String action, List<String> events) {
         Register(String... events) {
