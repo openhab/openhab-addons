@@ -24,6 +24,7 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -66,12 +67,13 @@ public class RevolutionHandler extends ServerHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        if (isLinked(DISPLAY + "#" + LCD_BRIGHTNESS) || isLinked(DISPLAY + "#" + LCD_ORIENTATION)
-                || isLinked(DISPLAY + "#" + LCD_FORCED)) {
+        if (isLinked(GROUP_DISPLAY + ChannelUID.CHANNEL_GROUP_SEPARATOR + LCD_BRIGHTNESS)
+                || isLinked(GROUP_DISPLAY + ChannelUID.CHANNEL_GROUP_SEPARATOR + LCD_ORIENTATION)
+                || isLinked(GROUP_DISPLAY + ChannelUID.CHANNEL_GROUP_SEPARATOR + LCD_FORCED)) {
             Config config = getManager(LcdManager.class).getConfig();
-            updateChannelQuantity(DISPLAY, LCD_BRIGHTNESS, config.brightness(), PERCENT);
-            updateChannelDecimal(DISPLAY, LCD_ORIENTATION, config.orientation());
-            updateChannelOnOff(DISPLAY, LCD_FORCED, config.orientationForced());
+            updateChannelQuantity(GROUP_DISPLAY, LCD_BRIGHTNESS, config.brightness(), PERCENT);
+            updateChannelDecimal(GROUP_DISPLAY, LCD_ORIENTATION, config.orientation());
+            updateChannelOnOff(GROUP_DISPLAY, LCD_FORCED, config.orientationForced());
         }
     }
 

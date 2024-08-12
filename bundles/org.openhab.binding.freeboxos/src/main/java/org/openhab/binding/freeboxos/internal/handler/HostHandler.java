@@ -114,9 +114,9 @@ public class HostHandler extends ApiConsumerHandler {
     }
 
     public void updateConnectivityChannels(LanHost host) {
-        updateChannelOnOff(CONNECTIVITY, REACHABLE, host.reachable());
-        updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, host.getLastSeen());
-        updateChannelString(CONNECTIVITY, IP_ADDRESS, host.getIpv4());
+        updateChannelOnOff(GROUP_CONNECTIVITY, REACHABLE, host.reachable());
+        updateChannelDateTimeState(GROUP_CONNECTIVITY, LAST_SEEN, host.getLastSeen());
+        updateChannelString(GROUP_CONNECTIVITY, IP_ADDRESS, host.getIpv4());
         updateStatus(host.reachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
         // We will check and configure audio sink only when the host reachability changed
         if (reachable != host.reachable()) {

@@ -50,7 +50,7 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
 
     public ActivePlayerHandler(Thing thing) {
         super(thing);
-        eventChannelUID = new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT);
+        eventChannelUID = new ChannelUID(getThing().getUID(), GROUP_SYS_INFO, BOX_EVENT);
     }
 
     @Override
@@ -73,13 +73,14 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
             Player player = getManager(PlayerManager.class).getDevice(getClientId());
             updateStatus(player.reachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
             if (player.reachable()) {
-                if (isLinked(PLAYER_STATUS + "#" + PLAYER_STATUS) || isLinked(PLAYER_STATUS + "#" + PACKAGE)) {
+                if (isLinked(GROUP_PLAYER_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + PLAYER_STATUS)
+                        || isLinked(GROUP_PLAYER_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + PACKAGE)) {
                     Status status = getManager(PlayerManager.class).getPlayerStatus(getClientId());
                     if (status != null) {
-                        updateChannelString(PLAYER_STATUS, PLAYER_STATUS, status.powerState().name());
+                        updateChannelString(GROUP_PLAYER_STATUS, PLAYER_STATUS, status.powerState().name());
                         ForegroundApp foreground = status.foregroundApp();
                         if (foreground != null) {
-                            updateChannelString(PLAYER_STATUS, PACKAGE, foreground._package());
+                            updateChannelString(GROUP_PLAYER_STATUS, PACKAGE, foreground._package());
                         }
                     }
                 }
@@ -90,7 +91,7 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
                     uptime = 0;
                 }
             }
-            updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
+            updateChannelQuantity(GROUP_SYS_INFO, UPTIME, uptime, Units.SECOND);
         }
     }
 
