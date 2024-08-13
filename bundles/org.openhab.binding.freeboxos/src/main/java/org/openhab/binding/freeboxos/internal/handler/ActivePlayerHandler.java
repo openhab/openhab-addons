@@ -17,6 +17,7 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.action.ActivePlayerActions;
@@ -52,7 +53,7 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
     public ActivePlayerHandler(Thing thing) {
         super(thing);
         statusDrivenByLanConnectivity = false;
-        eventChannelUID = new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT);
+        eventChannelUID = new ChannelUID(getThing().getUID(), GROUP_SYS_INFO, BOX_EVENT);
     }
 
     @Override
@@ -90,12 +91,14 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-player-not-reachable");
             }
             if (player.reachable()) {
-                Status status = getManager(PlayerManager.class).getPlayerStatus(getClientId());
-                if (status != null) {
-                    updateChannelString(PLAYER_STATUS, PLAYER_STATUS, status.powerState().name());
-                    ForegroundApp foreground = status.foregroundApp();
-                    if (foreground != null) {
-                        updateChannelString(PLAYER_STATUS, PACKAGE, foreground._package());
+                if (anyChannelLinked(GROUP_PLAYER_STATUS, Set.of(PLAYER_STATUS, PACKAGE))) {
+                    Status status = getManager(PlayerManager.class).getPlayerStatus(getClientId());
+                    if (status != null) {
+                        updateChannelString(GROUP_PLAYER_STATUS, PLAYER_STATUS, status.powerState().name());
+                        ForegroundApp foreground = status.foregroundApp();
+                        if (foreground != null) {
+                            updateChannelString(GROUP_PLAYER_STATUS, PACKAGE, foreground._package());
+                        }
                     }
                 }
                 Configuration config = getManager(PlayerManager.class).getConfig(getClientId());
@@ -105,7 +108,7 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
                     uptime = 0;
                 }
             }
-            updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
+            updateChannelQuantity(GROUP_SYS_INFO, UPTIME, uptime, Units.SECOND);
         } else {
             logger.debug("{}: poll with reachable={}", thing.getUID(), reachable);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-player-not-reachable");
