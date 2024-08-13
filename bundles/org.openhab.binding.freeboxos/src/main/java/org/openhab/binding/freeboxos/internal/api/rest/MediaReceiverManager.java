@@ -54,8 +54,11 @@ public class MediaReceiverManager extends ListableRest<Receiver, MediaReceiverMa
         UNKNOWN
     }
 
-    private static record Request(String password, Action action, MediaType mediaType, @Nullable String media,
+    private static record Request(String password, String action, String mediaType, @Nullable String media,
             int position) {
+        Request(String password, Action action, MediaType mediaType, @Nullable String media, int position) {
+            this(password, action.name().toLowerCase(), mediaType.name().toLowerCase(), media, position);
+        }
     }
 
     public MediaReceiverManager(FreeboxOsSession session, UriBuilder uriBuilder) throws FreeboxException {
@@ -77,6 +80,6 @@ public class MediaReceiverManager extends ListableRest<Receiver, MediaReceiverMa
     }
 
     private void sendToReceiver(String receiver, Request payload) throws FreeboxException {
-        post(payload, GenericResponse.class, receiver);
+        post(payload, receiver);
     }
 }
