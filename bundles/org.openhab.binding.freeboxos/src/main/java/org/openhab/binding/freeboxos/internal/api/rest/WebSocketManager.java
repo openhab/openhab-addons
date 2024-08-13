@@ -73,8 +73,7 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
     @Nullable
     private String sessionToken;
     private int reconnectInterval;
-    private boolean vmSupported = true;
-    private boolean retryConnectWithoutVm = false;
+    private boolean vmSupported;
 
     private record Register(String action, List<String> events) {
         Register(String... events) {
@@ -101,9 +100,10 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
         }
     }
 
-    public void openSession(@Nullable String sessionToken, int reconnectInterval) {
+    public void openSession(@Nullable String sessionToken, int reconnectInterval, boolean vmSupported) {
         this.sessionToken = sessionToken;
         this.reconnectInterval = reconnectInterval;
+        this.vmSupported = vmSupported;
         if (reconnectInterval > 0) {
             try {
                 client.start();
@@ -190,12 +190,6 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
                 default:
                     logger.warn("Unhandled notification received: {}", result.action);
             }
-        } else if (result.action == Action.REGISTER) {
-            logger.debug("Event registration failed!");
-            if (vmSupported && "unsupported event vm_state_changed".equals(result.msg)) {
-                vmSupported = false;
-                retryConnectWithoutVm = true;
-            }
         }
     }
 
@@ -233,11 +227,6 @@ public class WebSocketManager extends RestManager implements WebSocketListener {
     public void onWebSocketClose(int statusCode, @NonNullByDefault({}) String reason) {
         logger.debug("Socket Closed: [{}] - reason {}", statusCode, reason);
         this.wsSession = null;
-        if (retryConnectWithoutVm) {
-            logger.debug("Retry connecting websocket client without VM support");
-            retryConnectWithoutVm = false;
-            startReconnect();
-        }
     }
 
     @Override
