@@ -14,6 +14,7 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,6 +45,8 @@ public interface ApiConsumerIntf extends ThingHandler {
     void updateProperties(@Nullable Map<String, String> properties);
 
     void updateStatus(ThingStatus status, ThingStatusDetail statusDetail, @Nullable String description);
+
+    boolean anyChannelLinked(String groupId, Set<String> channelSet);
 
     void stopJobs();
 
