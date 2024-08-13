@@ -121,7 +121,11 @@ public class ApiHandler {
             } else if (statusCode == Code.FORBIDDEN) {
                 logger.debug("Fobidden, serviceReponse was {}, ", content);
                 if (result instanceof Response<?> errorResponse) {
-                    throw new FreeboxException(errorResponse.getErrorCode(), errorResponse.getMsg());
+                    if (errorResponse.getErrorCode() == Response.ErrorCode.INSUFFICIENT_RIGHTS) {
+                        throw new PermissionException(errorResponse.getMissingRight(), errorResponse.getMsg());
+                    } else {
+                        throw new FreeboxException(errorResponse.getErrorCode(), errorResponse.getMsg());
+                    }
                 }
             }
 
