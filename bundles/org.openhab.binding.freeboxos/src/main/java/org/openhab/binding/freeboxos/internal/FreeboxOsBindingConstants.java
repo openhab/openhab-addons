@@ -98,13 +98,9 @@ public class FreeboxOsBindingConstants {
     public static final String GROUP_DISPLAY = "display";
     public static final String GROUP_VM_STATUS = "vmstatus";
     public static final String GROUP_WIFI = "wifi";
-<<<<<<< Upstream, based on main
     public static final String GROUP_REPEATER_MISC = "repeater-misc";
-=======
-    public static final String REPEATER_MISC = "repeater-misc";
     public static final String GROUP_XDSL = "xdsl";
     public static final String GROUP_FTTH = "ftth";
->>>>>>> 24fb551 Adding FTTH line status, initiating the addition of xDSL line status
 
     // List of all Channel ids
     public static final String RSSI = "rssi";

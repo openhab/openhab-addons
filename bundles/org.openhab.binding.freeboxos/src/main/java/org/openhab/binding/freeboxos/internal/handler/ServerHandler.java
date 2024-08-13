@@ -31,7 +31,6 @@ import org.openhab.binding.freeboxos.internal.api.rest.ConnectionManager;
 import org.openhab.binding.freeboxos.internal.api.rest.ConnectionManager.FtthStatus;
 import org.openhab.binding.freeboxos.internal.api.rest.ConnectionManager.Media;
 import org.openhab.binding.freeboxos.internal.api.rest.ConnectionManager.Status;
-import org.openhab.binding.freeboxos.internal.api.rest.ConnectionManager.XdslInfos;
 import org.openhab.binding.freeboxos.internal.api.rest.FtpManager;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.Source;
 import org.openhab.binding.freeboxos.internal.api.rest.LanManager;
@@ -166,7 +165,6 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
     }
 
     private void fetchConnectionStatus() throws FreeboxException {
-<<<<<<< Upstream, based on main
         if (anyChannelLinked(GROUP_CONNECTION_STATUS,
                 Set.of(LINE_STATUS, LINE_TYPE, LINE_MEDIA, IP_ADDRESS, IPV6_ADDRESS, BYTES_UP, BYTES_DOWN, RATE + "-up",
                         BW + "-up", PCT_BW + "-up", RATE + "-down", BW + "-down", PCT_BW + "-down"))) {
@@ -176,56 +174,26 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
             updateChannelString(GROUP_CONNECTION_STATUS, LINE_MEDIA, status.media());
             updateChannelString(GROUP_CONNECTION_STATUS, IP_ADDRESS, status.ipv4());
             updateChannelString(GROUP_CONNECTION_STATUS, IPV6_ADDRESS, status.ipv6());
-=======
-        ConnectionManager connectionManager = getManager(ConnectionManager.class);
-        Status status = connectionManager.getConfig();
-        updateChannelString(CONNECTION_STATUS, LINE_STATUS, status.state());
-        updateChannelString(CONNECTION_STATUS, LINE_TYPE, status.type());
-        updateChannelString(CONNECTION_STATUS, IP_ADDRESS, status.ipv4());
-        updateChannelString(CONNECTION_STATUS, IPV6_ADDRESS, status.ipv6());
->>>>>>> 24fb551 Adding FTTH line status, initiating the addition of xDSL line status
-
             updateRateBandwidth(status.rateUp(), status.bandwidthUp(), "up");
             updateRateBandwidth(status.rateDown(), status.bandwidthDown(), "down");
 
-<<<<<<< Upstream, based on main
             updateChannelQuantity(GROUP_CONNECTION_STATUS, BYTES_UP, new QuantityType<>(status.bytesUp(), OCTET),
                     GIBIOCTET);
             updateChannelQuantity(GROUP_CONNECTION_STATUS, BYTES_DOWN, new QuantityType<>(status.bytesDown(), OCTET),
                     GIBIOCTET);
-=======
-        updateChannelQuantity(CONNECTION_STATUS, BYTES_UP, new QuantityType<>(status.bytesUp(), OCTET), GIBIOCTET);
-        updateChannelQuantity(CONNECTION_STATUS, BYTES_DOWN, new QuantityType<>(status.bytesDown(), OCTET), GIBIOCTET);
 
-        updateChannelString(CONNECTION_STATUS, LINE_MEDIA, status.media());
-        switch (status.media()) {
-            case FTTH:
-                if (anyChannelLinked(GROUP_FTTH,
-                        Set.of(SFP_PRESENT, SFP_ALIM, SFP_POWER, SFP_SIGNAL, SFP_LINK, SFP_PWR_TX, SFP_PWR_RX))) {
-                    FtthStatus ftthStatus = connectionManager.getFtthStatus();
-                    updateChannelOnOff(GROUP_FTTH, SFP_PRESENT, ftthStatus.sfpPresent());
-                    updateChannelOnOff(GROUP_FTTH, SFP_ALIM, ftthStatus.sfpAlimOk());
-                    updateChannelOnOff(GROUP_FTTH, SFP_POWER, ftthStatus.sfpHasPowerReport());
-                    updateChannelOnOff(GROUP_FTTH, SFP_SIGNAL, ftthStatus.sfpHasSignal());
-                    updateChannelOnOff(GROUP_FTTH, SFP_LINK, ftthStatus.link());
-                    updateChannelQuantity(GROUP_FTTH, SFP_PWR_TX, ftthStatus.getTransmitDBM(),
-                            Units.DECIBEL_MILLIWATTS);
-                    updateChannelQuantity(GROUP_FTTH, SFP_PWR_RX, ftthStatus.getReceivedDBM(),
-                            Units.DECIBEL_MILLIWATTS);
-                }
-                break;
-            case XDSL:
-                XdslInfos xdslStatus = connectionManager.getXdslStatus();
-                // to be continued
-            default:
-                break;
->>>>>>> 24fb551 Adding FTTH line status, initiating the addition of xDSL line status
+            if (anyChannelLinked(GROUP_FTTH,
+                    Set.of(SFP_PRESENT, SFP_ALIM, SFP_POWER, SFP_SIGNAL, SFP_LINK, SFP_PWR_TX, SFP_PWR_RX))) {
+                FtthStatus ftthStatus = getManager(ConnectionManager.class).getFtthStatus();
+                updateChannelOnOff(GROUP_FTTH, SFP_PRESENT, ftthStatus.sfpPresent());
+                updateChannelOnOff(GROUP_FTTH, SFP_ALIM, ftthStatus.sfpAlimOk());
+                updateChannelOnOff(GROUP_FTTH, SFP_POWER, ftthStatus.sfpHasPowerReport());
+                updateChannelOnOff(GROUP_FTTH, SFP_SIGNAL, ftthStatus.sfpHasSignal());
+                updateChannelOnOff(GROUP_FTTH, SFP_LINK, ftthStatus.link());
+                updateChannelQuantity(GROUP_FTTH, SFP_PWR_TX, ftthStatus.getTransmitDBM(), Units.DECIBEL_MILLIWATTS);
+                updateChannelQuantity(GROUP_FTTH, SFP_PWR_RX, ftthStatus.getReceivedDBM(), Units.DECIBEL_MILLIWATTS);
+            }
         }
-    }
-
-    private boolean anyChannelLinked(String groupId, Set<String> channelSet) {
-        return channelSet.stream().map(id -> new ChannelUID(getThing().getUID(), groupId, id))
-                .anyMatch(uid -> isLinked(uid));
     }
 
     private void updateRateBandwidth(long rate, long bandwidth, String orientation) {
