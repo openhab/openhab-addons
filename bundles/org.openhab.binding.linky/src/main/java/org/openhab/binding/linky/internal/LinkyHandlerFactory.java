@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linky.internal.handler.EnedisBridgeHandler;
+import org.openhab.binding.linky.internal.handler.EnedisWebBridgeHandler;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
 import org.openhab.binding.linky.internal.handler.MyElectricalDataBridgeHandler;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -38,7 +39,6 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
 
-import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonDeserializer;
@@ -80,7 +80,9 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
                                     .atStartOfDay();
                         }
                     })
-            .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
+            .create();
+
+    // .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
 
     private final LocaleProvider localeProvider;
 
@@ -107,6 +109,10 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (thing.getThingTypeUID().equals(LinkyBindingConstants.THING_TYPE_API_ENEDIS_BRIDGE)) {
             EnedisBridgeHandler handler = new EnedisBridgeHandler((Bridge) thing, this.httpClientFactory,
+                    this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
+            return handler;
+        } else if (thing.getThingTypeUID().equals(LinkyBindingConstants.THING_TYPE_API_WEB_ENEDIS_BRIDGE)) {
+            EnedisWebBridgeHandler handler = new EnedisWebBridgeHandler((Bridge) thing, this.httpClientFactory,
                     this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
         } else if (thing.getThingTypeUID().equals(LinkyBindingConstants.THING_TYPE_API_MYELECTRICALDATA_BRIDGE)) {
