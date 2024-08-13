@@ -107,6 +107,7 @@ public class CasoKitchenHandler extends BaseThingHandler {
     public void initialize() {
         configuration = Optional.of(getConfigAs(CasoKitchenConfiguration.class));
         if (checkConfig(configuration.get())) {
+            updateStatus(ThingStatus.UNKNOWN);
             startSchedule();
         }
     }
@@ -170,19 +171,17 @@ public class CasoKitchenHandler extends BaseThingHandler {
             @NonNullByDefault({})
             @Override
             public void onComplete(org.eclipse.jetty.client.api.Result result) {
-                if (result.getResponse().getStatus() != 200) {
-                    String failure;
-                    if (result.getResponse().getReason() != null) {
-                        failure = result.getResponse().getReason();
-                    } else {
-                        failure = result.getFailure().getMessage();
-                    }
-                    logger.info("Request to {} failed. Status: {} Reason: {}", STATUS_URL,
-                            result.getResponse().getStatus(), failure);
-                    // todo send failure
+                int responseStatus = result.getResponse().getStatus();
+                String resultContent = getContentAsString();
+                if (responseStatus != 200) {
+                    logger.info("Request to {} failed. Status: {} Reason: {}", STATUS_URL, responseStatus,
+                            resultContent);
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/casokitchen.winecooler.status.http-status [\"" + responseStatus + " - "
+                                    + resultContent + "\"]");
                 } else {
-                    String resultContent = getContentAsString();
-                    logger.info("Request to {} delivered {}", STATUS_URL, getContentAsString());
+                    updateStatus(ThingStatus.ONLINE);
+                    logger.info("Request to {} delivered {}", STATUS_URL, resultContent);
                     if (resultContent != null) {
                         updateChannels(resultContent);
                     }
