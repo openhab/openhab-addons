@@ -17,6 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -353,6 +354,12 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
     @Override
     public void updateProperties(@Nullable Map<String, String> properties) {
         super.updateProperties(properties);
+    }
+
+    @Override
+    public boolean anyChannelLinked(String groupId, Set<String> channelSet) {
+        return channelSet.stream().map(id -> new ChannelUID(getThing().getUID(), groupId, id))
+                .anyMatch(uid -> isLinked(uid));
     }
 
     @Override

@@ -68,7 +68,7 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
 
     public ServerHandler(Thing thing) {
         super(thing);
-        eventChannelUID = new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT);
+        eventChannelUID = new ChannelUID(getThing().getUID(), GROUP_SYS_INFO, BOX_EVENT);
     }
 
     @Override
@@ -115,15 +115,27 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         fetchConnectionStatus();
         fetchSystemConfig();
 
-        updateChannelOnOff(ACTIONS, WIFI_STATUS, getManager(WifiManager.class).getStatus());
-        updateChannelOnOff(ACTIONS, AIRMEDIA_STATUS, getManager(AirMediaManager.class).getStatus());
-        updateChannelOnOff(ACTIONS, UPNPAV_STATUS, getManager(UPnPAVManager.class).getStatus());
+        if (anyChannelLinked(GROUP_ACTIONS, Set.of(WIFI_STATUS))) {
+            updateChannelOnOff(GROUP_ACTIONS, WIFI_STATUS, getManager(WifiManager.class).getStatus());
+        }
+        if (anyChannelLinked(GROUP_ACTIONS, Set.of(AIRMEDIA_STATUS))) {
+            updateChannelOnOff(GROUP_ACTIONS, AIRMEDIA_STATUS, getManager(AirMediaManager.class).getStatus());
+        }
+        if (anyChannelLinked(GROUP_ACTIONS, Set.of(UPNPAV_STATUS))) {
+            updateChannelOnOff(GROUP_ACTIONS, UPNPAV_STATUS, getManager(UPnPAVManager.class).getStatus());
+        }
 
-        Samba response = getManager(SambaManager.class).getConfig();
-        updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS, response.fileShareEnabled());
-        updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS, response.printShareEnabled());
-        updateChannelOnOff(FILE_SHARING, FTP_STATUS, getManager(FtpManager.class).getStatus());
-        updateChannelOnOff(FILE_SHARING, AFP_FILE_STATUS, getManager(AfpManager.class).getStatus());
+        if (anyChannelLinked(GROUP_FILE_SHARING, Set.of(SAMBA_FILE_STATUS, SAMBA_PRINTER_STATUS))) {
+            Samba response = getManager(SambaManager.class).getConfig();
+            updateChannelOnOff(GROUP_FILE_SHARING, SAMBA_FILE_STATUS, response.fileShareEnabled());
+            updateChannelOnOff(GROUP_FILE_SHARING, SAMBA_PRINTER_STATUS, response.printShareEnabled());
+        }
+        if (anyChannelLinked(GROUP_FILE_SHARING, Set.of(FTP_STATUS))) {
+            updateChannelOnOff(GROUP_FILE_SHARING, FTP_STATUS, getManager(FtpManager.class).getStatus());
+        }
+        if (anyChannelLinked(GROUP_FILE_SHARING, Set.of(AFP_FILE_STATUS))) {
+            updateChannelOnOff(GROUP_FILE_SHARING, AFP_FILE_STATUS, getManager(AfpManager.class).getStatus());
+        }
     }
 
     private void fetchSystemConfig() throws FreeboxException {
@@ -133,33 +145,41 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         config.fans().forEach(f -> updateChannelQuantity(GROUP_FANS, f.id(), f.value(), Units.RPM));
 
         uptime = checkUptimeAndFirmware(config.uptimeVal(), uptime, config.firmwareVersion());
-        updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
+        updateChannelQuantity(GROUP_SYS_INFO, UPTIME, uptime, Units.SECOND);
 
-        LanConfig lanConfig = getManager(LanManager.class).getConfig();
-        updateChannelString(SYS_INFO, IP_ADDRESS, lanConfig.ip());
+        if (anyChannelLinked(GROUP_SYS_INFO, Set.of(IP_ADDRESS))) {
+            LanConfig lanConfig = getManager(LanManager.class).getConfig();
+            updateChannelString(GROUP_SYS_INFO, IP_ADDRESS, lanConfig.ip());
+        }
     }
 
     private void fetchConnectionStatus() throws FreeboxException {
-        Status status = getManager(ConnectionManager.class).getConfig();
-        updateChannelString(CONNECTION_STATUS, LINE_STATUS, status.state());
-        updateChannelString(CONNECTION_STATUS, LINE_TYPE, status.type());
-        updateChannelString(CONNECTION_STATUS, LINE_MEDIA, status.media());
-        updateChannelString(CONNECTION_STATUS, IP_ADDRESS, status.ipv4());
-        updateChannelString(CONNECTION_STATUS, IPV6_ADDRESS, status.ipv6());
+        if (anyChannelLinked(GROUP_CONNECTION_STATUS,
+                Set.of(LINE_STATUS, LINE_TYPE, LINE_MEDIA, IP_ADDRESS, IPV6_ADDRESS, BYTES_UP, BYTES_DOWN, RATE + "-up",
+                        BW + "-up", PCT_BW + "-up", RATE + "-down", BW + "-down", PCT_BW + "-down"))) {
+            Status status = getManager(ConnectionManager.class).getConfig();
+            updateChannelString(GROUP_CONNECTION_STATUS, LINE_STATUS, status.state());
+            updateChannelString(GROUP_CONNECTION_STATUS, LINE_TYPE, status.type());
+            updateChannelString(GROUP_CONNECTION_STATUS, LINE_MEDIA, status.media());
+            updateChannelString(GROUP_CONNECTION_STATUS, IP_ADDRESS, status.ipv4());
+            updateChannelString(GROUP_CONNECTION_STATUS, IPV6_ADDRESS, status.ipv6());
 
-        updateRateBandwidth(status.rateUp(), status.bandwidthUp(), "up");
-        updateRateBandwidth(status.rateDown(), status.bandwidthDown(), "down");
+            updateRateBandwidth(status.rateUp(), status.bandwidthUp(), "up");
+            updateRateBandwidth(status.rateDown(), status.bandwidthDown(), "down");
 
-        updateChannelQuantity(CONNECTION_STATUS, BYTES_UP, new QuantityType<>(status.bytesUp(), OCTET), GIBIOCTET);
-        updateChannelQuantity(CONNECTION_STATUS, BYTES_DOWN, new QuantityType<>(status.bytesDown(), OCTET), GIBIOCTET);
+            updateChannelQuantity(GROUP_CONNECTION_STATUS, BYTES_UP, new QuantityType<>(status.bytesUp(), OCTET),
+                    GIBIOCTET);
+            updateChannelQuantity(GROUP_CONNECTION_STATUS, BYTES_DOWN, new QuantityType<>(status.bytesDown(), OCTET),
+                    GIBIOCTET);
+        }
     }
 
     private void updateRateBandwidth(long rate, long bandwidth, String orientation) {
         QuantityType<?> rateUp = new QuantityType<>(rate * 8, Units.BIT_PER_SECOND);
         QuantityType<?> bandwidthUp = new QuantityType<>(bandwidth, BIT_PER_SECOND);
-        updateChannelQuantity(CONNECTION_STATUS, RATE + "-" + orientation, rateUp, KILOBIT_PER_SECOND);
-        updateChannelQuantity(CONNECTION_STATUS, BW + "-" + orientation, bandwidthUp, KILOBIT_PER_SECOND);
-        updateChannelQuantity(CONNECTION_STATUS, PCT_BW + "-" + orientation,
+        updateChannelQuantity(GROUP_CONNECTION_STATUS, RATE + "-" + orientation, rateUp, KILOBIT_PER_SECOND);
+        updateChannelQuantity(GROUP_CONNECTION_STATUS, BW + "-" + orientation, bandwidthUp, KILOBIT_PER_SECOND);
+        updateChannelQuantity(GROUP_CONNECTION_STATUS, PCT_BW + "-" + orientation,
                 !bandwidthUp.equals(QuantityType.ZERO) ? rateUp.multiply(HUNDRED).divide(bandwidthUp)
                         : QuantityType.ZERO,
                 Units.PERCENT);
@@ -171,27 +191,29 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
             boolean enable = TRUE_COMMANDS.contains(command);
             switch (channelId) {
                 case WIFI_STATUS:
-                    updateChannelOnOff(ACTIONS, WIFI_STATUS, getManager(WifiManager.class).setStatus(enable));
+                    updateChannelOnOff(GROUP_ACTIONS, WIFI_STATUS, getManager(WifiManager.class).setStatus(enable));
                     return true;
                 case FTP_STATUS:
-                    updateChannelOnOff(FILE_SHARING, FTP_STATUS, getManager(FtpManager.class).setStatus(enable));
+                    updateChannelOnOff(GROUP_FILE_SHARING, FTP_STATUS, getManager(FtpManager.class).setStatus(enable));
                     return true;
                 case SAMBA_FILE_STATUS:
-                    updateChannelOnOff(FILE_SHARING, SAMBA_FILE_STATUS,
+                    updateChannelOnOff(GROUP_FILE_SHARING, SAMBA_FILE_STATUS,
                             getManager(SambaManager.class).setFileShare(enable));
                     return true;
                 case SAMBA_PRINTER_STATUS:
-                    updateChannelOnOff(FILE_SHARING, SAMBA_PRINTER_STATUS,
+                    updateChannelOnOff(GROUP_FILE_SHARING, SAMBA_PRINTER_STATUS,
                             getManager(SambaManager.class).setPrintShare(enable));
                     return true;
                 case UPNPAV_STATUS:
-                    updateChannelOnOff(ACTIONS, UPNPAV_STATUS, getManager(UPnPAVManager.class).setStatus(enable));
+                    updateChannelOnOff(GROUP_ACTIONS, UPNPAV_STATUS, getManager(UPnPAVManager.class).setStatus(enable));
                     return true;
                 case AFP_FILE_STATUS:
-                    updateChannelOnOff(FILE_SHARING, AFP_FILE_STATUS, getManager(AfpManager.class).setStatus(enable));
+                    updateChannelOnOff(GROUP_FILE_SHARING, AFP_FILE_STATUS,
+                            getManager(AfpManager.class).setStatus(enable));
                     return true;
                 case AIRMEDIA_STATUS:
-                    updateChannelOnOff(ACTIONS, AIRMEDIA_STATUS, getManager(AirMediaManager.class).setStatus(enable));
+                    updateChannelOnOff(GROUP_ACTIONS, AIRMEDIA_STATUS,
+                            getManager(AirMediaManager.class).setStatus(enable));
                     return true;
                 default:
                     break;
