@@ -24,6 +24,7 @@ import org.openhab.binding.freeboxos.internal.api.rest.VmManager.VirtualMachine;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +76,11 @@ public class VmHandler extends HostHandler {
         boolean running = Status.RUNNING.equals(vm.status());
         updateChannelOnOff(VM_STATUS, STATUS, running);
         updateChannelOnOff(CONNECTIVITY, REACHABLE, running);
-        updateStatus(running ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+        if (running) {
+            updateStatus(ThingStatus.ONLINE);
+        } else {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-vm-not-running");
+        }
     }
 
     @Override
