@@ -218,7 +218,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
         ThingStatusDetail detail = thing.getStatusInfo().getStatusDetail();
         if (ThingStatusDetail.DUTY_CYCLE.equals(detail)) {
             try {
-                internalPoll();
+                internalForcePoll();
             } catch (FreeboxException ignore) {
                 // An exception is normal if the box is rebooting then let's try again later...
                 addJob("Initialize", this::initialize, 10, TimeUnit.SECONDS);

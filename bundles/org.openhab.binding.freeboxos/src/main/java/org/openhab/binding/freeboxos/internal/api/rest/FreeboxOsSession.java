@@ -52,6 +52,8 @@ public class FreeboxOsSession {
     private @Nullable Session session;
     private String appToken = "";
     private int wsReconnectInterval;
+    @Nullable
+    private Boolean vmSupported;
 
     public enum BoxModel {
         FBXGW_R1_FULL, // Freebox Server (v6) revision 1
@@ -85,7 +87,9 @@ public class FreeboxOsSession {
                 ApiVersion.class, null, null);
         this.uriBuilder = config.getUriBuilder(version.baseUrl());
         this.wsReconnectInterval = config.wsReconnectInterval;
+        this.vmSupported = null;
         getManager(LoginManager.class);
+        getManager(SystemManager.class);
         getManager(NetShareManager.class);
         getManager(LanManager.class);
         getManager(WifiManager.class);
@@ -95,9 +99,13 @@ public class FreeboxOsSession {
 
     public void openSession(String appToken) throws FreeboxException {
         Session newSession = getManager(LoginManager.class).openSession(appToken);
-        getManager(WebSocketManager.class).openSession(newSession.sessionToken(), wsReconnectInterval);
         session = newSession;
         this.appToken = appToken;
+        if (vmSupported == null) {
+            vmSupported = getManager(SystemManager.class).getConfig().modelInfo().hasVm();
+        }
+        getManager(WebSocketManager.class).openSession(newSession.sessionToken(), wsReconnectInterval,
+                Boolean.TRUE.equals(vmSupported));
     }
 
     public String grant() throws FreeboxException {

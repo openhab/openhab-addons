@@ -57,7 +57,16 @@ public class WifiStationHandler extends HostHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
+        poll();
+    }
 
+    @Override
+    protected void internalForcePoll() throws FreeboxException {
+        super.internalForcePoll();
+        poll();
+    }
+
+    private void poll() throws FreeboxException {
         MACAddress mac = getMac();
         if (mac == null) {
             throw new FreeboxException(
