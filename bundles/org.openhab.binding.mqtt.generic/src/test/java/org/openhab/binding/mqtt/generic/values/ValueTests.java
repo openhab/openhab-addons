@@ -140,21 +140,29 @@ public class ValueTests {
         assertThat(v.getMQTTpublishValue(OnOffType.ON, "=%s"), is("=fancyON"));
 
         assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
+
+        // Test the defaults
+        v = new OnOffValue(null, null);
+        assertThat(v.parseCommand(new StringType("OFF")), is(OnOffType.OFF));
+        assertThat(v.parseCommand(new StringType("ON")), is(OnOffType.ON));
+        assertThat(v.getMQTTpublishValue(OnOffType.OFF, null), is("OFF"));
+        assertThat(v.getMQTTpublishValue(OnOffType.ON, null), is("ON"));
     }
 
     @Test
-    public void onoffMultiStates() {
-        OnOffValue v = new OnOffValue(new String[] { "LOCKED" }, new String[] { "UNLOCKED", "JAMMED" }, "LOCK",
-                "UNLOCK");
+    public void onOffMultiStates() {
+        OnOffValue v = new OnOffValue("LOCKED", "UNLOCKED,JAMMED", "LOCK", "UNLOCK");
 
         assertThat(v.parseCommand(new StringType("LOCKED")), is(OnOffType.ON));
         assertThat(v.parseCommand(new StringType("UNLOCKED")), is(OnOffType.OFF));
         assertThat(v.parseCommand(new StringType("JAMMED")), is(OnOffType.OFF));
+        assertThat(v.getMQTTpublishValue(OnOffType.ON, null), is("LOCK"));
+        assertThat(v.getMQTTpublishValue(OnOffType.OFF, null), is("UNLOCK"));
     }
 
     @Test
     public void openCloseUpdate() {
-        OpenCloseValue v = new OpenCloseValue("fancyON", "fancyOff");
+        OpenCloseValue v = new OpenCloseValue("fancyOPEN", "fancyCLOSED");
 
         // Test with command
         assertThat(v.parseCommand(OpenClosedType.CLOSED), is(OpenClosedType.CLOSED));
@@ -165,14 +173,32 @@ public class ValueTests {
         assertThat(v.parseCommand(new StringType("OPEN")), is(OpenClosedType.OPEN));
 
         // Test with custom string, setup in the constructor
-        assertThat(v.parseCommand(new StringType("fancyOff")), is(OpenClosedType.CLOSED));
-        assertThat(v.parseCommand(new StringType("fancyON")), is(OpenClosedType.OPEN));
+        assertThat(v.parseCommand(new StringType("fancyCLOSED")), is(OpenClosedType.CLOSED));
+        assertThat(v.parseCommand(new StringType("fancyOPEN")), is(OpenClosedType.OPEN));
 
         // Test basic formatting
-        assertThat(v.getMQTTpublishValue(OpenClosedType.CLOSED, null), is("fancyOff"));
-        assertThat(v.getMQTTpublishValue(OpenClosedType.OPEN, null), is("fancyON"));
+        assertThat(v.getMQTTpublishValue(OpenClosedType.CLOSED, null), is("fancyCLOSED"));
+        assertThat(v.getMQTTpublishValue(OpenClosedType.OPEN, null), is("fancyOPEN"));
 
         assertThat(v.parseMessage(new StringType("")), is(UnDefType.NULL));
+
+        // Test the defaults
+        v = new OpenCloseValue(null, null);
+        assertThat(v.parseCommand(new StringType("CLOSED")), is(OpenClosedType.CLOSED));
+        assertThat(v.parseCommand(new StringType("OPEN")), is(OpenClosedType.OPEN));
+        assertThat(v.getMQTTpublishValue(OpenClosedType.CLOSED, null), is("CLOSED"));
+        assertThat(v.getMQTTpublishValue(OpenClosedType.OPEN, null), is("OPEN"));
+    }
+
+    @Test
+    public void openCloseMultiStates() {
+        OpenCloseValue v = new OpenCloseValue("UNLOCKED,UNLATCHED", "LOCKED", "UNLOCKED", "LOCKED");
+
+        assertThat(v.parseCommand(new StringType("LOCKED")), is(OpenClosedType.CLOSED));
+        assertThat(v.parseCommand(new StringType("UNLOCKED")), is(OpenClosedType.OPEN));
+        assertThat(v.parseCommand(new StringType("UNLATCHED")), is(OpenClosedType.OPEN));
+        assertThat(v.getMQTTpublishValue(OpenClosedType.OPEN, null), is("UNLOCKED"));
+        assertThat(v.getMQTTpublishValue(OpenClosedType.CLOSED, null), is("LOCKED"));
     }
 
     @Test

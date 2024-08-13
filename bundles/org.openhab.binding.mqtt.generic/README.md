@@ -128,12 +128,12 @@ You can connect this channel to a Rollershutter or Dimmer item.
 - **on**: An optional number (like 1, 10) or a string (like "ON"/"Open") that is recognized as on/open state.
 - **off**: An optional number (like 0, -10) or a string (like "OFF"/"Close") that is recognized as off/closed state.
 
+You can provide multiple values for **on** and **off** separated by a comma. The first value is used for publishing to MQTT.
+
 The contact channel by default recognizes `"OPEN"` and `"CLOSED"`. You can connect this channel to a Contact item.
 The switch channel by default recognizes `"ON"` and `"OFF"`. You can connect this channel to a Switch item.
 
 If **on** and **off** are not configured it publishes the strings mentioned before respectively.
-
-You can connect this channel to a Contact or Switch item.
 
 ### Channel Type "color"
 

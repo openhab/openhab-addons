@@ -70,8 +70,12 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
             throw new ConfigurationException("Component:Switch does not support forced optimistic mode");
         }
 
-        OnOffValue value = new OnOffValue(channelConfiguration.stateOn, channelConfiguration.stateOff,
-                channelConfiguration.payloadOn, channelConfiguration.payloadOff);
+        String stateOn = channelConfiguration.stateOn != null ? channelConfiguration.stateOn
+                : channelConfiguration.payloadOn;
+        String stateOff = channelConfiguration.stateOff != null ? channelConfiguration.stateOff
+                : channelConfiguration.payloadOff;
+        OnOffValue value = new OnOffValue(stateOn, stateOff, channelConfiguration.payloadOn,
+                channelConfiguration.payloadOff);
 
         buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, value, getName(),
                 componentConfiguration.getUpdateListener())

@@ -52,31 +52,31 @@ public class OnOffValue extends Value {
      *
      * values send in messages will be the same as those expected in incoming messages
      *
-     * @param onValue The ON value string. This will be compared to MQTT messages. Defaults to "ON".
-     * @param offValue The OFF value string. This will be compared to MQTT messages. Defaults to "OFF".
+     * @param onValues The ON values as comma-separated string. These will be compared to MQTT messages. Defaults to
+     *            "ON" if null.
+     * @param offValue The OFF values as comma-separated string. These will be compared to MQTT messages. Defaults to
+     *            "OFF" if null.
      */
-    public OnOffValue(@Nullable String onValue, @Nullable String offValue) {
-        this(onValue, offValue, onValue, offValue);
+    public OnOffValue(@Nullable String onValues, @Nullable String offValue) {
+        this(onValues, offValue, null, null);
     }
 
     /**
      * Creates a new SWITCH On/Off value.
      *
-     * @param onState The ON value string. This will be compared to MQTT messages. Defaults to onCommand if null, or
-     *            "ON" if both are null.
-     * @param offState The OFF value string. This will be compared to MQTT messages. Defaults to offComamand if null, or
-     *            "OFF" if both are null.
-     * @param onCommand The ON value string. This will be send in MQTT messages. Defaults to onState if null, or "ON" if
-     *            both are null.
-     * @param offCommand The OFF value string. This will be send in MQTT messages. Defaults to offCommand if null, or
-     *            "OFF" if both are null.
+     * @param onStates The ON values as comma-separated string. These will be compared to MQTT messages. Defaults to
+     *            "ON" if null.
+     * @param offStates he OFF values as comma-separated string. These will be compared to MQTT messages. Defaults to
+     *            "OFF" if null.
+     * @param onCommand The ON value string. This will be sent in MQTT messages. Defaults to the first onState if null.
+     * @param offCommand The OFF value string. This will be sent in MQTT messages. Defaults to the first offState if
+     *            null.
      */
-    public OnOffValue(@Nullable String onState, @Nullable String offState, @Nullable String onCommand,
+    public OnOffValue(@Nullable String onStates, @Nullable String offStates, @Nullable String onCommand,
             @Nullable String offCommand) {
-        this(new String[] { defaultArgument(onState, onCommand, OnOffType.ON.name()) },
-                new String[] { defaultArgument(offState, offCommand, OnOffType.OFF.name()) },
-                defaultArgument(onCommand, onState, OnOffType.ON.name()),
-                defaultArgument(offCommand, offState, OnOffType.OFF.name()));
+        this(onStates == null ? new String[] { OnOffType.ON.name() } : onStates.split(","),
+                offStates == null ? new String[] { OnOffType.OFF.name() } : offStates.split(","), onCommand,
+                offCommand);
     }
 
     /**
@@ -84,15 +84,16 @@ public class OnOffValue extends Value {
      *
      * @param onStates A list of valid ON value strings. This will be compared to MQTT messages.
      * @param offStates A list of valid OFF value strings. This will be compared to MQTT messages.
-     * @param onCommand The ON value string. This will be send in MQTT messages.
-     * @param offCommand The OFF value string. This will be send in MQTT messages.
+     * @param onCommand The ON value string. This will be sent in MQTT messages. Defaults to the first onState if null.
+     * @param offCommand The OFF value string. This will be sent in MQTT messages. Defaults to the first offState if
+     *            null.
      */
-    public OnOffValue(String[] onStates, String[] offStates, String onCommand, String offCommand) {
+    public OnOffValue(String[] onStates, String[] offStates, @Nullable String onCommand, @Nullable String offCommand) {
         super(CoreItemFactory.SWITCH, List.of(OnOffType.class, StringType.class));
         this.onStates = Stream.of(onStates).filter(not(String::isBlank)).collect(Collectors.toSet());
         this.offStates = Stream.of(offStates).filter(not(String::isBlank)).collect(Collectors.toSet());
-        this.onCommand = onCommand;
-        this.offCommand = offCommand;
+        this.onCommand = onCommand == null ? onStates[0] : onCommand;
+        this.offCommand = offCommand == null ? offStates[0] : offCommand;
     }
 
     @Override
@@ -127,16 +128,5 @@ public class OnOffValue extends Value {
         builder = builder.withCommandOption(new CommandOption(onCommand, onCommand));
         builder = builder.withCommandOption(new CommandOption(offCommand, offCommand));
         return builder;
-    }
-
-    private static String defaultArgument(@Nullable String arg1, @Nullable String arg2, String defaultValue) {
-        String result = arg1;
-        if (result == null) {
-            result = arg2;
-        }
-        if (result == null) {
-            result = defaultValue;
-        }
-        return result;
     }
 }

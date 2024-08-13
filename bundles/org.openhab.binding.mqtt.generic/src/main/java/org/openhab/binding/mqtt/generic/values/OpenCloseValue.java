@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
+import static java.util.function.Predicate.not;
+
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -22,34 +27,60 @@ import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 
 /**
- * Implements an open/close boolean value.
+ * Implements an Open/Closed boolean value.
  *
  * @author David Graeff - Initial contribution
  */
 @NonNullByDefault
 public class OpenCloseValue extends Value {
-    private final String openString;
-    private final String closeString;
+    private final Set<String> openStates;
+    private final Set<String> closedStates;
+    private final String openCommand;
+    private final String closedCommand;
 
     /**
-     * Creates a contact Open/Close type.
+     * Creates a CONTACT Open/Closed value.
      */
     public OpenCloseValue() {
-        super(CoreItemFactory.CONTACT, List.of(OpenClosedType.class, StringType.class));
-        this.openString = OpenClosedType.OPEN.name();
-        this.closeString = OpenClosedType.CLOSED.name();
+        this(null, null);
     }
 
     /**
-     * Creates a new contact Open/Close value.
+     * Creates a new CONTACT Open/Closed value.
      *
-     * @param openValue The ON value string. This will be compared to MQTT messages.
-     * @param closeValue The OFF value string. This will be compared to MQTT messages.
+     * @param openValues The ON values as comma-separate string. These will be compared to MQTT messages. Defaults to
+     *            "OPEN" if null.
+     * @param closedValues The OFF values as comma-separated string. These will be compared to MQTT messages. Defaults
+     *            to "CLOSED" if null.
      */
-    public OpenCloseValue(@Nullable String openValue, @Nullable String closeValue) {
+    public OpenCloseValue(@Nullable String openValues, @Nullable String closedValues) {
+        this(openValues, closedValues, null, null);
+    }
+
+    public OpenCloseValue(@Nullable String openValues, @Nullable String closedValues, @Nullable String openCommand,
+            @Nullable String closedCommand) {
+        this(openValues == null ? new String[] { OpenClosedType.OPEN.name() } : openValues.split(","),
+                closedValues == null ? new String[] { OpenClosedType.CLOSED.name() } : closedValues.split(","),
+                openCommand, closedCommand);
+    }
+
+    /**
+     * Creates a new CONTACT Open/Closed value.
+     *
+     * @param openStates The list of valid OPEN value strings. This will be compared to MQTT messages.
+     * @param closedStates The list of valid CLOSED value strings. This will be compared to MQTT messages.
+     * @param openCommand The OPEN value string. This will be sent in MQTT messages. Defaults to the first openState if
+     *            null.
+     * @param closedCommand The CLOSED value string. This will be sent in MQTT messages. Defaults to the first
+     *            closedState if null.
+     */
+    public OpenCloseValue(String[] openStates, String[] closedStates, @Nullable String openCommand,
+            @Nullable String closedCommand) {
         super(CoreItemFactory.CONTACT, List.of(OpenClosedType.class, StringType.class));
-        this.openString = openValue == null ? OpenClosedType.OPEN.name() : openValue;
-        this.closeString = closeValue == null ? OpenClosedType.CLOSED.name() : closeValue;
+        this.openStates = Stream.of(openStates).filter(not(String::isBlank)).collect(Collectors.toSet());
+        this.closedStates = Stream.of(closedStates).filter(not(String::isBlank)).collect(Collectors.toSet());
+        this.openCommand = openCommand == null ? openStates[0] : openCommand;
+        this.closedCommand = closedCommand == null ? closedStates[0] : closedCommand;
     }
 
     @Override
@@ -58,9 +89,9 @@ public class OpenCloseValue extends Value {
             return openClosed;
         } else {
             final String updatedValue = command.toString();
-            if (openString.equals(updatedValue)) {
+            if (openStates.contains(updatedValue)) {
                 return OpenClosedType.OPEN;
-            } else if (closeString.equals(updatedValue)) {
+            } else if (closedStates.contains(updatedValue)) {
                 return OpenClosedType.CLOSED;
             } else {
                 return OpenClosedType.valueOf(updatedValue);
@@ -75,6 +106,6 @@ public class OpenCloseValue extends Value {
             formatPattern = "%s";
         }
 
-        return String.format(formatPattern, command == OpenClosedType.OPEN ? openString : closeString);
+        return String.format(formatPattern, command == OpenClosedType.OPEN ? openCommand : closedCommand);
     }
 }
