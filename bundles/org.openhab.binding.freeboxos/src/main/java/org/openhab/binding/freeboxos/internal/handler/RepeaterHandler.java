@@ -66,7 +66,16 @@ public class RepeaterHandler extends HostHandler implements FreeDeviceIntf {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
+        poll();
+    }
 
+    @Override
+    protected void internalForcePoll() throws FreeboxException {
+        super.internalForcePoll();
+        poll();
+    }
+
+    private void poll() throws FreeboxException {
         if (!thing.getStatus().equals(ThingStatus.ONLINE)) {
             return;
         }
