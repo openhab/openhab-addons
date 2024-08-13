@@ -82,7 +82,16 @@
 			<channel id="visibility" typeId="visibility-channel"/>
 			<channel id="solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="solar-energy" typeId="solar-energy-channel"/>
-			<channel id="uv-index" typeId="uv-index-channel"/>
+			<channel id="uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="sunrise" typeId="sunrise-channel"/>
 			<channel id="sunrise-epoch" typeId="time-stamp-channel">
 				<label>Sunrise Epoch</label>
@@ -150,7 +159,16 @@
 			<channel id="hour00-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour00-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour00-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour00-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour00-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour00-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour00-conditions" typeId="conditions-channel"/>
 			<channel id="hour00-icon" typeId="icon-channel"/>
@@ -207,7 +225,16 @@
 			<channel id="hour01-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour01-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour01-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour01-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour01-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour01-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour01-conditions" typeId="conditions-channel"/>
 			<channel id="hour01-icon" typeId="icon-channel"/>
@@ -264,7 +291,16 @@
 			<channel id="hour02-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour02-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour02-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour02-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour02-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour02-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour02-conditions" typeId="conditions-channel"/>
 			<channel id="hour02-icon" typeId="icon-channel"/>
@@ -321,7 +357,16 @@
 			<channel id="hour03-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour03-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour03-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour03-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour03-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour03-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour03-conditions" typeId="conditions-channel"/>
 			<channel id="hour03-icon" typeId="icon-channel"/>
@@ -378,7 +423,16 @@
 			<channel id="hour04-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour04-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour04-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour04-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour04-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour04-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour04-conditions" typeId="conditions-channel"/>
 			<channel id="hour04-icon" typeId="icon-channel"/>
@@ -435,7 +489,16 @@
 			<channel id="hour05-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour05-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour05-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour05-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour05-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour05-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour05-conditions" typeId="conditions-channel"/>
 			<channel id="hour05-icon" typeId="icon-channel"/>
@@ -492,7 +555,16 @@
 			<channel id="hour06-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour06-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour06-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour06-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour06-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour06-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour06-conditions" typeId="conditions-channel"/>
 			<channel id="hour06-icon" typeId="icon-channel"/>
@@ -549,7 +621,16 @@
 			<channel id="hour07-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour07-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour07-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour07-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour07-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour07-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour07-conditions" typeId="conditions-channel"/>
 			<channel id="hour07-icon" typeId="icon-channel"/>
@@ -606,7 +687,16 @@
 			<channel id="hour08-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour08-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour08-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour08-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour08-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour08-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour08-conditions" typeId="conditions-channel"/>
 			<channel id="hour08-icon" typeId="icon-channel"/>
@@ -663,7 +753,16 @@
 			<channel id="hour09-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour09-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour09-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour09-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour09-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour09-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour09-conditions" typeId="conditions-channel"/>
 			<channel id="hour09-icon" typeId="icon-channel"/>
@@ -720,7 +819,16 @@
 			<channel id="hour10-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour10-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour10-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour10-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour10-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour10-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour10-conditions" typeId="conditions-channel"/>
 			<channel id="hour10-icon" typeId="icon-channel"/>
@@ -777,7 +885,16 @@
 			<channel id="hour11-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour11-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour11-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour11-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour11-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour11-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour11-conditions" typeId="conditions-channel"/>
 			<channel id="hour11-icon" typeId="icon-channel"/>
@@ -834,7 +951,16 @@
 			<channel id="hour12-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour12-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour12-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour12-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour12-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour12-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour12-conditions" typeId="conditions-channel"/>
 			<channel id="hour12-icon" typeId="icon-channel"/>
@@ -891,7 +1017,16 @@
 			<channel id="hour13-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour13-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour13-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour13-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour13-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour13-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour13-conditions" typeId="conditions-channel"/>
 			<channel id="hour13-icon" typeId="icon-channel"/>
@@ -948,7 +1083,16 @@
 			<channel id="hour14-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour14-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour14-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour14-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour14-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour14-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour14-conditions" typeId="conditions-channel"/>
 			<channel id="hour14-icon" typeId="icon-channel"/>
@@ -1005,7 +1149,16 @@
 			<channel id="hour15-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour15-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour15-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour15-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour15-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour15-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour15-conditions" typeId="conditions-channel"/>
 			<channel id="hour15-icon" typeId="icon-channel"/>
@@ -1062,7 +1215,16 @@
 			<channel id="hour16-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour16-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour16-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour16-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour16-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour16-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour16-conditions" typeId="conditions-channel"/>
 			<channel id="hour16-icon" typeId="icon-channel"/>
@@ -1119,7 +1281,16 @@
 			<channel id="hour17-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour17-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour17-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour17-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour17-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour17-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour17-conditions" typeId="conditions-channel"/>
 			<channel id="hour17-icon" typeId="icon-channel"/>
@@ -1176,7 +1347,16 @@
 			<channel id="hour18-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour18-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour18-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour18-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour18-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour18-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour18-conditions" typeId="conditions-channel"/>
 			<channel id="hour18-icon" typeId="icon-channel"/>
@@ -1233,7 +1413,16 @@
 			<channel id="hour19-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour19-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour19-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour19-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour19-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour19-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour19-conditions" typeId="conditions-channel"/>
 			<channel id="hour19-icon" typeId="icon-channel"/>
@@ -1290,7 +1479,16 @@
 			<channel id="hour20-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour20-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour20-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour20-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour20-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour20-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour20-conditions" typeId="conditions-channel"/>
 			<channel id="hour20-icon" typeId="icon-channel"/>
@@ -1347,7 +1545,16 @@
 			<channel id="hour21-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour21-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour21-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour21-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour21-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour21-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour21-conditions" typeId="conditions-channel"/>
 			<channel id="hour21-icon" typeId="icon-channel"/>
@@ -1404,7 +1611,16 @@
 			<channel id="hour22-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour22-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour22-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour22-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour22-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour22-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour22-conditions" typeId="conditions-channel"/>
 			<channel id="hour22-icon" typeId="icon-channel"/>
@@ -1461,7 +1677,16 @@
 			<channel id="hour23-cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="hour23-solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="hour23-solar-energy" typeId="solar-energy-channel"/>
-			<channel id="hour23-uv-index" typeId="uv-index-channel"/>
+			<channel id="hour23-uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="hour23-severe-risk" typeId="severe-risk-channel"/>
 			<channel id="hour23-conditions" typeId="conditions-channel"/>
 			<channel id="hour23-icon" typeId="icon-channel"/>
@@ -1527,7 +1752,16 @@
 			<channel id="cloud-cover" typeId="cloud-cover-channel"/>
 			<channel id="solar-radiation" typeId="solar-radiation-channel"/>
 			<channel id="solar-energy" typeId="solar-energy-channel"/>
-			<channel id="uv-index" typeId="uv-index-channel"/>
+			<channel id="uv-index" typeId="system.uv-index">
+				<description>
+					A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
+					represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of
+					short
+					wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and
+					location
+					altitude. Daily values represent the maximum value of the hourly values.
+				</description>
+			</channel>
 			<channel id="conditions" typeId="conditions-channel"/>
 			<channel id="icon" typeId="icon-channel"/>
 			<channel id="stations" typeId="stations-channel"/>
@@ -1672,7 +1906,6 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="solar-energy-channel">
-		<!-- TODO Is there item-type for MJ /m^2 ? -->
 		<item-type>Number</item-type>
 		<label>Solar Energy</label>
 		<description>(MJ /m^2) Indicates the total energy from the sun that builds up over an hour or day. See the full
@@ -1685,18 +1918,6 @@
 			pages.
 		</description>
 		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="uv-index-channel">
-		<!-- TODO Is there item-type for UV? -->
-		<item-type>Number</item-type>
-		<label>UV Index</label>
-		<description>
-			A value between 0 and 10 indicating the level of ultra violet (UV) exposure for that hour or day. 10
-			represents high level of exposure, and 0 represents no exposure. The UV index is calculated based on amount of short
-			wave solar radiation which in turn is a level the cloudiness, type of cloud, time of day, time of year and location
-			altitude. Daily values represent the maximum value of the hourly values.
-		</description>
-		<state readOnly="true" min="0" max="10"/>
 	</channel-type>
 	<channel-type id="conditions-channel">
 		<item-type>String</item-type>
