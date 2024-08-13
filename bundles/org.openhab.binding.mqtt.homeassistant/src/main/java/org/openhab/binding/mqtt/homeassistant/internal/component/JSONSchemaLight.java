@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
-import org.openhab.binding.mqtt.homeassistant.internal.exception.UnsupportedComponentException;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -82,19 +81,7 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
     @Override
     protected void buildChannels() {
         List<LightColorMode> supportedColorModes = channelConfiguration.supportedColorModes;
-        if (supportedColorModes != null && supportedColorModes.contains(LightColorMode.COLOR_MODE_COLOR_TEMP)) {
-            colorModeValue = new TextValue(
-                    supportedColorModes.stream().map(LightColorMode::serializedName).toArray(String[]::new));
-            buildChannel(COLOR_MODE_CHANNEL_ID, ComponentChannelType.STRING, colorModeValue, "Color Mode", this)
-                    .isAdvanced(true).build();
-        }
-
-        if (channelConfiguration.colorMode) {
-            if (supportedColorModes == null || channelConfiguration.supportedColorModes.isEmpty()) {
-                throw new UnsupportedComponentException("JSON schema light with color modes '" + getHaID()
-                        + "' does not define supported_color_modes!");
-            }
-
+        if (supportedColorModes != null) {
             if (LightColorMode.hasColorChannel(supportedColorModes)) {
                 hasColorChannel = true;
             }
@@ -103,6 +90,14 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
                 buildChannel(COLOR_TEMP_CHANNEL_ID, ComponentChannelType.NUMBER, colorTempValue, "Color Temperature",
                         this).commandTopic(DUMMY_TOPIC, true, 1)
                         .commandFilter(command -> handleColorTempCommand(command)).build();
+
+                if (hasColorChannel) {
+                    colorModeValue = new TextValue(
+                            supportedColorModes.stream().map(LightColorMode::serializedName).toArray(String[]::new));
+                    buildChannel(COLOR_MODE_CHANNEL_ID, ComponentChannelType.STRING, colorModeValue, "Color Mode", this)
+                            .isAdvanced(true).build();
+
+                }
             }
         }
 
