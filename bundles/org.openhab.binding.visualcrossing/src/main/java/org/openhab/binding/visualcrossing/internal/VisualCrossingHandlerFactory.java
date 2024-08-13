@@ -18,6 +18,8 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -40,10 +42,14 @@ public class VisualCrossingHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(WEATHER_THING_TYPE);
     protected final @NonNullByDefault({}) HttpClientFactory httpClientFactory;
+    protected final @NonNullByDefault({}) LocaleProvider localeProvider;
+    protected final @NonNullByDefault({}) LocationProvider locationProvider;
 
     @Activate
-    public VisualCrossingHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+    public VisualCrossingHandlerFactory(@Reference HttpClientFactory httpClientFactory, @Reference  LocaleProvider localeProvider, @Reference LocationProvider locationProvider) {
         this.httpClientFactory = httpClientFactory;
+        this.localeProvider = localeProvider;
+        this.locationProvider = locationProvider;
     }
 
     @Override
@@ -56,7 +62,7 @@ public class VisualCrossingHandlerFactory extends BaseThingHandlerFactory {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
         if (WEATHER_THING_TYPE.equals(thingTypeUID)) {
-            return new VisualCrossingHandler(thing, httpClientFactory);
+            return new VisualCrossingHandler(thing, httpClientFactory, localeProvider, locationProvider);
         }
 
         return null;
