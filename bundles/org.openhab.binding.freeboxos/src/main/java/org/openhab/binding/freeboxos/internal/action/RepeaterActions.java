@@ -60,6 +60,10 @@ public class RepeaterActions implements ThingActions {
     }
 
     public static void rebootRepeater(ThingActions actions) {
-        ((RepeaterActions) actions).rebootRepeater();
+        if (actions instanceof RepeaterActions repeaterActions) {
+            repeaterActions.rebootRepeater();
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a RepeaterActions class.");
+        }
     }
 }

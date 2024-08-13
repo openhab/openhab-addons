@@ -60,6 +60,10 @@ public class HostActions implements ThingActions {
     }
 
     public static void wol(ThingActions actions) {
-        ((HostActions) actions).wol();
+        if (actions instanceof HostActions hostActions) {
+            hostActions.wol();
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a HostHandler class.");
+        }
     }
 }

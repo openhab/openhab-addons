@@ -94,18 +94,34 @@ public class PlayerActions implements ThingActions {
     }
 
     public static void sendKey(ThingActions actions, String key) {
-        ((PlayerActions) actions).sendKey(key);
+        if (actions instanceof PlayerActions playerActions) {
+            playerActions.sendKey(key);
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a PlayerActions class.");
+        }
     }
 
     public static void sendLongKey(ThingActions actions, String key) {
-        ((PlayerActions) actions).sendLongKey(key);
+        if (actions instanceof PlayerActions playerActions) {
+            playerActions.sendLongKey(key);
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a PlayerActions class.");
+        }
     }
 
     public static void sendMultipleKeys(ThingActions actions, String keys) {
-        ((PlayerActions) actions).sendMultipleKeys(keys);
+        if (actions instanceof PlayerActions playerActions) {
+            playerActions.sendMultipleKeys(keys);
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a PlayerActions class.");
+        }
     }
 
     public static void sendKeyRepeat(ThingActions actions, String key, int count) {
-        ((PlayerActions) actions).sendKeyRepeat(key, count);
+        if (actions instanceof PlayerActions playerActions) {
+            playerActions.sendKeyRepeat(key, count);
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a PlayerActions class.");
+        }
     }
 }

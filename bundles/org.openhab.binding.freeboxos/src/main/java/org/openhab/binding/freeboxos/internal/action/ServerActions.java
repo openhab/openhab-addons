@@ -60,6 +60,10 @@ public class ServerActions implements ThingActions {
     }
 
     public static void rebootServer(ThingActions actions) {
-        ((ServerActions) actions).rebootServer();
+        if (actions instanceof ServerActions serverActions) {
+            serverActions.rebootServer();
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a ServerActions class.");
+        }
     }
 }

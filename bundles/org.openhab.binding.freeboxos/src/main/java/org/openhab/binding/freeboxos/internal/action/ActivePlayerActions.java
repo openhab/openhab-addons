@@ -46,6 +46,10 @@ public class ActivePlayerActions extends PlayerActions {
     }
 
     public static void rebootPlayer(ThingActions actions) {
-        ((ActivePlayerActions) actions).rebootPlayer();
+        if (actions instanceof ActivePlayerActions activePlayerActions) {
+            activePlayerActions.rebootPlayer();
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a ActivePlayerActions class.");
+        }
     }
 }

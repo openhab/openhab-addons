@@ -60,6 +60,10 @@ public class CallActions implements ThingActions {
     }
 
     public static void resetCalls(ThingActions actions) {
-        ((CallActions) actions).resetCalls();
+        if (actions instanceof CallActions callActions) {
+            callActions.resetCalls();
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a CallActions class.");
+        }
     }
 }

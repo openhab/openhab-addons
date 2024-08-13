@@ -60,6 +60,10 @@ public class FreeplugActions implements ThingActions {
     }
 
     public static void resetPlug(ThingActions actions) {
-        ((FreeplugActions) actions).resetPlug();
+        if (actions instanceof FreeplugActions freeplugActions) {
+            freeplugActions.resetPlug();
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a FreeplugActions class.");
+        }
     }
 }
