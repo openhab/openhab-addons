@@ -17,6 +17,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -117,8 +118,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
     private void startAudioSink(Receiver receiver) {
         FreeboxOsHandler bridgeHandler = checkBridgeHandler();
         // Only video and photo is supported by the API so use VIDEO capability for audio
-        Boolean isAudioReceiver = receiver.capabilities().get(MediaType.VIDEO);
-        if (reg == null && bridgeHandler != null && isAudioReceiver != null && isAudioReceiver.booleanValue()) {
+        if (reg == null && bridgeHandler != null && Boolean.TRUE.equals(receiver.capabilities().get(MediaType.VIDEO))) {
             ApiConsumerConfiguration config = getConfig().as(ApiConsumerConfiguration.class);
             String callbackURL = bridgeHandler.getCallbackURL();
             if (!config.password.isEmpty() || !receiver.passwordProtected()) {
@@ -218,7 +218,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
         ThingStatusDetail detail = thing.getStatusInfo().getStatusDetail();
         if (ThingStatusDetail.DUTY_CYCLE.equals(detail)) {
             try {
-                internalPoll();
+                internalForcePoll();
             } catch (FreeboxException ignore) {
                 // An exception is normal if the box is rebooting then let's try again later...
                 addJob("Initialize", this::initialize, 10, TimeUnit.SECONDS);
@@ -353,6 +353,12 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
     @Override
     public void updateProperties(@Nullable Map<String, String> properties) {
         super.updateProperties(properties);
+    }
+
+    @Override
+    public boolean anyChannelLinked(String groupId, Set<String> channelSet) {
+        return channelSet.stream().map(id -> new ChannelUID(getThing().getUID(), groupId, id))
+                .anyMatch(uid -> isLinked(uid));
     }
 
     @Override
