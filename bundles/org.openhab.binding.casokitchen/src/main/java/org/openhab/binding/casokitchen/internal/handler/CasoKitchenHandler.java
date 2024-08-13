@@ -148,13 +148,13 @@ public class CasoKitchenHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.ONLINE);
                         return true;
                     } else {
-                        reason = "Refresh Interval " + c.refreshInterval + " not supported";
+                        reason = "@text/casokitchen.winecooler.status.refresh-interval [\"" + c.refreshInterval + "\"]";
                     }
                 } else {
-                    reason = "Technical Device ID Missing";
+                    reason = "@text/casokitchen.winecooler.status.device-id-missing";
                 }
             } else {
-                reason = "API Key Missing";
+                reason = "@text/casokitchen.winecooler.status.api-key-missing";
             }
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, reason);
