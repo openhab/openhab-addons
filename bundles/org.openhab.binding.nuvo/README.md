@@ -28,6 +28,15 @@ It has the `amplifier` id.
 Discovery is not supported.
 You have to add all things manually.
 
+## Binding Configuration
+
+The binding has the following configuration parameters:
+
+| Parameter Label          | Parameter ID   | Description                                                   | Accepted Values       |
+|--------------------------|--------------- |---------------------------------------------------------------|-----------------------|
+| Image Height             | imageHeight    | Height (in pixels) for album art images loaded from the MPS4. | 1 - 1024; default 150 |
+| Image Width              | imageWidth     | Width (in pixels) for album art images loaded from the MPS4.  | 1 - 1024; default 150 |
+
 ## Thing Configuration
 
 The thing has the following configuration parameters:
