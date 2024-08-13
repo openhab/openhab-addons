@@ -18,13 +18,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,7 +31,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.linktap.internal.LinkTapBindingConstants;
 import org.openhab.binding.linktap.internal.TransactionProcessor;
 import org.openhab.binding.linktap.protocol.frames.TLGatewayFrame;
-import org.openhab.core.thing.Thing;
 import org.osgi.service.http.HttpService;
 import org.osgi.service.http.NamespaceException;
 import org.slf4j.Logger;
@@ -55,7 +53,7 @@ public class BindingServlet extends HttpServlet {
     HttpService httpService;
 
     volatile boolean registered;
-    List<Thing> accountHandlers = new ArrayList<>();
+    final Object registerLock = new Object();
 
     public static final BindingServlet INSTANCE = new BindingServlet();
 
@@ -74,7 +72,7 @@ public class BindingServlet extends HttpServlet {
         if (httpPortStr == null || httpPortStr.isEmpty()) {
             logger.warn("HTTP Server port is not running, cannot use for API callbacks");
             if (httpsPortStr != null && !httpsPortStr.isEmpty()) {
-                logger.warn("Looks like HTTPS is enabled - the device needs HTTP for efficient comm's");
+                logger.warn("It looks like HTTPS is enabled only - the device needs HTTP for efficient comm's");
             }
             return EMPTY_STRING;
         }
@@ -83,80 +81,27 @@ public class BindingServlet extends HttpServlet {
 
     public void registerServlet() {
         final HttpService srv = httpService;
-        if (!registered && srv != null) {
-            try {
-                srv.registerServlet(SERVLET_URL, this, null, srv.createDefaultHttpContext());
-                registered = true;
-                logger.trace("Registered servlet " + SERVLET_URL);
-            } catch (NamespaceException | ServletException e) {
-                logger.warn("Register servlet failed for {}", SERVLET_URL, e);
+        synchronized (registerLock) {
+            if (!registered && srv != null) {
+                try {
+                    srv.registerServlet(SERVLET_URL, this, null, srv.createDefaultHttpContext());
+                    registered = true;
+                    logger.trace("Registered servlet " + SERVLET_URL);
+                } catch (NamespaceException | ServletException e) {
+                    logger.warn("Register servlet failed for {}", SERVLET_URL, e);
+                }
             }
         }
     }
 
     public void unregisterServlet() {
         final HttpService srv = httpService;
-        if (registered && srv != null) {
-            srv.unregister(SERVLET_URL);
-            registered = false;
-            logger.trace("Unregistered servlet");
-        }
-    }
-
-    @Override
-    protected void doGet(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp)
-            throws ServletException, IOException {
-        if (req == null) {
-            return;
-        }
-        /*
-         * if (BridgeManager.getInstance().isEmpty()) {
-         * resp.setStatus(HttpStatus.NOT_FOUND_404);
-         * resp.setContentLength(0);
-         * resp.flushBuffer();
-         * }
-         */
-
-        logger.warn("Got GET request from {}", req.getRemoteAddr());
-        logger.warn("Got GET request from {}", req.getRemoteHost());
-
-        StringBuilder html = new StringBuilder();
-        html.append("<html><head><title>" + "My first page" + "</title><head><body>");
-        html.append("<h1>" + "Some Heading" + "</h1>");
-
-        html.append("<body><b>Remote Host</b>").append(req.getRemoteHost()).append("</body>");
-        html.append("<body><b>Remote Addr</b>").append(req.getRemoteAddr()).append("</body>");
-        html.append("<body><b>Remote User</b>").append(req.getRemoteUser()).append("</body>");
-        html.append("<body><b>Remote Port</b>").append(req.getRemotePort()).append("</body>");
-
-        if (resp == null) {
-            return;
-        }
-
-        String requestUri = req.getRequestURI();
-        if (requestUri == null) {
-            return;
-        }
-        String uri = requestUri.substring(SERVLET_URL.length());
-        String queryString = req.getQueryString();
-        if (queryString != null && queryString.length() > 0) {
-            uri += "?" + queryString;
-        }
-        logger.debug("doGet {}", uri);
-
-        // if (!"/".equals(uri)) {
-        // String newUri = req.getServletPath() + "/";
-        // resp.sendRedirect(newUri);
-        // return;
-        // }
-
-        html.append("</body></html>");
-
-        resp.addHeader("content-type", "text/html;charset=UTF-8");
-        try {
-            resp.getWriter().write(html.toString());
-        } catch (IOException e) {
-            logger.warn("return html failed with uri syntax error", e);
+        synchronized (registerLock) {
+            if (registered && srv != null) {
+                srv.unregister(SERVLET_URL);
+                registered = false;
+                logger.trace("Unregistered servlet");
+            }
         }
     }
 
@@ -167,69 +112,28 @@ public class BindingServlet extends HttpServlet {
             return;
         }
 
-        /*
-         * if (BridgeManager.getInstance().isEmpty()) {
-         * resp.setStatus(HttpStatus.NOT_FOUND_404);
-         * resp.setContentLength(0);
-         * resp.flushBuffer();
-         * }
-         */
-
-        // logger.warn("Got request from {}", req.getRemoteAddr());
-        // logger.warn("Got request from {}", req.getRemoteHost());
-        // Enumeration<String> headers = req.getHeaderNames();
-        /*
-         * if (headers != null) {
-         * for (Iterator<String> it = headers.asIterator(); it.hasNext();) {
-         * String header = it.next();
-         * // logger.warn("Got header {} with value {}", header, req.getHeader(header));
-         * }
-         * }
-         */
-
         int bufferSize = 1000; // The payload string is technically limited to 768 characters - this should be enough
-                               // for one buffer for the whole lot
+                               // a single read to fully fit
         char[] buffer = new char[bufferSize];
         StringBuilder out = new StringBuilder();
-        Reader in = new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8);
-        for (int numRead; (numRead = in.read(buffer, 0, buffer.length)) > 0;) {
-            out.append(buffer, 0, numRead);
+        try (Reader in = new InputStreamReader(req.getInputStream(), StandardCharsets.UTF_8)) {
+            for (int numRead; (numRead = in.read(buffer, 0, buffer.length)) > 0;) {
+                out.append(buffer, 0, numRead);
+            }
         }
 
         String payload = out.toString();
-        // logger.warn("Output {}", payload);
         final TLGatewayFrame tlFrame = LinkTapBindingConstants.GSON.fromJson(payload, TLGatewayFrame.class);
-        // if (tlFrame.command == DEFAULT_INT) {
-        // logger.warn("Unsolicited frame - Mapping to CMD 3");
-        // } else {
         String result = "";
         if (tlFrame != null) {
-            // logger.warn("Got Command {}", tlFrame.command);
             TransactionProcessor tp = TransactionProcessor.getInstance();
             result = tp.processGwRequest(req.getRemoteAddr(), tlFrame.command, payload);
         }
-        // resp.setStatus(HttpServletResponse.SC_OK);
-        // resp.setContentType("application/json");
-        // resp.setContentLength(result.length());
-        // resp.setCharacterEncoding("UTF-8");
-        // resp.getWriter().write(result);
-        // resp.getWriter().flush();
-        // resp.getWriter().close();
-        // resp.flushBuffer();
-        // }
-        // logger.warn("SENDING RESPONSE BODY {}", result);
-        // resp.addHeader("content-type", "text/html;charset=UTF-8");
-        // try {
-        // resp.getWriter().write(result);
-        // } catch (IOException e) {
-        // logger.warn("return html failed with uri syntax error", e);
-        // }
         if (resp == null) {
             return;
         }
-        // logger.warn("SENDING RESPONSE BODY 2 {}", result);
 
-        resp.setContentType("application/json");
+        resp.setContentType(MediaType.APPLICATION_JSON);
         resp.setStatus(HttpStatus.OK_200);
         resp.getWriter().append(result);
         resp.getWriter().close();

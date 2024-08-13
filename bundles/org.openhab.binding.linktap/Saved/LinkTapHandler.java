@@ -254,20 +254,6 @@ public class LinkTapHandler extends BaseThingHandler {
             }
         });
 
-        /*
-         * if (CHANNEL_1.equals(channelUID.getId())) {
-         * if (command instanceof RefreshType) {
-         * // TODO: handle data refresh
-         * }
-         * 
-         * // TODO: handle command`
-         * 
-         * // Note: if communication with thing fails for some reason,
-         * // indicate that by setting the status with detail information:
-         * // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-         * // "Could not control device at IP address x.x.x.x");
-         * }
-         */
     }
 
     @Override
@@ -343,9 +329,13 @@ public class LinkTapHandler extends BaseThingHandler {
         }
 
         // Validate the payload is within the expected limits for the device its being sent to
-        // if (!frame.isValid()) {
-        // throw new RuntimeException("Payload validation failed - will not send");
-        // }
+        {
+            final String validationError = frame.isValid();
+            if (!validationError.isEmpty()) {
+                logger.warn("{} -> Payload validation failed - {}", getThing().getLabel(), validationError);
+                return "";
+            }
+        }
         Bridge parentBridge = getBridge();
         if (parentBridge == null) {
             logger.warn("Cannot send device does not have a valid bridge");
@@ -411,7 +401,7 @@ public class LinkTapHandler extends BaseThingHandler {
 
     public void processDeviceCommand(final int commandId, final String frame) {
         lastStatusCommandRecvTs = System.currentTimeMillis();
-        logger.debug("{} processing device request with command {}", this.getThing().getLabel(), commandId);
+        logger.debug("{} processing device request with command {}", getThing().getLabel(), commandId);
 
         switch (commandId) {
             case CMD_UPDATE_WATER_TIMER_STATUS:

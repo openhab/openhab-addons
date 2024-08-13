@@ -25,4 +25,7 @@ public class LinkTapBridgeConfiguration {
     public String host = "";
     public String username = "";
     public String password = "";
+    public boolean enableMDNS = true;
+    public boolean enableJSONComms = false;
+    public boolean enforceProtocolLimits = true;
 }

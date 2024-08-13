@@ -16,6 +16,7 @@
 			<property name="HTTP API Enabled"/>
 			<property name="HTTP API Callback URI"/>
 			<property name="Volume Unit"/>
+			<property name="UTC Offset"/>
 		</properties>
 
 		<config-description>
@@ -37,8 +38,20 @@
 				<description>The password if set for the gateway device</description>
 			</parameter>
 			<parameter name="enableMDNS" type="boolean">
-				<label>Enable mDNS responder</label>
+				<label>Enable mDNS Responder</label>
 				<description>On connection whether the mDNS responder should be enabled on the gateway device</description>
+				<default>true</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="enableJSONComms" type="boolean">
+				<label>Enable non HTML responses</label>
+				<description>Enable if only OpenHab is directly using the Gateway, to allow more efficient communications</description>
+				<default>false</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="enforceProtocolLimits" type="boolean">
+				<label>Enforce protocol limits</label>
+				<description>If parameters outside the limits acceptable to the device's are sent they will be blocked and logged</description>
 				<default>true</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -55,31 +68,31 @@
 		<description>LinkTap Binding Device</description>
 
 		<channels>
-			<channel id="mode" typeId="deviceMode"/>
-			<channel id="manual-watering" typeId="deviceManMode"/>
-			<channel id="active-watering" typeId="deviceWatering"/>
-			<channel id="rf-linked" typeId="deviceRfLinked"/>
-			<channel id="flm-linked" typeId="deviceFlmLinked"/>
-			<channel id="water-cut" typeId="deviceWaterCutoff"/>
-			<channel id="fall-status" typeId="deviceFallStatus"/>
-			<channel id="shutdown-failure" typeId="deviceFailStatus"/>
-			<channel id="high-flow" typeId="deviceIsLeak"/>
-			<channel id="low-flow" typeId="deviceIsClog"/>
-			<channel id="eco-final" typeId="deviceFinalSegment"/>
-			<channel id="signal" typeId="deviceSignalLevel"/>
-			<channel id="battery" typeId="deviceBatteryLevel"/>
-			<channel id="child-lock" typeId="deviceChildLockMode"/>
-			<channel id="flow-rate" typeId="deviceFlowRate"/>
-			<channel id="volume" typeId="deviceVolume"/>
-			<channel id="duration" typeId="deviceTotalDuration"/>
-			<channel id="remaining" typeId="deviceRemainingDuration"/>
-			<channel id="dur-limit" typeId="deviceFailsafeDuration"/>
-			<channel id="vol-limit" typeId="deviceVolumeLimit"/>
-			<channel id="oh-dur-limit" typeId="ohInstantDuration"/>
-			<channel id="oh-vol-limit" typeId="ohInstantVolumeLimit"/>
-			<channel id="water-skip-prev" typeId="waterSkipPrevRain"/>
-			<channel id="water-skip-next" typeId="waterSkipFutureRain"/>
-			<channel id="water-skip-ts" typeId="waterSkipDateTime"/>
+			<channel id="mode" typeId="mode-type"/>
+			<channel id="manual-watering" typeId="man-mode-type"/>
+			<channel id="watering" typeId="watering-type"/>
+			<channel id="rf-linked" typeId="rf-linked-type"/>
+			<channel id="flm-linked" typeId="flm-linked-type"/>
+			<channel id="water-cut" typeId="water-cut-type"/>
+			<channel id="fall-status" typeId="fall-status-type"/>
+			<channel id="shutdown-failure" typeId="fail-status-type"/>
+			<channel id="high-flow" typeId="is-leak-type"/>
+			<channel id="low-flow" typeId="is-clog-type"/>
+			<channel id="eco-final" typeId="final-segment-type"/>
+			<channel id="signal" typeId="signal-level-type"/>
+			<channel id="battery" typeId="battery-level-type"/>
+			<channel id="child-lock" typeId="child-lock-type"/>
+			<channel id="flow-rate" typeId="flow-rate-type"/>
+			<channel id="volume" typeId="volume-type"/>
+			<channel id="duration" typeId="total-duration-type"/>
+			<channel id="remaining" typeId="remaining-duration-type"/>
+			<channel id="dur-limit" typeId="failsafe-duration-type"/>
+			<channel id="vol-limit" typeId="volume-limit-type"/>
+			<channel id="oh-dur-limit" typeId="instant-duration-type"/>
+			<channel id="oh-vol-limit" typeId="instant-limit-type"/>
+			<channel id="plan-pause-enable" typeId="pause-enable-type"/>
+			<channel id="plan-resume-time" typeId="pause-until-type"/>
+			<channel id="watering-plan-id" typeId="plan-id-type"/>
 		</channels>
 
 		<representation-property>deviceId</representation-property>

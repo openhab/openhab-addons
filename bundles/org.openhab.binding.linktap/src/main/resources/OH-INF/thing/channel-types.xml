@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<channel-type id="deviceMode">
+	<channel-type id="mode-type">
 		<item-type>String</item-type>
-		<label>Watering mode</label>
+		<label>Watering Mode</label>
 		<description>The watering mode</description>
 		<category>Time</category>
 		<state readOnly="false">
@@ -22,15 +22,15 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="deviceManMode">
+	<channel-type id="man-mode-type">
 		<item-type>Switch</item-type>
-		<label>Manual watering</label>
+		<label>Manual Watering</label>
 		<description>Manual watering mode status</description>
 		<category>Water</category>
-		<state readOnly="false"/>
+		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="deviceWatering">
+	<channel-type id="watering-type">
 		<item-type>Switch</item-type>
 		<label>Watering</label>
 		<description>Active watering status</description>
@@ -38,7 +38,7 @@
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="deviceRfLinked">
+	<channel-type id="rf-linked-type">
 		<item-type>Switch</item-type>
 		<label>RF Linked</label>
 		<description>Is the device RF linked</description>
@@ -46,7 +46,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="deviceFlmLinked">
+	<channel-type id="flm-linked-type">
 		<item-type>Switch</item-type>
 		<label>FLM Linked</label>
 		<description>The device has a included flow meter</description>
@@ -54,7 +54,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="deviceIsLeak">
+	<channel-type id="is-leak-type">
 		<item-type>Switch</item-type>
 		<label>High Flow Detected</label>
 		<description>Unusually high flow rate detected alert</description>
@@ -62,7 +62,7 @@
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="deviceIsClog">
+	<channel-type id="is-clog-type">
 		<item-type>Switch</item-type>
 		<label>Low Flow Detected</label>
 		<description>Unusually low flow rate detected alert</description>
@@ -70,23 +70,23 @@
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="deviceFallStatus">
+	<channel-type id="fall-status-type">
 		<item-type>Switch</item-type>
-		<label>Fallen status</label>
+		<label>Fallen Status</label>
 		<description>The device has fallen</description>
 		<category>Alarm</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="deviceFailStatus">
+	<channel-type id="fail-status-type">
 		<item-type>Switch</item-type>
-		<label>Shutdown value failed</label>
+		<label>Shutdown Value Failed</label>
 		<description>The device has failed to close the valve</description>
 		<category>Alarm</category>
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="deviceFinalSegment">
+	<channel-type id="final-segment-type">
 		<item-type>Switch</item-type>
 		<label>Final ECO Segment</label>
 		<description>In ECO mode this is true when the final ON watering on segment is running</description>
@@ -94,7 +94,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="deviceSignalLevel">
+	<channel-type id="signal-level-type">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Signal Level</label>
 		<description>Reception Signal Strength</description>
@@ -102,7 +102,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="deviceBatteryLevel">
+	<channel-type id="battery-level-type">
 		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Battery Level</label>
 		<description>Battery Remaining Level</description>
@@ -110,7 +110,7 @@
 		<state readOnly="true" pattern="%.0f %%"/>
 	</channel-type>
 
-	<channel-type id="deviceWaterCutoff">
+	<channel-type id="water-cut-type">
 		<item-type>Switch</item-type>
 		<label>Water Cutoff</label>
 		<description>Water cut-off alert</description>
@@ -118,7 +118,7 @@
 		<state readOnly="false"/>
 	</channel-type>
 
-	<channel-type id="deviceFlowRate">
+	<channel-type id="flow-rate-type">
 		<item-type unitHint="l/min">Number:VolumetricFlowRate</item-type>
 		<label>Flow Rate</label>
 		<description>Current water flow rate</description>
@@ -126,7 +126,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="deviceVolume">
+	<channel-type id="volume-type">
 		<item-type unitHint="l">Number:Volume</item-type>
 		<label>Current Watering Volume</label>
 		<description>Accumulated volume of current watering cycle</description>
@@ -134,23 +134,23 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="deviceVolumeLimit">
+	<channel-type id="volume-limit-type">
 		<item-type unitHint="l">Number:Volume</item-type>
 		<label>Current Watering Limit</label>
 		<description>Volume limit for the current watering cycle</description>
 		<category>Water</category>
-		<state readOnly="false" pattern="%.2f %unit%"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="deviceTotalDuration">
+	<channel-type id="total-duration-type">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Watering Cycle Duration</label>
 		<description>Total duration of current watering cycle</description>
 		<category>Time</category>
-		<state readOnly="false" pattern="%.2f %unit%"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="deviceRemainingDuration">
+	<channel-type id="remaining-duration-type">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Watering Cycle Remaining</label>
 		<description>Remaining duration of the current watering cycle</description>
@@ -158,7 +158,7 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="deviceFailsafeDuration">
+	<channel-type id="failsafe-duration-type">
 		<item-type unitHint="s">Number:Time</item-type>
 		<label>Watering Cycle Failsafe</label>
 		<description>Failsafe duration of the current watering cycle</description>
@@ -166,9 +166,9 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="deviceChildLockMode">
+	<channel-type id="child-lock-type">
 		<item-type>String</item-type>
-		<label>Child-lock mode</label>
+		<label>Child Lock Mode</label>
 		<description>The child lock mode</description>
 		<category>Lock</category>
 		<state readOnly="false">
@@ -180,43 +180,43 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="ohInstantDuration">
+	<channel-type id="instant-duration-type">
 		<item-type unitHint="s">Number:Time</item-type>
-		<label>OH Instance On Duration</label>
+		<label>Instant Duration Limit</label>
 		<description>Max duration allowed for the immediate watering</description>
 		<category>Time</category>
 		<state readOnly="false" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="ohInstantVolumeLimit">
+	<channel-type id="instant-limit-type">
 		<item-type unitHint="l">Number:Volume</item-type>
-		<label>OH Instance On Watering Limit</label>
+		<label>Instant Volume Limit</label>
 		<description>Max Volume limit for immediate watering</description>
 		<category>Water</category>
 		<state readOnly="false" pattern="%.2f %unit%"/>
 	</channel-type>
 
-	<channel-type id="waterSkipPrevRain">
-		<item-type unitHint="mm">Number:Length</item-type>
-		<label>Watering Skipped Previous Rain</label>
-		<description>Previous rainfall calculated when watering was skipped</description>
-		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%"/>
-	</channel-type>
-
-	<channel-type id="waterSkipFutureRain">
-		<item-type unitHint="mm">Number:Length</item-type>
-		<label>Watering Skipped Future Rain</label>
-		<description>Future rainfall calculated when watering was skipped</description>
-		<category>Rain</category>
-		<state readOnly="true" pattern="%.2f %unit%"/>
-	</channel-type>
-
-	<channel-type id="waterSkipDateTime">
-		<item-type>DateTime</item-type>
-		<label>Watering Skipped Timestamp</label>
-		<description>Time when watering was skipped</description>
+	<channel-type id="pause-enable-type">
+		<item-type>Switch</item-type>
+		<label>Pause plan schedule</label>
+		<description>When ON will pause the current watering plan for an hour every 55 minutes</description>
 		<category>Time</category>
+		<state readOnly="false"/>
+	</channel-type>
+
+	<channel-type id="pause-until-type">
+		<item-type>DateTime</item-type>
+		<label>Plan Paused Until</label>
+		<description>Displays when the last pause issued will expiry, resuming the current watering plan</description>
+		<category>Calendar</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="plan-id-type">
+		<item-type>String</item-type>
+		<label>Watering Plan Id</label>
+		<description>Displays the current watering plan id</description>
+		<category>Calendar</category>
 		<state readOnly="true"/>
 	</channel-type>
 

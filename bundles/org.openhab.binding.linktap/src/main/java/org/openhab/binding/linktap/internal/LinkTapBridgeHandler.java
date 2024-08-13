@@ -14,25 +14,25 @@ package org.openhab.binding.linktap.internal;
 
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_GW_ID;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_GW_VER;
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_UTC_OFFSET;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_VOL_UNIT;
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.THING_TYPE_BRIDGE;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_DATETIME_SYNC;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_GET_CONFIGURATION;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_HANDSHAKE;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_NOTIFICATION_WATERING_SKIPPED;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_RAINFALL_DATA;
+import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.DEFAULT_INT;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.EMPTY_STRING_ARRAY;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.Socket;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -50,7 +50,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linktap.configuration.LinkTapBridgeConfiguration;
 import org.openhab.binding.linktap.protocol.frames.GatewayConfigResp;
-import org.openhab.binding.linktap.protocol.frames.HandshakeReq;
 import org.openhab.binding.linktap.protocol.frames.TLGatewayFrame;
 import org.openhab.binding.linktap.protocol.http.CommandNotSupportedException;
 import org.openhab.binding.linktap.protocol.http.DeviceIdException;
@@ -62,6 +61,7 @@ import org.openhab.binding.linktap.protocol.http.WebServerApi;
 import org.openhab.binding.linktap.protocol.servers.BindingServlet;
 import org.openhab.binding.linktap.protocol.servers.IHttpClientProvider;
 import org.openhab.core.cache.ExpiringCache;
+import org.openhab.core.config.discovery.DiscoveryServiceRegistry;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -72,6 +72,8 @@ import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +87,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(LinkTapBridgeHandler.class);
     private String bridgeKey = "";
-    private String gwId = "";
+    private volatile String currentGwId = "";
     private IHttpClientProvider httpClientProvider;
     public static final LookupWrapper<@Nullable LinkTapBridgeHandler> ADDR_LOOKUP = new LookupWrapper<>();
     public static final LookupWrapper<@Nullable LinkTapBridgeHandler> GW_ID_LOOKUP = new LookupWrapper<>();
@@ -93,10 +95,18 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     public static final LookupWrapper<@Nullable String> MDNS_LOOKUP = new LookupWrapper<>();
     private final Object schedulerLock = new Object();
     private @Nullable ScheduledFuture<?> backgroundGwPollingScheduler;
+    private volatile LinkTapBridgeConfiguration config = new LinkTapBridgeConfiguration();
+
+    private java.util.concurrent.@Nullable ScheduledFuture<?> connectRepair = null;
+    private final Object reconnectFutureLock = new Object();
 
     private volatile long lastGwCommandRecvTs = 0L;
 
     private final Object getConfigLock = new Object();
+
+    private volatile long lastMdnsScanMillis = -1L;
+
+    private static final long MIN_TIME_BETWEEN_MDNS_SCANS_MS = 600000;
 
     protected ExpiringCache<String> lastGetConfigCache = new ExpiringCache<>(Duration.ofSeconds(10),
             LinkTapBridgeHandler::expireCacheContents);
@@ -105,9 +115,60 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         return null;
     }
 
-    public LinkTapBridgeHandler(final Bridge bridge, @NotNull IHttpClientProvider httpClientProvider) {
+    private final DiscoveryServiceRegistry discoverySrvReg;
+
+    @Activate
+    public LinkTapBridgeHandler(final Bridge bridge, @NotNull IHttpClientProvider httpClientProvider,
+            @Reference DiscoveryServiceRegistry discoveryService) {
         super(bridge);
         this.httpClientProvider = httpClientProvider;
+        this.discoverySrvReg = discoveryService;
+    }
+
+    public static class Firmware {
+        String raw;
+        int buildVer;
+        int hwVer;
+
+        public Firmware(final @Nullable String fwVersion) {
+            raw = "S00000000";
+            hwVer = 0;
+            buildVer = 0;
+
+            if (fwVersion == null || fwVersion.length() < 7) {
+                return;
+            } else {
+                raw = fwVersion;
+                buildVer = Integer.parseInt(raw.substring(1, 7));
+            }
+
+            switch (fwVersion.charAt(0)) {
+                case 'G':
+                    hwVer = 2;
+                    break;
+                case 'S':
+                    hwVer = 1;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public boolean supportsLocalConfig() {
+            return buildVer >= 60900;
+        }
+
+        public boolean supportsMDNS() {
+            return buildVer >= 60880;
+        }
+
+        public String generateTestedRevisionForHw(final int versionNo) {
+            return String.format("%c%05d", raw.charAt(0), versionNo);
+        }
+
+        public String getRecommendedMinVer() {
+            return generateTestedRevisionForHw(60900);
+        }
     }
 
     private void startGwPolling() {
@@ -131,17 +192,30 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    private void requestMdnsScan() {
+        final long sysMillis = System.currentTimeMillis();
+        if (lastMdnsScanMillis + MIN_TIME_BETWEEN_MDNS_SCANS_MS < sysMillis) {
+            logger.debug("Requesting MDNS Scan");
+            discoverySrvReg.startScan(THING_TYPE_BRIDGE, null);
+            lastMdnsScanMillis = sysMillis;
+        } else {
+            logger.trace("Not requesting MDNS Scan last ran under 10 min's ago");
+        }
+    }
+
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(this::connect);
+        config = getConfigAs(LinkTapBridgeConfiguration.class);
+        scheduleReconnect(0);
     }
 
     @Override
     public void dispose() {
+        cancelReconnect();
         cancelGwPolling();
         deregisterBridge(this);
-        GW_ID_LOOKUP.deregisterItem(gwId, this, () -> {
+        GW_ID_LOOKUP.deregisterItem(currentGwId, this, () -> {
         });
     }
 
@@ -151,7 +225,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     }
 
     public @Nullable String getGatewayId() {
-        return editProperties().get(BRIDGE_PROP_GW_ID);
+        return currentGwId;
     }
 
     private void deregisterBridge(final LinkTapBridgeHandler ref) {
@@ -163,21 +237,15 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    public String getHost() {
-        final LinkTapBridgeConfiguration config = getConfigAs(LinkTapBridgeConfiguration.class);
-        return config.host;
-    }
-
     private boolean registerBridge(final LinkTapBridgeHandler ref) {
         final WebServerApi api = WebServerApi.getInstance();
         api.setHttpClient(httpClientProvider.getHttpClient());
-        final LinkTapBridgeConfiguration config = getConfigAs(LinkTapBridgeConfiguration.class);
         try {
-            final InetAddress ip = InetAddress.getByName(new URL("http://" + config.host).getHost());
-            final String newHost = ip.getHostAddress();
-            if (!bridgeKey.equals(newHost)) {
+            final String host = getHostname();
+
+            if (!bridgeKey.equals(host)) {
                 deregisterBridge(this);
-                bridgeKey = newHost;
+                bridgeKey = host;
             }
 
             if (!ADDR_LOOKUP.registerItem(bridgeKey, this, () -> {
@@ -185,7 +253,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             })) {
                 return false;
             }
-        } catch (MalformedURLException | UnknownHostException e) {
+        } catch (UnknownHostException e) {
             deregisterBridge(this);
             return false;
         }
@@ -206,10 +274,13 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         if (gwConfig == null) {
             return;
         }
+        currentGwId = gwConfig.gatewayId;
+
         final String version = gwConfig.version;
         final String volUnit = gwConfig.volumeUnit;
         final String[] devIds = gwConfig.endDevices;
         final String[] devNames = gwConfig.deviceNames;
+        final Integer utcOffset = gwConfig.utfOfs;
         if (!version.equals(editProperties().get(BRIDGE_PROP_GW_VER))) {
             final Map<String, String> props = editProperties();
             props.put(BRIDGE_PROP_GW_VER, version);
@@ -220,6 +291,14 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             final Map<String, String> props = editProperties();
             props.put(BRIDGE_PROP_VOL_UNIT, volUnit);
             updateProperties(props);
+        }
+        if (utcOffset != DEFAULT_INT) { // This is only in later firmwares
+            final String strVal = String.valueOf(utcOffset);
+            if (!strVal.equals(editProperties().get(BRIDGE_PROP_UTC_OFFSET))) {
+                final Map<String, String> props = editProperties();
+                props.put(BRIDGE_PROP_UTC_OFFSET, strVal);
+                updateProperties(props);
+            }
         }
 
         boolean updatedDeviceInfo = devIds.length != discoveredDevices.size();
@@ -251,20 +330,23 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         final UUID uid = UUID.randomUUID();
 
         final WebServerApi api = WebServerApi.getInstance();
-        final String host = getHost();
-        final String gwId = getGatewayId();
-        if (host.isEmpty() || gwId == null) {
-            return "";
-        }
-        req.gatewayId = gwId;
+        String host = "Unresolved";
         try {
+            host = getHostname();
+            final boolean confirmGateway = req.command != TLGatewayFrame.CMD_GET_CONFIGURATION;
+            if (confirmGateway && (host.isEmpty() || currentGwId.isEmpty())) {
+                logger.warn("Request when host \"{}\" or gateway \"{}\" id is unknown for command {}", host,
+                        currentGwId, req.command);
+                return "";
+            }
+            req.gatewayId = currentGwId;
             final String reqData = LinkTapBindingConstants.GSON.toJson(req);
             logger.debug("{} = APP BRIDGE -> GW -> Request {}", uid, reqData);
             final String respData = api.sendRequest(host, reqData);
             logger.debug("{} = APP BRIDGE -> GW -> Response {}", uid, respData);
             final TLGatewayFrame gwResponseFrame = LinkTapBindingConstants.GSON.fromJson(respData,
                     TLGatewayFrame.class);
-            if (gwResponseFrame != null && !gwResponseFrame.gatewayId.equals(req.gatewayId)) {
+            if (confirmGateway && gwResponseFrame != null && !gwResponseFrame.gatewayId.equals(req.gatewayId)) {
                 logger.warn("{} = Response from incorrect Gateway \"{}\" != \"{}\"", uid, req.gatewayId,
                         gwResponseFrame.gatewayId);
                 return "";
@@ -276,25 +358,34 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
             return respData;
         } catch (NotTapLinkGatewayException e) {
             logger.warn("{} = {} is not a Link Tap Gateway!", uid, host);
-        } catch (TransientCommunicationIssueException e) {
+        } catch (UnknownHostException | TransientCommunicationIssueException e) {
             logger.warn("{} = Possible communications issue (auto retry): {}", uid, e.getMessage());
+            scheduleReconnect();
         }
         return "";
     }
 
     private void connect() {
-        final LinkTapBridgeConfiguration config = getConfigAs(LinkTapBridgeConfiguration.class);
         // Check if we can resolve the remote host, if so then it can be mapped back to a bridge handler.
-        // If not further communications would fail - so its offline.
+        // If not further communications would fail - so it's offline.
         if (!registerBridge(this)) {
+            requestMdnsScan();
+            scheduleReconnect();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Hostname / IP cannot be found");
             return;
         }
+
         final WebServerApi api = WebServerApi.getInstance();
         api.setHttpClient(httpClientProvider.getHttpClient());
         try {
             final Map<String, String> bridgeProps = api.getBridgeProperities(bridgeKey);
             if (!bridgeProps.isEmpty()) {
+                final String readGwId = bridgeProps.get(BRIDGE_PROP_GW_ID);
+                if (readGwId != null) {
+                    currentGwId = readGwId;
+                } else {
+                    logger.warn("Missing gateway! in response");
+                }
                 final Map<String, String> currentProps = editProperties();
                 currentProps.putAll(bridgeProps);
                 updateProperties(currentProps);
@@ -305,19 +396,24 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                     return;
                 }
             }
-            // Update the GW ID -> this bridge lookup
-            String newId = getGatewayId();
-            if (newId != null) {
-                gwId = newId;
-                GW_ID_LOOKUP.registerItem(gwId, this, () -> {
-                });
-            }
+
             getGatewayConfiguration();
+
+            // Update the GW ID -> this bridge lookup
+            GW_ID_LOOKUP.registerItem(currentGwId, this, () -> {
+            });
+
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
+
+            @NotNull
+            final String hostname = getHostname(config);
 
             String localServerAddr = "";
             try (Socket socket = new Socket()) {
                 try {
-                    socket.connect(new InetSocketAddress(config.host, 80));
+                    socket.connect(new InetSocketAddress(hostname, 80), 1500);
                 } catch (IOException e) {
                     logger.warn("Failed to connect to remote device due to exception", e);
                     return;
@@ -325,25 +421,72 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                 localServerAddr = socket.getLocalAddress().getHostAddress();
                 logger.trace("Local address for connectivity is {}", socket.getLocalAddress().getHostAddress());
             } catch (IOException e) {
-                logger.warn("Failed to connect to remote device due to exception", e);
+                logger.trace("Failed to connect to remote device due to exception", e);
             }
 
             final String servletEp = BindingServlet.getServletAddress(localServerAddr);
             final Optional<String> servletEpOpt = (!servletEp.isEmpty()) ? Optional.of(servletEp) : Optional.empty();
-
-            @NotNull
-            final String hostname = getHostname(config);
-
-            api.configureBridge(hostname, Optional.of(Boolean.TRUE), servletEpOpt);
+            api.configureBridge(hostname, Optional.of(config.enableMDNS), Optional.of(config.enableJSONComms),
+                    servletEpOpt);
             updateStatus(ThingStatus.ONLINE);
+            if (Thread.currentThread().isInterrupted()) {
+                return;
+            }
             startGwPolling();
+            connectRepair = null;
+
+            final Firmware firmware = new Firmware(getThing().getProperties().get(BRIDGE_PROP_GW_VER));
+            if (!firmware.supportsLocalConfig()) {
+                logger.info("{} -> Local configuration support requires newer firmware it should be >= {}",
+                        getThing().getLabel(), firmware.getRecommendedMinVer());
+            }
+        } catch (InterruptedException ignored) {
         } catch (NotTapLinkGatewayException e) {
             deregisterBridge(this);
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Target Host is not a LinkTap Gateway");
         } catch (TransientCommunicationIssueException e) {
+            scheduleReconnect();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Cannot connect to LinkTap Gateway");
+        } catch (UnknownHostException e) {
+            scheduleReconnect();
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Unknown host");
+        }
+    }
+
+    private void scheduleReconnect() {
+        scheduleReconnect(15);
+    }
+
+    public void attemptReconnectIfNeeded() {
+        if (getThing().getStatus().equals(ThingStatus.OFFLINE)) {
+            synchronized (reconnectFutureLock) {
+                if (connectRepair != null) {
+                    scheduleReconnect(0);
+                }
+            }
+        }
+    }
+
+    private void scheduleReconnect(int seconds) {
+        if (seconds < 1) {
+            seconds = 1;
+        }
+        logger.trace("Scheduling connection re-attempt in {} seconds", seconds);
+        synchronized (reconnectFutureLock) {
+            cancelReconnect();
+            connectRepair = scheduler.schedule(this::connect, seconds, TimeUnit.SECONDS); // Schedule a retry
+        }
+    }
+
+    private void cancelReconnect() {
+        final java.util.concurrent.@Nullable ScheduledFuture<?> ref = connectRepair;
+        synchronized (reconnectFutureLock) {
+            if (ref != null) {
+                ref.cancel(true);
+                connectRepair = null;
+            }
         }
     }
 
@@ -351,40 +494,32 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     public void handleCommand(final ChannelUID channelUID, final Command command) {
     }
 
-    protected @NotNull String getHostname() {
-        final LinkTapBridgeConfiguration config = getConfigAs(LinkTapBridgeConfiguration.class);
+    protected @NotNull String getHostname() throws UnknownHostException {
         return getHostname(config);
     }
 
-    private @NotNull String getHostname(final LinkTapBridgeConfiguration config) {
+    private @NotNull String getHostname(final LinkTapBridgeConfiguration config) throws UnknownHostException {
         @NotNull
         String hostname = config.host;
-        final String mdnsLookup = MDNS_LOOKUP.getItem(config.host);
+        final String mdnsLookup = MDNS_LOOKUP.getItem(hostname);
         if (mdnsLookup != null) {
             hostname = mdnsLookup;
         }
-        return hostname;
-    }
-
-    public Map<String, String> getMetadataProperities(final @Nullable HandshakeReq handshake) {
-        if (handshake == null) {
-            return Map.of();
-        }
-        final Map<String, String> newProps = new HashMap<>(3);
-        newProps.put(BRIDGE_PROP_GW_ID, handshake.gatewayId);
-        newProps.put(BRIDGE_PROP_GW_VER, handshake.version);
-        newProps.put(BRIDGE_PROP_VOL_UNIT, "?");
-        return newProps;
+        final InetAddress address = InetAddress.getByName(hostname);
+        return address.getHostAddress();
     }
 
     private final Object singleCommLock = new Object();
 
     public String sendRequest(final TLGatewayFrame frame) throws DeviceIdException, InvalidParameterException {
         // Validate the payload is within the expected limits for the device its being sent to
-        // if (!frame.isValid()) {
-        // logger.warn("Payload validation failed - will not send");
-        // return "";
-        // }
+        if (config.enforceProtocolLimits) {
+            final String error = frame.isValid();
+            if (!error.isEmpty()) {
+                logger.warn("Device {} payload validation failed - will not send -> {}", getThing().getLabel(), error);
+                return "";
+            }
+        }
         final TransactionProcessor tp = TransactionProcessor.getInstance();
         final String gatewayId = getGatewayId();
         if (gatewayId == null) {
@@ -438,7 +573,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
 
     public void processGatewayCommand(final int commandId, final String frame) {
         logger.debug("{} processing gateway request with command {}", this.getThing().getLabel(), commandId);
-        // Store this so that the only when necessary can poll's be done - aka
+        // Store this so that the only when necessary can polls be done - aka
         // no direct from Gateway communications.
         lastGwCommandRecvTs = System.currentTimeMillis();
         switch (commandId) {
@@ -492,5 +627,6 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
         scheduler.execute(this::getGatewayConfiguration);
+        super.childHandlerDisposed(childHandler, childThing);
     }
 }

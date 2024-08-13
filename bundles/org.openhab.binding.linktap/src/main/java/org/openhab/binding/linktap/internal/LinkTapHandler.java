@@ -29,6 +29,8 @@ import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVIC
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_LOW_FLOW;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_OH_DURATION_LIMIT;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_OH_VOLUME_LIMIT;
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_PAUSE_PLAN_EXPIRES;
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_PAUSE_PLAN_OVERRIDE;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_REMAIN_DURATION;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_RF_LINKED;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_SHUTDOWN_FAILURE;
@@ -36,9 +38,7 @@ import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVIC
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_TOTAL_DURATION;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_WATERING_MODE;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_WATER_CUT;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_WSKIP_DATE_TIME;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_WSKIP_NEXT_RAIN;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_WSKIP_PREV_RAIN;
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.DEVICE_CHANNEL_WATER_PLAN_ID;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.GSON;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.WateringMode;
 import static org.openhab.binding.linktap.protocol.frames.DismissAlertReq.ALERT_DEVICE_FALL;
@@ -46,26 +46,27 @@ import static org.openhab.binding.linktap.protocol.frames.DismissAlertReq.ALERT_
 import static org.openhab.binding.linktap.protocol.frames.DismissAlertReq.ALERT_UNEXPECTED_LOW_FLOW;
 import static org.openhab.binding.linktap.protocol.frames.DismissAlertReq.ALERT_VALVE_SHUTDOWN_FAIL;
 import static org.openhab.binding.linktap.protocol.frames.DismissAlertReq.ALERT_WATER_CUTOFF;
-import static org.openhab.binding.linktap.protocol.frames.SetDeviceConfigReq.CONFIG_DURATION_LIMIT;
-import static org.openhab.binding.linktap.protocol.frames.SetDeviceConfigReq.CONFIG_VOLUME_LIMIT;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_DATETIME_SYNC;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_IMMEDIATE_WATER_STOP;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_NOTIFICATION_WATERING_SKIPPED;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_RAINFALL_DATA;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_UPDATE_WATER_TIMER_STATUS;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linktap.protocol.frames.AlertStateReq;
 import org.openhab.binding.linktap.protocol.frames.DeviceCmdReq;
 import org.openhab.binding.linktap.protocol.frames.DismissAlertReq;
+import org.openhab.binding.linktap.protocol.frames.EndpointDeviceResponse;
 import org.openhab.binding.linktap.protocol.frames.LockReq;
-import org.openhab.binding.linktap.protocol.frames.SetDeviceConfigReq;
+import org.openhab.binding.linktap.protocol.frames.PauseWateringPlanReq;
 import org.openhab.binding.linktap.protocol.frames.StartWateringReq;
 import org.openhab.binding.linktap.protocol.frames.WaterMeterStatus;
-import org.openhab.binding.linktap.protocol.frames.WateringSkippedNotification;
 import org.openhab.binding.linktap.protocol.http.InvalidParameterException;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
@@ -73,8 +74,11 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.storage.Storage;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
@@ -99,6 +103,10 @@ public class LinkTapHandler extends PollingDeviceHandler {
     private static final List<String> READBACK_DISABLED_CHANNELS = List.of(DEVICE_CHANNEL_OH_VOLUME_LIMIT,
             DEVICE_CHANNEL_OH_DURATION_LIMIT);
 
+    private java.util.concurrent.@Nullable ScheduledFuture<?> pausePlanFuture = null;
+    private final Object pausePlanLock = new Object();
+    private volatile boolean pausePlanActive = false;
+
     public LinkTapHandler(Thing thing, Storage<String> strStore) {
         super(thing);
         this.strStore = strStore;
@@ -112,12 +120,28 @@ public class LinkTapHandler extends PollingDeviceHandler {
     @Override
     protected void runStartInit() {
         try {
-            final LinkTapDeviceConfiguration config = getConfigAs(LinkTapDeviceConfiguration.class);
             if (config.enableAlerts) {
                 sendRequest(new AlertStateReq(0, true));
             }
+
+            final String[] chansToRefresh = new String[] { DEVICE_CHANNEL_PAUSE_PLAN_OVERRIDE,
+                    DEVICE_CHANNEL_PAUSE_PLAN_EXPIRES, DEVICE_CHANNEL_OH_DURATION_LIMIT,
+                    DEVICE_CHANNEL_OH_VOLUME_LIMIT };
+            for (String chanId : chansToRefresh) {
+                final Channel pausePlanChan = getThing().getChannel(chanId);
+                if (pausePlanChan != null) {
+                    handleCommand(pausePlanChan.getUID(), RefreshType.REFRESH);
+                }
+            }
+
+            final String pausePlanState = strStore.get(DEVICE_CHANNEL_PAUSE_PLAN_OVERRIDE);
+            if (OnOffType.ON.toString().equals(pausePlanState)) {
+                scheduleRenewPlanPause();
+            }
+
         } catch (final InvalidParameterException ipe) {
-            logger.warn("Failed to enable all alerts");
+            logger.warn("Raise Bug Report: {} - Failed to enable all alerts - invalid parameter exception",
+                    getThing().getLabel());
         }
     }
 
@@ -138,7 +162,7 @@ public class LinkTapHandler extends PollingDeviceHandler {
         try {
             return sendRequest(new DeviceCmdReq(CMD_UPDATE_WATER_TIMER_STATUS));
         } catch (final InvalidParameterException ipe) {
-            logger.warn("Poll failure - invalid parameter");
+            logger.warn("Raise Bug Report: {} - Poll failure - invalid parameter exception", getThing().getLabel());
             return "";
         }
     }
@@ -153,11 +177,62 @@ public class LinkTapHandler extends PollingDeviceHandler {
      */
 
     @Override
+    public void dispose() {
+        cancelPlanPauseRenew();
+        super.dispose();
+    }
+
+    private void scheduleRenewPlanPause() {
+        synchronized (pausePlanLock) {
+            cancelPlanPauseRenew();
+            pausePlanFuture = scheduler.scheduleWithFixedDelay(this::requestPlanPause, 0, 55, TimeUnit.MINUTES);
+            pausePlanActive = true;
+        }
+    }
+
+    private boolean isPlanPauseActive() {
+        return pausePlanActive;
+    }
+
+    private void cancelPlanPauseRenew() {
+        synchronized (pausePlanLock) {
+            ScheduledFuture<?> ref = pausePlanFuture;
+            if (ref != null) {
+                ref.cancel(false);
+                pausePlanFuture = null;
+            }
+            pausePlanActive = false;
+        }
+    }
+
+    private void requestPlanPause() {
+        try {
+            final String respRaw = sendRequest(new PauseWateringPlanReq(1.0));
+            final EndpointDeviceResponse devResp = GSON.fromJson(respRaw, EndpointDeviceResponse.class);
+            if (devResp != null && devResp.isSuccess()) {
+                final DateTimeType expiryTime = new DateTimeType(LocalDateTime.now().plusHours(1).toString());
+                strStore.put(DEVICE_CHANNEL_PAUSE_PLAN_EXPIRES, expiryTime.format(null));
+                updateState(DEVICE_CHANNEL_PAUSE_PLAN_EXPIRES, expiryTime);
+            }
+        } catch (final InvalidParameterException ignored) {
+            logger.warn("Raise Bug Report: {} - Pause plan failure - invalid parameter exception",
+                    getThing().getLabel());
+        }
+    }
+
+    @Override
     public void handleCommand(final ChannelUID channelUID, final Command command) {
         scheduler.submit(() -> {
             try {
                 if (command instanceof RefreshType rt) {
                     switch (channelUID.getId()) {
+                        case DEVICE_CHANNEL_PAUSE_PLAN_EXPIRES: {
+                            final String savedVal = strStore.get(DEVICE_CHANNEL_PAUSE_PLAN_EXPIRES);
+                            if (savedVal != null) {
+                                updateState(DEVICE_CHANNEL_PAUSE_PLAN_EXPIRES, new DateTimeType(savedVal));
+                            }
+                        }
+                            break;
                         case DEVICE_CHANNEL_OH_DURATION_LIMIT: {
                             final String savedVal = strStore.get(DEVICE_CHANNEL_OH_DURATION_LIMIT);
                             if (savedVal != null) {
@@ -178,6 +253,11 @@ public class LinkTapHandler extends PollingDeviceHandler {
                             }
                         }
                             break;
+                        case DEVICE_CHANNEL_PAUSE_PLAN_OVERRIDE:
+                            final String savedVal = strStore.get(DEVICE_CHANNEL_PAUSE_PLAN_OVERRIDE);
+                            updateState(DEVICE_CHANNEL_OH_VOLUME_LIMIT,
+                                    OnOffType.ON.toString().equals(savedVal) ? OnOffType.ON : OnOffType.OFF);
+                            break;
                         default:
                             pollForUpdate(false);
                     }
@@ -190,14 +270,6 @@ public class LinkTapHandler extends PollingDeviceHandler {
                         case DEVICE_CHANNEL_OH_VOLUME_LIMIT:
                             strStore.put(DEVICE_CHANNEL_OH_VOLUME_LIMIT, String.valueOf(targetValue));
                             break;
-                        case DEVICE_CHANNEL_FAILSAFE_VOLUME: {
-                            sendRequest(new SetDeviceConfigReq(CONFIG_VOLUME_LIMIT, targetValue));
-                        }
-                            break;
-                        case DEVICE_CHANNEL_TOTAL_DURATION: {
-                            sendRequest(new SetDeviceConfigReq(CONFIG_DURATION_LIMIT, targetValue));
-                        }
-                            break;
                     }
                 } else if (command instanceof StringType stringCmd) {
                     switch (channelUID.getId()) {
@@ -209,14 +281,14 @@ public class LinkTapHandler extends PollingDeviceHandler {
                 } else if (command instanceof OnOffType) {
                     // Alert dismiss events below
                     switch (channelUID.getId()) {
-                        case DEVICE_CHANNEL_IS_MANUAL_MODE:
-                            // We can pull from channels I suspect as they feed stateful representations of data
-                            // therefore the data we need below - we need to cache from writes and reads from the
-                            // relevant
-                            // polls / writes, for the items / data points.
-                            if (command.equals(OnOffType.OFF)) {
-                                sendRequest(new DeviceCmdReq(CMD_IMMEDIATE_WATER_STOP));
+                        case DEVICE_CHANNEL_PAUSE_PLAN_OVERRIDE:
+                            strStore.put(DEVICE_CHANNEL_PAUSE_PLAN_OVERRIDE, command.toString());
+                            if (command.equals(OnOffType.ON)) {
+                                scheduleRenewPlanPause();
+                            } else {
+                                cancelPlanPauseRenew();
                             }
+                            break;
                         case DEVICE_CHANNEL_ACTIVE_WATERING:
                             if (command.equals(OnOffType.ON)) {
                                 String volLimit = strStore.get(DEVICE_CHANNEL_OH_VOLUME_LIMIT);
@@ -284,8 +356,6 @@ public class LinkTapHandler extends PollingDeviceHandler {
                 processCommand3(frame);
                 break;
             case CMD_NOTIFICATION_WATERING_SKIPPED:
-                processCommand9(frame);
-                break;
             case CMD_RAINFALL_DATA:
             case CMD_DATETIME_SYNC:
                 logger.trace("No implementation for command {} for processing the Device request", commandId);
@@ -326,6 +396,17 @@ public class LinkTapHandler extends PollingDeviceHandler {
                 volumeUnit = volumeUnitProp;
             }
         }
+        String prevPlanId = strStore.get(DEVICE_CHANNEL_WATER_PLAN_ID);
+        if (prevPlanId == null) {
+            prevPlanId = "0";
+        }
+        final String currPlanId = String.valueOf(devStatus.planSerialNo);
+        if (isPlanPauseActive() && !prevPlanId.equals(currPlanId)) {
+            scheduleRenewPlanPause();
+        }
+        updateState(DEVICE_CHANNEL_WATER_PLAN_ID, new StringType(String.valueOf(devStatus.planSerialNo)));
+        strStore.put(DEVICE_CHANNEL_WATER_PLAN_ID, String.valueOf(devStatus.planSerialNo));
+
         final Integer planModeRaw = devStatus.planMode;
         if (planModeRaw != null) {
             updateState(DEVICE_CHANNEL_WATERING_MODE, new StringType(WateringMode.values()[planModeRaw].getDesc()));
@@ -397,20 +478,6 @@ public class LinkTapHandler extends PollingDeviceHandler {
         }
     }
 
-    private void processCommand9(final String request) {
-        final WateringSkippedNotification skippedNotice = GSON.fromJson(request, WateringSkippedNotification.class);
-        if (skippedNotice == null) {
-            return;
-        }
-        logger.trace("Received rainfall skipped notice - past hour {}, next hour {}", skippedNotice.getPastRainfall(),
-                skippedNotice.getFutureRainfall());
-        updateState(DEVICE_CHANNEL_WSKIP_PREV_RAIN,
-                new QuantityType<>(skippedNotice.getPastRainfall(), Units.MILLIMETRE_PER_HOUR));
-        updateState(DEVICE_CHANNEL_WSKIP_NEXT_RAIN,
-                new QuantityType<>(skippedNotice.getFutureRainfall(), Units.MILLIMETRE_PER_HOUR));
-        updateState(DEVICE_CHANNEL_WSKIP_DATE_TIME, new DateTimeType());
-    }
-
     @Override
     public void handleBridgeDataUpdated() {
         switch (getThing().getStatus()) {
@@ -419,6 +486,10 @@ public class LinkTapHandler extends PollingDeviceHandler {
                 logger.trace("Handling new bridge data for {}", getThing().getLabel());
                 final LinkTapBridgeHandler bridge = (LinkTapBridgeHandler) getBridgeHandler();
                 if (bridge != null) {
+                    if (bridge.getThing().getStatus().equals(ThingStatus.OFFLINE)) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                        return;
+                    }
                     initAfterBridge(bridge);
                 }
                 break;

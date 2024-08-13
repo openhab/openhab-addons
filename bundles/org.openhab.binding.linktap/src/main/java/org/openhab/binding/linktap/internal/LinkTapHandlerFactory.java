@@ -21,6 +21,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.linktap.protocol.servers.BindingServlet;
 import org.openhab.binding.linktap.protocol.servers.IHttpClientProvider;
+import org.openhab.core.config.discovery.DiscoveryServiceRegistry;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.storage.Storage;
 import org.openhab.core.storage.StorageService;
@@ -48,10 +49,13 @@ public class LinkTapHandlerFactory extends BaseThingHandlerFactory implements IH
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE, THING_TYPE_BRIDGE);
 
     private final StorageService storageService;
+    private final DiscoveryServiceRegistry discSrvReg;
 
     @Activate
-    public LinkTapHandlerFactory(@Reference HttpService httpService, @Reference StorageService storageService) {
+    public LinkTapHandlerFactory(@Reference HttpService httpService, @Reference StorageService storageService,
+            @Reference DiscoveryServiceRegistry discoveryService) {
         this.storageService = storageService;
+        this.discSrvReg = discoveryService;
         BindingServlet.getInstance().setHttpService(httpService);
     }
 
@@ -69,7 +73,7 @@ public class LinkTapHandlerFactory extends BaseThingHandlerFactory implements IH
                     String.class.getClassLoader());
             return new LinkTapHandler(thing, storage);
         } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
-            return new LinkTapBridgeHandler((Bridge) thing, this);
+            return new LinkTapBridgeHandler((Bridge) thing, this, discSrvReg);
         }
 
         return null;

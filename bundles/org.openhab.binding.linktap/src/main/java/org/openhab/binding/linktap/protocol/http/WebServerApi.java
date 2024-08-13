@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.linktap.protocol.http;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_HTTP_API_ENABLED;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_HTTP_API_EP;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_GW_ID;
@@ -39,6 +38,7 @@ import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.SSLHandshakeException;
 import javax.ws.rs.HttpMethod;
+import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,10 +48,12 @@ import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.client.util.FormContentProvider;
 import org.eclipse.jetty.client.util.StringContentProvider;
 import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.http.HttpHeader;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.openhab.binding.linktap.internal.LinkTapBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +72,8 @@ public final class WebServerApi {
     private static final int REQ_TIMEOUT_SECONDS = 3;
 
     private static final WebServerApi INSTANCE = new WebServerApi();
+
+    private static final String REQ_HDR_APPLICATION_JSON = new MediaType("application", "json", "UTF-8").toString();
 
     private WebServerApi() {
     }
@@ -109,10 +113,19 @@ public final class WebServerApi {
                 default:
                     throw new NotTapLinkGatewayException(MISSING_SERVER_TITLE);
             }
-            getMdnsEnableArgs(doc);
-            return getMetadataProperties(doc);
+            final Map<String, String> deviceProps = getMetadataProperties(doc);
+            LinkTapBridgeHandler.Firmware firmware = new LinkTapBridgeHandler.Firmware(
+                    deviceProps.get(BRIDGE_PROP_GW_VER));
+            if (firmware.supportsMDNS()) {
+                getMdnsEnableArgs(doc);
+            } else {
+                logger.debug("Firmware revision does not include mDNS support");
+            }
+            return deviceProps;
 
-        } catch (InterruptedException | TimeoutException e) {
+        } catch (InterruptedException e) {
+            return Map.of();
+        } catch (TimeoutException e) {
             throw new TransientCommunicationIssueException(HOST_COMM_TIMEOUT);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
@@ -265,7 +278,8 @@ public final class WebServerApi {
         return "";
     }
 
-    public String getLocalHttpApiArgs(final Document doc, final String targetServer) {
+    public String getLocalHttpApiArgs(final Document doc, final Optional<String> targetServerOpt,
+            final Optional<Boolean> wrapHtmlDisable) {
         final Optional<Element> localHttpApiSection = getSection(doc, "Local HTTP API settings");
         StringBuilder sb = new StringBuilder();
 
@@ -281,26 +295,44 @@ public final class WebServerApi {
             sb.append(val);
         }
 
-        // Change the enable Local HTTP API flag to true
-        final int enableApiIdx = sb.indexOf("htapi=0");
-        if (enableApiIdx != -1) {
-            sb.replace(enableApiIdx, enableApiIdx + 7, "htapi=1");
-        }
-
-        final int urlApiMarker = sb.indexOf("URL=");
         boolean updatedUri = false;
-        if (urlApiMarker != -1) {
-            final int nextArg = sb.indexOf("&", urlApiMarker);
-            String urlArg = (nextArg == -1) ? sb.substring(urlApiMarker + 4) : sb.substring(urlApiMarker + 4, nextArg);
-            logger.trace("Found existing HTTP URL Server : {}", urlArg);
-            if (!urlArg.equals(targetServer)) {
-                updatedUri = true;
-                sb.replace(urlApiMarker, urlApiMarker + urlArg.length() + 4,
-                        "URL=" + URLEncoder.encode(targetServer, StandardCharsets.UTF_8));
+        int enableApiIdx = -1;
+
+        if (targetServerOpt.isPresent()) {
+            String targetServer = targetServerOpt.get();
+            // Change the enable Local HTTP API flag to true
+            enableApiIdx = sb.indexOf("htapi=0");
+            if (enableApiIdx != -1) {
+                sb.replace(enableApiIdx, enableApiIdx + 7, "htapi=1");
+            }
+
+            final int urlApiMarker = sb.indexOf("URL=");
+            if (urlApiMarker != -1) {
+                final int nextArg = sb.indexOf("&", urlApiMarker);
+                String urlArg = (nextArg == -1) ? sb.substring(urlApiMarker + 4)
+                        : sb.substring(urlApiMarker + 4, nextArg);
+                logger.trace("Found existing HTTP URL Server : {}", urlArg);
+                if (!urlArg.equals(targetServer)) {
+                    updatedUri = true;
+                    sb.replace(urlApiMarker, urlApiMarker + urlArg.length() + 4,
+                            "URL=" + URLEncoder.encode(targetServer, StandardCharsets.UTF_8));
+                }
             }
         }
 
-        if (enableApiIdx != -1 || updatedUri) {
+        int wgrhIdx = -1;
+        if (wrapHtmlDisable.isPresent() && wrapHtmlDisable.get()) {
+            // Change the wgrhIdx flag to true
+            {
+                wgrhIdx = sb.indexOf("wgrh=1");
+                if (wgrhIdx != -1) {
+                    sb.replace(wgrhIdx, wgrhIdx + 6, "wgrh=0");
+                    return sb.toString();
+                }
+            }
+        }
+
+        if (wgrhIdx != -1 || enableApiIdx != -1 || updatedUri) {
             return sb.toString();
         }
 
@@ -308,13 +340,14 @@ public final class WebServerApi {
     }
 
     public boolean configureBridge(final @Nullable String hostname, final Optional<Boolean> mdnsEnable,
-            final Optional<String> localServer)
-            throws NotTapLinkGatewayException, TransientCommunicationIssueException {
+            final Optional<Boolean> nonHtmlEnable, final Optional<String> localServer)
+            throws InterruptedException, NotTapLinkGatewayException, TransientCommunicationIssueException {
         try {
             if (hostname == null) {
                 throw new TransientCommunicationIssueException("Hostname invalid - null");
             }
-            final Request request = httpClient.newRequest(URI_HOST_PREFIX + hostname).method(HttpMethod.GET);
+            final String targetHost = URI_HOST_PREFIX + hostname;
+            final Request request = httpClient.newRequest(targetHost).method(HttpMethod.GET);
             final ContentResponse cr = request.timeout(REQ_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             if (HttpURLConnection.HTTP_OK != cr.getStatus()) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
@@ -335,12 +368,11 @@ public final class WebServerApi {
             boolean rebootReq = false;
             if (mdnsEnable.isPresent() && mdnsEnable.get()) {
                 logger.trace("Enabling mdns server on gateway");
-                String mdnsEnableReqStr = this.getMdnsEnableArgs(doc);
+                String mdnsEnableReqStr = getMdnsEnableArgs(doc);
                 if (!mdnsEnableReqStr.isEmpty()) {
                     logger.debug("Updating mdns server settings on gateway");
                     final Request mdnsRequest = httpClient
-                            .newRequest(URI_HOST_PREFIX + hostname + "/index.shtml?flag=4&" + mdnsEnableReqStr)
-                            .method(HttpMethod.GET);
+                            .newRequest(targetHost + "/index.shtml?flag=4&" + mdnsEnableReqStr).method(HttpMethod.GET);
                     final ContentResponse mdnsCr = mdnsRequest.timeout(REQ_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
                     if (HttpURLConnection.HTTP_OK != mdnsCr.getStatus()) {
                         throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
@@ -349,13 +381,20 @@ public final class WebServerApi {
                 }
             }
 
-            if (localServer.isPresent() && !localServer.get().isBlank()) {
-                logger.trace("Setting Local HTTP Api on gateway");
-                String localHttpApiReqStr = this.getLocalHttpApiArgs(doc, localServer.get());
+            if (localServer.isPresent() && !localServer.get().isBlank()
+                    || nonHtmlEnable.isPresent() && nonHtmlEnable.get()) {
+                if (localServer.isPresent() && !localServer.get().isBlank()) {
+                    logger.trace("Setting Local HTTP Api on gateway");
+                }
+                if (nonHtmlEnable.isPresent() && nonHtmlEnable.get()) {
+                    logger.trace("Enabling efficient non HTML communications on gateway");
+                }
+
+                String localHttpApiReqStr = this.getLocalHttpApiArgs(doc, localServer, nonHtmlEnable);
                 if (!localHttpApiReqStr.isEmpty()) {
                     logger.debug("Updating Local HTTP API server settings on gateway");
                     final Request lhttpApiRequest = httpClient
-                            .newRequest(URI_HOST_PREFIX + hostname + "/index.shtml?flag=5&" + localHttpApiReqStr)
+                            .newRequest(targetHost + "/index.shtml?flag=5&" + localHttpApiReqStr)
                             .method(HttpMethod.GET);
                     final ContentResponse mdnsCr = lhttpApiRequest.timeout(REQ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                             .send();
@@ -368,7 +407,7 @@ public final class WebServerApi {
 
             if (rebootReq) {
                 logger.debug("Rebooting gateway to apply new settings");
-                final Request restartReq = httpClient.newRequest(URI_HOST_PREFIX + hostname + "/index.shtml?flag=0")
+                final Request restartReq = httpClient.newRequest(targetHost + "/index.shtml?flag=0")
                         .method(HttpMethod.GET);
                 final ContentResponse mdnsCr = restartReq.timeout(REQ_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
                 if (HttpURLConnection.HTTP_OK != mdnsCr.getStatus()) {
@@ -378,7 +417,7 @@ public final class WebServerApi {
 
             return rebootReq;
 
-        } catch (InterruptedException | TimeoutException e) {
+        } catch (TimeoutException e) {
             throw new TransientCommunicationIssueException(HOST_COMM_TIMEOUT);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
@@ -409,7 +448,9 @@ public final class WebServerApi {
             }
             validateHeaders(cr.getHeaders());
             return !getBridgeProperities(hostname).isEmpty();
-        } catch (InterruptedException | TimeoutException e) {
+        } catch (InterruptedException e) {
+            return false;
+        } catch (TimeoutException e) {
             throw new TransientCommunicationIssueException(HOST_COMM_TIMEOUT);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
@@ -445,35 +486,51 @@ public final class WebServerApi {
             final InetAddress address = InetAddress.getByName(hostname);
             logger.trace("API Endpoint: {}", URI_HOST_PREFIX + address.getHostAddress() + "/api.shtml");
             final Request request = httpClient.POST(URI_HOST_PREFIX + address.getHostAddress() + "/api.shtml");
-            request.content(new StringContentProvider(requestBody), APPLICATION_JSON_TYPE.toString());
+            request.content(new StringContentProvider(requestBody), REQ_HDR_APPLICATION_JSON);
 
             final ContentResponse cr = request.timeout(REQ_TIMEOUT_SECONDS, TimeUnit.SECONDS).send();
             if (HttpURLConnection.HTTP_OK != cr.getStatus()) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_STATUS_CODE);
             }
-            validateHeaders(cr.getHeaders());
+
+            final HttpFields headers = cr.getHeaders();
+            validateHeaders(headers);
+
             String responseData = cr.getContentAsString();
-            final Document doc = Jsoup.parse(responseData);
-            final String docTitle = doc.title();
-            if (!docTitle.equals(TITLE_API_RESPONSE)) {
-                throw new NotTapLinkGatewayException(MISSING_API_TITLE);
+            final String contentType = headers.get(HttpHeader.CONTENT_TYPE);
+
+            // If content type is test/html its wrapped in HTML (Old standard)
+            // If content type is application/json it's a raw compact response (More efficient new standard)
+            switch (contentType) {
+                case "text/html":
+                    final Document doc = Jsoup.parse(responseData);
+                    final String docTitle = doc.title();
+                    if (!docTitle.equals(TITLE_API_RESPONSE)) {
+                        throw new NotTapLinkGatewayException(MISSING_API_TITLE);
+                    }
+                    responseData = doc.body().text();
+                    break;
+                case "application/json":
+                    // Do nothing - the raw content is the response
+                    break;
+                default:
+                    responseData = "";
             }
-            responseData = doc.body().text();
+
             return responseData;
-        } catch (InterruptedException | TimeoutException | UnknownHostException e) {
+        } catch (InterruptedException e) {
+            return "";
+        } catch (TimeoutException | UnknownHostException e) {
             throw new TransientCommunicationIssueException(HOST_COMM_TIMEOUT);
         } catch (ExecutionException e) {
             final Throwable t = e.getCause();
             if (t instanceof UnknownHostException) {
                 throw new TransientCommunicationIssueException(HOST_NOT_RESOLVED);
-            } else if (t instanceof SocketTimeoutException) {
-                throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             } else if (t instanceof SSLHandshakeException) {
                 throw new NotTapLinkGatewayException(UNEXPECTED_HTTPS);
             } else {
-                logger.warn("ExecutionException -> {}", e.getMessage());
+                throw new TransientCommunicationIssueException(HOST_UNREACHABLE);
             }
-            throw new NotTapLinkGatewayException("Unexpected failure -> " + e.getMessage());
         }
     }
 

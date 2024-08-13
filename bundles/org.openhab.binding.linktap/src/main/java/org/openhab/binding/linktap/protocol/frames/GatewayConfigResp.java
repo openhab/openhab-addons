@@ -42,6 +42,13 @@ public class GatewayConfigResp extends HandshakeReq {
     public String volumeUnit = EMPTY_STRING;
 
     /**
+     * Defines the UTC offset the gateway TZ is located in (seconds offset)
+     */
+    @SerializedName("utc_ofs")
+    @Expose
+    public Integer utfOfs = DEFAULT_INT;
+
+    /**
      * Defines the names assigned to each Endpoint device.
      */
     @SerializedName("dev_name")

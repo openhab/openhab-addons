@@ -12,15 +12,16 @@
  */
 package org.openhab.binding.linktap.internal;
 
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_UTC_OFFSET;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.GSON;
 import static org.openhab.binding.linktap.protocol.frames.GatewayDeviceResponse.*;
 
+import java.net.UnknownHostException;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,6 +37,7 @@ import org.openhab.binding.linktap.protocol.http.InvalidParameterException;
 import org.openhab.binding.linktap.protocol.http.NotTapLinkGatewayException;
 import org.openhab.binding.linktap.protocol.http.TransientCommunicationIssueException;
 import org.openhab.binding.linktap.protocol.http.WebServerApi;
+import org.openhab.core.thing.ThingStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,9 +57,10 @@ public final class TransactionProcessor {
     // As the Gateway is an embedded device,
 
     private static final TransactionProcessor INSTANCE = new TransactionProcessor();
-    // private static final Object InstanceLock = new Object();
 
     private static final WebServerApi API = WebServerApi.getInstance();
+
+    private static final int MAX_COMMAND_RETRIES = 3;
 
     private TransactionProcessor() {
     }
@@ -68,25 +71,6 @@ public final class TransactionProcessor {
 
     private final Logger logger = LoggerFactory.getLogger(TransactionProcessor.class);
 
-    // private final BridgeManager bridgeIpAddrManager = BridgeManager.getInstance();
-    // private final BridgeManager bridgeIdManager = BridgeManager.getInstance();
-
-    private final LookupWrapper<@Nullable LinkTapBridgeHandler> ipAddrManager = new LookupWrapper<>();
-    // private final LookupWrapper<LinkTapBridgeHandler> idAddrManager = new LookupWrapper<>();
-
-    public void processServletRequest(@Nullable HttpServletRequest req, @Nullable HttpServletResponse resp) {
-        if (req != null) {
-            // Check if we have a bridge for managing the requested device
-            LinkTapBridgeHandler bridge = ipAddrManager.getItem(req.getRemoteHost());
-            // if (bridge == null) {
-            // throw new RuntimeException("Did not find bridge for remote host: " + req.getRemoteHost());
-            // }
-            if (bridge != null) {
-                logger.warn("Found bridge to handle request with name {}", bridge.getThing().getLabel());
-            }
-        }
-    }
-
     public String processGwRequest(final String sourceHost, int command, final String payload) {
         final UUID uid = UUID.randomUUID();
         logger.debug("{} = GW -> APP Request {} -> Payload {}", uid, sourceHost, payload);
@@ -94,7 +78,7 @@ public final class TransactionProcessor {
         try {
             processGw(sourceHost, command, payload);
         } catch (CommandNotSupportedException cnse) {
-            logger.warn("Command {} not supported by gateway - bug should be reported", command);
+            logger.warn("Raise Bug Report: Command {} not supported by gateway", command);
         }
         logger.debug("{} = GW -> APP Response {} -> Payload {}", uid, payload, response);
         return response;
@@ -123,10 +107,8 @@ public final class TransactionProcessor {
         }
 
         final ResultStatus resultStatus = frame.getRes();
-        if (resultStatus != ResultStatus.RET_CMD_NOT_SUPPORTED) {
-            if (resultStatus == ResultStatus.RET_CMD_NOT_SUPPORTED) {
-                throw new CommandNotSupportedException(resultStatus.getDesc());
-            }
+        if (resultStatus == ResultStatus.RET_CMD_NOT_SUPPORTED) {
+            throw new CommandNotSupportedException(resultStatus.getDesc());
         }
 
         String response = "";
@@ -135,11 +117,11 @@ public final class TransactionProcessor {
                 WaterMeterStatus meterStatus = GSON.fromJson(payload, WaterMeterStatus.class);
 
                 if (meterStatus != null) {
-                    final LinkTapHandler device = LinkTapBridgeHandler.DEV_ID_LOOKUP
-                            .getItem(meterStatus.deviceStatuses.get(0).deviceId);
+                    final String devId = meterStatus.deviceStatuses.get(0).deviceId;
+                    final LinkTapHandler device = LinkTapBridgeHandler.DEV_ID_LOOKUP.getItem(devId);
 
                     if (device != null) {
-                        logger.trace("Found device {}", device);
+                        logger.trace("Found device with ID: {} -> {}", devId, device.getThing().getLabel());
                         device.processDeviceCommand(command, payload);
                     } else {
                         logger.debug("No device with id {} found to process command {}",
@@ -149,7 +131,7 @@ public final class TransactionProcessor {
                 break;
             case CMD_HANDSHAKE:
             case CMD_DATETIME_SYNC:
-                response = generateTimeDateResponse(frame.gatewayId, command);
+                response = generateTimeDateResponse(bridge, frame.gatewayId, command);
                 if (bridge != null) {
                     bridge.processGatewayCommand(CMD_HANDSHAKE, payload);
                 }
@@ -161,7 +143,7 @@ public final class TransactionProcessor {
                     final LinkTapHandler device = LinkTapBridgeHandler.DEV_ID_LOOKUP.getItem(devFrame.deviceId);
 
                     if (device != null) {
-                        logger.trace("Found device {}", device);
+                        logger.trace("Found device with ID: {} -> {}", devFrame.deviceId, device.getThing().getLabel());
                         device.processDeviceCommand(command, payload);
                     } else {
                         logger.debug("No device with id {} found to process command {}", devFrame.deviceId, command);
@@ -175,7 +157,7 @@ public final class TransactionProcessor {
                     final LinkTapHandler device = LinkTapBridgeHandler.DEV_ID_LOOKUP.getItem(devFrame.deviceId);
 
                     if (device != null) {
-                        logger.trace("Found device {}", device);
+                        logger.trace("Found device with ID: {} -> {}", devFrame.deviceId, device.getThing().getLabel());
                         device.processDeviceCommand(command, payload);
                     } else {
                         logger.trace("No device modelled to process meter status command");
@@ -191,8 +173,11 @@ public final class TransactionProcessor {
 
     public String sendRequest(final LinkTapBridgeHandler handler, final TLGatewayFrame request)
             throws GatewayIdException, DeviceIdException, CommandNotSupportedException, InvalidParameterException {
-        // Try communication requests 3 times
-        int triesLeft = 3;
+        if (handler.getThing().getStatus().equals(ThingStatus.OFFLINE)) {
+            logger.trace("Gateway offline");
+            return "";
+        }
+        int triesLeft = MAX_COMMAND_RETRIES;
         int retry = 0;
         while (triesLeft > 0) {
             try {
@@ -214,13 +199,14 @@ public final class TransactionProcessor {
             throws GatewayIdException, DeviceIdException, CommandNotSupportedException, InvalidParameterException,
             TransientCommunicationIssueException {
         // We need the hostname from the handler of the bridge
-        UUID uid = UUID.randomUUID();
-        final String targetHost = handler.getHostname();
-        final String payloadJson = GSON.toJson(request);
-        logger.debug("{} = APP -> GW Request {} -> Payload {}", uid, targetHost, payloadJson);
 
         // Responses can be one of the following types
         try {
+            UUID uid = UUID.randomUUID();
+            final String targetHost = handler.getHostname();
+            final String payloadJson = GSON.toJson(request);
+            logger.debug("{} = APP -> GW Request {} -> Payload {}", uid, targetHost, payloadJson);
+
             String response = API.sendRequest(targetHost, GSON.toJson(request));
             logger.debug("{} = APP -> GW Response {} -> Payload {}", uid, targetHost, response);
             GatewayDeviceResponse gatewayFrame = GSON.fromJson(response, GatewayDeviceResponse.class);
@@ -295,21 +281,38 @@ public final class TransactionProcessor {
 
             return response;
         } catch (NotTapLinkGatewayException e) {
-            logger.warn("NOT TAP LINK GATEWAY EXCEPTION", e);
-        } catch (TransientCommunicationIssueException e) {
-            logger.warn("TRANSIENT COMMUNICATION EXCEPTION", e);
+            logger.warn("Communicating with non TapLink Gateway detected");
+        } catch (UnknownHostException e) {
+            throw new TransientCommunicationIssueException("Unknown host");
         }
         return "";
     }
 
-    private String generateTimeDateResponse(final String gwId, final int commandId) {
+    private String generateTimeDateResponse(final @Nullable LinkTapBridgeHandler bridge, final String gwId,
+            final int commandId) {
         final LocalDateTime currentTime = LocalDateTime.now();
+        int wday = currentTime.getDayOfWeek().getValue();
+        String dateStr = currentTime.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String timeStr = currentTime.format(DateTimeFormatter.ofPattern("HHmmss"));
+
+        // Presume we are running in local time, unless we have the bridge modelled with the relevant UTC data
+        if (bridge != null) {
+            final String utcOffset = bridge.getThing().getProperties().get(BRIDGE_PROP_UTC_OFFSET);
+            if (utcOffset != null && !utcOffset.isEmpty()) {
+                OffsetDateTime odt = currentTime.atOffset(ZoneOffset.UTC);
+                odt = odt.plusSeconds(Long.parseLong(utcOffset));
+                wday = odt.getDayOfWeek().getValue();
+                dateStr = odt.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+                timeStr = odt.format(DateTimeFormatter.ofPattern("HHmmss"));
+            }
+        }
+
         final HandshakeResp respPayload = new HandshakeResp();
         respPayload.command = commandId;
         respPayload.gatewayId = gwId;
-        respPayload.wday = currentTime.getDayOfWeek().getValue();
-        respPayload.date = currentTime.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        respPayload.time = currentTime.format(DateTimeFormatter.ofPattern("HHmmss"));
+        respPayload.wday = wday;
+        respPayload.date = dateStr;
+        respPayload.time = timeStr;
         return GSON.toJson(respPayload);
     }
 }

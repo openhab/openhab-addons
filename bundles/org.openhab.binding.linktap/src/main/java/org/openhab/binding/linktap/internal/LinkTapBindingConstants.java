@@ -47,9 +47,6 @@ public class LinkTapBindingConstants {
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
 
-    // List of all Channel ids
-    public static final String CHANNEL_1 = "channel1";
-
     public static final String BRIDGE_PROP_GW_ID = "Gateway Id";
     public static final String BRIDGE_PROP_HW_MODEL = "Hardware Model";
     public static final String BRIDGE_PROP_GW_VER = "Version";
@@ -57,8 +54,11 @@ public class LinkTapBindingConstants {
     public static final String BRIDGE_HTTP_API_ENABLED = "HTTP API Enabled";
     public static final String BRIDGE_HTTP_API_EP = "HTTP API Callback URI";
     public static final String BRIDGE_PROP_VOL_UNIT = "Volume Unit";
+    public static final String BRIDGE_PROP_UTC_OFFSET = "UTC Offset";
     public static final String BRIDGE_CONFIG_HOSTNAME = "host";
     public static final String BRIDGE_CONFIG_MDNS_ENABLE = "enableMDNS";
+    public static final String BRIDGE_CONFIG_NON_HTML_COMM_ENABLE = "enableJSONComms";
+    public static final String BRIDGE_CONFIG_ENFORCE_COMM_LIMITS = "enforceProtocolLimits";
 
     public static final String DEVICE_PROP_DEV_ID = "Device Id";
     public static final String DEVICE_PROP_DEV_NAME = "Device Name";
@@ -68,7 +68,7 @@ public class LinkTapBindingConstants {
 
     public static final String DEVICE_CHANNEL_WATERING_MODE = "mode";
     public static final String DEVICE_CHANNEL_IS_MANUAL_MODE = "manual-watering";
-    public static final String DEVICE_CHANNEL_ACTIVE_WATERING = "active-watering";
+    public static final String DEVICE_CHANNEL_ACTIVE_WATERING = "watering";
     public static final String DEVICE_CHANNEL_RF_LINKED = "rf-linked";
     public static final String DEVICE_CHANNEL_FLM_LINKED = "flm-linked";
     public static final String DEVICE_CHANNEL_FALL_STATUS = "fall-status";
@@ -88,9 +88,9 @@ public class LinkTapBindingConstants {
     public static final String DEVICE_CHANNEL_FAILSAFE_VOLUME = "vol-limit";
     public static final String DEVICE_CHANNEL_OH_VOLUME_LIMIT = "oh-vol-limit";
     public static final String DEVICE_CHANNEL_OH_DURATION_LIMIT = "oh-dur-limit";
-    public static final String DEVICE_CHANNEL_WSKIP_PREV_RAIN = "water-skip-prev";
-    public static final String DEVICE_CHANNEL_WSKIP_NEXT_RAIN = "water-skip-next";
-    public static final String DEVICE_CHANNEL_WSKIP_DATE_TIME = "water-skip-ts";
+    public static final String DEVICE_CHANNEL_PAUSE_PLAN_OVERRIDE = "plan-pause-enable";
+    public static final String DEVICE_CHANNEL_PAUSE_PLAN_EXPIRES = "plan-resume-time";
+    public static final String DEVICE_CHANNEL_WATER_PLAN_ID = "watering-plan-id";
 
     public enum WateringMode {
 
@@ -189,11 +189,4 @@ public class LinkTapBindingConstants {
             return String.format("%d - %s", value, description);
         }
     }
-
-    // Property name constants
-    public static final String DEVICE_PROP_DEVICE_NAME = "Device Name";
-    public static final String DEVICE_PROP_DEVICE_TYPE = "Device Type";
-    public static final String DEVICE_PROP_DEVICE_MAC_ID = "MAC Id";
-    public static final String DEVICE_PROP_DEVICE_FAMILY = "Device Family";
-    public static final String DEVICE_PROP_DEVICE_UUID = "UUID";
 }

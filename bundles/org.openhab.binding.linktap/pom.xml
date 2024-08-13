@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: LinkTap Binding</name>
 
   <properties>
-    <jsoup.version>1.15.3</jsoup.version>
+    <jsoup.version>1.15.4</jsoup.version>
   </properties>
 
   <dependencies>

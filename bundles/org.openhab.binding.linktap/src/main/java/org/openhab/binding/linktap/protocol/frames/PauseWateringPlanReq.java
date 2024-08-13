@@ -28,6 +28,11 @@ public class PauseWateringPlanReq extends DeviceCmdReq {
     public PauseWateringPlanReq() {
     }
 
+    public PauseWateringPlanReq(final double duration) {
+        this.command = CMD_PAUSE_WATER_PLAN;
+        this.duration = duration;
+    }
+
     /**
      * Defines the duration the watering plan is to be paused for.
      * Acceptable range is between 0.1 to 240

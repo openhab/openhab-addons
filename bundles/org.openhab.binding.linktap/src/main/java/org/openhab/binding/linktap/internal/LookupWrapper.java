@@ -19,8 +19,6 @@ import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The {@link LookupWrapper} is a container providing common functionality for providing
@@ -30,7 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class LookupWrapper<@Nullable itemT> {
-    private final Logger logger = LoggerFactory.getLogger(LookupWrapper.class);
 
     final Map<@NotNull String, @Nullable itemT> storeLookup = new ConcurrentHashMap<>();
 
@@ -45,7 +42,6 @@ public class LookupWrapper<@Nullable itemT> {
      */
     public boolean registerItem(final @NotNull String key, final @NotNull itemT item,
             @NotNull final Runnable afterAddition) {
-        logger.trace("Adding {} -> {}", key, item);
         if (storeLookup.containsKey(key)) {
             final itemT found = storeLookup.get(key);
             if (found != null && !found.equals(item)) {
@@ -53,7 +49,6 @@ public class LookupWrapper<@Nullable itemT> {
             }
         }
         storeLookup.put(key, item);
-        logger.trace("Total mappings after addition now : {}", storeLookup.size());
         afterAddition.run();
         return true;
     }
@@ -67,9 +62,7 @@ public class LookupWrapper<@Nullable itemT> {
      */
     public void deregisterItem(final @NotNull String key, final @NotNull itemT item,
             @NotNull final Runnable whenEmpty) {
-        logger.trace("Removing {} -> {}", key, item);
         storeLookup.remove(key, item);
-        logger.trace("Total mappings after remove now : {}", storeLookup.size());
         if (storeLookup.isEmpty()) {
             whenEmpty.run();
         }
@@ -82,9 +75,15 @@ public class LookupWrapper<@Nullable itemT> {
      * @return - null if no item is found otherwise the found item
      */
     public @Nullable itemT getItem(final @NotNull String key) {
-        logger.trace("Locating {}", key);
-        itemT result = storeLookup.get(key);
-        logger.trace("Located result {} -> {}", key, result);
-        return result;
+        return storeLookup.get(key);
+    }
+
+    /**
+     * Clears a entry when only the given key is known
+     *
+     * @param key - the key remove if it exists
+     */
+    public void clearItem(final @NotNull String key) {
+        storeLookup.remove(key);
     }
 }

@@ -52,10 +52,6 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
 
     private final Logger logger = LoggerFactory.getLogger(PollingDeviceHandler.class);
 
-    protected Logger getLogger() {
-        return logger;
-    }
-
     protected static final String MARKER_INVALID_DEVICE_KEY = "---INVALID---";
     protected String registeredDeviceId = EMPTY_STRING;
 
@@ -69,6 +65,8 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
 
     private final Object readBackPollLock = new Object();
     private @Nullable ScheduledFuture<?> readBackPollSf = null;
+
+    protected volatile LinkTapDeviceConfiguration config = new LinkTapDeviceConfiguration();
 
     protected void requestReadbackPoll() {
         synchronized (readBackPollLock) {
@@ -124,10 +122,13 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-
+        config = getConfigAs(LinkTapDeviceConfiguration.class);
         final LinkTapBridgeHandler bridge = (LinkTapBridgeHandler) getBridgeHandler();
         if (bridge == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "Bridge is not selected / set");
+            return;
+        } else if (bridge.getThing().getStatus().equals(ThingStatus.OFFLINE)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
             return;
         }
 
@@ -192,7 +193,6 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
         if (frame instanceof DeviceCmdReq) {
             final String deviceAddr = getValidatedIdString();
             if (deviceAddr.equals(MARKER_INVALID_DEVICE_KEY)) {
-                logger.warn("Device is unknown - will not send");
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Check device setup - device is unknown");
                 return EMPTY_STRING;
@@ -200,21 +200,13 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
             ((DeviceCmdReq) frame).deviceId = deviceAddr;
         }
 
-        // Validate the payload is within the expected limits for the device its being sent to
-        final String validationResult = frame.isValid();
-        if (!validationResult.isEmpty()) {
-            logger.warn("Not sending request due to validation error -> {}", validationResult);
-            return EMPTY_STRING;
-        }
         final Bridge parentBridge = getBridge();
         if (parentBridge == null) {
-            logger.warn("Cannot send device does not have a valid bridge");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge not selected");
             return EMPTY_STRING;
         }
         final LinkTapBridgeHandler parentBridgeHandler = (LinkTapBridgeHandler) parentBridge.getHandler();
         if (parentBridgeHandler == null) {
-            logger.warn("Cannot send device does not have a valid bridge handler");
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Bridge not selected");
             return EMPTY_STRING;
         }
@@ -228,8 +220,6 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
 
     @NotNull
     public String getValidatedIdString() {
-        final LinkTapDeviceConfiguration config = getConfigAs(LinkTapDeviceConfiguration.class);
-
         BridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler instanceof LinkTapBridgeHandler vesyncBridgeHandler) {
             final String devId = config.id;
@@ -317,7 +307,6 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
             response = lastPollResultCache.getValue();
             if (response == null || skipCache) {
                 response = getPollResponseData();
-                // Todo: Check response status
                 lastPollResultCache.putValue(response);
             }
         }
