@@ -26,6 +26,7 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
+import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.Source;
 import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager;
 import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.MediaType;
@@ -176,8 +177,11 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
                     logger.debug("Unexpected command {} on channel {}", command, channelUID.getId());
                 }
             }
+        } catch (PermissionException e) {
+            logger.warn("Missing permission {} for handling command {} on channel {}: {}", e.getPermission(), command,
+                    channelUID.getId(), e.getMessage());
         } catch (FreeboxException e) {
-            logger.warn("Error handling command: {}", e.getMessage());
+            logger.warn("Error handling command {} on channel {}: {}", command, channelUID.getId(), e.getMessage());
         }
     }
 
