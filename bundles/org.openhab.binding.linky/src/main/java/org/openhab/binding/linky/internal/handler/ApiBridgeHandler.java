@@ -78,8 +78,8 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
     private HttpService httpService;
     private BundleContext bundleContext;
 
-    private final HttpClient httpClient;
-    private EnedisHttpApi enedisApi;
+    protected final HttpClient httpClient;
+    protected EnedisHttpApi enedisApi;
     private OAuthClientService oAuthService;
     protected final ThingRegistry thingRegistry;
 
@@ -88,6 +88,8 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
 
     private static final String TEMPLATE_PATH = "templates/";
     private static final String TEMPLATE_INDEX = TEMPLATE_PATH + "index.html";
+
+    protected final Gson gson;
 
     public ApiBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
@@ -107,21 +109,22 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
             logger.warn("An exception occurred while initialising the SSL context : '{}'", e.getMessage(), e);
         }
 
+        this.gson = gson;
         this.httpService = httpService;
         this.thingRegistry = thingRegistry;
         this.bundleContext = componentContext.getBundleContext();
 
         this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID, sslContextFactory);
-        httpClient.setFollowRedirects(false);
-        httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
-
-        this.enedisApi = new EnedisHttpApi(this, gson, this.httpClient);
+        this.httpClient.setFollowRedirects(false);
+        this.httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
 
         try {
             httpClient.start();
         } catch (Exception e) {
             logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
         }
+
+        this.enedisApi = new EnedisHttpApi(this, gson, this.httpClient);
 
         config = getConfigAs(LinkyConfiguration.class);
 
