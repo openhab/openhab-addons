@@ -49,7 +49,7 @@ public class ActivePlayerActions extends PlayerActions {
         if (actions instanceof ActivePlayerActions activePlayerActions) {
             activePlayerActions.rebootPlayer();
         } else {
-            throw new IllegalArgumentException("actions parameter is not a ActivePlayerActions class.");
+            throw new IllegalArgumentException("actions parameter is not an ActivePlayerActions class.");
         }
     }
 }
