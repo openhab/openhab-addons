@@ -118,8 +118,7 @@ public abstract class ApiConsumerHandler extends BaseThingHandler implements Api
     private void startAudioSink(Receiver receiver) {
         FreeboxOsHandler bridgeHandler = checkBridgeHandler();
         // Only video and photo is supported by the API so use VIDEO capability for audio
-        Boolean isAudioReceiver = receiver.capabilities().get(MediaType.VIDEO);
-        if (reg == null && bridgeHandler != null && isAudioReceiver != null && isAudioReceiver.booleanValue()) {
+        if (reg == null && bridgeHandler != null && Boolean.TRUE.equals(receiver.capabilities().get(MediaType.VIDEO))) {
             ApiConsumerConfiguration config = getConfig().as(ApiConsumerConfiguration.class);
             String callbackURL = bridgeHandler.getCallbackURL();
             if (!config.password.isEmpty() || !receiver.passwordProtected()) {
