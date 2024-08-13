@@ -28,6 +28,7 @@ import org.openhab.binding.freeboxos.internal.api.rest.WebSocketManager;
 import org.openhab.binding.freeboxos.internal.config.ApiConsumerConfiguration;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,7 +123,11 @@ public class HostHandler extends ApiConsumerHandler {
         updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, host.getLastSeen());
         updateChannelString(CONNECTIVITY, IP_ADDRESS, host.getIpv4());
         if (statusDrivenByLanConnectivity) {
-            updateStatus(host.reachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
+            if (host.reachable()) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Host is not reachable");
+            }
         }
         // We will check and configure audio sink only when the host reachability changed
         if (reachable != host.reachable()) {
