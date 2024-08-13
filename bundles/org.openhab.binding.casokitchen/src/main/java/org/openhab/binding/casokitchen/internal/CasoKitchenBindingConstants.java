@@ -48,7 +48,7 @@ public class CasoKitchenBindingConstants {
     public static final String BASE_URL = "https://publickitchenapi.casoapp.com";
     public static final String LIGHT_URL = BASE_URL + "/api/v1.1/Winecooler/SetLight";
     public static final String STATUS_URL = BASE_URL + "/api/v1.1/Winecooler/Status";
-    public static final  String HTTP_HEADER_API_KEY = "x-api-key";
+    public static final String HTTP_HEADER_API_KEY = "x-api-key";
 
     public static final Gson GSON = new Gson();
 }
