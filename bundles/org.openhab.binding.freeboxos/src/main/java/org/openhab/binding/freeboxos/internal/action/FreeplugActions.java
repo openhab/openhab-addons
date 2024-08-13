@@ -49,13 +49,21 @@ public class FreeplugActions implements ThingActions {
     }
 
     @RuleAction(label = "reset freeplug", description = "Resets the Freeplug")
-    public void reset() {
+    public void resetPlug() {
         logger.debug("Freeplug reset requested");
         FreeplugHandler plugHandler = this.handler;
         if (plugHandler != null) {
             plugHandler.reset();
         } else {
             logger.warn("Freeplug Action service ThingHandler is null");
+        }
+    }
+
+    public static void resetPlug(ThingActions actions) {
+        if (actions instanceof FreeplugActions freeplugActions) {
+            freeplugActions.resetPlug();
+        } else {
+            throw new IllegalArgumentException("actions parameter is not a FreeplugActions class.");
         }
     }
 }
