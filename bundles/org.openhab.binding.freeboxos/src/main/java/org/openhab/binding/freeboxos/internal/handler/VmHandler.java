@@ -74,8 +74,8 @@ public class VmHandler extends HostHandler {
 
     public void updateVmChannels(VirtualMachine vm) {
         boolean running = Status.RUNNING.equals(vm.status());
-        updateChannelOnOff(VM_STATUS, STATUS, running);
-        updateChannelOnOff(CONNECTIVITY, REACHABLE, running);
+        updateChannelOnOff(GROUP_VM_STATUS, STATUS, running);
+        updateChannelOnOff(GROUP_CONNECTIVITY, REACHABLE, running);
         if (running) {
             updateStatus(ThingStatus.ONLINE);
         } else {
