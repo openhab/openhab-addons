@@ -115,26 +115,25 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         fetchConnectionStatus();
         fetchSystemConfig();
 
-        if (isLinked(GROUP_ACTIONS + ChannelUID.CHANNEL_GROUP_SEPARATOR + WIFI_STATUS)) {
+        if (anyChannelLinked(GROUP_ACTIONS, Set.of(WIFI_STATUS))) {
             updateChannelOnOff(GROUP_ACTIONS, WIFI_STATUS, getManager(WifiManager.class).getStatus());
         }
-        if (isLinked(GROUP_ACTIONS + ChannelUID.CHANNEL_GROUP_SEPARATOR + AIRMEDIA_STATUS)) {
+        if (anyChannelLinked(GROUP_ACTIONS, Set.of(AIRMEDIA_STATUS))) {
             updateChannelOnOff(GROUP_ACTIONS, AIRMEDIA_STATUS, getManager(AirMediaManager.class).getStatus());
         }
-        if (isLinked(GROUP_ACTIONS + ChannelUID.CHANNEL_GROUP_SEPARATOR + UPNPAV_STATUS)) {
+        if (anyChannelLinked(GROUP_ACTIONS, Set.of(UPNPAV_STATUS))) {
             updateChannelOnOff(GROUP_ACTIONS, UPNPAV_STATUS, getManager(UPnPAVManager.class).getStatus());
         }
 
-        if (isLinked(GROUP_FILE_SHARING + ChannelUID.CHANNEL_GROUP_SEPARATOR + SAMBA_FILE_STATUS)
-                || isLinked(GROUP_FILE_SHARING + ChannelUID.CHANNEL_GROUP_SEPARATOR + SAMBA_PRINTER_STATUS)) {
+        if (anyChannelLinked(GROUP_FILE_SHARING, Set.of(SAMBA_FILE_STATUS, SAMBA_PRINTER_STATUS))) {
             Samba response = getManager(SambaManager.class).getConfig();
             updateChannelOnOff(GROUP_FILE_SHARING, SAMBA_FILE_STATUS, response.fileShareEnabled());
             updateChannelOnOff(GROUP_FILE_SHARING, SAMBA_PRINTER_STATUS, response.printShareEnabled());
         }
-        if (isLinked(GROUP_FILE_SHARING + ChannelUID.CHANNEL_GROUP_SEPARATOR + FTP_STATUS)) {
+        if (anyChannelLinked(GROUP_FILE_SHARING, Set.of(FTP_STATUS))) {
             updateChannelOnOff(GROUP_FILE_SHARING, FTP_STATUS, getManager(FtpManager.class).getStatus());
         }
-        if (isLinked(GROUP_FILE_SHARING + ChannelUID.CHANNEL_GROUP_SEPARATOR + AFP_FILE_STATUS)) {
+        if (anyChannelLinked(GROUP_FILE_SHARING, Set.of(AFP_FILE_STATUS))) {
             updateChannelOnOff(GROUP_FILE_SHARING, AFP_FILE_STATUS, getManager(AfpManager.class).getStatus());
         }
     }
@@ -148,26 +147,16 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         uptime = checkUptimeAndFirmware(config.uptimeVal(), uptime, config.firmwareVersion());
         updateChannelQuantity(GROUP_SYS_INFO, UPTIME, uptime, Units.SECOND);
 
-        if (isLinked(GROUP_SYS_INFO + ChannelUID.CHANNEL_GROUP_SEPARATOR + IP_ADDRESS)) {
+        if (anyChannelLinked(GROUP_SYS_INFO, Set.of(IP_ADDRESS))) {
             LanConfig lanConfig = getManager(LanManager.class).getConfig();
             updateChannelString(GROUP_SYS_INFO, IP_ADDRESS, lanConfig.ip());
         }
     }
 
     private void fetchConnectionStatus() throws FreeboxException {
-        if (isLinked(GROUP_CONNECTION_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + LINE_STATUS)
-                || isLinked(GROUP_CONNECTION_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + LINE_TYPE)
-                || isLinked(GROUP_CONNECTION_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + LINE_MEDIA)
-                || isLinked(GROUP_CONNECTION_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + IP_ADDRESS)
-                || isLinked(GROUP_CONNECTION_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + IPV6_ADDRESS)
-                || isLinked(GROUP_CONNECTION_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + BYTES_UP)
-                || isLinked(GROUP_CONNECTION_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + BYTES_DOWN)
-                || isLinked(GROUP_CONNECTION_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + RATE + "-up")
-                || isLinked(GROUP_CONNECTION_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + BW + "-up")
-                || isLinked(GROUP_CONNECTION_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + PCT_BW + "-up")
-                || isLinked(GROUP_CONNECTION_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + RATE + "-down")
-                || isLinked(GROUP_CONNECTION_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + BW + "-down")
-                || isLinked(GROUP_CONNECTION_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + PCT_BW + "-down")) {
+        if (anyChannelLinked(GROUP_CONNECTION_STATUS,
+                Set.of(LINE_STATUS, LINE_TYPE, LINE_MEDIA, IP_ADDRESS, IPV6_ADDRESS, BYTES_UP, BYTES_DOWN, RATE + "-up",
+                        BW + "-up", PCT_BW + "-up", RATE + "-down", BW + "-down", PCT_BW + "-down"))) {
             Status status = getManager(ConnectionManager.class).getConfig();
             updateChannelString(GROUP_CONNECTION_STATUS, LINE_STATUS, status.state());
             updateChannelString(GROUP_CONNECTION_STATUS, LINE_TYPE, status.type());

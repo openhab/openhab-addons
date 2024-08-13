@@ -17,6 +17,7 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.action.ActivePlayerActions;
@@ -73,8 +74,7 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
             Player player = getManager(PlayerManager.class).getDevice(getClientId());
             updateStatus(player.reachable() ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
             if (player.reachable()) {
-                if (isLinked(GROUP_PLAYER_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + PLAYER_STATUS)
-                        || isLinked(GROUP_PLAYER_STATUS + ChannelUID.CHANNEL_GROUP_SEPARATOR + PACKAGE)) {
+                if (anyChannelLinked(GROUP_PLAYER_STATUS, Set.of(PLAYER_STATUS, PACKAGE))) {
                     Status status = getManager(PlayerManager.class).getPlayerStatus(getClientId());
                     if (status != null) {
                         updateChannelString(GROUP_PLAYER_STATUS, PLAYER_STATUS, status.powerState().name());

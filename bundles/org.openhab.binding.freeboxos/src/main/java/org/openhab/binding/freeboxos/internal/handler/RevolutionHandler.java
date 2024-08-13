@@ -15,6 +15,8 @@ package org.openhab.binding.freeboxos.internal.handler;
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 import static org.openhab.core.library.unit.Units.PERCENT;
 
+import java.util.Set;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.LcdManager;
@@ -24,7 +26,6 @@ import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
@@ -67,9 +68,7 @@ public class RevolutionHandler extends ServerHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        if (isLinked(GROUP_DISPLAY + ChannelUID.CHANNEL_GROUP_SEPARATOR + LCD_BRIGHTNESS)
-                || isLinked(GROUP_DISPLAY + ChannelUID.CHANNEL_GROUP_SEPARATOR + LCD_ORIENTATION)
-                || isLinked(GROUP_DISPLAY + ChannelUID.CHANNEL_GROUP_SEPARATOR + LCD_FORCED)) {
+        if (anyChannelLinked(GROUP_DISPLAY, Set.of(LCD_BRIGHTNESS, LCD_ORIENTATION, LCD_FORCED))) {
             Config config = getManager(LcdManager.class).getConfig();
             updateChannelQuantity(GROUP_DISPLAY, LCD_BRIGHTNESS, config.brightness(), PERCENT);
             updateChannelDecimal(GROUP_DISPLAY, LCD_ORIENTATION, config.orientation());
