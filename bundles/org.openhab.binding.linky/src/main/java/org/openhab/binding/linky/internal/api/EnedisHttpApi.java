@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linky.internal.api;
 
+import java.net.HttpCookie;
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -27,11 +29,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.FormContentProvider;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.AddressInfo;
 import org.openhab.binding.linky.internal.dto.ContactInfo;
-import org.openhab.binding.linky.internal.dto.Contracts;
 import org.openhab.binding.linky.internal.dto.Customer;
 import org.openhab.binding.linky.internal.dto.CustomerIdResponse;
 import org.openhab.binding.linky.internal.dto.CustomerReponse;
@@ -41,10 +45,8 @@ import org.openhab.binding.linky.internal.dto.MeterResponse;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.TempoResponse;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
-import org.openhab.binding.linky.internal.dto.UsagePointDetails;
 import org.openhab.binding.linky.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
-import org.openhab.binding.linky.internal.handler.MyElectricalDataBridgeHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,6 +69,11 @@ public class EnedisHttpApi {
     private final HttpClient httpClient;
     private ApiBridgeHandler apiBridgeHandler;
 
+    public static final String ENEDIS_DOMAIN = ".enedis.fr";
+    public static final String URL_MON_COMPTE = "https://mon-compte" + EnedisHttpApi.ENEDIS_DOMAIN;
+    public static final String URL_COMPTE_PART = URL_MON_COMPTE.replace("compte", "compte-particulier");
+    public static final URI COOKIE_URI = URI.create(URL_COMPTE_PART);
+
     private boolean connected = false;
 
     public EnedisHttpApi(ApiBridgeHandler apiBridgeHandler, Gson gson, HttpClient httpClient) {
@@ -76,13 +83,16 @@ public class EnedisHttpApi {
     }
 
     public void initialize() throws LinkyException {
+        connected = true;
     }
 
-    private void disconnect() throws LinkyException {
-        if (connected) {
-            logger.debug("Logout process");
-            connected = false;
-        }
+    public void disconnect() throws LinkyException {
+
+        // if (connected) {
+        logger.debug("Logout process");
+        connected = false;
+        httpClient.getCookieStore().removeAll();
+        // }
     }
 
     public boolean isConnected() {
@@ -91,6 +101,23 @@ public class EnedisHttpApi {
 
     public void dispose() throws LinkyException {
         disconnect();
+    }
+
+    public FormContentProvider getFormContent(String fieldName, String fieldValue) {
+        Fields fields = new Fields();
+        fields.put(fieldName, fieldValue);
+        return new FormContentProvider(fields);
+    }
+
+    public void addCookie(String key, String value) {
+        HttpCookie cookie = new HttpCookie(key, value);
+        cookie.setDomain(ENEDIS_DOMAIN);
+        cookie.setPath("/");
+        httpClient.getCookieStore().add(COOKIE_URI, cookie);
+    }
+
+    public String getLocation(ContentResponse response) {
+        return response.getHeaders().get(HttpHeader.LOCATION);
     }
 
     public String getData(LinkyHandler handler, String url) throws LinkyException {
@@ -136,57 +163,34 @@ public class EnedisHttpApi {
         }
     }
 
+    /*
+     * private String getData(String url) throws LinkyException {
+     * try {
+     * ContentResponse result = httpClient.GET(url);
+     * if (result.getStatus() != 200) {
+     * throw new LinkyException("Error requesting '%s' : %s", url, result.getContentAsString());
+     * }
+     * return result.getContentAsString();
+     * } catch (InterruptedException | ExecutionException | TimeoutException e) {
+     * throw new LinkyException(e, "Error getting url : '%s'", url);
+     * }
+     * }
+     */
+
     public PrmInfo getPrmInfo(LinkyHandler handler, String prmId) throws LinkyException {
         PrmInfo result = new PrmInfo();
 
-        if (apiBridgeHandler instanceof MyElectricalDataBridgeHandler) {
-            result.contractInfo = new Contracts();
-            result.addressInfo = new AddressInfo();
-            result.contactInfo = new ContactInfo();
-            result.identityInfo = new IdentityInfo();
-            result.usagePointInfo = new UsagePointDetails();
+        Customer customer = getCustomer(handler, prmId);
+        UsagePoint usagePoint = customer.usagePoints[0];
 
-            result.contractInfo.subscribedPower = "12Kva";
-            result.contactInfo.email = "lxxyyy@domain.net";
-            result.contactInfo.phone = "--.--.--.--.--";
-            result.contractInfo.contractStatus = "unknow";
-            result.contractInfo.contractType = "unknow";
-            result.contractInfo.distributionTariff = "unknow";
-            result.contractInfo.lastActivationDate = "unknow";
-            result.contractInfo.lastDistributionTariffChangeDate = "unknow";
-            result.contractInfo.segment = "unknow";
-            result.contractInfo.offpeakHours = "unknow";
+        result.contractInfo = usagePoint.contracts;
+        result.usagePointInfo = usagePoint.usagePoint;
+        result.identityInfo = getIdentity(handler, prmId);
+        result.addressInfo = getAddress(handler, prmId);
+        result.contactInfo = getContact(handler, prmId);
 
-            result.addressInfo.city = "Ville";
-            result.addressInfo.country = "France";
-            result.addressInfo.postalCode = "xxxxx";
-            result.addressInfo.inseeCode = "0";
-            result.addressInfo.street = "xx Rue de yyyyyy";
-
-            result.identityInfo.firstname = "Laurent";
-            result.identityInfo.lastname = "ARNAL";
-            result.identityInfo.title = "M.";
-
-            result.usagePointInfo.meterType = "unknow";
-            result.usagePointInfo.usagePointId = "unknow";
-            result.usagePointInfo.usagePointStatus = "unknow";
-
-            result.prmId = prmId;
-            result.customerId = "xxxxxxxxxx";
-
-        } else {
-            Customer customer = getCustomer(handler, prmId);
-            UsagePoint usagePoint = customer.usagePoints[0];
-
-            result.contractInfo = usagePoint.contracts;
-            result.usagePointInfo = usagePoint.usagePoint;
-            result.identityInfo = getIdentity(handler, prmId);
-            result.addressInfo = getAddress(handler, prmId);
-            result.contactInfo = getContact(handler, prmId);
-
-            result.prmId = result.usagePointInfo.usagePointId;
-            result.customerId = customer.customerId;
-        }
+        result.prmId = result.usagePointInfo.usagePointId;
+        result.customerId = customer.customerId;
 
         return result;
     }
@@ -317,7 +321,7 @@ public class EnedisHttpApi {
     }
 
     public TempoResponse getTempoData(LinkyHandler handler) throws LinkyException {
-        String url = String.format(apiBridgeHandler.getTempoUrl(), "2024-01-01", "2024-06-30");
+        String url = String.format(apiBridgeHandler.getTempoUrl(), "2024-01-01", "2024-08-30");
         if (!connected) {
             initialize();
         }

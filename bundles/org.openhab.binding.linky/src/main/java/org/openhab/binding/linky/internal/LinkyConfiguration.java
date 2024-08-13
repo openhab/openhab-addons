@@ -23,10 +23,16 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public class LinkyConfiguration {
+    public static final String INTERNAL_AUTH_ID = "internalAuthId";
+
     public String token = "";
     public String prmId = "";
     public String clientId = "";
     public String clientSecret = "";
+
+    public String username = "";
+    public String password = "";
+    public String internalAuthId = "";
 
     public boolean seemsValid() {
         return !prmId.isBlank();
