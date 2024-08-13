@@ -5,7 +5,6 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 	<channel-group-type id="top-values">
 		<label>Top Zone</label>
-		<description>Values for upper zone</description>
 		<channels>
 			<channel id="temperature" typeId="temperature"/>
 			<channel id="set-temperature" typeId="set-temperature"/>
