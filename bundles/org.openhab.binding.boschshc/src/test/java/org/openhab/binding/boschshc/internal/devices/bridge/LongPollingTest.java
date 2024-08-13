@@ -14,6 +14,7 @@ package org.openhab.binding.boschshc.internal.devices.bridge;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -462,10 +463,9 @@ class LongPollingTest {
         ArgumentCaptor<Throwable> throwableCaptor = ArgumentCaptor.forClass(Throwable.class);
         verify(failureHandler).accept(throwableCaptor.capture());
         Throwable t = throwableCaptor.getValue();
-        assertEquals(
-                "Could not deserialize long poll response: '<HTML><HEAD><TITLE>400</TITLE></HEAD><BODY><H1>400 Unsupported HTTP Protocol Version: /remote/json-rpcHTTP/1.1</H1></BODY></HTML>'",
-                t.getMessage());
-        assertTrue(t.getCause() instanceof JsonSyntaxException);
+        assertThat(t.getMessage(), is(
+                "Could not deserialize long poll response: '<HTML><HEAD><TITLE>400</TITLE></HEAD><BODY><H1>400 Unsupported HTTP Protocol Version: /remote/json-rpcHTTP/1.1</H1></BODY></HTML>'"));
+        assertThat(t.getCause(), instanceOf(JsonSyntaxException.class));
     }
 
     @Test
@@ -490,8 +490,8 @@ class LongPollingTest {
         ArgumentCaptor<Throwable> throwableCaptor = ArgumentCaptor.forClass(Throwable.class);
         verify(failureHandler).accept(throwableCaptor.capture());
         Throwable t = throwableCaptor.getValue();
-        assertEquals("Error while handling long poll response: '" + resultJson + "'", t.getMessage());
-        assertTrue(t.getCause() instanceof NullPointerException);
+        assertThat(t.getMessage(), is("Error while handling long poll response: '" + resultJson + "'"));
+        assertThat(t.getCause(), instanceOf(NullPointerException.class));
     }
 
     @AfterEach

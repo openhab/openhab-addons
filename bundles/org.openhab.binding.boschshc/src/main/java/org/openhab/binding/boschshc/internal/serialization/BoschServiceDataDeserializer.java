@@ -49,22 +49,12 @@ public class BoschServiceDataDeserializer implements JsonDeserializer<BoschSHCSe
         }
 
         String dataType = dataTypeElement.getAsString();
-        switch (dataType) {
-            case "DeviceServiceData" -> {
-                return GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonObject, DeviceServiceData.class);
-            }
-            case "scenarioTriggered" -> {
-                return GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonObject, Scenario.class);
-            }
-            case "userDefinedState" -> {
-                return GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonObject, UserDefinedState.class);
-            }
-            case "message" -> {
-                return GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonElement, Message.class);
-            }
-            default -> {
-                return new BoschSHCServiceState(dataType);
-            }
-        }
+        return switch (dataType) {
+            case "DeviceServiceData" -> GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonObject, DeviceServiceData.class);
+            case "scenarioTriggered" -> GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonObject, Scenario.class);
+            case "userDefinedState" -> GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonObject, UserDefinedState.class);
+            case "message" -> GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonElement, Message.class);
+            default -> new BoschSHCServiceState(dataType);
+        };
     }
 }

@@ -17,8 +17,10 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.HashSet;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -26,6 +28,7 @@ import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceDat
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.LongPollResult;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Scenario;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedState;
+import org.openhab.binding.boschshc.internal.services.dto.BoschSHCServiceState;
 
 /**
  * Unit tests for {@link BoschServiceDataDeserializer}.
@@ -64,10 +67,13 @@ class BoschServiceDataDeserializerTest {
                 """;
 
         var longPollResult = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(resultJson, LongPollResult.class);
-        assertThat(longPollResult, is(notNullValue()));
-        assertThat(longPollResult.result, hasSize(2));
+        // note: when using assertThat() to check that the value is non-null, we get compiler warnings.
+        assertNotNull(longPollResult);
+        List<BoschSHCServiceState> results = longPollResult.result;
+        assertThat(results, is(notNullValue()));
+        assertThat(results, hasSize(2));
 
-        var resultClasses = new HashSet<>(longPollResult.result.stream().map(e -> e.getClass().getName()).toList());
+        var resultClasses = new HashSet<>(results.stream().map(e -> e.getClass().getName()).toList());
         assertThat(resultClasses, hasSize(2));
         assertThat(resultClasses, containsInAnyOrder(DeviceServiceData.class.getName(), Scenario.class.getName()));
     }
@@ -89,8 +95,11 @@ class BoschServiceDataDeserializerTest {
                 """;
 
         var longPollResult = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(resultJson, LongPollResult.class);
-        assertThat(longPollResult, is(notNullValue()));
-        assertThat(longPollResult.result, hasSize(1));
+        // note: when using assertThat() to check that the value is non-null, we get compiler warnings.
+        assertNotNull(longPollResult);
+        List<BoschSHCServiceState> results = longPollResult.result;
+        assertThat(results, is(notNullValue()));
+        assertThat(results, hasSize(1));
 
         DeviceServiceData deviceServiceData = (DeviceServiceData) longPollResult.result.get(0);
         assertThat(deviceServiceData.type, is("DeviceServiceData"));
@@ -115,8 +124,11 @@ class BoschServiceDataDeserializerTest {
                 """;
 
         var longPollResult = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(resultJson, LongPollResult.class);
-        assertThat(longPollResult, is(notNullValue()));
-        assertThat(longPollResult.result, hasSize(1));
+        // note: when using assertThat() to check that the value is non-null, we get compiler warnings.
+        assertNotNull(longPollResult);
+        List<BoschSHCServiceState> results = longPollResult.result;
+        assertThat(results, is(notNullValue()));
+        assertThat(results, hasSize(1));
 
         Scenario scenario = (Scenario) longPollResult.result.get(0);
         assertThat(scenario.type, is("scenarioTriggered"));
@@ -143,8 +155,11 @@ class BoschServiceDataDeserializerTest {
                 """;
 
         var longPollResult = GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(resultJson, LongPollResult.class);
-        assertThat(longPollResult, is(notNullValue()));
-        assertThat(longPollResult.result, hasSize(1));
+        // note: when using assertThat() to check that the value is non-null, we get compiler warnings.
+        assertNotNull(longPollResult);
+        List<BoschSHCServiceState> results = longPollResult.result;
+        assertThat(results, is(notNullValue()));
+        assertThat(results, hasSize(1));
 
         UserDefinedState userDefinedState = (UserDefinedState) longPollResult.result.get(0);
         assertThat(userDefinedState.type, is("userDefinedState"));
