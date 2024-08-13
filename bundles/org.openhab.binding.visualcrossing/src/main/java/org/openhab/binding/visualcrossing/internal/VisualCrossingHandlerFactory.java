@@ -46,7 +46,8 @@ public class VisualCrossingHandlerFactory extends BaseThingHandlerFactory {
     protected final @NonNullByDefault({}) LocationProvider locationProvider;
 
     @Activate
-    public VisualCrossingHandlerFactory(@Reference HttpClientFactory httpClientFactory, @Reference  LocaleProvider localeProvider, @Reference LocationProvider locationProvider) {
+    public VisualCrossingHandlerFactory(@Reference HttpClientFactory httpClientFactory,
+            @Reference LocaleProvider localeProvider, @Reference LocationProvider locationProvider) {
         this.httpClientFactory = httpClientFactory;
         this.localeProvider = localeProvider;
         this.locationProvider = locationProvider;

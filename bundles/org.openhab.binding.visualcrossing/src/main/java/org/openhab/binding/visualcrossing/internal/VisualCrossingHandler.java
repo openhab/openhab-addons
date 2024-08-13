@@ -1,18 +1,36 @@
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
- * <p>
+ *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- * <p>
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- * <p>
+ *
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.visualcrossing.internal;
 
-import com.google.gson.Gson;
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.openhab.binding.visualcrossing.internal.TypeBuilder.*;
+import static org.openhab.binding.visualcrossing.internal.VisualCrossingBindingConstants.Channels.BasicChannelGroup.*;
+import static org.openhab.binding.visualcrossing.internal.VisualCrossingBindingConstants.Channels.CurrentConditions.*;
+import static org.openhab.binding.visualcrossing.internal.VisualCrossingBindingConstants.SUPPORTED_LANGUAGES;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatusDetail.*;
+import static org.openhab.core.types.RefreshType.REFRESH;
+import static org.openhab.core.types.UnDefType.UNDEF;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.visualcrossing.internal.VisualCrossingBindingConstants.Channels.ChannelDay;
@@ -32,7 +50,6 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.LocationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.PointType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.binding.BaseThingHandler;
@@ -42,24 +59,7 @@ import org.openhab.core.types.State;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static java.util.Objects.requireNonNull;
-import static java.util.Optional.ofNullable;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.openhab.binding.visualcrossing.internal.TypeBuilder.*;
-import static org.openhab.binding.visualcrossing.internal.VisualCrossingBindingConstants.Channels.BasicChannelGroup.*;
-import static org.openhab.binding.visualcrossing.internal.VisualCrossingBindingConstants.Channels.CurrentConditions.*;
-import static org.openhab.binding.visualcrossing.internal.VisualCrossingBindingConstants.SUPPORTED_LANGUAGES;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatusDetail.*;
-import static org.openhab.core.types.RefreshType.REFRESH;
-import static org.openhab.core.types.UnDefType.UNDEF;
+import com.google.gson.Gson;
 
 /**
  * The {@link VisualCrossingHandler} is responsible for handling commands, which are
@@ -84,7 +84,8 @@ public class VisualCrossingHandler extends BaseThingHandler {
     @Nullable
     private ScheduledFuture<?> schedule;
 
-    public VisualCrossingHandler(Thing thing, HttpClientFactory httpClientFactory, LocaleProvider localeProvider, LocationProvider locationProvider) {
+    public VisualCrossingHandler(Thing thing, HttpClientFactory httpClientFactory, LocaleProvider localeProvider,
+            LocationProvider locationProvider) {
         super(thing);
         this.httpClientFactory = httpClientFactory;
         this.localeProvider = localeProvider;
@@ -481,12 +482,16 @@ public class VisualCrossingHandler extends BaseThingHandler {
         if (config.location != null && !config.location.isBlank()) {
             location = config.location;
         } else {
-             var pointType = locationProvider.getLocation();
-             if(pointType != null) {
-                 var latitude = pointType.getLatitude();
-                 var longitude = pointType.getLongitude();
-                 location = "%s,%s".formatted(latitude, longitude);
-             }
+            var pointType = locationProvider.getLocation();
+            if (pointType != null) {
+                var latitude = pointType.getLatitude();
+                var longitude = pointType.getLongitude();
+                location = "%s,%s".formatted(latitude, longitude);
+            }
+        }
+        if (location == null) {
+            updateStatus(OFFLINE, CONFIGURATION_ERROR, "@text/addon.visualcrossing.weather.error.no-location");
+            return;
         }
 
         if (config.lang != null && !config.lang.isBlank()) {
@@ -550,7 +555,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
 
     @Nullable
     public WeatherResponse timeline(@Nullable String location, @Nullable UnitGroup unitGroup, @Nullable String lang,
-                                    @Nullable String dateFrom, @Nullable String dateTo)
+            @Nullable String dateFrom, @Nullable String dateTo)
             throws VisualCrossingAuthException, VisualCrossingApiException, VisualCrossingRateException {
         var localApi = api;
         if (localApi == null) {
