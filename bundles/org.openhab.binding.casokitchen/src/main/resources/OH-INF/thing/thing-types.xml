@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="casokitchen"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="winecooler">
+		<label>Winecooler 2 Zones</label>
+		<description>Wine Cooler for 2 Zones</description>
+
+		<channel-groups>
+			<channel-group id="top" typeId="top-values"/>
+			<channel-group id="bottom" typeId="bottom-values"/>
+			<channel-group id="generic" typeId="generic-values"/>
+		</channel-groups>
+
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<label>API Key</label>
+				<description>API Key generated via CASO SMart Kitchen API</description>
+			</parameter>
+			<parameter name="deviceId" type="text" required="true">
+				<label>Device ID</label>
+				<description>Device ID from CASO connected devices</description>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" unit="m" min="1">
+				<label>Refresh Interval</label>
+				<description>Interval the device is polled in minutes.</description>
+				<default>5</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>
