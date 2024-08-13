@@ -126,7 +126,7 @@ public class HostHandler extends ApiConsumerHandler {
             if (host.reachable()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Host is not reachable");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-host-not-reachable");
             }
         }
         // We will check and configure audio sink only when the host reachability changed

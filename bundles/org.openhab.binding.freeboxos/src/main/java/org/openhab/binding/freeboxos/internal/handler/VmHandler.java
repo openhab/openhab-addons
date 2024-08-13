@@ -79,7 +79,7 @@ public class VmHandler extends HostHandler {
         if (running) {
             updateStatus(ThingStatus.ONLINE);
         } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "VM is not running");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-vm-not-running");
         }
     }
 

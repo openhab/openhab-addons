@@ -87,7 +87,7 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
             if (player.reachable()) {
                 updateStatus(ThingStatus.ONLINE);
             } else {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Player is not reachable");
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-player-not-reachable");
             }
             if (player.reachable()) {
                 Status status = getManager(PlayerManager.class).getPlayerStatus(getClientId());
@@ -108,7 +108,7 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
             updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
         } else {
             logger.debug("{}: poll with reachable={}", thing.getUID(), reachable);
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "Player is not reachable");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-player-not-reachable");
         }
     }
 
