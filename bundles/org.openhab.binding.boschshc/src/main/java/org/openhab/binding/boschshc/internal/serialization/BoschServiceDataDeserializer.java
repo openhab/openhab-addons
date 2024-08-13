@@ -32,6 +32,7 @@ import com.google.gson.JsonParseException;
  * Utility class for JSON deserialization of device data and triggered scenarios using Google Gson.
  *
  * @author Patrick Gell - Initial contribution
+ * @author David Pace - Fixed NPEs and simplified code, added sanity check
  *
  */
 @NonNullByDefault
@@ -42,36 +43,18 @@ public class BoschServiceDataDeserializer implements JsonDeserializer<BoschSHCSe
     public BoschSHCServiceState deserialize(JsonElement jsonElement, Type type,
             JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonObject jsonObject = jsonElement.getAsJsonObject();
-        JsonElement dataType = jsonObject.get("@type");
-        switch (dataType.getAsString()) {
-            case "DeviceServiceData" -> {
-                var deviceServiceData = new DeviceServiceData();
-                deviceServiceData.deviceId = jsonObject.get("deviceId").getAsString();
-                deviceServiceData.state = jsonObject.get("state");
-                deviceServiceData.id = jsonObject.get("id").getAsString();
-                deviceServiceData.path = jsonObject.get("path").getAsString();
-                return deviceServiceData;
-            }
-            case "scenarioTriggered" -> {
-                var scenario = new Scenario();
-                scenario.id = jsonObject.get("id").getAsString();
-                scenario.name = jsonObject.get("name").getAsString();
-                scenario.lastTimeTriggered = jsonObject.get("lastTimeTriggered").getAsString();
-                return scenario;
-            }
-            case "userDefinedState" -> {
-                var state = new UserDefinedState();
-                state.setId(jsonObject.get("id").getAsString());
-                state.setName(jsonObject.get("name").getAsString());
-                state.setState(jsonObject.get("state").getAsBoolean());
-                return state;
-            }
-            case "message" -> {
-                return GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonElement, Message.class);
-            }
-            default -> {
-                return new BoschSHCServiceState(dataType.getAsString());
-            }
+        JsonElement dataTypeElement = jsonObject.get("@type");
+        if (dataTypeElement == null) {
+            throw new IllegalArgumentException("Received a service state without a @type property: " + jsonObject);
         }
+
+        String dataType = dataTypeElement.getAsString();
+        return switch (dataType) {
+            case "DeviceServiceData" -> GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonObject, DeviceServiceData.class);
+            case "scenarioTriggered" -> GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonObject, Scenario.class);
+            case "userDefinedState" -> GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonObject, UserDefinedState.class);
+            case "message" -> GsonUtils.DEFAULT_GSON_INSTANCE.fromJson(jsonElement, Message.class);
+            default -> new BoschSHCServiceState(dataType);
+        };
     }
 }
