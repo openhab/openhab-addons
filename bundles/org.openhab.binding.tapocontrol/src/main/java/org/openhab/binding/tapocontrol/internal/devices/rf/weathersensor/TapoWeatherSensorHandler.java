@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.tapocontrol.internal.devices.rf.wheatersensor;
+package org.openhab.binding.tapocontrol.internal.devices.rf.weathersensor;
 
 import static org.openhab.binding.tapocontrol.internal.constants.TapoThingConstants.*;
 import static org.openhab.binding.tapocontrol.internal.helpers.utils.TypeUtils.*;
@@ -27,13 +27,13 @@ import org.openhab.core.thing.Thing;
  * @author Christian Wild - Initial contribution
  */
 @NonNullByDefault
-public class TapoWheaterSensorHandler extends TapoChildDeviceHandler {
+public class TapoWeatherSensorHandler extends TapoChildDeviceHandler {
     /**
      * Constructor
      *
      * @param thing Thing object representing device
      */
-    public TapoWheaterSensorHandler(Thing thing) {
+    public TapoWeatherSensorHandler(Thing thing) {
         super(thing);
     }
 
