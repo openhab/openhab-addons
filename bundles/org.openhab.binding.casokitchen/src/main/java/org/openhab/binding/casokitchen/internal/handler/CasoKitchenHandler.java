@@ -44,6 +44,7 @@ import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +60,7 @@ public class CasoKitchenHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(CasoKitchenHandler.class);
 
     private Optional<CasoKitchenConfiguration> configuration = Optional.empty();
+    private Optional<StatusResult> cachedResult = Optional.empty();
     private @Nullable ScheduledFuture<?> refreshJob;
     private final HttpClient httpClient;
     private final TimeZoneProvider timeZoneProvider;
@@ -71,6 +73,73 @@ public class CasoKitchenHandler extends BaseThingHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
+        if (command instanceof RefreshType) {
+            cachedResult.ifPresent(result -> {
+                // update channels from cached result if available
+                String group = channelUID.getGroupId();
+                if (group == null) {
+                    return; // no channels without group defined!
+                }
+                String channel = channelUID.getIdWithoutGroup();
+                switch (group) {
+                    case GENERIC:
+                        switch (channel) {
+                            case LIGHT:
+                                updateState(new ChannelUID(thing.getUID(), GENERIC, LIGHT),
+                                        OnOffType.from(result.light1 && result.light2));
+                                break;
+                            case LAST_UPDATE:
+                                Instant timestamp = Instant.parse(result.logTimestampUtc);
+                                updateState(new ChannelUID(thing.getUID(), GENERIC, LAST_UPDATE),
+                                        new DateTimeType(timestamp.atZone(timeZoneProvider.getTimeZone())));
+                                break;
+                            case HINT:
+                                updateState(new ChannelUID(thing.getUID(), GENERIC, HINT),
+                                        StringType.valueOf(result.hint));
+                                break;
+                        }
+                        break;
+                    case TOP:
+                        switch (channel) {
+                            case LIGHT:
+                                updateState(new ChannelUID(thing.getUID(), TOP, LIGHT), OnOffType.from(result.light1));
+                                break;
+                            case POWER:
+                                updateState(new ChannelUID(thing.getUID(), TOP, POWER), OnOffType.from(result.power1));
+                                break;
+                            case TEMPERATURE:
+                                updateState(new ChannelUID(thing.getUID(), TOP, TEMPERATURE),
+                                        QuantityType.valueOf(result.temperature1, SIUnits.CELSIUS));
+                                break;
+                            case TARGET_TEMPERATURE:
+                                updateState(new ChannelUID(thing.getUID(), TOP, TARGET_TEMPERATURE),
+                                        QuantityType.valueOf(result.targetTemperature1, SIUnits.CELSIUS));
+                                break;
+                        }
+                        break;
+                    case BOTTOM:
+                        switch (channel) {
+                            case LIGHT:
+                                updateState(new ChannelUID(thing.getUID(), BOTTOM, LIGHT),
+                                        OnOffType.from(result.light2));
+                                break;
+                            case POWER:
+                                updateState(new ChannelUID(thing.getUID(), BOTTOM, POWER),
+                                        OnOffType.from(result.power2));
+                                break;
+                            case TEMPERATURE:
+                                updateState(new ChannelUID(thing.getUID(), BOTTOM, TEMPERATURE),
+                                        QuantityType.valueOf(result.temperature2, SIUnits.CELSIUS));
+                                break;
+                            case TARGET_TEMPERATURE:
+                                updateState(new ChannelUID(thing.getUID(), BOTTOM, TARGET_TEMPERATURE),
+                                        QuantityType.valueOf(result.targetTemperature2, SIUnits.CELSIUS));
+                                break;
+                        }
+                        break;
+                }
+            });
+        }
         if (LIGHT.equals(channelUID.getIdWithoutGroup())) {
             logger.info("{} request received for group {}", LIGHT, channelUID.getGroupId());
             LightRequest lr = new LightRequest();
@@ -149,13 +218,14 @@ public class CasoKitchenHandler extends BaseThingHandler {
                         updateStatus(ThingStatus.ONLINE);
                         return true;
                     } else {
-                        reason = "@text/casokitchen.winecooler.status.refresh-interval [\"" + c.refreshInterval + "\"]";
+                        reason = "@text/casokitchen.winecooler-2z.status.refresh-interval [\"" + c.refreshInterval
+                                + "\"]";
                     }
                 } else {
-                    reason = "@text/casokitchen.winecooler.status.device-id-missing";
+                    reason = "@text/casokitchen.winecooler-2z.status.device-id-missing";
                 }
             } else {
-                reason = "@text/casokitchen.winecooler.status.api-key-missing";
+                reason = "@text/casokitchen.winecooler-2z.status.api-key-missing";
             }
         }
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, reason);
@@ -178,21 +248,24 @@ public class CasoKitchenHandler extends BaseThingHandler {
                     logger.info("Request to {} failed. Status: {} Reason: {}", STATUS_URL, responseStatus,
                             resultContent);
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/casokitchen.winecooler.status.http-status [\"" + responseStatus + " - "
+                            "@text/casokitchen.winecooler-2z.status.http-status [\"" + responseStatus + " - "
                                     + resultContent + "\"]");
                 } else {
                     updateStatus(ThingStatus.ONLINE);
                     logger.info("Request to {} delivered {}", STATUS_URL, resultContent);
                     if (resultContent != null) {
-                        updateChannels(resultContent);
+                        StatusResult statusResult = GSON.fromJson(resultContent, StatusResult.class);
+                        if (statusResult != null) {
+                            cachedResult = Optional.of(statusResult);
+                            updateChannels(statusResult);
+                        }
                     }
                 }
             }
         });
     }
 
-    private void updateChannels(String json) {
-        StatusResult result = GSON.fromJson(json, StatusResult.class);
+    private void updateChannels(StatusResult result) {
         updateState(new ChannelUID(thing.getUID(), GENERIC, HINT), StringType.valueOf(result.hint));
         updateState(new ChannelUID(thing.getUID(), GENERIC, LIGHT), OnOffType.from(result.light1 && result.light2));
         updateState(new ChannelUID(thing.getUID(), TOP, TEMPERATURE),
