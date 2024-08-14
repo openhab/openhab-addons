@@ -186,7 +186,6 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
             connected = false;
             httpClient.getCookieStore().removeAll();
         }
-
     }
 
     @Override

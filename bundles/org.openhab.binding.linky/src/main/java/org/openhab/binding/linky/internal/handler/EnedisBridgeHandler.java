@@ -81,7 +81,6 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public void connectionInit() {
-
     }
 
     @Override
