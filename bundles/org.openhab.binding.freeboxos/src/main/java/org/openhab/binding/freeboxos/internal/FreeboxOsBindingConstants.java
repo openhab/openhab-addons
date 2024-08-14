@@ -86,7 +86,7 @@ public class FreeboxOsBindingConstants {
     public static final String LOCAL = "local";
     public static final String FULL_DUPLEX = "fullDuplex";
 
-    // List of all Group Channel ids
+    // List of all Channel Groups ids
     public static final String GROUP_SENSORS = "sensors";
     public static final String GROUP_FANS = "fans";
     public static final String GROUP_CONNECTION_STATUS = "connection-status";
@@ -99,6 +99,8 @@ public class FreeboxOsBindingConstants {
     public static final String GROUP_VM_STATUS = "vmstatus";
     public static final String GROUP_WIFI = "wifi";
     public static final String GROUP_REPEATER_MISC = "repeater-misc";
+    public static final String GROUP_XDSL = "xdsl";
+    public static final String GROUP_FTTH = "ftth";
 
     // List of all Channel ids
     public static final String RSSI = "rssi";
@@ -156,6 +158,15 @@ public class FreeboxOsBindingConstants {
     // Repeater channels
     public static final String LED = "led";
     public static final String HOST_COUNT = "host-count";
+
+    // FTTH channels ids
+    public static final String SFP_PRESENT = "sfp-present";
+    public static final String SFP_ALIM = "sfp-alim-ok";
+    public static final String SFP_POWER = "sfp-has-power";
+    public static final String SFP_SIGNAL = "sfp-has-signal";
+    public static final String SFP_LINK = "link";
+    public static final String SFP_PWR_TX = "sfp-pwr-tx";
+    public static final String SFP_PWR_RX = "sfp-pwr-rx";
 
     // Home channels
     public static final String KEYFOB_ENABLE = "enable";

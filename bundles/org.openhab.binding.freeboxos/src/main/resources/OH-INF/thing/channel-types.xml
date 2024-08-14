@@ -461,4 +461,46 @@
 		<state pattern="%s"/>
 	</channel-type>
 
+	<channel-type id="sfp-present">
+		<item-type>Switch</item-type>
+		<label>SFP Present</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sfp-alim-ok">
+		<item-type>Switch</item-type>
+		<label>Alimentation Ok</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sfp-has-power">
+		<item-type>Switch</item-type>
+		<label>Power Available</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sfp-has-signal">
+		<item-type>Switch</item-type>
+		<label>Signal Present</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="link">
+		<item-type>Switch</item-type>
+		<label>Link Is Active</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sfp-signal-level">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>Signal Level</label>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%.2f dBm"/>
+	</channel-type>
+
 </thing:thing-descriptions>
