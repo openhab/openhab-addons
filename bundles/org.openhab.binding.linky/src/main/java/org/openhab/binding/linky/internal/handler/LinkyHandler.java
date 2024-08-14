@@ -227,8 +227,8 @@ public class LinkyHandler extends BaseThingHandler {
     private synchronized void updateData() {
         boolean connectedBefore = isConnected();
 
-        // updateEnergyData();
-        // updatePowerData();
+        updateEnergyData();
+        updatePowerData();
 
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
         TempoResponse tempoData = getTempoData();
@@ -322,9 +322,11 @@ public class LinkyHandler extends BaseThingHandler {
     private synchronized void updateEnergyData() {
         dailyConsumption.getValue().ifPresentOrElse(values -> {
             int dSize = values.dayValue.length;
-            updateKwhChannel(DAY_MINUS_1, values.dayValue[dSize - 1].value / 1000.00);
-            updateKwhChannel(DAY_MINUS_2, values.dayValue[dSize - 2].value / 1000.00);
-            updateKwhChannel(DAY_MINUS_3, values.dayValue[dSize - 3].value / 1000.00);
+            double divider = 1000.00;
+            divider = 1.00;
+            updateKwhChannel(DAY_MINUS_1, values.dayValue[dSize - 1].value / divider);
+            updateKwhChannel(DAY_MINUS_2, values.dayValue[dSize - 2].value / divider);
+            updateKwhChannel(DAY_MINUS_3, values.dayValue[dSize - 3].value / divider);
 
             LocalDate currentDt = LocalDate.now();
             int idxCurrentYear = currentDt.getYear() - values.dayValue[0].date.getYear();
@@ -335,17 +337,17 @@ public class LinkyHandler extends BaseThingHandler {
             int idxCurrentWeek = (52 * idxCurrentYear) + currentWeek;
             int idxCurrentMonth = (12 * idxCurrentYear) + currentMonth;
 
-            updateKwhChannel(WEEK_MINUS_0, values.weekValue[idxCurrentWeek].value / 1000.00);
-            updateKwhChannel(WEEK_MINUS_1, values.weekValue[idxCurrentWeek - 1].value / 1000.00);
-            updateKwhChannel(WEEK_MINUS_2, values.weekValue[idxCurrentWeek - 2].value / 1000.00);
+            updateKwhChannel(WEEK_MINUS_0, values.weekValue[idxCurrentWeek].value / divider);
+            updateKwhChannel(WEEK_MINUS_1, values.weekValue[idxCurrentWeek - 1].value / divider);
+            updateKwhChannel(WEEK_MINUS_2, values.weekValue[idxCurrentWeek - 2].value / divider);
 
-            updateKwhChannel(MONTH_MINUS_0, values.monthValue[idxCurrentMonth].value / 1000.00);
-            updateKwhChannel(MONTH_MINUS_1, values.monthValue[idxCurrentMonth - 1].value / 1000.00);
-            updateKwhChannel(MONTH_MINUS_2, values.monthValue[idxCurrentMonth - 2].value / 1000.00);
+            updateKwhChannel(MONTH_MINUS_0, values.monthValue[idxCurrentMonth].value / divider);
+            updateKwhChannel(MONTH_MINUS_1, values.monthValue[idxCurrentMonth - 1].value / divider);
+            updateKwhChannel(MONTH_MINUS_2, values.monthValue[idxCurrentMonth - 2].value / divider);
 
-            updateKwhChannel(YEAR_MINUS_0, values.yearValue[idxCurrentYear].value / 1000.00);
-            updateKwhChannel(YEAR_MINUS_1, values.yearValue[idxCurrentYear - 1].value / 1000.00);
-            updateKwhChannel(YEAR_MINUS_2, values.yearValue[idxCurrentYear - 2].value / 1000.00);
+            updateKwhChannel(YEAR_MINUS_0, values.yearValue[idxCurrentYear].value / divider);
+            updateKwhChannel(YEAR_MINUS_1, values.yearValue[idxCurrentYear - 1].value / divider);
+            updateKwhChannel(YEAR_MINUS_2, values.yearValue[idxCurrentYear - 2].value / divider);
         }, () -> {
             updateKwhChannel(DAY_MINUS_1, Double.NaN);
             updateKwhChannel(DAY_MINUS_2, Double.NaN);
