@@ -38,8 +38,37 @@ public class MeterReading {
 
     @SerializedName("interval_reading")
     public IntervalReading[] dayValue;
-
     public IntervalReading[] weekValue;
     public IntervalReading[] monthValue;
     public IntervalReading[] yearValue;
+
+    public static MeterReading fromComsumptionReport(ConsumptionReport comsumptionReport) {
+        MeterReading result = new MeterReading();
+        result.readingType = new ReadingType();
+
+        result.dayValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.days);
+        result.weekValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.weeks);
+        result.monthValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.months);
+        result.yearValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.years);
+
+        return result;
+    }
+
+    public static IntervalReading[] fromAgregat(ConsumptionReport.Aggregate agregat) {
+
+        int size = agregat.datas.size();
+        IntervalReading[] result = new IntervalReading[size];
+
+        for (int i = 0; i < size; i++) {
+            Double data = agregat.datas.get(i);
+            ConsumptionReport.Period period = agregat.periodes.get(i);
+            String label = agregat.labels.get(i);
+
+            result[i] = new IntervalReading();
+            result[i].value = data;
+            result[i].date = period.dateDebut.toLocalDateTime();
+        }
+
+        return result;
+    }
 }
