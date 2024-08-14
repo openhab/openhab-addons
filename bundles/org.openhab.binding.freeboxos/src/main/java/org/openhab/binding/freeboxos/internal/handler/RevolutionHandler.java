@@ -47,18 +47,17 @@ public class RevolutionHandler extends ServerHandler {
     @Override
     protected boolean internalHandleCommand(String channelId, Command command) throws FreeboxException {
         LcdManager manager = getManager(LcdManager.class);
-        Config config = manager.getConfig();
         switch (channelId) {
             case LCD_BRIGHTNESS:
-                setBrightness(manager, config, command);
+                setBrightness(manager, manager.getConfig(), command);
                 internalPoll();
                 return true;
             case LCD_ORIENTATION:
-                setOrientation(manager, config, command);
+                setOrientation(manager, manager.getConfig(), command);
                 internalPoll();
                 return true;
             case LCD_FORCED:
-                setForced(manager, config, command);
+                setForced(manager, manager.getConfig(), command);
                 internalPoll();
                 return true;
         }
