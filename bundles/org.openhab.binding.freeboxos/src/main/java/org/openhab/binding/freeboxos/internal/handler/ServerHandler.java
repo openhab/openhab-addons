@@ -181,18 +181,17 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
                     GIBIOCTET);
             updateChannelQuantity(GROUP_CONNECTION_STATUS, BYTES_DOWN, new QuantityType<>(status.bytesDown(), OCTET),
                     GIBIOCTET);
-
-            if (anyChannelLinked(GROUP_FTTH,
-                    Set.of(SFP_PRESENT, SFP_ALIM, SFP_POWER, SFP_SIGNAL, SFP_LINK, SFP_PWR_TX, SFP_PWR_RX))) {
-                FtthStatus ftthStatus = getManager(ConnectionManager.class).getFtthStatus();
-                updateChannelOnOff(GROUP_FTTH, SFP_PRESENT, ftthStatus.sfpPresent());
-                updateChannelOnOff(GROUP_FTTH, SFP_ALIM, ftthStatus.sfpAlimOk());
-                updateChannelOnOff(GROUP_FTTH, SFP_POWER, ftthStatus.sfpHasPowerReport());
-                updateChannelOnOff(GROUP_FTTH, SFP_SIGNAL, ftthStatus.sfpHasSignal());
-                updateChannelOnOff(GROUP_FTTH, SFP_LINK, ftthStatus.link());
-                updateChannelQuantity(GROUP_FTTH, SFP_PWR_TX, ftthStatus.getTransmitDBM(), Units.DECIBEL_MILLIWATTS);
-                updateChannelQuantity(GROUP_FTTH, SFP_PWR_RX, ftthStatus.getReceivedDBM(), Units.DECIBEL_MILLIWATTS);
-            }
+        }
+        if (anyChannelLinked(GROUP_FTTH,
+                Set.of(SFP_PRESENT, SFP_ALIM, SFP_POWER, SFP_SIGNAL, SFP_LINK, SFP_PWR_TX, SFP_PWR_RX))) {
+            FtthStatus ftthStatus = getManager(ConnectionManager.class).getFtthStatus();
+            updateChannelOnOff(GROUP_FTTH, SFP_PRESENT, ftthStatus.sfpPresent());
+            updateChannelOnOff(GROUP_FTTH, SFP_ALIM, ftthStatus.sfpAlimOk());
+            updateChannelOnOff(GROUP_FTTH, SFP_POWER, ftthStatus.sfpHasPowerReport());
+            updateChannelOnOff(GROUP_FTTH, SFP_SIGNAL, ftthStatus.sfpHasSignal());
+            updateChannelOnOff(GROUP_FTTH, SFP_LINK, ftthStatus.link());
+            updateChannelQuantity(GROUP_FTTH, SFP_PWR_TX, ftthStatus.getTransmitDBM(), Units.DECIBEL_MILLIWATTS);
+            updateChannelQuantity(GROUP_FTTH, SFP_PWR_RX, ftthStatus.getReceivedDBM(), Units.DECIBEL_MILLIWATTS);
         }
     }
 
