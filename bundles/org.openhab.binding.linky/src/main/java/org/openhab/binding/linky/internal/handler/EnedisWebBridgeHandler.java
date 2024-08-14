@@ -235,5 +235,4 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
             throw new LinkyException(e, "Error opening connection with Enedis webservice");
         }
     }
-
 }
