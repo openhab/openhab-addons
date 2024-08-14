@@ -93,7 +93,7 @@ public class ApiHandler {
         try {
             httpClient.start();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Unable to start httpClient", e);
+            logger.warn("Unable to start httpClient: {}", e.getMessage());
         }
     }
 
@@ -101,7 +101,7 @@ public class ApiHandler {
         try {
             httpClient.stop();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Unable to stop httpClient", e);
+            logger.warn("Unable to stop httpClient: {}", e.getMessage());
         }
     }
 
