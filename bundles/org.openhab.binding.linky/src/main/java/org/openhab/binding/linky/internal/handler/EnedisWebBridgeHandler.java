@@ -129,7 +129,7 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public String getAddressUrl() {
-        return PRM_INFO_URL;
+        return "";
     }
 
     @Override

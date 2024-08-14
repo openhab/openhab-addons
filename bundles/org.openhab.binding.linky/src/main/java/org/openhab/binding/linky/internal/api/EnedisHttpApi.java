@@ -14,13 +14,13 @@ package org.openhab.binding.linky.internal.api;
 
 import java.net.HttpCookie;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -32,7 +32,6 @@ import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.AddressInfo;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport;
 import org.openhab.binding.linky.internal.dto.ContactInfo;
-import org.openhab.binding.linky.internal.dto.Contracts;
 import org.openhab.binding.linky.internal.dto.Customer;
 import org.openhab.binding.linky.internal.dto.CustomerIdResponse;
 import org.openhab.binding.linky.internal.dto.CustomerReponse;
@@ -42,7 +41,6 @@ import org.openhab.binding.linky.internal.dto.MeterResponse;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.TempoResponse;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
-import org.openhab.binding.linky.internal.dto.UsagePointDetails;
 import org.openhab.binding.linky.internal.dto.WebPrmInfo;
 import org.openhab.binding.linky.internal.dto.WebUserInfo;
 import org.openhab.binding.linky.internal.handler.ApiBridgeHandler;
@@ -154,97 +152,27 @@ public class EnedisHttpApi {
         }
 
         PrmInfo result = new PrmInfo();
-        if (false) {
-            Customer customer = getCustomer(handler, prmId);
-            UsagePoint usagePoint = customer.usagePoints[0];
+        Customer customer = getContract(handler, prmId);
+        UsagePoint usagePoint = customer.usagePoints[0];
 
-            result.contractInfo = usagePoint.contracts;
-            result.usagePointInfo = usagePoint.usagePoint;
-            result.identityInfo = getIdentity(handler, prmId);
-            result.addressInfo = getAddress(handler, prmId);
-            result.contactInfo = getContact(handler, prmId);
+        result.contractInfo = usagePoint.contracts;
+        result.usagePointInfo = usagePoint.usagePoint;
 
-            result.prmId = result.usagePointInfo.usagePointId;
-            result.customerId = customer.customerId;
+        result.identityInfo = getIdentity(handler, prmId);
+        result.contactInfo = getContact(handler, prmId);
 
-            return result;
-        } else {
-            WebPrmInfo[] webPrmsInfo;
-            WebUserInfo webUserInfo;
+        result.prmId = result.usagePointInfo.usagePointId;
+        result.customerId = customer.customerId;
 
-            String prm_info_url = apiBridgeHandler.getContractUrl();
-            String user_info_url = apiBridgeHandler.getContactUrl();
+        return result;
 
-            String data = getData(prm_info_url);
-            if (data.isEmpty()) {
-                throw new LinkyException("Requesting '%s' returned an empty response", prm_info_url);
-            }
-            try {
-                webPrmsInfo = gson.fromJson(data, WebPrmInfo[].class);
-                if (webPrmsInfo == null || webPrmsInfo.length < 1) {
-                    throw new LinkyException("Invalid prms data received");
-                }
-            } catch (JsonSyntaxException e) {
-                logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-                throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", prm_info_url);
-            }
-
-            data = getData(user_info_url);
-            if (data.isEmpty()) {
-                throw new LinkyException("Requesting '%s' returned an empty response", user_info_url);
-            }
-            try {
-                webUserInfo = gson.fromJson(data, WebUserInfo.class);
-            } catch (JsonSyntaxException e) {
-                logger.debug("invalid JSON response not matching UserInfo.class: {}", data);
-                throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", user_info_url);
-            }
-
-            WebPrmInfo webPrmInfo = Arrays.stream(webPrmsInfo).filter(x -> x.prmId.equals(prmId)).findAny()
-                    .orElseThrow();
-
-            result.addressInfo = new AddressInfo();
-            result.addressInfo.street = webPrmInfo.adresse.adresseLigneQuatre;
-            result.addressInfo.city = webPrmInfo.adresse.adresseLigneSix;
-            result.addressInfo.postalCode = webPrmInfo.adresse.adresseLigneSix;
-            result.addressInfo.country = webPrmInfo.adresse.adresseLigneSept;
-
-            result.contactInfo = new ContactInfo();
-            result.identityInfo = new IdentityInfo();
-            result.contractInfo = new Contracts();
-            result.usagePointInfo = new UsagePointDetails();
-
-            result.contactInfo.email = webUserInfo.userProperties.mail;
-            result.contactInfo.phone = "";
-
-            result.identityInfo.firstname = webUserInfo.userProperties.firstName;
-            result.identityInfo.lastname = webUserInfo.userProperties.name;
-            result.identityInfo.title = "";
-            // webUserInfo.userProperties.internId;
-            // webUserInfo.userProperties.personalInfo;
-
-            result.contractInfo.contractStatus = "";
-            result.contractInfo.contractType = "";
-            result.contractInfo.distributionTariff = "";
-            result.contractInfo.lastActivationDate = "";
-            result.contractInfo.lastDistributionTariffChangeDate = "";
-            result.contractInfo.offpeakHours = "";
-            result.contractInfo.segment = webPrmInfo.segment;
-            result.contractInfo.subscribedPower = "" + webPrmInfo.puissanceSouscrite;
-
-            result.prmId = prmId;
-            result.customerId = "";
-
-            return result;
-
-        }
     }
 
     public String formatUrl(String apiUrl, String prmId) {
         return apiUrl.formatted(prmId);
     }
 
-    public Customer getCustomer(LinkyHandler handler, String prmId) throws LinkyException {
+    public Customer getContract(LinkyHandler handler, String prmId) throws LinkyException {
         if (!apiBridgeHandler.isConnected()) {
             apiBridgeHandler.initialize();
         }
@@ -255,22 +183,48 @@ public class EnedisHttpApi {
             throw new LinkyException("Requesting '%s' returned an empty response", contractUrl);
         }
         try {
-            CustomerReponse cResponse = gson.fromJson(data, CustomerReponse.class);
-            if (cResponse == null) {
-                throw new LinkyException("Invalid customer data received");
+            if (data.startsWith("[{\"adresse\"")) {
+                try {
+                    WebPrmInfo[] webPrmsInfo = gson.fromJson(data, WebPrmInfo[].class);
+                    if (webPrmsInfo == null || webPrmsInfo.length < 1) {
+                        throw new LinkyException("Invalid prms data received");
+                    }
+                    return Customer.fromWebPrmInfos(webPrmsInfo, prmId);
+
+                } catch (JsonSyntaxException e) {
+                    logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
+                    throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", contractUrl);
+                }
+            } else {
+                CustomerReponse cResponse = gson.fromJson(data, CustomerReponse.class);
+                if (cResponse == null) {
+                    throw new LinkyException("Invalid customer data received");
+                }
+
+                AddressInfo addressInfo = getAddress(handler, prmId);
+                if (addressInfo != null) {
+                    cResponse.customer.usagePoints[0].usagePoint.usagePointAddresses = addressInfo;
+                }
+
+                return cResponse.customer;
             }
-            return cResponse.customer;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
             throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", contractUrl);
         }
     }
 
+    @Nullable
     public AddressInfo getAddress(LinkyHandler handler, String prmId) throws LinkyException {
         if (!apiBridgeHandler.isConnected()) {
             apiBridgeHandler.initialize();
         }
         String addressUrl = apiBridgeHandler.getAddressUrl();
+
+        if (addressUrl.isEmpty()) {
+            return null;
+        }
+
         String data = getData(handler, formatUrl(addressUrl, prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", addressUrl);
@@ -297,11 +251,21 @@ public class EnedisHttpApi {
             throw new LinkyException("Requesting '%s' returned an empty response", identityUrl);
         }
         try {
-            CustomerIdResponse iResponse = gson.fromJson(data, CustomerIdResponse.class);
-            if (iResponse == null) {
-                throw new LinkyException("Invalid customer data received");
+            if (data.contains("av2_interne_id")) {
+                try {
+                    WebUserInfo webUserInfo = gson.fromJson(data, WebUserInfo.class);
+                    return IdentityInfo.fromWebUserInfo(webUserInfo);
+                } catch (JsonSyntaxException e) {
+                    logger.debug("invalid JSON response not matching UserInfo.class: {}", data);
+                    throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", identityUrl);
+                }
+            } else {
+                CustomerIdResponse iResponse = gson.fromJson(data, CustomerIdResponse.class);
+                if (iResponse == null) {
+                    throw new LinkyException("Invalid customer data received");
+                }
+                return iResponse.identity.naturalPerson;
             }
-            return iResponse.identity.naturalPerson;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
             throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", identityUrl);
@@ -319,11 +283,21 @@ public class EnedisHttpApi {
             throw new LinkyException("Requesting '%s' returned an empty response", contactUrl);
         }
         try {
-            CustomerIdResponse cResponse = gson.fromJson(data, CustomerIdResponse.class);
-            if (cResponse == null) {
-                throw new LinkyException("Invalid customer data received");
+            if (data.contains("av2_interne_id")) {
+                try {
+                    WebUserInfo webUserInfo = gson.fromJson(data, WebUserInfo.class);
+                    return ContactInfo.fromWebUserInfo(webUserInfo);
+                } catch (JsonSyntaxException e) {
+                    logger.debug("invalid JSON response not matching UserInfo.class: {}", data);
+                    throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", contactUrl);
+                }
+            } else {
+                CustomerIdResponse cResponse = gson.fromJson(data, CustomerIdResponse.class);
+                if (cResponse == null) {
+                    throw new LinkyException("Invalid customer data received");
+                }
+                return cResponse.contactData;
             }
-            return cResponse.contactData;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
             throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", contactUrl);
