@@ -24,7 +24,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.tapocontrol.internal.devices.bridge.TapoBridgeHandler;
 import org.openhab.binding.tapocontrol.internal.devices.rf.smartcontact.TapoSmartContactHandler;
-import org.openhab.binding.tapocontrol.internal.devices.rf.wheatersensor.TapoWheaterSensorHandler;
+import org.openhab.binding.tapocontrol.internal.devices.rf.weathersensor.TapoWeatherSensorHandler;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.TapoUniversalDeviceHandler;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.bulb.TapoBulbHandler;
 import org.openhab.binding.tapocontrol.internal.devices.wifi.hub.TapoHubHandler;
@@ -125,8 +125,8 @@ public class TapoControlHandlerFactory extends BaseThingHandlerFactory {
             return new TapoLightStripHandler(thing);
         } else if (SUPPORTED_SMART_CONTACTS.contains(thingTypeUID)) {
             return new TapoSmartContactHandler(thing);
-        } else if (SUPPORTED_WHEATHER_SENSORS.contains(thingTypeUID)) {
-            return new TapoWheaterSensorHandler(thing);
+        } else if (SUPPORTED_WEATHER_SENSORS.contains(thingTypeUID)) {
+            return new TapoWeatherSensorHandler(thing);
         } else if (thingTypeUID.equals(UNIVERSAL_THING_TYPE)) {
             return new TapoUniversalDeviceHandler(thing);
         }
