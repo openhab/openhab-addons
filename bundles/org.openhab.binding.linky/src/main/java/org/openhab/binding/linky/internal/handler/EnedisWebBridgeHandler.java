@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
+import java.net.URI;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -28,7 +29,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
-import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.dto.AuthData;
 import org.openhab.binding.linky.internal.dto.AuthResult;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -54,24 +54,32 @@ import com.google.gson.JsonSyntaxException;
 public class EnedisWebBridgeHandler extends ApiBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(EnedisWebBridgeHandler.class);
 
-    private static final String BASE_URL = "https://ext.prod-sandbox.api.enedis.fr/";
+    public static final String ENEDIS_DOMAIN = ".enedis.fr";
 
-    private static final String CONTRACT_URL = BASE_URL + "customers_upc/v5/usage_points/contracts?usage_point_id=%s";
-    private static final String IDENTITY_URL = BASE_URL + "customers_i/v5/identity?usage_point_id=%s";
-    private static final String CONTACT_URL = BASE_URL + "customers_cd/v5/contact_data?usage_point_id=%s";
-    private static final String ADDRESS_URL = BASE_URL + "customers_upa/v5/usage_points/addresses?usage_point_id=%s";
-    private static final String MEASURE_DAILY_CONSUMPTION_URL = BASE_URL
-            + "metering_data_dc/v5/daily_consumption?usage_point_id=%s&start=%s&end=%s";
+    private static final String BASE_URL = "https://alex.microapplications" + ENEDIS_DOMAIN;
+
+    public static final String URL_MON_COMPTE = "https://mon-compte" + ENEDIS_DOMAIN;
+    public static final String URL_COMPTE_PART = URL_MON_COMPTE.replace("compte", "compte-particulier");
+    public static final URI COOKIE_URI = URI.create(URL_COMPTE_PART);
+
+    private static final String USER_INFO_URL = BASE_URL + "/userinfos";
+    private static final String PRM_INFO_BASE_URL = BASE_URL + "/mes-mesures/api/private/v1/personnes/";
+    private static final String PRM_INFO_URL = PRM_INFO_BASE_URL + "null/prms";
+
+    private static final String MEASURE_DAILY_CONSUMPTION_URL = PRM_INFO_BASE_URL
+            + "undefined/prms/%s/donnees-energie?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
+
     private static final String MEASURE_MAX_POWER_URL = BASE_URL
-            + "metering_data_dcmp/v5/daily_consumption_max_power?usage_point_id=%s&start=%s&end=%s";
+            + "undefined/prms/%s/donnees-pmax?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
 
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 
-    private static final String URL_APPS_LINCS = "https://alex.microapplications" + EnedisHttpApi.ENEDIS_DOMAIN;
-    private static final String URL_ENEDIS_AUTHENTICATE = URL_APPS_LINCS + "/authenticate?target="
-            + EnedisHttpApi.URL_COMPTE_PART;
+    private static final String URL_ENEDIS_AUTHENTICATE = BASE_URL + "/authenticate?target=" + URL_COMPTE_PART;
 
     private static final Pattern REQ_PATTERN = Pattern.compile("ReqID%(.*?)%26");
+
+    private static final String BASE_MYELECT_URL = "https://www.myelectricaldata.fr/";
+    private static final String TEMPO_URL = BASE_MYELECT_URL + "rte/tempo/%s/%s";
 
     public EnedisWebBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
@@ -106,22 +114,22 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public String getContactUrl() {
-        return CONTACT_URL;
+        return USER_INFO_URL;
     }
 
     @Override
     public String getContractUrl() {
-        return CONTRACT_URL;
+        return PRM_INFO_URL;
     }
 
     @Override
     public String getIdentityUrl() {
-        return IDENTITY_URL;
+        return USER_INFO_URL;
     }
 
     @Override
     public String getAddressUrl() {
-        return ADDRESS_URL;
+        return PRM_INFO_URL;
     }
 
     @Override
@@ -136,7 +144,12 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public String getTempoUrl() {
-        return "";
+        return TEMPO_URL;
+    }
+
+    @Override
+    public DateTimeFormatter getApiDateFormat() {
+        return API_DATE_FORMAT;
     }
 
     @Override
@@ -167,9 +180,9 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
             }
 
             String reqId = m.group(1);
-            String authenticateUrl = EnedisHttpApi.URL_MON_COMPTE
+            String authenticateUrl = URL_MON_COMPTE
                     + "/auth/json/authenticate?realm=/enedis&forward=true&spEntityID=SP-ODW-PROD&goto=/auth/SSOPOST/metaAlias/enedis/providerIDP?ReqID%"
-                    + reqId + "%26index%3Dnull%26acsURL%3D" + URL_APPS_LINCS
+                    + reqId + "%26index%3Dnull%26acsURL%3D" + BASE_URL
                     + "/saml/SSO%26spEntityID%3DSP-ODW-PROD%26binding%3Durn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST&AMAuthCookie=";
 
             logger.debug("Step 3 : auth1 - retrieve the template, thanks to cookie internalAuthId user is already set");
@@ -206,7 +219,7 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
             enedisApi.addCookie("enedisExt", authResult.tokenId);
 
             logger.debug("Step 5 : retrieve the SAMLresponse");
-            data = enedisApi.getData(EnedisHttpApi.URL_MON_COMPTE + "/" + authResult.successUrl);
+            data = enedisApi.getData(URL_MON_COMPTE + "/" + authResult.successUrl);
             htmlDocument = Jsoup.parse(data);
             el = htmlDocument.select("form").first();
             samlInput = el.select("input[name=SAMLResponse]").first();
@@ -222,4 +235,5 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
             throw new LinkyException(e, "Error opening connection with Enedis webservice");
         }
     }
+
 }

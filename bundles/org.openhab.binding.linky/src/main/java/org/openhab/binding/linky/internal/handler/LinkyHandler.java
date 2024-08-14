@@ -506,19 +506,18 @@ public class LinkyHandler extends BaseThingHandler {
         logger.debug("getConsumptionData from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
                 to.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
-        if (false) {
-            EnedisHttpApi api = this.enedisApi;
-            if (api != null) {
-                try {
-                    MeterReading meterReading = api.getEnergyData(this, config.prmId, from, to);
-                    updateStatus(ThingStatus.ONLINE);
-                    return meterReading;
-                } catch (LinkyException e) {
-                    logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-                }
+        EnedisHttpApi api = this.enedisApi;
+        if (api != null) {
+            try {
+                MeterReading meterReading = api.getEnergyData(this, config.prmId, from, to);
+                updateStatus(ThingStatus.ONLINE);
+                return meterReading;
+            } catch (LinkyException e) {
+                logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
+
         return null;
     }
 
@@ -526,19 +525,18 @@ public class LinkyHandler extends BaseThingHandler {
         logger.debug("getPowerData from {} to {}", from.format(DateTimeFormatter.ISO_LOCAL_DATE),
                 to.format(DateTimeFormatter.ISO_LOCAL_DATE));
 
-        if (false) {
-            EnedisHttpApi api = this.enedisApi;
-            if (api != null) {
-                try {
-                    MeterReading meterReading = api.getPowerData(this, config.prmId, from, to);
-                    updateStatus(ThingStatus.ONLINE);
-                    return meterReading;
-                } catch (LinkyException e) {
-                    logger.debug("Exception when getting power data: {}", e.getMessage(), e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
-                }
+        EnedisHttpApi api = this.enedisApi;
+        if (api != null) {
+            try {
+                MeterReading meterReading = api.getPowerData(this, config.prmId, from, to);
+                updateStatus(ThingStatus.ONLINE);
+                return meterReading;
+            } catch (LinkyException e) {
+                logger.debug("Exception when getting power data: {}", e.getMessage(), e);
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
             }
         }
+
         return null;
     }
 
@@ -561,12 +559,15 @@ public class LinkyHandler extends BaseThingHandler {
 
     private boolean isConnected() {
         Bridge bridge = getBridge();
-        ApiBridgeHandler bridgeHandler = (ApiBridgeHandler) bridge.getHandler();
-        if (bridgeHandler == null) {
-            return false;
-        }
+        if (bridge != null) {
+            ApiBridgeHandler bridgeHandler = (ApiBridgeHandler) bridge.getHandler();
+            if (bridgeHandler == null) {
+                return false;
+            }
 
-        return bridgeHandler.isConnected();
+            return bridgeHandler.isConnected();
+        }
+        return false;
     }
 
     private void disconnect() {

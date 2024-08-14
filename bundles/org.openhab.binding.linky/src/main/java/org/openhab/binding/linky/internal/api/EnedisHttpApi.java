@@ -13,9 +13,7 @@
 package org.openhab.binding.linky.internal.api;
 
 import java.net.HttpCookie;
-import java.net.URI;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -47,6 +45,7 @@ import org.openhab.binding.linky.internal.dto.UsagePointDetails;
 import org.openhab.binding.linky.internal.dto.WebPrmInfo;
 import org.openhab.binding.linky.internal.dto.WebUserInfo;
 import org.openhab.binding.linky.internal.handler.ApiBridgeHandler;
+import org.openhab.binding.linky.internal.handler.EnedisWebBridgeHandler;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,24 +62,10 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class EnedisHttpApi {
 
-    private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
     private final Logger logger = LoggerFactory.getLogger(EnedisHttpApi.class);
     private final Gson gson;
     private final HttpClient httpClient;
     private ApiBridgeHandler apiBridgeHandler;
-
-    public static final String ENEDIS_DOMAIN = ".enedis.fr";
-    public static final String URL_MON_COMPTE = "https://mon-compte" + EnedisHttpApi.ENEDIS_DOMAIN;
-    public static final String URL_COMPTE_PART = URL_MON_COMPTE.replace("compte", "compte-particulier");
-    public static final URI COOKIE_URI = URI.create(URL_COMPTE_PART);
-
-    private static final String URL_APPS_LINCS = "https://alex.microapplications" + EnedisHttpApi.ENEDIS_DOMAIN;
-    private static final String USER_INFO_URL = URL_APPS_LINCS + "/userinfos";
-    private static final String PRM_INFO_BASE_URL = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/";
-    private static final String PRM_INFO_URL = PRM_INFO_BASE_URL + "null/prms";
-    private static final String MEASURE_URL = PRM_INFO_BASE_URL
-            + "%s/prms/%s/donnees-%s?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
 
     public EnedisHttpApi(ApiBridgeHandler apiBridgeHandler, Gson gson, HttpClient httpClient) {
         this.gson = gson;
@@ -96,9 +81,9 @@ public class EnedisHttpApi {
 
     public void addCookie(String key, String value) {
         HttpCookie cookie = new HttpCookie(key, value);
-        cookie.setDomain(ENEDIS_DOMAIN);
+        cookie.setDomain(EnedisWebBridgeHandler.ENEDIS_DOMAIN);
         cookie.setPath("/");
-        httpClient.getCookieStore().add(COOKIE_URI, cookie);
+        httpClient.getCookieStore().add(EnedisWebBridgeHandler.COOKIE_URI, cookie);
     }
 
     public String getLocation(ContentResponse response) {
@@ -186,9 +171,12 @@ public class EnedisHttpApi {
             WebPrmInfo[] webPrmsInfo;
             WebUserInfo webUserInfo;
 
-            String data = getData(PRM_INFO_URL);
+            String prm_info_url = apiBridgeHandler.getContractUrl();
+            String user_info_url = apiBridgeHandler.getContactUrl();
+
+            String data = getData(prm_info_url);
             if (data.isEmpty()) {
-                throw new LinkyException("Requesting '%s' returned an empty response", PRM_INFO_URL);
+                throw new LinkyException("Requesting '%s' returned an empty response", prm_info_url);
             }
             try {
                 webPrmsInfo = gson.fromJson(data, WebPrmInfo[].class);
@@ -197,18 +185,18 @@ public class EnedisHttpApi {
                 }
             } catch (JsonSyntaxException e) {
                 logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-                throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", PRM_INFO_URL);
+                throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", prm_info_url);
             }
 
-            data = getData(USER_INFO_URL);
+            data = getData(user_info_url);
             if (data.isEmpty()) {
-                throw new LinkyException("Requesting '%s' returned an empty response", USER_INFO_URL);
+                throw new LinkyException("Requesting '%s' returned an empty response", user_info_url);
             }
             try {
                 webUserInfo = gson.fromJson(data, WebUserInfo.class);
             } catch (JsonSyntaxException e) {
                 logger.debug("invalid JSON response not matching UserInfo.class: {}", data);
-                throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", USER_INFO_URL);
+                throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", user_info_url);
             }
 
             WebPrmInfo webPrmInfo = Arrays.stream(webPrmsInfo).filter(x -> x.prmId.equals(prmId)).findAny()
@@ -343,8 +331,8 @@ public class EnedisHttpApi {
 
     private MeterReading getMeasures(LinkyHandler handler, String apiUrl, String prmId, LocalDate from, LocalDate to)
             throws LinkyException {
-        String dtStart = from.format(API_DATE_FORMAT);
-        String dtEnd = to.format(API_DATE_FORMAT);
+        String dtStart = from.format(apiBridgeHandler.getApiDateFormat());
+        String dtEnd = to.format(apiBridgeHandler.getApiDateFormat());
 
         String url = String.format(apiUrl, prmId, dtStart, dtEnd);
         if (!apiBridgeHandler.isConnected()) {
