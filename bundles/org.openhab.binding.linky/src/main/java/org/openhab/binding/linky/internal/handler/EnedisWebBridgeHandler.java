@@ -31,7 +31,6 @@ import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.api.EnedisHttpApi;
 import org.openhab.binding.linky.internal.dto.AuthData;
 import org.openhab.binding.linky.internal.dto.AuthResult;
-import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -71,14 +70,8 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
     private static final String URL_APPS_LINCS = "https://alex.microapplications" + EnedisHttpApi.ENEDIS_DOMAIN;
     private static final String URL_ENEDIS_AUTHENTICATE = URL_APPS_LINCS + "/authenticate?target="
             + EnedisHttpApi.URL_COMPTE_PART;
-    private static final String USER_INFO_URL = URL_APPS_LINCS + "/userinfos";
-    private static final String PRM_INFO_BASE_URL = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/";
-    private static final String PRM_INFO_URL = PRM_INFO_BASE_URL + "null/prms";
-    private static final String MEASURE_URL = PRM_INFO_BASE_URL
-            + "%s/prms/%s/donnees-%s?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
-    private static final Pattern REQ_PATTERN = Pattern.compile("ReqID%(.*?)%26");
 
-    private boolean connected = false;
+    private static final Pattern REQ_PATTERN = Pattern.compile("ReqID%(.*?)%26");
 
     public EnedisWebBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
@@ -89,12 +82,6 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
     @Override
     public void initialize() {
         super.initialize();
-
-        try {
-            doAuth();
-        } catch (LinkyException ex) {
-            logger.debug("Exception: {}", ex.getMessage());
-        }
     }
 
     @Override
@@ -108,29 +95,8 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
     }
 
     @Override
-    public void dispose() {
-        logger.debug("Shutting down Netatmo API bridge handler.");
-        try {
-            enedisApi.disconnect();
-        } catch (LinkyException ex) {
-            logger.debug("Exception: {}", ex.getMessage());
-        }
-        super.dispose();
-    }
-
-    @Override
     public String getToken(LinkyHandler handler) throws LinkyException {
-
-        AccessTokenResponse accesToken = getAccessTokenResponse();
-        if (accesToken == null) {
-            accesToken = getAccessTokenByClientCredentials();
-        }
-
-        if (accesToken == null) {
-            throw new LinkyException("no token");
-        }
-
-        return "Bearer " + accesToken.getAccessToken();
+        return "";
     }
 
     @Override
@@ -173,7 +139,8 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
         return "";
     }
 
-    public void doAuth() throws LinkyException {
+    @Override
+    protected void connectionInit() throws LinkyException {
         logger.debug("Starting login process for user : {}", config.username);
 
         try {
