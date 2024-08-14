@@ -68,6 +68,8 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
 
     private long uptime = -1;
 
+    private boolean tryConfigureMediaSink = true;
+
     public ServerHandler(Thing thing) {
         super(thing);
         eventChannelUID = new ChannelUID(getThing().getUID(), GROUP_SYS_INFO, BOX_EVENT);
@@ -147,6 +149,17 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
         if (anyChannelLinked(GROUP_FILE_SHARING, Set.of(AFP_FILE_STATUS))) {
             updateChannelOnOff(GROUP_FILE_SHARING, AFP_FILE_STATUS, getManager(AfpManager.class).getStatus());
         }
+
+        if (tryConfigureMediaSink) {
+            configureMediaSink();
+            tryConfigureMediaSink = false;
+        }
+    }
+
+    @Override
+    protected void internalForcePoll() throws FreeboxException {
+        tryConfigureMediaSink = true;
+        internalPoll();
     }
 
     private void fetchSystemConfig() throws FreeboxException {
@@ -235,6 +248,7 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
                 case AIRMEDIA_STATUS:
                     updateChannelOnOff(GROUP_ACTIONS, AIRMEDIA_STATUS,
                             getManager(AirMediaManager.class).setStatus(enable));
+                    tryConfigureMediaSink = true;
                     return true;
                 default:
                     break;
