@@ -312,32 +312,34 @@ public class LinkyHandler extends BaseThingHandler {
         }
     }
 
-    /*
-     * private synchronized void updatePowerData() {
-     * if (isLinked(PEAK_POWER) || isLinked(PEAK_TIMESTAMP)) {
-     * cachedPowerData.getValue().ifPresentOrElse(values -> {
-     * Aggregate days = values.aggregats.days;
-     * updateVAChannel(PEAK_POWER, days.datas.get(days.datas.size() - 1));
-     * updateState(PEAK_TIMESTAMP, new DateTimeType(days.periodes.get(days.datas.size() - 1).dateDebut));
-     * }, () -> {
-     * updateKwhChannel(PEAK_POWER, Double.NaN);
-     * updateState(PEAK_TIMESTAMP, UnDefType.UNDEF);
-     * });
-     * }
-     * }
-     */
+    private synchronized void updatePowerData() {
+        dailyConsumptionMaxPower.getValue().ifPresentOrElse(values -> {
+            int dSize = values.dayValue.length;
+            double divider = 1000.00;
+            divider = 1.00;
 
-    private void setCurrentAndPrevious(Aggregate periods, String currentChannel, String previousChannel) {
-        double currentValue = 0.0;
-        double previousValue = 0.0;
-        if (!periods.datas.isEmpty()) {
-            currentValue = periods.datas.get(periods.datas.size() - 1);
-            if (periods.datas.size() > 1) {
-                previousValue = periods.datas.get(periods.datas.size() - 2);
-            }
-        }
-        updateKwhChannel(currentChannel, currentValue);
-        updateKwhChannel(previousChannel, previousValue);
+            updateVAChannel(PEAK_POWER_DAY_MINUS_1, values.dayValue[dSize - 1].value / divider);
+            updateState(PEAK_POWER_TS_DAY_MINUS_1,
+                    new DateTimeType(values.dayValue[dSize - 1].date.atZone(ZoneId.systemDefault())));
+
+            updateVAChannel(PEAK_POWER_DAY_MINUS_2, values.dayValue[dSize - 2].value / divider);
+            updateState(PEAK_POWER_TS_DAY_MINUS_2,
+                    new DateTimeType(values.dayValue[dSize - 2].date.atZone(ZoneId.systemDefault())));
+
+            updateVAChannel(PEAK_POWER_DAY_MINUS_3, values.dayValue[dSize - 3].value / divider);
+            updateState(PEAK_POWER_TS_DAY_MINUS_3,
+                    new DateTimeType(values.dayValue[dSize - 3].date.atZone(ZoneId.systemDefault())));
+
+        }, () -> {
+            updateKwhChannel(PEAK_POWER_DAY_MINUS_1, Double.NaN);
+            updateState(PEAK_POWER_TS_DAY_MINUS_1, UnDefType.UNDEF);
+
+            updateKwhChannel(PEAK_POWER_DAY_MINUS_2, Double.NaN);
+            updateState(PEAK_POWER_TS_DAY_MINUS_2, UnDefType.UNDEF);
+
+            updateKwhChannel(PEAK_POWER_DAY_MINUS_3, Double.NaN);
+            updateState(PEAK_POWER_TS_DAY_MINUS_3, UnDefType.UNDEF);
+        });
     }
 
     /**
