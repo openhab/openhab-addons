@@ -47,6 +47,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -99,8 +100,10 @@ public class TibberHandler extends BaseThingHandler {
         versionString = FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
         logger.debug("Binding version: {}", versionString);
 
-        getTibberParameters();
-        startRefresh(tibberConfig.getRefresh());
+        scheduler.execute(() -> {
+            getTibberParameters();
+            startRefresh(tibberConfig.getRefresh());
+        });
     }
 
     @Override
@@ -109,6 +112,24 @@ public class TibberHandler extends BaseThingHandler {
             startRefresh(tibberConfig.getRefresh());
         } else {
             logger.debug("Tibber API is read-only and does not handle commands");
+        }
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        if (channelUID.getAsString().contains("live_") && !isConnected() && "true".equals(rtEnabled)) {
+            try {
+                startLiveStream();
+            } catch (IOException e) {
+                logger.debug("Unable to start live data: {}", e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        if (channelUID.getAsString().contains("live_") && !liveChannelsLinked() && isConnected()) {
+            close();
         }
     }
 
@@ -148,20 +169,8 @@ public class TibberHandler extends BaseThingHandler {
                     }
                 }
 
-                if ("true".equals(rtEnabled)) {
-                    logger.debug("Pulse associated with HomeId: Live stream will be started");
-                    getSubscriptionUrl();
-
-                    if (subscriptionURL == null || subscriptionURL.isBlank()) {
-                        logger.debug("Unexpected subscription result from the server");
-                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                "Unexpected subscription result from the server");
-                    } else {
-                        logger.debug("Reconnecting Subscription to: {}", subscriptionURL);
-                        open();
-                    }
-                } else {
-                    logger.debug("No Pulse associated with HomeId: No live stream will be started");
+                if (liveChannelsLinked() && "true".equals(rtEnabled)) {
+                    startLiveStream();
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -311,20 +320,15 @@ public class TibberHandler extends BaseThingHandler {
 
     public void updateRequest() throws IOException {
         getURLInput(BASE_URL);
-        if ("true".equals(rtEnabled) && !isConnected()) {
-            logger.debug("Attempting to reopen Websocket connection");
-            getSubscriptionUrl();
-
-            if (subscriptionURL == null || subscriptionURL.isBlank()) {
-                logger.debug("Unexpected subscription result from the server");
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "Unexpected subscription result from the server");
-            } else {
-                logger.debug("Reconnecting Subscription to: {}", subscriptionURL);
-                open();
-            }
+        if (liveChannelsLinked() && "true".equals(rtEnabled) && !isConnected()) {
+            startLiveStream();
         }
     }
+
+    private boolean liveChannelsLinked() {
+        return getThing().getChannels().stream().map(Channel::getUID)
+                .filter((channelUID -> channelUID.getAsString().contains("live_"))).anyMatch(this::isLinked);
+    };
 
     private void getSubscriptionUrl() throws IOException {
         TibberPriceConsumptionHandler tibberQuery = new TibberPriceConsumptionHandler();
@@ -391,6 +395,20 @@ public class TibberHandler extends BaseThingHandler {
             }
         }
         super.dispose();
+    }
+
+    private void startLiveStream() throws IOException {
+        logger.debug("Attempting to open Websocket connection");
+        getSubscriptionUrl();
+
+        if (subscriptionURL == null || subscriptionURL.isBlank()) {
+            logger.debug("Unexpected subscription result from the server");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unexpected subscription result from the server");
+        } else {
+            logger.debug("Connecting Subscription to: {}", subscriptionURL);
+            open();
+        }
     }
 
     public void open() {
