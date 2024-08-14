@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
+import java.time.format.DateTimeFormatter;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
@@ -46,6 +48,8 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
             + "metering_data_dc/v5/daily_consumption?usage_point_id=%s&start=%s&end=%s";
     private static final String MEASURE_MAX_POWER_URL = BASE_URL
             + "metering_data_dcmp/v5/daily_consumption_max_power?usage_point_id=%s&start=%s&end=%s";
+
+    private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public EnedisBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
@@ -133,5 +137,10 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     @Override
     public String getTempoUrl() {
         return "";
+    }
+
+    @Override
+    public DateTimeFormatter getApiDateFormat() {
+        return API_DATE_FORMAT;
     }
 }

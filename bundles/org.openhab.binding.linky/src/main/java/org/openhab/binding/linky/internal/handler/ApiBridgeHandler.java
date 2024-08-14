@@ -19,6 +19,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -354,4 +355,6 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
     public abstract String getMaxPowerUrl();
 
     public abstract String getTempoUrl();
+
+    public abstract DateTimeFormatter getApiDateFormat();
 }
