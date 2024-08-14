@@ -30,6 +30,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.AddressInfo;
+import org.openhab.binding.linky.internal.dto.ConsumptionReport;
 import org.openhab.binding.linky.internal.dto.ContactInfo;
 import org.openhab.binding.linky.internal.dto.Contracts;
 import org.openhab.binding.linky.internal.dto.Customer;
@@ -345,10 +346,23 @@ public class EnedisHttpApi {
         }
         logger.trace("getData returned {}", data);
         try {
+            // See if with have response header from old Web API
+            if (data.startsWith("{\"1\":{\"CONS\"")) {
+                // If so, decode to ConsumptionReport, and convert to new Format
+                ConsumptionReport consomptionReport = gson.fromJson(data, ConsumptionReport.class);
+                if (consomptionReport == null) {
+                    throw new LinkyException("No report data received");
+                }
+
+                return MeterReading.fromComsumptionReport(consomptionReport);
+            }
+
+            // Else decode directly to new API format
             MeterResponse meterResponse = gson.fromJson(data, MeterResponse.class);
             if (meterResponse == null) {
                 throw new LinkyException("No report data received");
             }
+
             return meterResponse.meterReading;
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching ConsumptionReport.class: {}", data);
