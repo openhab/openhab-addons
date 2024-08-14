@@ -23,4 +23,12 @@ import org.eclipse.jetty.jaas.spi.UserInfo;
 public class ContactInfo {
     public String phone;
     public String email;
+
+    public static ContactInfo fromWebUserInfo(WebUserInfo webUserInfo) {
+        ContactInfo result = new ContactInfo();
+
+        result.email = webUserInfo.userProperties.mail;
+
+        return result;
+    }
 }

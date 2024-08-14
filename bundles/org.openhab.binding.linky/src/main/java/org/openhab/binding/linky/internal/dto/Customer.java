@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import java.util.Arrays;
+
 import org.eclipse.jetty.jaas.spi.UserInfo;
 
 /**
@@ -25,4 +27,38 @@ public class Customer {
     public String customerId;
 
     public UsagePoint[] usagePoints;
+
+    public static Customer fromWebPrmInfos(WebPrmInfo[] webPrmsInfo, String prmId) {
+        Customer result = new Customer();
+
+        WebPrmInfo webPrmInfo = Arrays.stream(webPrmsInfo).filter(x -> x.prmId.equals(prmId)).findAny().orElseThrow();
+
+        result.usagePoints = new UsagePoint[1];
+        result.usagePoints[0] = new UsagePoint();
+
+        result.usagePoints[0].usagePoint = new UsagePointDetails();
+        result.usagePoints[0].usagePoint.meterType = "";
+        result.usagePoints[0].usagePoint.usagePointId = "";
+        result.usagePoints[0].usagePoint.usagePointStatus = "";
+
+        result.usagePoints[0].usagePoint.usagePointAddresses = new AddressInfo();
+        result.usagePoints[0].usagePoint.usagePointAddresses.city = webPrmInfo.adresse.adresseLigneSix;
+        result.usagePoints[0].usagePoint.usagePointAddresses.country = webPrmInfo.adresse.adresseLigneSept;
+        result.usagePoints[0].usagePoint.usagePointAddresses.inseeCode = "";
+        result.usagePoints[0].usagePoint.usagePointAddresses.locality = "";
+        result.usagePoints[0].usagePoint.usagePointAddresses.postalCode = webPrmInfo.adresse.adresseLigneSix;
+        result.usagePoints[0].usagePoint.usagePointAddresses.street = webPrmInfo.adresse.adresseLigneQuatre;
+
+        result.usagePoints[0].contracts = new Contracts();
+        result.usagePoints[0].contracts.contractStatus = "";
+        result.usagePoints[0].contracts.contractType = "";
+        result.usagePoints[0].contracts.distributionTariff = "";
+        result.usagePoints[0].contracts.lastActivationDate = "";
+        result.usagePoints[0].contracts.lastDistributionTariffChangeDate = "";
+        result.usagePoints[0].contracts.offpeakHours = "";
+        result.usagePoints[0].contracts.segment = webPrmInfo.segment;
+        result.usagePoints[0].contracts.subscribedPower = "" + webPrmInfo.puissanceSouscrite;
+
+        return result;
+    }
 }
