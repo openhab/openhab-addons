@@ -14,6 +14,7 @@ package org.openhab.binding.casokitchen.internal.handler;
 
 import static org.openhab.binding.casokitchen.internal.CasoKitchenBindingConstants.*;
 
+import java.time.Instant;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -192,8 +193,6 @@ public class CasoKitchenHandler extends BaseThingHandler {
 
     private void updateChannels(String json) {
         StatusResult result = GSON.fromJson(json, StatusResult.class);
-        updateState(new ChannelUID(thing.getUID(), GENERIC, LAST_UPDATE),
-                DateTimeType.valueOf(result.logTimestampUtc).toZone(timeZoneProvider.getTimeZone()));
         updateState(new ChannelUID(thing.getUID(), GENERIC, HINT), StringType.valueOf(result.hint));
         updateState(new ChannelUID(thing.getUID(), GENERIC, LIGHT), OnOffType.from(result.light1 && result.light2));
         updateState(new ChannelUID(thing.getUID(), TOP, TEMPERATURE),
@@ -208,5 +207,8 @@ public class CasoKitchenHandler extends BaseThingHandler {
                 QuantityType.valueOf(result.targetTemperature2, SIUnits.CELSIUS));
         updateState(new ChannelUID(thing.getUID(), BOTTOM, POWER), OnOffType.from(result.power2));
         updateState(new ChannelUID(thing.getUID(), BOTTOM, LIGHT), OnOffType.from(result.light2));
+        Instant timestamp = Instant.parse(result.logTimestampUtc);
+        updateState(new ChannelUID(thing.getUID(), GENERIC, LAST_UPDATE),
+                new DateTimeType(timestamp.atZone(timeZoneProvider.getTimeZone())));
     }
 }

@@ -28,7 +28,7 @@ public class CasoKitchenBindingConstants {
     private static final String BINDING_ID = "casokitchen";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_WINECOOLER = new ThingTypeUID(BINDING_ID, "winecooler");
+    public static final ThingTypeUID THING_TYPE_WINECOOLER = new ThingTypeUID(BINDING_ID, "winecooler-2z");
 
     // List of all Channel Group ids
     public static final String TOP = "top";
