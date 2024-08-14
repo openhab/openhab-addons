@@ -76,6 +76,11 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     }
 
     @Override
+    public void connectionInit() {
+
+    }
+
+    @Override
     public String getToken(LinkyHandler handler) throws LinkyException {
 
         AccessTokenResponse accesToken = getAccessTokenResponse();

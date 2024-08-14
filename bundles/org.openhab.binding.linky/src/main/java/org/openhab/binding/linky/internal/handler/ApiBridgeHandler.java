@@ -91,6 +91,8 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
 
     protected final Gson gson;
 
+    protected boolean connected = false;
+
     public ApiBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
@@ -163,12 +165,38 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
 
         scheduler.submit(() -> {
             try {
-                enedisApi.initialize();
+                connectionInit();
                 updateStatus(ThingStatus.ONLINE);
             } catch (LinkyException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
             }
         });
+    }
+
+    protected abstract void connectionInit() throws LinkyException;
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void disconnect() {
+        if (connected) {
+            logger.debug("Logout process");
+            connected = false;
+            httpClient.getCookieStore().removeAll();
+        }
+
+    }
+
+    @Override
+    public void dispose() {
+        logger.debug("Shutting down Netatmo API bridge handler.");
+        disconnect();
+
+        httpService.unregister(LinkyBindingConstants.LINKY_ALIAS);
+        httpService.unregister(LinkyBindingConstants.LINKY_ALIAS + LinkyBindingConstants.LINKY_IMG_ALIAS);
+
+        super.dispose();
     }
 
     /*
@@ -186,16 +214,6 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void dispose() {
-        logger.debug("Shutting down Netatmo API bridge handler.");
-
-        httpService.unregister(LinkyBindingConstants.LINKY_ALIAS);
-        httpService.unregister(LinkyBindingConstants.LINKY_ALIAS + LinkyBindingConstants.LINKY_IMG_ALIAS);
-
-        super.dispose();
     }
 
     private void registerServlet() {
