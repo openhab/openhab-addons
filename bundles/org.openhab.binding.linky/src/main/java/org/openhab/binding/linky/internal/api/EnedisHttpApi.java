@@ -16,10 +16,7 @@ import java.net.HttpCookie;
 import java.net.URI;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
@@ -36,6 +33,7 @@ import org.eclipse.jetty.util.Fields;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.AddressInfo;
 import org.openhab.binding.linky.internal.dto.ContactInfo;
+import org.openhab.binding.linky.internal.dto.Contracts;
 import org.openhab.binding.linky.internal.dto.Customer;
 import org.openhab.binding.linky.internal.dto.CustomerIdResponse;
 import org.openhab.binding.linky.internal.dto.CustomerReponse;
@@ -45,6 +43,9 @@ import org.openhab.binding.linky.internal.dto.MeterResponse;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.TempoResponse;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
+import org.openhab.binding.linky.internal.dto.UsagePointDetails;
+import org.openhab.binding.linky.internal.dto.WebPrmInfo;
+import org.openhab.binding.linky.internal.dto.WebUserInfo;
 import org.openhab.binding.linky.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
 import org.slf4j.Logger;
@@ -74,33 +75,17 @@ public class EnedisHttpApi {
     public static final String URL_COMPTE_PART = URL_MON_COMPTE.replace("compte", "compte-particulier");
     public static final URI COOKIE_URI = URI.create(URL_COMPTE_PART);
 
-    private boolean connected = false;
+    private static final String URL_APPS_LINCS = "https://alex.microapplications" + EnedisHttpApi.ENEDIS_DOMAIN;
+    private static final String USER_INFO_URL = URL_APPS_LINCS + "/userinfos";
+    private static final String PRM_INFO_BASE_URL = URL_APPS_LINCS + "/mes-mesures/api/private/v1/personnes/";
+    private static final String PRM_INFO_URL = PRM_INFO_BASE_URL + "null/prms";
+    private static final String MEASURE_URL = PRM_INFO_BASE_URL
+            + "%s/prms/%s/donnees-%s?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
 
     public EnedisHttpApi(ApiBridgeHandler apiBridgeHandler, Gson gson, HttpClient httpClient) {
         this.gson = gson;
         this.httpClient = httpClient;
         this.apiBridgeHandler = apiBridgeHandler;
-    }
-
-    public void initialize() throws LinkyException {
-        connected = true;
-    }
-
-    public void disconnect() throws LinkyException {
-
-        // if (connected) {
-        logger.debug("Logout process");
-        connected = false;
-        httpClient.getCookieStore().removeAll();
-        // }
-    }
-
-    public boolean isConnected() {
-        return connected;
-    }
-
-    public void dispose() throws LinkyException {
-        disconnect();
     }
 
     public FormContentProvider getFormContent(String fieldName, String fieldValue) {
@@ -178,21 +163,92 @@ public class EnedisHttpApi {
      */
 
     public PrmInfo getPrmInfo(LinkyHandler handler, String prmId) throws LinkyException {
+        if (!apiBridgeHandler.isConnected()) {
+            apiBridgeHandler.initialize();
+        }
+
         PrmInfo result = new PrmInfo();
+        if (false) {
+            Customer customer = getCustomer(handler, prmId);
+            UsagePoint usagePoint = customer.usagePoints[0];
 
-        Customer customer = getCustomer(handler, prmId);
-        UsagePoint usagePoint = customer.usagePoints[0];
+            result.contractInfo = usagePoint.contracts;
+            result.usagePointInfo = usagePoint.usagePoint;
+            result.identityInfo = getIdentity(handler, prmId);
+            result.addressInfo = getAddress(handler, prmId);
+            result.contactInfo = getContact(handler, prmId);
 
-        result.contractInfo = usagePoint.contracts;
-        result.usagePointInfo = usagePoint.usagePoint;
-        result.identityInfo = getIdentity(handler, prmId);
-        result.addressInfo = getAddress(handler, prmId);
-        result.contactInfo = getContact(handler, prmId);
+            result.prmId = result.usagePointInfo.usagePointId;
+            result.customerId = customer.customerId;
 
-        result.prmId = result.usagePointInfo.usagePointId;
-        result.customerId = customer.customerId;
+            return result;
+        } else {
+            WebPrmInfo[] webPrmsInfo;
+            WebUserInfo webUserInfo;
 
-        return result;
+            String data = getData(PRM_INFO_URL);
+            if (data.isEmpty()) {
+                throw new LinkyException("Requesting '%s' returned an empty response", PRM_INFO_URL);
+            }
+            try {
+                webPrmsInfo = gson.fromJson(data, WebPrmInfo[].class);
+                if (webPrmsInfo == null || webPrmsInfo.length < 1) {
+                    throw new LinkyException("Invalid prms data received");
+                }
+            } catch (JsonSyntaxException e) {
+                logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
+                throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", PRM_INFO_URL);
+            }
+
+            data = getData(USER_INFO_URL);
+            if (data.isEmpty()) {
+                throw new LinkyException("Requesting '%s' returned an empty response", USER_INFO_URL);
+            }
+            try {
+                webUserInfo = gson.fromJson(data, WebUserInfo.class);
+            } catch (JsonSyntaxException e) {
+                logger.debug("invalid JSON response not matching UserInfo.class: {}", data);
+                throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", USER_INFO_URL);
+            }
+
+            WebPrmInfo webPrmInfo = Arrays.stream(webPrmsInfo).filter(x -> x.prmId.equals(prmId)).findAny()
+                    .orElseThrow();
+
+            result.addressInfo = new AddressInfo();
+            result.addressInfo.street = webPrmInfo.adresse.adresseLigneQuatre;
+            result.addressInfo.city = webPrmInfo.adresse.adresseLigneSix;
+            result.addressInfo.postalCode = webPrmInfo.adresse.adresseLigneSix;
+            result.addressInfo.country = webPrmInfo.adresse.adresseLigneSept;
+
+            result.contactInfo = new ContactInfo();
+            result.identityInfo = new IdentityInfo();
+            result.contractInfo = new Contracts();
+            result.usagePointInfo = new UsagePointDetails();
+
+            result.contactInfo.email = webUserInfo.userProperties.mail;
+            result.contactInfo.phone = "";
+
+            result.identityInfo.firstname = webUserInfo.userProperties.firstName;
+            result.identityInfo.lastname = webUserInfo.userProperties.name;
+            result.identityInfo.title = "";
+            // webUserInfo.userProperties.internId;
+            // webUserInfo.userProperties.personalInfo;
+
+            result.contractInfo.contractStatus = "";
+            result.contractInfo.contractType = "";
+            result.contractInfo.distributionTariff = "";
+            result.contractInfo.lastActivationDate = "";
+            result.contractInfo.lastDistributionTariffChangeDate = "";
+            result.contractInfo.offpeakHours = "";
+            result.contractInfo.segment = webPrmInfo.segment;
+            result.contractInfo.subscribedPower = "" + webPrmInfo.puissanceSouscrite;
+
+            result.prmId = prmId;
+            result.customerId = "";
+
+            return result;
+
+        }
     }
 
     public String formatUrl(String apiUrl, String prmId) {
@@ -200,9 +256,10 @@ public class EnedisHttpApi {
     }
 
     public Customer getCustomer(LinkyHandler handler, String prmId) throws LinkyException {
-        if (!connected) {
-            initialize();
+        if (!apiBridgeHandler.isConnected()) {
+            apiBridgeHandler.initialize();
         }
+
         String contractUrl = apiBridgeHandler.getContractUrl();
         String data = getData(handler, formatUrl(contractUrl, prmId));
         if (data.isEmpty()) {
@@ -221,8 +278,8 @@ public class EnedisHttpApi {
     }
 
     public AddressInfo getAddress(LinkyHandler handler, String prmId) throws LinkyException {
-        if (!connected) {
-            initialize();
+        if (!apiBridgeHandler.isConnected()) {
+            apiBridgeHandler.initialize();
         }
         String addressUrl = apiBridgeHandler.getAddressUrl();
         String data = getData(handler, formatUrl(addressUrl, prmId));
@@ -242,8 +299,8 @@ public class EnedisHttpApi {
     }
 
     public IdentityInfo getIdentity(LinkyHandler handler, String prmId) throws LinkyException {
-        if (!connected) {
-            initialize();
+        if (!apiBridgeHandler.isConnected()) {
+            apiBridgeHandler.initialize();
         }
         String identityUrl = apiBridgeHandler.getIdentityUrl();
         String data = getData(handler, formatUrl(identityUrl, prmId));
@@ -263,8 +320,8 @@ public class EnedisHttpApi {
     }
 
     public ContactInfo getContact(LinkyHandler handler, String prmId) throws LinkyException {
-        if (!connected) {
-            initialize();
+        if (!apiBridgeHandler.isConnected()) {
+            apiBridgeHandler.initialize();
         }
         String contactUrl = apiBridgeHandler.getContactUrl();
         String data = getData(handler, formatUrl(contactUrl, prmId));
@@ -290,9 +347,10 @@ public class EnedisHttpApi {
         String dtEnd = to.format(API_DATE_FORMAT);
 
         String url = String.format(apiUrl, prmId, dtStart, dtEnd);
-        if (!connected) {
-            initialize();
+        if (!apiBridgeHandler.isConnected()) {
+            apiBridgeHandler.initialize();
         }
+
         String data = getData(handler, url);
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", url);
@@ -322,9 +380,15 @@ public class EnedisHttpApi {
 
     public TempoResponse getTempoData(LinkyHandler handler) throws LinkyException {
         String url = String.format(apiBridgeHandler.getTempoUrl(), "2024-01-01", "2024-08-30");
-        if (!connected) {
-            initialize();
+
+        if (url.isEmpty()) {
+            return new TempoResponse();
         }
+
+        if (!apiBridgeHandler.isConnected()) {
+            apiBridgeHandler.initialize();
+        }
+
         String data = getData(handler, url);
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", url);

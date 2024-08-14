@@ -64,6 +64,11 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
     }
 
     @Override
+    public void connectionInit() {
+
+    }
+
+    @Override
     public void initialize() {
         super.initialize();
     }
