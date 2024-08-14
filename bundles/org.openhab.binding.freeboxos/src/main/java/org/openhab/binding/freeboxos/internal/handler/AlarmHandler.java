@@ -48,9 +48,8 @@ public class AlarmHandler extends HomeNodeHandler {
         }
 
         return switch (channelId) {
-            case ALARM_STATE -> StringType.valueOf(value);
             case NODE_BATTERY -> DecimalType.valueOf(value);
-            case ALARM_PIN -> StringType.valueOf(value);
+            case ALARM_STATE, ALARM_PIN -> StringType.valueOf(value);
             case ALARM_SOUND, ALARM_VOLUME -> QuantityType.valueOf(value + " %");
             case ALARM_TIMEOUT1, ALARM_TIMEOUT2, ALARM_TIMEOUT3 -> QuantityType.valueOf(value + " s");
             default -> UnDefType.NULL;

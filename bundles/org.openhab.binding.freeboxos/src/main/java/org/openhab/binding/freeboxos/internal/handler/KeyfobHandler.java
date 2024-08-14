@@ -56,18 +56,17 @@ public class KeyfobHandler extends HomeNodeHandler {
                                     : new DateTimeType(ZonedDateTime
                                             .ofInstant(Instant.ofEpochSecond(change.timestamp()), ZoneOffset.UTC))))
                     .orElse(UnDefType.UNDEF)).orElse(UnDefType.UNDEF));
-        } else {
-            String value = state.value();
-            if (value != null) {
-                switch (channelId) {
-                    case KEYFOB_ENABLE:
-                        return OnOffType.from(state.asBoolean());
-                    case NODE_BATTERY:
-                        return DecimalType.valueOf(value);
-                }
-            }
-            return UnDefType.NULL;
         }
+        String value = state.value();
+        if (value != null) {
+            switch (channelId) {
+                case KEYFOB_ENABLE:
+                    return OnOffType.from(state.asBoolean());
+                case NODE_BATTERY:
+                    return DecimalType.valueOf(value);
+            }
+        }
+        return UnDefType.NULL;
     }
 
     @Override

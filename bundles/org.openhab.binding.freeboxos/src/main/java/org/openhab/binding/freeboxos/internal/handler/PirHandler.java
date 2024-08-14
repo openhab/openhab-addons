@@ -46,23 +46,24 @@ public class PirHandler extends HomeNodeHandler {
 
     @Override
     protected State getChannelState(String channelId, EndpointState state, Optional<Endpoint> endPoint) {
-        String value = state.value();
-        if (value != null) {
-            switch (channelId) {
-                case NODE_BATTERY:
-                    return DecimalType.valueOf(value);
-                case PIR_COVER:
-                    return state.asBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
-                case PIR_COVER_UPDATE:
-                case PIR_TRIGGER_UPDATE:
-                    return Objects.requireNonNull(endPoint.map(ep -> ep.getLastChange()
-                            .map(change -> (State) new DateTimeType(
-                                    ZonedDateTime.ofInstant(Instant.ofEpochSecond(change.timestamp()), ZoneOffset.UTC)))
-                            .orElse(UnDefType.UNDEF)).orElse(UnDefType.UNDEF));
-                case PIR_TRIGGER:
-                    return OnOffType.from(value);
-            }
+        if (PIR_COVER_UPDATE.equals(channelId) || PIR_TRIGGER_UPDATE.equals(channelId)) {
+            return Objects.requireNonNull(endPoint.map(ep -> ep.getLastChange()
+                    .map(change -> (State) new DateTimeType(
+                            ZonedDateTime.ofInstant(Instant.ofEpochSecond(change.timestamp()), ZoneOffset.UTC)))
+                    .orElse(UnDefType.UNDEF)).orElse(UnDefType.UNDEF));
         }
-        return UnDefType.NULL;
+
+        String value = state.value();
+
+        if (value == null) {
+            return UnDefType.NULL;
+        }
+
+        return switch (channelId) {
+            case NODE_BATTERY -> DecimalType.valueOf(value);
+            case PIR_COVER -> state.asBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+            case PIR_TRIGGER -> OnOffType.from(value);
+            default -> UnDefType.NULL;
+        };
     }
 }
