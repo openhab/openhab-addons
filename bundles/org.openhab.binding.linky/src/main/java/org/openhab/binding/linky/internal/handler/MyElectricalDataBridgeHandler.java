@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -54,6 +55,8 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
             + "daily_consumption_max_power/%s/start/%s/end/%s/cache/";
 
     private static final String TEMPO_URL = BASE_URL + "rte/tempo/%s/%s";
+
+    private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // https://www.myelectricaldata.fr/v1/oauth2/authorize?response_type=code&client_id=&state=linky&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fconnectlinky&scope=am_application_scope+default&user_type=aa&person_id=-1&usage_points_id=aa
 
@@ -175,5 +178,10 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
     @Override
     public String getTempoUrl() {
         return TEMPO_URL;
+    }
+
+    @Override
+    public DateTimeFormatter getApiDateFormat() {
+        return API_DATE_FORMAT;
     }
 }
