@@ -290,16 +290,18 @@ public class LinkyHandler extends BaseThingHandler {
     private synchronized void updatePowerData() {
         dailyConsumptionMaxPower.getValue().ifPresentOrElse(values -> {
             int dSize = values.dayValue.length;
+            double divider = 1000.00;
+            divider = 1.00;
 
-            updateVAChannel(PEAK_POWER_DAY_MINUS_1, values.dayValue[dSize - 1].value / 1000.00);
+            updateVAChannel(PEAK_POWER_DAY_MINUS_1, values.dayValue[dSize - 1].value / divider);
             updateState(PEAK_POWER_TS_DAY_MINUS_1,
                     new DateTimeType(values.dayValue[dSize - 1].date.atZone(ZoneId.systemDefault())));
 
-            updateVAChannel(PEAK_POWER_DAY_MINUS_2, values.dayValue[dSize - 2].value / 1000.00);
+            updateVAChannel(PEAK_POWER_DAY_MINUS_2, values.dayValue[dSize - 2].value / divider);
             updateState(PEAK_POWER_TS_DAY_MINUS_2,
                     new DateTimeType(values.dayValue[dSize - 2].date.atZone(ZoneId.systemDefault())));
 
-            updateVAChannel(PEAK_POWER_DAY_MINUS_3, values.dayValue[dSize - 3].value / 1000.00);
+            updateVAChannel(PEAK_POWER_DAY_MINUS_3, values.dayValue[dSize - 3].value / divider);
             updateState(PEAK_POWER_TS_DAY_MINUS_3,
                     new DateTimeType(values.dayValue[dSize - 3].date.atZone(ZoneId.systemDefault())));
 
