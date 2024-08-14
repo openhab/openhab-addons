@@ -29,8 +29,8 @@
 		</parameter>
 		<parameter name="pollingInterval" type="integer" min="0" max="9999" required="false">
 			<label>Refresh Interval</label>
-			<description>Refresh interval for refreshing hub informations in seconds (0=disabled). Set it below 10 seconds may
-				cause communication issues (not recommed).</description>
+			<description>Refresh interval for refreshing hub informations in seconds (0=disabled). Setting it below 10 seconds
+				may cause communication issues (not recommended).</description>
 			<default>10</default>
 			<advanced>true</advanced>
 		</parameter>

@@ -72,6 +72,9 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsDiscoveryService.class);
 
+    private boolean hasVm = true;
+    private boolean hasHomeAutomation = true;
+
     private Optional<ScheduledFuture<?>> backgroundFuture = Optional.empty();
 
     public FreeboxOsDiscoveryService() {
@@ -111,13 +114,17 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 discoverPlugs(bridgeUID);
                 discoverRepeater(bridgeUID, lanHosts);
                 discoverPlayer(bridgeUID, lanHosts);
-                discoverVM(bridgeUID, lanHosts);
-                discoverHome(bridgeUID);
+                if (hasVm) {
+                    discoverVM(bridgeUID, lanHosts);
+                }
+                if (hasHomeAutomation) {
+                    discoverHome(bridgeUID);
+                }
                 if (thingHandler.getConfiguration().discoverNetDevice) {
                     discoverHosts(bridgeUID, lanHosts);
                 }
             } catch (FreeboxException e) {
-                logger.warn("Error while requesting data for things discovery: {}", e.getMessage());
+                logger.debug("Error while requesting data for things discovery: {}", e.getMessage());
             }
         }
     }
@@ -128,7 +135,7 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
             thingHandler.getManager(HomeManager.class).getHomeNodes().forEach(
                     node -> builder.configure(bridgeUID, node).ifPresent(result -> thingDiscovered(result.build())));
         } catch (FreeboxException e) {
-            logger.warn("Error discovering Home: {}", e.getMessage());
+            logger.debug("Error discovering Home: {}", e.getMessage());
         }
     }
 
@@ -138,7 +145,7 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
             thingHandler.getManager(FreeplugManager.class).getPlugs()
                     .forEach(plug -> thingDiscovered(builder.configure(bridgeUID, plug).build()));
         } catch (FreeboxException e) {
-            logger.warn("Error discovering freeplugs: {}", e.getMessage());
+            logger.debug("Error discovering freeplugs: {}", e.getMessage());
         }
     }
 
@@ -149,7 +156,7 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
             statuses = thingHandler.getManager(PhoneManager.class).getPhoneStatuses();
             statuses.forEach(phone -> thingDiscovered(builder.configure(bridgeUID, phone).build()));
         } catch (FreeboxException e) {
-            logger.warn("Error discovering phones: {}", e.getMessage());
+            logger.debug("Error discovering phones: {}", e.getMessage());
         }
         if (!statuses.isEmpty()) {
             ThingUID thingUID = new ThingUID(THING_TYPE_CALL, bridgeUID, "landline");
@@ -180,7 +187,7 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 thingDiscovered(builder.build());
             });
         } catch (FreeboxException e) {
-            logger.warn("Error discovering Hosts: {}", e.getMessage());
+            logger.debug("Error discovering Hosts: {}", e.getMessage());
         }
     }
 
@@ -199,7 +206,7 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 thingDiscovered(discoveryResult);
             });
         } catch (FreeboxException e) {
-            logger.warn("Error discovering VM: {}", e.getMessage());
+            logger.debug("Error discovering VM: {}", e.getMessage());
         }
     }
 
@@ -219,13 +226,16 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 thingDiscovered(discoveryResult);
             });
         } catch (FreeboxException e) {
-            logger.warn("Error discovering Repeater: {}", e.getMessage());
+            logger.debug("Error discovering Repeater: {}", e.getMessage());
         }
     }
 
     private void discoverServer(ThingUID bridgeUID) {
         try {
             Config config = thingHandler.getManager(SystemManager.class).getConfig();
+
+            hasVm = config.modelInfo().hasVm();
+            hasHomeAutomation = config.modelInfo().hasHomeAutomation();
 
             ThingTypeUID targetType = config.boardName().startsWith("fbxgw7") ? THING_TYPE_DELTA
                     : THING_TYPE_REVOLUTION;
@@ -237,7 +247,7 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                     .withProperty(Thing.PROPERTY_MAC_ADDRESS, config.mac().toColonDelimitedString()).build();
             thingDiscovered(discoveryResult);
         } catch (FreeboxException e) {
-            logger.warn("Error discovering Server: {}", e.getMessage());
+            logger.debug("Error discovering Server: {}", e.getMessage());
         }
     }
 
@@ -254,7 +264,7 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 thingDiscovered(discoveryResult);
             }
         } catch (FreeboxException e) {
-            logger.warn("Error discovering Player: {}", e.getMessage());
+            logger.debug("Error discovering Player: {}", e.getMessage());
         }
     }
 }
