@@ -114,7 +114,7 @@
 		<item-type unitHint="Mbit/s">Number:DataTransferRate</item-type>
 		<label>Transfer Rate</label>
 		<description>Current transfer rate</description>
-		<state readOnly="true" pattern="%.2f Mbit/s"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="transfer-rate-bps" advanced="true">
