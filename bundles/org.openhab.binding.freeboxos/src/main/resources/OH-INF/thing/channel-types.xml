@@ -507,6 +507,7 @@
 		<item-type>Switch</item-type>
 		<label>Ready</label>
 		<description>ON when xDSL line connection is synchronized</description>
+		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>
 
