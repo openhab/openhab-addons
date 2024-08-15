@@ -102,10 +102,11 @@ public class FeneconController {
             } else {
                 return createResponseFromJson(JsonParser.parseString(response.body()).getAsJsonObject());
             }
-        } catch (IOException | InterruptedException err) {
-            throw new FeneconCommunicationException("Communication error with FENECON system", err);
+        } catch (IOException | UnsupportedOperationException | InterruptedException err) {
+            throw new FeneconCommunicationException("Communication error with FENECON system on channel: " + channel,
+                    err);
         } catch (URISyntaxException | JsonSyntaxException err) {
-            throw new FeneconCommunicationException("Syntax error", err);
+            throw new FeneconCommunicationException("Syntax error on channel: " + channel, err);
         }
     }
 

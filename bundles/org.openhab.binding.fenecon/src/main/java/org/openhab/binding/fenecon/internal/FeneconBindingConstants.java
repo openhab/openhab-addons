@@ -42,9 +42,10 @@ public class FeneconBindingConstants {
     public static final String GRID_SELL_ACTIVE_ENERGY_ADDRESS = "_sum/GridSellActiveEnergy";
     public static final String GRID_BUY_ACTIVE_ENERGY_ADDRESS = "_sum/GridBuyActiveEnergy";
     // Group of all FENECON Addresses
-    public static final List<String> ADDRESSES = List.of(GRID_MODE_ADDRESS, STATE_ADDRESS, ESS_SOC_ADDRESS,
+    public static final List<String> ADDRESSES = List.of(STATE_ADDRESS, GRID_MODE_ADDRESS,
             CONSUMPTION_ACTIVE_POWER_ADDRESS, PRODUCTION_ACTIVE_POWER_ADDRESS, GRID_ACTIVE_POWER_ADDRESS,
-            ESS_DISCHARGE_POWER_ADDRESS, GRID_BUY_ACTIVE_ENERGY_ADDRESS, GRID_SELL_ACTIVE_ENERGY_ADDRESS);
+            GRID_BUY_ACTIVE_ENERGY_ADDRESS, GRID_SELL_ACTIVE_ENERGY_ADDRESS, ESS_SOC_ADDRESS,
+            ESS_DISCHARGE_POWER_ADDRESS);
 
     // List of all Channel IDs
     public static final String STATE_CHANNEL = "state";
