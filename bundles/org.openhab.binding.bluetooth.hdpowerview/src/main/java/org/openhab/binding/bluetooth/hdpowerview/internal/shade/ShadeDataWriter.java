@@ -12,70 +12,143 @@
  */
 package org.openhab.binding.bluetooth.hdpowerview.internal.shade;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.HexFormat;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * Interface for parsers for data sent to an HD PowerView Generation 3 Shade.
+ * Encoder/decoder for data sent to an HD PowerView Generation 3 Shade.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public interface ShadeDataWriter {
+public class ShadeDataWriter {
+
+    // real position values 0% to 100% scale to internal values 0 to 10000
+    private static final double SCALE = 100;
+
+    // byte array for a blank 'no-op' write command
+    private static final byte[] BLANK_WRITE_COMMAND_FRAME = HexFormat.ofDelimiter(":")
+            .parseHex("f7:01:00:09:00:80:00:80:00:80:00:80:00");
+
+    // index to data field positions in the outgoing bytes
+    private static final int INDEX_SEQUENCE = 2;
+    private static final int INDEX_PRIMARY = 4;
+    private static final int INDEX_SECONDARY = 6;
+    private static final int INDEX_TILT = 10;
+
+    private final byte[] bytes;
+
+    public ShadeDataWriter() {
+        bytes = BLANK_WRITE_COMMAND_FRAME.clone();
+    }
+
+    public ShadeDataWriter(byte[] bytes) {
+        this.bytes = bytes.clone();
+    }
+
+    public byte[] getBytes() {
+        return bytes;
+    }
 
     /**
-     * Convert the given primary position percentage to a byte array containing the values to write to the shade.
-     * Reverse engineered from observing Bluetooth traffic between the HD App and a shade.
+     * Decrypt the bytes using the given hexadecimal key. No-Op if key is blank or null.
      *
-     * @param percent the position in percent
-     * @return a byte array in little endian format
+     * @param keyHex decryption key
+     * @return decrypted bytes
+     * @throws IllegalArgumentException (the key hex value could not be parsed)
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException
+     * @throws InvalidAlgorithmParameterException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
+     */
+    public byte[] getDecrypted(@Nullable String keyHex)
+            throws IllegalArgumentException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+            InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+        if (keyHex != null && !keyHex.isBlank()) {
+            byte[] keyBytes = HexFormat.of().parseHex(keyHex);
+            SecretKey keySecret = new SecretKeySpec(keyBytes, "AES");
+            Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");
+            cipher.init(Cipher.DECRYPT_MODE, keySecret, new IvParameterSpec(new byte[16]));
+            return cipher.doFinal(bytes);
+        }
+        return bytes;
+    }
+
+    /**
+     * Encrypt the bytes using the given hexadecimal key. No-Op if key is blank or null.
      *
-     * @throws IllegalArgumentException if the position is out of range 0..100
+     * @param keyHex decryption key
+     * @return encrypted bytes
+     * @throws IllegalArgumentException (the key hex value could not be parsed)
+     * @throws NoSuchAlgorithmException
+     * @throws NoSuchPaddingException
+     * @throws InvalidKeyException
+     * @throws InvalidAlgorithmParameterException
+     * @throws IllegalBlockSizeException
+     * @throws BadPaddingException
      */
-    public byte[] primaryPositionToBytes(double percent);
+    public byte[] getEncrypted(@Nullable String keyHex)
+            throws IllegalArgumentException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException,
+            InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+        if (keyHex != null && !keyHex.isBlank()) {
+            byte[] keyBytes = HexFormat.of().parseHex(keyHex);
+            SecretKey keySecret = new SecretKeySpec(keyBytes, "AES");
+            Cipher cipher = Cipher.getInstance("AES/CTR/NoPadding");
+            cipher.init(Cipher.ENCRYPT_MODE, keySecret, new IvParameterSpec(new byte[16]));
+            return cipher.doFinal(bytes);
+        }
+        return bytes;
+    }
 
     /**
-     * Convert the given secondary position percentage to a byte array containing the values to write to the shade.
-     *
-     * @param percent the position in percent
-     * @return a byte array in little endian format
-     *
-     * @throws IllegalArgumentException if the position is out of range 0..100
+     * Encode the bytes in little endian format.
      */
-    public byte[] secondaryPositionToBytes(double percent);
+    public byte[] encodeLE(double percent) throws IllegalArgumentException {
+        if (percent < 0 || percent > 100) {
+            throw new IllegalArgumentException(String.format("Number '%0.1f' out of range (0% to 100%)", percent));
+        }
+        int position = ((int) Math.round(percent * SCALE));
+        return new byte[] { (byte) (position & 0xff), (byte) ((position & 0xff00) >> 8) };
+    }
 
-    /**
-     * Convert the given tilt position percent to a byte array containing the values to write to the shade. . Reverse
-     * engineered from observing Bluetooth traffic between the HD App and a shade.
-     *
-     * @param percent the position in percent
-     * @return a byte array in little endian format
-     *
-     * @throws IllegalArgumentException if the position is out of range 0..100
-     */
-    public byte[] tiltPositionToBytes(double percent);
+    public ShadeDataWriter withPrimary(double percent) {
+        byte[] bytes = encodeLE(percent);
+        System.arraycopy(bytes, 0, this.bytes, INDEX_PRIMARY, bytes.length);
+        return this;
+    }
 
-    /**
-     * Return the byte array.
-     */
-    public byte[] getBytes();
+    public ShadeDataWriter withSecondary(double percent) {
+        byte[] bytes = encodeLE(percent);
+        System.arraycopy(bytes, 0, this.bytes, INDEX_SECONDARY, bytes.length);
+        return this;
+    }
 
-    /**
-     * Overwrite the primary position command bytes.
-     */
-    public ShadeDataWriter withPrimary(double percent);
+    public ShadeDataWriter withSequence(byte sequence) {
+        this.bytes[INDEX_SEQUENCE] = sequence;
+        return this;
+    }
 
-    /**
-     * Overwrite the secondary position command bytes.
-     */
-    public ShadeDataWriter withSecondary(double percent);
-
-    /**
-     * Overwrite the sequence number command byte.
-     */
-    public ShadeDataWriter withSequence(byte sequence);
-
-    /**
-     * Overwrite the tilt position command bytes.
-     */
-    public ShadeDataWriter withTilt(double percent);
+    public ShadeDataWriter withTilt(double percent) {
+        if (percent < 0 || percent > 100) {
+            throw new IllegalArgumentException(String.format("Number '%0.1f' out of range (0% to 100%)", percent));
+        }
+        byte[] bytes = new byte[] { (byte) (percent), 0 };
+        System.arraycopy(bytes, 0, this.bytes, INDEX_TILT, bytes.length);
+        return this;
+    }
 }

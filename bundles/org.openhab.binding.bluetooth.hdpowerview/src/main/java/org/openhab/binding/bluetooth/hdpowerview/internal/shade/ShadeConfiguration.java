@@ -25,10 +25,13 @@ public class ShadeConfiguration {
     public int bleTimeout = 6; // seconds
     public int heartbeatDelay = 15; // seconds
     public int pollingDelay = 300; // seconds
+    public String encryptionKey = "";
 
     @Override
     public String toString() {
-        return String.format("[address:%s, bleTimeout:%d, heartbeatDelay:%d, pollingDelay:%d]", address, bleTimeout,
-                heartbeatDelay, pollingDelay);
+        return String.format("[address:%s, bleTimeout:%d, heartbeatDelay:%d, pollingDelay:%d, encryptionKey:%s]",
+                address, bleTimeout, heartbeatDelay, pollingDelay, encryptionKey);
     }
+
+    public static final String ENCRYPTION_KEY = "encryptionKey";
 }

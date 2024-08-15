@@ -14,6 +14,9 @@ package org.openhab.binding.bluetooth.hdpowerview.internal.shade;
 
 import static org.openhab.binding.bluetooth.hdpowerview.internal.ShadeBindingConstants.*;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +31,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
@@ -40,6 +47,7 @@ import org.openhab.binding.bluetooth.ConnectionException;
 import org.openhab.binding.bluetooth.notification.BluetoothScanNotification;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase;
 import org.openhab.binding.hdpowerview.internal.database.ShadeCapabilitiesDatabase.Capabilities;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
@@ -65,7 +73,11 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class ShadeHandler extends BeaconBluetoothHandler {
 
+    private static final String ENCRYPTION_KEY_HELP_URL = //
+            "https://www.openhab.org/addons/bindings/bluetooth.hdpowerview/readme.html#encryption-key";
+
     private static final ShadeCapabilitiesDatabase CAPABILITIES_DATABASE = new ShadeCapabilitiesDatabase();
+    private static final Map<Integer, String> HOME_ID_ENCRYPTION_KEYS = new ConcurrentHashMap<>();
 
     private final Logger logger = LoggerFactory.getLogger(ShadeHandler.class);
     private final List<Future<?>> readTasks = new ArrayList<>();
@@ -143,6 +155,33 @@ public class ShadeHandler extends BeaconBluetoothHandler {
         super.dispose();
     }
 
+    /**
+     * Get the key for encrypting write commands. Uses either..
+     *
+     * <li>The key for this specific Thing via its own configuration properties, or</li>
+     * <li>The key for any other Thing with the same homeId via the shared ENCRYPTION_KEYS map</li>
+     */
+    private @Nullable String getEncryptionKey() {
+        String key = null;
+        if (homeId != 0) {
+            key = configuration.encryptionKey;
+            key = key.isBlank() ? HOME_ID_ENCRYPTION_KEYS.get(homeId) : key;
+            if (key == null || key.isBlank()) {
+                logger.warn("Device '{}' requires an encryption key => see {}", device.getAddress(),
+                        ENCRYPTION_KEY_HELP_URL);
+            } else {
+                HOME_ID_ENCRYPTION_KEYS.putIfAbsent(homeId, key);
+                if (!configuration.encryptionKey.equals(key)) {
+                    configuration.encryptionKey = key;
+                    Configuration config = getConfig();
+                    config.put(ShadeConfiguration.ENCRYPTION_KEY, key);
+                    updateConfiguration(config);
+                }
+            }
+        }
+        return key;
+    }
+
     @Override
     public void handleCommand(ChannelUID channelUID, Command commandArg) {
         super.handleCommand(channelUID, commandArg);
@@ -189,40 +228,43 @@ public class ShadeHandler extends BeaconBluetoothHandler {
                 return;
             }
 
-            switch (channelUID.getId()) {
-                case CHANNEL_SHADE_PRIMARY:
-                    if (capabilities.supportsPrimary()) {
-                        scheduleWritePosition(getShadeDataWriter().withSequence(writeSequence++)
-                                .withPrimary(percent.doubleValue()).getBytes());
-                    }
-                    break;
+            try {
+                switch (channelUID.getId()) {
+                    case CHANNEL_SHADE_PRIMARY:
+                        if (capabilities.supportsPrimary()) {
+                            scheduleWritePosition(new ShadeDataWriter().withSequence(writeSequence++)
+                                    .withPrimary(percent.doubleValue()).getEncrypted(getEncryptionKey()));
+                        }
+                        break;
 
-                case CHANNEL_SHADE_SECONDARY:
-                    if (capabilities.supportsSecondary()) {
-                        scheduleWritePosition(getShadeDataWriter().withSequence(writeSequence++)
-                                .withSecondary(percent.doubleValue()).getBytes());
-                    }
-                    break;
+                    case CHANNEL_SHADE_SECONDARY:
+                        if (capabilities.supportsSecondary()) {
+                            scheduleWritePosition(new ShadeDataWriter().withSequence(writeSequence++)
+                                    .withSecondary(percent.doubleValue()).getEncrypted(getEncryptionKey()));
+                        }
+                        break;
 
-                case CHANNEL_SHADE_TILT:
-                    if (capabilities.supportsTiltOnClosed() || capabilities.supportsTilt180()
-                            || capabilities.supportsTiltAnywhere()) {
-                        scheduleWritePosition(getShadeDataWriter().withSequence(writeSequence++)
-                                .withTilt(percent.doubleValue()).getBytes());
-                    }
-                    break;
+                    case CHANNEL_SHADE_TILT:
+                        if (capabilities.supportsTiltOnClosed() || capabilities.supportsTilt180()
+                                || capabilities.supportsTiltAnywhere()) {
+                            scheduleWritePosition(new ShadeDataWriter().withSequence(writeSequence++)
+                                    .withTilt(percent.doubleValue()).getEncrypted(getEncryptionKey()));
+                        }
+                        break;
+                }
+            } catch (InvalidKeyException | IllegalArgumentException | NoSuchAlgorithmException | NoSuchPaddingException
+                    | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+                logger.warn("handleCommand() device={} error={}", device.getAddress(), e.getMessage(),
+                        logger.isDebugEnabled() ? e : null);
             }
         }
-    }
-
-    private ShadeDataWriter getShadeDataWriter() {
-        return homeId == 0 ? new ShadeDataWriter2() : new ShadeDataWriter1();
     }
 
     @Override
     public void initialize() {
         super.initialize();
         configuration = getConfigAs(ShadeConfiguration.class);
+        updateProperty(PROPERTY_HOME_ID, Integer.toHexString(homeId).toUpperCase());
         activityTimeout = Instant.now().plusSeconds(configuration.pollingDelay * 2);
 
         cancelTasks(false);
@@ -391,12 +433,23 @@ public class ShadeHandler extends BeaconBluetoothHandler {
     }
 
     /**
+     * Update homeId and if necessary update the encryption key.
+     */
+    private void updateHomeId(int newHomeId) {
+        if (homeId != newHomeId) {
+            homeId = newHomeId;
+            updateProperty(PROPERTY_HOME_ID, Integer.toHexString(homeId).toUpperCase());
+            getEncryptionKey();
+        }
+    }
+
+    /**
      * Update the position channels
      */
     private void updatePosition(byte[] value) {
         logger.debug("updatePosition() device={}", device.getAddress());
         dataReader.setBytes(value);
-        homeId = dataReader.getHomeId();
+        updateHomeId(dataReader.getHomeId());
 
         Capabilities capabilities = this.capabilities;
         if (capabilities == null) {

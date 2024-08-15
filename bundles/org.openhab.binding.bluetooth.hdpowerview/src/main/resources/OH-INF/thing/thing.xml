@@ -43,6 +43,10 @@
 				<description>Timeout in seconds for Bluetooth Low Energy operations</description>
 				<default>6</default>
 			</parameter>
+			<parameter name="encryptionKey" type="text">
+				<label>Encryption Key</label>
+				<description>Encryption key to be used on position commands</description>
+			</parameter>
 		</config-description>
 	</thing-type>
 

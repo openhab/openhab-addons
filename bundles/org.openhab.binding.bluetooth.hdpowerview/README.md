@@ -36,6 +36,15 @@ Any discovered shades will be displayed with the name prefix 'Powerview Shade'.
 | bleTimeout              | Optional | The maximum number of seconds to wait before transactions over Bluetooth will time out (default = 6 seconds).       |
 | heartbeatDelay          | Optional | The scanning interval in seconds at which the binding checks if the Shade is on- or off- line (default 15 seconds). |
 | pollingDelay            | Optional | The scanning interval in seconds at which the binding checks the battery status (default 300 seconds).              |
+| encryptionKey           | Optional | The key to be used when encrypting commands to the shade. See [next chapter](#encryption-key).                      |
+
+## Encryption Key
+
+If you want to send position commands to a shade, then an encryption key may be required.
+If the shade is NOT included in the Powerview App, then an encryption key is not required.
+But if it IS in the Powerview App, then openHAB has to use the same encryption key as used by the App.
+Currently you can only discover the encryption key by snooping the network traffic between the App and the shade.
+Please post on the openHAB community forum for advice about how to do this.
 
 ## Channels
 

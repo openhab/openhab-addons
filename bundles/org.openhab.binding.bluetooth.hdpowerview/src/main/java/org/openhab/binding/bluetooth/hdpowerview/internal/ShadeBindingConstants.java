@@ -53,6 +53,8 @@ public class ShadeBindingConstants {
     public static final String HUNTER_DOUGLAS = "Hunter Douglas";
     public static final String SHADE_LABEL = "PowerView Shade";
 
+    public static final String PROPERTY_HOME_ID = "homeId";
+
     public static final UUID UUID_SERVICE_SHADE = UUID.fromString("0000FDC1-0000-1000-8000-00805F9B34FB");
     public static final UUID UUID_CHARACTERISTIC_POSITION = UUID.fromString("CAFE1001-C0FF-EE01-8000-A110CA7AB1E0");
     public static final UUID UUID_CHARACTERISTIC_TBD = UUID.fromString("CAFE1002-C0FF-EE01-8000-A110CA7AB1E0");

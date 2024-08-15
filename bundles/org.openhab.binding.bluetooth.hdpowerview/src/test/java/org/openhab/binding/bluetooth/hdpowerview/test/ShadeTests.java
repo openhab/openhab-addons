@@ -13,17 +13,23 @@
 
 package org.openhab.binding.bluetooth.hdpowerview.test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.bluetooth.hdpowerview.internal.shade.ShadeDataWriter;
-import org.openhab.binding.bluetooth.hdpowerview.internal.shade.ShadeDataWriter1;
 import org.openhab.core.util.HexUtils;
 
 /**
@@ -200,18 +206,25 @@ class ShadeTests {
         HD_POWERVIEW_APP_OBSERVED_RESULTS.put(100.00, HexFormat.ofDelimiter(":").parseHex("4c:a0"));
     }
 
+    private static final String TEST_KEY = "02c2efcbd4064d59409c980e627e2fc7"; // (or 9440bf8b334c2b6c8564d80548b67c00)
+
     /**
-     * Compare the results of the binding conversions against the results of the HD Powerview App conversions, as
-     * sniffed over the air using a Bluetooth sniffer.
+     * Compare the results of the binding {@code ShadeDataWriter} conversions against the results of the HD Powerview
+     * App conversions, as sniffed over the air using a Bluetooth sniffer.
      */
     @Test
     void testCalculatedEqualsObserved() {
-        ShadeDataWriter shadeDataWriter = new ShadeDataWriter1();
         for (Entry<Double, byte[]> observedResult : HD_POWERVIEW_APP_OBSERVED_RESULTS.entrySet()) {
-            byte[] observed = observedResult.getValue();
-            byte[] calculated = shadeDataWriter.primaryPositionToBytes(observedResult.getKey());
-            assertEquals(observed[1], calculated[1]);
-            assertEquals(observed[0], calculated[0], 1); // LSB can have one bit errors; it's not clear why..
+            try {
+                byte[] calculated = new ShadeDataWriter().withPrimary(observedResult.getKey()).getEncrypted(TEST_KEY);
+                byte[] observed = observedResult.getValue();
+                assertEquals(observed[0], calculated[4], 1); // allow error of 1 in LSB for rounding
+                assertEquals(observed[1], calculated[5]);
+
+            } catch (InvalidKeyException | IllegalArgumentException | NoSuchAlgorithmException | NoSuchPaddingException
+                    | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+                fail(e);
+            }
         }
     }
 
@@ -220,29 +233,39 @@ class ShadeTests {
      */
     @Test
     void testShadeDataWriter() {
-        // test basic output
-        assertEquals("1F70807E5C07AD03100E0FB3DA", HexUtils.bytesToHex( //
-                new ShadeDataWriter1().getBytes()));
+        try {
+            String actual;
+            String expected;
 
-        // test sequence number
-        assertEquals("1F70007E5C07AD03100E0FB3DA", HexUtils.bytesToHex( //
-                new ShadeDataWriter1().withSequence((byte) 0).getBytes()));
+            // test basic output
+            actual = HexUtils.bytesToHex(new ShadeDataWriter().getEncrypted(TEST_KEY));
+            expected = "1F70847E5C07AD03100E0FB3DA";
+            assertTrue(expected.equals(actual));
 
-        // test primary position
-        assertEquals("1F70807E4CA0AD03100E0FB3DA", HexUtils.bytesToHex( //
-                new ShadeDataWriter1().withPrimary(100).getBytes()));
+            // test sequence number only
+            actual = HexUtils.bytesToHex(new ShadeDataWriter().withSequence((byte) 1).getEncrypted(TEST_KEY));
+            expected = "1F70857E5C07AD03100E0FB3DA";
+            assertTrue(expected.equals(actual));
 
-        // test tilt position
-        assertEquals("1F70807E5C07AD03100E6B33DA", HexUtils.bytesToHex( //
-                new ShadeDataWriter1().withTilt(100).getBytes()));
+            // test primary position only
+            actual = HexUtils.bytesToHex(new ShadeDataWriter().withPrimary(100).getEncrypted(TEST_KEY));
+            expected = "1F70847E4CA0AD03100E0FB3DA";
+            assertTrue(expected.equals(actual));
 
-        // test secondary position
-        /*
-         * Secondary is not yet implemented due to lack of a device to test on. I intend to implement this as soon as I
-         * get appropriate inputs from a user via the community forum or a GitHub issue. And when support is eventually
-         * added, this test will need to be changed to match.
-         */
-        assertEquals("1F70807E5C07AD03100E0FB3DA", HexUtils.bytesToHex( //
-                new ShadeDataWriter1().withSecondary(100).getBytes()));
+            // test tilt position only
+            actual = HexUtils.bytesToHex(new ShadeDataWriter().withTilt(40).getEncrypted(TEST_KEY));
+            expected = "1F70847E5C07AD03100E2733DA";
+            assertTrue(expected.equals(actual));
+
+            // test sequence number, plus primary position, plus secondary position
+            expected = "1F70227EE48C4580100E0FB3DA";
+            actual = HexUtils.bytesToHex(new ShadeDataWriter().withSequence((byte) 0xa6).withPrimary(30)
+                    .withSecondary(10).getEncrypted(TEST_KEY));
+            assertTrue(expected.equals(actual));
+
+        } catch (InvalidKeyException | IllegalArgumentException | NoSuchAlgorithmException | NoSuchPaddingException
+                | InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+            fail(e);
+        }
     }
 }
