@@ -53,7 +53,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="ftth">
-		<label>FTTH Connection Status</label>
+		<label>FTTH Connection Details</label>
 		<channels>
 			<channel id="sfp-present" typeId="sfp-present"/>
 			<channel id="sfp-alim-ok" typeId="sfp-alim-ok"/>
@@ -72,10 +72,14 @@
 	</channel-group-type>
 
 	<channel-group-type id="xdsl">
-		<label>xDSL Connection Status</label>
+		<label>xDSL Connection Details</label>
 		<channels>
-			<channel id="status" typeId="status"/>
-			<!-- to be completed -->
+			<channel id="ready" typeId="xdsl-ready"/>
+			<channel id="status" typeId="xdsl-status"/>
+			<channel id="modulation" typeId="xdsl-modulation"/>
+			<channel id="uptime" typeId="uptime">
+				<description>Time since last synchronization</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 
