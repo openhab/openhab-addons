@@ -125,10 +125,10 @@
 	</channel-type>
 
 	<channel-type id="transfer-bytes" advanced="true">
-		<item-type>Number:DataAmount</item-type>
+		<item-type unitHint="GB">Number:DataAmount</item-type>
 		<label>Transfered Bytes</label>
 		<description>Total data transfered since last connection</description>
-		<state readOnly="true" pattern="%.2f GB"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="uptime" advanced="true">
