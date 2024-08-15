@@ -8,11 +8,11 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Screen Brightness</label>
 		<description>Brightness level of the screen in percent</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<state pattern="%d %unit%" min="0" max="100"/>
 	</channel-type>
 
-	<channel-type id="lcd-orientation">
+	<channel-type id="lcd-orientation" advanced="true">
 		<item-type>Number</item-type>
 		<label>Screen Orientation</label>
 		<description>Screen Orientation in degrees</description>
@@ -160,7 +160,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="line-type">
+	<channel-type id="line-type" advanced="true">
 		<item-type>String</item-type>
 		<label>Line Type</label>
 		<description>Type of network line connection</description>
@@ -215,7 +215,7 @@
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="airmedia-status">
+	<channel-type id="airmedia-status" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Air Media Enabled</label>
 		<description>Indicates whether Air Media is enabled</description>
