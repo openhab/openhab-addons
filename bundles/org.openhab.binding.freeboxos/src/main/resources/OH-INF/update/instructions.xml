@@ -54,9 +54,6 @@
 				<label>RX Power</label>
 				<description>SFP Power in reception</description>
 			</add-channel>
-		</instruction-set>
-
-		<instruction-set targetVersion="1">
 			<add-channel id="ready" groupIds="xdsl">
 				<type>freeboxos:xdsl-ready</type>
 			</add-channel>
@@ -102,9 +99,6 @@
 				<label>RX Power</label>
 				<description>SFP Power in reception</description>
 			</add-channel>
-		</instruction-set>
-
-		<instruction-set targetVersion="1">
 			<add-channel id="ready" groupIds="xdsl">
 				<type>freeboxos:xdsl-ready</type>
 			</add-channel>
