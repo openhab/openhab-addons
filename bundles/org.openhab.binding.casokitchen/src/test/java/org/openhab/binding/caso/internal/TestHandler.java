@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.library.types.DateTimeType;
 
 /**
  * The {@link TestHandler} is testing handler functions
@@ -29,11 +30,12 @@ class TestHandler {
 
     @Test
     void test() {
-        String dtUTC = "2024-08-13T23:25:32.2382092Z";
+        String dtUTC = "2024-08-14T11:52:43.7170897Z";
         Instant timestamp = Instant.parse(dtUTC);
-        ZonedDateTime losAngelesTime = timestamp.atZone(ZoneId.of("Europe/Berlin"));
-        System.out.println(losAngelesTime);
-
+        ZoneId zone = ZoneId.of("Europe/Berlin");
+        ZonedDateTime zdt = timestamp.atZone(zone);
+        System.out.println(zdt);
+        System.out.println(new DateTimeType(zdt));
         // String dtUTC = "2024-08-13T23:25:32.2382092Z";
         // DateTimeType dtt = DateTimeType.valueOf(dtUTC);
         // System.out.println(dtt);

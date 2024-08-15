@@ -15,6 +15,7 @@ package org.openhab.binding.casokitchen.internal.handler;
 import static org.openhab.binding.casokitchen.internal.CasoKitchenBindingConstants.*;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -280,8 +281,8 @@ public class CasoKitchenHandler extends BaseThingHandler {
                 QuantityType.valueOf(result.targetTemperature2, SIUnits.CELSIUS));
         updateState(new ChannelUID(thing.getUID(), BOTTOM, POWER), OnOffType.from(result.power2));
         updateState(new ChannelUID(thing.getUID(), BOTTOM, LIGHT), OnOffType.from(result.light2));
-        Instant timestamp = Instant.parse(result.logTimestampUtc);
-        updateState(new ChannelUID(thing.getUID(), GENERIC, LAST_UPDATE),
-                new DateTimeType(timestamp.atZone(timeZoneProvider.getTimeZone())));
+
+        ZonedDateTime zdt = Instant.parse(result.logTimestampUtc).atZone(timeZoneProvider.getTimeZone());
+        updateState(new ChannelUID(thing.getUID(), GENERIC, LAST_UPDATE), new DateTimeType(zdt));
     }
 }
