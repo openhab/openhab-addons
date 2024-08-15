@@ -17,7 +17,6 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -121,7 +120,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private final Bundle bundle;
     private final LocaleProvider localeProvider;
     private final TranslationProvider translationProvider;
-    private final Set<String> automationIds = new HashSet<>();;
+    private final Map<String, String> automationIds = new ConcurrentHashMap<>();;
     private final ChannelGroupUID automationChannelGroupUID;
 
     private @Nullable Clip2Bridge clip2Bridge;
@@ -837,9 +836,11 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         List<Resource> automations = getAutomationsList(resources);
 
         if (automations.size() != automationIds.size()
-                || automations.stream().anyMatch(a -> !automationIds.contains(a.getId()))) {
+                || automations.stream().anyMatch(a -> !automationIds.containsKey(a.getId()))
+                || automations.stream().anyMatch(a -> !a.getName().equals(automationIds.get(a.getId())))) {
+
             automationIds.clear();
-            automationIds.addAll(automations.stream().map(a -> a.getId()).collect(Collectors.toSet()));
+            automationIds.putAll(automations.stream().collect(Collectors.toMap(a -> a.getId(), a -> a.getName())));
 
             Stream<Channel> newChannels = automations.stream().map(a -> createAutomationChannel(a));
             Stream<Channel> oldchannels = thing.getChannels().stream()
@@ -877,7 +878,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         boolean refreshAutomationChannels = false;
         for (Resource automation : getAutomationsList(resources)) {
             String automationId = automation.getId();
-            refreshAutomationChannels |= !automationIds.contains(automationId);
+            refreshAutomationChannels |= !automationIds.containsKey(automationId);
             ChannelUID channelUID = new ChannelUID(automationChannelGroupUID, automationId);
             Boolean enabled = automation.getEnabled();
             State state = Objects.nonNull(enabled) ? OnOffType.from(enabled) : UnDefType.UNDEF;
