@@ -74,8 +74,12 @@
 	<channel-group-type id="xdsl">
 		<label>xDSL Connection Status</label>
 		<channels>
-			<channel id="status" typeId="status"/>
-			<!-- to be completed -->
+			<channel id="ready" typeId="xdsl-ready"/>
+			<channel id="status" typeId="xdsl-status"/>
+			<channel id="modulation" typeId="xdsl-modulation"/>
+			<channel id="uptime" typeId="uptime">
+				<description>Time since last synchronization</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 

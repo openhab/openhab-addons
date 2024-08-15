@@ -107,7 +107,7 @@ public class ConnectionManager extends ConfigurableRest<ConnectionManager.Status
     ) {
     }
 
-    private enum SynchroState {
+    public enum SynchroState {
         DOWN, // unsynchronized
         TRAINING, // synchronizing step 1/4
         STARTED, // synchronizing step 2/4
@@ -118,18 +118,16 @@ public class ConnectionManager extends ConfigurableRest<ConnectionManager.Status
         UNKNOWN
     }
 
-    private enum Modulation {
+    public enum Modulation {
         ADSL,
         VDSL,
         UNKNOWN
     }
 
     public static record XdslStatus(SynchroState status, String protocol, Modulation modulation, long uptime) {
-
     }
 
     public static record XdslInfos(XdslStatus status, XdslStats down, XdslStats up) {
-
     }
 
     public ConnectionManager(FreeboxOsSession session) throws FreeboxException {

@@ -31,6 +31,8 @@ import org.openhab.binding.freeboxos.internal.api.rest.ConnectionManager;
 import org.openhab.binding.freeboxos.internal.api.rest.ConnectionManager.FtthStatus;
 import org.openhab.binding.freeboxos.internal.api.rest.ConnectionManager.Media;
 import org.openhab.binding.freeboxos.internal.api.rest.ConnectionManager.Status;
+import org.openhab.binding.freeboxos.internal.api.rest.ConnectionManager.SynchroState;
+import org.openhab.binding.freeboxos.internal.api.rest.ConnectionManager.XdslInfos;
 import org.openhab.binding.freeboxos.internal.api.rest.FtpManager;
 import org.openhab.binding.freeboxos.internal.api.rest.LanBrowserManager.Source;
 import org.openhab.binding.freeboxos.internal.api.rest.LanManager;
@@ -205,6 +207,13 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
             updateChannelOnOff(GROUP_FTTH, SFP_LINK, ftthStatus.link());
             updateChannelQuantity(GROUP_FTTH, SFP_PWR_TX, ftthStatus.getTransmitDBM(), Units.DECIBEL_MILLIWATTS);
             updateChannelQuantity(GROUP_FTTH, SFP_PWR_RX, ftthStatus.getReceivedDBM(), Units.DECIBEL_MILLIWATTS);
+        }
+        if (anyChannelLinked(GROUP_XDSL, Set.of(XDSL_READY, XDSL_STATUS, XDSL_MODULATION, XDSL_UPTIME))) {
+            XdslInfos xdslInfos = getManager(ConnectionManager.class).getXdslStatus();
+            updateChannelOnOff(GROUP_XDSL, XDSL_READY, xdslInfos.status().status() == SynchroState.SHOWTIME);
+            updateChannelString(GROUP_XDSL, XDSL_STATUS, xdslInfos.status().status());
+            updateChannelString(GROUP_XDSL, XDSL_MODULATION, xdslInfos.status().modulation());
+            updateChannelQuantity(GROUP_XDSL, XDSL_UPTIME, xdslInfos.status().uptime(), Units.SECOND);
         }
     }
 
