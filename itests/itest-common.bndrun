@@ -25,7 +25,8 @@ Test-Cases: ${classes;CONCRETE;PUBLIC;NAMED;*Test}
 # This property is set by the build-helper-maven-plugin in the itests pom.xml
 -runvm: \
 	-Djdk.util.zip.disableZip64ExtraFieldValidation=true,\
-	-Dorg.osgi.service.http.port=${org.osgi.service.http.port}
+	-Dorg.osgi.service.http.port=${org.osgi.service.http.port},\
+	-DJETTY_AVAILABLE_PROCESSORS=4
 
 # The integration test itself does not export anything.
 Export-Package: 
