@@ -168,6 +168,12 @@ public class FreeboxOsBindingConstants {
     public static final String SFP_PWR_TX = "sfp-pwr-tx";
     public static final String SFP_PWR_RX = "sfp-pwr-rx";
 
+    // xDSL channels ids
+    public static final String XDSL_READY = "ready";
+    public static final String XDSL_STATUS = "status";
+    public static final String XDSL_MODULATION = "modulation";
+    public static final String XDSL_UPTIME = "uptime";
+
     // Home channels
     public static final String KEYFOB_ENABLE = "enable";
     public static final String NODE_BATTERY = "battery";

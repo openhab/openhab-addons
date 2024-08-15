@@ -54,6 +54,19 @@
 				<label>RX Power</label>
 				<description>SFP Power in reception</description>
 			</add-channel>
+			<add-channel id="ready" groupIds="xdsl">
+				<type>freeboxos:xdsl-ready</type>
+			</add-channel>
+			<add-channel id="status" groupIds="xdsl">
+				<type>freeboxos:xdsl-status</type>
+			</add-channel>
+			<add-channel id="modulation" groupIds="xdsl">
+				<type>freeboxos:xdsl-modulation</type>
+			</add-channel>
+			<add-channel id="uptime" groupIds="xdsl">
+				<type>freeboxos:uptime</type>
+				<description>Time since last synchronization</description>
+			</add-channel>
 		</instruction-set>
 
 	</thing-type>
@@ -85,6 +98,19 @@
 				<type>freeboxos:sfp-signal-level</type>
 				<label>RX Power</label>
 				<description>SFP Power in reception</description>
+			</add-channel>
+			<add-channel id="ready" groupIds="xdsl">
+				<type>freeboxos:xdsl-ready</type>
+			</add-channel>
+			<add-channel id="status" groupIds="xdsl">
+				<type>freeboxos:xdsl-status</type>
+			</add-channel>
+			<add-channel id="modulation" groupIds="xdsl">
+				<type>freeboxos:xdsl-modulation</type>
+			</add-channel>
+			<add-channel id="uptime" groupIds="xdsl">
+				<type>freeboxos:uptime</type>
+				<description>Time since last synchronization</description>
 			</add-channel>
 		</instruction-set>
 
