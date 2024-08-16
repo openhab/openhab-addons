@@ -16,6 +16,8 @@ import java.util.Arrays;
 
 import org.eclipse.jetty.jaas.spi.UserInfo;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link UserInfo} holds informations about energy delivery point
  *
@@ -24,8 +26,10 @@ import org.eclipse.jetty.jaas.spi.UserInfo;
  */
 
 public class Customer {
+    @SerializedName("customer_id")
     public String customerId;
 
+    @SerializedName("usage_points")
     public UsagePoint[] usagePoints;
 
     public static Customer fromWebPrmInfos(WebPrmInfo[] webPrmsInfo, String prmId) {

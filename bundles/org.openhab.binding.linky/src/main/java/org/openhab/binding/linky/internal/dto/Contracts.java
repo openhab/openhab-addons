@@ -14,6 +14,8 @@ package org.openhab.binding.linky.internal.dto;
 
 import org.eclipse.jetty.jaas.spi.UserInfo;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link UserInfo} holds informations about energy delivery point
  *
@@ -22,11 +24,25 @@ import org.eclipse.jetty.jaas.spi.UserInfo;
 
 public class Contracts {
     public String segment;
+
+    @SerializedName("subscribed_power")
     public String subscribedPower;
+
+    @SerializedName("last_activation_date")
     public String lastActivationDate;
+
+    @SerializedName("distribution_tariff")
     public String distributionTariff;
+
+    @SerializedName("offpeak_hours")
     public String offpeakHours;
+
+    @SerializedName("contract_status")
     public String contractStatus;
+
+    @SerializedName("contract_type")
     public String contractType;
+
+    @SerializedName("last_distribution_tariff_change_date")
     public String lastDistributionTariffChangeDate;
 }
