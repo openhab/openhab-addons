@@ -38,6 +38,8 @@ public class FeneconBindingConstants {
     public static final String CONSUMPTION_ACTIVE_POWER_PHASE1_ADDRESS = "_sum/ConsumptionActivePowerL1";
     public static final String CONSUMPTION_ACTIVE_POWER_PHASE2_ADDRESS = "_sum/ConsumptionActivePowerL2";
     public static final String CONSUMPTION_ACTIVE_POWER_PHASE3_ADDRESS = "_sum/ConsumptionActivePowerL3";
+    public static final String CONSUMPTION_MAX_ACTIVE_POWER_ADDRESS = "_sum/ConsumptionMaxActivePower";
+    public static final String PRODUCTION_MAX_ACTIVE_POWER_ADDRESS = "_sum/ProductionMaxActivePower";
     public static final String PRODUCTION_ACTIVE_POWER_ADDRESS = "_sum/ProductionActivePower";
     public static final String GRID_ACTIVE_POWER_ADDRESS = "_sum/GridActivePower";
     public static final String ESS_DISCHARGE_POWER_ADDRESS = "_sum/EssDischargePower";
@@ -48,8 +50,9 @@ public class FeneconBindingConstants {
     public static final List<String> ADDRESSES = List.of(STATE_ADDRESS, GRID_MODE_ADDRESS,
             CONSUMPTION_ACTIVE_POWER_ADDRESS, CONSUMPTION_ACTIVE_POWER_PHASE1_ADDRESS,
             CONSUMPTION_ACTIVE_POWER_PHASE2_ADDRESS, CONSUMPTION_ACTIVE_POWER_PHASE3_ADDRESS,
-            PRODUCTION_ACTIVE_POWER_ADDRESS, GRID_ACTIVE_POWER_ADDRESS, GRID_BUY_ACTIVE_ENERGY_ADDRESS,
-            GRID_SELL_ACTIVE_ENERGY_ADDRESS, ESS_SOC_ADDRESS, ESS_DISCHARGE_POWER_ADDRESS);
+            CONSUMPTION_MAX_ACTIVE_POWER_ADDRESS, PRODUCTION_MAX_ACTIVE_POWER_ADDRESS, PRODUCTION_ACTIVE_POWER_ADDRESS,
+            GRID_ACTIVE_POWER_ADDRESS, GRID_BUY_ACTIVE_ENERGY_ADDRESS, GRID_SELL_ACTIVE_ENERGY_ADDRESS, ESS_SOC_ADDRESS,
+            ESS_DISCHARGE_POWER_ADDRESS);
 
     // List of all Channel IDs
     public static final String STATE_CHANNEL = "state";
@@ -58,6 +61,8 @@ public class FeneconBindingConstants {
     public static final String CONSUMPTION_ACTIVE_POWER_PHASE1_CHANNEL = "consumption-active-power-l1";
     public static final String CONSUMPTION_ACTIVE_POWER_PHASE2_CHANNEL = "consumption-active-power-l2";
     public static final String CONSUMPTION_ACTIVE_POWER_PHASE3_CHANNEL = "consumption-active-power-l3";
+    public static final String CONSUMPTION_MAX_ACTIVE_POWER_CHANNEL = "consumption-max-active-power";
+    public static final String PRODUCTION_MAX_ACTIVE_POWER_CHANNEL = "production-max-active-power";
     public static final String PRODUCTION_ACTIVE_POWER_CHANNEL = "production-active-power";
     public static final String EXPORT_TO_GRID_POWER_CHANNEL = "export-to-grid-power";
     public static final String IMPORT_FROM_GRID_POWER_CHANNEL = "import-from-grid-power";

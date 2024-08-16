@@ -41,9 +41,11 @@ The FENECON binding currently only provides access to read out the values from t
 | discharger-power              | Number:Power         | R          | Current discharger power of energy storage system in watt.                  |
 | emergency-power-mode          | Switch               | R          | Indicates if there is grid power is off and the emergency power mode is on. |
 | production-active-power       | Number:Power         | R          | Current active power producer load in watt.                                 |
+| production-max-active-power   | Number:Power         | R          | Maximum active production power in watt that was measured.                  |
 | export-to-grid-power          | Number:Power         | R          | Current export power to grid in watt.                                       |
 | exported-to-grid-energy       | Number:Energy        | R          | Total energy exported to the grid in watt per hour.                         |
 | consumption-active-power      | Number:Power         | R          | Current active power consumer load in watt.                                 |
+| consumption-max-active-power  | Number:Power         | R          | Maximum active consumption power in watt that was measured.                 |
 | consumption-active-power-l1   | Number:Power         | R          | Current active power consumer load in watt on phase 1.                      |
 | consumption-active-power-l2   | Number:Power         | R          | Current active power consumer load in watt on phase 2.                      |
 | consumption-active-power-l3   | Number:Power         | R          | Current active power consumer load in watt on phase 3.                      |
@@ -78,10 +80,12 @@ Number:Power         DischargerPower                <energy>       (GF_UtilityRo
 Switch               EmergencyPowerMode             <switch>       (GF_UtilityRoomSolar) ["Switch"]                {channel="fenecon:home-device:local:emergency-power-mode"}
 
 Number:Power         ProductionActivePower          <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:production-active-power"}
+Number:Power         ProductionMaxActivePower       <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:production-max-active-power"}
 Number:Power         SellToGridPower                <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:export-to-grid-power"}
 Number:Energy        TotalSellEnergy                <energy>       (GF_UtilityRoomSolar) ["Measurement", "Energy"] {channel="fenecon:home-device:local:exported-to-grid-energy"}
 
 Number:Power         ConsumptionActivePower         <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power"}
+Number:Power         ConsumptionMaxActivePower      <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-max-active-power"}
 Number:Power         ConsumptionActivePowerPhase1   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power-l1"}
 Number:Power         ConsumptionActivePowerPhase2   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power-l2"}
 Number:Power         ConsumptionActivePowerPhase3   <energy>       (GF_UtilityRoomSolar) ["Measurement", "Power"]  {channel="fenecon:home-device:local:consumption-active-power-l3"}

@@ -22,6 +22,8 @@
 			<channel id="consumption-active-power-l1" typeId="consumption-active-power-phase"/>
 			<channel id="consumption-active-power-l2" typeId="consumption-active-power-phase"/>
 			<channel id="consumption-active-power-l3" typeId="consumption-active-power-phase"/>
+			<channel id="consumption-max-active-power" typeId="consumption-max-active-power"/>
+			<channel id="production-max-active-power" typeId="production-max-active-power"/>
 			<channel id="production-active-power" typeId="production-active-power"/>
 			<channel id="export-to-grid-power" typeId="export-to-grid-power"/>
 			<channel id="exported-to-grid-energy" typeId="exported-to-grid-energy"/>
@@ -140,6 +142,20 @@
 		<item-type>Number:Power</item-type>
 		<label>Consumer Power Phase</label>
 		<description>Current active power consumer load in watt on the corresponding phase.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="consumption-max-active-power">
+		<item-type>Number:Power</item-type>
+		<label>Consumer Max Power</label>
+		<description>Maximum active consumption power in watt that was measured.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="production-max-active-power">
+		<item-type>Number:Power</item-type>
+		<label>Producer Max Power</label>
+		<description>Maximum active production power in watt that was measured.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>

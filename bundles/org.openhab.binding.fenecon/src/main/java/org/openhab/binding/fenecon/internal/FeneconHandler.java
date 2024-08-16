@@ -117,6 +117,14 @@ public class FeneconHandler extends BaseThingHandler {
                 updateState(FeneconBindingConstants.CONSUMPTION_ACTIVE_POWER_PHASE3_CHANNEL,
                         new QuantityType<>(Integer.valueOf(response.value()), Units.WATT));
                 break;
+            case FeneconBindingConstants.CONSUMPTION_MAX_ACTIVE_POWER_ADDRESS:
+                updateState(FeneconBindingConstants.CONSUMPTION_MAX_ACTIVE_POWER_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), Units.WATT));
+                break;
+            case FeneconBindingConstants.PRODUCTION_MAX_ACTIVE_POWER_ADDRESS:
+                updateState(FeneconBindingConstants.PRODUCTION_MAX_ACTIVE_POWER_CHANNEL,
+                        new QuantityType<>(Integer.valueOf(response.value()), Units.WATT));
+                break;
             case FeneconBindingConstants.PRODUCTION_ACTIVE_POWER_ADDRESS:
                 updateState(FeneconBindingConstants.PRODUCTION_ACTIVE_POWER_CHANNEL,
                         new QuantityType<>(Integer.valueOf(response.value()), Units.WATT));
