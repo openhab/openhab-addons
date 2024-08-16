@@ -19,6 +19,9 @@
 			<channel id="discharger-power" typeId="discharger-power"/>
 			<channel id="emergency-power-mode" typeId="emergency-power-mode"/>
 			<channel id="consumption-active-power" typeId="consumption-active-power"/>
+			<channel id="consumption-active-power-l1" typeId="consumption-active-power-phase"/>
+			<channel id="consumption-active-power-l2" typeId="consumption-active-power-phase"/>
+			<channel id="consumption-active-power-l3" typeId="consumption-active-power-phase"/>
 			<channel id="production-active-power" typeId="production-active-power"/>
 			<channel id="export-to-grid-power" typeId="export-to-grid-power"/>
 			<channel id="exported-to-grid-energy" typeId="exported-to-grid-energy"/>
@@ -130,6 +133,13 @@
 		<item-type>Number:Power</item-type>
 		<label>Consumer Power</label>
 		<description>Current active power consumer load in watt.</description>
+		<category>Energy</category>
+		<state readOnly="true" pattern="%.0f %unit%"/>
+	</channel-type>
+	<channel-type id="consumption-active-power-phase">
+		<item-type>Number:Power</item-type>
+		<label>Consumer Power Phase</label>
+		<description>Current active power consumer load in watt on the corresponding phase.</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
