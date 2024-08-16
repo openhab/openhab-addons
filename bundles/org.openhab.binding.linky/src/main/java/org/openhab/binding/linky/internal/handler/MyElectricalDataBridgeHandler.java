@@ -57,6 +57,7 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
     private static final String TEMPO_URL = BASE_URL + "rte/tempo/%s/%s";
 
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter API_DATE_FORMAT_YEAR_FIRST = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     // https://www.myelectricaldata.fr/v1/oauth2/authorize?response_type=code&client_id=&state=linky&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fconnectlinky&scope=am_application_scope+default&user_type=aa&person_id=-1&usage_points_id=aa
 
@@ -183,4 +184,10 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
     public DateTimeFormatter getApiDateFormat() {
         return API_DATE_FORMAT;
     }
+
+    @Override
+    public DateTimeFormatter getApiDateFormatYearsFirst() {
+        return API_DATE_FORMAT_YEAR_FIRST;
+    }
+
 }

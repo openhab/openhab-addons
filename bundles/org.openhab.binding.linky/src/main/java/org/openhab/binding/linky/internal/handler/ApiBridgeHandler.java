@@ -356,4 +356,6 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
     public abstract String getTempoUrl();
 
     public abstract DateTimeFormatter getApiDateFormat();
+
+    public abstract DateTimeFormatter getApiDateFormatYearsFirst();
 }
