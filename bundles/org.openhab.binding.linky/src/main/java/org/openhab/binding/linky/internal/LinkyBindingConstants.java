@@ -49,7 +49,10 @@ public class LinkyBindingConstants {
 
     // List of all Channel id's
 
-    public static final String CONSUMPTION = "timeseries#consumption";
+    public static final String DAYLY_CONSUMPTION = "daily#consumption";
+    public static final String WEEKLY_CONSUMPTION = "weekly#consumption";
+    public static final String MONTHLY_CONSUMPTION = "monthly#consumption";
+    public static final String YEARLY_CONSUMPTION = "yearly#consumption";
 
     public static final String DAY_MINUS_1 = "daily#yesterday";
     public static final String DAY_MINUS_2 = "daily#day-2";
@@ -78,7 +81,8 @@ public class LinkyBindingConstants {
 
     public static final String MAIN_IDENTITY = "main#identity";
 
-    public static final String TEMPO_TEMPO_INFO = "tempo#tempoInfo";
+    public static final String TEMPO_TODAY_INFO = "tempo#tempoInfoToday";
+    public static final String TEMPO_TOMORROW_INFO = "tempo#tempoInfoTomorrow";
     public static final String TEMPO_TEMPO_INFO_TIME_SERIES = "tempo#tempoInfoTimeSeries";
 
     public static final String MAIN_CONTRACT_SUBSCRIBED_POWER = "main#contractSubscribedPower";
