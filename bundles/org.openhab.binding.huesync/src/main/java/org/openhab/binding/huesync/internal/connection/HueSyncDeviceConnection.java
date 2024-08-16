@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -35,6 +34,9 @@ import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistra
 import org.openhab.binding.huesync.internal.api.dto.registration.HueSyncRegistrationRequestDto;
 import org.openhab.binding.huesync.internal.config.HueSyncConfiguration;
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -53,7 +55,7 @@ public class HueSyncDeviceConnection {
 
     private HueSyncConnection connection;
 
-    private Map<String, Consumer<Command>> DeviceCommandExecutors = new HashMap<>();
+    private Map<String, Consumer<ExecutionPayload>> DeviceCommandExecutors = new HashMap<>();
 
     public HueSyncDeviceConnection(HttpClient httpClient, HueSyncConfiguration configuration)
             throws CertificateException, IOException, URISyntaxException {
@@ -66,30 +68,33 @@ public class HueSyncDeviceConnection {
     // #region private
 
     private void registerCommandHandlers() {
-        this.DeviceCommandExecutors.put(COMMANDS.MODE, command -> {
-            execute("mode", "\"" + command.toFullString() + "\"", command);
-        });
-        this.DeviceCommandExecutors.put(COMMANDS.SYNC, command -> {
-            String commandValue = command.toFullString().toUpperCase();
-
-            switch (commandValue) {
-                case "ON":
-                    execute("syncActive", "true", command);
-                    break;
-                case "OFF":
-                    execute("syncActive", "false", command);
-                    break;
-                default:
-                    logger.warn("Unable to translate command value: {}", commandValue);
-            }
-        });
-        this.DeviceCommandExecutors.put(COMMANDS.SOURCE, command -> {
-            execute("hdmiSource", "\"" + command.toFullString() + "\"", command);
-        });
+        this.DeviceCommandExecutors.put(COMMANDS.MODE, defaultHandler());
+        this.DeviceCommandExecutors.put(COMMANDS.SOURCE, defaultHandler());
+        this.DeviceCommandExecutors.put(COMMANDS.BRIGHTNESS, defaultHandler());
+        this.DeviceCommandExecutors.put(COMMANDS.SYNC, defaultHandler());
     }
 
-    private void execute(String key, String value, Command command) {
+    private Consumer<ExecutionPayload> defaultHandler() {
+        return payload -> {
+            execute(payload.API, payload.Command);
+        };
+    }
+
+    private void execute(String key, Command command) {
         this.logger.info("Command executor: {}", command);
+
+        String value = "";
+
+        if (command instanceof QuantityType) {
+            value = Integer.toString(((QuantityType<?>) command).intValue());
+        } else if (command instanceof OnOffType) {
+            value = ((OnOffType) command).name().equals("ON") ? "true" : "false";
+        } else if (command instanceof StringType) {
+            value = ((StringType) command).toString();
+        } else {
+            this.logger.error("Type {} not supported by this connection", command.getClass().getCanonicalName());
+            return;
+        }
 
         if (!this.connection.isRegistered()) {
             this.logger.warn("Device is not registered - ignoring command: {}", command);
@@ -102,6 +107,7 @@ public class HueSyncDeviceConnection {
 
     // #endregion
 
+    @SuppressWarnings("null")
     public void executeCommand(Channel channel, Command command) {
         String uid = channel.getUID().getAsString();
         String commandId = channel.getUID().getId();
@@ -113,8 +119,7 @@ public class HueSyncDeviceConnection {
         }
 
         if (this.DeviceCommandExecutors.containsKey(commandId)) {
-            ((@NonNull Consumer<Command>) this.DeviceCommandExecutors.get(commandId)).accept(command);
-            ;
+            this.DeviceCommandExecutors.get(commandId).accept(new ExecutionPayload(commandId, command));
         } else {
             this.logger.error("No executor registered for command {} - please report this as an issue", commandId);
         }

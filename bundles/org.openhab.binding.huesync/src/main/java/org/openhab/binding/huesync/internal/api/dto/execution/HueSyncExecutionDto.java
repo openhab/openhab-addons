@@ -89,6 +89,12 @@ public class HueSyncExecutionDto {
     public @Nullable String lastSyncMode;
     public @Nullable String preset;
 
+    /**
+     * brightness:
+     * - Get, Put
+     * - number, uint
+     * - 0 ... 200 (100 = no brightness reduction/boost compared to input, 0 = max reduction, 200 = max boost)
+     */
     public int brightness;
 
     public @Nullable HueSyncExecutionDtoVideo video;

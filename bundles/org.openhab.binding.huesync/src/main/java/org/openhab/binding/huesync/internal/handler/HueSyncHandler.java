@@ -40,6 +40,7 @@ import org.openhab.binding.huesync.internal.handler.tasks.HueSyncUpdateTaskResul
 import org.openhab.binding.huesync.internal.log.HueSyncLogFactory;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
+import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.Channel;
@@ -248,6 +249,8 @@ public class HueSyncHandler extends BaseThingHandler {
         this.updateState(HueSyncConstants.CHANNELS.COMMANDS.MODE, new StringType(executionStatus.getMode()));
         this.updateState(HueSyncConstants.CHANNELS.COMMANDS.SYNC,
                 executionStatus.syncActive ? OnOffType.ON : OnOffType.OFF);
+        this.updateState(HueSyncConstants.CHANNELS.COMMANDS.SOURCE, new StringType(executionStatus.hdmiSource));
+        this.updateState(HueSyncConstants.CHANNELS.COMMANDS.BRIGHTNESS, new DecimalType(executionStatus.brightness));
     }
 
     private void handleRegistration(HueSyncRegistrationDto registration) {

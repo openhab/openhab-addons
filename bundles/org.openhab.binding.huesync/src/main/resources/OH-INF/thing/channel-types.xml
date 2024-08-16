@@ -191,15 +191,15 @@
 		brightness:
 		- Get, Put
 		- number, uint
-		- 0 – 200 (100 = no brightness reduction/boost compared to input, 0 = max reduction, 200 = max boost)
+		- 0 ... 200 (100 = no brightness reduction/boost compared to input, 0 = max reduction, 200 = max boost)
 	-->
 	<channel-type id="execution-brightness">
-		<item-type>Dimmer</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Brightness</label>
 		<description>
 			<![CDATA[
 			<p>
-			  0 - 200
+			  0 ... 200
 			  <ul>
 			    <li>0 = max reduction</li>
 				<li>100 = no brightness reduction/boost compared to input</li>
@@ -209,10 +209,6 @@
 			]]>
 		</description>
 		<category>iconify:mdi:brightness-percent</category>
-		<tags>
-			<tag>Control</tag>
-			<tag>Light</tag>
-		</tags>
 		<state min="0" max="200" step="1" pattern="%d"/>
 	</channel-type>
 
