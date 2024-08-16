@@ -32,9 +32,9 @@ public class Daytemps {
     private String msg = "";
     private boolean success;
     private Data data = new Data();
-    private boolean response_status = true;
-    private double dc_temperature;
-    private double ac_temperature;
+    private boolean responseStatus = true;
+    private double dcTemperature;
+    private double acTemperature;
 
     class Data {
         private @Nullable List<Infos> infos = new ArrayList<Infos>();
@@ -56,20 +56,19 @@ public class Daytemps {
     }
 
     public void getLastValue() {
-
         List<Infos> infos = this.data.infos;
         if (infos != null) { // Sometimes after midnight infos or records are empty
             if (!infos.isEmpty()) {
-                List<Record> dc_record = infos.get(0).records;
-                List<Record> ac_record = infos.get(1).records;
-                if (dc_record != null && ac_record != null) {
-                    this.dc_temperature = dc_record.get(dc_record.size() - 1).value;
-                    this.ac_temperature = ac_record.get(ac_record.size() - 1).value;
+                List<Record> dcRecord = infos.get(0).records;
+                List<Record> acRecord = infos.get(1).records;
+                if (dcRecord != null && acRecord != null) {
+                    this.dcTemperature = dcRecord.get(dcRecord.size() - 1).value;
+                    this.acTemperature = acRecord.get(acRecord.size() - 1).value;
                     return;
                 }
             }
         }
-        this.response_status = false;
+        this.responseStatus = false;
         // do nothing leave dc_ and ac_ temperature values as they are.
     }
 
@@ -78,6 +77,6 @@ public class Daytemps {
     }
 
     public Daytempsreturn inverterTemperatures() {
-        return new Daytempsreturn(this.response_status, this.dc_temperature, this.ac_temperature);
+        return new Daytempsreturn(this.responseStatus, this.dcTemperature, this.acTemperature);
     }
 }

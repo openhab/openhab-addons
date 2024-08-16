@@ -15,6 +15,7 @@ package org.openhab.binding.sunsynk.internal.handler;
 import static org.openhab.binding.sunsynk.internal.SunSynkBindingConstants.*;
 
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -265,8 +266,13 @@ public class SunSynkInverterHandler extends BaseThingHandler {
         try {
             bridgeHandler.refreshAccount(); // check account token
         } catch (SunSynkAuthenticateException e) {
-            logger.debug("Sun Synk account refresh failed: Msg = {} Cause = {}.", e.getMessage().toString(),
-                    e.getCause().toString());
+            if (logger.isDebugEnabled()) {
+                String message = Objects.requireNonNullElse(e.getMessage(), "unkown error message");
+                Throwable cause = e.getCause();
+                String causeMessage = cause != null ? Objects.requireNonNullElse(cause.getMessage(), "unkown cause")
+                        : "unkown cause";
+                logger.debug("Sun Synk account refresh failed: Msg = {}. Cause = {}.", message, causeMessage);
+            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, "Sun Synk account refresh failed");
             bridgeHandler.setBridgeOffline();
             return;

@@ -64,17 +64,17 @@ public class Grid {
     }
 
     public void sumVIP() {
-        double l_power = 0.0;
-        double l_voltage = 0.0;
-        double l_current = 0.0;
+        double sumPower = 0.0;
+        double sumVoltage = 0.0;
+        double sumCurrent = 0.0;
         for (VIP x : this.data.vip) {
-            l_power = l_power + x.power;
-            l_voltage = l_voltage + x.volt;
-            l_current = l_current + x.current;
+            sumPower = sumPower + x.power;
+            sumVoltage = sumVoltage + x.volt;
+            sumCurrent = sumCurrent + x.current;
         }
-        this.power = l_power;
-        this.voltage = l_voltage;
-        this.current = l_current;
+        this.power = sumPower;
+        this.voltage = sumVoltage;
+        this.current = sumCurrent;
     }
 
     public double getGridPower() {

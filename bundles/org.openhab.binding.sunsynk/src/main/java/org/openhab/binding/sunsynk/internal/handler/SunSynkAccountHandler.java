@@ -14,6 +14,7 @@ package org.openhab.binding.sunsynk.internal.handler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -109,8 +110,13 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
         try {
             this.sunAccount.authenticate(accountConfig.getEmail(), accountConfig.getPassword());
         } catch (SunSynkAuthenticateException | SunSynkTokenException e) {
-            logger.debug("Error attempting to authenticate account Msg = {} Cause = {}", e.getMessage().toString(),
-                    e.getCause().toString());
+            if (logger.isDebugEnabled()) {
+                String message = Objects.requireNonNullElse(e.getMessage(), "unkown error message");
+                Throwable cause = e.getCause();
+                String causeMessage = cause != null ? Objects.requireNonNullElse(cause.getMessage(), "unkown cause")
+                        : "unkown cause";
+                logger.debug("Error attempting to authenticate account Msg = {} Cause = {}", message, causeMessage);
+            }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error attempting to authenticate account");
             return;
@@ -121,8 +127,9 @@ public class SunSynkAccountHandler extends BaseBridgeHandler {
     public boolean refreshAccount() throws SunSynkAuthenticateException {
         try {
             SunSynkAccountConfig accountConfig = this.accountConfig;
-            if (accountConfig == null)
+            if (accountConfig == null) {
                 throw new SunSynkTokenException("No account config");
+            }
             this.sunAccount.refreshAccount(accountConfig.getEmail());
         } catch (SunSynkTokenException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,

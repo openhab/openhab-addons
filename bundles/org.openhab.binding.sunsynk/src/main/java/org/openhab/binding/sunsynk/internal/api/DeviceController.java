@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -50,15 +51,15 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class DeviceController {
 
+    private static final int TIMEOUT_IN_MS = 4000;
     private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
     private String sn = "";
     private String alias = "";
     private Settings batterySettings = new Settings();
     private Battery realTimeBattery = new Battery();
     private Grid grid = new Grid();
-    private Daytemps inverter_day_temperatures = new Daytemps();
+    private Daytemps inverterDayTemperatures = new Daytemps();
     private RealTimeInData realTimeDataIn = new RealTimeInData();
-    private final static int TIMEOUT_IN_MS = 4000;
     public Settings tempInverterChargeSettings = new Settings(); // Holds modified battery settings.
 
     public DeviceController() {
@@ -100,8 +101,9 @@ public class DeviceController {
             getInverterACDCTemperatures(); // get Inverter temperatures
             getRealTimeIn(); // Used for solar power now
         } catch (IOException e) {
-            logger.debug("Failed to send to Inverter API: {} ", e.getMessage());
-            int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");
+            String message = Objects.requireNonNullElse(e.getMessage(), "unkown error message");
+            logger.debug("Failed to send to Inverter API: {} ", message);
+            int found = message.indexOf("Authentication challenge without WWW-Authenticate header");
             if (found > -1) {
                 throw new SunSynkGetStatusException("Authentication token failed", e);
             }
@@ -123,7 +125,7 @@ public class DeviceController {
     }
 
     public Daytemps getInverterTemperatureHistory() {
-        return this.inverter_day_temperatures;
+        return this.inverterDayTemperatures;
     }
 
     public RealTimeInData getRealtimeSolarStatus() {
@@ -138,8 +140,9 @@ public class DeviceController {
         Gson gson = new Gson();
         @Nullable
         Settings settings = gson.fromJson(response, Settings.class);
-        if (settings == null)
+        if (settings == null) {
             throw new SunSynkDeviceControllerException("Could not retrieve battery charge settings");
+        }
         this.batterySettings = settings;
         this.batterySettings.buildLists();
     }
@@ -152,8 +155,9 @@ public class DeviceController {
         Gson gson = new Gson();
         @Nullable
         Grid grid = gson.fromJson(response, Grid.class);
-        if (grid == null)
+        if (grid == null) {
             throw new SunSynkDeviceControllerException("Could not retrieve grid state");
+        }
         this.grid = grid;
         this.grid.sumVIP();
     }
@@ -167,8 +171,9 @@ public class DeviceController {
         Gson gson = new Gson();
         @Nullable
         Battery battery = gson.fromJson(response, Battery.class);
-        if (battery == null)
+        if (battery == null) {
             throw new SunSynkDeviceControllerException("Could not retrieve battery state");
+        }
         this.realTimeBattery = battery;
     }
 
@@ -183,10 +188,11 @@ public class DeviceController {
         Gson gson = new Gson();
         @Nullable
         Daytemps daytemps = gson.fromJson(response, Daytemps.class);
-        if (daytemps == null)
+        if (daytemps == null) {
             throw new SunSynkDeviceControllerException("Could not retrieve device temperatures");
-        this.inverter_day_temperatures = daytemps;
-        this.inverter_day_temperatures.getLastValue();
+        }
+        this.inverterDayTemperatures = daytemps;
+        this.inverterDayTemperatures.getLastValue();
     }
 
     @SuppressWarnings("unused")
@@ -198,8 +204,9 @@ public class DeviceController {
         Gson gson = new Gson();
         @Nullable
         RealTimeInData realTimeInData = gson.fromJson(response, RealTimeInData.class);
-        if (realTimeInData == null)
+        if (realTimeInData == null) {
             throw new SunSynkDeviceControllerException("Could not retrieve solar state");
+        }
         this.realTimeDataIn = realTimeInData;
         this.realTimeDataIn.sumPVIV();
     }
@@ -222,8 +229,9 @@ public class DeviceController {
         try {
             apiPostMethod(makeURL(path), body, APIdata.staticAccessToken);
         } catch (IOException e) {
-            logger.debug("Failed to send to Inverter API: {} ", e.getMessage());
-            int found = e.getMessage().indexOf("Authentication challenge without WWW-Authenticate header");
+            String message = Objects.requireNonNullElse(e.getMessage(), "unkown error message");
+            logger.debug("Failed to send to Inverter API: {} ", message);
+            int found = message.indexOf("Authentication challenge without WWW-Authenticate header");
             if (found > -1) {
                 throw new SunSynkSendCommandException("Authentication token failed", e);
             }
@@ -254,8 +262,6 @@ public class DeviceController {
     }
 
     private String getAPIFormatDate() {
-        LocalDate date = LocalDate.now();
-        DateTimeFormatter APIformat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return date.format(APIformat);
+        return LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 }

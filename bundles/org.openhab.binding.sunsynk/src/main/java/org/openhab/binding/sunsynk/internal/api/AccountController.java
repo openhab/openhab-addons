@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -47,8 +48,8 @@ import com.google.gson.JsonSyntaxException;
 
 @NonNullByDefault
 public class AccountController {
+    private static final int TIMEOUT_IN_MS = 4000;
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
-    private final static int TIMEOUT_IN_MS = 4000;
     private Client sunAccount = new Client();
 
     public AccountController() {
@@ -102,9 +103,10 @@ public class AccountController {
 
             @Nullable
             Client client = gson.fromJson(response, Client.class);
-            if (client == null)
+            if (client == null) {
                 throw new SunSynkAuthenticateException(
                         "Sun Synk Account could not be authenticated: Try re-enabling account");
+            }
             this.sunAccount = client;
         } catch (IOException | JsonSyntaxException e) {
             throw new SunSynkAuthenticateException("Sun Synk Account could not be authenticated", e);
@@ -149,12 +151,19 @@ public class AccountController {
                     TIMEOUT_IN_MS);
             @Nullable
             Details maybeDeats = gson.fromJson(response, Details.class);
-            if (maybeDeats == null)
+            if (maybeDeats == null) {
                 throw new SunSynkInverterDiscoveryException("Failed to discover Inverters");
+            }
             output = maybeDeats;
         } catch (IOException | JsonSyntaxException e) {
-            logger.debug("Error attempting to find inverters registered to account: Msg = {}. Cause = {}.",
-                    e.getMessage(), e.getCause().toString());
+            if (logger.isDebugEnabled()) {
+                String message = Objects.requireNonNullElse(e.getMessage(), "unkown error message");
+                Throwable cause = e.getCause();
+                String causeMessage = cause != null ? Objects.requireNonNullElse(cause.getMessage(), "unkown cause")
+                        : "unkown cause";
+                logger.debug("Error attempting to find inverters registered to account: Msg = {}. Cause = {}.", message,
+                        causeMessage);
+            }
             throw new SunSynkInverterDiscoveryException("Failed to discover Inverters", e);
         }
         inverters = output.getInverters(APIdata.staticAccessToken);

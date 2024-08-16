@@ -18,6 +18,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link RealTimeInData} is the internal class for inverter real time information
  * from a Sun Synk Connect Account.
@@ -32,12 +34,13 @@ public class RealTimeInData {
     private String msg = "";
     private boolean success;
     private Data data = new Data();
-    private double solar_power;
+    private double solarPower;
 
     @SuppressWarnings("unused")
     class Data {
         private int pac;
-        private String grid_tip_power = "";
+        @SerializedName("grid_tip_power")
+        private String gridTipPower = "";
         private double etoday;
         private double etotal;
         private List<PVIV> pvIV = new ArrayList<PVIV>();
@@ -75,13 +78,13 @@ public class RealTimeInData {
     }
 
     public void sumPVIV() {
-        double solar_power = 0.0;
+        double solarPower = 0.0;
         for (PVIV x : this.data.pvIV) {
-            this.solar_power = solar_power + x.ppv;
+            this.solarPower = solarPower + x.ppv;
         }
     }
 
     public double getPVIV() {
-        return this.solar_power;
+        return this.solarPower;
     }
 }
