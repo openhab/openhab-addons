@@ -339,6 +339,8 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
         return result;
     }
 
+    public abstract double getDivider();
+
     public abstract String getBaseUrl();
 
     public abstract String getContactUrl();
