@@ -88,8 +88,6 @@
 			<channel-group typeId="weekly" id="weekly"/>
 			<channel-group typeId="monthly" id="monthly"/>
 			<channel-group typeId="yearly" id="yearly"/>
-			<channel-group typeId="timeseries" id="timeseries"/>
-
 		</channel-groups>
 
 
@@ -110,14 +108,6 @@
 
 	</thing-type>
 
-	<channel-group-type id="timeseries">
-		<label>Timeseries channel</label>
-		<channels>
-			<channel id="consumption" typeId="consumption">
-				<label>Consumption</label>
-			</channel>
-		</channels>
-	</channel-group-type>
 
 	<channel-group-type id="daily">
 		<label>Daily consumption</label>
@@ -131,6 +121,11 @@
 			<channel id="day-3" typeId="consumption">
 				<label>Yesterday Consumption</label>
 			</channel>
+            <channel id="consumption" typeId="consumption">
+                <label>Consumption</label>
+            </channel>
+			
+			
 
 			<channel id="power" typeId="power"/>
 			<channel id="timestamp" typeId="timestamp">
@@ -164,6 +159,9 @@
 			<channel id="week-2" typeId="consumption">
 				<label>Last Week Consumption</label>
 			</channel>
+            <channel id="consumption" typeId="consumption">
+                <label>Consumption</label>
+            </channel>
 		</channels>
 	</channel-group-type>
 
@@ -179,6 +177,9 @@
 			<channel id="month-2" typeId="consumption">
 				<label>Last Month Consumption</label>
 			</channel>
+            <channel id="consumption" typeId="consumption">
+                <label>Consumption</label>
+            </channel>
 		</channels>
 	</channel-group-type>
 
@@ -194,16 +195,22 @@
 			<channel id="year-2" typeId="consumption">
 				<label>Last Year Consumption</label>
 			</channel>
+            <channel id="consumption" typeId="consumption">
+                <label>Consumption</label>
+            </channel>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="tempo">
 		<label>Tempo</label>
 		<channels>
-			<channel id="tempoInfo" typeId="info">
-				<label>Tempo day information</label>
+			<channel id="tempoInfoToday" typeId="tempoValue">
+				<label>Tempo Today color</label>
 			</channel>
-			<channel id="tempoInfoTimeSeries" typeId="info">
+            <channel id="tempoInfoTomorrow" typeId="tempoValue">
+                <label>Tempo Today color</label>
+            </channel>
+			<channel id="tempoInfoTimeSeries" typeId="tempoValue">
 				<label>Tempo day information</label>
 			</channel>
 		</channels>
@@ -242,7 +249,6 @@
 				<label>Contract Segment</label>
 			</channel>
 
-
 			<channel id="usagePointId" typeId="info">
 				<label>UsagePoint Id</label>
 			</channel>
@@ -269,22 +275,27 @@
 				<label>Street</label>
 			</channel>
 
-
-
-
 			<channel id="contactMail" typeId="info">
 				<label>Mail</label>
 			</channel>
 			<channel id="contactPhone" typeId="info">
 				<label>Phone</label>
 			</channel>
-
-
-
-
-
 		</channels>
 	</channel-group-type>
+	
+	<channel-type id="tempoValue">
+	    <item-type>Number</item-type>
+        <label>Tempo color information</label>
+        <description>This status describes the tempo color of a day.</description>
+        <state>
+            <options>
+                <option value="0">Blue</option>
+                <option value="1">White</option>
+                <option value="2">Red</option>
+            </options>
+        </state>
+	</channel-type>
 
 	<channel-type id="info" advanced="false">
 		<item-type>String</item-type>
@@ -293,8 +304,6 @@
 		<category>energy</category>
 		<state readOnly="true"></state>
 	</channel-type>
-
-
 
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>
@@ -317,4 +326,6 @@
 		<category>time</category>
 		<state readOnly="true"/>
 	</channel-type>
+	
+	
 </thing:thing-descriptions>
