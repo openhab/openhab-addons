@@ -14,6 +14,8 @@ package org.openhab.binding.linky.internal.dto;
 
 import org.eclipse.jetty.jaas.spi.UserInfo;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link UserInfo} holds informations about energy delivery point
  *
@@ -23,7 +25,11 @@ import org.eclipse.jetty.jaas.spi.UserInfo;
 public class AddressInfo {
     public String street;
     public String locality;
+
+    @SerializedName("postal_code")
     public String postalCode;
+
+    @SerializedName("insee_code")
     public String inseeCode;
     public String city;
     public String country;
