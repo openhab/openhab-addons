@@ -311,6 +311,11 @@ public class LinkyHandler extends BaseThingHandler {
             updateState(PEAK_POWER_TS_DAY_MINUS_3,
                     new DateTimeType(values.dayValue[dSize - 3].date.atZone(ZoneId.systemDefault())));
 
+            updateMaxPowerTimeSeries(PEAK_POWER_DAILY, values.dayValue);
+            updateMaxPowerTimeSeries(PEAK_POWER_WEEKLY, values.weekValue);
+            updateMaxPowerTimeSeries(PEAK_POWER_MONTHLY, values.monthValue);
+            updateMaxPowerTimeSeries(PEAK_POWER_YEARLY, values.yearValue);
+
         }, () -> {
             updateKwhChannel(PEAK_POWER_DAY_MINUS_1, Double.NaN);
             updateState(PEAK_POWER_TS_DAY_MINUS_1, UnDefType.UNDEF);
@@ -376,6 +381,26 @@ public class LinkyHandler extends BaseThingHandler {
         });
     }
 
+    private synchronized void updateMaxPowerTimeSeries(String channel, IntervalReading[] iv) {
+        TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
+        LocalDate today = LocalDate.now();
+
+        for (int i = 0; i < iv.length; i++) {
+            try {
+                if (Double.isNaN(iv[i].value)) {
+                    continue;
+                }
+                Instant timestamp = iv[i].date.toInstant(ZoneOffset.UTC);
+                timeSeries.add(timestamp, new DecimalType(iv[i].value));
+            } catch (Exception ex) {
+                logger.debug("aa");
+            }
+        }
+
+        sendTimeSeries(channel, timeSeries);
+        updateState(channel, new DecimalType(iv[iv.length - 1].value));
+    }
+
     private synchronized void updateConsumptionTimeSeries(String channel, IntervalReading[] iv) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
         LocalDate today = LocalDate.now();
@@ -387,7 +412,6 @@ public class LinkyHandler extends BaseThingHandler {
 
         sendTimeSeries(channel, timeSeries);
         updateState(channel, new DecimalType(iv[iv.length - 1].value));
-
     }
 
     private void updateKwhChannel(String channelId, double consumption) {

@@ -126,6 +126,11 @@
             </channel>
 			
 			
+            <channel id="maxPower" typeId="power">
+                <label>Peak Value</label>
+                <description>Maximum power usage value</description>
+            </channel>
+
 
 			<channel id="power" typeId="power">
                 <label>Peak Value Yesterday</label>
@@ -171,6 +176,10 @@
             <channel id="consumption" typeId="consumption">
                 <label>Consumption</label>
             </channel>
+            <channel id="maxPower" typeId="power">
+	            <label>Peak Value</label>
+                <description>Maximum power usage value</description>
+            </channel>
 		</channels>
 	</channel-group-type>
 
@@ -189,6 +198,10 @@
             <channel id="consumption" typeId="consumption">
                 <label>Consumption</label>
             </channel>
+            <channel id="maxPower" typeId="power">
+                <label>Peak Value</label>
+                <description>Maximum power usage value</description>
+            </channel>
 		</channels>
 	</channel-group-type>
 
@@ -206,6 +219,10 @@
 			</channel>
             <channel id="consumption" typeId="consumption">
                 <label>Consumption</label>
+            </channel>
+            <channel id="maxPower" typeId="power">
+                <label>Peak Value</label>
+                <description>Maximum power usage value</description>
             </channel>
 		</channels>
 	</channel-group-type>
