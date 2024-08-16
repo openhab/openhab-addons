@@ -552,6 +552,8 @@ public class LinkyHandler extends BaseThingHandler {
             boolean connectedBefore = isConnected();
 
             updateEnergyData();
+            updatePowerData();
+            updateTempoTimeSeries();
 
             if (!connectedBefore && isConnected()) {
                 disconnect();
