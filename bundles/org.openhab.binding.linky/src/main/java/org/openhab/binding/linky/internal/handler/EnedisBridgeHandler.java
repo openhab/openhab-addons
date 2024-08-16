@@ -50,6 +50,7 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
             + "metering_data_dcmp/v5/daily_consumption_max_power?usage_point_id=%s&start=%s&end=%s";
 
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final DateTimeFormatter API_DATE_FORMAT_YEAR_FIRST = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     public EnedisBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
@@ -142,4 +143,10 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     public DateTimeFormatter getApiDateFormat() {
         return API_DATE_FORMAT;
     }
+
+    @Override
+    public DateTimeFormatter getApiDateFormatYearsFirst() {
+        return API_DATE_FORMAT_YEAR_FIRST;
+    }
+
 }
