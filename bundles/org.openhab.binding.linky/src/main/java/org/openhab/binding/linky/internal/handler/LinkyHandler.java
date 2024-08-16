@@ -77,6 +77,8 @@ public class LinkyHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(LinkyHandler.class);
 
     private final ExpiringDayCache<MeterReading> dailyConsumption;
+    private final ExpiringDayCache<MeterReading> dailyConsumptionMaxPower;
+    private final ExpiringDayCache<TempoResponse> tempoInformation;
 
     private @Nullable ScheduledFuture<?> refreshJob;
     private LinkyConfiguration config;
@@ -107,6 +109,7 @@ public class LinkyHandler extends BaseThingHandler {
             return meterReading;
         });
 
+<<<<<<< HEAD
         /*
          * this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
          * // We request data for yesterday and the day before yesterday, even if the data for the day before yesterday
@@ -146,6 +149,32 @@ public class LinkyHandler extends BaseThingHandler {
          * return consumption;
          * });
          */
+=======
+        // We request data for yesterday and the day before yesterday, even if the data for the day before yesterday
+        // is not needed by the binding. This is only a workaround to an API bug that will return
+        // INTERNAL_SERVER_ERROR rather than the expected data with a NaN value when the data for yesterday is not yet
+        // available.
+        // By requesting two days, the API is not failing and you get the expected NaN value for yesterday when the data
+        // is not yet available.
+        this.dailyConsumptionMaxPower = new ExpiringDayCache<>("dailyConsumptionMaxPower", REFRESH_FIRST_HOUR_OF_DAY,
+                () -> {
+                    LocalDate today = LocalDate.now();
+                    MeterReading meterReading = getPowerData(today.minusDays(1095), today);
+                    meterReading = getMeterReadingAfterChecks(meterReading);
+                    if (meterReading != null) {
+                        logData(meterReading.dayValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
+                    }
+                    return meterReading;
+                });
+
+        // Read Tempo Information
+        this.tempoInformation = new ExpiringDayCache<>("tempoInformation", REFRESH_FIRST_HOUR_OF_DAY, () -> {
+            LocalDate today = LocalDate.now();
+
+            TempoResponse tempoData = getTempoData(today.minusDays(1095), today.plusDays(1));
+            return tempoData;
+        });
+>>>>>>> 7a863e3128 (review channel definitions)
     }
 
     @Override
@@ -254,62 +283,59 @@ public class LinkyHandler extends BaseThingHandler {
 
         updateEnergyData();
         updatePowerData();
-
-        TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
-        TempoResponse tempoData = getTempoData();
-
-        tempoData.forEach((k, v) -> {
-            try {
-                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-                Date date = df.parse(k);
-                long epoch = date.getTime();
-                Instant timestamp = Instant.ofEpochMilli(epoch);
-
-                int val = 0;
-                if (v.equals("WHITE")) {
-                    val = 0;
-                }
-                if (v.equals("BLUE")) {
-                    val = 1;
-                }
-                if (v.equals("RED")) {
-                    val = 2;
-                }
-                timeSeries.add(timestamp, new DecimalType(val));
-            } catch (ParseException ex) {
-
-            }
-
-        });
-
-        sendTimeSeries(TEMPO_TEMPO_INFO_TIME_SERIES, timeSeries);
-        updateState(TEMPO_TEMPO_INFO_TIME_SERIES, new DecimalType(1));
-
-        TimeSeries timeSeries2 = new TimeSeries(Policy.REPLACE);
-
-        LocalDate today = LocalDate.now();
-        MeterReading meterReading = getConsumptionData(today.minusDays(1095), today);
-        meterReading = getMeterReadingAfterChecks(meterReading);
-        if (meterReading != null) {
-
-            IntervalReading[] iv = meterReading.dayValue;
-
-            for (int i = 0; i < iv.length; i++) {
-
-                // iv[i].value
-
-                Instant timestamp = iv[i].date.toInstant(ZoneOffset.UTC);
-                timeSeries2.add(timestamp, new DecimalType(iv[i].value));
-
-            }
-        }
-
-        sendTimeSeries(CONSUMPTION, timeSeries2);
-        updateState(CONSUMPTION, new DecimalType(0));
+        updateTempoTimeSeries();
 
         if (!connectedBefore && isConnected()) {
             disconnect();
         }
+    }
+
+    private synchronized void updateTempoTimeSeries() {
+        tempoInformation.getValue().ifPresentOrElse(values -> {
+            LocalDate today = LocalDate.now();
+            TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
+
+            values.forEach((k, v) -> {
+                try {
+                    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = df.parse(k);
+                    long epoch = date.getTime();
+                    Instant timestamp = Instant.ofEpochMilli(epoch);
+
+                    timeSeries.add(timestamp, new DecimalType(getTempoIdx(v)));
+                } catch (ParseException ex) {
+
+                }
+            });
+
+            int tomorrowDayIdx = values.size();
+            Object[] tempoValues = values.values().toArray();
+
+            updateTempoChannel(TEMPO_TODAY_INFO, getTempoIdx((String) tempoValues[tomorrowDayIdx - 2]));
+            updateTempoChannel(TEMPO_TOMORROW_INFO, getTempoIdx((String) tempoValues[tomorrowDayIdx - 1]));
+
+            sendTimeSeries(TEMPO_TEMPO_INFO_TIME_SERIES, timeSeries);
+            updateState(TEMPO_TEMPO_INFO_TIME_SERIES,
+                    new DecimalType(getTempoIdx((String) tempoValues[tomorrowDayIdx - 2])));
+        }, () -> {
+            updateTempoChannel(TEMPO_TODAY_INFO, -1);
+            updateTempoChannel(TEMPO_TOMORROW_INFO, -1);
+        });
+    }
+
+    private int getTempoIdx(String color) {
+        int val = 0;
+        if (color.equals("BLUE")) {
+            val = 0;
+        }
+        if (color.equals("WHITE")) {
+            val = 1;
+        }
+        if (color.equals("RED")) {
+            val = 2;
+        }
+
+        return val;
     }
 
     private synchronized void updatePowerData() {
@@ -355,14 +381,10 @@ public class LinkyHandler extends BaseThingHandler {
             updateKwhChannel(DAY_MINUS_2, values.dayValue[dSize - 2].value / divider);
             updateKwhChannel(DAY_MINUS_3, values.dayValue[dSize - 3].value / divider);
 
-                LocalDate currentDt = LocalDate.now();
-                int idxCurrentYear = currentDt.getYear() - 2021;
-
-                int currentWeek = (currentDt.getDayOfYear() / 7) + 1;
-                int currentMonth = currentDt.getMonthValue();
-
-                int idxCurrentWeek = (52 * idxCurrentYear) + currentWeek;
-                int idxCurrentMonth = (12 * idxCurrentYear) + currentMonth;
+            LocalDate currentDt = LocalDate.now();
+            int idxCurrentYear = values.yearValue.length - 1;
+            int idxCurrentWeek = values.weekValue.length - 1;
+            int idxCurrentMonth = values.monthValue.length - 1;
 
             updateKwhChannel(WEEK_MINUS_0, values.weekValue[idxCurrentWeek].value / divider);
             updateKwhChannel(WEEK_MINUS_1, values.weekValue[idxCurrentWeek - 1].value / divider);
@@ -375,6 +397,11 @@ public class LinkyHandler extends BaseThingHandler {
             updateKwhChannel(YEAR_MINUS_0, values.yearValue[idxCurrentYear].value / divider);
             updateKwhChannel(YEAR_MINUS_1, values.yearValue[idxCurrentYear - 1].value / divider);
             updateKwhChannel(YEAR_MINUS_2, values.yearValue[idxCurrentYear - 2].value / divider);
+
+            updateConsumptionTimeSeries(DAYLY_CONSUMPTION, values.dayValue);
+            updateConsumptionTimeSeries(WEEKLY_CONSUMPTION, values.weekValue);
+            updateConsumptionTimeSeries(MONTHLY_CONSUMPTION, values.monthValue);
+            updateConsumptionTimeSeries(YEARLY_CONSUMPTION, values.yearValue);
         }, () -> {
             updateKwhChannel(DAY_MINUS_1, Double.NaN);
             updateKwhChannel(DAY_MINUS_2, Double.NaN);
@@ -390,60 +417,19 @@ public class LinkyHandler extends BaseThingHandler {
         }
     }
 
-    /**
-     * Request new monthly data and updates channels
-     */
+  private synchronized void updateConsumptionTimeSeries(String channel, IntervalReading[] iv) {
+        TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
+        LocalDate today = LocalDate.now();
 
-    /*
-     * private synchronized void updateMonthlyData() {
-     * if (isLinked(LAST_MONTH) || isLinked(THIS_MONTH)) {
-     * cachedMonthlyData.getValue().ifPresentOrElse(values -> {
-     * Aggregate months = values.aggregats.months;
-     * updateKwhChannel(LAST_MONTH, months.datas.get(0));
-     * if (months.datas.size() > 1) {
-     * updateKwhChannel(THIS_MONTH, months.datas.get(1));
-     * } else {
-     * updateKwhChannel(THIS_MONTH, 0.0);
-     * }
-     * }, () -> {
-     * if (ZonedDateTime.now().getDayOfMonth() == 1) {
-     * updateKwhChannel(THIS_MONTH, 0.0);
-     * updateKwhChannel(LAST_MONTH, Double.NaN);
-     * } else {
-     * updateKwhChannel(THIS_MONTH, Double.NaN);
-     * }
-     * });
-     * }
-     * }
-     */
+        for (int i = 0; i < iv.length; i++) {
+            Instant timestamp = iv[i].date.toInstant(ZoneOffset.UTC);
+            timeSeries.add(timestamp, new DecimalType(iv[i].value));
+        }
 
+        sendTimeSeries(channel, timeSeries);
+        updateState(channel, new DecimalType(iv[iv.length - 1].value));
 
-    /**
-     * Request new yearly data and updates channels
-     */
-
-    /*
-     * private synchronized void updateYearlyData() {
-     * if (isLinked(LAST_YEAR) || isLinked(THIS_YEAR)) {
-     * cachedYearlyData.getValue().ifPresentOrElse(values -> {
-     * Aggregate years = values.aggregats.years;
-     * updateKwhChannel(LAST_YEAR, years.datas.get(0));
-     * if (years.datas.size() > 1) {
-     * updateKwhChannel(THIS_YEAR, years.datas.get(1));
-     * } else {
-     * updateKwhChannel(THIS_YEAR, 0.0);
-     * }
-     * }, () -> {
-     * if (ZonedDateTime.now().getDayOfYear() == 1) {
-     * updateKwhChannel(THIS_YEAR, 0.0);
-     * updateKwhChannel(LAST_YEAR, Double.NaN);
-     * } else {
-     * updateKwhChannel(THIS_YEAR, Double.NaN);
-     * }
-     * });
-     * }
-     * }
-     */
+    }
 
     private void updateKwhChannel(String channelId, double consumption) {
         logger.debug("Update channel {} with {}", channelId, consumption);
@@ -455,6 +441,11 @@ public class LinkyHandler extends BaseThingHandler {
         logger.debug("Update channel {} with {}", channelId, power);
         updateState(channelId, Double.isNaN(power) ? UnDefType.UNDEF
                 : new QuantityType<>(power, MetricPrefix.KILO(Units.VOLT_AMPERE)));
+    }
+
+    private void updateTempoChannel(String channelId, int tempoValue) {
+        logger.debug("Update channel {} with {}", channelId, tempoValue);
+        updateState(channelId, new DecimalType(tempoValue));
     }
 
     /**
@@ -551,13 +542,13 @@ public class LinkyHandler extends BaseThingHandler {
         return null;
     }
 
-    private @Nullable TempoResponse getTempoData() {
+    private @Nullable TempoResponse getTempoData(LocalDate from, LocalDate to) {
         logger.debug("getTempoData from");
 
         EnedisHttpApi api = this.enedisApi;
         if (api != null) {
             try {
-                TempoResponse result = api.getTempoData(this);
+                TempoResponse result = api.getTempoData(this, from, to);
                 updateStatus(ThingStatus.ONLINE);
                 return result;
             } catch (LinkyException e) {
@@ -639,40 +630,42 @@ public class LinkyHandler extends BaseThingHandler {
         }
 
         if (meterReading != null) {
-            meterReading.weekValue = new IntervalReading[208];
-            meterReading.monthValue = new IntervalReading[48];
-            meterReading.yearValue = new IntervalReading[4];
+            if (meterReading.weekValue == null) {
+                meterReading.weekValue = new IntervalReading[208];
+                meterReading.monthValue = new IntervalReading[48];
+                meterReading.yearValue = new IntervalReading[4];
 
-            for (int idx = 0; idx < 208; idx++) {
-                meterReading.weekValue[idx] = new IntervalReading();
-            }
-            for (int idx = 0; idx < 48; idx++) {
-                meterReading.monthValue[idx] = new IntervalReading();
-            }
-            for (int idx = 0; idx < 4; idx++) {
-                meterReading.yearValue[idx] = new IntervalReading();
-            }
+                for (int idx = 0; idx < 208; idx++) {
+                    meterReading.weekValue[idx] = new IntervalReading();
+                }
+                for (int idx = 0; idx < 48; idx++) {
+                    meterReading.monthValue[idx] = new IntervalReading();
+                }
+                for (int idx = 0; idx < 4; idx++) {
+                    meterReading.yearValue[idx] = new IntervalReading();
+                }
 
-            int size = meterReading.dayValue.length;
-            int baseYear = meterReading.dayValue[0].date.getYear();
+                int size = meterReading.dayValue.length;
+                int baseYear = meterReading.dayValue[0].date.getYear();
 
-            for (int idx = 0; idx < size; idx++) {
-                IntervalReading ir = meterReading.dayValue[idx];
-                LocalDateTime dt = ir.date;
-                double value = ir.value;
+                for (int idx = 0; idx < size; idx++) {
+                    IntervalReading ir = meterReading.dayValue[idx];
+                    LocalDateTime dt = ir.date;
+                    double value = ir.value;
 
-                int idxYear = dt.getYear() - baseYear;
+                    int idxYear = dt.getYear() - baseYear;
 
-                int dayOfYear = dt.getDayOfYear();
-                int week = ((dayOfYear - 1) / 7) + 1;
-                int month = dt.getMonthValue();
+                    int dayOfYear = dt.getDayOfYear();
+                    int week = ((dayOfYear - 1) / 7) + 1;
+                    int month = dt.getMonthValue();
 
-                int idxMonth = (idxYear * 12) + month;
-                int idxWeek = (idxYear * 52) + week;
+                    int idxMonth = (idxYear * 12) + month;
+                    int idxWeek = (idxYear * 52) + week;
 
-                meterReading.weekValue[idxWeek].value += value;
-                meterReading.monthValue[idxMonth].value += value;
-                meterReading.yearValue[idxYear].value += value;
+                    meterReading.weekValue[idxWeek].value += value;
+                    meterReading.monthValue[idxMonth].value += value;
+                    meterReading.yearValue[idxYear].value += value;
+                }
             }
         }
 
