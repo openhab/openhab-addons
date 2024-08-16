@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 /**
  * The {@link UserInfo} holds informations about energy delivery point
@@ -21,7 +21,7 @@ import java.util.HashMap;
  * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
-public class TempoResponse extends HashMap<String, String> {
+public class TempoResponse extends LinkedHashMap<String, String> {
     @java.io.Serial
     private static final long serialVersionUID = 362498820763181264L;
 }
