@@ -132,20 +132,6 @@ public class EnedisHttpApi {
         }
     }
 
-    /*
-     * private String getData(String url) throws LinkyException {
-     * try {
-     * ContentResponse result = httpClient.GET(url);
-     * if (result.getStatus() != 200) {
-     * throw new LinkyException("Error requesting '%s' : %s", url, result.getContentAsString());
-     * }
-     * return result.getContentAsString();
-     * } catch (InterruptedException | ExecutionException | TimeoutException e) {
-     * throw new LinkyException(e, "Error getting url : '%s'", url);
-     * }
-     * }
-     */
-
     public PrmInfo getPrmInfo(LinkyHandler handler, String prmId) throws LinkyException {
         if (!apiBridgeHandler.isConnected()) {
             apiBridgeHandler.initialize();
@@ -161,11 +147,13 @@ public class EnedisHttpApi {
         result.identityInfo = getIdentity(handler, prmId);
         result.contactInfo = getContact(handler, prmId);
 
+        result.addressInfo = result.usagePointInfo.usagePointAddresses;
+
         result.prmId = result.usagePointInfo.usagePointId;
-        result.customerId = customer.customerId;
+        result.customerId = "";
+        // customer.customerId;
 
         return result;
-
     }
 
     public String formatUrl(String apiUrl, String prmId) {
@@ -354,8 +342,11 @@ public class EnedisHttpApi {
         return getMeasures(handler, apiBridgeHandler.getMaxPowerUrl(), prmId, from, to);
     }
 
-    public TempoResponse getTempoData(LinkyHandler handler) throws LinkyException {
-        String url = String.format(apiBridgeHandler.getTempoUrl(), "2024-01-01", "2024-08-30");
+    public TempoResponse getTempoData(LinkyHandler handler, LocalDate from, LocalDate to) throws LinkyException {
+        String dtStart = from.format(apiBridgeHandler.getApiDateFormatYearsFirst());
+        String dtEnd = to.format(apiBridgeHandler.getApiDateFormatYearsFirst());
+
+        String url = String.format(apiBridgeHandler.getTempoUrl(), dtStart, dtEnd);
 
         if (url.isEmpty()) {
             return new TempoResponse();
