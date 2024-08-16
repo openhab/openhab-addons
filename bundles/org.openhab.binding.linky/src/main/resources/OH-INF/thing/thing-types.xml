@@ -121,39 +121,39 @@
 			<channel id="day-3" typeId="consumption">
 				<label>Yesterday Consumption</label>
 			</channel>
-            <channel id="consumption" typeId="consumption">
-                <label>Consumption</label>
-            </channel>
-			
-			
-            <channel id="maxPower" typeId="power">
-                <label>Peak Value</label>
-                <description>Maximum power usage value</description>
-            </channel>
+			<channel id="consumption" typeId="consumption">
+				<label>Consumption</label>
+			</channel>
+
+
+			<channel id="maxPower" typeId="power">
+				<label>Peak Value</label>
+				<description>Maximum power usage value</description>
+			</channel>
 
 
 			<channel id="power" typeId="power">
-                <label>Peak Value Yesterday</label>
-                <description>Maximum power usage value for Yesterday</description>
-            </channel>
+				<label>Peak Value Yesterday</label>
+				<description>Maximum power usage value for Yesterday</description>
+			</channel>
 			<channel id="timestamp" typeId="timestamp">
 				<label>Peak Timestamp Yesterday</label>
 				<description>Maximum power usage timestamp for Yesterday</description>
 			</channel>
 
 			<channel id="power-2" typeId="power">
-                <label>Peak Value Day-2</label>
-                <description>Maximum power usage value for Day-2</description>
-            </channel>
+				<label>Peak Value Day-2</label>
+				<description>Maximum power usage value for Day-2</description>
+			</channel>
 			<channel id="timestamp-2" typeId="timestamp">
 				<label>Peak Timestamp Day-2</label>
 				<description>Maximum power usage timestamp for Day-2</description>
 			</channel>
 
 			<channel id="power-3" typeId="power">
-                <label>Peak Value Day-3</label>
-                <description>Maximum power usage value for Day-3</description>
-            </channel>
+				<label>Peak Value Day-3</label>
+				<description>Maximum power usage value for Day-3</description>
+			</channel>
 			<channel id="timestamp-3" typeId="timestamp">
 				<label>Peak Timestamp Day-3</label>
 				<description>Maximum power usage timestamp for Day-3</description>
@@ -173,13 +173,13 @@
 			<channel id="week-2" typeId="consumption">
 				<label>Last Week Consumption</label>
 			</channel>
-            <channel id="consumption" typeId="consumption">
-                <label>Consumption</label>
-            </channel>
-            <channel id="maxPower" typeId="power">
-	            <label>Peak Value</label>
-                <description>Maximum power usage value</description>
-            </channel>
+			<channel id="consumption" typeId="consumption">
+				<label>Consumption</label>
+			</channel>
+			<channel id="maxPower" typeId="power">
+				<label>Peak Value</label>
+				<description>Maximum power usage value</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -195,13 +195,13 @@
 			<channel id="month-2" typeId="consumption">
 				<label>Last Month Consumption</label>
 			</channel>
-            <channel id="consumption" typeId="consumption">
-                <label>Consumption</label>
-            </channel>
-            <channel id="maxPower" typeId="power">
-                <label>Peak Value</label>
-                <description>Maximum power usage value</description>
-            </channel>
+			<channel id="consumption" typeId="consumption">
+				<label>Consumption</label>
+			</channel>
+			<channel id="maxPower" typeId="power">
+				<label>Peak Value</label>
+				<description>Maximum power usage value</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -217,13 +217,13 @@
 			<channel id="year-2" typeId="consumption">
 				<label>Last Year Consumption</label>
 			</channel>
-            <channel id="consumption" typeId="consumption">
-                <label>Consumption</label>
-            </channel>
-            <channel id="maxPower" typeId="power">
-                <label>Peak Value</label>
-                <description>Maximum power usage value</description>
-            </channel>
+			<channel id="consumption" typeId="consumption">
+				<label>Consumption</label>
+			</channel>
+			<channel id="maxPower" typeId="power">
+				<label>Peak Value</label>
+				<description>Maximum power usage value</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 
@@ -233,9 +233,9 @@
 			<channel id="tempoInfoToday" typeId="tempoValue">
 				<label>Tempo Today color</label>
 			</channel>
-            <channel id="tempoInfoTomorrow" typeId="tempoValue">
-                <label>Tempo Today color</label>
-            </channel>
+			<channel id="tempoInfoTomorrow" typeId="tempoValue">
+				<label>Tempo Today color</label>
+			</channel>
 			<channel id="tempoInfoTimeSeries" typeId="tempoValue">
 				<label>Tempo day information</label>
 			</channel>
@@ -309,18 +309,18 @@
 			</channel>
 		</channels>
 	</channel-group-type>
-	
+
 	<channel-type id="tempoValue">
-	    <item-type>Number</item-type>
-        <label>Tempo color information</label>
-        <description>This status describes the tempo color of a day.</description>
-        <state>
-            <options>
-                <option value="0">Blue</option>
-                <option value="1">White</option>
-                <option value="2">Red</option>
-            </options>
-        </state>
+		<item-type>Number</item-type>
+		<label>Tempo color information</label>
+		<description>This status describes the tempo color of a day.</description>
+		<state>
+			<options>
+				<option value="0">Blue</option>
+				<option value="1">White</option>
+				<option value="2">Red</option>
+			</options>
+		</state>
 	</channel-type>
 
 	<channel-type id="info" advanced="false">
@@ -352,6 +352,6 @@
 		<category>time</category>
 		<state readOnly="true"/>
 	</channel-type>
-	
-	
+
+
 </thing:thing-descriptions>
