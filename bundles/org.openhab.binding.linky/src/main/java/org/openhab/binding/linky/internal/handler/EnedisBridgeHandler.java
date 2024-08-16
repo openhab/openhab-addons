@@ -100,6 +100,11 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     }
 
     @Override
+    public double getDivider() {
+        return 1000.00;
+    }
+
+    @Override
     public String getBaseUrl() {
         return BASE_URL;
     }
