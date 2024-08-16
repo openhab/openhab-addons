@@ -893,7 +893,6 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Create a filtered resource list that contains only automation resources
      */
     private List<Resource> getAutomationsList(Collection<Resource> resources) {
-        return resources.stream().filter(r -> (ResourceType.BEHAVIOR_INSTANCE == r.getType()) && r.isStateNull())
-                .toList();
+        return resources.stream().filter(r -> r.isAutomationResource()).toList();
     }
 }

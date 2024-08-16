@@ -109,6 +109,7 @@ public class Resource {
     private @Nullable @SerializedName("contact_report") ContactReport contactReport;
     private @Nullable @SerializedName("tamper_reports") List<TamperReport> tamperReports;
     private @Nullable JsonElement state;
+    private @Nullable Configuration configuration;
 
     /**
      * Constructor
@@ -930,7 +931,9 @@ public class Resource {
                 getType().name().toLowerCase());
     }
 
-    public boolean isStateNull() {
-        return Objects.isNull(state);
+    public boolean isAutomationResource() {
+        Configuration configuration = this.configuration;
+        return Objects.nonNull(configuration) && !configuration.hasDeviceElement()
+                && (ResourceType.BEHAVIOR_INSTANCE == getType());
     }
 }
