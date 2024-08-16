@@ -373,7 +373,5 @@ public class EnedisHttpApi {
             logger.debug("invalid JSON response not matching ConsumptionReport.class: {}", data);
             throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", url);
         }
-
-        // return data;
     }
 }
