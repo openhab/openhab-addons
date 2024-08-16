@@ -109,47 +109,6 @@ public class LinkyHandler extends BaseThingHandler {
             return meterReading;
         });
 
-<<<<<<< HEAD
-        /*
-         * this.cachedPowerData = new ExpiringDayCache<>("power cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-         * // We request data for yesterday and the day before yesterday, even if the data for the day before yesterday
-         * // is not needed by the binding. This is only a workaround to an API bug that will return
-         * // INTERNAL_SERVER_ERROR rather than the expected data with a NaN value when the data for yesterday is not
-         * // yet available.
-         * // By requesting two days, the API is not failing and you get the expected NaN value for yesterday when the
-         * // data is not yet available.
-         * LocalDate today = LocalDate.now();
-         * Consumption consumption = getPowerData(today.minusDays(2), today);
-         * if (consumption != null) {
-         * logData(consumption.aggregats.days, "Day (peak)", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME,
-         * Target.ALL);
-         * consumption = getConsumptionAfterChecks(consumption, Target.LAST);
-         * }
-         * return consumption;
-         * });
-         *
-         *
-         * this.cachedMonthlyData = new ExpiringDayCache<>("monthly cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-         * LocalDate today = LocalDate.now();
-         * Consumption consumption = getConsumptionData(today.withDayOfMonth(1).minusMonths(1), today);
-         * if (consumption != null) {
-         * logData(consumption.aggregats.months, "Month", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
-         * consumption = getConsumptionAfterChecks(consumption, Target.LAST);
-         * }
-         * return consumption;
-         * });
-         *
-         * this.cachedYearlyData = new ExpiringDayCache<>("yearly cache", REFRESH_FIRST_HOUR_OF_DAY, () -> {
-         * LocalDate today = LocalDate.now();
-         * Consumption consumption = getConsumptionData(LocalDate.of(today.getYear() - 1, 1, 1), today);
-         * if (consumption != null) {
-         * logData(consumption.aggregats.years, "Year", true, DateTimeFormatter.ISO_LOCAL_DATE_TIME, Target.ALL);
-         * consumption = getConsumptionAfterChecks(consumption, Target.LAST);
-         * }
-         * return consumption;
-         * });
-         */
-=======
         // We request data for yesterday and the day before yesterday, even if the data for the day before yesterday
         // is not needed by the binding. This is only a workaround to an API bug that will return
         // INTERNAL_SERVER_ERROR rather than the expected data with a NaN value when the data for yesterday is not yet
@@ -174,7 +133,6 @@ public class LinkyHandler extends BaseThingHandler {
             TempoResponse tempoData = getTempoData(today.minusDays(1095), today.plusDays(1));
             return tempoData;
         });
->>>>>>> 7a863e3128 (review channel definitions)
     }
 
     @Override
@@ -592,6 +550,7 @@ public class LinkyHandler extends BaseThingHandler {
         if (command instanceof RefreshType) {
             logger.debug("Refreshing channel {}", channelUID.getId());
             boolean connectedBefore = isConnected();
+<<<<<<< HEAD
             switch (channelUID.getId()) {
                 case YESTERDAY:
                 case LAST_WEEK:
@@ -613,6 +572,13 @@ public class LinkyHandler extends BaseThingHandler {
                 default:
                     break;
             }
+=======
+
+            updateEnergyData();
+            updatePowerData();
+            updateTempoTimeSeries();
+
+>>>>>>> d96bda22d5 (fix refresh)
             if (!connectedBefore && isConnected()) {
                 disconnect();
             }
