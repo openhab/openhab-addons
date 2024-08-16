@@ -73,6 +73,7 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
             + "undefined/prms/%s/donnees-pmax?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
 
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final DateTimeFormatter API_DATE_FORMAT_YEAR_FIRST = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     private static final String URL_ENEDIS_AUTHENTICATE = BASE_URL + "/authenticate?target=" + URL_COMPTE_PART;
 
@@ -150,6 +151,11 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
     @Override
     public DateTimeFormatter getApiDateFormat() {
         return API_DATE_FORMAT;
+    }
+
+    @Override
+    public DateTimeFormatter getApiDateFormatYearsFirst() {
+        return API_DATE_FORMAT_YEAR_FIRST;
     }
 
     @Override
