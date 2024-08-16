@@ -60,6 +60,9 @@ import org.openhab.core.types.TimeSeries.Policy;
 import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.threeten.extra.Months;
+import org.threeten.extra.Weeks;
+import org.threeten.extra.Years;
 
 /**
  * The {@link LinkyHandler} is responsible for handling commands, which are
@@ -83,6 +86,7 @@ public class LinkyHandler extends BaseThingHandler {
     private @Nullable ScheduledFuture<?> refreshJob;
     private LinkyConfiguration config;
     private @Nullable EnedisHttpApi enedisApi;
+    private double divider = 1.00;
 
     private enum Target {
         FIRST,
@@ -149,6 +153,7 @@ public class LinkyHandler extends BaseThingHandler {
             return;
         }
         enedisApi = bridgeHandler.getEnedisApi();
+        divider = bridgeHandler.getDivider();
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -299,8 +304,6 @@ public class LinkyHandler extends BaseThingHandler {
     private synchronized void updatePowerData() {
         dailyConsumptionMaxPower.getValue().ifPresentOrElse(values -> {
             int dSize = values.dayValue.length;
-            double divider = 1000.00;
-            divider = 1.00;
 
             updateVAChannel(PEAK_POWER_DAY_MINUS_1, values.dayValue[dSize - 1].value / divider);
             updateState(PEAK_POWER_TS_DAY_MINUS_1,
@@ -338,8 +341,7 @@ public class LinkyHandler extends BaseThingHandler {
     private synchronized void updateEnergyData() {
         dailyConsumption.getValue().ifPresentOrElse(values -> {
             int dSize = values.dayValue.length;
-            double divider = 1000.00;
-            divider = 1.00;
+
             updateKwhChannel(DAY_MINUS_1, values.dayValue[dSize - 1].value / divider);
             updateKwhChannel(DAY_MINUS_2, values.dayValue[dSize - 2].value / divider);
             updateKwhChannel(DAY_MINUS_3, values.dayValue[dSize - 3].value / divider);
@@ -597,27 +599,44 @@ public class LinkyHandler extends BaseThingHandler {
 
         if (meterReading != null) {
             if (meterReading.weekValue == null) {
-                meterReading.weekValue = new IntervalReading[208];
-                meterReading.monthValue = new IntervalReading[48];
-                meterReading.yearValue = new IntervalReading[4];
 
-                for (int idx = 0; idx < 208; idx++) {
+                LocalDate startDate = meterReading.dayValue[0].date.toLocalDate();
+                LocalDate endDate = meterReading.dayValue[meterReading.dayValue.length - 1].date.toLocalDate();
+
+                int weeksNum = Weeks.between(startDate, endDate).getAmount() + 1;
+                int monthsNum = Months.between(startDate, endDate).getAmount() + 1;
+                int yearsNum = Years.between(startDate, endDate).getAmount() + 2;
+
+                meterReading.weekValue = new IntervalReading[weeksNum];
+                meterReading.monthValue = new IntervalReading[monthsNum];
+                meterReading.yearValue = new IntervalReading[yearsNum];
+
+                for (int idx = 0; idx < weeksNum; idx++) {
                     meterReading.weekValue[idx] = new IntervalReading();
                 }
-                for (int idx = 0; idx < 48; idx++) {
+                for (int idx = 0; idx < monthsNum; idx++) {
                     meterReading.monthValue[idx] = new IntervalReading();
                 }
-                for (int idx = 0; idx < 4; idx++) {
+                for (int idx = 0; idx < yearsNum; idx++) {
                     meterReading.yearValue[idx] = new IntervalReading();
                 }
 
                 int size = meterReading.dayValue.length;
                 int baseYear = meterReading.dayValue[0].date.getYear();
+                int baseMonth = meterReading.dayValue[0].date.getMonthValue();
+                int baseDayOfYear = meterReading.dayValue[0].date.getDayOfYear();
+                int baseWeek = ((baseDayOfYear - 1) / 7) + 1;
 
                 for (int idx = 0; idx < size; idx++) {
                     IntervalReading ir = meterReading.dayValue[idx];
                     LocalDateTime dt = ir.date;
                     double value = ir.value;
+
+                    /*
+                     * int idxWeek = Weeks.between(startDate, dt).getAmount();
+                     * int idxMonth = Months.between(startDate, dt).getAmount();
+                     * int idxYear = dt.getYear() - baseYear;
+                     */
 
                     int idxYear = dt.getYear() - baseYear;
 
@@ -625,12 +644,29 @@ public class LinkyHandler extends BaseThingHandler {
                     int week = ((dayOfYear - 1) / 7) + 1;
                     int month = dt.getMonthValue();
 
-                    int idxMonth = (idxYear * 12) + month;
-                    int idxWeek = (idxYear * 52) + week;
+                    int idxMonth = (idxYear * 12) + month - baseMonth;
+                    int idxWeek = (idxYear * 52) + week - baseWeek;
+
+                    if (idxWeek >= weeksNum) {
+                        continue;
+                    }
+                    if (idxMonth >= monthsNum) {
+                        continue;
+                    }
 
                     meterReading.weekValue[idxWeek].value += value;
                     meterReading.monthValue[idxMonth].value += value;
                     meterReading.yearValue[idxYear].value += value;
+
+                    if (meterReading.weekValue[idxWeek].date == null) {
+                        meterReading.weekValue[idxWeek].date = dt;
+                    }
+                    if (meterReading.monthValue[idxMonth].date == null) {
+                        meterReading.monthValue[idxMonth].date = LocalDateTime.of(dt.getYear(), month, 1, 0, 0);
+                    }
+                    if (meterReading.yearValue[idxYear].date == null) {
+                        meterReading.yearValue[idxYear].date = dt;
+                    }
                 }
             }
         }
