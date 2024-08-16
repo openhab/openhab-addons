@@ -246,7 +246,7 @@ unlocked=OFF
 So the full `toItem` transformation is
 
 ```
-JSONPATH:$.device.status.temperature∩MAP:doorlock.map
+JSONPATH:$.device.status.lock∩MAP:doorlock.map
 ```
 
 #### Outgoing values (`toChannel`)
