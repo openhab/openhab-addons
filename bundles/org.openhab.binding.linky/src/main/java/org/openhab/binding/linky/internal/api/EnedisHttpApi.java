@@ -138,20 +138,24 @@ public class EnedisHttpApi {
         }
 
         PrmInfo result = new PrmInfo();
-        Customer customer = getContract(handler, prmId);
-        UsagePoint usagePoint = customer.usagePoints[0];
+        result.prmId = prmId;
 
-        result.contractInfo = usagePoint.contracts;
-        result.usagePointInfo = usagePoint.usagePoint;
+        result.contractInfo.subscribedPower = "Na";
 
-        result.identityInfo = getIdentity(handler, prmId);
-        result.contactInfo = getContact(handler, prmId);
+        try {
+            Customer customer = getContract(handler, prmId);
+            UsagePoint usagePoint = customer.usagePoints[0];
 
-        result.addressInfo = result.usagePointInfo.usagePointAddresses;
+            result.contractInfo = usagePoint.contracts;
+            result.usagePointInfo = usagePoint.usagePoint;
 
-        result.prmId = result.usagePointInfo.usagePointId;
-        result.customerId = "";
-        // customer.customerId;
+            result.identityInfo = getIdentity(handler, prmId);
+            result.contactInfo = getContact(handler, prmId);
+
+            result.addressInfo = result.usagePointInfo.usagePointAddresses;
+        } catch (Exception ex) {
+            logger.debug("Warning, unable to read contract info");
+        }
 
         return result;
     }
