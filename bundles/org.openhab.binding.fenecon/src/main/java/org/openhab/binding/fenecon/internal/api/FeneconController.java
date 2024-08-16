@@ -22,6 +22,7 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.util.Base64;
+import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.fenecon.internal.FeneconConfiguration;
@@ -78,11 +79,11 @@ public class FeneconController {
      * Queries the data for a specified channel.
      *
      * @param channel Channel to be queried, e.g. _sum/State .
-     * @return {@link FeneconResponse}
+     * @return {@link FeneconResponse} can be optional if values are not available.
      * @throws FeneconException is thrown if there are problems with the connection or processing of data to the FENECON
      *             system.
      */
-    public FeneconResponse requestChannel(String channel) throws FeneconException {
+    public Optional<FeneconResponse> requestChannel(String channel) throws FeneconException {
         try {
             HttpRequest request = baseHttpRequest.uri(new URI(getBaseUrl(config) + "rest/channel/" + channel)).build();
             logger.trace("FENECON - request: {}", request);
@@ -110,13 +111,20 @@ public class FeneconController {
         }
     }
 
-    private FeneconResponse createResponseFromJson(JsonObject response) {
+    private Optional<FeneconResponse> createResponseFromJson(JsonObject response) {
         // Example response: {"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
         // 0..100","unit":"%","value":99}
+
+        if (response.get("value").isJsonNull()) {
+            // Example problem response: {"address":"_sum/EssSoc","type":"INTEGER","accessMode":"RO","text":"Range
+            // 0..100","unit":"%","value":null}
+            return Optional.empty();
+        }
+
         String address = response.get("address").getAsString();
         String text = response.get("text").getAsString();
         String value = response.get("value").getAsString();
 
-        return new FeneconResponse(address, text, value);
+        return Optional.of(new FeneconResponse(address, text, value));
     }
 }

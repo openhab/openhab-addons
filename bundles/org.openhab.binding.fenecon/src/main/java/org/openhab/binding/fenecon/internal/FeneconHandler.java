@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.fenecon.internal;
 
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -70,9 +71,12 @@ public class FeneconHandler extends BaseThingHandler {
         for (String eachChannel : FeneconBindingConstants.ADDRESSES) {
             try {
                 @SuppressWarnings("null")
-                FeneconResponse response = feneconController.requestChannel(eachChannel);
+                Optional<FeneconResponse> response = feneconController.requestChannel(eachChannel);
 
-                processDataPoint(response);
+                if (response.isPresent()) {
+                    processDataPoint(response.get());
+                }
+
                 updateStatus(ThingStatus.ONLINE);
             } catch (FeneconException err) {
                 logger.trace("FENECON - connection problem on FENECON channel {}", eachChannel, err);
