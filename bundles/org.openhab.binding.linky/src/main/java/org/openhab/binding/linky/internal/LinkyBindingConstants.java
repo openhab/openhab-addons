@@ -58,6 +58,11 @@ public class LinkyBindingConstants {
     public static final String DAY_MINUS_2 = "daily#day-2";
     public static final String DAY_MINUS_3 = "daily#day-3";
 
+    public static final String PEAK_POWER_DAILY = "daily#maxPower";
+    public static final String PEAK_POWER_WEEKLY = "weekly#maxPower";
+    public static final String PEAK_POWER_MONTHLY = "monthly#maxPower";
+    public static final String PEAK_POWER_YEARLY = "yearly#maxPower";
+
     public static final String PEAK_POWER_DAY_MINUS_1 = "daily#power";
     public static final String PEAK_POWER_TS_DAY_MINUS_1 = "daily#timestamp";
 
