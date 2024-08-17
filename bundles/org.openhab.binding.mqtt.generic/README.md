@@ -58,7 +58,8 @@ The following optional parameters can be set for the Thing:
 - **availabilityTopic**: The MQTT topic that represents the availability of the thing. This can be the thing's LWT topic.
 - **payloadAvailable**: Payload of the `Availability Topic`, when the device is available. Default: `ON`.
 - **payloadNotAvailable**: Payload of the `Availability Topic`, when the device is _not_ available. Default: `OFF`.
-- **transformationPattern**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to the incoming availability payload. Transformations can be chained by separating them with the mathematical intersection character "∩". The result of the transformations is then checked against `payloadAvailable` and `payloadNotAvailable`.
+- **transformationPattern**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to the incoming availability payload.
+  The result of the transformations is then checked against `payloadAvailable` and `payloadNotAvailable`.
 
 ## Supported Channels
 
@@ -266,7 +267,16 @@ If the availability status is available, it can be configured to set the Thing s
 ```java
 Thing mqtt:topic:bedroom1-switch (mqtt:broker:myInsecureBroker) [ availabilityTopic="tele/bedroom1-switch/LWT", payloadAvailable="Online", payloadNotAvailable="Offline" ] {
     Channels:
-         Type switch        : power        [ stateTopic="stat/bedroom1-switch/RESULT", transformationPattern="REGEX:(.*POWER.*)∩JSONPATH:$.POWER", commandTopic="cmnd/bedroom1-switch/POWER" ]
+         Type switch : power [ stateTopic="stat/bedroom1-switch/RESULT", transformationPattern="REGEX((.*POWER.*))∩JSONPATH($.POWER)", commandTopic="cmnd/bedroom1-switch/POWER" ]
+}
+```
+
+The transformation pattern can be chained using the intersection character "∩" as above, or by listing them separately:
+
+```java
+Thing mqtt:topic:bedroom1-switch (mqtt:broker:myInsecureBroker) [ availabilityTopic="tele/bedroom1-switch/LWT", payloadAvailable="Online", payloadNotAvailable="Offline" ] {
+    Channels:
+         Type switch : power [ stateTopic="stat/bedroom1-switch/RESULT", transformationPattern="REGEX((.*POWER.*))","JSONPATH($.POWER)", commandTopic="cmnd/bedroom1-switch/POWER" ]
 }
 ```
 
@@ -277,6 +287,19 @@ Thing mqtt:topic:bedroom1-switch (mqtt:broker:myInsecureBroker) [ availabilityTo
 - The HomeAssistant Light Component does not support XY color changes.
 - The HomeAssistant Climate Components is not yet supported.
 
+## Value Transformations
+
+[Transformations](/docs/configuration/transformations.html) can be applied to:
+
+- Incoming availability payload
+- Incoming value
+- Outgoing value
+
+Transformations can be chained in the UI by listing each transformation on a separate line, or by separating them with the mathematical intersection character "∩".
+Transformations are defined using this syntax: `TYPE(FUNCTION)`, e.g.: `JSONPATH($.path)`.
+The syntax: `TYPE:FUNCTION` is still supported, e.g.: `JSONPATH:$.path`.
+Please note that the values will be discarded if one of the transformations failed (e.g. REGEX did not match) or returned `null`.
+
 ## Incoming Value Transformation
 
 All mentioned channels allow an optional transformation for incoming MQTT topic values.
@@ -285,20 +308,18 @@ This is required if your received value is wrapped in a JSON or XML response.
 
 Here are a few examples to unwrap a value from a complex response:
 
-| Received value                                                      | Tr. Service | Transformation                            |
-|---------------------------------------------------------------------|-------------|-------------------------------------------|
-| `{device: {status: { temperature: 23.2 }}}`                         | JSONPATH    | `JSONPATH:$.device.status.temperature`    |
-| `<device><status><temperature>23.2</temperature></status></device>` | XPath       | `XPath:/device/status/temperature/text()` |
-| `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX::(.*?)°`                           |
-
-Transformations can be chained by separating them with the mathematical intersection character "∩".
-Please note that the incoming value will be discarded if one transformation fails (e.g. REGEX did not match).
+| Received value                                                      | Tr. Service | Transformation                             |
+|---------------------------------------------------------------------|-------------|--------------------------------------------|
+| `{device: {status: { temperature: 23.2 }}}`                         | JSONPATH    | `JSONPATH($.device.status.temperature)`    |
+| `<device><status><temperature>23.2</temperature></status></device>` | XPath       | `XPath(/device/status/temperature/text())` |
+| `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX(:(.*?)°)`                           |
+| `abc`                                                               | JS          | `JS(to_uppercase.js)`                      |
+| `abc`                                                               | JS (inline) | `JS(\| input.toUpperCase() )`              |
 
 ## Outgoing Value Transformation
 
 All mentioned channels allow an optional transformation for outgoing values.
 Please prefer formatting as described in the next section whenever possible.
-Please note that value will be discarded and not sent if one transformation fails (e.g. REGEX did not match).
 
 ## Format before Publish
 
