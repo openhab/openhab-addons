@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-type id="actual-ambient-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Actual Ambient Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="actual-power-type">
+		<item-type unitHint="%">Number:Power</item-type>
+		<label>Actual Power (input or excess)</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="actual-power-consumption-type">
+		<item-type unitHint="%">Number:Power</item-type>
+		<label>Actual Power Consumption</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="boiler1-actual-high-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler 1 Actual High Temperature</label>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="boiler150-maximum-boiler-temperature-type">
+		<item-type>Number:Temperature</item-type>
+		<label>Boiler 1 Maximum Boiler Temperature</label>
+		<state readOnly="false" pattern="%.1f %unit%"/>
+	</channel-type>
+</thing:thing-descriptions>
