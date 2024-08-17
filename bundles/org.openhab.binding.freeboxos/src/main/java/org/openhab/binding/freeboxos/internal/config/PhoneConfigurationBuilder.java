@@ -41,13 +41,20 @@ public class PhoneConfigurationBuilder {
     }
 
     public DiscoveryResultBuilder configure(ThingUID bridgeUID, Status config) {
-        ThingUID thingUID = new ThingUID("dect".equalsIgnoreCase(config.type()) ? THING_TYPE_DECT : THING_TYPE_FXS,
-                bridgeUID, Integer.toString(config.id()));
+        ThingUID thingUID;
+        String label;
+        if ("dect".equalsIgnoreCase(config.type())) {
+            thingUID = new ThingUID(THING_TYPE_DECT, bridgeUID, Integer.toString(config.id()));
+            label = "DECT Phone";
+        } else {
+            thingUID = new ThingUID(THING_TYPE_FXS, bridgeUID, Integer.toString(config.id()));
+            label = "Landline Phone";
+        }
 
         logger.debug("Adding new Freebox Phone {} to inbox", thingUID);
 
         return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                .withProperty(ClientConfiguration.ID, config.id()).withLabel(config.type())
+                .withProperty(ClientConfiguration.ID, config.id()).withLabel(label)
                 .withRepresentationProperty(ClientConfiguration.ID);
     }
 }
