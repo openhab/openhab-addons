@@ -117,6 +117,8 @@ public class WLedSegmentHandler extends BaseThingHandler {
                             localApi.setMasterOn(false, config.segmentIndex);
                             return;
                         }
+                        // do not turn the globalOn in order to allow for configuring this segment for effects that
+                        // start later
                         localApi.setMasterBrightness(percentCommand, config.segmentIndex);
                     }
                     break;
@@ -155,6 +157,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
                         localApi.setMasterOn(OnOffType.ON.equals(command), config.segmentIndex);
                     } else if (command instanceof IncreaseDecreaseType) {
                         if (IncreaseDecreaseType.INCREASE.equals(command)) {
+                            localApi.setGlobalOn(true);
                             if (masterBrightness255.intValue() < 240) {
                                 localApi.sendGetRequest("/win&TT=1000&A=~15"); // 255 divided by 15 = 17 levels
                             } else {
@@ -184,6 +187,11 @@ public class WLedSegmentHandler extends BaseThingHandler {
                             localApi.setMasterHSB(hsbCommand, config.segmentIndex);
                         }
                     } else if (command instanceof PercentType percentCommand) {
+                        if (PercentType.ZERO.equals(percentCommand)) {
+                            localApi.setMasterOn(false, config.segmentIndex);
+                            return;
+                        }
+                        localApi.setGlobalOn(true);
                         localApi.setMasterBrightness(percentCommand, config.segmentIndex);
                     }
                     return;
@@ -216,6 +224,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
                     localApi.setPalette(command.toString(), config.segmentIndex);
                     break;
                 case CHANNEL_FX:
+                    localApi.setGlobalOn(true);
                     localApi.setEffect(command.toString(), config.segmentIndex);
                     break;
                 case CHANNEL_SPEED:
