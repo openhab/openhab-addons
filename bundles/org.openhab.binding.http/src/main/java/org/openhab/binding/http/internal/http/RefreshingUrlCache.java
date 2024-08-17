@@ -86,6 +86,11 @@ public class RefreshingUrlCache {
         logger.trace("Started refresh task for URL '{}' with interval {}s", url, refreshTime);
     }
 
+    public void run(ScheduledExecutorService executor) {
+        executor.schedule(() -> this.refresh(), 1, TimeUnit.SECONDS);
+        logger.trace("Started refresh task for URL '{}'", url);
+    }
+
     public void stop() {
         // clearing all listeners to prevent further updates
         consumers.clear();
@@ -151,7 +156,7 @@ public class RefreshingUrlCache {
         consumers.add(consumer);
     }
 
-    public Optional<ChannelHandlerContent> get() {
+    public Optional<ChannelHandlerContent> getCached() {
         return Optional.ofNullable(lastContent);
     }
 
