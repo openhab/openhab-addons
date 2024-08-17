@@ -58,7 +58,9 @@ The following optional parameters can be set for the Thing:
 - **availabilityTopic**: The MQTT topic that represents the availability of the thing. This can be the thing's LWT topic.
 - **payloadAvailable**: Payload of the `Availability Topic`, when the device is available. Default: `ON`.
 - **payloadNotAvailable**: Payload of the `Availability Topic`, when the device is _not_ available. Default: `OFF`.
-- **transformationPattern**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to the incoming availability payload. Transformations can be chained by separating them with the mathematical intersection character "∩". The result of the transformations is then checked against `payloadAvailable` and `payloadNotAvailable`.
+- **transformationPattern**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to the incoming availability payload.
+  Transformations can be chained by listing each in a separate line in the UI, or by separating them with the mathematical intersection character "∩".
+  The result of the transformations is then checked against `payloadAvailable` and `payloadNotAvailable`.
 
 ## Supported Channels
 
@@ -266,7 +268,16 @@ If the availability status is available, it can be configured to set the Thing s
 ```java
 Thing mqtt:topic:bedroom1-switch (mqtt:broker:myInsecureBroker) [ availabilityTopic="tele/bedroom1-switch/LWT", payloadAvailable="Online", payloadNotAvailable="Offline" ] {
     Channels:
-         Type switch        : power        [ stateTopic="stat/bedroom1-switch/RESULT", transformationPattern="REGEX:(.*POWER.*)∩JSONPATH:$.POWER", commandTopic="cmnd/bedroom1-switch/POWER" ]
+         Type switch : power [ stateTopic="stat/bedroom1-switch/RESULT", transformationPattern="REGEX:(.*POWER.*)∩JSONPATH:$.POWER", commandTopic="cmnd/bedroom1-switch/POWER" ]
+}
+```
+
+The transformation pattern can be chained using the intersection character "∩" as above, or by listing them separately:
+
+```java
+Thing mqtt:topic:bedroom1-switch (mqtt:broker:myInsecureBroker) [ availabilityTopic="tele/bedroom1-switch/LWT", payloadAvailable="Online", payloadNotAvailable="Offline" ] {
+    Channels:
+         Type switch : power [ stateTopic="stat/bedroom1-switch/RESULT", transformationPattern="REGEX:(.*POWER.*)","JSONPATH:$.POWER", commandTopic="cmnd/bedroom1-switch/POWER" ]
 }
 ```
 
@@ -291,7 +302,7 @@ Here are a few examples to unwrap a value from a complex response:
 | `<device><status><temperature>23.2</temperature></status></device>` | XPath       | `XPath:/device/status/temperature/text()` |
 | `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX::(.*?)°`                           |
 
-Transformations can be chained by separating them with the mathematical intersection character "∩".
+Transformations can be chained by listing each in a separate line in the UI, or by separating them with the mathematical intersection character "∩".
 Please note that the incoming value will be discarded if one transformation fails (e.g. REGEX did not match).
 
 ## Outgoing Value Transformation

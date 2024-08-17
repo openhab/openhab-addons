@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.generic;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -76,7 +78,7 @@ public interface AvailabilityTracker {
      *            transformation_pattern is not null).
      */
     void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
-            @Nullable String transformation_pattern,
+            @Nullable List<String> transformation_pattern,
             @Nullable TransformationServiceProvider transformationServiceProvider);
 
     void removeAvailabilityTopic(String availability_topic);

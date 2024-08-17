@@ -132,9 +132,15 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
         ChannelState state = new ChannelState(channelConfig, channelUID, valueState, this);
 
         // Incoming value transformations
-        state.addTransformation(channelConfig.transformationPattern, transformationServiceProvider);
+        if (channelConfig.transformationPattern != null) {
+            channelConfig.transformationPattern.stream()
+                    .forEach(t -> state.addTransformation(t.toString(), transformationServiceProvider));
+        }
         // Outgoing value transformations
-        state.addTransformationOut(channelConfig.transformationPatternOut, transformationServiceProvider);
+        if (channelConfig.transformationPatternOut != null) {
+            channelConfig.transformationPatternOut.stream()
+                    .forEach(t -> state.addTransformationOut(t.toString(), transformationServiceProvider));
+        }
 
         return state;
     }

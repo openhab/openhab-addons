@@ -13,6 +13,7 @@
 package org.openhab.binding.mqtt.generic;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -306,7 +307,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
 
     @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
-            @Nullable String transformation_pattern,
+            @Nullable List<String> transformation_pattern,
             @Nullable TransformationServiceProvider transformationServiceProvider) {
         availabilityStates.computeIfAbsent(availability_topic, topic -> {
             Value value = new OnOffValue(payload_available, payload_not_available);
@@ -329,7 +330,8 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
                         }
                     });
             if (transformation_pattern != null && transformationServiceProvider != null) {
-                state.addTransformation(transformation_pattern, transformationServiceProvider);
+                transformation_pattern.stream()
+                        .forEach(t -> state.addTransformation(t.toString(), transformationServiceProvider));
             }
             MqttBrokerConnection connection = getConnection();
             if (connection != null) {
