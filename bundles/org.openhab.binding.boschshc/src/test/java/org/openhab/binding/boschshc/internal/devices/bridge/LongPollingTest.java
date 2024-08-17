@@ -14,6 +14,7 @@ package org.openhab.binding.boschshc.internal.devices.bridge;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -461,10 +463,35 @@ class LongPollingTest {
         ArgumentCaptor<Throwable> throwableCaptor = ArgumentCaptor.forClass(Throwable.class);
         verify(failureHandler).accept(throwableCaptor.capture());
         Throwable t = throwableCaptor.getValue();
-        assertEquals(
-                "Could not deserialize long poll response: '<HTML><HEAD><TITLE>400</TITLE></HEAD><BODY><H1>400 Unsupported HTTP Protocol Version: /remote/json-rpcHTTP/1.1</H1></BODY></HTML>'",
-                t.getMessage());
-        assertTrue(t.getCause() instanceof JsonSyntaxException);
+        assertThat(t.getMessage(), is(
+                "Could not deserialize long poll response: '<HTML><HEAD><TITLE>400</TITLE></HEAD><BODY><H1>400 Unsupported HTTP Protocol Version: /remote/json-rpcHTTP/1.1</H1></BODY></HTML>'"));
+        assertThat(t.getCause(), instanceOf(JsonSyntaxException.class));
+    }
+
+    @Test
+    void testHandleLongPollResponseNPE() {
+        doThrow(NullPointerException.class).when(longPollHandler).accept(any());
+
+        var resultJson = """
+                {
+                    "result": [
+                        {
+                            "@type": "DeviceServiceData",
+                            "deleted": true,
+                            "id": "CommunicationQuality",
+                            "deviceId": "hdm:ZigBee:30fb10fffe46d732"
+                        }
+                    ],
+                    "jsonrpc":"2.0"
+                }
+                """;
+        fixture.handleLongPollResponse(httpClient, "subscriptionId", resultJson);
+
+        ArgumentCaptor<Throwable> throwableCaptor = ArgumentCaptor.forClass(Throwable.class);
+        verify(failureHandler).accept(throwableCaptor.capture());
+        Throwable t = throwableCaptor.getValue();
+        assertThat(t.getMessage(), is("Error while handling long poll response: '" + resultJson + "'"));
+        assertThat(t.getCause(), instanceOf(NullPointerException.class));
     }
 
     @AfterEach

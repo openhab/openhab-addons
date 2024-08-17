@@ -28,6 +28,4 @@ public class MqttBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID HOMEASSISTANT_MQTT_THING = new ThingTypeUID(BINDING_ID, "homeassistant");
-
-    public static final String CONFIG_HA_CHANNEL = "channel-type:mqtt:ha-channel";
 }

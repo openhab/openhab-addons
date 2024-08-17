@@ -13,6 +13,7 @@
 package org.openhab.binding.mqtt.homie.internal.homie300;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -22,6 +23,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
 import org.openhab.binding.mqtt.homie.generic.internal.MqttBindingConstants;
@@ -55,7 +57,6 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     // Runtime
     public final DeviceCallback callback;
     protected final ChannelGroupUID channelGroupUID;
-    public final ChannelGroupTypeUID channelGroupTypeUID;
     private final String topic;
     private boolean initialized = false;
 
@@ -72,7 +73,6 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
         this.topic = topic + "/" + nodeID;
         this.nodeID = nodeID;
         this.callback = callback;
-        channelGroupTypeUID = new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, UIDUtils.encode(this.topic));
         channelGroupUID = new ChannelGroupUID(thingUID, UIDUtils.encode(nodeID));
         properties = new ChildMap<>();
     }
@@ -117,15 +117,16 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
     /**
      * Return the channel group type for this Node.
      */
-    public ChannelGroupType type() {
-        final List<ChannelDefinition> channelDefinitions = properties.stream()
-                .map(p -> Objects.requireNonNull(p.getChannelDefinition())).collect(Collectors.toList());
-        return ChannelGroupTypeBuilder.instance(channelGroupTypeUID, attributes.name)
+    public ChannelGroupType type(String prefix, MqttChannelTypeProvider channelTypeProvider) {
+        final List<ChannelDefinition> channelDefinitions = properties.stream(propertyOrder(prefix, channelTypeProvider))
+                .map(p -> Objects.requireNonNull(p.getChannelDefinition())).toList();
+        return ChannelGroupTypeBuilder.instance(getChannelGroupTypeUID(prefix), attributes.name)
                 .withChannelDefinitions(channelDefinitions).build();
     }
 
-    public ChannelGroupDefinition getChannelGroupDefinition() {
-        return new ChannelGroupDefinition(channelGroupUID.getId(), channelGroupTypeUID, attributes.name, null);
+    public ChannelGroupDefinition getChannelGroupDefinition(String prefix) {
+        return new ChannelGroupDefinition(channelGroupUID.getId(), getChannelGroupTypeUID(prefix), attributes.name,
+                null);
     }
 
     /**
@@ -219,5 +220,22 @@ public class Node implements AbstractMqttAttributeClass.AttributeChanged {
                 .collect(Collectors.toList()).forEach(topics::addAll);
 
         return topics;
+    }
+
+    public Collection<String> propertyOrder(String prefix, MqttChannelTypeProvider channelTypeProvider) {
+        String[] properties = attributes.properties;
+        if (properties != null) {
+            return Stream.of(properties).toList();
+        }
+        ChannelGroupType channelGroupType = channelTypeProvider.getChannelGroupType(getChannelGroupTypeUID(prefix),
+                null);
+        if (channelGroupType != null) {
+            return channelGroupType.getChannelDefinitions().stream().map(ChannelDefinition::getId).toList();
+        }
+        return this.properties.keySet();
+    }
+
+    private ChannelGroupTypeUID getChannelGroupTypeUID(String prefix) {
+        return new ChannelGroupTypeUID(MqttBindingConstants.BINDING_ID, prefix + "_" + UIDUtils.encode(this.topic));
     }
 }

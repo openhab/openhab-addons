@@ -60,6 +60,17 @@ Also, due to the time the aWATTar API delivers the data for the next day, it doe
 
 ## Channels
 
+### Bridge
+
+The bridge has two channels which support a time-series:
+
+| channel      | type               | description                                                                                                                             |
+| ------------ |--------------------| --------------------------------------------------------------------------------------------------------------------------------------- |
+| market-net   | Number:EnergyPrice | This net market price per kWh. This is directly taken from the price the aWATTar API delivers.                                          |
+| total-net    | Number:EnergyPrice | Sum of net market price and configured base price                                                                                       |
+
+If you need gross prices, please use the [VAT profile](https://www.openhab.org/addons/transformations/vat/).
+
 ### Prices Thing
 
 For every hour, the `prices` thing provides the following prices:

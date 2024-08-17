@@ -8,11 +8,11 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Screen Brightness</label>
 		<description>Brightness level of the screen in percent</description>
-		<category>DimmableLight</category>
+		<category>Light</category>
 		<state pattern="%d %unit%" min="0" max="100"/>
 	</channel-type>
 
-	<channel-type id="lcd-orientation">
+	<channel-type id="lcd-orientation" advanced="true">
 		<item-type>Number</item-type>
 		<label>Screen Orientation</label>
 		<description>Screen Orientation in degrees</description>
@@ -75,11 +75,11 @@
 	</channel-type>
 
 	<channel-type id="fanspeed" advanced="true">
-		<item-type>Number:Frequency</item-type>
+		<item-type unitHint="rpm">Number:Frequency</item-type>
 		<label>Fan Speed</label>
 		<description>Actual measured rotation speed of the fan</description>
 		<category>Fan</category>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%d rpm"/>
 	</channel-type>
 
 	<channel-type id="samba-file-status" advanced="true">
@@ -143,7 +143,7 @@
 		<label>Uptime</label>
 		<description>Time since last reboot of the equipment</description>
 		<category>time</category>
-		<state readOnly="true" pattern="%d %unit%"/>
+		<state readOnly="true" pattern="%1$tdd %1$tHh %1$tMm %1$tSs"/>
 	</channel-type>
 
 	<channel-type id="line-status">
@@ -160,7 +160,7 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="line-type">
+	<channel-type id="line-type" advanced="true">
 		<item-type>String</item-type>
 		<label>Line Type</label>
 		<description>Type of network line connection</description>
@@ -215,7 +215,7 @@
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="airmedia-status">
+	<channel-type id="airmedia-status" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Air Media Enabled</label>
 		<description>Indicates whether Air Media is enabled</description>
@@ -355,7 +355,6 @@
 				<option value="home">Home</option>
 			</options>
 		</state>
-		<autoUpdatePolicy>veto</autoUpdatePolicy>
 	</channel-type>
 
 	<channel-type id="ip-address" advanced="true">
@@ -460,6 +459,79 @@
 		<label>PIN Code</label>
 		<category>oh:freeboxos:pin_code</category>
 		<state pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="sfp-present">
+		<item-type>Switch</item-type>
+		<label>SFP Present</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sfp-alim-ok">
+		<item-type>Switch</item-type>
+		<label>Alimentation Ok</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sfp-has-power">
+		<item-type>Switch</item-type>
+		<label>Power Available</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sfp-has-signal">
+		<item-type>Switch</item-type>
+		<label>Signal Present</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="link">
+		<item-type>Switch</item-type>
+		<label>Link Is Active</label>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="sfp-signal-level">
+		<item-type unitHint="dBm">Number:Power</item-type>
+		<label>Signal Level</label>
+		<category>QualityOfService</category>
+		<state readOnly="true" pattern="%.2f dBm"/>
+	</channel-type>
+
+	<channel-type id="xdsl-ready">
+		<item-type>Switch</item-type>
+		<label>Ready</label>
+		<description>ON when xDSL line connection is synchronized</description>
+		<category>Switch</category>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="xdsl-status" advanced="true">
+		<item-type>String</item-type>
+		<label>Line Status</label>
+		<description>Status of xDSL line connection</description>
+		<state readOnly="true" pattern="%s">
+			<options>
+				<option value="DOWN">Unsynchronized</option>
+				<option value="TRAINING">Synchronizing step 1/4</option>
+				<option value="STARTED">Synchronizing step 2/4</option>
+				<option value="CHAN_ANALYSIS">Synchronizing step 3/4</option>
+				<option value="MSG_EXCHANGE">Synchronizing step 4/4</option>
+				<option value="SHOWTIME">Synchronized</option>
+				<option value="DISABLED">Disabled</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="xdsl-modulation" advanced="true">
+		<item-type>String</item-type>
+		<label>Modulation</label>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

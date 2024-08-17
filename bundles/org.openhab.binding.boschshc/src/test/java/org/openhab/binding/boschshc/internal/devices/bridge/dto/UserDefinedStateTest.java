@@ -53,7 +53,7 @@ public class UserDefinedStateTest {
     @Test
     void testToString() {
         assertEquals(
-                String.format("UserDefinedState{id='%s', name='test user state', state=true, type='UserDefinedState'}",
+                String.format("UserDefinedState{id='%s', name='test user state', state=true, type='userDefinedState'}",
                         testId),
                 fixture.toString());
     }

@@ -84,7 +84,7 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
 
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING,
-                scheduler, channelStateUpdateListener, availabilityTracker, gson, transformationServiceProvider));
+                scheduler, channelStateUpdateListener, availabilityTracker, gson, transformationServiceProvider, true));
 
         HandlerConfiguration config = new HandlerConfiguration("homeassistant", List.of("switch/object"));
 

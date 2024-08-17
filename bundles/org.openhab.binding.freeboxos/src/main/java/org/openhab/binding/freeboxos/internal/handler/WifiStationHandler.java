@@ -57,7 +57,16 @@ public class WifiStationHandler extends HostHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
+        poll();
+    }
 
+    @Override
+    protected void internalForcePoll() throws FreeboxException {
+        super.internalForcePoll();
+        poll();
+    }
+
+    private void poll() throws FreeboxException {
         MACAddress mac = getMac();
         if (mac == null) {
             throw new FreeboxException(
@@ -68,7 +77,7 @@ public class WifiStationHandler extends HostHandler {
         Optional<Station> station = getManager(APManager.class).getStation(mac);
         if (station.isPresent()) {
             Station data = station.get();
-            updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, data.getLastSeen());
+            updateChannelDateTimeState(GROUP_CONNECTIVITY, LAST_SEEN, data.getLastSeen());
             updateChannelString(GROUP_WIFI, WIFI_HOST, SERVER_HOST);
             updateWifiStationChannels(data.signal(), data.getSsid(), data.rxRate(), data.txRate());
             return;
@@ -77,7 +86,7 @@ public class WifiStationHandler extends HostHandler {
         // Search if it is hosted by a repeater
         Optional<LanHost> wifiHost = getManager(RepeaterManager.class).getHost(mac);
         if (wifiHost.isPresent()) {
-            updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, wifiHost.get().getLastSeen());
+            updateChannelDateTimeState(GROUP_CONNECTIVITY, LAST_SEEN, wifiHost.get().getLastSeen());
             LanAccessPoint lanAp = wifiHost.get().accessPoint();
             if (lanAp != null) {
                 updateChannelString(GROUP_WIFI, WIFI_HOST, "%s-%s".formatted(lanAp.type(), lanAp.uid()));

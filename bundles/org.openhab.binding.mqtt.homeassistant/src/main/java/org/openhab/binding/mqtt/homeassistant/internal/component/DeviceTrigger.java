@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.TextValue;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
 
@@ -44,8 +45,8 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
         protected @Nullable String payload;
     }
 
-    public DeviceTrigger(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public DeviceTrigger(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels, true);
 
         if (!"trigger".equals(channelConfiguration.automationType)) {
             throw new ConfigurationException("Component:DeviceTrigger must have automation_type 'trigger'");
@@ -65,7 +66,8 @@ public class DeviceTrigger extends AbstractComponent<DeviceTrigger.ChannelConfig
             value = new TextValue();
         }
 
-        buildChannel(channelConfiguration.type, value, getName(), componentConfiguration.getUpdateListener())
+        buildChannel(channelConfiguration.type, ComponentChannelType.TRIGGER, value, getName(),
+                componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.topic, channelConfiguration.getValueTemplate()).trigger(true).build();
     }
 }

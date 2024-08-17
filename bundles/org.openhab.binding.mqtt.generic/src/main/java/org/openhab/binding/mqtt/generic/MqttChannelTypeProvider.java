@@ -14,22 +14,19 @@ package org.openhab.binding.mqtt.generic;
 
 import java.net.URI;
 import java.util.Collection;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.internal.MqttThingHandlerFactory;
+import org.openhab.core.storage.StorageService;
 import org.openhab.core.thing.ThingTypeUID;
+import org.openhab.core.thing.binding.AbstractStorageBasedTypeProvider;
 import org.openhab.core.thing.binding.ThingTypeProvider;
 import org.openhab.core.thing.type.ChannelGroupType;
 import org.openhab.core.thing.type.ChannelGroupTypeProvider;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
-import org.openhab.core.thing.type.ChannelType;
 import org.openhab.core.thing.type.ChannelTypeProvider;
-import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.thing.type.ThingTypeRegistry;
@@ -45,89 +42,24 @@ import org.osgi.service.component.annotations.Reference;
  * This provider is started on-demand only, as soon as {@link MqttThingHandlerFactory} or an extension requires it.
  *
  * @author David Graeff - Initial contribution
+ * @author Cody Cutrer - Use AbstractStorageBasedTypeProvider
  *
  */
 @NonNullByDefault
 @Component(immediate = false, service = { ThingTypeProvider.class, ChannelTypeProvider.class,
         ChannelGroupTypeProvider.class, MqttChannelTypeProvider.class })
-public class MqttChannelTypeProvider implements ThingTypeProvider, ChannelGroupTypeProvider, ChannelTypeProvider {
-    private final ThingTypeRegistry typeRegistry;
-
-    private final Map<ChannelTypeUID, ChannelType> types = new ConcurrentHashMap<>();
-    private final Map<ChannelGroupTypeUID, ChannelGroupType> groups = new ConcurrentHashMap<>();
-    private final Map<ThingTypeUID, ThingType> things = new ConcurrentHashMap<>();
+public class MqttChannelTypeProvider extends AbstractStorageBasedTypeProvider {
+    private final ThingTypeRegistry thingTypeRegistry;
 
     @Activate
-    public MqttChannelTypeProvider(@Reference ThingTypeRegistry typeRegistry) {
-        super();
-        this.typeRegistry = typeRegistry;
-    }
-
-    @Override
-    public Collection<ChannelType> getChannelTypes(@Nullable Locale locale) {
-        return types.values();
-    }
-
-    @Override
-    public @Nullable ChannelType getChannelType(ChannelTypeUID channelTypeUID, @Nullable Locale locale) {
-        return types.get(channelTypeUID);
-    }
-
-    @Override
-    public @Nullable ChannelGroupType getChannelGroupType(ChannelGroupTypeUID channelGroupTypeUID,
-            @Nullable Locale locale) {
-        return groups.get(channelGroupTypeUID);
-    }
-
-    @Override
-    public Collection<ChannelGroupType> getChannelGroupTypes(@Nullable Locale locale) {
-        return groups.values();
-    }
-
-    @Override
-    public Collection<ThingType> getThingTypes(@Nullable Locale locale) {
-        return things.values();
-    }
-
-    public Set<ThingTypeUID> getThingTypeUIDs() {
-        return things.keySet();
-    }
-
-    @Override
-    public @Nullable ThingType getThingType(ThingTypeUID thingTypeUID, @Nullable Locale locale) {
-        return things.get(thingTypeUID);
-    }
-
-    public void removeChannelType(ChannelTypeUID uid) {
-        types.remove(uid);
-    }
-
-    public void removeChannelGroupType(ChannelGroupTypeUID uid) {
-        groups.remove(uid);
-    }
-
-    public void setChannelGroupType(ChannelGroupTypeUID uid, ChannelGroupType type) {
-        groups.put(uid, type);
-    }
-
-    public void setChannelType(ChannelTypeUID uid, ChannelType type) {
-        types.put(uid, type);
-    }
-
-    public void removeThingType(ThingTypeUID uid) {
-        things.remove(uid);
-    }
-
-    public void setThingType(ThingTypeUID uid, ThingType type) {
-        things.put(uid, type);
-    }
-
-    public void setThingTypeIfAbsent(ThingTypeUID uid, ThingType type) {
-        things.putIfAbsent(uid, type);
+    public MqttChannelTypeProvider(@Reference ThingTypeRegistry thingTypeRegistry,
+            @Reference StorageService storageService) {
+        super(storageService);
+        this.thingTypeRegistry = thingTypeRegistry;
     }
 
     public ThingTypeBuilder derive(ThingTypeUID newTypeId, ThingTypeUID baseTypeId) {
-        ThingType baseType = typeRegistry.getThingType(baseTypeId);
+        ThingType baseType = thingTypeRegistry.getThingType(baseTypeId);
 
         ThingTypeBuilder result = ThingTypeBuilder.instance(newTypeId, baseType.getLabel())
                 .withChannelGroupDefinitions(baseType.getChannelGroupDefinitions())
@@ -154,5 +86,26 @@ public class MqttChannelTypeProvider implements ThingTypeProvider, ChannelGroupT
         }
 
         return result;
+    }
+
+    public void updateChannelGroupTypesForPrefix(String prefix, Collection<ChannelGroupType> types) {
+        Collection<ChannelGroupType> oldCgts = channelGroupTypesForPrefix(prefix);
+
+        Set<ChannelGroupTypeUID> oldUids = oldCgts.stream().map(ChannelGroupType::getUID).collect(Collectors.toSet());
+        Collection<ChannelGroupTypeUID> uids = types.stream().map(ChannelGroupType::getUID).toList();
+
+        oldUids.removeAll(uids);
+        // oldUids now contains only UIDs that no longer exist. so remove them
+        oldUids.forEach(this::removeChannelGroupType);
+        types.forEach(this::putChannelGroupType);
+    }
+
+    public void removeChannelGroupTypesForPrefix(String prefix) {
+        channelGroupTypesForPrefix(prefix).forEach(cgt -> removeChannelGroupType(cgt.getUID()));
+    }
+
+    private Collection<ChannelGroupType> channelGroupTypesForPrefix(String prefix) {
+        return getChannelGroupTypes(null).stream().filter(cgt -> cgt.getUID().getId().startsWith(prefix + "_"))
+                .toList();
     }
 }

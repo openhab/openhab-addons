@@ -86,18 +86,21 @@ public class FreeboxOsBindingConstants {
     public static final String LOCAL = "local";
     public static final String FULL_DUPLEX = "fullDuplex";
 
-    // List of all Group Channel ids
+    // List of all Channel Groups ids
     public static final String GROUP_SENSORS = "sensors";
     public static final String GROUP_FANS = "fans";
-    public static final String CONNECTION_STATUS = "connection-status";
-    public static final String SYS_INFO = "sysinfo";
-    public static final String ACTIONS = "actions";
-    public static final String FILE_SHARING = "file-sharing";
-    public static final String CONNECTIVITY = "connectivity";
-    public static final String DISPLAY = "display";
-    public static final String VM_STATUS = "vmstatus";
+    public static final String GROUP_CONNECTION_STATUS = "connection-status";
+    public static final String GROUP_SYS_INFO = "sysinfo";
+    public static final String GROUP_ACTIONS = "actions";
+    public static final String GROUP_PLAYER_STATUS = "player-status";
+    public static final String GROUP_FILE_SHARING = "file-sharing";
+    public static final String GROUP_CONNECTIVITY = "connectivity";
+    public static final String GROUP_DISPLAY = "display";
+    public static final String GROUP_VM_STATUS = "vmstatus";
     public static final String GROUP_WIFI = "wifi";
-    public static final String REPEATER_MISC = "repeater-misc";
+    public static final String GROUP_REPEATER_MISC = "repeater-misc";
+    public static final String GROUP_XDSL = "xdsl";
+    public static final String GROUP_FTTH = "ftth";
 
     // List of all Channel ids
     public static final String RSSI = "rssi";
@@ -122,6 +125,7 @@ public class FreeboxOsBindingConstants {
     public static final String BYTES_DOWN = "bytes-down";
     public static final String BW = "bandwidth";
     public static final String PCT_BW = "bandwidth-usage";
+    public static final String CONNECTION_STATUS = "connection-status";
     public static final String ONHOOK = "onhook";
     public static final String RINGING = "ringing";
     public static final String HARDWARE_STATUS = "hardware-status";
@@ -154,6 +158,21 @@ public class FreeboxOsBindingConstants {
     // Repeater channels
     public static final String LED = "led";
     public static final String HOST_COUNT = "host-count";
+
+    // FTTH channels ids
+    public static final String SFP_PRESENT = "sfp-present";
+    public static final String SFP_ALIM = "sfp-alim-ok";
+    public static final String SFP_POWER = "sfp-has-power";
+    public static final String SFP_SIGNAL = "sfp-has-signal";
+    public static final String SFP_LINK = "link";
+    public static final String SFP_PWR_TX = "sfp-pwr-tx";
+    public static final String SFP_PWR_RX = "sfp-pwr-rx";
+
+    // xDSL channels ids
+    public static final String XDSL_READY = "ready";
+    public static final String XDSL_STATUS = "status";
+    public static final String XDSL_MODULATION = "modulation";
+    public static final String XDSL_UPTIME = "uptime";
 
     // Home channels
     public static final String KEYFOB_ENABLE = "enable";

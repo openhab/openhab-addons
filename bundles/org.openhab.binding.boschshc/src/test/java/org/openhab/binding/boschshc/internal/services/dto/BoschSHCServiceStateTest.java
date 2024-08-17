@@ -12,7 +12,12 @@
  */
 package org.openhab.binding.boschshc.internal.services.dto;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -85,8 +90,9 @@ class BoschSHCServiceStateTest {
     @Test
     void fromJsonReturnsUserStateServiceStateForValidJson() {
         var state = BoschSHCServiceState.fromJson(new JsonPrimitive("false"), UserStateServiceState.class);
-        assertNotEquals(null, state);
-        assertTrue(state.getClass().isAssignableFrom(UserStateServiceState.class));
-        assertFalse(state.isState());
+        // note: when using assertThat() to check that the value is non-null, we get compiler warnings.
+        assertNotNull(state);
+        assertThat(state, instanceOf(UserStateServiceState.class));
+        assertThat(state.isState(), is(false));
     }
 }
