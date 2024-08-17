@@ -420,14 +420,10 @@ public class HttpThingHandler extends BaseThingHandler implements HttpStatusList
 
     private ChannelHandler createChannelHandler(AbstractTransformingChannelHandler.Factory factory, String commandUrl,
             ChannelUID channelUID, HttpChannelConfig channelConfig) {
-        return factory.create(
-                state -> updateState(channelUID, state),
-                command -> postCommand(channelUID, command),
+        return factory.create(state -> updateState(channelUID, state), command -> postCommand(channelUID, command),
                 command -> sendHttpValue(commandUrl, command),
                 new ChannelTransformation(channelConfig.stateTransformation),
-                new ChannelTransformation(channelConfig.commandTransformation),
-                channelConfig
-        );
+                new ChannelTransformation(channelConfig.commandTransformation), channelConfig);
     }
 
     private ChannelHandler createGenericChannelHandler(String commandUrl, ChannelUID channelUID,
