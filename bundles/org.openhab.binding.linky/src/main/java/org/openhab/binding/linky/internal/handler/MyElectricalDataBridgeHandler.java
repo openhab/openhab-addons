@@ -53,6 +53,8 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
             + "daily_consumption/%s/start/%s/end/%s/cache/";
     private static final String MEASURE_MAX_POWER_URL = BASE_URL
             + "daily_consumption_max_power/%s/start/%s/end/%s/cache/";
+    private static final String LOAD_CURVE_CONSUMPTION_URL = BASE_URL
+            + "consumption_load_curve/%s/start/%s/end/%s/cache/";
 
     private static final String TEMPO_URL = BASE_URL + "rte/tempo/%s/%s";
 
@@ -178,6 +180,11 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
     @Override
     public String getMaxPowerUrl() {
         return MEASURE_MAX_POWER_URL;
+    }
+
+    @Override
+    public String getLoadCurveUrl() {
+        return LOAD_CURVE_CONSUMPTION_URL;
     }
 
     @Override

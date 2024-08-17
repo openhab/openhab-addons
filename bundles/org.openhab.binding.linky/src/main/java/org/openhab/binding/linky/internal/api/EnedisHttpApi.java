@@ -341,6 +341,11 @@ public class EnedisHttpApi {
         return getMeasures(handler, apiBridgeHandler.getDailyConsumptionUrl(), prmId, from, to);
     }
 
+    public MeterReading getLoadCurveData(LinkyHandler handler, String prmId, LocalDate from, LocalDate to)
+            throws LinkyException {
+        return getMeasures(handler, apiBridgeHandler.getLoadCurveUrl(), prmId, from, to);
+    }
+
     public MeterReading getPowerData(LinkyHandler handler, String prmId, LocalDate from, LocalDate to)
             throws LinkyException {
         return getMeasures(handler, apiBridgeHandler.getMaxPowerUrl(), prmId, from, to);
