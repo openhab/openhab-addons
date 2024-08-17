@@ -159,10 +159,10 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
             logger.debug("Error discovering phones: {}", e.getMessage());
         }
         if (!statuses.isEmpty()) {
-            ThingUID thingUID = new ThingUID(THING_TYPE_CALL, bridgeUID, "landline");
+            ThingUID thingUID = new ThingUID(THING_TYPE_CALL, bridgeUID, "calls");
             logger.debug("Adding new Call thing {} to inbox", thingUID);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withLabel("Freebox Calls").build();
+                    .withLabel("Phone Calls").build();
             thingDiscovered(discoveryResult);
         }
     }
