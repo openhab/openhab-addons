@@ -23,9 +23,11 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.WeekFields;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -407,6 +409,10 @@ public class LinkyHandler extends BaseThingHandler {
         LocalDate today = LocalDate.now();
 
         for (int i = 0; i < iv.length; i++) {
+            if (iv[i].date == null) {
+                continue;
+            }
+
             Instant timestamp = iv[i].date.toInstant(ZoneOffset.UTC);
             timeSeries.add(timestamp, new DecimalType(iv[i].value));
         }
@@ -603,8 +609,8 @@ public class LinkyHandler extends BaseThingHandler {
                 LocalDate startDate = meterReading.dayValue[0].date.toLocalDate();
                 LocalDate endDate = meterReading.dayValue[meterReading.dayValue.length - 1].date.toLocalDate();
 
-                int weeksNum = Weeks.between(startDate, endDate).getAmount() + 1;
-                int monthsNum = Months.between(startDate, endDate).getAmount() + 1;
+                int weeksNum = Weeks.between(startDate, endDate).getAmount() + 2;
+                int monthsNum = Months.between(startDate, endDate).getAmount() + 2;
                 int yearsNum = Years.between(startDate, endDate).getAmount() + 2;
 
                 meterReading.weekValue = new IntervalReading[weeksNum];
@@ -632,40 +638,32 @@ public class LinkyHandler extends BaseThingHandler {
                     LocalDateTime dt = ir.date;
                     double value = ir.value;
 
-                    /*
-                     * int idxWeek = Weeks.between(startDate, dt).getAmount();
-                     * int idxMonth = Months.between(startDate, dt).getAmount();
-                     * int idxYear = dt.getYear() - baseYear;
-                     */
-
                     int idxYear = dt.getYear() - baseYear;
-
-                    int dayOfYear = dt.getDayOfYear();
-                    int week = ((dayOfYear - 1) / 7) + 1;
                     int month = dt.getMonthValue();
+                    int weekOfYear = dt.get(WeekFields.of(Locale.FRANCE).weekOfYear());
 
                     int idxMonth = (idxYear * 12) + month - baseMonth;
-                    int idxWeek = (idxYear * 52) + week - baseWeek;
+                    int idxWeek = (idxYear * 52) + weekOfYear - baseWeek;
 
-                    if (idxWeek >= weeksNum) {
-                        continue;
+                    if (idxWeek < weeksNum) {
+                        meterReading.weekValue[idxWeek].value += value;
+                        if (meterReading.weekValue[idxWeek].date == null) {
+                            meterReading.weekValue[idxWeek].date = dt;
+                        }
                     }
-                    if (idxMonth >= monthsNum) {
-                        continue;
+                    if (idxMonth < monthsNum) {
+                        meterReading.monthValue[idxMonth].value += value;
+                        if (meterReading.monthValue[idxMonth].date == null) {
+                            meterReading.monthValue[idxMonth].date = LocalDateTime.of(dt.getYear(), month, 1, 0, 0);
+                        }
                     }
 
-                    meterReading.weekValue[idxWeek].value += value;
-                    meterReading.monthValue[idxMonth].value += value;
-                    meterReading.yearValue[idxYear].value += value;
+                    if (idxYear < yearsNum) {
+                        meterReading.yearValue[idxYear].value += value;
 
-                    if (meterReading.weekValue[idxWeek].date == null) {
-                        meterReading.weekValue[idxWeek].date = dt;
-                    }
-                    if (meterReading.monthValue[idxMonth].date == null) {
-                        meterReading.monthValue[idxMonth].date = LocalDateTime.of(dt.getYear(), month, 1, 0, 0);
-                    }
-                    if (meterReading.yearValue[idxYear].date == null) {
-                        meterReading.yearValue[idxYear].date = dt;
+                        if (meterReading.yearValue[idxYear].date == null) {
+                            meterReading.yearValue[idxYear].date = LocalDateTime.of(dt.getYear(), 1, 1, 0, 0);
+                        }
                     }
                 }
             }
