@@ -132,23 +132,27 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
             componentConfiguration.getTracker().setAvailabilityMode(availabilityTrackerMode);
             for (Availability availability : availabilities) {
                 String availabilityTemplate = availability.getValueTemplate();
+                List<String> availabilityTemplates = null;
                 if (availabilityTemplate != null) {
                     availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+                    availabilityTemplates = List.of(availabilityTemplate);
                 }
                 componentConfiguration.getTracker().addAvailabilityTopic(availability.getTopic(),
-                        availability.getPayloadAvailable(), availability.getPayloadNotAvailable(), availabilityTemplate,
-                        componentConfiguration.getTransformationServiceProvider());
+                        availability.getPayloadAvailable(), availability.getPayloadNotAvailable(),
+                        availabilityTemplates, componentConfiguration.getTransformationServiceProvider());
             }
         } else {
             String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
             if (availabilityTopic != null) {
                 String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
+                List<String> availabilityTemplates = null;
                 if (availabilityTemplate != null) {
                     availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
+                    availabilityTemplates = List.of(availabilityTemplate);
                 }
                 componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
                         this.channelConfiguration.getPayloadAvailable(),
-                        this.channelConfiguration.getPayloadNotAvailable(), availabilityTemplate,
+                        this.channelConfiguration.getPayloadNotAvailable(), availabilityTemplates,
                         componentConfiguration.getTransformationServiceProvider());
             }
         }
