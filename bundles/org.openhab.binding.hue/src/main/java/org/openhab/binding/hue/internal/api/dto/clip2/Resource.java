@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ButtonEventType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.CategoryType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContactStateType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
@@ -109,7 +110,7 @@ public class Resource {
     private @Nullable @SerializedName("contact_report") ContactReport contactReport;
     private @Nullable @SerializedName("tamper_reports") List<TamperReport> tamperReports;
     private @Nullable JsonElement state;
-    private @Nullable Configuration configuration;
+    private @Nullable @SerializedName("script_id") String scriptId;
 
     /**
      * Constructor
@@ -343,6 +344,14 @@ public class Resource {
 
     public @Nullable ColorXy getColorXy() {
         return color;
+    }
+
+    /**
+     * Return the resource's metadata category.
+     */
+    public CategoryType getCategory() {
+        MetaData metaData = getMetaData();
+        return Objects.nonNull(metaData) ? metaData.getCategory() : CategoryType.NULL;
     }
 
     /**
@@ -651,6 +660,13 @@ public class Resource {
     }
 
     /**
+     * Return the scriptId if any.
+     */
+    public @Nullable String getScriptId() {
+        return scriptId;
+    }
+
+    /**
      * If the getSceneActive() optional result is empty return 'UnDefType.NULL'. Otherwise if the optional result is
      * present and 'true' (i.e. the scene is active) return the scene name. Or finally (the optional result is present
      * and 'false') return 'UnDefType.UNDEF'.
@@ -929,11 +945,5 @@ public class Resource {
         String id = this.id;
         return String.format("id:%s, type:%s", Objects.nonNull(id) ? id : "?" + " ".repeat(35),
                 getType().name().toLowerCase());
-    }
-
-    public boolean isAutomationResource() {
-        Configuration configuration = this.configuration;
-        return Objects.nonNull(configuration) && !configuration.hasDeviceElement()
-                && (ResourceType.BEHAVIOR_INSTANCE == getType());
     }
 }

@@ -10,25 +10,32 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.hue.internal.api.dto.clip2;
-
-import java.util.Objects;
+package org.openhab.binding.hue.internal.api.dto.clip2.enums;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
-import com.google.gson.JsonElement;
-
 /**
- * DTO for configuration of behavior_instance resources.
+ * Enum for 'category' fields.
  *
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-public class Configuration {
-    private @Nullable JsonElement device;
+public enum CategoryType {
+    ACCESSORY,
+    AUTOMATION,
+    ENTERTAINMENT,
+    NULL,
+    UNDEF;
 
-    public boolean hasDeviceElement() {
-        return Objects.nonNull(device);
+    public static CategoryType of(@Nullable String value) {
+        if (value != null) {
+            try {
+                return valueOf(value.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return UNDEF;
+            }
+        }
+        return NULL;
     }
 }

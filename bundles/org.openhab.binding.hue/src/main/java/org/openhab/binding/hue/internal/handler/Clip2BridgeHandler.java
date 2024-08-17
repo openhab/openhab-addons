@@ -17,6 +17,7 @@ import static org.openhab.binding.hue.internal.HueBindingConstants.*;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -38,6 +39,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
 import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.CategoryType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.config.Clip2BridgeConfig;
@@ -102,6 +104,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private static final ResourceReference BRIDGE_HOME = new ResourceReference().setType(ResourceType.BRIDGE_HOME);
     private static final ResourceReference SCENE = new ResourceReference().setType(ResourceType.SCENE);
     private static final ResourceReference SMART_SCENE = new ResourceReference().setType(ResourceType.SMART_SCENE);
+    private static final ResourceReference SCRIPT = new ResourceReference().setType(ResourceType.BEHAVIOR_SCRIPT);
     private static final ResourceReference BEHAVIOR = new ResourceReference().setType(ResourceType.BEHAVIOR_INSTANCE);
 
     private static final String AUTOMATION_CHANNEL_LABEL_KEY = "dynamic-channel.automation-enable.label";
@@ -121,6 +124,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     private final LocaleProvider localeProvider;
     private final TranslationProvider translationProvider;
     private final Map<String, String> automationIds = new ConcurrentHashMap<>();;
+    private final Set<String> automationScriptIds = new HashSet<>();
     private final ChannelGroupUID automationChannelGroupUID;
 
     private @Nullable Clip2Bridge clip2Bridge;
@@ -635,6 +639,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             logger.debug("updateOnlineState()");
             connectRetriesRemaining = RECONNECT_MAX_TRIES;
             updateStatus(ThingStatus.ONLINE);
+            loadAutomationScriptIds();
             updateThingsScheduled(500);
             Clip2ThingDiscoveryService discoveryService = this.discoveryService;
             if (Objects.nonNull(discoveryService)) {
@@ -816,24 +821,36 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
     }
 
     /**
+     * Load the set of automation script ids.
+     */
+    private void loadAutomationScriptIds() {
+        try {
+            automationScriptIds.clear();
+            automationScriptIds.addAll(getClip2Bridge().getResources(SCRIPT).getResources().stream()
+                    .filter(r -> CategoryType.AUTOMATION == r.getCategory()).map(r -> r.getId())
+                    .collect(Collectors.toSet()));
+        } catch (ApiException | AssetNotLoadedException e) {
+            logger.warn("loadAutomationScriptIds() unexpected exception {}", e.getMessage(),
+                    logger.isDebugEnabled() ? e : null);
+        } catch (InterruptedException e) {
+        }
+    }
+
+    /**
      * Create the automation channels
      */
     private void updateChannels() {
-        List<Resource> resources;
+        List<Resource> automations;
         try {
-            resources = getClip2Bridge().getResources(BEHAVIOR).getResources();
+            automations = getClip2Bridge().getResources(BEHAVIOR).getResources().stream()
+                    .filter(r -> automationScriptIds.contains(r.getScriptId())).toList();
         } catch (ApiException | AssetNotLoadedException e) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("updateChannels() unexpected exception", e);
-            } else {
-                logger.warn("Unexpected exception '{}' while updating channels.", e.getMessage());
-            }
+            logger.warn("Unexpected exception '{}' while updating channels.", e.getMessage(),
+                    logger.isDebugEnabled() ? e : null);
             return;
         } catch (InterruptedException e) {
             return;
         }
-
-        List<Resource> automations = getAutomationsList(resources);
 
         if (automations.size() != automationIds.size()
                 || automations.stream().anyMatch(a -> !automationIds.containsKey(a.getId()))
@@ -875,8 +892,10 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      * Process event resources list and update the automation channels
      */
     public void onResources(List<Resource> resources) {
+        List<Resource> automations = resources.stream().filter(r -> automationScriptIds.contains(r.getScriptId()))
+                .toList();
         boolean refreshAutomationChannels = false;
-        for (Resource automation : getAutomationsList(resources)) {
+        for (Resource automation : automations) {
             String automationId = automation.getId();
             refreshAutomationChannels |= !automationIds.containsKey(automationId);
             ChannelUID channelUID = new ChannelUID(automationChannelGroupUID, automationId);
@@ -887,12 +906,5 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
         if (refreshAutomationChannels) {
             channelRefreshTask = scheduler.submit(() -> updateChannels());
         }
-    }
-
-    /**
-     * Create a filtered resource list that contains only automation resources
-     */
-    private List<Resource> getAutomationsList(Collection<Resource> resources) {
-        return resources.stream().filter(r -> r.isAutomationResource()).toList();
     }
 }
