@@ -355,6 +355,8 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
 
     public abstract String getMaxPowerUrl();
 
+    public abstract String getLoadCurveUrl();
+
     public abstract String getTempoUrl();
 
     public abstract DateTimeFormatter getApiDateFormat();
