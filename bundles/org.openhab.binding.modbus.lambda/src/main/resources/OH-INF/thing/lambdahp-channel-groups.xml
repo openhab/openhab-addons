@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="modbus"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<channel-group-type id="general-ambient">
+		<label>General Ambient</label>
+		<channels>
+			<channel id="actual-ambient-temperature" typeId="actual-ambient-temperature-type"/>
+
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="general-emanager">
+		<label>General E-Manager</label>
+		<channels>
+			<channel id="actual-power" typeId="actual-power-type"/>
+			<channel id="actual-power-consumption" typeId="actual-power-consumption-type"/>
+
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="boiler1">
+		<label>Boiler 1</label>
+		<channels>
+			<channel id="boiler1-actual-high-temperature" typeId="boiler1-actual-high-temperature-type"/>
+
+		</channels>
+
+		<channel-group-type id="boiler150">
+			<label>Boiler 1</label>
+			<channels>
+				<channel id="boiler150-maximum-boiler-temperature" typeId="boiler150-maximum-boiler-temperature-type"/>
+
+			</channels>
+		</channel-group-type>
+</thing:thing-descriptions>
