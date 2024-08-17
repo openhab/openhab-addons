@@ -72,7 +72,8 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
     private static final String MEASURE_MAX_POWER_URL = PRM_INFO_BASE_URL
             + "undefined/prms/%s/donnees-pmax?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
 
-    private static final String LOAD_CURVE_CONSUMPTION_URL = BASE_URL + "??";
+    private static final String LOAD_CURVE_CONSUMPTION_URL = PRM_INFO_BASE_URL
+            + "undefined/prms/%s/courbe-de-charge?dateDebut=%s&dateFin=%s&mesuretypecode=CONS";
 
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy");
     private static final DateTimeFormatter API_DATE_FORMAT_YEAR_FIRST = DateTimeFormatter.ofPattern("yyyy-MM-dd");
