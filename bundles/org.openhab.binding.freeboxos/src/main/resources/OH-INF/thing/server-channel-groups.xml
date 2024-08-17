@@ -18,7 +18,7 @@
 			<channel id="uptime" typeId="uptime"/>
 			<channel id="ip-address" typeId="ip-address">
 				<label>Internal IP</label>
-				<description>Internal IPv4 Address of the host</description>
+				<description>Internal IPv4 Address of the Freebox Server</description>
 			</channel>
 			<channel id="box-event" typeId="box-event"/>
 		</channels>
@@ -92,19 +92,19 @@
 			<channel id="line-media" typeId="line-media"/>
 			<channel id="ip-address" typeId="ip-address">
 				<label>Public IPv4</label>
-				<description>Public IPv4 Address of the Freebox (this field is only available when connection state is up)</description>
+				<description>Public IPv4 Address of the Freebox Server (this field is only available when connection state is up)</description>
 			</channel>
 			<channel id="ipv6-address" typeId="ip-address">
 				<label>Public IPv6</label>
-				<description>Public IPv6 Address of the Freebox (this field is only available when connection state is up)</description>
+				<description>Public IPv6 Address of the Freebox Server (this field is only available when connection state is up)</description>
 			</channel>
 			<channel id="bandwidth-up" typeId="transfer-rate">
 				<label>Bandwidth Up</label>
-				<description>Raw value of the upload bandwidth currently used</description>
+				<description>Raw value of the upload bandwidth</description>
 			</channel>
 			<channel id="bandwidth-down" typeId="transfer-rate">
 				<label>Bandwidth Down</label>
-				<description>Raw value of the download bandwidth currently used</description>
+				<description>Raw value of the download bandwidth</description>
 			</channel>
 			<channel id="bandwidth-usage-up" typeId="bandwidth-usage">
 				<label>Bandwidth Usage Up</label>
