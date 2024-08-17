@@ -37,22 +37,11 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
     protected class StatusResponse extends Response<Status> {
     }
 
-    private enum NetworkStatus {
-        WORKING,
-        UNKNOWN
-    }
-
-    public static record Config(NetworkStatus network, boolean dectEcoMode, String dectPin, int dectRingPattern,
+    public static record Config(String network, boolean dectEcoMode, String dectPin, int dectRingPattern,
             boolean dectRegistration, boolean dectNemoMode, boolean dectEnabled, boolean dectRingOnOff) {
     }
 
-    public enum Type {
-        FXS,
-        DECT,
-        UNKNOWN
-    }
-
-    public static record Status(int id, boolean isRinging, boolean onHook, boolean hardwareDefect, Type type,
+    public static record Status(int id, boolean isRinging, boolean onHook, boolean hardwareDefect, String type,
             @Nullable String vendor, int gainRx, int gainTx) {
 
         public String vendor() {

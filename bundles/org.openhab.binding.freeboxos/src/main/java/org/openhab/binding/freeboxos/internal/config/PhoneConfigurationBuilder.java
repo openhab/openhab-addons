@@ -16,7 +16,6 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Status;
-import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Type;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -42,13 +41,13 @@ public class PhoneConfigurationBuilder {
     }
 
     public DiscoveryResultBuilder configure(ThingUID bridgeUID, Status config) {
-        ThingUID thingUID = new ThingUID(Type.DECT.equals(config.type()) ? THING_TYPE_DECT : THING_TYPE_FXS, bridgeUID,
-                Integer.toString(config.id()));
+        ThingUID thingUID = new ThingUID("dect".equalsIgnoreCase(config.type()) ? THING_TYPE_DECT : THING_TYPE_FXS,
+                bridgeUID, Integer.toString(config.id()));
 
         logger.debug("Adding new Freebox Phone {} to inbox", thingUID);
 
         return DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                .withProperty(ClientConfiguration.ID, config.id()).withLabel(config.type().name())
+                .withProperty(ClientConfiguration.ID, config.id()).withLabel(config.type())
                 .withRepresentationProperty(ClientConfiguration.ID);
     }
 }
