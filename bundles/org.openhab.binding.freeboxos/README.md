@@ -250,7 +250,7 @@ The following channels are supported:
 | call                  | outgoing          | name                 | String                  | R           | Last outgoing called name                                                      |
 | basic-shutter | basic-shutter#basic-shutter | RollerShutter | W           | Up, stop and down commands for a RTS shutter                                   |
 
-(*): any thing type amongst *active-player*, *host*, *wifihost*, *repeater* and *vm*.
+(*): any thing type amongst *active-player*, *player*, *host*, *wifihost*, *repeater* and *vm*.
 
 ## Actions for rules
 
