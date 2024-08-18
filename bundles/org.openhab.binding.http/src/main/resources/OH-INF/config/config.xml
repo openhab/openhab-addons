@@ -8,12 +8,12 @@
 		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
 			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
-				each transformation in a separate line, or by concatenating them with "∩".</description>
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
 			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
-				transformation in a separate line, or by concatenating them with "∩".</description>
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -47,12 +47,12 @@
 		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
 			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
-				each transformation in a separate line, or by concatenating them with "∩".</description>
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
 			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
-				transformation in a separate line, or by concatenating them with "∩".</description>
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -118,12 +118,12 @@
 		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
 			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
-				each transformation in a separate line, or by concatenating them with "∩".</description>
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
 			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
-				transformation in a separate line, or by concatenating them with "∩".</description>
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -165,12 +165,12 @@
 		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
 			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
-				each transformation in a separate line, or by concatenating them with "∩".</description>
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
 			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
-				transformation in a separate line, or by concatenating them with "∩".</description>
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -239,12 +239,12 @@
 		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
 			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
-				each transformation in a separate line, or by concatenating them with "∩".</description>
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
 			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
-				transformation in a separate line, or by concatenating them with "∩".</description>
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -283,12 +283,12 @@
 		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
 			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
-				each transformation in a separate line, or by concatenating them with "∩".</description>
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
 			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
-				transformation in a separate line, or by concatenating them with "∩".</description>
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -346,12 +346,12 @@
 		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
 			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
-				each transformation in a separate line, or by concatenating them with "∩".</description>
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
 			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
-				transformation in a separate line, or by concatenating them with "∩".</description>
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -401,12 +401,12 @@
 		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
 			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
-				each transformation in a separate line, or by concatenating them with "∩".</description>
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
 			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
-				transformation in a separate line, or by concatenating them with "∩".</description>
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
