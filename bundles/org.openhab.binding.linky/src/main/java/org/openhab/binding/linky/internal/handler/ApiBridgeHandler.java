@@ -87,7 +87,7 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
         }
 
         this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID, tokenUrl,
-                authorizeUrl, config.clientId, config.clientSecret, LinkyBindingConstants.LINKY_SCOPES, true);
+                authorizeUrl, getClientId(), getClientSecret(), LinkyBindingConstants.LINKY_SCOPES, true);
 
         registerServlet();
 

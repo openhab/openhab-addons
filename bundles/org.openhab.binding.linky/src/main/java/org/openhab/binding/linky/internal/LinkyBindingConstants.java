@@ -141,5 +141,5 @@ public class LinkyBindingConstants {
     public static final String LINKY_MYELECTRICALDATA_API_TOKEN_URL = LINKY_MYELECTRICALDATA_ACCOUNT_URL
             + "v1/oauth2/authorize?client_id=%s&response_type=code&redirect_uri=na&user_type=na&state=na&person_id=-1&usage_points_id=%s";
 
-    public static final String LINKY_MYELECTRICALDATA_CLIENT_ID = "e551937c-5250-48bc-b4a6-2323af68db92";
+    public static final String LINKY_MYELECTRICALDATA_CLIENT_ID = "_h7zLaRr2INxqBI8jhDUQXsa_G4a";
 }
