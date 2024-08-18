@@ -160,4 +160,5 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     public DateTimeFormatter getApiDateFormatYearsFirst() {
         return API_DATE_FORMAT_YEAR_FIRST;
     }
+
 }

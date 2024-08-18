@@ -22,5 +22,5 @@ import org.eclipse.jetty.jaas.spi.UserInfo;
  */
 
 public class CustomerReponse {
-    public Customer customer;
+    public Contracts customer;
 }

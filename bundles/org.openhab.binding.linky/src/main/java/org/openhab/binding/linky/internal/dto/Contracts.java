@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import java.util.Arrays;
+
 import org.eclipse.jetty.jaas.spi.UserInfo;
 
 import com.google.gson.annotations.SerializedName;
@@ -19,30 +21,48 @@ import com.google.gson.annotations.SerializedName;
 /**
  * The {@link UserInfo} holds informations about energy delivery point
  *
- * @author Laurent Arnal - Initial contribution
+ * @author Gaël L'hopital - Initial contribution
+ * @author Laurent Arnal - Rewrite addon to use official dataconect API
  */
 
 public class Contracts {
-    public String segment;
+    @SerializedName("customer_id")
+    public String customerId;
 
-    @SerializedName("subscribed_power")
-    public String subscribedPower;
+    @SerializedName("usage_points")
+    public UsagePoint[] usagePoints;
 
-    @SerializedName("last_activation_date")
-    public String lastActivationDate;
+    public static Contracts fromWebPrmInfos(WebPrmInfo[] webPrmsInfo, String prmId) {
+        Contracts result = new Contracts();
 
-    @SerializedName("distribution_tariff")
-    public String distributionTariff;
+        WebPrmInfo webPrmInfo = Arrays.stream(webPrmsInfo).filter(x -> x.prmId.equals(prmId)).findAny().orElseThrow();
 
-    @SerializedName("offpeak_hours")
-    public String offpeakHours;
+        result.usagePoints = new UsagePoint[1];
+        result.usagePoints[0] = new UsagePoint();
 
-    @SerializedName("contract_status")
-    public String contractStatus;
+        result.usagePoints[0].usagePoint = new UsagePointDetails();
+        result.usagePoints[0].usagePoint.meterType = "";
+        result.usagePoints[0].usagePoint.usagePointId = "";
+        result.usagePoints[0].usagePoint.usagePointStatus = "";
 
-    @SerializedName("contract_type")
-    public String contractType;
+        result.usagePoints[0].usagePoint.usagePointAddresses = new AddressInfo();
+        result.usagePoints[0].usagePoint.usagePointAddresses.city = webPrmInfo.adresse.adresseLigneSix;
+        result.usagePoints[0].usagePoint.usagePointAddresses.country = webPrmInfo.adresse.adresseLigneSept;
+        result.usagePoints[0].usagePoint.usagePointAddresses.inseeCode = "";
+        result.usagePoints[0].usagePoint.usagePointAddresses.locality = "";
+        result.usagePoints[0].usagePoint.usagePointAddresses.postalCode = webPrmInfo.adresse.adresseLigneSix;
+        result.usagePoints[0].usagePoint.usagePointAddresses.street = webPrmInfo.adresse.adresseLigneQuatre;
 
-    @SerializedName("last_distribution_tariff_change_date")
-    public String lastDistributionTariffChangeDate;
+        result.usagePoints[0].contracts = new ContractDetails();
+        result.usagePoints[0].contracts.contractStatus = "";
+        result.usagePoints[0].contracts.contractType = "";
+        result.usagePoints[0].contracts.distributionTariff = "";
+        result.usagePoints[0].contracts.lastActivationDate = "";
+        result.usagePoints[0].contracts.lastDistributionTariffChangeDate = "";
+        result.usagePoints[0].contracts.offpeakHours = "";
+        result.usagePoints[0].contracts.segment = webPrmInfo.segment;
+        result.usagePoints[0].contracts.subscribedPower = "" + webPrmInfo.puissanceSouscrite;
+
+        return result;
+    }
 }

@@ -26,5 +26,5 @@ import com.google.gson.annotations.SerializedName;
 public class UsagePoint {
     @SerializedName("usage_point")
     public UsagePointDetails usagePoint;
-    public Contracts contracts;
+    public ContractDetails contracts;
 }

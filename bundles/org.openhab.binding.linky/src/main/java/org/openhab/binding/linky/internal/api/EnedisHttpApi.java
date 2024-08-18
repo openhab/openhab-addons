@@ -32,7 +32,7 @@ import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.AddressInfo;
 import org.openhab.binding.linky.internal.dto.ConsumptionReport;
 import org.openhab.binding.linky.internal.dto.ContactInfo;
-import org.openhab.binding.linky.internal.dto.Customer;
+import org.openhab.binding.linky.internal.dto.Contracts;
 import org.openhab.binding.linky.internal.dto.CustomerIdResponse;
 import org.openhab.binding.linky.internal.dto.CustomerReponse;
 import org.openhab.binding.linky.internal.dto.IdentityInfo;
@@ -41,10 +41,9 @@ import org.openhab.binding.linky.internal.dto.MeterResponse;
 import org.openhab.binding.linky.internal.dto.PrmInfo;
 import org.openhab.binding.linky.internal.dto.TempoResponse;
 import org.openhab.binding.linky.internal.dto.UsagePoint;
-import org.openhab.binding.linky.internal.dto.WebPrmInfo;
 import org.openhab.binding.linky.internal.dto.WebUserInfo;
-import org.openhab.binding.linky.internal.handler.ApiBridgeHandler;
 import org.openhab.binding.linky.internal.handler.EnedisWebBridgeHandler;
+import org.openhab.binding.linky.internal.handler.LinkyBridgeHandler;
 import org.openhab.binding.linky.internal.handler.LinkyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,12 +63,12 @@ public class EnedisHttpApi {
     private final Logger logger = LoggerFactory.getLogger(EnedisHttpApi.class);
     private final Gson gson;
     private final HttpClient httpClient;
-    private ApiBridgeHandler apiBridgeHandler;
+    private LinkyBridgeHandler linkyBridgeHandler;
 
-    public EnedisHttpApi(ApiBridgeHandler apiBridgeHandler, Gson gson, HttpClient httpClient) {
+    public EnedisHttpApi(LinkyBridgeHandler linkyBridgeHandler, Gson gson, HttpClient httpClient) {
         this.gson = gson;
         this.httpClient = httpClient;
-        this.apiBridgeHandler = apiBridgeHandler;
+        this.linkyBridgeHandler = linkyBridgeHandler;
     }
 
     public FormContentProvider getFormContent(String fieldName, String fieldValue) {
@@ -90,15 +89,15 @@ public class EnedisHttpApi {
     }
 
     public String getData(LinkyHandler handler, String url) throws LinkyException {
-        return getData(apiBridgeHandler, url, httpClient, apiBridgeHandler.getToken(handler));
+        return getData(linkyBridgeHandler, url, httpClient, linkyBridgeHandler.getToken(handler));
     }
 
     public String getData(String url) throws LinkyException {
-        return getData(apiBridgeHandler, url, httpClient, "");
+        return getData(linkyBridgeHandler, url, httpClient, "");
     }
 
-    private static String getData(ApiBridgeHandler apiBridgeHandler, String url, HttpClient httpClient, String token)
-            throws LinkyException {
+    private static String getData(LinkyBridgeHandler linkyBridgeHandler, String url, HttpClient httpClient,
+            String token) throws LinkyException {
         try {
             Request request = httpClient.newRequest(url);
             request = request.method(HttpMethod.GET);
@@ -110,7 +109,7 @@ public class EnedisHttpApi {
             ContentResponse result = request.send();
             if (result.getStatus() == 307) {
                 String loc = result.getHeaders().get("Location");
-                String newUrl = apiBridgeHandler.getBaseUrl() + loc.substring(1);
+                String newUrl = linkyBridgeHandler.getBaseUrl() + loc.substring(1);
                 request = httpClient.newRequest(newUrl);
                 request = request.method(HttpMethod.GET);
                 result = request.send();
@@ -133,8 +132,8 @@ public class EnedisHttpApi {
     }
 
     public PrmInfo getPrmInfo(LinkyHandler handler, String prmId) throws LinkyException {
-        if (!apiBridgeHandler.isConnected()) {
-            apiBridgeHandler.initialize();
+        if (!linkyBridgeHandler.isConnected()) {
+            linkyBridgeHandler.initialize();
         }
 
         PrmInfo result = new PrmInfo();
@@ -143,12 +142,16 @@ public class EnedisHttpApi {
         result.contractInfo.subscribedPower = "Na";
 
         try {
-            Customer customer = getContract(handler, prmId);
-            UsagePoint usagePoint = customer.usagePoints[0];
+            Contracts contract = getContract(handler, prmId);
+            UsagePoint usagePoint = contract.usagePoints[0];
+
+            AddressInfo addressInfo = getAddress(handler, prmId);
+            if (addressInfo != null) {
+                usagePoint.usagePoint.usagePointAddresses = addressInfo;
+            }
 
             result.contractInfo = usagePoint.contracts;
             result.usagePointInfo = usagePoint.usagePoint;
-
             result.identityInfo = getIdentity(handler, prmId);
             result.contactInfo = getContact(handler, prmId);
 
@@ -164,54 +167,26 @@ public class EnedisHttpApi {
         return apiUrl.formatted(prmId);
     }
 
-    public Customer getContract(LinkyHandler handler, String prmId) throws LinkyException {
-        if (!apiBridgeHandler.isConnected()) {
-            apiBridgeHandler.initialize();
+    public Contracts getContract(LinkyHandler handler, String prmId) throws LinkyException {
+        if (!linkyBridgeHandler.isConnected()) {
+            linkyBridgeHandler.initialize();
         }
 
-        String contractUrl = apiBridgeHandler.getContractUrl();
+        String contractUrl = linkyBridgeHandler.getContractUrl();
         String data = getData(handler, formatUrl(contractUrl, prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", contractUrl);
         }
-        try {
-            if (data.startsWith("[{\"adresse\"")) {
-                try {
-                    WebPrmInfo[] webPrmsInfo = gson.fromJson(data, WebPrmInfo[].class);
-                    if (webPrmsInfo == null || webPrmsInfo.length < 1) {
-                        throw new LinkyException("Invalid prms data received");
-                    }
-                    return Customer.fromWebPrmInfos(webPrmsInfo, prmId);
 
-                } catch (JsonSyntaxException e) {
-                    logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-                    throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", contractUrl);
-                }
-            } else {
-                CustomerReponse cResponse = gson.fromJson(data, CustomerReponse.class);
-                if (cResponse == null) {
-                    throw new LinkyException("Invalid customer data received");
-                }
-
-                AddressInfo addressInfo = getAddress(handler, prmId);
-                if (addressInfo != null) {
-                    cResponse.customer.usagePoints[0].usagePoint.usagePointAddresses = addressInfo;
-                }
-
-                return cResponse.customer;
-            }
-        } catch (JsonSyntaxException e) {
-            logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", contractUrl);
-        }
+        return linkyBridgeHandler.decodeCustomerResponse(data, prmId);
     }
 
     @Nullable
     public AddressInfo getAddress(LinkyHandler handler, String prmId) throws LinkyException {
-        if (!apiBridgeHandler.isConnected()) {
-            apiBridgeHandler.initialize();
+        if (!linkyBridgeHandler.isConnected()) {
+            linkyBridgeHandler.initialize();
         }
-        String addressUrl = apiBridgeHandler.getAddressUrl();
+        String addressUrl = linkyBridgeHandler.getAddressUrl();
 
         if (addressUrl.isEmpty()) {
             return null;
@@ -234,41 +209,23 @@ public class EnedisHttpApi {
     }
 
     public IdentityInfo getIdentity(LinkyHandler handler, String prmId) throws LinkyException {
-        if (!apiBridgeHandler.isConnected()) {
-            apiBridgeHandler.initialize();
+        if (!linkyBridgeHandler.isConnected()) {
+            linkyBridgeHandler.initialize();
         }
-        String identityUrl = apiBridgeHandler.getIdentityUrl();
+        String identityUrl = linkyBridgeHandler.getIdentityUrl();
         String data = getData(handler, formatUrl(identityUrl, prmId));
         if (data.isEmpty()) {
             throw new LinkyException("Requesting '%s' returned an empty response", identityUrl);
         }
-        try {
-            if (data.contains("av2_interne_id")) {
-                try {
-                    WebUserInfo webUserInfo = gson.fromJson(data, WebUserInfo.class);
-                    return IdentityInfo.fromWebUserInfo(webUserInfo);
-                } catch (JsonSyntaxException e) {
-                    logger.debug("invalid JSON response not matching UserInfo.class: {}", data);
-                    throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", identityUrl);
-                }
-            } else {
-                CustomerIdResponse iResponse = gson.fromJson(data, CustomerIdResponse.class);
-                if (iResponse == null) {
-                    throw new LinkyException("Invalid customer data received");
-                }
-                return iResponse.identity.naturalPerson;
-            }
-        } catch (JsonSyntaxException e) {
-            logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
-            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response", identityUrl);
-        }
+
+        return linkyBridgeHandler.decodeIdentityResponse(data, prmId);
     }
 
     public ContactInfo getContact(LinkyHandler handler, String prmId) throws LinkyException {
-        if (!apiBridgeHandler.isConnected()) {
-            apiBridgeHandler.initialize();
+        if (!linkyBridgeHandler.isConnected()) {
+            linkyBridgeHandler.initialize();
         }
-        String contactUrl = apiBridgeHandler.getContactUrl();
+        String contactUrl = linkyBridgeHandler.getContactUrl();
         String data = getData(handler, formatUrl(contactUrl, prmId));
 
         if (data.isEmpty()) {
@@ -298,12 +255,12 @@ public class EnedisHttpApi {
 
     private MeterReading getMeasures(LinkyHandler handler, String apiUrl, String prmId, LocalDate from, LocalDate to)
             throws LinkyException {
-        String dtStart = from.format(apiBridgeHandler.getApiDateFormat());
-        String dtEnd = to.format(apiBridgeHandler.getApiDateFormat());
+        String dtStart = from.format(linkyBridgeHandler.getApiDateFormat());
+        String dtEnd = to.format(linkyBridgeHandler.getApiDateFormat());
 
         String url = String.format(apiUrl, prmId, dtStart, dtEnd);
-        if (!apiBridgeHandler.isConnected()) {
-            apiBridgeHandler.initialize();
+        if (!linkyBridgeHandler.isConnected()) {
+            linkyBridgeHandler.initialize();
         }
 
         String data = getData(handler, url);
@@ -338,31 +295,31 @@ public class EnedisHttpApi {
 
     public MeterReading getEnergyData(LinkyHandler handler, String prmId, LocalDate from, LocalDate to)
             throws LinkyException {
-        return getMeasures(handler, apiBridgeHandler.getDailyConsumptionUrl(), prmId, from, to);
+        return getMeasures(handler, linkyBridgeHandler.getDailyConsumptionUrl(), prmId, from, to);
     }
 
     public MeterReading getLoadCurveData(LinkyHandler handler, String prmId, LocalDate from, LocalDate to)
             throws LinkyException {
-        return getMeasures(handler, apiBridgeHandler.getLoadCurveUrl(), prmId, from, to);
+        return getMeasures(handler, linkyBridgeHandler.getLoadCurveUrl(), prmId, from, to);
     }
 
     public MeterReading getPowerData(LinkyHandler handler, String prmId, LocalDate from, LocalDate to)
             throws LinkyException {
-        return getMeasures(handler, apiBridgeHandler.getMaxPowerUrl(), prmId, from, to);
+        return getMeasures(handler, linkyBridgeHandler.getMaxPowerUrl(), prmId, from, to);
     }
 
     public TempoResponse getTempoData(LinkyHandler handler, LocalDate from, LocalDate to) throws LinkyException {
-        String dtStart = from.format(apiBridgeHandler.getApiDateFormatYearsFirst());
-        String dtEnd = to.format(apiBridgeHandler.getApiDateFormatYearsFirst());
+        String dtStart = from.format(linkyBridgeHandler.getApiDateFormatYearsFirst());
+        String dtEnd = to.format(linkyBridgeHandler.getApiDateFormatYearsFirst());
 
-        String url = String.format(apiBridgeHandler.getTempoUrl(), dtStart, dtEnd);
+        String url = String.format(linkyBridgeHandler.getTempoUrl(), dtStart, dtEnd);
 
         if (url.isEmpty()) {
             return new TempoResponse();
         }
 
-        if (!apiBridgeHandler.isConnected()) {
-            apiBridgeHandler.initialize();
+        if (!linkyBridgeHandler.isConnected()) {
+            linkyBridgeHandler.initialize();
         }
 
         String data = getData(handler, url);
