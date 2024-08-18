@@ -285,7 +285,7 @@ Transformations can be applied to:
 - Incoming value
 - Outgoing value
 
-The transformations can be specified using a colon syntax `SERVICENAME:PATTERN`, or starting from openHAB 4.3, using parentheses `SERVICENAME(PATTERN)`.
+The transformations can be specified using a colon syntax `SERVICENAME:PATTERN`, or starting from openHAB 4.3, using parentheses `SERVICENAME(PATTERN)` (recommended).
 
 ## Incoming Value Transformation
 

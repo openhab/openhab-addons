@@ -33,7 +33,7 @@
 			Applies transformations to an incoming MQTT topic value.
 			<br /><br />
 			A transformation example for a received JSON would be "JSONPATH($.device.status.temperature)"
-			or "JSONPATH:$.device.status.temperature" for
+			or the deprecated syntax "JSONPATH:$.device.status.temperature" for
 			a json {device: {status: { temperature: 23.2 }}}.
 			<br /><br />
 			You can chain transformations by separating them with the intersection character ∩.
