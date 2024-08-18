@@ -33,6 +33,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.types.Command;
@@ -254,10 +255,7 @@ public class WLedSegmentHandler extends BaseThingHandler {
             WledApi localAPI = localBridgeHandler.api;
             if (localAPI != null) {
                 updateStatus(ThingStatus.ONLINE);
-                localBridgeHandler.stateDescriptionProvider
-                        .setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_FX), localAPI.getUpdatedFxList());
-                localBridgeHandler.stateDescriptionProvider.setStateOptions(
-                        new ChannelUID(getThing().getUID(), CHANNEL_PALETTES), localAPI.getUpdatedPaletteList());
+                updateStateDescriptionProviders();
                 if (!localBridgeHandler.hasWhite) {
                     logger.debug("WLED is not setup to use RGBW, so removing un-needed white channels");
                     removeWhiteChannels();
@@ -265,6 +263,33 @@ public class WLedSegmentHandler extends BaseThingHandler {
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED);
             }
+        }
+    }
+
+    private void updateStateDescriptionProviders() {
+        Bridge bridge = getBridge();
+        if (bridge != null) {
+            WLedBridgeHandler localBridgeHandler = (WLedBridgeHandler) bridge.getHandler();
+            if (localBridgeHandler != null) {
+                WledApi localAPI = localBridgeHandler.api;
+                if (localAPI != null) {
+                    localBridgeHandler.stateDescriptionProvider.setStateOptions(
+                            new ChannelUID(getThing().getUID(), CHANNEL_FX), localAPI.getUpdatedFxList());
+                    localBridgeHandler.stateDescriptionProvider.setStateOptions(
+                            new ChannelUID(getThing().getUID(), CHANNEL_PALETTES), localAPI.getUpdatedPaletteList());
+                }
+            }
+        }
+    }
+
+    @Override
+    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
+        super.bridgeStatusChanged(bridgeStatusInfo);
+
+        if (ThingStatus.ONLINE.equals(bridgeStatusInfo.getStatus())) {
+            // if the handler has been started before the WLED controller is available, we have to fill the providers
+            // again once the bridge goes ONLINE
+            updateStateDescriptionProviders();
         }
     }
 }
