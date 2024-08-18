@@ -333,10 +333,10 @@ public class LinkyHandler extends BaseThingHandler {
             updateState(PEAK_POWER_TS_DAY_MINUS_3,
                     new DateTimeType(values.dayValue[dSize - 3].date.atZone(ZoneId.systemDefault())));
 
-            updateMaxPowerTimeSeries(PEAK_POWER_DAILY, values.dayValue);
-            updateMaxPowerTimeSeries(PEAK_POWER_WEEKLY, values.weekValue);
-            updateMaxPowerTimeSeries(PEAK_POWER_MONTHLY, values.monthValue);
-            updateMaxPowerTimeSeries(PEAK_POWER_YEARLY, values.yearValue);
+            updatePowerTimeSeries(PEAK_POWER_DAILY, values.dayValue);
+            updatePowerTimeSeries(PEAK_POWER_WEEKLY, values.weekValue);
+            updatePowerTimeSeries(PEAK_POWER_MONTHLY, values.monthValue);
+            updatePowerTimeSeries(PEAK_POWER_YEARLY, values.yearValue);
 
         }, () -> {
             updateKwhChannel(PEAK_POWER_DAY_MINUS_1, Double.NaN);
@@ -397,17 +397,17 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     /**
-     * Request new dayly/weekly data and updates channels
+     * Request new loadCurve data and updates channels
      */
     private synchronized void updateLoadCurveData() {
         loadCurveConsumption.getValue().ifPresentOrElse(values -> {
             int dSize = values.dayValue.length;
-            updateMaxPowerTimeSeries(LOAD_CURVE, values.dayValue);
+            updatePowerTimeSeries(LOAD_CURVE, values.dayValue);
         }, () -> {
         });
     }
 
-    private synchronized void updateMaxPowerTimeSeries(String channel, IntervalReading[] iv) {
+    private synchronized void updatePowerTimeSeries(String channel, IntervalReading[] iv) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
         for (int i = 0; i < iv.length; i++) {

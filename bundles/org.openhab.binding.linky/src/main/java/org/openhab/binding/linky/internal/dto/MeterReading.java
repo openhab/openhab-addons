@@ -90,7 +90,6 @@ public class MeterReading {
         for (int i = 0; i < size; i++) {
             Double data = datas.get(i);
             String label = labels.get(i);
-            // 2024-08-11T00:00:00.000+0200
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS[X]");
             ZonedDateTime dt = ZonedDateTime.parse(label, formatter);
 
