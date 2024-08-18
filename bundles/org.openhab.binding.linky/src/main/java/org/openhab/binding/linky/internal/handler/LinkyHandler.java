@@ -406,7 +406,6 @@ public class LinkyHandler extends BaseThingHandler {
             updateMaxPowerTimeSeries(LOAD_CURVE, values.dayValue);
         }, () -> {
         });
-
     }
 
     private synchronized void updateMaxPowerTimeSeries(String channel, IntervalReading[] iv) {
