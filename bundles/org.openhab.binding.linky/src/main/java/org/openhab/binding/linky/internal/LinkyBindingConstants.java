@@ -49,6 +49,8 @@ public class LinkyBindingConstants {
 
     // List of all Channel id's
 
+    public static final String LOAD_CURVE = "loadCurve#power";
+
     public static final String DAYLY_CONSUMPTION = "daily#consumption";
     public static final String WEEKLY_CONSUMPTION = "weekly#consumption";
     public static final String MONTHLY_CONSUMPTION = "monthly#consumption";
