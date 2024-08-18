@@ -19,7 +19,9 @@ import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 
+import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -33,6 +35,11 @@ public class Event {
     }.getType();
 
     private @Nullable List<Resource> data = new ArrayList<>();
+    private @Nullable @SerializedName("type") String contentType; // content type of resources
+
+    public ContentType getContentType() {
+        return ContentType.of(contentType);
+    }
 
     public List<Resource> getData() {
         List<Resource> data = this.data;
