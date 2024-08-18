@@ -120,7 +120,6 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
                 if (handler != null) {
                     handler.saveConfiguration(config);
                 }
-
             }
         }
         return token;

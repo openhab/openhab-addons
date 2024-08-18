@@ -257,7 +257,6 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
                 throw new LinkyException("Invalid prms data received");
             }
             return Contracts.fromWebPrmInfos(webPrmsInfo, prmId);
-
         } catch (JsonSyntaxException e) {
             logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
             throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response");

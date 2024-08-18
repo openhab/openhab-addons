@@ -74,7 +74,6 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
     public ApiBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
-
         super(bridge, httpClientFactory, oAuthFactory, httpService, thingRegistry, componentContext, gson);
 
         String tokenUrl = "";
@@ -109,7 +108,6 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
                 httpService.registerResources(LinkyBindingConstants.LINKY_ALIAS + LinkyBindingConstants.LINKY_IMG_ALIAS,
                         "web", null);
             }
-
         } catch (NamespaceException | ServletException | IOException e) {
             logger.warn("Error during linky servlet startup", e);
         }
@@ -158,7 +156,6 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
         // this is not the case in v1 as we go trough MyElectricalData
 
         try {
-
             logger.debug("Make call to Enedis to get access token.");
             final AccessTokenResponse credentials = oAuthService
                     .getAccessTokenByClientCredentials(LinkyBindingConstants.LINKY_SCOPES);

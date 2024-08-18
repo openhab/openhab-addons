@@ -79,7 +79,6 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
             SSLContext sslContext = SSLContext.getInstance("SSL");
             sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);
             sslContextFactory.setSslContext(sslContext);
-
         } catch (NoSuchAlgorithmException e) {
             logger.warn("An exception occurred while requesting the SSL encryption algorithm : '{}'", e.getMessage(),
                     e);
@@ -154,7 +153,6 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
     }
 
     public abstract double getDivider();

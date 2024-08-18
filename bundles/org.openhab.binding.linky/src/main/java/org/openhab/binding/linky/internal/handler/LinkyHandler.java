@@ -183,12 +183,11 @@ public class LinkyHandler extends BaseThingHandler {
 
     private void pollingCode() {
         try {
-
             EnedisHttpApi api = this.enedisApi;
 
             if (api != null) {
-
                 Bridge lcBridge = getBridge();
+                ScheduledFuture<?> lcPollingJob = pollingJob;
 
                 if (lcBridge == null || lcBridge.getStatus() != ThingStatus.ONLINE) {
                     return;
@@ -209,6 +208,10 @@ public class LinkyHandler extends BaseThingHandler {
 
                 if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
                     updateStatus(ThingStatus.ONLINE);
+                }
+
+                if (lcPollingJob != null) {
+                    lcPollingJob.cancel(false);
                 }
 
                 refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
@@ -259,7 +262,6 @@ public class LinkyHandler extends BaseThingHandler {
 
                 updateState(MAIN_CONTACT_MAIL, new StringType(info.contactInfo.email));
                 updateState(MAIN_CONTACT_PHONE, new StringType(info.contactInfo.phone));
-
             } catch (LinkyException e) {
                 logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -296,7 +298,6 @@ public class LinkyHandler extends BaseThingHandler {
 
                     timeSeries.add(timestamp, new DecimalType(getTempoIdx(v)));
                 } catch (ParseException ex) {
-
                 }
             });
 
@@ -317,13 +318,13 @@ public class LinkyHandler extends BaseThingHandler {
 
     private int getTempoIdx(String color) {
         int val = 0;
-        if (color.equals("BLUE")) {
+        if ("BLUE".equals(color)) {
             val = 0;
         }
-        if (color.equals("WHITE")) {
+        if ("WHITE".equals(color)) {
             val = 1;
         }
-        if (color.equals("RED")) {
+        if ("RED".equals(color)) {
             val = 2;
         }
 
@@ -601,11 +602,9 @@ public class LinkyHandler extends BaseThingHandler {
         Bridge bridge = getBridge();
         if (bridge != null) {
             LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) bridge.getHandler();
-            if (bridgeHandler == null) {
-                return false;
+            if (bridgeHandler != null) {
+                return bridgeHandler.isConnected();
             }
-
-            return bridgeHandler.isConnected();
         }
         return false;
     }

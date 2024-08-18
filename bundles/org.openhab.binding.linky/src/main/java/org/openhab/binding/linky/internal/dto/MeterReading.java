@@ -66,7 +66,6 @@ public class MeterReading {
     }
 
     public static IntervalReading[] fromAgregat(ConsumptionReport.Aggregate agregat) {
-
         int size = agregat.datas.size();
         IntervalReading[] result = new IntervalReading[size];
 
@@ -83,7 +82,6 @@ public class MeterReading {
     }
 
     public static IntervalReading[] fromLabelsAndDatas(List<String> labels, List<Double> datas) {
-
         int size = datas.size();
         IntervalReading[] result = new IntervalReading[size];
 
