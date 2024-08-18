@@ -401,7 +401,6 @@ public class LinkyHandler extends BaseThingHandler {
      */
     private synchronized void updateLoadCurveData() {
         loadCurveConsumption.getValue().ifPresentOrElse(values -> {
-            int dSize = values.dayValue.length;
             updatePowerTimeSeries(LOAD_CURVE, values.dayValue);
         }, () -> {
         });
