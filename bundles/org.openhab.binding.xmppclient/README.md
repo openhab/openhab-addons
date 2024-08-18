@@ -26,14 +26,14 @@ Bridge xmppclient:xmppBridge:xmpp "XMPP Client" [ host="xmpp.example.com", port=
 
 **xmppBridge** parameters:
 
-| Name     | Label              | Description                                                        | Required | Default value         |
-|----------|--------------------|--------------------------------------------------------------------|----------|-----------------------|
-| username | Username           | The XMPP username (left part of JID)                               | true     | -                     |
-| domain   | Domain             | The XMPP domain name (right part of JID)                           | true     | -                     |
-| password | Password           | The XMPP user password                                             | true     | -                     |
-| host     | Server Hostname/IP | The IP/Hostname of the XMPP server                                 | false    | as "domain" parameter |
-| port     | XMPP server Port   | The typical port is 5222                                           | false    | 5222                  |
-| port     | Security Mode      | Sets the TLS security mode: `required`, `ifpossible` or `disabled` | false    | `required`            |
+| Name         | Label              | Description                                                        | Required | Default value         |
+|--------------|--------------------|--------------------------------------------------------------------|----------|-----------------------|
+| username     | Username           | The XMPP username (left part of JID)                               | true     | -                     |
+| domain       | Domain             | The XMPP domain name (right part of JID)                           | true     | -                     |
+| password     | Password           | The XMPP user password                                             | true     | -                     |
+| host         | Server Hostname/IP | The IP/Hostname of the XMPP server                                 | false    | as "domain" parameter |
+| port         | XMPP server Port   | The typical port is 5222                                           | false    | 5222                  |
+| securityMode | Security Mode      | Sets the TLS security mode: `required`, `ifpossible` or `disabled` | false    | `required`            |
 
 ## Channels
 

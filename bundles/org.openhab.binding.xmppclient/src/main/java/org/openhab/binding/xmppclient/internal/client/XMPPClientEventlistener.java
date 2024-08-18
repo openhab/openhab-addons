@@ -15,7 +15,7 @@ package org.openhab.binding.xmppclient.internal.client;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link XMPPClientEventlistener} is lib for handling XMPP connection events
+ * The {@link XMPPClientEventlistener} is an interface for handling XMPP connection events.
  *
  * @author Leo Siepel - Initial Contribution
  */
