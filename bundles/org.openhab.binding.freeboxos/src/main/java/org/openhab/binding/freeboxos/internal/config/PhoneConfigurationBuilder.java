@@ -16,6 +16,7 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Status;
+import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Type;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class PhoneConfigurationBuilder {
     public DiscoveryResultBuilder configure(ThingUID bridgeUID, Status config) {
         ThingUID thingUID;
         String label;
-        if ("dect".equalsIgnoreCase(config.type())) {
+        if (Type.DECT.equals(config.type())) {
             thingUID = new ThingUID(THING_TYPE_DECT, bridgeUID, Integer.toString(config.id()));
             label = "DECT Phone";
         } else {

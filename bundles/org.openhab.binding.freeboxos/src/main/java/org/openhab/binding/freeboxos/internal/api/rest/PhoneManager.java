@@ -20,6 +20,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link PhoneManager} is the Java class used to handle api requests related to phone and calls
  *
@@ -37,11 +39,25 @@ public class PhoneManager extends ConfigurableRest<PhoneManager.Config, PhoneMan
     protected class StatusResponse extends Response<Status> {
     }
 
-    public static record Config(String network, boolean dectEcoMode, String dectPin, int dectRingPattern,
+    private enum NetworkStatus {
+        @SerializedName("working")
+        WORKING,
+        UNKNOWN
+    }
+
+    public static record Config(NetworkStatus network, boolean dectEcoMode, String dectPin, int dectRingPattern,
             boolean dectRegistration, boolean dectNemoMode, boolean dectEnabled, boolean dectRingOnOff) {
     }
 
-    public static record Status(int id, boolean isRinging, boolean onHook, boolean hardwareDefect, String type,
+    public enum Type {
+        @SerializedName("fxs")
+        FXS,
+        @SerializedName("dect")
+        DECT,
+        UNKNOWN
+    }
+
+    public static record Status(int id, boolean isRinging, boolean onHook, boolean hardwareDefect, Type type,
             @Nullable String vendor, int gainRx, int gainTx) {
 
         public String vendor() {
