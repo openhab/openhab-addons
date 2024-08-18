@@ -277,6 +277,16 @@ Thing mqtt:topic:bedroom1-switch (mqtt:broker:myInsecureBroker) [ availabilityTo
 - The HomeAssistant Light Component does not support XY color changes.
 - The HomeAssistant Climate Components is not yet supported.
 
+## Value Transformations
+
+Transformations can be applied to:
+
+- Incoming availability payload
+- Incoming value
+- Outgoing value
+
+The transformations can be specified using a colon syntax `SERVICENAME:PATTERN`, or starting from openHAB 4.3, using parentheses `SERVICENAME(PATTERN)`.
+
 ## Incoming Value Transformation
 
 All mentioned channels allow an optional transformation for incoming MQTT topic values.
@@ -287,9 +297,9 @@ Here are a few examples to unwrap a value from a complex response:
 
 | Received value                                                      | Tr. Service | Transformation                            |
 |---------------------------------------------------------------------|-------------|-------------------------------------------|
-| `{device: {status: { temperature: 23.2 }}}`                         | JSONPATH    | `JSONPATH:$.device.status.temperature`    |
-| `<device><status><temperature>23.2</temperature></status></device>` | XPath       | `XPath:/device/status/temperature/text()` |
-| `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX::(.*?)°`                           |
+| `{device: {status: { temperature: 23.2 }}}`                         | JSONPATH    | `JSONPATH($.device.status.temperature)`    |
+| `<device><status><temperature>23.2</temperature></status></device>` | XPath       | `XPath(/device/status/temperature/text())` |
+| `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX(:(.*?)°)`                           |
 
 Transformations can be chained by separating them with the mathematical intersection character "∩".
 Please note that the incoming value will be discarded if one transformation fails (e.g. REGEX did not match).

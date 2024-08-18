@@ -123,7 +123,7 @@ public class ChannelState implements MqttMessageSubscriber {
             TransformationServiceProvider transformationServiceProvider) {
         String[] transformations = transformation.split("∩");
         return Stream.of(transformations).filter(t -> !t.isBlank())
-                .map(t -> new ChannelStateTransformation(t, transformationServiceProvider));
+                .map(t -> new ChannelStateTransformation(t.strip(), transformationServiceProvider));
     }
 
     /**

@@ -13,6 +13,8 @@
 package org.openhab.binding.mqtt.generic;
 
 import java.lang.ref.WeakReference;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -33,6 +35,8 @@ public class ChannelStateTransformation {
     private WeakReference<@Nullable TransformationService> transformationService = new WeakReference<>(null);
     final String pattern;
     final String serviceName;
+    private final Pattern transformationPattern = Pattern
+            .compile("(?<service1>[a-zA-Z]+):(?<pattern1>.*)|(?<service2>[a-zA-Z]+)\\((?<pattern2>.*)\\)$");
 
     /**
      * Creates a new channel state transformer.
@@ -45,14 +49,19 @@ public class ChannelStateTransformation {
      */
     public ChannelStateTransformation(String pattern, TransformationServiceProvider provider) {
         this.provider = provider;
-        int index = pattern.indexOf(':');
-        if (index == -1) {
+        Matcher matcher = transformationPattern.matcher(pattern);
+        if (!matcher.find()) {
             throw new IllegalArgumentException(
-                    "The transformation pattern must consist of the type and the pattern separated by a colon");
+                    "The transformation pattern must be in the syntax of TYPE:PATTERN or TYPE(PATTERN)");
         }
-        String type = pattern.substring(0, index).toUpperCase();
-        this.pattern = pattern.substring(index + 1);
-        this.serviceName = type;
+        String service = matcher.group("service2");
+        if (service == null) {
+            this.serviceName = matcher.group("service1").toUpperCase();
+            this.pattern = matcher.group("pattern1");
+        } else {
+            this.serviceName = service.toUpperCase();
+            this.pattern = matcher.group("pattern2");
+        }
     }
 
     /**

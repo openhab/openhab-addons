@@ -66,7 +66,7 @@ public class ChannelStateTransformationTests {
 
         // Mock the thing: We need the thingUID and the bridgeUID
         when(thingMock.getUID()).thenReturn(TEST_GENERIC_THING);
-        when(thingMock.getChannels()).thenReturn(THING_CHANNEL_LIST_WITH_JSON);
+        when(thingMock.getChannels()).thenReturn(THING_CHANNEL_LIST_WITH_JSON_COLON);
         when(thingMock.getStatusInfo()).thenReturn(thingStatus);
         when(thingMock.getConfiguration()).thenReturn(new Configuration());
 
@@ -94,7 +94,7 @@ public class ChannelStateTransformationTests {
     @SuppressWarnings("null")
     @Test
     public void initialize() throws Exception {
-        when(thingMock.getChannels()).thenReturn(THING_CHANNEL_LIST_WITH_JSON);
+        when(thingMock.getChannels()).thenReturn(THING_CHANNEL_LIST_WITH_JSON_COLON);
 
         thingHandler.initialize();
         ChannelState channelConfig = thingHandler.getChannelState(TEXT_CHANNEL_UID);
@@ -119,5 +119,17 @@ public class ChannelStateTransformationTests {
 
         verify(callbackMock).stateUpdated(eq(TEXT_CHANNEL_UID), argThat(arg -> "23.2".equals(arg.toString())));
         assertThat(channelConfig.getCache().getChannelState().toString(), is("23.2"));
+    }
+
+    @Test
+    public void testPatternWithParentheses() throws Exception {
+        when(thingMock.getChannels()).thenReturn(THING_CHANNEL_LIST_WITH_REGEX_PARENTHESES);
+
+        thingHandler.initialize();
+        ChannelState channelConfig = thingHandler.getChannelState(TEXT_CHANNEL_UID);
+        assertThat(channelConfig.transformationsIn.get(0).serviceName, is(TRANSFORMATION_SERVICE1));
+        assertThat(channelConfig.transformationsIn.get(0).pattern, is(TRANSFORMATION_PATTERN1));
+        assertThat(channelConfig.transformationsIn.get(1).serviceName, is(TRANSFORMATION_SERVICE2));
+        assertThat(channelConfig.transformationsIn.get(1).pattern, is(TRANSFORMATION_PATTERN2));
     }
 }
