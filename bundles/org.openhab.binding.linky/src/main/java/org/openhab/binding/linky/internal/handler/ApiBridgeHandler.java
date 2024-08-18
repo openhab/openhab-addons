@@ -247,5 +247,4 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
             throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response");
         }
     }
-
 }

@@ -182,5 +182,4 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
     public abstract Contracts decodeCustomerResponse(String data, String prmId) throws LinkyException;
 
     public abstract IdentityInfo decodeIdentityResponse(String data, String prmId) throws LinkyException;
-
 }
