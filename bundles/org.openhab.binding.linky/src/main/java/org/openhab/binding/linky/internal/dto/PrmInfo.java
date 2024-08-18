@@ -25,7 +25,7 @@ public class PrmInfo {
 
     public PrmInfo() {
         customerId = "";
-        contractInfo = new Contracts();
+        contractInfo = new ContractDetails();
         identityInfo = new IdentityInfo();
         addressInfo = new AddressInfo();
         contactInfo = new ContactInfo();
@@ -35,7 +35,7 @@ public class PrmInfo {
     public String prmId;
     public String customerId;
 
-    public Contracts contractInfo;
+    public ContractDetails contractInfo;
     public UsagePointDetails usagePointInfo;
     public ContactInfo contactInfo;
     public AddressInfo addressInfo;

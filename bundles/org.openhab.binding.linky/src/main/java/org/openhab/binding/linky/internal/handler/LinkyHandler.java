@@ -162,7 +162,7 @@ public class LinkyHandler extends BaseThingHandler {
             return;
         }
 
-        ApiBridgeHandler bridgeHandler = (ApiBridgeHandler) bridge.getHandler();
+        LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) bridge.getHandler();
         if (bridgeHandler == null) {
             return;
         }
@@ -588,7 +588,7 @@ public class LinkyHandler extends BaseThingHandler {
     private boolean isConnected() {
         Bridge bridge = getBridge();
         if (bridge != null) {
-            ApiBridgeHandler bridgeHandler = (ApiBridgeHandler) bridge.getHandler();
+            LinkyBridgeHandler bridgeHandler = (LinkyBridgeHandler) bridge.getHandler();
             if (bridgeHandler == null) {
                 return false;
             }
