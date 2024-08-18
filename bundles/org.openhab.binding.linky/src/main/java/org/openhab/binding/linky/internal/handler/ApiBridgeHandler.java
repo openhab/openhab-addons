@@ -17,28 +17,23 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.linky.internal.LinkyAuthServlet;
 import org.openhab.binding.linky.internal.LinkyBindingConstants;
-import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
-import org.openhab.binding.linky.internal.api.EnedisHttpApi;
+import org.openhab.binding.linky.internal.dto.Contracts;
+import org.openhab.binding.linky.internal.dto.CustomerIdResponse;
+import org.openhab.binding.linky.internal.dto.CustomerReponse;
+import org.openhab.binding.linky.internal.dto.IdentityInfo;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -46,16 +41,10 @@ import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.auth.client.oauth2.OAuthResponseException;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.net.http.HttpClientFactory;
-import org.openhab.core.io.net.http.TrustAllTrustManager;
 import org.openhab.core.thing.Bridge;
-import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.ThingStatus;
-import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.binding.BaseBridgeHandler;
-import org.openhab.core.types.Command;
-import org.osgi.framework.BundleContext;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.http.HttpService;
@@ -64,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * {@link ApiBridgeHandler} is the base handler to access enedis data.
@@ -71,65 +61,21 @@ import com.google.gson.Gson;
  * @author Laurent Arnal - Initial contribution
  */
 @NonNullByDefault
-public abstract class ApiBridgeHandler extends BaseBridgeHandler {
+public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
 
-    private static final int REQUEST_BUFFER_SIZE = 8000;
-
-    private HttpService httpService;
-    private BundleContext bundleContext;
-
-    protected final HttpClient httpClient;
-    protected EnedisHttpApi enedisApi;
     private OAuthClientService oAuthService;
-    protected final ThingRegistry thingRegistry;
 
     private static @Nullable HttpServlet servlet;
-    protected LinkyConfiguration config;
 
     private static final String TEMPLATE_PATH = "templates/";
     private static final String TEMPLATE_INDEX = TEMPLATE_PATH + "index.html";
 
-    protected final Gson gson;
-
-    protected boolean connected = false;
-
     public ApiBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
-        super(bridge);
 
-        SslContextFactory sslContextFactory = new SslContextFactory.Client();
-        try {
-            SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[] { TrustAllTrustManager.getInstance() }, null);
-            sslContextFactory.setSslContext(sslContext);
-
-        } catch (NoSuchAlgorithmException e) {
-            logger.warn("An exception occurred while requesting the SSL encryption algorithm : '{}'", e.getMessage(),
-                    e);
-        } catch (KeyManagementException e) {
-            logger.warn("An exception occurred while initialising the SSL context : '{}'", e.getMessage(), e);
-        }
-
-        this.gson = gson;
-        this.httpService = httpService;
-        this.thingRegistry = thingRegistry;
-        this.bundleContext = componentContext.getBundleContext();
-
-        this.httpClient = httpClientFactory.createHttpClient(LinkyBindingConstants.BINDING_ID, sslContextFactory);
-        this.httpClient.setFollowRedirects(false);
-        this.httpClient.setRequestBufferSize(REQUEST_BUFFER_SIZE);
-
-        try {
-            httpClient.start();
-        } catch (Exception e) {
-            logger.warn("Unable to start Jetty HttpClient {}", e.getMessage());
-        }
-
-        this.enedisApi = new EnedisHttpApi(this, gson, this.httpClient);
-
-        config = getConfigAs(LinkyConfiguration.class);
+        super(bridge, httpClientFactory, oAuthFactory, httpService, thingRegistry, componentContext, gson);
 
         String tokenUrl = "";
         String authorizeUrl = "";
@@ -139,7 +85,6 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
         } else if (this instanceof EnedisBridgeHandler) {
             tokenUrl = LinkyBindingConstants.ENEDIS_API_TOKEN_URL_PREPROD;
             authorizeUrl = LinkyBindingConstants.ENEDIS_AUTHORIZE_URL_PREPROD;
-
         }
 
         this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID, tokenUrl,
@@ -150,71 +95,9 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
     }
 
-    public @Nullable EnedisHttpApi getEnedisApi() {
-        return enedisApi;
-    }
-
     public abstract String getClientId();
 
     public abstract String getClientSecret();
-
-    @Override
-    public void initialize() {
-        logger.debug("Initializing Linky API bridge handler.");
-
-        updateStatus(ThingStatus.UNKNOWN);
-
-        scheduler.submit(() -> {
-            try {
-                connectionInit();
-                updateStatus(ThingStatus.ONLINE);
-            } catch (LinkyException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            }
-        });
-    }
-
-    protected abstract void connectionInit() throws LinkyException;
-
-    public boolean isConnected() {
-        return connected;
-    }
-
-    public void disconnect() {
-        if (connected) {
-            logger.debug("Logout process");
-            connected = false;
-            httpClient.getCookieStore().removeAll();
-        }
-    }
-
-    @Override
-    public void dispose() {
-        logger.debug("Shutting down Netatmo API bridge handler.");
-        disconnect();
-
-        httpService.unregister(LinkyBindingConstants.LINKY_ALIAS);
-        httpService.unregister(LinkyBindingConstants.LINKY_ALIAS + LinkyBindingConstants.LINKY_IMG_ALIAS);
-
-        super.dispose();
-    }
-
-    /*
-     * @Override
-     * protected void deactivate(ComponentContext componentContext) {
-     * super.deactivate(componentContext);
-     * try {
-     * httpClient.stop();
-     * } catch (Exception e) {
-     * logger.warn("Unable to stop Jetty HttpClient {}", e.getMessage());
-     * }
-     * }
-     */
-
-    @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        // TODO Auto-generated method stub
-    }
 
     private void registerServlet() {
         try {
@@ -291,8 +174,6 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
                 && accessTokenResponse.getRefreshToken() != null;
     }
 
-    public abstract String getToken(LinkyHandler handler) throws LinkyException;
-
     protected @Nullable AccessTokenResponse getAccessTokenByClientCredentials() {
         try {
             return oAuthService.getAccessTokenByClientCredentials(LinkyBindingConstants.LINKY_SCOPES);
@@ -339,27 +220,32 @@ public abstract class ApiBridgeHandler extends BaseBridgeHandler {
         return result;
     }
 
-    public abstract double getDivider();
+    @Override
+    public Contracts decodeCustomerResponse(String data, String prmId) throws LinkyException {
+        try {
+            CustomerReponse cResponse = gson.fromJson(data, CustomerReponse.class);
+            if (cResponse == null) {
+                throw new LinkyException("Invalid customer data received");
+            }
+            return cResponse.customer;
+        } catch (JsonSyntaxException e) {
+            logger.debug("invalid JSON response not matching CustomerReponse.class: {}", data);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response");
+        }
+    }
 
-    public abstract String getBaseUrl();
+    @Override
+    public IdentityInfo decodeIdentityResponse(String data, String prmId) throws LinkyException {
+        try {
+            CustomerIdResponse iResponse = gson.fromJson(data, CustomerIdResponse.class);
+            if (iResponse == null) {
+                throw new LinkyException("Invalid customer data received");
+            }
+            return iResponse.identity.naturalPerson;
+        } catch (JsonSyntaxException e) {
+            logger.debug("invalid JSON response not matching CustomerIdResponse.class: {}", data);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response");
+        }
+    }
 
-    public abstract String getContactUrl();
-
-    public abstract String getContractUrl();
-
-    public abstract String getIdentityUrl();
-
-    public abstract String getAddressUrl();
-
-    public abstract String getDailyConsumptionUrl();
-
-    public abstract String getMaxPowerUrl();
-
-    public abstract String getLoadCurveUrl();
-
-    public abstract String getTempoUrl();
-
-    public abstract DateTimeFormatter getApiDateFormat();
-
-    public abstract DateTimeFormatter getApiDateFormatYearsFirst();
 }

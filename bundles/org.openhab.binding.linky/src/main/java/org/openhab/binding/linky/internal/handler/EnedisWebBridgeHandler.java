@@ -31,6 +31,10 @@ import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.binding.linky.internal.dto.AuthData;
 import org.openhab.binding.linky.internal.dto.AuthResult;
+import org.openhab.binding.linky.internal.dto.Contracts;
+import org.openhab.binding.linky.internal.dto.IdentityInfo;
+import org.openhab.binding.linky.internal.dto.WebPrmInfo;
+import org.openhab.binding.linky.internal.dto.WebUserInfo;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -51,7 +55,7 @@ import com.google.gson.JsonSyntaxException;
  *
  */
 @NonNullByDefault
-public class EnedisWebBridgeHandler extends ApiBridgeHandler {
+public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(EnedisWebBridgeHandler.class);
 
     public static final String ENEDIS_DOMAIN = ".enedis.fr";
@@ -94,16 +98,6 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
     @Override
     public void initialize() {
         super.initialize();
-    }
-
-    @Override
-    public String getClientId() {
-        return config.clientId;
-    }
-
-    @Override
-    public String getClientSecret() {
-        return config.clientSecret;
     }
 
     @Override
@@ -252,6 +246,32 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
             connected = true;
         } catch (InterruptedException | TimeoutException | ExecutionException | JsonSyntaxException e) {
             throw new LinkyException(e, "Error opening connection with Enedis webservice");
+        }
+    }
+
+    @Override
+    public Contracts decodeCustomerResponse(String data, String prmId) throws LinkyException {
+        try {
+            WebPrmInfo[] webPrmsInfo = gson.fromJson(data, WebPrmInfo[].class);
+            if (webPrmsInfo == null || webPrmsInfo.length < 1) {
+                throw new LinkyException("Invalid prms data received");
+            }
+            return Contracts.fromWebPrmInfos(webPrmsInfo, prmId);
+
+        } catch (JsonSyntaxException e) {
+            logger.debug("invalid JSON response not matching PrmInfo[].class: {}", data);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response");
+        }
+    }
+
+    @Override
+    public IdentityInfo decodeIdentityResponse(String data, String prmId) throws LinkyException {
+        try {
+            WebUserInfo webUserInfo = gson.fromJson(data, WebUserInfo.class);
+            return IdentityInfo.fromWebUserInfo(webUserInfo);
+        } catch (JsonSyntaxException e) {
+            logger.debug("invalid JSON response not matching UserInfo.class: {}", data);
+            throw new LinkyException(e, "Requesting '%s' returned an invalid JSON response");
         }
     }
 }
