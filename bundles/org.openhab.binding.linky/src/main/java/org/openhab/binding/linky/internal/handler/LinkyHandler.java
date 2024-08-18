@@ -207,7 +207,9 @@ public class LinkyHandler extends BaseThingHandler {
                 final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
                         .truncatedTo(ChronoUnit.HOURS);
 
-                updateStatus(ThingStatus.ONLINE);
+                if (this.getThing().getStatusInfo().getStatusDetail() != ThingStatusDetail.COMMUNICATION_ERROR) {
+                    updateStatus(ThingStatus.ONLINE);
+                }
 
                 refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
                         ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
