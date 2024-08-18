@@ -84,6 +84,7 @@
 		<channel-groups>
 			<channel-group typeId="main" id="main"/>
 			<channel-group typeId="tempo" id="tempo"/>
+			<channel-group typeId="loadCurve" id="loadCurve"/>
 			<channel-group typeId="daily" id="daily"/>
 			<channel-group typeId="weekly" id="weekly"/>
 			<channel-group typeId="monthly" id="monthly"/>
@@ -109,6 +110,15 @@
 	</thing-type>
 
 
+    <channel-group-type id="loadCurve">
+        <label>Load curve</label>
+        <channels>
+            <channel id="power" typeId="power">
+                <label>Load Curve power</label>
+            </channel>
+        </channels>
+    </channel-group-type>
+    
 	<channel-group-type id="daily">
 		<label>Daily consumption</label>
 		<channels>
