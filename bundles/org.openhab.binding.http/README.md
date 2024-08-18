@@ -78,8 +78,8 @@ Here are a few examples to unwrap an incoming value via `stateTransformation` fr
 | `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX(:(.*?)°)`                           |
 
 Transformations can be chained in the UI by listing each transformation on a separate line, or by separating them with the mathematical intersection character "∩".
-Starting from openHAB 4.3, transformations are defined using this syntax: `TYPE(FUNCTION)`, e.g.: `JSONPATH($.path)`.
-The previous syntax is also supported: `TYPE:FUNCTION`, e.g.: `JSONPATH:$.path`.
+Transformations are defined using this syntax: `TYPE(FUNCTION)`, e.g.: `JSONPATH($.path)`.
+The syntax: `TYPE:FUNCTION` is still supported, e.g.: `JSONPATH:$.path`.
 Please note that the values will be discarded if one transformation fails (e.g. REGEX did not match).
 
 The same mechanism works for commands (`commandTransformation`) for outgoing values.
