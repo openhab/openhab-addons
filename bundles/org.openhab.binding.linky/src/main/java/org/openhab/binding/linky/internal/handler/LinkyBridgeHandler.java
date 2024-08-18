@@ -89,17 +89,6 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
 
         config = getConfigAs(LinkyConfiguration.class);
 
-        String tokenUrl = "";
-        String authorizeUrl = "";
-        if (this instanceof MyElectricalDataBridgeHandler) {
-            tokenUrl = LinkyBindingConstants.LINKY_MYELECTRICALDATA_API_TOKEN_URL;
-            authorizeUrl = LinkyBindingConstants.LINKY_MYELECTRICALDATA_AUTHORIZE_URL;
-        } else if (this instanceof EnedisBridgeHandler) {
-            tokenUrl = LinkyBindingConstants.ENEDIS_API_TOKEN_URL_PREPROD;
-            authorizeUrl = LinkyBindingConstants.ENEDIS_AUTHORIZE_URL_PREPROD;
-
-        }
-
         updateStatus(ThingStatus.UNKNOWN);
     }
 
