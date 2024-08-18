@@ -71,6 +71,7 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public void connectionInit() {
+        connected = true;
     }
 
     @Override
