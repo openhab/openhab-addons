@@ -91,6 +91,8 @@ public class LinkyHandler extends BaseThingHandler {
     private @Nullable EnedisHttpApi enedisApi;
     private double divider = 1.00;
 
+    private @Nullable ScheduledFuture<?> pollingJob = null;
+
     private enum Target {
         FIRST,
         LAST,
@@ -154,7 +156,7 @@ public class LinkyHandler extends BaseThingHandler {
     }
 
     @Override
-    public void initialize() {
+    public synchronized void initialize() {
         logger.debug("Initializing Linky handler.");
 
         Bridge bridge = getBridge();
@@ -172,38 +174,47 @@ public class LinkyHandler extends BaseThingHandler {
         updateStatus(ThingStatus.UNKNOWN);
 
         if (config.seemsValid()) {
-            scheduler.submit(() -> {
-                try {
-
-                    EnedisHttpApi api = this.enedisApi;
-
-                    if (api != null) {
-                        PrmInfo prmInfo = api.getPrmInfo(this, config.prmId);
-                        updateProperties(Map.of(USER_ID, prmInfo.customerId, PUISSANCE,
-                                prmInfo.contractInfo.subscribedPower, PRM_ID, prmInfo.prmId));
-
-                        updateMetaData();
-                        updateData();
-
-                        disconnect();
-
-                        final LocalDateTime now = LocalDateTime.now();
-                        final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
-                                .truncatedTo(ChronoUnit.HOURS);
-
-                        updateStatus(ThingStatus.ONLINE);
-
-                        refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
-                                ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
-                                REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
-                    }
-                } catch (LinkyException e) {
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-                }
-            });
+            pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, 5, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.config-error-mandatory-settings");
+        }
+    }
+
+    private void pollingCode() {
+        try {
+
+            EnedisHttpApi api = this.enedisApi;
+
+            if (api != null) {
+
+                Bridge lcBridge = getBridge();
+
+                if (lcBridge == null || lcBridge.getStatus() != ThingStatus.ONLINE) {
+                    return;
+                }
+
+                PrmInfo prmInfo = api.getPrmInfo(this, config.prmId);
+                updateProperties(Map.of(USER_ID, prmInfo.customerId, PUISSANCE, prmInfo.contractInfo.subscribedPower,
+                        PRM_ID, prmInfo.prmId));
+
+                updateMetaData();
+                updateData();
+
+                disconnect();
+
+                final LocalDateTime now = LocalDateTime.now();
+                final LocalDateTime nextDayFirstTimeUpdate = now.plusDays(1).withHour(REFRESH_FIRST_HOUR_OF_DAY)
+                        .truncatedTo(ChronoUnit.HOURS);
+
+                updateStatus(ThingStatus.ONLINE);
+
+                refreshJob = scheduler.scheduleWithFixedDelay(this::updateData,
+                        ChronoUnit.MINUTES.between(now, nextDayFirstTimeUpdate) % REFRESH_INTERVAL_IN_MIN + 1,
+                        REFRESH_INTERVAL_IN_MIN, TimeUnit.MINUTES);
+            }
+        } catch (LinkyException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
         }
     }
 
@@ -607,6 +618,12 @@ public class LinkyHandler extends BaseThingHandler {
         if (job != null && !job.isCancelled()) {
             job.cancel(true);
             refreshJob = null;
+        }
+
+        ScheduledFuture<?> lcPollingJob = pollingJob;
+        if (lcPollingJob != null) {
+            lcPollingJob.cancel(true);
+            pollingJob = null;
         }
         disconnect();
         enedisApi = null;

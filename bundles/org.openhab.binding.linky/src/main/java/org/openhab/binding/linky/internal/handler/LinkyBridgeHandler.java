@@ -110,7 +110,7 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
     }
 
     @Override
-    public void initialize() {
+    public synchronized void initialize() {
         logger.debug("Initializing Linky API bridge handler.");
 
         updateStatus(ThingStatus.UNKNOWN);
@@ -147,10 +147,6 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
     public void dispose() {
         logger.debug("Shutting down Linky API bridge handler.");
         disconnect();
-
-        httpService.unregister(LinkyBindingConstants.LINKY_ALIAS);
-        httpService.unregister(LinkyBindingConstants.LINKY_ALIAS + LinkyBindingConstants.LINKY_IMG_ALIAS);
-
         super.dispose();
     }
 
