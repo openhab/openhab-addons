@@ -172,7 +172,7 @@ public class EnedisWebBridgeHandler extends ApiBridgeHandler {
     }
 
     @Override
-    protected void connectionInit() throws LinkyException {
+    protected synchronized void connectionInit() throws LinkyException {
         logger.debug("Starting login process for user : {}", config.username);
 
         try {

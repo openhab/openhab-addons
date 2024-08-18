@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2010-2025 Contributors to the openHAB project
+/**
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,7 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
@@ -23,30 +22,28 @@ import com.google.gson.annotations.SerializedName;
  * returned by API calls
  *
  * @author Gaël L'hopital - Initial contribution
- * @author Laurent Arnal - fix to handle new Dto format after enedis site modifications
  */
 public class ConsumptionReport {
-
-    public class Data {
-        public LocalDateTime dateDebut;
-        public LocalDateTime dateFin;
-        public Double valeur;
+    public class Period {
+        public String grandeurPhysiqueEnum;
+        public ZonedDateTime dateDebut;
+        public ZonedDateTime dateFin;
     }
 
     public class Aggregate {
-        @SerializedName("donnees")
-        public List<Data> datas;
-        public String unite;
+        public List<String> labels;
+        public List<Period> periodes;
+        public List<Double> datas;
     }
 
     public class ChronoData {
-        @SerializedName("jour")
+        @SerializedName("JOUR")
         public Aggregate days;
-        @SerializedName("semaine")
+        @SerializedName("SEMAINE")
         public Aggregate weeks;
-        @SerializedName("mois")
+        @SerializedName("MOIS")
         public Aggregate months;
-        @SerializedName("annee")
+        @SerializedName("ANNEE")
         public Aggregate years;
     }
 
@@ -54,10 +51,17 @@ public class ConsumptionReport {
         public ChronoData aggregats;
         public String grandeurMetier;
         public String grandeurPhysique;
-        public LocalDate dateDebut;
-        public LocalDate dateFin;
+        public String unite;
+        public String mesuresPasEnum;
+        public List<String> labels;
+        public List<Double> data;
     }
 
-    @SerializedName("cons")
-    public Consumption consumptions;
+    public class FirstLevel {
+        @SerializedName("CONS")
+        public Consumption consumptions;
+    }
+
+    @SerializedName("1")
+    public FirstLevel firstLevel;
 }
