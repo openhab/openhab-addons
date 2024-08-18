@@ -247,7 +247,6 @@ public class TelegramHandler extends BaseThingHandler {
                 cancelThingOnlineStatusJob();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, exception.getMessage());
                 delayThingOnlineStatus();
-                return;
             } else {
                 logger.warn("Telegram exception: {}", exception.getMessage());
             }
