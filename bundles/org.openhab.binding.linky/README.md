@@ -268,8 +268,6 @@ The resulting graph will look like this:
 
 ![TempoGraph](doc/GraphConso.png)
 
-
-
 ## Console Commands
 
 The binding provides one specific command you can use in the console.
