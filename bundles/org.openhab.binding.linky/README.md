@@ -35,6 +35,7 @@ This binding does not provide discovery service.
 To retrieve data, Linky thing will be need to be linked to a LinkyBridge. LinkyBridge can be today select between EnedisWebBridge, MyElectricalDataBridge and EnedisBridge.
 
 If you select EnedisWebBridge, you will need :
+
 - To create an Enedis account : https://mon-compte-client.enedis.fr/
 - To fill the bridge with you information : username, Password, and also InternalAuthId.
 
@@ -60,12 +61,14 @@ Instructions given for Firefox :
 
 
 If you select MyElectricalDataBridge, you will need :
+
 - To create an Enedis account : https://mon-compte-client.enedis.fr/
 - To do a consent request on the MyElectricalData site : https://www.myelectricaldata.fr/
 - To fill the token provided by MyElectricalData into your Linky things config.
 
 These steps can also be done using the connectlinky page available from your openhab: http://localhost:8080/connectlinky.
 You're wil have:
+
 - to select your PrmId from the combobox.
 - to click the "Authorized Bridge".
 - to follow the authorized process on the enedis page : please select only one prmId there as the token is specific to each Linky.
@@ -87,6 +90,7 @@ The thing has the following configuration parameters:
 The information that is retrieved is available as many different groups.
 
 - The Main group will give information about the contract linked to this linky.
+
 You will find the following channel:
 
 | Channel ID                                        | Item Type      | Description                                   |
