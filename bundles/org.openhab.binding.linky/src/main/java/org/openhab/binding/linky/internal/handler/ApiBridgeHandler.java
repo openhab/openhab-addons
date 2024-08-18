@@ -115,6 +115,14 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
         }
     }
 
+    @Override
+    public void dispose() {
+        httpService.unregister(LinkyBindingConstants.LINKY_ALIAS);
+        httpService.unregister(LinkyBindingConstants.LINKY_ALIAS + LinkyBindingConstants.LINKY_IMG_ALIAS);
+
+        super.dispose();
+    }
+
     /**
      * Creates a new {@link LinkyAuthServlet}.
      *
