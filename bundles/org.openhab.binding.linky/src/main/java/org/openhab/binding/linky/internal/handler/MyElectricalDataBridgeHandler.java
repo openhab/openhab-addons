@@ -49,12 +49,11 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
     private static final String IDENTITY_URL = BASE_URL + "identity/%s/cache/";
     private static final String CONTACT_URL = BASE_URL + "contact/%s/cache/";
     private static final String ADDRESS_URL = BASE_URL + "addresses/%s/cache/";
-    private static final String MEASURE_DAILY_CONSUMPTION_URL = BASE_URL
-            + "daily_consumption/%s/start/%s/end/%s/cache/";
+    private static final String MEASURE_DAILY_CONSUMPTION_URL = BASE_URL + "daily_consumption/%s/start/%s/end/%s/cache";
     private static final String MEASURE_MAX_POWER_URL = BASE_URL
-            + "daily_consumption_max_power/%s/start/%s/end/%s/cache/";
+            + "daily_consumption_max_power/%s/start/%s/end/%s/cache";
     private static final String LOAD_CURVE_CONSUMPTION_URL = BASE_URL
-            + "consumption_load_curve/%s/start/%s/end/%s/cache/";
+            + "consumption_load_curve/%s/start/%s/end/%s/cache";
 
     private static final String TEMPO_URL = BASE_URL + "rte/tempo/%s/%s";
 
