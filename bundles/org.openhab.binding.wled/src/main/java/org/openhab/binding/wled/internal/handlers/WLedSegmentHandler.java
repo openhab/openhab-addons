@@ -280,7 +280,6 @@ public class WLedSegmentHandler extends BaseThingHandler {
                 }
             }
         }
-
     }
 
     @Override
@@ -292,6 +291,5 @@ public class WLedSegmentHandler extends BaseThingHandler {
             // again once the bridge goes ONLINE
             updateStateDescriptionProviders();
         }
-
     }
 }
