@@ -269,7 +269,6 @@ public class LinkyHandler extends BaseThingHandler {
 
     private synchronized void updateTempoTimeSeries() {
         tempoInformation.getValue().ifPresentOrElse(values -> {
-            LocalDate today = LocalDate.now();
             TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
             values.forEach((k, v) -> {
@@ -359,7 +358,6 @@ public class LinkyHandler extends BaseThingHandler {
             updateKwhChannel(DAY_MINUS_2, values.dayValue[dSize - 2].value);
             updateKwhChannel(DAY_MINUS_3, values.dayValue[dSize - 3].value);
 
-            LocalDate currentDt = LocalDate.now();
             int idxCurrentYear = values.yearValue.length - 1;
             int idxCurrentWeek = values.weekValue.length - 1;
             int idxCurrentMonth = values.monthValue.length - 1;
@@ -408,11 +406,11 @@ public class LinkyHandler extends BaseThingHandler {
             logger.debug("load curve");
         }, () -> {
         });
+
     }
 
     private synchronized void updateMaxPowerTimeSeries(String channel, IntervalReading[] iv) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
-        LocalDate today = LocalDate.now();
 
         for (int i = 0; i < iv.length; i++) {
             try {
@@ -432,7 +430,6 @@ public class LinkyHandler extends BaseThingHandler {
 
     private synchronized void updateConsumptionTimeSeries(String channel, IntervalReading[] iv) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
-        LocalDate today = LocalDate.now();
 
         for (int i = 0; i < iv.length; i++) {
             if (iv[i].date == null) {

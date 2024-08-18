@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.linky.internal.dto;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
 import org.eclipse.jetty.jaas.spi.UserInfo;
 
 import com.google.gson.annotations.SerializedName;
@@ -48,10 +52,15 @@ public class MeterReading {
         MeterReading result = new MeterReading();
         result.readingType = new ReadingType();
 
-        result.dayValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.days);
-        result.weekValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.weeks);
-        result.monthValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.months);
-        result.yearValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.years);
+        if (comsumptionReport.firstLevel.consumptions.aggregats != null) {
+            result.dayValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.days);
+            result.weekValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.weeks);
+            result.monthValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.months);
+            result.yearValue = fromAgregat(comsumptionReport.firstLevel.consumptions.aggregats.years);
+        } else {
+            result.dayValue = fromLabelsAndDatas(comsumptionReport.firstLevel.consumptions.labels,
+                    comsumptionReport.firstLevel.consumptions.data);
+        }
 
         return result;
     }
@@ -64,11 +73,30 @@ public class MeterReading {
         for (int i = 0; i < size; i++) {
             Double data = agregat.datas.get(i);
             ConsumptionReport.Period period = agregat.periodes.get(i);
-            String label = agregat.labels.get(i);
 
             result[i] = new IntervalReading();
             result[i].value = data;
             result[i].date = period.dateDebut.toLocalDateTime();
+        }
+
+        return result;
+    }
+
+    public static IntervalReading[] fromLabelsAndDatas(List<String> labels, List<Double> datas) {
+
+        int size = datas.size();
+        IntervalReading[] result = new IntervalReading[size];
+
+        for (int i = 0; i < size; i++) {
+            Double data = datas.get(i);
+            String label = labels.get(i);
+            // 2024-08-11T00:00:00.000+0200
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS[X]");
+            ZonedDateTime dt = ZonedDateTime.parse(label, formatter);
+
+            result[i] = new IntervalReading();
+            result[i].value = data;
+            result[i].date = dt.toLocalDateTime();
         }
 
         return result;
