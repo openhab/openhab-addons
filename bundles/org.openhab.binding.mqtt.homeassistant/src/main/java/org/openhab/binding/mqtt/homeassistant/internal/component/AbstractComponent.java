@@ -26,7 +26,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
@@ -139,7 +138,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
                 }
                 componentConfiguration.getTracker().addAvailabilityTopic(availability.getTopic(),
                         availability.getPayloadAvailable(), availability.getPayloadNotAvailable(),
-                        availabilityTemplates, componentConfiguration.getTransformationServiceProvider());
+                        availabilityTemplates);
             }
         } else {
             String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
@@ -152,8 +151,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
                 }
                 componentConfiguration.getTracker().addAvailabilityTopic(availabilityTopic,
                         this.channelConfiguration.getPayloadAvailable(),
-                        this.channelConfiguration.getPayloadNotAvailable(), availabilityTemplates,
-                        componentConfiguration.getTransformationServiceProvider());
+                        this.channelConfiguration.getPayloadNotAvailable(), availabilityTemplates);
             }
         }
     }
@@ -326,11 +324,6 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     public String getChannelConfigurationJson() {
         return channelConfigurationJson;
-    }
-
-    @Nullable
-    public TransformationServiceProvider getTransformationServiceProvider() {
-        return componentConfiguration.getTransformationServiceProvider();
     }
 
     public boolean isEnabledByDefault() {
