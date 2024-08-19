@@ -200,7 +200,12 @@ public class CommunicationManager {
                     socket.setReuseAddress(true);
                     while (!stopped) {
                         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                        socket.receive(packet);
+                        if (!socket.isClosed()) {
+                            socket.receive(packet);
+                        } else {
+                            logger.warn("Socket was unexpectedly closed");
+                            break;
+                        }
                         if (stopped) {
                             break;
                         }
