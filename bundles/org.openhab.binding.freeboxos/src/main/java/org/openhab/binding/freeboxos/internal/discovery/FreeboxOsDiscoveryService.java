@@ -195,7 +195,7 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 logger.debug("Adding new Freebox Network Host {} to inbox", thingUID);
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                         .withLabel(lanHost.getPrimaryName()
-                                .orElse("@text/discovery.netwrok-device.label [ \"%s\" ]".formatted(macString)))
+                                .orElse("@text/discovery.network-device.label [ \"%s\" ]".formatted(macString)))
                         .withTTL(300).withProperty(Thing.PROPERTY_MAC_ADDRESS, macString)
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
                 thingDiscovered(builder.build());
