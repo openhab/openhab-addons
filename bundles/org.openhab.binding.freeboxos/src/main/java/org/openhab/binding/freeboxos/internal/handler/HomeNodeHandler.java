@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.freeboxos.internal.handler;
 
-import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.UPDATE_POSTFIX;
+import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.TIMESTAMP_POSTFIX;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -73,8 +73,8 @@ public abstract class HomeNodeHandler extends ApiConsumerHandler {
     }
 
     protected void internalConfigureChannel(String channelId, Configuration conf, List<Endpoint> endpoints) {
-        if (channelId.endsWith(UPDATE_POSTFIX)) {
-            String baseEndpoint = channelId.replace(UPDATE_POSTFIX, "");
+        if (channelId.endsWith(TIMESTAMP_POSTFIX)) {
+            String baseEndpoint = channelId.replace(TIMESTAMP_POSTFIX, "");
             endpoints.stream().filter(ep -> ep.name().equals(baseEndpoint)).forEach(ep -> {
                 conf.put(ep.name(), ep.id());
                 conf.put("signal", ep.id());

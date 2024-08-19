@@ -31,14 +31,14 @@
 
 		<channels>
 			<channel id="trigger" typeId="pir-trigger"/>
-			<channel id="trigger-update" typeId="timestamp">
+			<channel id="trigger-timestamp" typeId="timestamp">
 				<label>Trigger Timestamp</label>
-				<description>Timestamp of the last trigger state change</description>
+				<description>Timestamp of the last state change</description>
 			</channel>
 			<channel id="cover" typeId="pir-cover"/>
-			<channel id="cover-update" typeId="timestamp">
-				<label>Cover Timestamp</label>
-				<description>Timestamp of the last cover state change</description>
+			<channel id="cover-timestamp" typeId="timestamp">
+				<label>Tamper Timestamp</label>
+				<description>Timestamp of the last cover tampered state change</description>
 			</channel>
 			<channel id="battery" typeId="system.battery-level"/>
 		</channels>
@@ -93,7 +93,7 @@
 
 		<channels>
 			<channel id="pushed" typeId="kfb-pushed"/>
-			<channel id="pushed-update" typeId="timestamp">
+			<channel id="pushed-timestamp" typeId="timestamp">
 				<label>Timestamp</label>
 				<description>Timestamp of the last action on the keyfob</description>
 			</channel>

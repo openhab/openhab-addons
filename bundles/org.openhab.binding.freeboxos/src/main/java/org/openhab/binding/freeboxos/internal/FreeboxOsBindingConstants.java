@@ -175,11 +175,11 @@ public class FreeboxOsBindingConstants {
     public static final String XDSL_UPTIME = "uptime";
 
     // Home channels
-    public static final String UPDATE_POSTFIX = "-update";
+    public static final String TIMESTAMP_POSTFIX = "-timestamp";
 
     public static final String KEYFOB_ENABLE = "enable";
     public static final String KEYFOB_PUSHED = "pushed";
-    public static final String KEYFOB_PUSHED_UPDATE = KEYFOB_PUSHED + UPDATE_POSTFIX;
+    public static final String KEYFOB_PUSHED_UPDATE = KEYFOB_PUSHED + TIMESTAMP_POSTFIX;
 
     public static final String NODE_BATTERY = "battery";
     public static final String SHUTTER_POSITION = "position-set";
@@ -197,8 +197,8 @@ public class FreeboxOsBindingConstants {
 
     public static final String PIR_COVER = "cover";
     public static final String PIR_TRIGGER = "trigger";
-    public static final String PIR_COVER_UPDATE = PIR_COVER + UPDATE_POSTFIX;
-    public static final String PIR_TRIGGER_UPDATE = PIR_TRIGGER + UPDATE_POSTFIX;
+    public static final String PIR_COVER_UPDATE = PIR_COVER + TIMESTAMP_POSTFIX;
+    public static final String PIR_TRIGGER_UPDATE = PIR_TRIGGER + TIMESTAMP_POSTFIX;
 
     public static final Set<Command> TRUE_COMMANDS = Set.of(OnOffType.ON, UpDownType.UP, OpenClosedType.OPEN);
     public static final Set<Class<?>> ON_OFF_CLASSES = Set.of(OnOffType.class, UpDownType.class, OpenClosedType.class);
