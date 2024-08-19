@@ -83,6 +83,7 @@ public class Resource {
      * <li><b>ADD</b> resource being added; contains (assumed) all fields</li>
      * <li><b>DELETE</b> resource being deleted; contains id and type only</li>
      * <li><b>UPDATE</b> resource being updated; contains id, type and changed fields</li>
+     * <li><b>ERROR</b> resource with error; contents unknown</li>
      * <li><b>FULL_STATE</b> existing resource being downloaded; contains all fields</li>
      */
     private transient ContentType contentType;

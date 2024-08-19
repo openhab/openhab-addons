@@ -13,7 +13,8 @@
 package org.openhab.binding.hue.internal.api.dto.clip2.enums;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Enum for content type of Resource instances
@@ -22,19 +23,14 @@ import org.eclipse.jdt.annotation.Nullable;
  */
 @NonNullByDefault
 public enum ContentType {
-    ADD, // resource being added; contains (maybe) all fields
-    DELETE, // resource being deleted; contains id and type only
-    UPDATE, // resource being updated; contains id, type and updated fields
-    FULL_STATE; // existing resource being downloaded; contains all fields
-
-    public static ContentType of(@Nullable String value) {
-        if (value != null) {
-            try {
-                return valueOf(value.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                // fall through
-            }
-        }
-        return UPDATE;
-    }
+    @SerializedName("add") // resource being added; contains (maybe) all fields
+    ADD,
+    @SerializedName("delete") // resource being deleted; contains id and type only
+    DELETE,
+    @SerializedName("update") // resource being updated; contains id, type and updated fields
+    UPDATE,
+    @SerializedName("error") // resource error event
+    ERROR,
+    // existing resource being downloaded; contains all fields; excluded from (de-)serialization
+    FULL_STATE
 }

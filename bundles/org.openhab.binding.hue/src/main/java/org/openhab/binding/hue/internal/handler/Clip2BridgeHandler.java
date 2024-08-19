@@ -820,7 +820,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
      */
     private void loadAutomationScriptIds() {
         try {
-            synchronized (this) {
+            synchronized (automationScriptIds) {
                 automationScriptIds.clear();
                 automationScriptIds.addAll(getClip2Bridge().getResources(SCRIPT).getResources().stream()
                         .filter(r -> CategoryType.AUTOMATION == r.getCategory()).map(r -> r.getId())
@@ -854,7 +854,7 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
             return Objects.isNull(cachedAutomation) || !automation.getName().equals(cachedAutomation.getName());
         })) {
 
-            synchronized (this) {
+            synchronized (automationsCache) {
                 automationsCache.clear();
                 automationsCache.putAll(automations.stream().collect(Collectors.toMap(a -> a.getId(), a -> a)));
             }
@@ -928,6 +928,8 @@ public class Clip2BridgeHandler extends BaseBridgeHandler {
                                     resource.getEnabledState());
                         }
                     }
+                    break;
+                default:
             }
         }
         return requireUpdateChannels;

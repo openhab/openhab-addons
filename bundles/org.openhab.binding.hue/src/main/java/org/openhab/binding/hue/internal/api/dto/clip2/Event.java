@@ -13,7 +13,6 @@
 package org.openhab.binding.hue.internal.api.dto.clip2;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,11 +33,12 @@ public class Event {
     public static final Type EVENT_LIST_TYPE = new TypeToken<List<Event>>() {
     }.getType();
 
-    private @Nullable List<Resource> data = new ArrayList<>();
-    private @Nullable @SerializedName("type") String contentType; // content type of resources
+    private @Nullable List<Resource> data;
+    private @Nullable @SerializedName("type") ContentType contentType; // content type of resources
 
     public ContentType getContentType() {
-        return ContentType.of(contentType);
+        ContentType contentType = this.contentType;
+        return Objects.nonNull(contentType) ? contentType : ContentType.ERROR;
     }
 
     public List<Resource> getData() {
