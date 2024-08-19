@@ -10,18 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.xmppclient.internal.handler;
+package org.openhab.binding.xmppclient.internal.client;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * Subscriber interface
- * 
- * @author Pavel Gololobov - Initial contribution
+ * The {@link XMPPClientEventlistener} is an interface for handling XMPP connection events.
+ *
+ * @author Leo Siepel - Initial Contribution
  */
-@NonNullByDefault
-public interface XMPPClientMessageSubscriber {
-    void processMessage(String from, String payload);
 
-    String getName();
+@NonNullByDefault
+public interface XMPPClientEventlistener {
+
+    void onErrorEvent(String errorMessage);
+
+    void onAllOk();
 }
