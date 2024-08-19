@@ -22,7 +22,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -630,60 +629,60 @@ public class Resource {
     }
 
     /**
-     * Check if the scene resource contains a 'status.active' element. If such an element is present, returns a Boolean
+     * Check if the scene resource contains a 'status.active' element. If such an element is present, returns a boolean
      * Optional whose value depends on the value of that element, or an empty Optional if it is not.
      *
      * @return true, false, or empty.
      */
-    public Optional<Boolean> getSceneActive() {
+    public @Nullable Boolean getSceneActive() {
         if (ResourceType.SCENE == getType()) {
             JsonElement status = this.status;
             if (Objects.nonNull(status) && status.isJsonObject()) {
                 JsonElement active = ((JsonObject) status).get("active");
                 if (Objects.nonNull(active) && active.isJsonPrimitive()) {
-                    return Optional.of(!"inactive".equalsIgnoreCase(active.getAsString()));
+                    return !"inactive".equalsIgnoreCase(active.getAsString());
                 }
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     /**
-     * If the getSceneActive() optional result is empty return 'UnDefType.NULL'. Otherwise if the optional result is
-     * present and 'true' (i.e. the scene is active) return the scene name. Or finally (the optional result is present
-     * and 'false') return 'UnDefType.UNDEF'.
+     * If the getSceneActive() result is null or false return 'UnDefType.NULL'. Otherwise if the result is
+     * 'true' (i.e. the scene is active) return the scene name.
      *
-     * @return either 'UnDefType.NULL', a StringType containing the (active) scene name, or 'UnDefType.UNDEF'.
+     * @return either a StringType containing the (active) scene name, or 'UnDefType.UNDEF'.
      */
     public State getSceneState() {
-        return getSceneActive().map(a -> a ? new StringType(getName()) : UnDefType.UNDEF).orElse(UnDefType.NULL);
+        Boolean sceneActive = getSceneActive();
+        return sceneActive != null && sceneActive ? new StringType(getName()) : UnDefType.UNDEF;
     }
 
     /**
      * Check if the smart scene resource contains a 'state' element. If such an element is present, returns a Boolean
-     * Optional whose value depends on the value of that element, or an empty Optional if it is not.
+     * whose value depends on the value of that element, or null if it is not.
      *
-     * @return true, false, or empty.
+     * @return true, false, or null.
      */
-    public Optional<Boolean> getSmartSceneActive() {
+    public @Nullable Boolean getSmartSceneActive() {
         if (ResourceType.SMART_SCENE == getType()) {
             String state = this.state;
             if (Objects.nonNull(state)) {
-                return Optional.of(SmartSceneState.ACTIVE == SmartSceneState.of(state));
+                return SmartSceneState.ACTIVE == SmartSceneState.of(state);
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     /**
-     * If the getSmartSceneActive() optional result is empty return 'UnDefType.NULL'. Otherwise if the optional result
-     * is present and 'true' (i.e. the scene is active) return the smart scene name. Or finally (the optional result is
-     * present and 'false') return 'UnDefType.UNDEF'.
+     * If the getSmartSceneActive() result is null or false return 'UnDefType.NULL'. Otherwise if the result is
+     * 'true' (i.e. the scene is active) return the scene name.
      *
-     * @return either 'UnDefType.NULL', a StringType containing the (active) scene name, or 'UnDefType.UNDEF'.
+     * @return either a StringType containing the (active) scene name, or 'UnDefType.UNDEF'.
      */
     public State getSmartSceneState() {
-        return getSmartSceneActive().map(a -> a ? new StringType(getName()) : UnDefType.UNDEF).orElse(UnDefType.NULL);
+        Boolean smartSceneActive = getSmartSceneActive();
+        return smartSceneActive != null && smartSceneActive ? new StringType(getName()) : UnDefType.UNDEF;
     }
 
     public List<ResourceReference> getServiceReferences() {
