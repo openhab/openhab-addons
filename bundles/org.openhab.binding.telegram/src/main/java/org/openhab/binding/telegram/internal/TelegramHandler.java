@@ -224,23 +224,32 @@ public class TelegramHandler extends BaseThingHandler {
         if (exception != null) {
             if (exception.response() != null) {
                 BaseResponse localResponse = exception.response();
-                if (localResponse.errorCode() == 401) { // unauthorized
-                    cancelThingOnlineStatusJob();
-                    if (localBot != null) {
-                        localBot.removeGetUpdatesListener();
-                    }
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                            "Unauthorized attempt to connect to the Telegram server, please check if the bot token is valid");
-                    return;
+                switch (localResponse.errorCode()) {
+                    case 401: // unauthorized
+                        cancelThingOnlineStatusJob();
+                        if (localBot != null) {
+                            localBot.removeGetUpdatesListener();
+                        }
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                                "Unauthorized attempt to connect to the Telegram server, please check if the bot token is valid");
+                        return;
+                    case 502:
+                        cancelThingOnlineStatusJob();
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "Unable to communicate to Telegram servers, check your connection");
+                        delayThingOnlineStatus();
+                        return;
+                    default:
+                        logger.warn("Telegram exception: {}", exception.getMessage());
+                        return;
                 }
-            }
-            if (exception.getCause() != null) { // cause is only non-null in case of an IOException
+            } else if (exception.getCause() != null) { // cause is only non-null in case of an IOException
                 cancelThingOnlineStatusJob();
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, exception.getMessage());
                 delayThingOnlineStatus();
-                return;
+            } else {
+                logger.warn("Telegram exception: {}", exception.getMessage());
             }
-            logger.warn("Telegram exception: {}", exception.getMessage());
         }
     }
 
