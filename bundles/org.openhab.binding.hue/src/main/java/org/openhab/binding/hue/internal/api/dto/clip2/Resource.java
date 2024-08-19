@@ -629,10 +629,10 @@ public class Resource {
     }
 
     /**
-     * Check if the scene resource contains a 'status.active' element. If such an element is present, returns a boolean
-     * Optional whose value depends on the value of that element, or an empty Optional if it is not.
+     * Check if the scene resource contains a 'status.active' element. Returns a Boolean if such an element is present,
+     * whose value depends on the value of that element, or null if it is not.
      *
-     * @return true, false, or empty.
+     * @return true, false, or null.
      */
     public @Nullable Boolean getSceneActive() {
         if (ResourceType.SCENE == getType()) {
