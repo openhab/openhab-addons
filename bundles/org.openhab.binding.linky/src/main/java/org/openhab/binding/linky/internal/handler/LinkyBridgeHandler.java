@@ -57,14 +57,15 @@ import com.google.gson.Gson;
 public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(LinkyBridgeHandler.class);
 
-    protected HttpService httpService;
-    protected BundleContext bundleContext;
+    protected final HttpService httpService;
+    protected final BundleContext bundleContext;
     protected final HttpClient httpClient;
-    protected EnedisHttpApi enedisApi;
+    protected final EnedisHttpApi enedisApi;
     protected final ThingRegistry thingRegistry;
 
-    protected LinkyConfiguration config;
+    protected final LinkyConfiguration config;
     protected final Gson gson;
+
     protected boolean connected = false;
 
     private static final int REQUEST_BUFFER_SIZE = 8000;

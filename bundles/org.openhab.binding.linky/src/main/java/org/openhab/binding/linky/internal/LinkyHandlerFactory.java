@@ -82,8 +82,6 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
                     })
             .create();
 
-    // .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-
     private final LocaleProvider localeProvider;
 
     @Activate
@@ -107,19 +105,19 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (thing.getThingTypeUID().equals(LinkyBindingConstants.THING_TYPE_API_ENEDIS_BRIDGE)) {
+        if (LinkyBindingConstants.THING_TYPE_API_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
             EnedisBridgeHandler handler = new EnedisBridgeHandler((Bridge) thing, this.httpClientFactory,
                     this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
-        } else if (thing.getThingTypeUID().equals(LinkyBindingConstants.THING_TYPE_API_WEB_ENEDIS_BRIDGE)) {
+        } else if (LinkyBindingConstants.THING_TYPE_API_WEB_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
             EnedisWebBridgeHandler handler = new EnedisWebBridgeHandler((Bridge) thing, this.httpClientFactory,
                     this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
-        } else if (thing.getThingTypeUID().equals(LinkyBindingConstants.THING_TYPE_API_MYELECTRICALDATA_BRIDGE)) {
+        } else if (LinkyBindingConstants.THING_TYPE_API_MYELECTRICALDATA_BRIDGE.equals(thing.getThingTypeUID())) {
             MyElectricalDataBridgeHandler handler = new MyElectricalDataBridgeHandler((Bridge) thing,
                     this.httpClientFactory, this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
-        } else if (thing.getThingTypeUID().equals(LinkyBindingConstants.THING_TYPE_LINKY)) {
+        } else if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
             LinkyHandler handler = new LinkyHandler(thing, localeProvider);
             return handler;
         }

@@ -63,7 +63,7 @@ public class EnedisHttpApi {
     private final Logger logger = LoggerFactory.getLogger(EnedisHttpApi.class);
     private final Gson gson;
     private final HttpClient httpClient;
-    private LinkyBridgeHandler linkyBridgeHandler;
+    private final LinkyBridgeHandler linkyBridgeHandler;
 
     public EnedisHttpApi(LinkyBridgeHandler linkyBridgeHandler, Gson gson, HttpClient httpClient) {
         this.gson = gson;
@@ -101,7 +101,7 @@ public class EnedisHttpApi {
         try {
             Request request = httpClient.newRequest(url);
             request = request.method(HttpMethod.GET);
-            if (!("".equals(token))) {
+            if (!token.isEmpty()) {
                 request = request.header("Authorization", "" + token);
                 request = request.header("Accept", "application/json");
             }
@@ -116,8 +116,11 @@ public class EnedisHttpApi {
 
                 if (result.getStatus() == 307) {
                     loc = result.getHeaders().get("Location");
-                    String res = loc.split("/")[3];
-                    return res;
+                    String[] urlParts = loc.split("/");
+                    if (urlParts.length < 4) {
+                        throw new LinkyException("malformed url : %s", loc);
+                    }
+                    return urlParts[3];
                 }
             }
             if (result.getStatus() != 200) {

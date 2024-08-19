@@ -64,7 +64,7 @@ import com.google.gson.JsonSyntaxException;
 public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
 
-    private OAuthClientService oAuthService;
+    private final OAuthClientService oAuthService;
 
     private static @Nullable HttpServlet servlet;
 
@@ -209,7 +209,7 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
     }
 
     public List<String> getAllPrmId() {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         Collection<Thing> col = this.thingRegistry.getAll();
 
