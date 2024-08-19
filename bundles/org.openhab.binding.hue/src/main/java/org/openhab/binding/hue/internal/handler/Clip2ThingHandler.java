@@ -635,12 +635,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param resources a collection of Resource objects containing the new state.
      */
     public void onResources(Collection<Resource> resources) {
-        boolean sceneActivated = resources.stream().anyMatch(r -> sceneContributorsCache.containsKey(r.getId())
-                && (r.getSceneActive().orElse(false) || r.getSmartSceneActive().orElse(false)));
+        boolean sceneActivated = resources.stream()
+                .anyMatch(r -> sceneContributorsCache.containsKey(r.getId())
+                        && (Objects.requireNonNullElse(r.getSceneActive(), false)
+                                || Objects.requireNonNullElse(r.getSmartSceneActive(), false)));
         for (Resource resource : resources) {
             // Skip scene deactivation when we have also received a scene activation.
             boolean updateChannels = !sceneActivated || !sceneContributorsCache.containsKey(resource.getId())
-                    || resource.getSceneActive().orElse(false) || resource.getSmartSceneActive().orElse(false);
+                    || Objects.requireNonNullElse(resource.getSceneActive(), false)
+                    || Objects.requireNonNullElse(resource.getSmartSceneActive(), false);
             onResource(resource, updateChannels);
         }
     }
@@ -1233,8 +1236,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 sceneContributorsCache.putAll(scenes.stream().collect(Collectors.toMap(s -> s.getId(), s -> s)));
                 sceneResourceEntries.putAll(scenes.stream().collect(Collectors.toMap(s -> s.getName(), s -> s)));
 
-                State state = Objects.requireNonNull(scenes.stream().filter(s -> s.getSceneActive().orElse(false))
-                        .map(s -> s.getSceneState()).findAny().orElse(UnDefType.UNDEF));
+                State state = Objects.requireNonNull(
+                        scenes.stream().filter(s -> Objects.requireNonNullElse(s.getSceneActive(), false))
+                                .map(s -> s.getSceneState()).findAny().orElse(UnDefType.UNDEF));
 
                 // create scene channel if it is missing
                 if (getThing().getChannel(CHANNEL_2_SCENE) == null) {
