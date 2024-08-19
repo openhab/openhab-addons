@@ -109,6 +109,10 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
         updateStatus(ThingStatus.UNKNOWN);
     }
 
+    public BundleContext getBundleContext() {
+        return bundleContext;
+    }
+
     @Override
     public synchronized void initialize() {
         logger.debug("Initializing Linky API bridge handler.");

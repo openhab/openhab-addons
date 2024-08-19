@@ -12,7 +12,10 @@
  */
 package org.openhab.binding.linky.internal;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -57,19 +60,61 @@ public class LinkyAuthServlet extends HttpServlet {
     private static final String KEY_AUTHORIZE_URI = "authorize.uri";
     private static final String KEY_RETRIEVE_TOKEN_URI = "retrieveToken.uri";
     private static final String KEY_REDIRECT_URI = "redirectUri";
+    private static final String KEY_CODE = "code.Value";
+    private static final String KEY_PRMID = "prmId.Value";
     private static final String KEY_PRMID_OPTION = "prmId.Option";
     private static final String KEY_AUTHORIZED_USER = "authorizedUser";
     private static final String KEY_ERROR = "error";
     private static final String KEY_PAGE_REFRESH = "pageRefresh";
 
     private final Logger logger = LoggerFactory.getLogger(LinkyAuthServlet.class);
-    private final String indexTemplate;
+    private final String index;
+    private final String enedisStep1;
+    private final String enedisStep2;
+    private final String enedisStep3;
+    private final String myelectricaldataStep1;
+    private final String myelectricaldataStep2;
+    private final String myelectricaldataStep3;
+
+    private static final String TEMPLATE_PATH = "templates/";
 
     private ApiBridgeHandler apiBridgeHandler;
 
-    public LinkyAuthServlet(ApiBridgeHandler apiBridgeHandler, String indexTemplate) {
-        this.indexTemplate = indexTemplate;
+    public LinkyAuthServlet(ApiBridgeHandler apiBridgeHandler) throws LinkyException {
         this.apiBridgeHandler = apiBridgeHandler;
+
+        try {
+            this.index = readTemplate("index.html");
+            this.enedisStep1 = readTemplate("enedis-step1.html");
+            this.enedisStep2 = readTemplate("enedis-step2.html");
+            this.enedisStep3 = readTemplate("enedis-step3-cb.html");
+            this.myelectricaldataStep1 = readTemplate("myelectricaldata-step1.html");
+            this.myelectricaldataStep2 = readTemplate("myelectricaldata-step2.html");
+            this.myelectricaldataStep3 = readTemplate("myelectricaldata-step3.html");
+
+        } catch (IOException e) {
+            throw new LinkyException("unable to initialize auth servlet", e);
+        }
+    }
+
+    /**
+     * Reads a template from file and returns the content as String.
+     *
+     * @param templateName name of the template file to read
+     * @return The content of the template file
+     * @throws IOException thrown when an HTML template could not be read
+     */
+    private String readTemplate(String templateName) throws IOException {
+        final URL url = apiBridgeHandler.getBundleContext().getBundle().getEntry(TEMPLATE_PATH + templateName);
+
+        if (url == null) {
+            throw new FileNotFoundException(
+                    String.format("Cannot find '{}' - failed to initialize Linky servlet", templateName));
+        } else {
+            try (InputStream inputStream = url.openStream()) {
+                return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            }
+        }
     }
 
     @Override
@@ -80,10 +125,35 @@ public class LinkyAuthServlet extends HttpServlet {
         StringBuffer requestUrl = req.getRequestURL();
         String servletBaseUrl = requestUrl != null ? requestUrl.toString() : "";
 
-        String servletBaseURLSecure = servletBaseUrl;
+        String template = "";
+        if (servletBaseUrl.contains("enedis-step1")) {
+            template = enedisStep1;
+        } else if (servletBaseUrl.contains("enedis-step2")) {
+            template = enedisStep2;
+        } else if (servletBaseUrl.contains("enedis-step3-cb")) {
+            template = enedisStep3;
+        } else if (servletBaseUrl.contains("myelectricaldata-step1")) {
+            template = myelectricaldataStep1;
+        } else if (servletBaseUrl.contains("myelectricaldata-step2")) {
+            template = myelectricaldataStep2;
+        } else if (servletBaseUrl.contains("myelectricaldata-step3")) {
+            template = myelectricaldataStep3;
+        } else if (servletBaseUrl.contains("enedis")) {
+            template = enedisStep1;
+        } else if (servletBaseUrl.contains("myelectricaldata")) {
+            template = myelectricaldataStep1;
+        } else {
+            template = enedisStep1;
+        }
+
+        // for some unknown reason, getRequestURL return a malformed URL mixing http:// and port 443
+        if (servletBaseUrl.contains(":443")) {
+            servletBaseUrl = servletBaseUrl.replace("http://", "https://");
+            servletBaseUrl = servletBaseUrl.replace(":443", "");
+        }
 
         try {
-            handleLinkyRedirect(replaceMap, servletBaseURLSecure, req.getQueryString());
+            handleLinkyRedirect(replaceMap, servletBaseUrl, req.getQueryString());
 
             resp.setContentType(CONTENT_TYPE);
 
@@ -94,16 +164,26 @@ public class LinkyAuthServlet extends HttpServlet {
                 optionBuffer.append("<option value=\"" + prmId + "\">" + prmId + "</option>");
             }
 
+            final MultiMap<String> params = new MultiMap<>();
+            UrlEncoded.decodeTo(req.getQueryString(), params, StandardCharsets.UTF_8.name());
+            final String usagePointId = params.getString("usage_point_id");
+            final String code = params.getString("code");
+
+            replaceMap.put(KEY_PRMID, usagePointId);
+            replaceMap.put(KEY_CODE, code);
+
             replaceMap.put(KEY_PRMID_OPTION, optionBuffer.toString());
-            replaceMap.put(KEY_REDIRECT_URI, servletBaseURLSecure);
-            replaceMap.put(KEY_RETRIEVE_TOKEN_URI, servletBaseURLSecure + "?state=OK");
-            replaceMap.put(KEY_AUTHORIZE_URI, apiBridgeHandler.formatAuthorizationUrl(servletBaseURLSecure));
-            resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
+            replaceMap.put(KEY_REDIRECT_URI, servletBaseUrl);
+            replaceMap.put(KEY_RETRIEVE_TOKEN_URI, servletBaseUrl + "?state=OK");
+
+            String authorizeUri = apiBridgeHandler.formatAuthorizationUrl(servletBaseUrl);
+            replaceMap.put(KEY_AUTHORIZE_URI, authorizeUri);
+            resp.getWriter().append(replaceKeysFromMap(template, replaceMap));
             resp.getWriter().close();
         } catch (LinkyException ex) {
             resp.setContentType(CONTENT_TYPE);
             replaceMap.put(KEY_ERROR, "Error during request handling : " + ex.getMessage());
-            resp.getWriter().append(replaceKeysFromMap(indexTemplate, replaceMap));
+            resp.getWriter().append(replaceKeysFromMap(template, replaceMap));
             resp.getWriter().close();
         }
     }
