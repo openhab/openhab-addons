@@ -10,20 +10,20 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.melcloud.internal.api.json;
+package org.openhab.binding.melcloud.internal.api.dto;
 
 import java.util.List;
 
 import com.google.gson.annotations.Expose;
 
 /**
- * {@link Area} provides area specific information for JSON data returned from MELCloud API
- * Area Data
+ * {@link Floor} provides floor specific information for JSON data returned from MELCloud API
+ * Floor Data
  * Generated with jsonschema2pojo
  *
  * @author Wietse van Buitenen - Initial contribution
  */
-public class Area {
+public class Floor {
 
     @Expose
     private Integer iD;
@@ -35,9 +35,6 @@ public class Area {
     private Integer buildingId;
 
     @Expose
-    private Integer floorId;
-
-    @Expose
     private Integer accessLevel;
 
     @Expose
@@ -47,6 +44,12 @@ public class Area {
     private Object endDate;
 
     @Expose
+    private List<Area> areas = null;
+
+    @Expose
+    private List<Device> devices = null;
+
+    @Expose
     private Integer minTemperature;
 
     @Expose
@@ -54,9 +57,6 @@ public class Area {
 
     @Expose
     private Boolean expanded;
-
-    @Expose
-    private List<Device> devices = null;
 
     public Integer getID() {
         return iD;
@@ -72,14 +72,6 @@ public class Area {
 
     public void setBuildingId(Integer buildingId) {
         this.buildingId = buildingId;
-    }
-
-    public Integer getFloorId() {
-        return floorId;
-    }
-
-    public void setFloorId(Integer floorId) {
-        this.floorId = floorId;
     }
 
     public Integer getAccessLevel() {
@@ -112,6 +104,14 @@ public class Area {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Area> getAreas() {
+        return areas;
+    }
+
+    public void setAreas(List<Area> areas) {
+        this.areas = areas;
     }
 
     public List<Device> getDevices() {
