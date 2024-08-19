@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The xxx manages the authorization with the Linky Web API. The servlet implements the
+ * The LinkyAuthServlet manages the authorization with the Linky Web API. The servlet implements the
  * Authorization Code flow and saves the resulting refreshToken with the bridge.
  *
  * @author Gaël L'hopital - Initial contribution
@@ -65,7 +65,7 @@ public class LinkyAuthServlet extends HttpServlet {
     private final Logger logger = LoggerFactory.getLogger(LinkyAuthServlet.class);
     private final String indexTemplate;
 
-    private @NonNullByDefault({}) ApiBridgeHandler apiBridgeHandler;
+    private ApiBridgeHandler apiBridgeHandler;
 
     public LinkyAuthServlet(ApiBridgeHandler apiBridgeHandler, String indexTemplate) {
         this.indexTemplate = indexTemplate;

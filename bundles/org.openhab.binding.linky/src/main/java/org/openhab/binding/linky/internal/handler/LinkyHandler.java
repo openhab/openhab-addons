@@ -57,6 +57,7 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
 import org.openhab.core.types.UnDefType;
@@ -146,7 +147,7 @@ public class LinkyHandler extends BaseThingHandler {
         // Comsuption Load Curve
         this.loadCurveConsumption = new ExpiringDayCache<>("loadCurveConsumption", REFRESH_FIRST_HOUR_OF_DAY, () -> {
             LocalDate today = LocalDate.now();
-            MeterReading meterReading = getLoadCurveConsumption(today.minusDays(7), today);
+            MeterReading meterReading = getLoadCurveConsumption(today.minusDays(6), today);
             meterReading = getMeterReadingAfterChecks(meterReading);
             if (meterReading != null) {
                 logData(meterReading.dayValue, "Day (peak)", DateTimeFormatter.ISO_LOCAL_DATE, Target.ALL);
@@ -237,31 +238,38 @@ public class LinkyHandler extends BaseThingHandler {
                 String firstName = info.identityInfo.firstname;
                 String lastName = info.identityInfo.lastname;
 
-                updateState(MAIN_IDENTITY, new StringType(title + " " + firstName + " " + lastName));
+                updateState(MAIN_GROUP, MAIN_IDENTITY, new StringType(title + " " + firstName + " " + lastName));
 
-                updateState(MAIN_CONTRACT_SEGMENT, new StringType(info.contractInfo.segment));
-                updateState(MAIN_CONTRACT_CONTRACT_STATUS, new StringType(info.contractInfo.contractStatus));
-                updateState(MAIN_CONTRACT_CONTRACT_TYPE, new StringType(info.contractInfo.contractType));
-                updateState(MAIN_CONTRACT_DISTRIBUTION_TARIFF, new StringType(info.contractInfo.distributionTariff));
-                updateState(MAIN_CONTRACT_LAST_ACTIVATION_DATE, new StringType(info.contractInfo.lastActivationDate));
-                updateState(MAIN_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
+                updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, new StringType(info.contractInfo.segment));
+                updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_STATUS,
+                        new StringType(info.contractInfo.contractStatus));
+                updateState(MAIN_GROUP, MAIN_CONTRACT_CONTRACT_TYPE, new StringType(info.contractInfo.contractType));
+                updateState(MAIN_GROUP, MAIN_CONTRACT_DISTRIBUTION_TARIFF,
+                        new StringType(info.contractInfo.distributionTariff));
+                updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_ACTIVATION_DATE,
+                        new StringType(info.contractInfo.lastActivationDate));
+                updateState(MAIN_GROUP, MAIN_CONTRACT_LAST_DISTRIBUTION_TARIFF_CHANGE_DATE,
                         new StringType(info.contractInfo.lastDistributionTariffChangeDate));
-                updateState(MAIN_CONTRACT_OFF_PEAK_HOURS, new StringType(info.contractInfo.offpeakHours));
-                updateState(MAIN_CONTRACT_SEGMENT, new StringType(info.contractInfo.segment));
-                updateState(MAIN_CONTRACT_SUBSCRIBED_POWER, new StringType(info.contractInfo.subscribedPower));
+                updateState(MAIN_GROUP, MAIN_CONTRACT_OFF_PEAK_HOURS, new StringType(info.contractInfo.offpeakHours));
+                updateState(MAIN_GROUP, MAIN_CONTRACT_SEGMENT, new StringType(info.contractInfo.segment));
+                updateState(MAIN_GROUP, MAIN_CONTRACT_SUBSCRIBED_POWER,
+                        new StringType(info.contractInfo.subscribedPower));
 
-                updateState(MAIN_USAGEPOINT_ID, new StringType(info.usagePointInfo.usagePointId));
-                updateState(MAIN_USAGEPOINT_STATUS, new StringType(info.usagePointInfo.usagePointStatus));
-                updateState(MAIN_USAGEPOINT_METER_TYPE, new StringType(info.usagePointInfo.meterType));
+                updateState(MAIN_GROUP, MAIN_USAGEPOINT_ID, new StringType(info.usagePointInfo.usagePointId));
+                updateState(MAIN_GROUP, MAIN_USAGEPOINT_STATUS, new StringType(info.usagePointInfo.usagePointStatus));
+                updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_TYPE, new StringType(info.usagePointInfo.meterType));
 
-                updateState(MAIN_USAGEPOINT_METER_ADDRESS_CITY, new StringType(info.addressInfo.city));
-                updateState(MAIN_USAGEPOINT_METER_ADDRESS_COUNTRY, new StringType(info.addressInfo.country));
-                updateState(MAIN_USAGEPOINT_METER_ADDRESS_POSTAL_CODE, new StringType(info.addressInfo.postalCode));
-                updateState(MAIN_USAGEPOINT_METER_ADDRESS_INSEE_CODE, new StringType(info.addressInfo.inseeCode));
-                updateState(MAIN_USAGEPOINT_METER_ADDRESS_STREET, new StringType(info.addressInfo.street));
+                updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_CITY, new StringType(info.addressInfo.city));
+                updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_COUNTRY,
+                        new StringType(info.addressInfo.country));
+                updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_POSTAL_CODE,
+                        new StringType(info.addressInfo.postalCode));
+                updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_INSEE_CODE,
+                        new StringType(info.addressInfo.inseeCode));
+                updateState(MAIN_GROUP, MAIN_USAGEPOINT_METER_ADDRESS_STREET, new StringType(info.addressInfo.street));
 
-                updateState(MAIN_CONTACT_MAIL, new StringType(info.contactInfo.email));
-                updateState(MAIN_CONTACT_PHONE, new StringType(info.contactInfo.phone));
+                updateState(MAIN_GROUP, MAIN_CONTACT_MAIL, new StringType(info.contactInfo.email));
+                updateState(MAIN_GROUP, MAIN_CONTACT_PHONE, new StringType(info.contactInfo.phone));
             } catch (LinkyException e) {
                 logger.debug("Exception when getting consumption data: {}", e.getMessage(), e);
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getMessage());
@@ -304,15 +312,15 @@ public class LinkyHandler extends BaseThingHandler {
             int tomorrowDayIdx = values.size();
             Object[] tempoValues = values.values().toArray();
 
-            updateTempoChannel(TEMPO_TODAY_INFO, getTempoIdx((String) tempoValues[tomorrowDayIdx - 2]));
-            updateTempoChannel(TEMPO_TOMORROW_INFO, getTempoIdx((String) tempoValues[tomorrowDayIdx - 1]));
+            updateTempoChannel(TEMPO_GROUP, TEMPO_TODAY_INFO, getTempoIdx((String) tempoValues[tomorrowDayIdx - 2]));
+            updateTempoChannel(TEMPO_GROUP, TEMPO_TOMORROW_INFO, getTempoIdx((String) tempoValues[tomorrowDayIdx - 1]));
 
-            sendTimeSeries(TEMPO_TEMPO_INFO_TIME_SERIES, timeSeries);
-            updateState(TEMPO_TEMPO_INFO_TIME_SERIES,
+            sendTimeSeries(TEMPO_GROUP, TEMPO_TEMPO_INFO_TIME_SERIES, timeSeries);
+            updateState(TEMPO_GROUP, TEMPO_TEMPO_INFO_TIME_SERIES,
                     new DecimalType(getTempoIdx((String) tempoValues[tomorrowDayIdx - 2])));
         }, () -> {
-            updateTempoChannel(TEMPO_TODAY_INFO, -1);
-            updateTempoChannel(TEMPO_TOMORROW_INFO, -1);
+            updateTempoChannel(TEMPO_GROUP, TEMPO_TODAY_INFO, -1);
+            updateTempoChannel(TEMPO_GROUP, TEMPO_TOMORROW_INFO, -1);
         });
     }
 
@@ -335,79 +343,83 @@ public class LinkyHandler extends BaseThingHandler {
         dailyConsumptionMaxPower.getValue().ifPresentOrElse(values -> {
             int dSize = values.dayValue.length;
 
-            updateVAChannel(PEAK_POWER_DAY_MINUS_1, values.dayValue[dSize - 1].value);
-            updateState(PEAK_POWER_TS_DAY_MINUS_1,
+            updateVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_1, values.dayValue[dSize - 1].value);
+            updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_1,
                     new DateTimeType(values.dayValue[dSize - 1].date.atZone(ZoneId.systemDefault())));
 
-            updateVAChannel(PEAK_POWER_DAY_MINUS_2, values.dayValue[dSize - 2].value);
-            updateState(PEAK_POWER_TS_DAY_MINUS_2,
+            updateVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_2, values.dayValue[dSize - 2].value);
+            updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_2,
                     new DateTimeType(values.dayValue[dSize - 2].date.atZone(ZoneId.systemDefault())));
 
-            updateVAChannel(PEAK_POWER_DAY_MINUS_3, values.dayValue[dSize - 3].value);
-            updateState(PEAK_POWER_TS_DAY_MINUS_3,
+            updateVAChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_3, values.dayValue[dSize - 3].value);
+            updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_3,
                     new DateTimeType(values.dayValue[dSize - 3].date.atZone(ZoneId.systemDefault())));
 
-            updatePowerTimeSeries(PEAK_POWER_DAILY, values.dayValue);
-            updatePowerTimeSeries(PEAK_POWER_WEEKLY, values.weekValue);
-            updatePowerTimeSeries(PEAK_POWER_MONTHLY, values.monthValue);
-            updatePowerTimeSeries(PEAK_POWER_YEARLY, values.yearValue);
+            updatePowerTimeSeries(DAILY_GROUP, MAX_POWER_CHANNEL, values.dayValue);
+            updatePowerTimeSeries(WEEKLY_GROUP, MAX_POWER_CHANNEL, values.weekValue);
+            updatePowerTimeSeries(MONTHLY_GROUP, MAX_POWER_CHANNEL, values.monthValue);
+            updatePowerTimeSeries(YEARLY_GROUP, MAX_POWER_CHANNEL, values.yearValue);
 
         }, () -> {
-            updateKwhChannel(PEAK_POWER_DAY_MINUS_1, Double.NaN);
-            updateState(PEAK_POWER_TS_DAY_MINUS_1, UnDefType.UNDEF);
+            updateKwhChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_1, Double.NaN);
+            updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_1, UnDefType.UNDEF);
 
-            updateKwhChannel(PEAK_POWER_DAY_MINUS_2, Double.NaN);
-            updateState(PEAK_POWER_TS_DAY_MINUS_2, UnDefType.UNDEF);
+            updateKwhChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_2, Double.NaN);
+            updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_2, UnDefType.UNDEF);
 
-            updateKwhChannel(PEAK_POWER_DAY_MINUS_3, Double.NaN);
-            updateState(PEAK_POWER_TS_DAY_MINUS_3, UnDefType.UNDEF);
+            updateKwhChannel(DAILY_GROUP, PEAK_POWER_DAY_MINUS_3, Double.NaN);
+            updateState(DAILY_GROUP, PEAK_POWER_TS_DAY_MINUS_3, UnDefType.UNDEF);
         });
     }
 
     /**
-     * Request new dayly/weekly data and updates channels
+     * Request new daily/weekly data and updates channels
      */
     private synchronized void updateEnergyData() {
         dailyConsumption.getValue().ifPresentOrElse(values -> {
             int dSize = values.dayValue.length;
 
-            updateKwhChannel(DAY_MINUS_1, values.dayValue[dSize - 1].value);
-            updateKwhChannel(DAY_MINUS_2, values.dayValue[dSize - 2].value);
-            updateKwhChannel(DAY_MINUS_3, values.dayValue[dSize - 3].value);
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_1, values.dayValue[dSize - 1].value);
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_2, values.dayValue[dSize - 2].value);
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_3, values.dayValue[dSize - 3].value);
 
             int idxCurrentYear = values.yearValue.length - 1;
             int idxCurrentWeek = values.weekValue.length - 1;
             int idxCurrentMonth = values.monthValue.length - 1;
 
-            updateKwhChannel(WEEK_MINUS_0, values.weekValue[idxCurrentWeek].value);
-            updateKwhChannel(WEEK_MINUS_1, values.weekValue[idxCurrentWeek - 1].value);
-            updateKwhChannel(WEEK_MINUS_2, values.weekValue[idxCurrentWeek - 2].value);
+            updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_0, values.weekValue[idxCurrentWeek].value);
+            updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_1, values.weekValue[idxCurrentWeek - 1].value);
+            updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_2, values.weekValue[idxCurrentWeek - 2].value);
 
-            updateKwhChannel(MONTH_MINUS_0, values.monthValue[idxCurrentMonth].value);
-            updateKwhChannel(MONTH_MINUS_1, values.monthValue[idxCurrentMonth - 1].value);
-            updateKwhChannel(MONTH_MINUS_2, values.monthValue[idxCurrentMonth - 2].value);
+            updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_0, values.monthValue[idxCurrentMonth].value);
+            updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_1, values.monthValue[idxCurrentMonth - 1].value);
+            updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_2, values.monthValue[idxCurrentMonth - 2].value);
 
-            updateKwhChannel(YEAR_MINUS_0, values.yearValue[idxCurrentYear].value);
-            updateKwhChannel(YEAR_MINUS_1, values.yearValue[idxCurrentYear - 1].value);
-            updateKwhChannel(YEAR_MINUS_2, values.yearValue[idxCurrentYear - 2].value);
+            updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_0, values.yearValue[idxCurrentYear].value);
+            updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_1, values.yearValue[idxCurrentYear - 1].value);
+            updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_2, values.yearValue[idxCurrentYear - 2].value);
 
-            updateConsumptionTimeSeries(DAYLY_CONSUMPTION, values.dayValue);
-            updateConsumptionTimeSeries(WEEKLY_CONSUMPTION, values.weekValue);
-            updateConsumptionTimeSeries(MONTHLY_CONSUMPTION, values.monthValue);
-            updateConsumptionTimeSeries(YEARLY_CONSUMPTION, values.yearValue);
+            updateConsumptionTimeSeries(DAILY_GROUP, CONSUMPTION_CHANNEL, values.dayValue);
+            updateConsumptionTimeSeries(WEEKLY_GROUP, CONSUMPTION_CHANNEL, values.weekValue);
+            updateConsumptionTimeSeries(MONTHLY_GROUP, CONSUMPTION_CHANNEL, values.monthValue);
+            updateConsumptionTimeSeries(YEARLY_GROUP, CONSUMPTION_CHANNEL, values.yearValue);
         }, () -> {
-            updateKwhChannel(DAY_MINUS_1, Double.NaN);
-            updateKwhChannel(DAY_MINUS_2, Double.NaN);
-            updateKwhChannel(DAY_MINUS_3, Double.NaN);
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_1, Double.NaN);
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_2, Double.NaN);
+            updateKwhChannel(DAILY_GROUP, DAY_MINUS_3, Double.NaN);
 
-                updateKwhChannel(THIS_YEAR, values.YearValue[idxCurrentYear].value / 1000.00);
-                updateKwhChannel(LAST_YEAR, values.YearValue[idxPreviousYear].value / 1000.00);
-            }, () -> {
-                updateKwhChannel(YESTERDAY, Double.NaN);
-                updateKwhChannel(THIS_WEEK, Double.NaN);
-                updateKwhChannel(LAST_WEEK, Double.NaN);
-            });
-        }
+            updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_0, Double.NaN);
+            updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_1, Double.NaN);
+            updateKwhChannel(WEEKLY_GROUP, WEEK_MINUS_2, Double.NaN);
+
+            updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_0, Double.NaN);
+            updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_1, Double.NaN);
+            updateKwhChannel(MONTHLY_GROUP, MONTH_MINUS_2, Double.NaN);
+
+            updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_0, Double.NaN);
+            updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_1, Double.NaN);
+            updateKwhChannel(YEARLY_GROUP, YEAR_MINUS_2, Double.NaN);
+        });
     }
 
     /**
@@ -415,12 +427,12 @@ public class LinkyHandler extends BaseThingHandler {
      */
     private synchronized void updateLoadCurveData() {
         loadCurveConsumption.getValue().ifPresentOrElse(values -> {
-            updatePowerTimeSeries(LOAD_CURVE, values.dayValue);
+            updatePowerTimeSeries(LOAD_CURVE_GROUP, POWER_CHANNEL, values.dayValue);
         }, () -> {
         });
     }
 
-    private synchronized void updatePowerTimeSeries(String channel, IntervalReading[] iv) {
+    private synchronized void updatePowerTimeSeries(String groupId, String channelId, IntervalReading[] iv) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
         for (int i = 0; i < iv.length; i++) {
@@ -435,11 +447,11 @@ public class LinkyHandler extends BaseThingHandler {
             }
         }
 
-        sendTimeSeries(channel, timeSeries);
-        updateState(channel, new DecimalType(iv[iv.length - 1].value));
+        sendTimeSeries(groupId, channelId, timeSeries);
+        updateState(groupId, channelId, new DecimalType(iv[iv.length - 1].value));
     }
 
-    private synchronized void updateConsumptionTimeSeries(String channel, IntervalReading[] iv) {
+    private synchronized void updateConsumptionTimeSeries(String groupId, String channelId, IntervalReading[] iv) {
         TimeSeries timeSeries = new TimeSeries(Policy.REPLACE);
 
         for (int i = 0; i < iv.length; i++) {
@@ -451,25 +463,33 @@ public class LinkyHandler extends BaseThingHandler {
             timeSeries.add(timestamp, new DecimalType(iv[i].value));
         }
 
-        sendTimeSeries(channel, timeSeries);
-        updateState(channel, new DecimalType(iv[iv.length - 1].value));
+        sendTimeSeries(groupId, channelId, timeSeries);
+        updateState(groupId, channelId, new DecimalType(iv[iv.length - 1].value));
     }
 
-    private void updateKwhChannel(String channelId, double consumption) {
+    private void updateKwhChannel(String groupId, String channelId, double consumption) {
         logger.debug("Update channel {} with {}", channelId, consumption);
-        updateState(channelId,
+        updateState(groupId, channelId,
                 Double.isNaN(consumption) ? UnDefType.UNDEF : new QuantityType<>(consumption, Units.KILOWATT_HOUR));
     }
 
-    private void updatekVAChannel(String channelId, double power) {
+    private void updateVAChannel(String groupId, String channelId, double power) {
         logger.debug("Update channel {} with {}", channelId, power);
-        updateState(channelId, Double.isNaN(power) ? UnDefType.UNDEF
-                : new QuantityType<>(power, MetricPrefix.KILO(Units.VOLT_AMPERE)));
+        updateState(groupId, channelId,
+                Double.isNaN(power) ? UnDefType.UNDEF : new QuantityType<>(power, Units.VOLT_AMPERE));
     }
 
-    private void updateTempoChannel(String channelId, int tempoValue) {
+    private void updateTempoChannel(String groupId, String channelId, int tempoValue) {
         logger.debug("Update channel {} with {}", channelId, tempoValue);
         updateState(channelId, new DecimalType(tempoValue));
+    }
+
+    protected void updateState(String groupId, String channelID, State state) {
+        super.updateState(groupId + "#" + channelID, state);
+    }
+
+    protected void sendTimeSeries(String groupId, String channelID, TimeSeries timeSeries) {
+        super.sendTimeSeries(groupId + "#" + channelID, timeSeries);
     }
 
     /**
