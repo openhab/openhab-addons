@@ -651,7 +651,7 @@ public class Resource {
      * Depending on the returned value from getSceneActive() this method returns 'UnDefType.NULL' for 'null',
      * 'UnDefType.UNDEF' for 'false' or when 'true' (i.e. the scene is active) return the scene name.
      *
-     * @return either a StringType containing the (active) scene name, or 'UnDefType.UNDEF'.
+     * @return either a StringType containing the (active) scene name, 'UnDefType.UNDEF' or 'UnDefType.NULL'.
      */
     public State getSceneState() {
         Boolean sceneActive = getSceneActive();
