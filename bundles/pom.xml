@@ -379,6 +379,7 @@
     <module>org.openhab.binding.solaredge</module>
     <module>org.openhab.binding.solarforecast</module>
     <module>org.openhab.binding.solarlog</module>
+    <module>org.openhab.binding.solarman</module>
     <module>org.openhab.binding.solarmax</module>
     <module>org.openhab.binding.solarwatt</module>
     <module>org.openhab.binding.solax</module>

@@ -10,7 +10,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Freebox Home Basic Shutter</label>
-		<description>The Basic Shutter (UP,DOWN,STOP) configured in your Freebox Delta Server</description>
+		<description>A basic shutter (UP,DOWN,STOP) configured in your Freebox Server</description>
 
 		<channels>
 			<channel id="state" typeId="basic-shutter"/>
@@ -27,7 +27,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Freebox Alarm</label>
-		<description>The Alarm system configured in your Freebox Delta Server</description>
+		<description>The Alarm system configured in your Freebox Server</description>
 
 		<channels>
 			<channel id="pin" typeId="alarm-pin"/>
@@ -61,7 +61,7 @@
 
 
 		<label>Freebox Keyfob</label>
-		<description>A keyfob configured for your Freebox Security system</description>
+		<description>A keyfob configured in your Freebox Server</description>
 
 		<channels>
 			<channel id="enable" typeId="keyfob-enable"/>
@@ -79,7 +79,7 @@
 		</supported-bridge-type-refs>
 
 		<label>Freebox Home Shutter</label>
-		<description>The Shutter configured in your Freebox Delta Server</description>
+		<description>An IO Home Control shutter configured in your Freebox Server</description>
 
 		<channels>
 			<channel id="position-set" typeId="shutter"/>

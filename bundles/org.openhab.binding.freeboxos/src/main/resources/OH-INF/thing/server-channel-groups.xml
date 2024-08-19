@@ -18,7 +18,7 @@
 			<channel id="uptime" typeId="uptime"/>
 			<channel id="ip-address" typeId="ip-address">
 				<label>Internal IP</label>
-				<description>Internal IPv4 Address of the host</description>
+				<description>Internal IPv4 Address of the Freebox Server</description>
 			</channel>
 			<channel id="box-event" typeId="box-event"/>
 		</channels>
@@ -52,6 +52,38 @@
 		</channels>
 	</channel-group-type>
 
+	<channel-group-type id="ftth">
+		<label>FTTH Connection Details</label>
+		<channels>
+			<channel id="sfp-present" typeId="sfp-present"/>
+			<channel id="sfp-alim-ok" typeId="sfp-alim-ok"/>
+			<channel id="sfp-has-power" typeId="sfp-has-power"/>
+			<channel id="sfp-has-signal" typeId="sfp-has-signal"/>
+			<channel id="link" typeId="link"/>
+			<channel id="sfp-pwr-tx" typeId="sfp-signal-level">
+				<label>TX Power</label>
+				<description>SFP Power in transmission</description>
+			</channel>
+			<channel id="sfp-pwr-rx" typeId="sfp-signal-level">
+				<label>RX Power</label>
+				<description>SFP Power in reception</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+	<channel-group-type id="xdsl">
+		<label>xDSL Connection Details</label>
+		<channels>
+			<channel id="ready" typeId="xdsl-ready"/>
+			<channel id="status" typeId="xdsl-status"/>
+			<channel id="modulation" typeId="xdsl-modulation"/>
+			<channel id="uptime" typeId="uptime">
+				<description>Time since last synchronization</description>
+			</channel>
+		</channels>
+	</channel-group-type>
+
+
 	<channel-group-type id="connection-status">
 		<label>Connection Status Details</label>
 		<channels>
@@ -60,19 +92,19 @@
 			<channel id="line-media" typeId="line-media"/>
 			<channel id="ip-address" typeId="ip-address">
 				<label>Public IPv4</label>
-				<description>Public IPv4 Address of the Freebox (this field is only available when connection state is up)</description>
+				<description>Public IPv4 Address of the Freebox Server (this field is only available when connection state is up)</description>
 			</channel>
 			<channel id="ipv6-address" typeId="ip-address">
 				<label>Public IPv6</label>
-				<description>Public IPv6 Address of the Freebox (this field is only available when connection state is up)</description>
+				<description>Public IPv6 Address of the Freebox Server (this field is only available when connection state is up)</description>
 			</channel>
 			<channel id="bandwidth-up" typeId="transfer-rate">
 				<label>Bandwidth Up</label>
-				<description>Raw value of the upload bandwidth currently used</description>
+				<description>Raw value of the upload bandwidth</description>
 			</channel>
 			<channel id="bandwidth-down" typeId="transfer-rate">
 				<label>Bandwidth Down</label>
-				<description>Raw value of the download bandwidth currently used</description>
+				<description>Raw value of the download bandwidth</description>
 			</channel>
 			<channel id="bandwidth-usage-up" typeId="bandwidth-usage">
 				<label>Bandwidth Usage Up</label>

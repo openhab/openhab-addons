@@ -7,6 +7,30 @@
 	<bridge-type id="bridge">
 		<label>aWATTar Bridge</label>
 		<description>Provides price data from the aWATTar API.</description>
+
+		<channels>
+			<channel id="market-net" typeId="uom-price">
+				<label>Net Market Price</label>
+				<description>Price without VAT and network charge</description>
+			</channel>
+			<channel id="market-gross" typeId="uom-price">
+				<label>Gross Market Price</label>
+				<description>Price with VAT but without network charge</description>
+			</channel>
+			<channel id="total-net" typeId="uom-price">
+				<label>Net Total Price</label>
+				<description>Price with network charge but without VAT</description>
+			</channel>
+			<channel id="total-gross" typeId="uom-price">
+				<label>Gross Total Price</label>
+				<description>Price with network charge and VAT</description>
+			</channel>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="bridge-type:awattar:bridge"/>
 	</bridge-type>
 
@@ -249,6 +273,12 @@
 		</channels>
 		<config-description-ref uri="thing-type:awattar:bestprice"/>
 	</thing-type>
+
+	<channel-type id="uom-price">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Price</label>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
 
 	<channel-type id="price">
 		<item-type>Number</item-type>
