@@ -4,7 +4,7 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="EnedisBridge">
+	<bridge-type id="enedis">
 		<label>EnedisBridge</label>
 		<description>
 			Provides your energy consumption data.
@@ -25,7 +25,7 @@
 
 	</bridge-type>
 
-	<bridge-type id="EnedisWebBridge">
+	<bridge-type id="enedis-web">
 		<label>EnedisWebBridge</label>
 		<description>
 			Provides your energy consumption data.
@@ -53,7 +53,7 @@
 	</bridge-type>
 
 
-	<bridge-type id="MyElectricalDataBridge">
+	<bridge-type id="my-electrical-data">
 		<label>MyElectricalDataBridge</label>
 		<description>
 			Provides your energy consumption data.
@@ -68,9 +68,9 @@
 	<thing-type id="linky">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="EnedisBridge"/>
-			<bridge-type-ref id="EnedisWebBridge"/>
-			<bridge-type-ref id="MyElectricalDataBridge"/>
+			<bridge-type-ref id="enedis"/>
+			<bridge-type-ref id="enedis-web"/>
+			<bridge-type-ref id="my-electrical-data"/>
 		</supported-bridge-type-refs>
 
 		<label>Linky</label>
@@ -96,8 +96,8 @@
 
 		<config-description>
 			<parameter name="prmId" type="text" required="true">
-				<label>PrmId</label>
-				<description>Your PrmId</description>
+				<label>prmId</label>
+				<description>Your prmId</description>
 			</parameter>
 			<parameter name="token" type="text" required="false">
 				<label>Token</label>
@@ -263,7 +263,7 @@
 			<channel id="contractSubscribedPower" typeId="info">
 				<label>Subscribed Power</label>
 			</channel>
-			<channel id="contractLastActivationDate" typeId="info">
+			<channel id="contractLastActivationDate" typeId="infoDate">
 				<label>Last Activation Date</label>
 			</channel>
 			<channel id="contractDistributionTariff" typeId="info">
@@ -278,7 +278,7 @@
 			<channel id="contractType" typeId="info">
 				<label>Contract Type</label>
 			</channel>
-			<channel id="contractLastDistributionTariffChangeDate" typeId="info">
+			<channel id="contractLastDistributionTariffChangeDate" typeId="infoDate">
 				<label>Last Distribution Tariff ChangeDate</label>
 			</channel>
 			<channel id="contractSegment" typeId="info">
@@ -340,6 +340,14 @@
 		<category>energy</category>
 		<state readOnly="true"></state>
 	</channel-type>
+
+	<channel-type id="infoDate">
+		<item-type>DateTime</item-type>
+		<label>Information Date</label>
+		<description>an information of type date</description>
+		<state readOnly="true" pattern="%1$tF"/>
+	</channel-type>
+
 
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>
