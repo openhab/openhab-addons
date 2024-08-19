@@ -655,7 +655,7 @@ public class Resource {
      */
     public State getSceneState() {
         Boolean sceneActive = getSceneActive();
-        return sceneActive != null && sceneActive ? new StringType(getName()) : UnDefType.UNDEF;
+        return sceneActive != null ? sceneActive ? new StringType(getName()) : UnDefType.UNDEF : UnDefType.NULL;
     }
 
     /**
@@ -682,7 +682,8 @@ public class Resource {
      */
     public State getSmartSceneState() {
         Boolean smartSceneActive = getSmartSceneActive();
-        return smartSceneActive != null && smartSceneActive ? new StringType(getName()) : UnDefType.UNDEF;
+        return smartSceneActive != null ? smartSceneActive ? new StringType(getName()) : UnDefType.UNDEF
+                : UnDefType.NULL;
     }
 
     public List<ResourceReference> getServiceReferences() {
