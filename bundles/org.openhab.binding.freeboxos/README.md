@@ -43,7 +43,7 @@ The API bridge is discovered automatically through mDNS in the local network.
 After the bridge is discovered and available to openHAB, the binding will automatically discover phone, network devices available on the local network.
 Note that the discovered thing will be setup to use only HTTP API (and not HTTPS) because only an IP can be automatically determined while a domain name is required to use HTTPS with a valid certificate.
 
-## Binding configuration
+## Binding Configuration
 
 FreeboxOS binding has the following configuration parameters:
 
@@ -54,7 +54,7 @@ FreeboxOS binding has the following configuration parameters:
 
 ## Thing Configuration
 
-### Api bridge
+### Api Bridge
 
 The *api* bridge thing requires the following configuration parameters:
 
@@ -71,7 +71,7 @@ The *api* bridge thing requires the following configuration parameters:
 If the parameter *apiDomain* is not set, the binding will use the default address used by Free to access your Freebox Server (mafreebox.freebox.fr).
 The bridge thing will initialize only if a valid application token (parameter *appToken*) is filled.
 
-### Server things
+### Server Things
 
 The *revolution* or *delta* thing requires the following configuration parameters:
 
@@ -79,7 +79,7 @@ The *revolution* or *delta* thing requires the following configuration parameter
 |------------------|-----------------|--------------------------------------------------------------------------|----------|---------|
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll the Freebox Server | No       | 30      |
 
-### Player things
+### Player Things
 
 The *player* or *active-player* thing requires the following configuration parameters:
 
@@ -91,7 +91,7 @@ The *player* or *active-player* thing requires the following configuration param
 | Accept all MP3   | acceptAllMp3    | Accept any bitrate for MP3 audio or only bitrates greater than 64 kbps     | No       | true    |
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll the Freebox player   | No       | 30      |
 
-### Phone things
+### Phone Things
 
 The *fxs* or *dect* thing requires the following configuration parameters:
 
@@ -106,7 +106,7 @@ The *call* thing requires the following configuration parameters:
 |------------------|-----------------|------------------------------------------------------------------------|----------|---------|
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll for phone calls. | No       | 30      |
 
-### Network device things
+### Network Device Things
 
 The *host* thing requires the following configuration parameters:
 
@@ -126,7 +126,7 @@ The *wifihost* thing requires the following configuration parameters:
 When used, mDNS will search the host based on its mDNS name and eventually update the MAC address accordingly.
 This is useful with devices, especially Apple equipment, that uses randomly generated MAC addresses.
 
-### Freeplug thing
+### Freeplug Thing
 
 The *freeplug* thing requires the following configuration parameters:
 
@@ -135,7 +135,7 @@ The *freeplug* thing requires the following configuration parameters:
 | MAC Address      | macAddress      | The MAC address of the network device.                                 | Yes      |         |
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll the device.      | No       | 30      |
 
-### Repeater thing
+### Repeater Thing
 
 The *repeater* thing requires the following configuration parameters:
 
@@ -145,7 +145,7 @@ The *repeater* thing requires the following configuration parameters:
 | ID               | id              | Id of the repeater within Freebox Api                               | Yes      | 1       |
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll the repeater. | No       | 30      |
 
-### Virtual Machine thing
+### Virtual Machine Thing
 
 The *vm* thing requires the following configuration parameters:
 
@@ -156,7 +156,7 @@ The *vm* thing requires the following configuration parameters:
 | ID               | id              | Id of the Virtual Machine                                                  | Yes      | 1       |
 | Refresh Interval | refreshInterval | The refresh interval in seconds which is used to poll the virtual machine. | No       | 30      |
 
-### Home node things
+### Home Node Things
 
 The *basic-shutter*, *shutter*, *kfb* or *alarm* thing requires the following configuration parameters:
 
