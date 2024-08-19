@@ -46,10 +46,10 @@ public class PhoneConfigurationBuilder {
         String label;
         if (Type.DECT.equals(config.type())) {
             thingUID = new ThingUID(THING_TYPE_DECT, bridgeUID, Integer.toString(config.id()));
-            label = "DECT Phone";
+            label = "@text/discovery.dect.label";
         } else {
             thingUID = new ThingUID(THING_TYPE_FXS, bridgeUID, Integer.toString(config.id()));
-            label = "Landline Phone";
+            label = "@text/discovery.fxs.label";
         }
 
         logger.debug("Adding new Freebox Phone {} to inbox", thingUID);
