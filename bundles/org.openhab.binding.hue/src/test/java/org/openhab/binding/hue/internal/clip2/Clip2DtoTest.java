@@ -24,7 +24,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -522,9 +521,9 @@ class Clip2DtoTest {
         ResourceType type = group.getType();
         assertNotNull(type);
         assertEquals(ResourceType.ROOM, type);
-        Optional<Boolean> state = item.getSmartSceneActive();
-        assertTrue(state.isPresent());
-        assertFalse(state.get());
+        Boolean state = item.getSmartSceneActive();
+        assertNotNull(state);
+        assertFalse(state);
     }
 
     @Test
@@ -613,9 +612,9 @@ class Clip2DtoTest {
         assertNotNull(active);
         assertTrue(active.isJsonPrimitive());
         assertEquals("inactive", active.getAsString());
-        Optional<Boolean> isActive = resource.getSceneActive();
-        assertTrue(isActive.isPresent());
-        assertEquals(Boolean.FALSE, isActive.get());
+        Boolean isActive = resource.getSceneActive();
+        assertNotNull(isActive);
+        assertEquals(Boolean.FALSE, isActive);
     }
 
     @Test
