@@ -14,7 +14,7 @@ package org.openhab.binding.xmppclient.internal.action;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.xmppclient.internal.XMPPClient;
+import org.openhab.binding.xmppclient.internal.client.XMPPClient;
 import org.openhab.binding.xmppclient.internal.handler.XMPPClientHandler;
 import org.openhab.core.automation.annotation.ActionInput;
 import org.openhab.core.automation.annotation.RuleAction;
@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 @ThingActionsScope(name = "xmppclient")
 @NonNullByDefault
 public class XMPPActions implements ThingActions {
-    private static final Logger logger = LoggerFactory.getLogger(XMPPActions.class);
+    private final Logger logger = LoggerFactory.getLogger(XMPPActions.class);
     private @Nullable XMPPClientHandler handler;
 
     @Override
@@ -58,12 +58,8 @@ public class XMPPActions implements ThingActions {
         }
 
         XMPPClient connection = clientHandler.getXMPPClient();
-        if (connection == null) {
-            logger.warn("XMPP ThingHandler connection is null");
-            return;
-        }
-        if ((to == null) || (text == null)) {
-            logger.info("Skipping XMPP messaging to {} value {}", to, text);
+        if (to == null || text == null) {
+            logger.warn("Skipping XMPP messaging to {} value {}", to, text);
             return;
         }
         connection.sendMessage(to, text);
@@ -80,11 +76,7 @@ public class XMPPActions implements ThingActions {
         }
 
         XMPPClient connection = clientHandler.getXMPPClient();
-        if (connection == null) {
-            logger.warn("XMPP ThingHandler connection is null");
-            return;
-        }
-        if ((to == null) || (filename == null)) {
+        if (to == null || filename == null) {
             logger.warn("Skipping XMPP messaging to {} value {}", to, filename);
             return;
         }
