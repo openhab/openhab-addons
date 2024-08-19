@@ -22,6 +22,8 @@ import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.Response;
 import org.openhab.binding.freeboxos.internal.api.rest.MediaReceiverManager.Receiver;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * The {@link MediaReceiverManager} is the Java class used to handle api requests related to air media receivers
  *
@@ -41,15 +43,21 @@ public class MediaReceiverManager extends ListableRest<Receiver, MediaReceiverMa
     }
 
     public enum Action {
+        @SerializedName("start")
         START,
+        @SerializedName("stop")
         STOP,
         UNKNOWN
     }
 
     public enum MediaType {
+        @SerializedName("video")
         VIDEO,
+        @SerializedName("photo")
         PHOTO,
+        @SerializedName("audio")
         AUDIO,
+        @SerializedName("screen")
         SCREEN,
         UNKNOWN
     }
@@ -77,6 +85,6 @@ public class MediaReceiverManager extends ListableRest<Receiver, MediaReceiverMa
     }
 
     private void sendToReceiver(String receiver, Request payload) throws FreeboxException {
-        post(payload, GenericResponse.class, receiver);
+        post(payload, receiver);
     }
 }

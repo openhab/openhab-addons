@@ -231,7 +231,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         if (!status.isEmpty()) {
-            setThingOffline(errorCode, status, e.toString());
+            setThingOfflineAndDisconnect(errorCode, status, e.toString());
         } else {
             logger.debug("{}: Unable to initialize: {}, retrying later", thingName, e.toString());
         }
@@ -269,6 +269,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     public void handleConfigurationUpdate(Map<String, Object> configurationParameters) {
         super.handleConfigurationUpdate(configurationParameters);
         logger.debug("{}: Thing config updated, re-initialize", thingName);
+        Shelly1CoapHandler coap = this.coap;
         if (coap != null) {
             coap.stop();
         }
@@ -299,18 +300,23 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                 thingName, getThing().getLabel(), thingType, config.deviceAddress.toUpperCase(), gen2, profile.isBlu,
                 profile.alwaysOn, profile.hasBattery, config.eventsCoIoT);
         if (config.deviceAddress.isEmpty()) {
-            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "config-status.error.missing-device-address");
+            setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR,
+                    "config-status.error.missing-device-address");
             return false;
         }
 
         if (profile.alwaysOn || !profile.isInitialized()) {
-            updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
-                    messages.get("status.unknown.initializing"));
+            ThingStatusDetail detail = getThingStatusDetail();
+            if (detail != ThingStatusDetail.DUTY_CYCLE) {
+                updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
+                        messages.get("status.config_pending"));
+            }
         }
 
         // Gen 1 only: Setup CoAP listener to we get the CoAP message, which triggers initialization even the thing
         // could not be fully initialized here. In this case the CoAP messages triggers auto-initialization (like the
         // Action URL does when enabled)
+        Shelly1CoapHandler coap = this.coap;
         if (coap != null && config.eventsCoIoT && !profile.alwaysOn) {
             coap.start(thingName, config);
         }
@@ -319,7 +325,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         api.initialize();
         ShellySettingsDevice device = profile.device = api.getDeviceInfo();
         if (getBool(device.auth) && config.password.isEmpty()) {
-            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
+            setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-no-credentials");
             return false;
         }
         if (config.serviceName.isEmpty()) {
@@ -328,6 +334,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
         api.setConfig(thingName, config);
         ShellyDeviceProfile tmpPrf = api.getDeviceProfile(thingType, profile.device);
+        tmpPrf.initFromThingType(thingType);
         String mode = getString(tmpPrf.device.mode);
         if (this.getThing().getThingTypeUID().equals(THING_TYPE_SHELLYPROTECTED)) {
             changeThingType(thingName, mode);
@@ -336,7 +343,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         // Validate device mode
         String reqMode = thingType.contains("-") ? substringAfter(thingType, "-") : "";
         if (!reqMode.isEmpty() && !mode.equals(reqMode)) {
-            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-wrong-mode", mode, reqMode);
+            setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR, "offline.conf-error-wrong-mode", mode,
+                    reqMode);
             return false;
         }
         if (!getString(tmpPrf.device.coiot).isEmpty()) {
@@ -447,10 +455,11 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                         id = getNumber(command).intValue();
                     } else {
                         String cmd = command.toString();
+                        List<ShellyThermnostat> thermostats = profile.settings.thermostats;
                         if (isDigit(cmd.charAt(0))) {
                             id = Integer.parseInt(cmd);
-                        } else if (profile.settings.thermostats != null) {
-                            ShellyThermnostat t = profile.settings.thermostats.get(0);
+                        } else if (thermostats != null) {
+                            ShellyThermnostat t = thermostats.get(0);
                             for (int i = 0; i < t.profileNames.length; i++) {
                                 if (t.profileNames[i].equalsIgnoreCase(cmd)) {
                                     id = i + 1;
@@ -543,7 +552,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             ThingStatus thingStatus = getThing().getStatus();
             if (refreshSettings || (scheduledUpdates > 0) || (skipUpdate % skipCount == 0)) {
                 if (!profile.isInitialized() || ((thingStatus == ThingStatus.OFFLINE))
-                        || (thingStatus == ThingStatus.UNKNOWN)) {
+                        || (getThingStatusDetail() == ThingStatusDetail.CONFIGURATION_PENDING)) {
                     logger.debug("{}: Status update triggered thing initialization", thingName);
                     initializeThing(); // may fire an exception if initialization failed
                 }
@@ -671,7 +680,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
 
     @Override
     public boolean isThingOnline() {
-        return getThingStatus() == ThingStatus.ONLINE;
+        return getThingStatus() == ThingStatus.ONLINE
+                && getThingStatusDetail() != ThingStatusDetail.CONFIGURATION_PENDING;
     }
 
     public boolean isThingOffline() {
@@ -692,13 +702,18 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     @Override
-    public void setThingOffline(ThingStatusDetail detail, String messageKey, Object... arguments) {
+    public void setThingOfflineAndDisconnect(ThingStatusDetail detail, String messageKey, Object... arguments) {
         if (!isThingOffline()) {
             updateStatus(ThingStatus.OFFLINE, detail, messages.get(messageKey, arguments));
-            api.close(); // Gen2: disconnect WS/close http sessions
-            watchdog = 0;
-            channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
         }
+        api.close(); // Gen2: disconnect WS/close http sessions
+        watchdog = 0;
+        channelsCreated = false; // check for new channels after devices gets re-initialized (e.g. new
+    }
+
+    @Override
+    public void setThingStatus(ThingStatus status, ThingStatusDetail detail, String messageKey, Object... arguments) {
+        updateStatus(status, detail, messages.get(messageKey, arguments));
     }
 
     @Override
@@ -724,7 +739,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             logger.debug("{}: Handler is shutting down, ignore", thingName);
             return;
         }
-        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.CONFIGURATION_PENDING,
+        updateStatus(ThingStatus.ONLINE, ThingStatusDetail.CONFIGURATION_PENDING,
                 messages.get("offline.status-error-restarted"));
         requestUpdates(0, true);
     }
@@ -1025,7 +1040,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         config.localIp = bindingConfig.localIP;
         config.localPort = String.valueOf(bindingConfig.httpPort);
         if (config.localIp.startsWith("169.254")) {
-            setThingOffline(ThingStatusDetail.COMMUNICATION_ERROR, "config-status.error.network-config",
+            setThingOfflineAndDisconnect(ThingStatusDetail.COMMUNICATION_ERROR, "config-status.error.network-config",
                     config.localIp);
             return false;
         }
@@ -1065,35 +1080,30 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
     }
 
     private void checkVersion(ShellyDeviceProfile prf, ShellySettingsStatus status) {
-        try {
-            if (prf.fwVersion.isEmpty()) {
-                // no fw version available (e.g. BLU device)
-                return;
+        if (prf.fwVersion.isEmpty()) {
+            // no fw version available (e.g. BLU device)
+            return;
+        }
+        ShellyVersionDTO version = new ShellyVersionDTO();
+        if (version.checkBeta(getString(prf.fwVersion))) {
+            logger.info("{}: {}", prf.device.hostname, messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
+        } else {
+            String minVersion = !gen2 ? SHELLY_API_MIN_FWVERSION : SHELLY2_API_MIN_FWVERSION;
+            if (version.compare(prf.fwVersion, minVersion) < 0) {
+                logger.warn("{}: {}", prf.device.hostname,
+                        messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate, minVersion));
             }
-            ShellyVersionDTO version = new ShellyVersionDTO();
-            if (version.checkBeta(getString(prf.fwVersion))) {
-                logger.info("{}: {}", prf.device.hostname,
-                        messages.get("versioncheck.beta", prf.fwVersion, prf.fwDate));
-            } else {
-                String minVersion = !gen2 ? SHELLY_API_MIN_FWVERSION : SHELLY2_API_MIN_FWVERSION;
-                if (version.compare(prf.fwVersion, minVersion) < 0) {
-                    logger.warn("{}: {}", prf.device.hostname,
-                            messages.get("versioncheck.tooold", prf.fwVersion, prf.fwDate, minVersion));
-                }
+        }
+        if (!gen2 && bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
+                || ("production_test".equalsIgnoreCase(prf.fwVersion))) {
+            if (!config.eventsCoIoT) {
+                logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
             }
-            if (!gen2 && bindingConfig.autoCoIoT && ((version.compare(prf.fwVersion, SHELLY_API_MIN_FWCOIOT)) >= 0)
-                    || ("production_test".equalsIgnoreCase(prf.fwVersion))) {
-                if (!config.eventsCoIoT) {
-                    logger.info("{}: {}", thingName, messages.get("versioncheck.autocoiot"));
-                }
-                autoCoIoT = true;
-            }
-            if (status.update.hasUpdate && !version.checkBeta(getString(prf.fwVersion))) {
-                logger.info("{}: {}", thingName,
-                        messages.get("versioncheck.update", status.update.oldVersion, status.update.newVersion));
-            }
-        } catch (NullPointerException e) { // could be inconsistant format of beta version
-            logger.debug("{}: {}", thingName, messages.get("versioncheck.failed", prf.fwVersion));
+            autoCoIoT = true;
+        }
+        if (Boolean.TRUE.equals(status.update.hasUpdate) && !version.checkBeta(getString(prf.fwVersion))) {
+            logger.info("{}: {}", thingName,
+                    messages.get("versioncheck.update", status.update.oldVersion, status.update.newVersion));
         }
     }
 
@@ -1136,6 +1146,7 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
         }
 
         logger.debug("{}: Starting CoIoT (autoCoIoT={}/{})", thingName, bindingConfig.autoCoIoT, autoCoIoT);
+        Shelly1CoapHandler coap = this.coap;
         if (coap != null) {
             coap.start(thingName, config);
         }
@@ -1159,7 +1170,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
             changeThingType(thingTypeUID, getConfig());
         } else {
             logger.debug("{}:  to {}", thingName, thingType);
-            setThingOffline(ThingStatusDetail.CONFIGURATION_ERROR, "Unable to change thing type to " + thingType);
+            setThingOfflineAndDisconnect(ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Unable to change thing type to " + thingType);
         }
     }
 
@@ -1481,6 +1493,8 @@ public abstract class ShellyBaseHandler extends BaseThingHandler
                     logger.debug("{}: Device profile re-initialized (thingType={})", thingName, thingType);
                 }
             }
+        } catch (ShellyApiException | RuntimeException e) {
+            logger.debug("{}: Unable to initialize Device Profile", thingName, e);
         } finally {
             refreshSettings = false;
         }

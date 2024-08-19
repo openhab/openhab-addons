@@ -27,7 +27,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ButtonEventType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.CategoryType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContactStateType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
@@ -54,6 +56,7 @@ import org.openhab.core.util.ColorUtil.Gamut;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -73,8 +76,16 @@ public class Resource {
      * values have changed. A sparse resource does not contain the full state of the resource. And the absence of any
      * field from such a resource does not indicate that the field value is UNDEF, but rather that the value is the same
      * as what it was previously set to by the last non-sparse resource.
+     * <p>
+     * The following content types are defined:
+     *
+     * <li><b>ADD</b> resource being added; contains (assumed) all fields</li>
+     * <li><b>DELETE</b> resource being deleted; contains id and type only</li>
+     * <li><b>UPDATE</b> resource being updated; contains id, type and changed fields</li>
+     * <li><b>ERROR</b> resource with error; contents unknown</li>
+     * <li><b>FULL_STATE</b> existing resource being downloaded; contains all fields</li>
      */
-    private transient boolean hasSparseData;
+    private transient ContentType contentType;
 
     private @Nullable String type;
     private @Nullable String id;
@@ -106,7 +117,15 @@ public class Resource {
     private @Nullable Dynamics dynamics;
     private @Nullable @SerializedName("contact_report") ContactReport contactReport;
     private @Nullable @SerializedName("tamper_reports") List<TamperReport> tamperReports;
-    private @Nullable String state;
+    private @Nullable JsonElement state;
+    private @Nullable @SerializedName("script_id") String scriptId;
+
+    /**
+     * Constructor
+     */
+    public Resource() {
+        contentType = ContentType.FULL_STATE;
+    }
 
     /**
      * Constructor
@@ -114,6 +133,7 @@ public class Resource {
      * @param resourceType
      */
     public Resource(@Nullable ResourceType resourceType) {
+        this();
         if (Objects.nonNull(resourceType)) {
             setType(resourceType);
         }
@@ -343,6 +363,14 @@ public class Resource {
     }
 
     /**
+     * Return the resource's metadata category.
+     */
+    public CategoryType getCategory() {
+        MetaData metaData = getMetaData();
+        return Objects.nonNull(metaData) ? metaData.getCategory() : CategoryType.NULL;
+    }
+
+    /**
      * Return an HSB where the HS part is derived from the color xy JSON element (only), so the B part is 100%
      *
      * @return an HSBType.
@@ -372,6 +400,10 @@ public class Resource {
         return Objects.isNull(contactReport) ? UnDefType.NULL
                 : ContactStateType.CONTACT == contactReport.getContactState() ? OpenClosedType.CLOSED
                         : OpenClosedType.OPEN;
+    }
+
+    public ContentType getContentType() {
+        return contentType;
     }
 
     public int getControlId() {
@@ -648,6 +680,13 @@ public class Resource {
     }
 
     /**
+     * Return the scriptId if any.
+     */
+    public @Nullable String getScriptId() {
+        return scriptId;
+    }
+
+    /**
      * Depending on the returned value from getSceneActive() this method returns 'UnDefType.NULL' for 'null',
      * 'UnDefType.UNDEF' for 'false' or when 'true' (i.e. the scene is active) return the scene name.
      *
@@ -665,8 +704,8 @@ public class Resource {
      * @return true, false, or null.
      */
     public @Nullable Boolean getSmartSceneActive() {
-        if (ResourceType.SMART_SCENE == getType()) {
-            String state = this.state;
+        if (ResourceType.SMART_SCENE == getType() && (state instanceof JsonPrimitive statePrimitive)) {
+            String state = statePrimitive.getAsString();
             if (Objects.nonNull(state)) {
                 return SmartSceneState.ACTIVE == SmartSceneState.of(state);
             }
@@ -785,17 +824,12 @@ public class Resource {
     }
 
     public boolean hasFullState() {
-        return !hasSparseData;
+        return ContentType.FULL_STATE == contentType;
     }
 
-    /**
-     * Mark that the resource has sparse data.
-     *
-     * @return this instance.
-     */
-    public Resource markAsSparse() {
-        hasSparseData = true;
-        return this;
+    public boolean hasName() {
+        MetaData metaData = getMetaData();
+        return Objects.nonNull(metaData) && Objects.nonNull(metaData.getName());
     }
 
     public Resource setAlerts(Alerts alert) {
@@ -815,6 +849,11 @@ public class Resource {
 
     public Resource setContactReport(ContactReport contactReport) {
         this.contactReport = contactReport;
+        return this;
+    }
+
+    public Resource setContentType(ContentType contentType) {
+        this.contentType = contentType;
         return this;
     }
 

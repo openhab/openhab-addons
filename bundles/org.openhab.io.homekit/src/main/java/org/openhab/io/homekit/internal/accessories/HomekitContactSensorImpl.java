@@ -34,7 +34,7 @@ import io.github.hapjava.services.impl.ContactSensorService;
  * @author Philipp Arndt - Initial contribution
  */
 public class HomekitContactSensorImpl extends AbstractHomekitAccessoryImpl implements ContactSensorAccessory {
-    private final Map<ContactStateEnum, String> mapping;
+    private final Map<ContactStateEnum, Object> mapping;
 
     public HomekitContactSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)

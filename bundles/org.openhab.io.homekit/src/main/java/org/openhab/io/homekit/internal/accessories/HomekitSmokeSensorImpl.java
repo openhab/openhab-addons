@@ -34,7 +34,7 @@ import io.github.hapjava.services.impl.SmokeSensorService;
  * @author Cody Cutrer - Initial contribution
  */
 public class HomekitSmokeSensorImpl extends AbstractHomekitAccessoryImpl implements SmokeSensorAccessory {
-    private final Map<SmokeDetectedStateEnum, String> mapping;
+    private final Map<SmokeDetectedStateEnum, Object> mapping;
 
     public HomekitSmokeSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
