@@ -921,12 +921,15 @@ public class Clip2Bridge implements Closeable {
             return;
         }
         List<Resource> resources = new ArrayList<>();
-        events.forEach(event -> resources.addAll(event.getData()));
+        events.forEach(event -> {
+            List<Resource> eventResources = event.getData();
+            eventResources.forEach(resource -> resource.setContentType(event.getContentType()));
+            resources.addAll(eventResources);
+        });
         if (resources.isEmpty()) {
             LOGGER.debug("onEventData() resource list is empty");
             return;
         }
-        resources.forEach(resource -> resource.markAsSparse());
         bridgeHandler.onResourcesEvent(resources);
     }
 

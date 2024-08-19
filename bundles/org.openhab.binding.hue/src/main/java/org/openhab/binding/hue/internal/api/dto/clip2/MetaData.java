@@ -15,6 +15,7 @@ package org.openhab.binding.hue.internal.api.dto.clip2;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.Archetype;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.CategoryType;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -28,6 +29,7 @@ public class MetaData {
     private @Nullable String archetype;
     private @Nullable String name;
     private @Nullable @SerializedName("control_id") Integer controlId;
+    private @Nullable String category;
 
     public Archetype getArchetype() {
         return Archetype.of(archetype);
@@ -35,6 +37,10 @@ public class MetaData {
 
     public @Nullable String getName() {
         return name;
+    }
+
+    public CategoryType getCategory() {
+        return CategoryType.of(category);
     }
 
     public int getControlId() {

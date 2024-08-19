@@ -30,13 +30,14 @@ import org.openhab.binding.hue.internal.api.dto.clip2.Dimming;
 import org.openhab.binding.hue.internal.api.dto.clip2.Effects;
 import org.openhab.binding.hue.internal.api.dto.clip2.OnState;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.helper.Setters;
 import org.openhab.binding.hue.internal.exceptions.DTOPresentButEmptyException;
 
 /**
  * Tests for {@link Setters}.
- * 
+ *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
@@ -51,7 +52,7 @@ public class SettersTest {
      *
      * Expected output:
      * - Resource 1: type=light/grouped_light, sparse, id=1, on=on, dimming=50
-     * 
+     *
      * @throws DTOPresentButEmptyException
      */
     @ParameterizedTest
@@ -100,7 +101,7 @@ public class SettersTest {
      *
      * Expected output:
      * - Resource 1: type=light, sparse, id=1, dimming=50
-     * 
+     *
      * @throws DTOPresentButEmptyException
      */
     @Test
@@ -137,7 +138,7 @@ public class SettersTest {
      * Expected output:
      * - Resource 1: type=light, sparse, id=1, on=on, dimming=50
      * - Resource 2: type=light, sparse, id=1, effect=xxx
-     * 
+     *
      * @throws DTOPresentButEmptyException
      */
     @Test
@@ -185,7 +186,7 @@ public class SettersTest {
      * Expected output:
      * - Resource 1: type=light, sparse, id=1, on=on
      * - Resource 2: type=light, sparse, id=2, dimming=50
-     * 
+     *
      * @throws DTOPresentButEmptyException
      */
     @Test
@@ -228,7 +229,7 @@ public class SettersTest {
      *
      * Expected output:
      * - Exception thrown, full state is not supported/expected.
-     * 
+     *
      * @throws DTOPresentButEmptyException
      */
     @Test
@@ -254,7 +255,7 @@ public class SettersTest {
      * Expected output:
      * - Resource 1: type=light, sparse, id=1, on=on
      * - Resource 2: type=light, sparse, id=1, color temperature=370 mirek
-     * 
+     *
      * @throws DTOPresentButEmptyException
      */
     @Test
@@ -301,7 +302,7 @@ public class SettersTest {
      * Expected output:
      * - Resource 1: type=light, sparse, id=1, on=on, dimming=50
      * - Resource 2: type=light, sparse, id=1, color temperature=370 mirek
-     * 
+     *
      * @throws DTOPresentButEmptyException
      */
     @Test
@@ -352,7 +353,7 @@ public class SettersTest {
      *
      * Expected output:
      * - Resource 1: type=light, sparse, id=1, on=on, color temperature=370
-     * 
+     *
      * @throws DTOPresentButEmptyException
      */
     @Test
@@ -389,7 +390,7 @@ public class SettersTest {
      *
      * Expected output:
      * - Resource 1: type=motion, sparse, id=1
-     * 
+     *
      * @throws DTOPresentButEmptyException
      */
     @Test
@@ -431,7 +432,7 @@ public class SettersTest {
     private Resource createResource(ResourceType resourceType, String id) {
         Resource resource = new Resource(resourceType);
         resource.setId(id);
-        resource.markAsSparse();
+        resource.setContentType(ContentType.UPDATE);
 
         return resource;
     }

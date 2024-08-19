@@ -55,6 +55,17 @@ See [console command](#console-command-for-finding-resourceids)
 
 The configuration of all things (as described above) is the same regardless of whether it is a device containing a light, a button, or (one or more) sensors, or whether it is a room or zone.
 
+### Channels for Bridges
+
+Bridge Things support the following channels:
+
+| Channel ID                                      | Item Type          | Description                                 |
+|-------------------------------------------------|--------------------|---------------------------------------------|
+| automation#11111111-2222-3333-4444-555555555555 | Switch             | Enable / disable the respective automation. |
+
+The Bridge dynamically creates `automation` channels corresponding to the automations in the Hue App;
+the '11111111-2222-3333-4444-555555555555' is the unique id of the respective automation.
+
 ### Channels for Devices
 
 Device things support some of the following channels:
