@@ -237,13 +237,13 @@ Define a new `ThingTypeUID` for the new station and add it to the `SUPPORTED_THI
 
 Add a channel group for the new station.
 
-### Create OH-INF/thing/\<station-model\>.xml
+### Create `OH-INF/thing/<station-model>.xml`
 
 Add thing type and channel group specific to the data elements supported by this weather station.
 Modeling this after an existing thing type that shares many of the channels is the easiest starting point.
 You can determine the weather data elements returned for the weather station by putting the binding into debug mode and reviewing the JSON object returned by the Ambient Weather API.
 
-### Create Processor Class <StationModel>Processor
+### Create Processor Class `<StationModel>Processor`
 
 Add a class in `org.openhab.binding.ambientweather.internal.processor` that defines the channels supported by this station type.
 
