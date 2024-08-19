@@ -202,8 +202,8 @@ public class CommunicationManager {
                         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                         if (!socket.isClosed()) {
                             socket.receive(packet);
+                        } else {
                             logger.warn("Socket was unexpectedly closed");
-                            // break will in turn reopen the port
                             break;
                         }
                         if (stopped) {
