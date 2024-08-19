@@ -12,11 +12,7 @@
  */
 package org.openhab.binding.linky.internal.handler;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -68,9 +64,6 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
 
     private static @Nullable HttpServlet servlet;
 
-    private static final String TEMPLATE_PATH = "templates/";
-    private static final String TEMPLATE_INDEX = TEMPLATE_PATH + "index.html";
-
     public ApiBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
@@ -108,7 +101,7 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
                 httpService.registerResources(LinkyBindingConstants.LINKY_ALIAS + LinkyBindingConstants.LINKY_IMG_ALIAS,
                         "web", null);
             }
-        } catch (NamespaceException | ServletException | IOException e) {
+        } catch (NamespaceException | ServletException | LinkyException e) {
             logger.warn("Error during linky servlet startup", e);
         }
     }
@@ -127,28 +120,8 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
      * @return the newly created servlet
      * @throws IOException thrown when an HTML template could not be read
      */
-    private HttpServlet createServlet() throws IOException {
-        return new LinkyAuthServlet(this, readTemplate(TEMPLATE_INDEX));
-    }
-
-    /**
-     * Reads a template from file and returns the content as String.
-     *
-     * @param templateName name of the template file to read
-     * @return The content of the template file
-     * @throws IOException thrown when an HTML template could not be read
-     */
-    private String readTemplate(String templateName) throws IOException {
-        final URL index = bundleContext.getBundle().getEntry(templateName);
-
-        if (index == null) {
-            throw new FileNotFoundException(
-                    String.format("Cannot find '{}' - failed to initialize Linky servlet", templateName));
-        } else {
-            try (InputStream inputStream = index.openStream()) {
-                return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-            }
-        }
+    private HttpServlet createServlet() throws LinkyException {
+        return new LinkyAuthServlet(this);
     }
 
     public String authorize(String redirectUri, String reqState, String reqCode) throws LinkyException {

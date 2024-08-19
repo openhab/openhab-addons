@@ -37,7 +37,7 @@ To retrieve data, Linky thing will be need to be linked to a LinkyBridge. LinkyB
 If you select EnedisWebBridge, you will need :
 
 - To create an Enedis account : https://mon-compte-client.enedis.fr/
-- To fill the bridge with you information : username, Password, and also InternalAuthId.
+- To fill the bridge with you information : username, password, and also InternalAuthId.
 
 | Parameter      | Description                    |
 |----------------|--------------------------------|
@@ -69,7 +69,7 @@ If you select MyElectricalDataBridge, you will need :
 These steps can also be done using the connectlinky page available from your openhab: http://localhost:8080/connectlinky.
 You're wil have:
 
-- to select your PrmId from the combobox.
+- to select your prmId from the combobox.
 - to click the "Authorized Bridge".
 - to follow the authorized process on the enedis page : please select only one prmId there as the token is specific to each Linky.
 - then go back to the /connectlinky page, and click on the "Retrieve token" link to fill the Linky things with the token.
@@ -81,7 +81,7 @@ The thing has the following configuration parameters:
 
 | Parameter      | Description                                                                                 |
 |----------------|---------------------------------------------------------------------------------------------|
-| PrmId          | The PrmId link to the linky Handler.                                                        |
+| prmId          | The prmId link to the linky Handler.                                                        |
 | token          | Optional : need if a token necessary to access this Linky thing (use for MyElectricaldata)  |
 
 
