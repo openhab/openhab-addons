@@ -127,19 +127,14 @@ public class OpenWeatherMapOneCallHistoryHandlerTest {
     }
 
     @Test
-    public void testCurrentWithResponseMessageV30() {
+    public void testCurrentWithResponseMessageV30() throws IOException {
         // Arrange
         final Configuration configuration = createConfig(true, "3.0");
         final Thing thing = mockThing(configuration);
         final OpenWeatherMapOneCallHistoryHandler handler = createAndInitHandler(callback, thing);
 
-        OpenWeatherMapOneCallHistAPIData data = null;
-        try {
-            data = DataUtil.fromJson("history_v3_0.json", OpenWeatherMapOneCallHistAPIData.class);
-        } catch (IOException e) {
-            // ignore
-        }
-
+        OpenWeatherMapOneCallHistAPIData data = DataUtil.fromJson("history_v3_0.json",
+                OpenWeatherMapOneCallHistAPIData.class);
         OpenWeatherMapConnection connectionMock = mock(OpenWeatherMapConnection.class);
         when(connectionMock.getOneCallHistAPIData(handler.location,
                 ((BigDecimal) configuration.get(CONFIG_HISTORY_DAYS)).intValue())).thenReturn(data);
@@ -183,19 +178,14 @@ public class OpenWeatherMapOneCallHistoryHandlerTest {
     }
 
     @Test
-    public void testCurrentWithResponseMessageV25() {
+    public void testCurrentWithResponseMessageV25() throws IOException {
         // Arrange
         final Configuration configuration = createConfig(true, "3.0");
         final Thing thing = mockThing(configuration);
         final OpenWeatherMapOneCallHistoryHandler handler = createAndInitHandler(callback, thing);
 
-        OpenWeatherMapOneCallHistAPIData data = null;
-        try {
-            data = DataUtil.fromJson("history_v2_5.json", OpenWeatherMapOneCallHistAPIData.class);
-        } catch (IOException e) {
-            // ignore
-        }
-
+        OpenWeatherMapOneCallHistAPIData data = DataUtil.fromJson("history_v2_5.json",
+                OpenWeatherMapOneCallHistAPIData.class);
         OpenWeatherMapConnection connectionMock = mock(OpenWeatherMapConnection.class);
         when(connectionMock.getOneCallHistAPIData(handler.location,
                 ((BigDecimal) configuration.get(CONFIG_HISTORY_DAYS)).intValue())).thenReturn(data);
