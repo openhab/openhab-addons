@@ -34,61 +34,73 @@ This binding does not provide discovery service.
 
 To retrieve data, Linky thing will be need to be linked to a LinkyBridge. LinkyBridge can be today select between enedis-web, myelectricaldata and enedis.
 
+### enedis-web bridge
 If you select enedis-web bridge, you will need :
 
 - To create an Enedis account : https://mon-compte-client.enedis.fr/
 - To fill the bridge with you information : username, password, and also InternalAuthId.
 
-| Parameter      | Description                    |
-|----------------|--------------------------------|
-| username       | Your Enedis platform username. |
-| password       | Your Enedis platform password. |
-| internalAuthId | The internal authID            |
+      | Parameter      | Description                    |
+      |----------------|--------------------------------|
+      | username       | Your Enedis platform username. |
+      | password       | Your Enedis platform password. |
+      | internalAuthId | The internal authID            |
 
-This version is now compatible with the new version of Enedis WEB API (deployed from june 2020).
-To avoid the captcha login, it is necessary to log before on a classical browser (e.g Chrome, Firefox) and to retrieve the user cookies (internalAuthId).
+    This version is now compatible with the new version of Enedis WEB API (deployed from june 2020).
+    To avoid the captcha login, it is necessary to log before on a classical browser (e.g Chrome, Firefox) and to retrieve the user cookies (internalAuthId).
 
-Instructions given for Firefox :
+    Instructions given for Firefox :
 
-1. Go to <https://mon-compte-client.enedis.fr/>.
-1. Select "Particulier" in the drop down list and click on the "Connexion" button.
-1. You'll be redirected to a page where you'll have to enter you Enedis account email address and check the "Je ne suis pas un robot" checkbox.
-1. Clic on "Suivant".
-1. In the login page, prefilled with your mail address, enter your Enedis account password and click on "Connexion à Espace Client Enedis".
-1. You will be directed to your Enedis account environment. Get back to previous page in you browser.
-1. Disconnect from your Enedis account
-1. Repeat steps 1, 2. You should arrive directly on step 5, then open the developer tool window (F12) and select "Stockage" tab. In the "Cookies" entry, select "https://mon-compte-enedis.fr". You'll find an entry named "internalAuthId", copy this value in your openHAB configuration.
+    1. Go to <https://mon-compte-client.enedis.fr/>.
+    1. Select "Particulier" in the drop down list and click on the "Connexion" button.
+    1. You'll be redirected to a page where you'll have to enter you Enedis account email address and check the "Je ne suis pas un robot" checkbox.
+    1. Clic on "Suivant".
+    1. In the login page, prefilled with your mail address, enter your Enedis account password and click on "Connexion à Espace Client Enedis".
+    1. You will be directed to your Enedis account environment. Get back to previous page in you browser.
+    1. Disconnect from your Enedis account
+    1. Repeat steps 1, 2. You should arrive directly on step 5, then open the developer tool window (F12) and select "Stockage" tab. In the "Cookies" entry, select "https://mon-compte-enedis.fr". You'll find an entry named "internalAuthId", copy this value in your openHAB configuration.
 
+
+### myelectricaldata bridge
 
 If you select MyElectricalData bridge, you will need :
 
 - To create an Enedis account : https://mon-compte-client.enedis.fr/
 
-Follow these steps to initialize the token. you can access the procedure from the connectlinky page available from your openhab: https://home.myopenhab.org/connectlinky/index.
+Follow these steps to initialize the token. You can access the procedure from the connectlinky page available from your openhab: https://home.myopenhab.org/connectlinky/index.
 
 - to select your provider 
-![TempoGraph](doc/connectlinky-index.png)<br/>
+
+  ![connectlinky-index](doc/connectlinky-index.png)
+<br/>
 
 - To follow the two first step wizard, and click on the "access Enedis" button
-![TempoGraph](doc/connectlinky-myelectricaldata-step1.png)<br/>
-![TempoGraph](doc/connectlinky-myelectricaldata-step2.png)<br/>
+
+  ![connectlinky-myelectricaldata-step1](doc/connectlinky-myelectricaldata-step1.png)<br/>
+  ![connectlinky-myelectricaldata-step2](doc/connectlinky-myelectricaldata-step2.png)<br/>
 
 - To login to your Enedis Account
-![TempoGraph](doc/connectlinky-myelectricaldata-step2b.png)<br/>
+
+  ![connectlinky-myelectricaldata-step2b](doc/connectlinky-myelectricaldata-step2b.png)<br/>
 
 - To authorize data collection for your prmId. <br>
+
 If you have multiple linky on your account like me, you will have to repeat the procedure for each linky.
 Don't select the two linky in the same procedure, it will not work !
-![TempoGraph](doc/connectlinky-myelectricaldata-step2c.png)<br/>
+
+  ![connectlinky-myelectricaldata-step2c](doc/connectlinky-myelectricaldata-step2c.png)<br/>
 
 - You will then be redirect to a confirmation page on MyElectricalData web site
-![TempoGraph](doc/connectlinky-myelectricaldata-step2d.png)<br/>
+
+  ![connectlinky-myelectricaldata-step2d](doc/connectlinky-myelectricaldata-step2d.png)<br/>
 
 - Go back to your openhab with step3 : "connectlinky/myelectricaldata-step3", then select your prmId in combobox, and click "Retrieve Token"
-![TempoGraph](doc/connectlinky-myelectricaldata-step3.png)<br/>
+
+  ![connectlinky-myelectricaldata-step3](doc/connectlinky-myelectricaldata-step3.png)<br/>
 
 - Last, you will see this confirmation page if everything is everything is ok
-![TempoGraph](doc/connectlinky-myelectricaldata-step3b.png)<br/>
+
+  ![connectlinky-myelectricaldata-step3b](doc/connectlinky-myelectricaldata-step3b.png)<br/>
 
 
 If you select enedis bridge, you will need :
@@ -97,22 +109,28 @@ If you select enedis bridge, you will need :
 Follow these steps to initialize the token. you can access the procedure from the connectlinky page available from your openhab: https://home.myopenhab.org/connectlinky/index.
 
 - to select your provider 
-![TempoGraph](doc/enedis-index.png)<br/>
+
+  ![enedis-index](doc/enedis-index.png)<br/>
 
 - To follow the two first step wizard, and click on the "access Enedis" button
-![TempoGraph](doc/connectlinky-enedis-step1.png)<br/>
-![TempoGraph](doc/connectlinky-enedis-step2.png)<br/>
+
+  ![connectlinky-enedis-step1](doc/connectlinky-enedis-step1.png)<br/>
+  ![connectlinky-enedis-step2](doc/connectlinky-enedis-step2.png)<br/>
 
 - To login to your Enedis Account
-![TempoGraph](doc/connectlinky-enedis-step2b.png)<br/>
+
+  ![connectlinky-enedis-step2b](doc/connectlinky-enedis-step2b.png)<br/>
 
 - To authorize data collection for your prmId. <br>
+
 If you have multiple linky on your account like me, you will have to repeat the procedure for each linky.
 Don't select the two linky in the same procedure, it will not work !
-![TempoGraph](doc/connectlinky-enedis-step2c.png)<br/>
+
+  ![connectlinky-enedis-step2c](doc/connectlinky-enedis-step2c.png)<br/>
 
 - Last, you will see this confirmation page if everything is everything is ok
-![TempoGraph](doc/connectlinky-enedis-step3.png)<br/>
+
+  ![connectlinky-enedis-step3](doc/connectlinky-enedis-step3.png)<br/>
 
 
 
