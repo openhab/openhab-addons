@@ -154,12 +154,20 @@ function retrieveToken()
 	<div style="background:linear-gradient(#faf3ff, #e8cbfd);padding:20px;margin:0px;display:inline-block; width:97%;align:center;">
 	<h3>Plugin Linky / Enedis pour Openhab</h3>
 	<br/>
+	
+	<div style="display:${cb.displayConfirmation}">
+		Vous avez autorisé l'accès pour le compteur Linky : ${prmId.Value}<br/>
+		Vous pouvez maintenant utiliser le plugin Linky avec Enedis.<br/>
+		${authorizedUser}
+	</div>
+	
+	<div style="display:${cb.displayError}">
+		Une erreur c'est produite:
+		${error}
+	</div>
+	
+	
 	<p>
-	Vous avez autorisé l'accès pour le compteur Linky : ${prmId.Value}
-	</p>
-	<p>
-	Vous pouvez maintenant utilisé le plugin dans Openhab.
-	</p>
 	<br/>
 	
 </body>

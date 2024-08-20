@@ -64,6 +64,9 @@ public class LinkyAuthServlet extends HttpServlet {
     private static final String KEY_PRMID = "prmId.Value";
     private static final String KEY_PRMID_OPTION = "prmId.Option";
     private static final String KEY_AUTHORIZED_USER = "authorizedUser";
+    private static final String KEY_CB_DISPLAY_CONFIRMATION = "cb.displayConfirmation";
+    private static final String KEY_CB_DISPLAY_ERROR = "cb.displayError";
+    private static final String KEY_CB_DISPLAY_INSTRUCTION = "cb.displayInstruction";
     private static final String KEY_ERROR = "error";
     private static final String KEY_PAGE_REFRESH = "pageRefresh";
 
@@ -126,7 +129,9 @@ public class LinkyAuthServlet extends HttpServlet {
         String servletBaseUrl = requestUrl != null ? requestUrl.toString() : "";
 
         String template = "";
-        if (servletBaseUrl.contains("enedis-step1")) {
+        if (servletBaseUrl.contains("index")) {
+            template = index;
+        } else if (servletBaseUrl.contains("enedis-step1")) {
             template = enedisStep1;
         } else if (servletBaseUrl.contains("enedis-step2")) {
             template = enedisStep2;
@@ -203,6 +208,9 @@ public class LinkyAuthServlet extends HttpServlet {
         replaceMap.put(KEY_AUTHORIZED_USER, "");
         replaceMap.put(KEY_ERROR, "");
         replaceMap.put(KEY_PAGE_REFRESH, "");
+        replaceMap.put(KEY_CB_DISPLAY_CONFIRMATION, "none");
+        replaceMap.put(KEY_CB_DISPLAY_ERROR, "none");
+        replaceMap.put(KEY_CB_DISPLAY_INSTRUCTION, "true");
 
         if (queryString != null) {
             final MultiMap<String> params = new MultiMap<>();
@@ -217,8 +225,14 @@ public class LinkyAuthServlet extends HttpServlet {
 
             if (!StringUtil.isBlank(reqError)) {
                 logger.debug("Linky redirected with an error: {}", reqError);
+                replaceMap.put(KEY_CB_DISPLAY_ERROR, "true");
+                replaceMap.put(KEY_CB_DISPLAY_CONFIRMATION, "none");
+                replaceMap.put(KEY_CB_DISPLAY_INSTRUCTION, "none");
                 replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, reqError));
             } else if (!StringUtil.isBlank(reqState)) {
+                replaceMap.put(KEY_CB_DISPLAY_ERROR, "none");
+                replaceMap.put(KEY_CB_DISPLAY_CONFIRMATION, "true");
+                replaceMap.put(KEY_CB_DISPLAY_INSTRUCTION, "none");
                 try {
                     replaceMap.put(KEY_AUTHORIZED_USER, String.format(HTML_USER_AUTHORIZED,
                             reqCode + " / " + apiBridgeHandler.authorize(servletBaseURL, reqState, reqCode)));
