@@ -21,17 +21,10 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class WebUserInfo {
-    public class UserProperties {
-        @SerializedName("av2_interne_id")
-        public String internId;
-        @SerializedName("av2_prenom")
-        public String firstName;
-        @SerializedName("av2_mail")
-        public String mail;
-        @SerializedName("av2_nom")
-        public String name;
-        @SerializedName("av2_infos_personnalisees")
-        public String personalInfo;
+
+    public record UserProperties(@SerializedName("av2_interne_id") String internId,
+            @SerializedName("av2_prenom") String firstName, @SerializedName("av2_mail") String mail,
+            @SerializedName("av2_nom") String name, @SerializedName("av2_infos_personnalisees") String personalInfo) {
     }
 
     public String username;

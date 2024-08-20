@@ -111,7 +111,7 @@ public class LinkyAuthServlet extends HttpServlet {
 
         if (url == null) {
             throw new FileNotFoundException(
-                    String.format("Cannot find '{}' - failed to initialize Linky servlet", templateName));
+                    String.format("Cannot find '%s' - failed to initialize Linky servlet", templateName));
         } else {
             try (InputStream inputStream = url.openStream()) {
                 return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);

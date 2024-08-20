@@ -27,7 +27,7 @@ public class ContactInfo {
     public static ContactInfo fromWebUserInfo(WebUserInfo webUserInfo) {
         ContactInfo result = new ContactInfo();
 
-        result.email = webUserInfo.userProperties.mail;
+        result.email = webUserInfo.userProperties.mail();
 
         return result;
     }
