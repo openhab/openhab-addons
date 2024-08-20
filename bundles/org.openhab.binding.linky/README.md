@@ -11,13 +11,13 @@ The binding will not provide these informations unless this step is ok.
 This new binding version is able to use multiple bridge to access the consumption data.
 You can use :
 
-- The EnedisWebBridge : this one will use the old Enedis API, base on the enedis web site to gather the data.
-- The MyElectricalDataBridge : this one will use the new Rest Enedis API. We will use the MyElectricalData proxy site to access the data.
-- The EnedisBridge : this one will also use the new Rest Enedis API, and will directly gather data from Enedis Site.
+- The enedis-web bridge : this one will use the old Enedis API, base on the enedis web site to gather the data.
+- The myelectricaldata bridge : this one will use the new Rest Enedis API. We will use the MyElectricalData proxy site to access the data.
+- The enedis bridge : this one will also use the new Rest Enedis API, and will directly gather data from Enedis Site.
 
 There is advantage and disadvantage for each method.
 
-- EnedisWebBridge is the old way to go.
+-  enedis-web bridge is the old way to go.
 
 ## Supported Things
 

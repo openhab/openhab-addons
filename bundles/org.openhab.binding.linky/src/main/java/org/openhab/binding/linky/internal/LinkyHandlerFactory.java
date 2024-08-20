@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linky.internal;
 
+import static org.openhab.binding.linky.internal.LinkyBindingConstants.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -100,24 +102,24 @@ public class LinkyHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
-        return LinkyBindingConstants.SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID);
+        return SUPPORTED_DEVICE_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
-        if (LinkyBindingConstants.THING_TYPE_API_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
+        if (THING_TYPE_API_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
             EnedisBridgeHandler handler = new EnedisBridgeHandler((Bridge) thing, this.httpClientFactory,
                     this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
-        } else if (LinkyBindingConstants.THING_TYPE_API_WEB_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
+        } else if (THING_TYPE_API_WEB_ENEDIS_BRIDGE.equals(thing.getThingTypeUID())) {
             EnedisWebBridgeHandler handler = new EnedisWebBridgeHandler((Bridge) thing, this.httpClientFactory,
                     this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
-        } else if (LinkyBindingConstants.THING_TYPE_API_MYELECTRICALDATA_BRIDGE.equals(thing.getThingTypeUID())) {
+        } else if (THING_TYPE_API_MYELECTRICALDATA_BRIDGE.equals(thing.getThingTypeUID())) {
             MyElectricalDataBridgeHandler handler = new MyElectricalDataBridgeHandler((Bridge) thing,
                     this.httpClientFactory, this.oAuthFactory, this.httpService, thingRegistry, componentContext, gson);
             return handler;
-        } else if (LinkyBindingConstants.THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
+        } else if (THING_TYPE_LINKY.equals(thing.getThingTypeUID())) {
             LinkyHandler handler = new LinkyHandler(thing, localeProvider);
             return handler;
         }

@@ -61,11 +61,6 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     }
 
     @Override
-    public void initialize() {
-        super.initialize();
-    }
-
-    @Override
     public String getClientId() {
         return config.clientId;
     }
@@ -77,7 +72,7 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public void dispose() {
-        logger.debug("Shutting down Netatmo API bridge handler.");
+        logger.debug("Shutting down Enedis bridge handler.");
 
         super.dispose();
     }

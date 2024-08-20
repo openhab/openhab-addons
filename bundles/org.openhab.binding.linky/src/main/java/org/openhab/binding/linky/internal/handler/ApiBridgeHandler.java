@@ -138,7 +138,6 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
             logger.debug("Acces token: {}", accessToken);
             return accessToken;
         } catch (RuntimeException | OAuthException | IOException e) {
-            // updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
             throw new LinkyException("Error during oAuth authorize :" + e.getMessage(), e);
         } catch (final OAuthResponseException e) {
             throw new LinkyException("\"Error during oAuth authorize :" + e.getMessage(), e);

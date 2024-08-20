@@ -20,11 +20,11 @@ package org.openhab.binding.linky.internal.dto;
 
 public class WebPrmInfo {
     public class Adresse {
-        public Object adresseLigneUn;
+        public String adresseLigneUn;
         public String adresseLigneDeux;
-        public Object adresseLigneTrois;
+        public String adresseLigneTrois;
         public String adresseLigneQuatre;
-        public Object adresseLigneCinq;
+        public String adresseLigneCinq;
         public String adresseLigneSix;
         public String adresseLigneSept;
     }

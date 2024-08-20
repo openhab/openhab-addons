@@ -49,9 +49,7 @@
 				<description>Authentication ID delivered after the captcha (see documentation).</description>
 			</parameter>
 		</config-description>
-
 	</bridge-type>
-
 
 	<bridge-type id="my-electrical-data">
 		<label>MyElectricalDataBridge</label>
@@ -66,7 +64,6 @@
 	</bridge-type>
 
 	<thing-type id="linky">
-
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="enedis"/>
 			<bridge-type-ref id="enedis-web"/>
@@ -81,7 +78,6 @@
 		</description>
 		<semantic-equipment-tag>WebService</semantic-equipment-tag>
 
-
 		<channel-groups>
 			<channel-group typeId="main" id="main"/>
 			<channel-group typeId="tempo" id="tempo"/>
@@ -91,9 +87,6 @@
 			<channel-group typeId="monthly" id="monthly"/>
 			<channel-group typeId="yearly" id="yearly"/>
 		</channel-groups>
-
-
-
 
 		<config-description>
 			<parameter name="prmId" type="text" required="true">
@@ -106,22 +99,19 @@
 					http://youopenhab/connectlinky)</description>
 			</parameter>
 		</config-description>
-
-
 	</thing-type>
-
 
 	<channel-group-type id="loadCurve">
 		<label>Load curve</label>
 		<channels>
 			<channel id="power" typeId="power">
-				<label>Load Curve power</label>
+				<label>Load Curve Power</label>
 			</channel>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="daily">
-		<label>Daily consumption</label>
+		<label>Daily Consumption</label>
 		<channels>
 			<channel id="yesterday" typeId="consumption">
 				<label>Yesterday Consumption</label>
@@ -136,12 +126,10 @@
 				<label>Consumption</label>
 			</channel>
 
-
 			<channel id="maxPower" typeId="power">
 				<label>Peak Value</label>
 				<description>Maximum power usage value</description>
 			</channel>
-
 
 			<channel id="power" typeId="power">
 				<label>Peak Value Yesterday</label>
@@ -173,7 +161,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="weekly">
-		<label>Weekly consumption</label>
+		<label>Weekly Consumption</label>
 		<channels>
 			<channel id="thisWeek" typeId="consumption">
 				<label>This Week Consumption</label>
@@ -195,7 +183,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="monthly">
-		<label>Monthly consumption</label>
+		<label>Monthly Consumption</label>
 		<channels>
 			<channel id="thisMonth" typeId="consumption">
 				<label>This Month Consumption</label>
@@ -217,7 +205,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="yearly">
-		<label>Yearly consumption</label>
+		<label>Yearly Consumption</label>
 		<channels>
 			<channel id="thisYear" typeId="consumption">
 				<label>This Year Consumption</label>
@@ -242,20 +230,19 @@
 		<label>Tempo</label>
 		<channels>
 			<channel id="tempoInfoToday" typeId="tempoValue">
-				<label>Tempo Today color</label>
+				<label>Tempo Today Color</label>
 			</channel>
 			<channel id="tempoInfoTomorrow" typeId="tempoValue">
-				<label>Tempo Today color</label>
+				<label>Tempo Today Color</label>
 			</channel>
 			<channel id="tempoInfoTimeSeries" typeId="tempoValue">
-				<label>Tempo day information</label>
+				<label>Tempo Day Information</label>
 			</channel>
 		</channels>
 	</channel-group-type>
 
 	<channel-group-type id="main">
 		<label>Main</label>
-
 		<channels>
 			<channel id="identity" typeId="info">
 				<label>Identity</label>
@@ -323,7 +310,7 @@
 
 	<channel-type id="tempoValue">
 		<item-type>Number</item-type>
-		<label>Tempo color information</label>
+		<label>Tempo Color Information</label>
 		<description>This status describes the tempo color of a day.</description>
 		<state>
 			<options>
@@ -349,7 +336,6 @@
 		<state readOnly="true" pattern="%1$tF"/>
 	</channel-type>
 
-
 	<channel-type id="consumption">
 		<item-type>Number:Energy</item-type>
 		<label>Total Consumption</label>
@@ -371,6 +357,4 @@
 		<category>time</category>
 		<state readOnly="true"/>
 	</channel-type>
-
-
 </thing:thing-descriptions>
