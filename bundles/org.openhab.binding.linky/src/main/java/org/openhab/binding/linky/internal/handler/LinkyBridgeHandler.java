@@ -63,9 +63,9 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
     protected final EnedisHttpApi enedisApi;
     protected final ThingRegistry thingRegistry;
 
-    protected final LinkyConfiguration config;
     protected final Gson gson;
 
+    protected @Nullable LinkyConfiguration config;
     protected boolean connected = false;
 
     private static final int REQUEST_BUFFER_SIZE = 8000;
@@ -104,8 +104,6 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
 
         this.enedisApi = new EnedisHttpApi(this, gson, this.httpClient);
 
-        config = getConfigAs(LinkyConfiguration.class);
-
         updateStatus(ThingStatus.UNKNOWN);
     }
 
@@ -116,6 +114,8 @@ public abstract class LinkyBridgeHandler extends BaseBridgeHandler {
     @Override
     public synchronized void initialize() {
         logger.debug("Initializing Linky API bridge handler.");
+
+        config = getConfigAs(LinkyConfiguration.class);
 
         updateStatus(ThingStatus.UNKNOWN);
 
