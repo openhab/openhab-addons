@@ -15,6 +15,7 @@ package org.openhab.binding.linky.internal.handler;
 import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.linky.internal.LinkyConfiguration;
 import org.openhab.binding.linky.internal.LinkyException;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthFactory;
@@ -62,12 +63,20 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public String getClientId() {
-        return config.clientId;
+        LinkyConfiguration lcConfig = config;
+        if (lcConfig != null) {
+            return lcConfig.clientId;
+        }
+        return "";
     }
 
     @Override
     public String getClientSecret() {
-        return config.clientSecret;
+        LinkyConfiguration lcConfig = config;
+        if (lcConfig != null) {
+            return lcConfig.clientSecret;
+        }
+        return "";
     }
 
     @Override
