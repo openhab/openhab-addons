@@ -22,6 +22,5 @@ import java.util.LinkedHashMap;
  */
 
 public class TempoResponse extends LinkedHashMap<String, String> {
-    @java.io.Serial
     private static final long serialVersionUID = 362498820763181264L;
 }

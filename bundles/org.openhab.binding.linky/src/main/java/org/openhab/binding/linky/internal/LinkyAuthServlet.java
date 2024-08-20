@@ -69,6 +69,7 @@ public class LinkyAuthServlet extends HttpServlet {
     private static final String KEY_CB_DISPLAY_INSTRUCTION = "cb.displayInstruction";
     private static final String KEY_ERROR = "error";
     private static final String KEY_PAGE_REFRESH = "pageRefresh";
+    private static final String TEMPLATE_PATH = "templates/";
 
     private final Logger logger = LoggerFactory.getLogger(LinkyAuthServlet.class);
     private final String index;
@@ -78,8 +79,6 @@ public class LinkyAuthServlet extends HttpServlet {
     private final String myelectricaldataStep1;
     private final String myelectricaldataStep2;
     private final String myelectricaldataStep3;
-
-    private static final String TEMPLATE_PATH = "templates/";
 
     private ApiBridgeHandler apiBridgeHandler;
 
@@ -239,7 +238,7 @@ public class LinkyAuthServlet extends HttpServlet {
                 try {
                     replaceMap.put(KEY_AUTHORIZED_USER, String.format(HTML_USER_AUTHORIZED,
                             reqCode + " / " + apiBridgeHandler.authorize(servletBaseURL, reqState, reqCode)));
-                } catch (RuntimeException e) {
+                } catch (LinkyException e) {
                     logger.debug("Exception during authorizaton: ", e);
                     replaceMap.put(KEY_ERROR, String.format(HTML_ERROR, e.getMessage()));
                 }
