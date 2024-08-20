@@ -170,7 +170,10 @@ public class LinkyAuthServlet extends HttpServlet {
             }
 
             final MultiMap<String> params = new MultiMap<>();
-            UrlEncoded.decodeTo(req.getQueryString(), params, StandardCharsets.UTF_8.name());
+            String queryString = req.getQueryString();
+            if (queryString != null) {
+                UrlEncoded.decodeTo(queryString, params, StandardCharsets.UTF_8.name());
+            }
             final String usagePointId = params.getString("usage_point_id");
             final String code = params.getString("code");
 
@@ -181,7 +184,7 @@ public class LinkyAuthServlet extends HttpServlet {
             replaceMap.put(KEY_REDIRECT_URI, servletBaseUrl);
             replaceMap.put(KEY_RETRIEVE_TOKEN_URI, servletBaseUrl + "?state=OK");
 
-            String authorizeUri = apiBridgeHandler.formatAuthorizationUrl(servletBaseUrl);
+            String authorizeUri = apiBridgeHandler.formatAuthorizationUrl("");
             replaceMap.put(KEY_AUTHORIZE_URI, authorizeUri);
             resp.getWriter().append(replaceKeysFromMap(template, replaceMap));
             resp.getWriter().close();
