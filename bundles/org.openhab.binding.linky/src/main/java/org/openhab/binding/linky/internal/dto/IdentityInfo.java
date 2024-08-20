@@ -29,8 +29,8 @@ public class IdentityInfo {
     public static IdentityInfo fromWebUserInfo(WebUserInfo webUserInfo) {
         IdentityInfo result = new IdentityInfo();
 
-        result.firstname = webUserInfo.userProperties.firstName;
-        result.lastname = webUserInfo.userProperties.name;
+        result.firstname = webUserInfo.userProperties.firstName();
+        result.lastname = webUserInfo.userProperties.name();
         result.title = "";
 
         return result;
