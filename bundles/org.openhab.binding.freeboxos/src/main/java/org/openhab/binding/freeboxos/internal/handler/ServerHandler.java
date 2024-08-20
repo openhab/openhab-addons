@@ -192,10 +192,8 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
             updateRateBandwidth(status.rateUp(), status.bandwidthUp(), "up");
             updateRateBandwidth(status.rateDown(), status.bandwidthDown(), "down");
 
-            updateChannelQuantity(GROUP_CONNECTION_STATUS, BYTES_UP, new QuantityType<>(status.bytesUp(), OCTET),
-                    GIBIOCTET);
-            updateChannelQuantity(GROUP_CONNECTION_STATUS, BYTES_DOWN, new QuantityType<>(status.bytesDown(), OCTET),
-                    GIBIOCTET);
+            updateChannelQuantity(GROUP_CONNECTION_STATUS, BYTES_UP, status.bytesUp(), OCTET);
+            updateChannelQuantity(GROUP_CONNECTION_STATUS, BYTES_DOWN, status.bytesDown(), OCTET);
         }
         if (anyChannelLinked(GROUP_FTTH,
                 Set.of(SFP_PRESENT, SFP_ALIM, SFP_POWER, SFP_SIGNAL, SFP_LINK, SFP_PWR_TX, SFP_PWR_RX))) {
@@ -218,14 +216,12 @@ public class ServerHandler extends ApiConsumerHandler implements FreeDeviceIntf 
     }
 
     private void updateRateBandwidth(long rate, long bandwidth, String orientation) {
-        QuantityType<?> rateUp = new QuantityType<>(rate * 8, Units.BIT_PER_SECOND);
+        QuantityType<?> rateUp = new QuantityType<>(rate * 8, BIT_PER_SECOND);
         QuantityType<?> bandwidthUp = new QuantityType<>(bandwidth, BIT_PER_SECOND);
-        updateChannelQuantity(GROUP_CONNECTION_STATUS, RATE + "-" + orientation, rateUp, KILOBIT_PER_SECOND);
-        updateChannelQuantity(GROUP_CONNECTION_STATUS, BW + "-" + orientation, bandwidthUp, KILOBIT_PER_SECOND);
+        updateChannelQuantity(GROUP_CONNECTION_STATUS, RATE + "-" + orientation, rateUp);
+        updateChannelQuantity(GROUP_CONNECTION_STATUS, BW + "-" + orientation, bandwidthUp);
         updateChannelQuantity(GROUP_CONNECTION_STATUS, PCT_BW + "-" + orientation,
-                !bandwidthUp.equals(QuantityType.ZERO) ? rateUp.multiply(HUNDRED).divide(bandwidthUp)
-                        : QuantityType.ZERO,
-                Units.PERCENT);
+                !bandwidthUp.equals(QuantityType.ZERO) ? rateUp.divide(bandwidthUp) : QuantityType.ZERO, PERCENT);
     }
 
     @Override
