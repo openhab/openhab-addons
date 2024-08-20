@@ -129,7 +129,7 @@ public class LinkyBindingConstants {
 
     public static final String ENEDIS_ACCOUNT_URL_PREPROD = "https://ext.prod-sandbox.api.enedis.fr/";
     public static final String ENEDIS_AUTHORIZE_URL_PREPROD = ENEDIS_ACCOUNT_URL_PROD
-            + "dataconnect/v1/oauth2/authorize";
+            + "dataconnect/v1/oauth2/authorize?duration=P36M";
     public static final String ENEDIS_API_TOKEN_URL_PREPROD = ENEDIS_ACCOUNT_URL_PREPROD + "oauth2/v3/token";
 
     // List of Linky services related urls, information
