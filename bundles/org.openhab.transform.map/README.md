@@ -1,15 +1,30 @@
 # Map Transformation Service
 
-Transforms the input by mapping it to another string. It expects the mappings to be read from a file which is stored under the `transform` folder.
-The file name must have the `.map` extension. 
+Transforms the input by mapping it to another string.
 
-This file should be in property syntax, i.e. simple lines with "key=value" pairs. 
-The file format is documented [here](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Properties.html#load(java.io.Reader)).
-To organize the various transformations one might use subfolders.
+## Map Syntax
 
-A default value can be provided if no matching entry is found by using "=value" syntax. 
+The mapping is performed based on "key=value" pairs.
+When the input matches a `key` in the mapping table, the corresponding `value` is given as the output of the transformation.
+
+The format of the mapping table is documented [here](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Properties.html#load(java.io.Reader)).
+
+A default value can be provided if no matching entry is found by using "=value" syntax.
 Defining this default value using `_source_` would then return the non transformed input string.
 
+## File-based Map
+
+The mapping table can be stored in a file under the `transform` folder.
+The file name must have the `.map` extension.
+
+To organize the various transformations one might use subfolders.
+
+## Inline Map
+
+Instead of providing the file name from which to load, the mapping table can be specified inline by prefixing it with the `|` character.
+The "key=value" pairs are separated with a semicolon (`;`) or a newline character.
+
+For example, the following map function translates open/closed to ON/OFF: `|open=ON; closed=OFF`
 
 ## Example
 
@@ -32,7 +47,6 @@ white\ space=using escape
 | `key`         | `value`        |
 | `white space` | `using escape` |
 | `anything`    | `default`      |
-
 
 ## Usage as a Profile
 
