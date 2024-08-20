@@ -71,9 +71,9 @@ public class FreeboxOsBindingConstants {
     public static final Set<ThingTypeUID> THINGS_TYPES_UIDS = Set.of(THING_TYPE_FXS, THING_TYPE_DECT, THING_TYPE_CALL,
             THING_TYPE_HOST, THING_TYPE_VM, THING_TYPE_PLAYER, THING_TYPE_ACTIVE_PLAYER, THING_TYPE_DELTA,
             THING_TYPE_REVOLUTION, THING_TYPE_REPEATER, THING_TYPE_WIFI_HOST, THING_TYPE_FREEPLUG);
-    public static final Set<ThingTypeUID> HOME_TYPES_UIDS = Set.of(Category.BASIC_SHUTTER.getThingTypeUID(),
-            Category.SHUTTER.getThingTypeUID(), Category.KFB.getThingTypeUID(), Category.CAMERA.getThingTypeUID(),
-            Category.ALARM.getThingTypeUID());
+    public static final Set<ThingTypeUID> HOME_TYPES_UIDS = Set.of(Category.BASIC_SHUTTER.thingTypeUID,
+            Category.SHUTTER.thingTypeUID, Category.KFB.thingTypeUID, Category.CAMERA.thingTypeUID,
+            Category.ALARM.thingTypeUID, Category.PIR.thingTypeUID);
 
     protected static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(BRIDGE_TYPE_UIDS, THINGS_TYPES_UIDS, HOME_TYPES_UIDS).flatMap(Set::stream).collect(Collectors.toSet());
@@ -175,20 +175,30 @@ public class FreeboxOsBindingConstants {
     public static final String XDSL_UPTIME = "uptime";
 
     // Home channels
+    public static final String TIMESTAMP_POSTFIX = "-timestamp";
+
     public static final String KEYFOB_ENABLE = "enable";
+    public static final String KEYFOB_PUSHED = "pushed";
+    public static final String KEYFOB_PUSHED_UPDATE = KEYFOB_PUSHED + TIMESTAMP_POSTFIX;
+
     public static final String NODE_BATTERY = "battery";
     public static final String SHUTTER_POSITION = "position-set";
     public static final String SHUTTER_STOP = "stop";
     public static final String BASIC_SHUTTER_STATE = "state";
     public static final String BASIC_SHUTTER_UP = "up";
     public static final String BASIC_SHUTTER_DOWN = "down";
-    // public static final String BASIC_SHUTTER_CMD = "basic-shutter";
     public static final String ALARM_PIN = "pin";
     public static final String ALARM_SOUND = "sound";
     public static final String ALARM_VOLUME = "volume";
     public static final String ALARM_TIMEOUT1 = "timeout1";
     public static final String ALARM_TIMEOUT2 = "timeout2";
     public static final String ALARM_TIMEOUT3 = "timeout3";
+    public static final String ALARM_STATE = "state";
+
+    public static final String PIR_TAMPER = "tamper";
+    public static final String PIR_TRIGGER = "trigger";
+    public static final String PIR_TAMPER_UPDATE = PIR_TAMPER + TIMESTAMP_POSTFIX;
+    public static final String PIR_TRIGGER_UPDATE = PIR_TRIGGER + TIMESTAMP_POSTFIX;
 
     public static final Set<Command> TRUE_COMMANDS = Set.of(OnOffType.ON, UpDownType.UP, OpenClosedType.OPEN);
     public static final Set<Class<?>> ON_OFF_CLASSES = Set.of(OnOffType.class, UpDownType.class, OpenClosedType.class);
