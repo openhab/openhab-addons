@@ -32,9 +32,9 @@ This binding does not provide discovery service.
 
 ## Binding Configuration
 
-To retrieve data, Linky thing will be need to be linked to a LinkyBridge. LinkyBridge can be today select between EnedisWebBridge, MyElectricalDataBridge and EnedisBridge.
+To retrieve data, Linky thing will be need to be linked to a LinkyBridge. LinkyBridge can be today select between enedis-web, myelectricaldata and enedis.
 
-If you select EnedisWebBridge, you will need :
+If you select enedis-web bridge, you will need :
 
 - To create an Enedis account : https://mon-compte-client.enedis.fr/
 - To fill the bridge with you information : username, password, and also InternalAuthId.
@@ -60,19 +60,60 @@ Instructions given for Firefox :
 1. Repeat steps 1, 2. You should arrive directly on step 5, then open the developer tool window (F12) and select "Stockage" tab. In the "Cookies" entry, select "https://mon-compte-enedis.fr". You'll find an entry named "internalAuthId", copy this value in your openHAB configuration.
 
 
-If you select MyElectricalDataBridge, you will need :
+If you select MyElectricalData bridge, you will need :
 
 - To create an Enedis account : https://mon-compte-client.enedis.fr/
-- To do a consent request on the MyElectricalData site : https://www.myelectricaldata.fr/
-- To fill the token provided by MyElectricalData into your Linky things config.
 
-These steps can also be done using the connectlinky page available from your openhab: http://localhost:8080/connectlinky.
-You're wil have:
+Follow these steps to initialize the token. you can access the procedure from the connectlinky page available from your openhab: https://home.myopenhab.org/connectlinky/index.
 
-- to select your prmId from the combobox.
-- to click the "Authorized Bridge".
-- to follow the authorized process on the enedis page : please select only one prmId there as the token is specific to each Linky.
-- then go back to the /connectlinky page, and click on the "Retrieve token" link to fill the Linky things with the token.
+- to select your provider 
+![TempoGraph](doc/connectlinky-index.png)<br/>
+
+- To follow the two first step wizard, and click on the "access Enedis" button
+![TempoGraph](doc/connectlinky-myelectricaldata-step1.png)<br/>
+![TempoGraph](doc/connectlinky-myelectricaldata-step2.png)<br/>
+
+- To login to your Enedis Account
+![TempoGraph](doc/connectlinky-myelectricaldata-step2b.png)<br/>
+
+- To authorize data collection for your prmId. <br>
+If you have multiple linky on your account like me, you will have to repeat the procedure for each linky.
+Don't select the two linky in the same procedure, it will not work !
+![TempoGraph](doc/connectlinky-myelectricaldata-step2c.png)<br/>
+
+- You will then be redirect to a confirmation page on MyElectricalData web site
+![TempoGraph](doc/connectlinky-myelectricaldata-step2d.png)<br/>
+
+- Go back to your openhab with step3 : "connectlinky/myelectricaldata-step3", then select your prmId in combobox, and click "Retrieve Token"
+![TempoGraph](doc/connectlinky-myelectricaldata-step3.png)<br/>
+
+- Last, you will see this confirmation page if everything is everything is ok
+![TempoGraph](doc/connectlinky-myelectricaldata-step3b.png)<br/>
+
+
+If you select enedis bridge, you will need :
+- To create an Enedis account : https://mon-compte-client.enedis.fr/
+
+Follow these steps to initialize the token. you can access the procedure from the connectlinky page available from your openhab: https://home.myopenhab.org/connectlinky/index.
+
+- to select your provider 
+![TempoGraph](doc/enedis-index.png)<br/>
+
+- To follow the two first step wizard, and click on the "access Enedis" button
+![TempoGraph](doc/connectlinky-enedis-step1.png)<br/>
+![TempoGraph](doc/connectlinky-enedis-step2.png)<br/>
+
+- To login to your Enedis Account
+![TempoGraph](doc/connectlinky-enedis-step2b.png)<br/>
+
+- To authorize data collection for your prmId. <br>
+If you have multiple linky on your account like me, you will have to repeat the procedure for each linky.
+Don't select the two linky in the same procedure, it will not work !
+![TempoGraph](doc/connectlinky-enedis-step2c.png)<br/>
+
+- Last, you will see this confirmation page if everything is everything is ok
+![TempoGraph](doc/connectlinky-enedis-step3.png)<br/>
+
 
 
 ## Thing Configuration
