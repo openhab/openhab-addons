@@ -167,10 +167,15 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
 
     @Override
     protected synchronized void connectionInit() throws LinkyException {
-        logger.debug("Starting login process for user : {}", config.username);
+        LinkyConfiguration lcConfig = config;
+        if (lcConfig == null) {
+            return;
+        }
+
+        logger.debug("Starting login process for user : {}", lcConfig.username);
 
         try {
-            enedisApi.addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, config.internalAuthId);
+            enedisApi.addCookie(LinkyConfiguration.INTERNAL_AUTH_ID, lcConfig.internalAuthId);
             logger.debug("Step 1 : getting authentification");
             String data = enedisApi.getData(URL_ENEDIS_AUTHENTICATE);
 
@@ -207,13 +212,13 @@ public class EnedisWebBridgeHandler extends LinkyBridgeHandler {
 
             AuthData authData = gson.fromJson(result.getContentAsString(), AuthData.class);
             if (authData == null || authData.callbacks.size() < 2 || authData.callbacks.get(0).input.isEmpty()
-                    || authData.callbacks.get(1).input.isEmpty() || !config.username
+                    || authData.callbacks.get(1).input.isEmpty() || !lcConfig.username
                             .equals(Objects.requireNonNull(authData.callbacks.get(0).input.get(0)).valueAsString())) {
                 logger.debug("auth1 - invalid template for auth data: {}", result.getContentAsString());
                 throw new LinkyException("Authentication error, the authentication_cookie is probably wrong");
             }
 
-            authData.callbacks.get(1).input.get(0).value = config.password;
+            authData.callbacks.get(1).input.get(0).value = lcConfig.password;
             logger.debug("Step 4 : auth2 - send the auth data");
             result = httpClient.POST(authenticateUrl).header(HttpHeader.CONTENT_TYPE, "application/json")
                     .header("X-NoSession", "true").header("X-Password", "anonymous")
