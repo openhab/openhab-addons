@@ -45,7 +45,7 @@ import org.osgi.service.component.annotations.Reference;
 @NonNullByDefault
 @Component(configurationPid = "binding.flume", service = ThingHandlerFactory.class)
 public class FlumeHandlerFactory extends BaseThingHandlerFactory {
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CLOUD, THING_TYPE_DEVICE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_CLOUD, THING_TYPE_METER);
 
     private final HttpClientFactory httpClientFactory;
     private final TranslationProvider i18nProvider;
@@ -73,7 +73,7 @@ public class FlumeHandlerFactory extends BaseThingHandlerFactory {
         if (THING_TYPE_CLOUD.equals(thingTypeUID)) {
             return new FlumeBridgeHandler((Bridge) thing, systemOfUnits, this.httpClientFactory.getCommonHttpClient(),
                     i18nProvider, localeProvider);
-        } else if (THING_TYPE_DEVICE.equals(thingTypeUID)) {
+        } else if (THING_TYPE_METER.equals(thingTypeUID)) {
             return new FlumeDeviceHandler(thing);
         }
 

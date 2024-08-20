@@ -214,13 +214,13 @@ public class FlumeDeviceHandler extends BaseThingHandler {
     }
 
     public void handleApiException(Exception e) {
-        if (e instanceof FlumeApiException) {
-            if (((FlumeApiException) e).isConfigurationIssue()) {
+        if (e instanceof FlumeApiException flumeApiException) {
+            if (flumeApiException.isConfigurationIssue()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        e.getLocalizedMessage());
+                        flumeApiException.getLocalizedMessage());
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        e.getLocalizedMessage());
+                        flumeApiException.getLocalizedMessage());
             }
         } else if (e instanceof IOException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR, e.getLocalizedMessage());

@@ -16,6 +16,7 @@
 			</parameter>
 			<parameter name="password" type="text">
 				<label>Flume Password</label>
+				<context>password</context>
 				<description>Flume cloud portal password</description>
 				<required>true</required>
 			</parameter>
@@ -26,6 +27,7 @@
 			</parameter>
 			<parameter name="clientSecret" type="text">
 				<label>Flume Client Secret</label>
+				<context>password</context>
 				<description>Visit Flume cloud portal to get client secret</description>
 				<required>true</required>
 			</parameter>

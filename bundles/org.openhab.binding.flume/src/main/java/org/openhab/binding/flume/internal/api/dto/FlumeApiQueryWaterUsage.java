@@ -30,7 +30,8 @@ public class FlumeApiQueryWaterUsage {
     public LocalDateTime sinceDateTime;
     @SerializedName("until_datetime")
     public LocalDateTime untilDateTime;
-    public String tz;
+    @SerializedName("tz")
+    public String timeZone;
     public FlumeApi.BucketType bucket;
     @SerializedName("device_id")
     public String[] deviceId;

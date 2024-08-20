@@ -12,13 +12,12 @@
  */
 package org.openhab.binding.flume.internal.handler;
 
-import static org.openhab.binding.flume.internal.FlumeBindingConstants.THING_TYPE_DEVICE;
-
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
@@ -40,7 +39,6 @@ import org.openhab.core.i18n.LocaleProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
@@ -126,8 +124,8 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
     public void initialize() {
         config = getConfigAs(FlumeBridgeConfig.class);
 
-        if (config.clientId.isEmpty() | config.clientSecret.isEmpty() || config.password.isEmpty()
-                || config.username.isEmpty()) {
+        if (config.clientId.isBlank() | config.clientSecret.isBlank() || config.password.isBlank()
+                || config.username.isBlank()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
                     "@text/offline.cloud-configuration-error");
             return;
@@ -212,30 +210,24 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
 
     @Nullable
     public FlumeDeviceHandler getFlumeDeviceHandler(String id) {
-        List<Thing> things = getThing().getThings();
-
-        for (Thing t : things) {
-            if (!t.getThingTypeUID().equals(THING_TYPE_DEVICE)) {
-                continue;
-            }
-
-            FlumeDeviceHandler handler = (FlumeDeviceHandler) t.getHandler();
-            if (handler != null && handler.getId().equals(id)) {
-                return handler;
-            }
-        }
-
-        return null;
+        //@formatter:off
+        return getThing().getThings().stream()
+            .map(t -> (t.getHandler() instanceof FlumeDeviceHandler handler) ? handler : null )
+            .filter(Objects::nonNull)
+            .filter(h -> h.getId().equals(id))
+            .findFirst()
+            .orElse(null);
+        //@formatter:on
     }
 
     public void handleApiException(Exception e) {
-        if (e instanceof FlumeApiException) {
-            if (((FlumeApiException) e).isConfigurationIssue()) {
+        if (e instanceof FlumeApiException flumeApiException) {
+            if (flumeApiException.isConfigurationIssue()) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.CONFIGURATION_ERROR,
-                        e.getLocalizedMessage());
+                        flumeApiException.getLocalizedMessage());
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR,
-                        e.getLocalizedMessage());
+                        flumeApiException.getLocalizedMessage());
             }
         } else if (e instanceof IOException) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR, e.getLocalizedMessage());
@@ -273,21 +265,10 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
             refreshDevices(true);
         }
 
-        List<Thing> things = getThing().getThings();
-
-        for (Thing t : things) {
-            if (!t.getThingTypeUID().equals(THING_TYPE_DEVICE)) {
-                continue;
-            }
-
-            @Nullable
-            FlumeDeviceHandler handler = (FlumeDeviceHandler) t.getHandler();
-            if (handler == null) {
-                return;
-            }
-
-            handler.queryUsage();
-        }
+        //@formatter:off
+        getThing().getThings().stream()
+            .forEach(t -> { if(t.getHandler() instanceof FlumeDeviceHandler handler) { handler.queryUsage(); } });
+        //@formatter:on
     }
 
     public @Nullable String getLocaleString(String key) {
@@ -299,6 +280,7 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
         ScheduledFuture<?> localPollingJob = pollingJob;
         if (localPollingJob != null) {
             localPollingJob.cancel(true);
+            pollingJob = null;
         }
     }
 }

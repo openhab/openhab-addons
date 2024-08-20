@@ -5,16 +5,17 @@ This binding will interface with the cloud API to retrieve water usage from your
 ## Introduction
 
 The Cloud Connector is required as a "bridge" to interface to the cloud service from Flume.
-While the Flume API supports a rich querying of historical usage data, this binding only retrieves the cumulative water used and instantaneous water used, thus relying on Openhab's rich persistence services for exploring historical values.
+While the Flume API supports a rich querying of historical usage data, this binding only retrieves the cumulative water used and instantaneous water used, thus relying on openHAB's rich persistence services for exploring historical values.
+The binding does support querying historical data through the use of the Rule Action.
 
 ## Supported Things
 
 This binding supports the following things:
 
-| thing                     | type          | description                  |
-|----------                 |--------       |------------------------------|
-| Flume Cloud Connector     | Bridge        | This represents the cloud account to interface with the Flume API.  |
-| Flume Meter Device        | Device        | This interfaces to a specific Flume water monitor associated with the account. |
+| Thing                     | id            | Type          | Description                  |
+|----------                 |---------      |--------       |------------------------------|
+| Flume Cloud Connector     | cloud         | Bridge        | This represents the cloud account to interface with the Flume API.  |
+| Flume Meter Device        | meter-device  | Thing         | This interfaces to a specific Flume water monitor associated with the account. |
 
 This binding should work with multiple Flume monitors associated with the account, however it is currently only tested with a single device.
 
@@ -28,31 +29,31 @@ The only configuration required is to create a Flume Cloud Connector thing and f
 The client id and client secret can be found under Settings/API access from the [Flume portal online](https://portal.flumewater.com/settings).
 Note, there is a rate limit of 120 queries per hour imposed by Flume so use caution when selecting the Refresh Interfacl.
 
-| Name                          | Type      | Description                                                                           | Default | Required | Advanced |
-|-------                        |---------  |---------                                                                              |-------  |------    |-----     |
-| Flume Username                | text      | Username to access Flume cloud                                                        | N/A     | yes      | no       |
-| Flume Password                | text      | Password to access Flume cloud                                                        | N/A     | yes      | no       |
-| Flume Client ID               | text      | ID retrieved from Flume cloud                                                         | N/A     | yes      | no       |
-| Flume Client Secret           | text      | Secret retrieved from Flume cloud                                                     | N/A     | yes      | no       |
-| Instantaneous Refresh Interval| integer   | Polling interval (minutes) for instantaneous usage (rate limited to 120 queries/sec)  | 1       | no       | yes      |
-| Cumulative Refresh Interval   | integer   | Polling interval (minutes) for cumulative usage (rate-limited with above)             | 5       | no       | yes      |
+| Name                           | id                            | Type      | Description                                                                           | Default | Required | Advanced |
+|-------                         |------                         |---------  |---------                                                                              |-------  |------    |-----     |
+| Flume Username                 | username                      | text      | Username to access Flume cloud                                                        | N/A     | yes      | no       |
+| Flume Password                 | password                      | text      | Password to access Flume cloud                                                        | N/A     | yes      | no       |
+| Flume Client ID                | clientId                      | text      | ID retrieved from Flume cloud                                                         | N/A     | yes      | no       |
+| Flume Client Secret            | clientSecret                  | text      | Secret retrieved from Flume cloud                                                     | N/A     | yes      | no       |
+| Instantaneous Refresh Interval | refreshIntervalInstantaneous  | integer   | Polling interval (minutes) for instantaneous usage (rate limited to 120 queries/sec)  | 1       | no       | yes      |
+| Cumulative Refresh Interval    | refreshIntervalCumulative     | integer   | Polling interval (minutes) for cumulative usage (rate-limited with above)             | 5       | no       | yes      |
 
 ## Flume Meter Device Configuration
 
-| Name                  | Type      | Description                                | Default   | Required  | Advanced |
-|-------                |---------  |---------                                   |-------    |------     |-----     |
-| ID                    | text      | ID of the Flume device                     | N/A       | yes       | no       |
+| Name                  | id        | Type      | Description                                | Default   | Required  | Advanced |
+|-------                |---------  |------     |---------                                   |-------    |------     |-----     |
+| ID                    | id        | text      | ID of the Flume device                     | N/A       | yes       | no       |
 
 ## Flume Meter Device Channels
 
-| Channel               | Type                      | Read/Write | Description |
-|----------             |--------                   |--------    |
-| Instant Water Usage   | Number:VolumetricFlowRate | R          | Flow rate of water over the last minute  |
-| Cumulative Used       | Number:Volume             | R          | Total volume of water used since the beginning of Flume install |
-| Battery Level         | Number:Dimensionless      | R          | Estimate of percent of remaining battery level |
-| Low Battery           | Switch                    | R          | Indicator of low battery level |
-| Last Seen             | DateTime                  | R          | Date/Time when meter was last seen on the network |
-| Usage Alert           | Trigger                   | n/a        | Trigger channel for usage alert notification | 
+| Channel               | id                | Type                      | Read/Write | Description |
+|----------             |--------           |--------                   |--------    |
+| Instant Water Usage   | instant-usage     | Number:VolumetricFlowRate | R          | Flow rate of water over the last minute  |
+| Cumulative Used       | cumulative-usage  | Number:Volume             | R          | Total volume of water used since the beginning of Flume install |
+| Battery Level         | battery-level     | Number:Dimensionless      | R          | Estimate of percent of remaining battery level |
+| Low Battery           | low-battery       | Switch                    | R          | Indicator of low battery level |
+| Last Seen             | last-seen         | DateTime                  | R          | Date/Time when meter was last seen on the network |
+| Usage Alert           | usage-alert       | Trigger                   | n/a        | Trigger channel for usage alert notification | 
 
 ## Full Example
 
@@ -62,27 +63,26 @@ Please note that the device meter ID is only available through the API and not a
 When the Bridge device is first created, there will be a log message with the ID of the discovered device which can be used in further configuring the device via the text files.
 
 ```
-Bridge flume:cloud:cloudconnector [ username="xxx", password="xxx",
-    clientId="xxx", clientSecret="xxx" ] {
+Bridge flume:cloud:cloudconnector [ username="xxx", password="xxx", clientId="xxx", clientSecret="xxx" ] {
     
-    device meter [ id="xxx" ]
+    meter-device meter [ id="xxx" ]
 }
 ```
 
 ### Item Configuration
 
 ```
-Number:VolumetricFlowRate     InstantUsage     "Instant Usage"         { channel = "flume:device:cloud:meter:instantUsage" }
-Number:Volume                 CumulativeUsed   "Cumulative Used"       { channel = "flume:device:cloud:meter:cumulativeUsage" }
-Number:Dimensionless          BatteryLevel     "Battery Level"         { channel = "flume:device:cloud:meter:batteryLevel" }   
-DateTime                      LastSeen         "Last Seen"             { channel = "flume:device:cloud:meter:lastSeen" }
-Switch                        LowPower         "Battery Low Power"     { channel = "flume:device:cloud:meter:lowBattery" }   
+Number:VolumetricFlowRate     InstantUsage     "Instant Usage"         { channel = "flume:meter-device:1:meter:instant-usage" }
+Number:Volume                 CumulativeUsed   "Cumulative Used"       { channel = "flume:meter-device:1:meter:cumulative-usage" }
+Number:Dimensionless          BatteryLevel     "Battery Level"         { channel = "flume:meter-device:1:meter:battery-level" }   
+DateTime                      LastSeen         "Last Seen"             { channel = "flume:meter-device:1:meter:last-seen" }
+Switch                        LowPower         "Battery Low Power"     { channel = "flume:meter-device:1:meter:low-battery" }  
 
 ```
 
 ### Rules
 
-```
+```java
 rule "Flume Usage Alert"
 when
     Channel 'flume:device:cloud:meter:usageAlert' triggered
@@ -95,7 +95,7 @@ end
 
 There is an action where you can query the Flume Cloud for water usage as shown in the blow example:
 
-```
+```java
 val flumeActions = getActions("flume", "flume:device:cloud:meter")
 
 if(null === flumeActions) {

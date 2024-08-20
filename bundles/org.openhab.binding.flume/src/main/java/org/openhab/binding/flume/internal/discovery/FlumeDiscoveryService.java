@@ -36,7 +36,7 @@ import org.osgi.service.component.annotations.ServiceScope;
 @NonNullByDefault
 public class FlumeDiscoveryService extends AbstractThingHandlerDiscoveryService<FlumeBridgeHandler>
         implements ThingHandlerService {
-    private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE);
+    private static final Set<ThingTypeUID> DISCOVERABLE_THING_TYPES_UIDS = Set.of(THING_TYPE_METER);
 
     public FlumeDiscoveryService() {
         super(FlumeBridgeHandler.class, DISCOVERABLE_THING_TYPES_UIDS, 0, false);
@@ -62,7 +62,7 @@ public class FlumeDiscoveryService extends AbstractThingHandlerDiscoveryService<
     public void notifyDiscoveryDevice(String id) {
         ThingUID bridgeUID = thingHandler.getThing().getUID();
 
-        ThingUID uid = new ThingUID(THING_TYPE_DEVICE, bridgeUID, id);
+        ThingUID uid = new ThingUID(THING_TYPE_METER, bridgeUID, id);
 
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withBridge(bridgeUID).withProperty(PROPERTY_ID, id)
                 .withRepresentationProperty(PROPERTY_ID).withLabel("Flume Meter Device").build();

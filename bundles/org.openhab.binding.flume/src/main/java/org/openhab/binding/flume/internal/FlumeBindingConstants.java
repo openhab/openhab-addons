@@ -28,7 +28,7 @@ public class FlumeBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_CLOUD = new ThingTypeUID(BINDING_ID, "cloud");
-    public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
+    public static final ThingTypeUID THING_TYPE_METER = new ThingTypeUID(BINDING_ID, "meter-device");
 
     // Config options
     public static final String PARAM_USERNAME = "username";
