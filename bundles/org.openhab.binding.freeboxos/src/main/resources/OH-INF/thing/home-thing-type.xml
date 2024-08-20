@@ -35,8 +35,8 @@
 				<label>Trigger Timestamp</label>
 				<description>Timestamp of the last state change</description>
 			</channel>
-			<channel id="cover" typeId="pir-cover"/>
-			<channel id="cover-timestamp" typeId="timestamp">
+			<channel id="tamper" typeId="pir-tamper"/>
+			<channel id="tamper-timestamp" typeId="timestamp">
 				<label>Tamper Timestamp</label>
 				<description>Timestamp of the last cover tampered state change</description>
 			</channel>

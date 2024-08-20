@@ -46,7 +46,7 @@ public class PirHandler extends HomeNodeHandler {
 
     @Override
     protected State getChannelState(String channelId, EndpointState state, Optional<Endpoint> endPoint) {
-        if (PIR_COVER_UPDATE.equals(channelId) || PIR_TRIGGER_UPDATE.equals(channelId)) {
+        if (PIR_TAMPER_UPDATE.equals(channelId) || PIR_TRIGGER_UPDATE.equals(channelId)) {
             return Objects.requireNonNull(endPoint.map(ep -> ep.getLastChange()
                     .map(change -> (State) new DateTimeType(
                             ZonedDateTime.ofInstant(Instant.ofEpochSecond(change.timestamp()), ZoneOffset.UTC)))
@@ -61,7 +61,7 @@ public class PirHandler extends HomeNodeHandler {
 
         return switch (channelId) {
             case NODE_BATTERY -> DecimalType.valueOf(value);
-            case PIR_COVER -> state.asBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+            case PIR_TAMPER -> state.asBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
             case PIR_TRIGGER -> OnOffType.from(value);
             default -> UnDefType.NULL;
         };

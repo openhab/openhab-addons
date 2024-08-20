@@ -195,9 +195,9 @@ public class FreeboxOsBindingConstants {
     public static final String ALARM_TIMEOUT3 = "timeout3";
     public static final String ALARM_STATE = "state";
 
-    public static final String PIR_COVER = "cover";
+    public static final String PIR_TAMPER = "tamper";
     public static final String PIR_TRIGGER = "trigger";
-    public static final String PIR_COVER_UPDATE = PIR_COVER + TIMESTAMP_POSTFIX;
+    public static final String PIR_TAMPER_UPDATE = PIR_TAMPER + TIMESTAMP_POSTFIX;
     public static final String PIR_TRIGGER_UPDATE = PIR_TRIGGER + TIMESTAMP_POSTFIX;
 
     public static final Set<Command> TRUE_COMMANDS = Set.of(OnOffType.ON, UpDownType.UP, OpenClosedType.OPEN);

@@ -502,7 +502,7 @@
 		<category>oh:freeboxos:mouvement</category>
 	</channel-type>
 
-	<channel-type id="pir-cover">
+	<channel-type id="pir-tamper">
 		<item-type>Contact</item-type>
 		<label>Cover Tamper</label>
 		<category>oh:freeboxos:warning</category>
