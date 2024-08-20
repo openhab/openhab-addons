@@ -50,6 +50,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
@@ -687,7 +688,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     case ADD:
                         if (getResourceReference().equals(resource.getGroup())) {
                             resourceConsumed = true;
-                            sceneContributorsCache.put(resource.getId(), resource);
+                            putResourceToCache(resource);
                             sceneResourceEntries.put(resource.getName(), resource);
                             updateSceneChannelStateDescription();
                         }
@@ -718,6 +719,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     private void putResourceToCache(Resource resource) {
+        resource.setContentType(ContentType.FULL_STATE);
         if (SUPPORTED_SCENE_TYPES.contains(resource.getType())) {
             sceneContributorsCache.put(resource.getId(), resource);
         } else {
