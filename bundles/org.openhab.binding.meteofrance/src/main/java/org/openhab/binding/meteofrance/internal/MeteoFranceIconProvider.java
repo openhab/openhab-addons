@@ -100,7 +100,7 @@ public class MeteoFranceIconProvider implements IconProvider {
     public @Nullable InputStream getIcon(String category, String iconSetId, @Nullable String state, Format format) {
         String iconName = category;
         if (INTENSITY.equals(category) && state != null) {
-            String localState = state.equalsIgnoreCase("on") ? "3" : state.equalsIgnoreCase("off") ? "0" : state;
+            String localState = "on".equalsIgnoreCase(state) ? "3" : "off".equalsIgnoreCase(state) ? "0" : state;
             try {
                 iconName = "%s-%d".formatted(category, Double.valueOf(localState).intValue());
             } catch (NumberFormatException e) {

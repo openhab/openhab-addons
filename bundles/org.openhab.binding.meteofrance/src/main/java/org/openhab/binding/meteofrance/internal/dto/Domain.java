@@ -14,6 +14,7 @@ package org.openhab.binding.meteofrance.internal.dto;
 
 import java.lang.reflect.Field;
 import java.util.EnumSet;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -241,7 +242,7 @@ public enum Domain {
     UNKNOWN("Unknown");
 
     public final String description;
-    public final @Nullable String apiId;
+    private final @Nullable String apiId;
 
     Domain(String description) {
         this.description = description;
@@ -249,18 +250,20 @@ public enum Domain {
     }
 
     @Nullable
-    String getSerializedName() {
+    private String getSerializedName() {
         try {
             Field f = getClass().getField(this.name());
             SerializedName a = f.getAnnotation(SerializedName.class);
-            return a == null ? null : a.value();
+            if (a != null) {
+                return a.value();
+            }
         } catch (NoSuchFieldException ignored) {
-            return null;
         }
+        return null;
     }
 
     public static Domain getByApiId(String searched) {
-        return EnumSet.allOf(Domain.class).stream().filter(dom -> searched.equals(dom.apiId)).findFirst()
-                .orElse(UNKNOWN);
+        return Objects.requireNonNull(EnumSet.allOf(Domain.class).stream().filter(dom -> searched.equals(dom.apiId))
+                .findFirst().orElse(UNKNOWN));
     }
 }
