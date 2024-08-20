@@ -271,7 +271,7 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
             this.optimistic = (channelConfiguration.stateTopic == null);
         }
 
-        onOffValue = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
+        onOffValue = new OnOffValue(List.of(channelConfiguration.payloadOn), List.of(channelConfiguration.payloadOff));
         brightnessValue = new PercentageValue(null, new BigDecimal(channelConfiguration.brightnessScale), null, null,
                 null);
         @Nullable

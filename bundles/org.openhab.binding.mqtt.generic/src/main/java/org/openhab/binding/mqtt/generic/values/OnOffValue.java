@@ -17,7 +17,6 @@ import static java.util.function.Predicate.not;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,56 +43,40 @@ public class OnOffValue extends Value {
      * Creates a switch On/Off type, that accepts "ON" for on and "OFF" for off.
      */
     public OnOffValue() {
-        this(OnOffType.ON.name(), OnOffType.OFF.name());
+        this(null, null);
     }
 
     /**
      * Creates a new SWITCH On/Off value.
      *
-     * values send in messages will be the same as those expected in incoming messages
-     *
-     * @param onValues The ON values as comma-separated string. These will be compared to MQTT messages. Defaults to
-     *            "ON" if null.
-     * @param offValue The OFF values as comma-separated string. These will be compared to MQTT messages. Defaults to
-     *            "OFF" if null.
+     * @param onValues The list of ON value strings. These will be compared to MQTT messages. Defaults to "ON" if null.
+     * @param offValues The list of OFF value strings. These will be compared to MQTT messages. Defaults to "OFF" if
+     *            null.
      */
-    public OnOffValue(@Nullable String onValues, @Nullable String offValue) {
-        this(onValues, offValue, null, null);
+    public OnOffValue(@Nullable List<String> onValues, @Nullable List<String> offValues) {
+        this(onValues, offValues, null, null);
     }
 
     /**
      * Creates a new SWITCH On/Off value.
      *
-     * @param onStates The ON values as comma-separated string. These will be compared to MQTT messages. Defaults to
-     *            "ON" if null.
-     * @param offStates he OFF values as comma-separated string. These will be compared to MQTT messages. Defaults to
-     *            "OFF" if null.
+     * @param onStates The list of ON value strings. These will be compared to MQTT messages. Defaults to "ON" if null.
+     * @param offStates The list of OFF value strings. These will be compared to MQTT messages. Defaults to "OFF" if
+     *            null.
      * @param onCommand The ON value string. This will be sent in MQTT messages. Defaults to the first onState if null.
      * @param offCommand The OFF value string. This will be sent in MQTT messages. Defaults to the first offState if
      *            null.
      */
-    public OnOffValue(@Nullable String onStates, @Nullable String offStates, @Nullable String onCommand,
+    public OnOffValue(@Nullable List<String> onStates, @Nullable List<String> offStates, @Nullable String onCommand,
             @Nullable String offCommand) {
-        this(onStates == null ? new String[] { OnOffType.ON.name() } : onStates.split(","),
-                offStates == null ? new String[] { OnOffType.OFF.name() } : offStates.split(","), onCommand,
-                offCommand);
-    }
-
-    /**
-     * Creates a new SWITCH On/Off value.
-     *
-     * @param onStates A list of valid ON value strings. This will be compared to MQTT messages.
-     * @param offStates A list of valid OFF value strings. This will be compared to MQTT messages.
-     * @param onCommand The ON value string. This will be sent in MQTT messages. Defaults to the first onState if null.
-     * @param offCommand The OFF value string. This will be sent in MQTT messages. Defaults to the first offState if
-     *            null.
-     */
-    public OnOffValue(String[] onStates, String[] offStates, @Nullable String onCommand, @Nullable String offCommand) {
         super(CoreItemFactory.SWITCH, List.of(OnOffType.class, StringType.class));
-        this.onStates = Stream.of(onStates).filter(not(String::isBlank)).collect(Collectors.toSet());
-        this.offStates = Stream.of(offStates).filter(not(String::isBlank)).collect(Collectors.toSet());
-        this.onCommand = onCommand == null ? onStates[0] : onCommand;
-        this.offCommand = offCommand == null ? offStates[0] : offCommand;
+        this.onStates = onStates == null ? Set.of(OnOffType.ON.name())
+                : onStates.stream().filter(not(String::isBlank)).collect(Collectors.toSet());
+        this.offStates = offStates == null ? Set.of(OnOffType.ON.name())
+                : offStates.stream().filter(not(String::isBlank)).collect(Collectors.toSet());
+        this.onCommand = onCommand == null ? (onStates == null ? OnOffType.ON.name() : onStates.get(0)) : onCommand;
+        this.offCommand = offCommand == null ? (offStates == null ? OnOffType.OFF.name() : offStates.get(0))
+                : offCommand;
     }
 
     @Override

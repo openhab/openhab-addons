@@ -13,6 +13,7 @@
 package org.openhab.binding.mqtt.generic;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -58,8 +59,8 @@ public class ChannelConfig {
     public @Nullable String on;
     public @Nullable String off;
     public @Nullable String stop;
-    public @Nullable String onState;
-    public @Nullable String offState;
+    public @Nullable List<String> onState;
+    public @Nullable List<String> offState;
     public @Nullable String nullValue;
 
     public int onBrightness = 10;

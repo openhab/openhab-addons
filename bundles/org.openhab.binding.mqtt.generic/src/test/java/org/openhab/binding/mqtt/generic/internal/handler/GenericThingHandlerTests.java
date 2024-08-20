@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.openhab.binding.mqtt.generic.internal.handler.ThingChannelConstants.*;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -163,7 +164,7 @@ public class GenericThingHandlerTests {
 
     @Test
     public void handleCommandUpdateBoolean() {
-        OnOffValue value = spy(new OnOffValue("ON", "OFF"));
+        OnOffValue value = spy(new OnOffValue(List.of("ON"), List.of("OFF")));
         ChannelState channelConfig = spy(
                 new ChannelState(ChannelConfigBuilder.create("stateTopic", "commandTopic").build(), TEXT_CHANNEL_UID,
                         value, thingHandler));

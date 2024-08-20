@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.mqtt.generic.ChannelConfig;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
@@ -34,6 +36,8 @@ public class ValueFactory {
      */
     public static Value createValueState(ChannelConfig config, String channelTypeID) throws IllegalArgumentException {
         Value value;
+        String on = config.on;
+        String off = config.off;
         switch (channelTypeID) {
             case MqttBindingConstants.STRING:
                 TextValue textValue = config.allowedStates.isBlank() ? new TextValue()
@@ -72,10 +76,12 @@ public class ValueFactory {
                 value = new ColorValue(colorMode, config.on, config.off, config.onBrightness);
                 break;
             case MqttBindingConstants.SWITCH:
-                value = new OnOffValue(config.on, config.off);
+                value = new OnOffValue(config.onState == null && on != null ? List.of(on) : config.onState,
+                        config.offState == null && off != null ? List.of(off) : config.offState);
                 break;
             case MqttBindingConstants.CONTACT:
-                value = new OpenCloseValue(config.on, config.off);
+                value = new OpenCloseValue(config.onState == null && on != null ? List.of(on) : config.onState,
+                        config.offState == null && off != null ? List.of(off) : config.offState);
                 break;
             case MqttBindingConstants.ROLLERSHUTTER:
                 value = new RollershutterValue(config.on, config.off, config.stop, config.onState, config.offState,

@@ -17,6 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -117,7 +118,7 @@ public class ValueTests {
 
     @Test
     public void onoffUpdate() {
-        OnOffValue v = new OnOffValue("fancyON", "fancyOff");
+        OnOffValue v = new OnOffValue(List.of("fancyON"), List.of("fancyOff"));
 
         // Test with command
         assertThat(v.parseCommand(OnOffType.OFF), is(OnOffType.OFF));
@@ -151,18 +152,19 @@ public class ValueTests {
 
     @Test
     public void onOffMultiStates() {
-        OnOffValue v = new OnOffValue("LOCKED", "UNLOCKED,JAMMED", "LOCK", "UNLOCK");
+        OnOffValue v = new OnOffValue(List.of("fancyON", "ON"), List.of("fancyOFF", "OFF"), "fancyON", "fancyOFF");
 
-        assertThat(v.parseCommand(new StringType("LOCKED")), is(OnOffType.ON));
-        assertThat(v.parseCommand(new StringType("UNLOCKED")), is(OnOffType.OFF));
-        assertThat(v.parseCommand(new StringType("JAMMED")), is(OnOffType.OFF));
-        assertThat(v.getMQTTpublishValue(OnOffType.ON, null), is("LOCK"));
-        assertThat(v.getMQTTpublishValue(OnOffType.OFF, null), is("UNLOCK"));
+        assertThat(v.parseCommand(new StringType("fancyON")), is(OnOffType.ON));
+        assertThat(v.parseCommand(new StringType("ON")), is(OnOffType.ON));
+        assertThat(v.parseCommand(new StringType("fancyOFF")), is(OnOffType.OFF));
+        assertThat(v.parseCommand(new StringType("OFF")), is(OnOffType.OFF));
+        assertThat(v.getMQTTpublishValue(OnOffType.ON, null), is("fancyON"));
+        assertThat(v.getMQTTpublishValue(OnOffType.OFF, null), is("fancyOFF"));
     }
 
     @Test
     public void openCloseUpdate() {
-        OpenCloseValue v = new OpenCloseValue("fancyOPEN", "fancyCLOSED");
+        OpenCloseValue v = new OpenCloseValue(List.of("fancyOPEN"), List.of("fancyCLOSED"));
 
         // Test with command
         assertThat(v.parseCommand(OpenClosedType.CLOSED), is(OpenClosedType.CLOSED));
@@ -192,7 +194,8 @@ public class ValueTests {
 
     @Test
     public void openCloseMultiStates() {
-        OpenCloseValue v = new OpenCloseValue("UNLOCKED,UNLATCHED", "LOCKED", "UNLOCKED", "LOCKED");
+        OpenCloseValue v = new OpenCloseValue(List.of("UNLOCKED", "UNLATCHED"), List.of("LOCKED"), "UNLOCKED",
+                "LOCKED");
 
         assertThat(v.parseCommand(new StringType("LOCKED")), is(OpenClosedType.CLOSED));
         assertThat(v.parseCommand(new StringType("UNLOCKED")), is(OpenClosedType.OPEN));
@@ -287,7 +290,8 @@ public class ValueTests {
 
     @Test
     public void rollershutterUpdateWithDiscreteCommandAndStateStrings() {
-        RollershutterValue v = new RollershutterValue("OPEN", "CLOSE", "STOP", "open", "closed", false, true);
+        RollershutterValue v = new RollershutterValue("OPEN", "CLOSE", "STOP", List.of("open"), List.of("closed"),
+                false, true);
         // Test with UP/DOWN/STOP command
         assertThat(v.parseCommand(UpDownType.UP), is(UpDownType.UP));
         assertThat(v.getMQTTpublishValue(UpDownType.UP, null), is("OPEN"));

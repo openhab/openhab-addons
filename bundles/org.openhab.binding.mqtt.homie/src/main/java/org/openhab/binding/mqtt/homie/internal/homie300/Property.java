@@ -161,7 +161,7 @@ public class Property implements AttributeChanged {
 
         switch (attributes.datatype) {
             case boolean_:
-                value = new OnOffValue("true", "false");
+                value = new OnOffValue(List.of("true"), List.of("false"));
                 break;
             case color_:
                 if ("hsv".equals(attributes.format)) {

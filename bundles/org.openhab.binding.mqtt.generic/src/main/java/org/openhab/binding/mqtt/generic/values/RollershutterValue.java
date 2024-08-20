@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.generic.values;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -46,42 +47,42 @@ public class RollershutterValue extends Value {
     private static final String INVERTED_UP_VALUE = DOWN_VALUE;
     private static final String INVERTED_DOWN_VALUE = UP_VALUE;
 
-    private final @Nullable String upCommandString;
-    private final @Nullable String downCommandString;
-    private final @Nullable String stopCommandString;
-    private final @Nullable String upStateString;
-    private final @Nullable String downStateString;
+    private final @Nullable String upCommand;
+    private final @Nullable String downCommand;
+    private final @Nullable String stopCommand;
+    private final List<String> upStates;
+    private final List<String> downStates;
     private final boolean inverted;
     private final boolean transformExtentsToString;
 
     /**
      * Creates a new rollershutter value.
      *
-     * @param upCommandString The UP command string.
-     * @param downCommandString The DOWN command string.
-     * @param stopCommandString The STOP command string.
-     * @param upStateString The UP value string. This will be compared to MQTT messages.
-     * @param downStateString The DOWN value string. This will be compared to MQTT messages.
+     * @param upCommand The UP command string.
+     * @param downCommand The DOWN command string.
+     * @param stopCommand The STOP command string.
+     * @param upStates The list of UP value strings. This will be compared to MQTT messages.
+     * @param downStates The list of DOWN value strings. This will be compared to MQTT messages.
      * @param inverted Whether to invert 0-100/100-0
      * @param transformExtentsToString Whether 0/100 will be sent as UP/DOWN
      */
-    public RollershutterValue(@Nullable String upCommandString, @Nullable String downCommandString,
-            @Nullable String stopCommandString, @Nullable String upStateString, @Nullable String downStateString,
-            boolean inverted, boolean transformExtentsToString) {
+    public RollershutterValue(@Nullable String upCommand, @Nullable String downCommand, @Nullable String stopCommand,
+            @Nullable List<String> upStates, @Nullable List<String> downStates, boolean inverted,
+            boolean transformExtentsToString) {
         super(CoreItemFactory.ROLLERSHUTTER,
                 List.of(UpDownType.class, StopMoveType.class, PercentType.class, StringType.class));
-        this.upCommandString = upCommandString;
-        this.downCommandString = downCommandString;
-        this.stopCommandString = stopCommandString;
-        if (upStateString == null) {
-            this.upStateString = upCommandString;
+        this.upCommand = upCommand;
+        this.downCommand = downCommand;
+        this.stopCommand = stopCommand;
+        if (upStates == null) {
+            this.upStates = upCommand == null ? Collections.emptyList() : List.of(upCommand);
         } else {
-            this.upStateString = upStateString;
+            this.upStates = upStates;
         }
-        if (downStateString == null) {
-            this.downStateString = downCommandString;
+        if (downStates == null) {
+            this.downStates = downCommand == null ? Collections.emptyList() : List.of(downCommand);
         } else {
-            this.downStateString = downStateString;
+            this.downStates = downStates;
         }
         this.inverted = inverted;
         this.transformExtentsToString = transformExtentsToString;
@@ -95,27 +96,26 @@ public class RollershutterValue extends Value {
      * @param stopString The STOP value string. This will be compared to MQTT messages.
      */
     public RollershutterValue(@Nullable String upString, @Nullable String downString, @Nullable String stopString) {
-        this(upString, downString, stopString, upString, downString, false, true);
+        this(upString, downString, stopString, null, null, false, true);
     }
 
-    private Command parseType(Command command, @Nullable String upString, @Nullable String downString)
-            throws IllegalArgumentException {
+    private Command parseType(Command command, List<String> up, List<String> down) throws IllegalArgumentException {
         if (command instanceof StopMoveType) {
-            if (command == StopMoveType.STOP && stopCommandString != null) {
+            if (command == StopMoveType.STOP && stopCommand != null) {
                 return command;
             } else {
                 throw new IllegalArgumentException(command.toString() + " is not a valid command for MQTT.");
             }
         } else if (command instanceof UpDownType) {
             if (command == UpDownType.UP) {
-                if (upString != null) {
+                if (!up.isEmpty()) {
                     return command;
                 } else {
                     // Do not handle inversion here. See parseCommand below
                     return PercentType.ZERO;
                 }
             } else {
-                if (downString != null) {
+                if (!down.isEmpty()) {
                     return command;
                 } else {
                     // Do not handle inversion here. See parseCommand below
@@ -126,11 +126,11 @@ public class RollershutterValue extends Value {
             return percentage;
         } else if (command instanceof StringType) {
             final String updatedValue = command.toString();
-            if (updatedValue.equals(upString)) {
+            if (up.contains(updatedValue)) {
                 return UpDownType.UP;
-            } else if (updatedValue.equals(downString)) {
+            } else if (down.contains(updatedValue)) {
                 return UpDownType.DOWN;
-            } else if (updatedValue.equals(stopCommandString)) {
+            } else if (updatedValue.equals(stopCommand)) {
                 return StopMoveType.STOP;
             } else {
                 return PercentType.valueOf(updatedValue);
@@ -144,7 +144,10 @@ public class RollershutterValue extends Value {
         // Do not handle inversion in this code path. parseCommand might be called
         // multiple times when sending a command TO an MQTT topic. The inversion is
         // handled _only_ in getMQTTpublishValue
-        return parseType(command, upCommandString, downCommandString);
+        String upCommand = this.upCommand;
+        String downCommand = this.downCommand;
+        return parseType(command, upCommand == null ? Collections.emptyList() : List.of(upCommand),
+                downCommand == null ? Collections.emptyList() : List.of(downCommand));
     }
 
     @Override
@@ -152,7 +155,7 @@ public class RollershutterValue extends Value {
         if (command instanceof StringType string && string.toString().isEmpty()) {
             return UnDefType.NULL;
         }
-        command = parseType(command, upStateString, downStateString);
+        command = parseType(command, upStates, downStates);
         if (inverted && command instanceof PercentType percentType) {
             return new PercentType(100 - percentType.intValue());
         }
@@ -165,9 +168,9 @@ public class RollershutterValue extends Value {
     }
 
     public String getMQTTpublishValue(Command command, boolean transformExtentsToString) {
-        final String upCommandString = this.upCommandString;
-        final String downCommandString = this.downCommandString;
-        final String stopCommandString = this.stopCommandString;
+        final String upCommandString = this.upCommand;
+        final String downCommandString = this.downCommand;
+        final String stopCommandString = this.stopCommand;
         if (command == UpDownType.UP) {
             if (upCommandString != null) {
                 return upCommandString;

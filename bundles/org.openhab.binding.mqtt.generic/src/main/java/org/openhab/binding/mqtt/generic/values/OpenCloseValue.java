@@ -17,7 +17,6 @@ import static java.util.function.Predicate.not;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -48,39 +47,39 @@ public class OpenCloseValue extends Value {
     /**
      * Creates a new CONTACT Open/Closed value.
      *
-     * @param openValues The ON values as comma-separate string. These will be compared to MQTT messages. Defaults to
-     *            "OPEN" if null.
-     * @param closedValues The OFF values as comma-separated string. These will be compared to MQTT messages. Defaults
-     *            to "CLOSED" if null.
+     * @param openValues The list of OPEN value strings. These will be compared to MQTT messages. Defaults to "OPEN" if
+     *            null.
+     * @param closedValues The list of CLOSED value strings. These will be compared to MQTT messages. Defaults to
+     *            "CLOSED" if null.
      */
-    public OpenCloseValue(@Nullable String openValues, @Nullable String closedValues) {
+    public OpenCloseValue(@Nullable List<String> openValues, @Nullable List<String> closedValues) {
         this(openValues, closedValues, null, null);
-    }
-
-    public OpenCloseValue(@Nullable String openValues, @Nullable String closedValues, @Nullable String openCommand,
-            @Nullable String closedCommand) {
-        this(openValues == null ? new String[] { OpenClosedType.OPEN.name() } : openValues.split(","),
-                closedValues == null ? new String[] { OpenClosedType.CLOSED.name() } : closedValues.split(","),
-                openCommand, closedCommand);
     }
 
     /**
      * Creates a new CONTACT Open/Closed value.
      *
-     * @param openStates The list of valid OPEN value strings. This will be compared to MQTT messages.
-     * @param closedStates The list of valid CLOSED value strings. This will be compared to MQTT messages.
+     * @param openStates The list of OPEN value strings. These will be compared to MQTT messages. Defaults to "OPEN" if
+     *            null.
+     * @param closedStates The list of CLOSED value strings. These will be compared to MQTT messages. Defaults to
+     *            "CLOSED" if null.
      * @param openCommand The OPEN value string. This will be sent in MQTT messages. Defaults to the first openState if
      *            null.
      * @param closedCommand The CLOSED value string. This will be sent in MQTT messages. Defaults to the first
      *            closedState if null.
      */
-    public OpenCloseValue(String[] openStates, String[] closedStates, @Nullable String openCommand,
-            @Nullable String closedCommand) {
+    public OpenCloseValue(@Nullable List<String> openStates, @Nullable List<String> closedStates,
+            @Nullable String openCommand, @Nullable String closedCommand) {
         super(CoreItemFactory.CONTACT, List.of(OpenClosedType.class, StringType.class));
-        this.openStates = Stream.of(openStates).filter(not(String::isBlank)).collect(Collectors.toSet());
-        this.closedStates = Stream.of(closedStates).filter(not(String::isBlank)).collect(Collectors.toSet());
-        this.openCommand = openCommand == null ? openStates[0] : openCommand;
-        this.closedCommand = closedCommand == null ? closedStates[0] : closedCommand;
+        this.openStates = openStates == null ? Set.of(OpenClosedType.OPEN.name())
+                : openStates.stream().filter(not(String::isBlank)).collect(Collectors.toSet());
+        this.closedStates = closedStates == null ? Set.of(OpenClosedType.CLOSED.name())
+                : closedStates.stream().filter(not(String::isBlank)).collect(Collectors.toSet());
+        this.openCommand = openCommand == null ? (openStates == null ? OpenClosedType.OPEN.name() : openStates.get(0))
+                : openCommand;
+        this.closedCommand = closedCommand == null
+                ? (closedStates == null ? OpenClosedType.CLOSED.name() : closedStates.get(0))
+                : closedCommand;
     }
 
     @Override

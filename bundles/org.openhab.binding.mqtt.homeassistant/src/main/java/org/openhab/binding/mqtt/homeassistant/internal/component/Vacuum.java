@@ -262,14 +262,15 @@ public class Vacuum extends AbstractComponent<Vacuum.ChannelConfiguration> {
                     new PercentageValue(BigDecimal.ZERO, BigDecimal.valueOf(100), BigDecimal.ONE, null, null),
                     updateListener, null, null, channelConfiguration.batteryLevelTemplate,
                     channelConfiguration.batteryLevelTopic);
-            buildOptionalChannel(CHARGING_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(TRUE, FALSE),
-                    updateListener, null, null, channelConfiguration.chargingTemplate,
-                    channelConfiguration.chargingTopic);
-            buildOptionalChannel(CLEANING_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(TRUE, FALSE),
-                    updateListener, null, null, channelConfiguration.cleaningTemplate,
-                    channelConfiguration.cleaningTopic);
-            buildOptionalChannel(DOCKED_CH_ID, ComponentChannelType.SWITCH, new OnOffValue(TRUE, FALSE), updateListener,
-                    null, null, channelConfiguration.dockedTemplate, channelConfiguration.dockedTopic);
+            buildOptionalChannel(CHARGING_CH_ID, ComponentChannelType.SWITCH,
+                    new OnOffValue(List.of(TRUE), List.of(FALSE)), updateListener, null, null,
+                    channelConfiguration.chargingTemplate, channelConfiguration.chargingTopic);
+            buildOptionalChannel(CLEANING_CH_ID, ComponentChannelType.SWITCH,
+                    new OnOffValue(List.of(TRUE), List.of(FALSE)), updateListener, null, null,
+                    channelConfiguration.cleaningTemplate, channelConfiguration.cleaningTopic);
+            buildOptionalChannel(DOCKED_CH_ID, ComponentChannelType.SWITCH,
+                    new OnOffValue(List.of(TRUE), List.of(FALSE)), updateListener, null, null,
+                    channelConfiguration.dockedTemplate, channelConfiguration.dockedTopic);
             buildOptionalChannel(ERROR_CH_ID, ComponentChannelType.STRING, new TextValue(), updateListener, null, null,
                     channelConfiguration.errorTemplate, channelConfiguration.errorTopic);
         } else {

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
@@ -54,7 +56,8 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
     public Fan(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
         super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
-        OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
+        OnOffValue value = new OnOffValue(List.of(channelConfiguration.payloadOn),
+                List.of(channelConfiguration.payloadOff));
         buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, value, getName(),
                 componentConfiguration.getUpdateListener())
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())

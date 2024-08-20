@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
@@ -78,9 +80,9 @@ public class Lock extends AbstractComponent<Lock.ChannelConfiguration> {
 
         this.optimistic = channelConfiguration.optimistic || channelConfiguration.stateTopic.isBlank();
 
-        lockValue = new OnOffValue(new String[] { channelConfiguration.stateLocked },
-                new String[] { channelConfiguration.stateUnlocked, channelConfiguration.stateLocking,
-                        channelConfiguration.stateUnlocking, channelConfiguration.stateJammed },
+        lockValue = new OnOffValue(List.of(channelConfiguration.stateLocked),
+                List.of(channelConfiguration.stateUnlocked, channelConfiguration.stateLocking,
+                        channelConfiguration.stateUnlocking, channelConfiguration.stateJammed),
                 channelConfiguration.payloadLock, channelConfiguration.payloadUnlock);
 
         buildChannel(LOCK_CHANNEL_ID, ComponentChannelType.SWITCH, lockValue, "Lock",

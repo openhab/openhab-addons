@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.RollershutterValue;
@@ -130,8 +132,9 @@ public class Cover extends AbstractComponent<Cover.ChannelConfiguration> {
 
         boolean inverted = channelConfiguration.positionOpen > channelConfiguration.positionClosed;
         final RollershutterValue value = new RollershutterValue(channelConfiguration.payloadOpen,
-                channelConfiguration.payloadClose, channelConfiguration.payloadStop, channelConfiguration.stateOpen,
-                channelConfiguration.stateClosed, inverted, channelConfiguration.setPositionTopic == null);
+                channelConfiguration.payloadClose, channelConfiguration.payloadStop,
+                List.of(channelConfiguration.stateOpen), List.of(channelConfiguration.stateClosed), inverted,
+                channelConfiguration.setPositionTopic == null);
 
         buildChannel(COVER_CHANNEL_ID, ComponentChannelType.ROLLERSHUTTER, value, "Cover",
                 componentConfiguration.getUpdateListener()).stateTopic(rollershutterStateTopic, stateTemplate)

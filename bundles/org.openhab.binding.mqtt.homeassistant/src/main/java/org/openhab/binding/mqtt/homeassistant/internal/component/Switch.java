@@ -12,6 +12,9 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal.component;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
@@ -74,7 +77,8 @@ public class Switch extends AbstractComponent<Switch.ChannelConfiguration> {
                 : channelConfiguration.payloadOn;
         String stateOff = channelConfiguration.stateOff != null ? channelConfiguration.stateOff
                 : channelConfiguration.payloadOff;
-        OnOffValue value = new OnOffValue(stateOn, stateOff, channelConfiguration.payloadOn,
+        OnOffValue value = new OnOffValue(stateOn == null ? Collections.emptyList() : List.of(stateOn),
+                stateOff == null ? Collections.emptyList() : List.of(stateOff), channelConfiguration.payloadOn,
                 channelConfiguration.payloadOff);
 
         buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, value, getName(),

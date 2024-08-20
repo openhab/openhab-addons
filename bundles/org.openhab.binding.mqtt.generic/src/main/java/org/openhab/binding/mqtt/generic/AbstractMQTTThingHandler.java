@@ -13,6 +13,7 @@
 package org.openhab.binding.mqtt.generic;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -309,7 +310,7 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
             @Nullable String transformation_pattern,
             @Nullable TransformationServiceProvider transformationServiceProvider) {
         availabilityStates.computeIfAbsent(availability_topic, topic -> {
-            Value value = new OnOffValue(payload_available, payload_not_available);
+            Value value = new OnOffValue(List.of(payload_available), List.of(payload_not_available));
             ChannelGroupUID groupUID = new ChannelGroupUID(getThing().getUID(), "availability");
             ChannelUID channelUID = new ChannelUID(groupUID, UIDUtils.encode(topic));
             ChannelState state = new ChannelState(ChannelConfigBuilder.create().withStateTopic(topic).build(),

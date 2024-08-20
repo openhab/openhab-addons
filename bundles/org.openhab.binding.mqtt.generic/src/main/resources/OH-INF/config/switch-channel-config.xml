@@ -79,15 +79,25 @@
 			<advanced>true</advanced>
 		</parameter>
 
-		<parameter name="on" type="text">
-			<label>Custom On/Open Value</label>
-			<description>A number (like 1, 10) or a string (like "enabled") that is additionally recognised as on/open state. You
-				can use this parameter for a second keyword, next to ON (OPEN respectively on a Contact).</description>
+		<parameter name="onState" type="text" multiple="true">
+			<label>Custom On/Open Values</label>
+			<description>A list of numbers (like 1, 10) or strings (like "enabled") which are additionally recognised as on/open
+				state. You
+				can use this parameter for additional keywords, next to ON (OPEN respectively on a Contact).</description>
 		</parameter>
-		<parameter name="off" type="text">
-			<label>Custom Off/Closed Value</label>
-			<description>A number (like 0, -10) or a string (like "disabled") that is additionally recognised as off/closed
-				state. You can use this parameter for a second keyword, next to OFF (CLOSED respectively on a Contact).</description>
+		<parameter name="offState" type="text" multiple="true">
+			<label>Custom Off/Closed Values</label>
+			<description>A list of numbers (like 0, -10) or strings (like "disabled") which are additionally recognised as
+				off/closed
+				state. You can use this parameter for additional keywords, next to OFF (CLOSED respectively on a Contact).</description>
+		</parameter>
+		<parameter name="on" type="text" advanced="true">
+			<label>Custom On/Open Value (DEPRECATED)</label>
+			<description>Use onState instead.</description>
+		</parameter>
+		<parameter name="off" type="text" advanced="true">
+			<label>Custom Off/Closed Value (DEPRECATED)</label>
+			<description>Use offState instead.</description>
 		</parameter>
 	</config-description>
 </config-description:config-descriptions>
