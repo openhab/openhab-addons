@@ -154,35 +154,48 @@ function retrieveToken()
 	<div style="background:linear-gradient(#faf3ff, #e8cbfd);padding:20px;margin:0px;display:inline-block; width:97%;align:center;">
 	<h3>Plugin Linky / MyElectricalData pour Openhab</h3>
 	<br/>
-	<p>
-	Vous devez maintenant récupérer le token depuis MyElectricalData.
-	</p>
+
+	<div style="display:${cb.displayConfirmation}">
+		Vous pouvez maintenant utiliser le plugin Linky avec MyElectricalData.
+		${authorizedUser}
+	</div>
 	
-	<p>
-	Pour ce faire :
-	<ul>
-		<li>Sélectionner le numéro de prmId dans la combobox ci-dessous.</li>
-		<li>Cliquer sur le bouton "Retrive token".</li>
-	</ul>
-	</p>
-	<br/>
+	<div style="display:${cb.displayError}">
+		Une erreur c'est produite:
+		${error}
+	</div>
 	
-	<br/><br/><br/>
-	<div class="block${bridge.authorized}">
-        <br/>  
-        <div>
-            <div class="box">
-                <b>Please select your prmId :</b>
-		        <select id="prmId">
-		           ${prmId.Option}
-		        </select>
-	        </div>
-            <div class="button">
-                <a href="javascript:retrieveToken()">Retrieve token
-                </a>
-            </div>
-        </div>
-    </div>
+	<div style="display:${cb.displayInstruction}">
+		<p>
+		Vous devez maintenant récupérer le token depuis MyElectricalData.
+		</p>
+		
+		<p>
+		Pour ce faire :
+		<ul>
+			<li>Sélectionner le numéro de prmId dans la combobox ci-dessous.</li>
+			<li>Cliquer sur le bouton "Retrive token".</li>
+		</ul>
+		</p>
+		<br/>
+		
+		<br/><br/><br/>
+		<div class="block${bridge.authorized}">
+			<br/>  
+			<div>
+				<div class="box">
+					<b>Please select your prmId :</b>
+					<select id="prmId">
+					   ${prmId.Option}
+					</select>
+				</div>
+				<div class="button">
+					<a href="javascript:retrieveToken()">Retrieve token
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
 	
 </body>
 </html>
