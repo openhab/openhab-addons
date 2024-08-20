@@ -682,10 +682,30 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 updateDependenciesTask = scheduler.submit(() -> updateDependencies());
             }
         } else {
+            if (SUPPORTED_SCENE_TYPES.contains(resource.getType())) {
+                switch (resource.getContentType()) {
+                    case ADD:
+                        if (getResourceReference().equals(resource.getGroup())) {
+                            resourceConsumed = true;
+                            sceneContributorsCache.put(resource.getId(), resource);
+                            sceneResourceEntries.put(resource.getName(), resource);
+                            updateSceneChannelStateDescription();
+                        }
+                        break;
+                    case DELETE:
+                        Resource deletedScene = sceneContributorsCache.remove(resource.getId());
+                        if (Objects.nonNull(deletedScene)) {
+                            resourceConsumed = true;
+                            sceneResourceEntries.remove(deletedScene.getName());
+                            updateSceneChannelStateDescription();
+                        }
+                    default:
+                }
+            }
             Resource cachedResource = getResourceFromCache(resource);
             if (cachedResource != null) {
                 Setters.setResource(resource, cachedResource);
-                resourceConsumed = updateChannels && updateChannels(resource);
+                resourceConsumed |= (!updateChannels || updateChannels(resource));
                 putResourceToCache(resource);
                 if (ResourceType.LIGHT == resource.getType() && !updateLightPropertiesDone) {
                     updateLightProperties(resource);
@@ -1198,6 +1218,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Update the scene channel state description selection options
+     */
+    private void updateSceneChannelStateDescription() {
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_SCENE),
+                sceneResourceEntries.keySet().stream().map(n -> new StateOption(n, n)).collect(Collectors.toList()));
+    }
+
+    /**
      * Fetch the full list of normal resp. smart scenes from the bridge, and call
      * {@code updateSceneContributors(List<Resource> allScenes)}
      *
@@ -1249,9 +1277,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
 
                 updateState(CHANNEL_2_SCENE, state, true);
-
-                stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_SCENE), scenes
-                        .stream().map(s -> s.getName()).map(n -> new StateOption(n, n)).collect(Collectors.toList()));
+                updateSceneChannelStateDescription();
 
                 logger.debug("{} -> updateSceneContributors() found {} normal resp. smart scenes", resourceId,
                         scenes.size());
