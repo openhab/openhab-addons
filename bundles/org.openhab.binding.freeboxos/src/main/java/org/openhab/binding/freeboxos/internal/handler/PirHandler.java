@@ -14,33 +14,45 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.Endpoint;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
 
 /**
- * The {@link AlarmHandler} is responsible for handling everything associated to
- * any Freebox Home Alarm thing type.
+ * The {@link PirHandler} is responsible for handling everything associated to
+ * any Freebox Home PIR motion detection thing type.
  *
  * @author Gaël L'hopital - Initial contribution
  */
 @NonNullByDefault
-public class AlarmHandler extends HomeNodeHandler {
+public class PirHandler extends HomeNodeHandler {
 
-    public AlarmHandler(Thing thing) {
+    public PirHandler(Thing thing) {
         super(thing);
     }
 
     @Override
     protected State getChannelState(String channelId, EndpointState state, Optional<Endpoint> endPoint) {
+        if (PIR_TAMPER_UPDATE.equals(channelId) || PIR_TRIGGER_UPDATE.equals(channelId)) {
+            return Objects.requireNonNull(endPoint.map(ep -> ep.getLastChange()
+                    .map(change -> (State) new DateTimeType(
+                            ZonedDateTime.ofInstant(Instant.ofEpochSecond(change.timestamp()), ZoneOffset.UTC)))
+                    .orElse(UnDefType.UNDEF)).orElse(UnDefType.UNDEF));
+        }
+
         String value = state.value();
 
         if (value == null) {
@@ -49,9 +61,8 @@ public class AlarmHandler extends HomeNodeHandler {
 
         return switch (channelId) {
             case NODE_BATTERY -> DecimalType.valueOf(value);
-            case ALARM_STATE, ALARM_PIN -> StringType.valueOf(value);
-            case ALARM_SOUND, ALARM_VOLUME -> QuantityType.valueOf(value + " %");
-            case ALARM_TIMEOUT1, ALARM_TIMEOUT2, ALARM_TIMEOUT3 -> QuantityType.valueOf(value + " s");
+            case PIR_TAMPER -> state.asBoolean() ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+            case PIR_TRIGGER -> OnOffType.from(value);
             default -> UnDefType.NULL;
         };
     }

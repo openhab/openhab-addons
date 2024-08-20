@@ -14,11 +14,19 @@ package org.openhab.binding.freeboxos.internal.handler;
 
 import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*;
 
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager;
+import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.Endpoint;
 import org.openhab.binding.freeboxos.internal.api.rest.HomeManager.EndpointState;
 import org.openhab.core.config.core.Configuration;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
@@ -40,7 +48,15 @@ public class KeyfobHandler extends HomeNodeHandler {
     }
 
     @Override
-    protected State getChannelState(HomeManager homeManager, String channelId, EndpointState state) {
+    protected State getChannelState(String channelId, EndpointState state, Optional<Endpoint> endPoint) {
+        if (channelId.startsWith(KEYFOB_PUSHED)) {
+            return Objects.requireNonNull(endPoint.map(ep -> ep
+                    .getLastChange().map(
+                            change -> (State) (KEYFOB_PUSHED.equals(channelId) ? new DecimalType(change.value())
+                                    : new DateTimeType(ZonedDateTime
+                                            .ofInstant(Instant.ofEpochSecond(change.timestamp()), ZoneOffset.UTC))))
+                    .orElse(UnDefType.UNDEF)).orElse(UnDefType.UNDEF));
+        }
         String value = state.value();
         if (value != null) {
             switch (channelId) {
