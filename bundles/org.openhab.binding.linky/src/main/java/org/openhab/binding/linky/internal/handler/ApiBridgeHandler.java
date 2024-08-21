@@ -175,7 +175,7 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
                     LinkyBindingConstants.BINDING_ID);
             return uri;
         } catch (final OAuthException e) {
-            logger.debug("Error constructing AuthorizationUrl: {}", e);
+            logger.debug("Error constructing AuthorizationUrl: ", e);
             return "";
         }
     }
