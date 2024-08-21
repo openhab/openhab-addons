@@ -14,6 +14,8 @@ package org.openhab.binding.shelly.internal.api2;
 
 import java.util.ArrayList;
 
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleObserver;
+import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DevConfigBle.Shelly2DevConfigBleRpc;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2DeviceStatus.Shelly2DeviceStatusResult;
 import org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.Shelly2RpcBaseMessage.Shelly2RpcMessageError;
 
@@ -133,6 +135,7 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_EVENT_OTASTART = "ota_begin";
     public static final String SHELLY2_EVENT_OTAPROGRESS = "ota_progress";
     public static final String SHELLY2_EVENT_OTADONE = "ota_success";
+    public static final String SHELLY2_EVENT_RESTART = "scheduled_restart";
     public static final String SHELLY2_EVENT_WIFICONNFAILED = "sta_connect_fail";
     public static final String SHELLY2_EVENT_WIFIDISCONNECTED = "sta_disconnected";
 
@@ -166,11 +169,21 @@ public class Shelly2ApiJsonDTO {
     public static final String SHELLY2_POWERLED_MATCH = "match_output";
     public static final String SHELLY2_POWERLED_INVERT = "inverted_output";
 
-    public class Shelly2DevConfigBle {
+    public static class Shelly2DevConfigBle {
+        public static class Shelly2DevConfigBleRpc {
+            public Boolean enable;
+        }
+
+        public static class Shelly2DevConfigBleObserver {
+            public Boolean enable;
+        }
+
         public Boolean enable;
+        public Shelly2DevConfigBleRpc rpc;
+        public Shelly2DevConfigBleObserver observer;
     }
 
-    public class Shelly2DevConfigEth {
+    public static class Shelly2DevConfigEth {
         public Boolean enable;
         public String ipv4mode;
         public String ip;
@@ -921,6 +934,10 @@ public class Shelly2ApiJsonDTO {
         public Boolean sysLedEnable;
         @SerializedName("power_led")
         public String powerLed;
+
+        // BLE
+        public Shelly2DevConfigBleRpc rpc;
+        public Shelly2DevConfigBleObserver observer;
     }
 
     public static class Shelly2RpcRequest {

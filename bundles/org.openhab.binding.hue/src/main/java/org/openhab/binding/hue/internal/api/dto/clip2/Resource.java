@@ -22,13 +22,14 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ButtonEventType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.CategoryType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContactStateType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
@@ -55,6 +56,7 @@ import org.openhab.core.util.ColorUtil.Gamut;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.annotations.SerializedName;
 
 /**
@@ -74,8 +76,16 @@ public class Resource {
      * values have changed. A sparse resource does not contain the full state of the resource. And the absence of any
      * field from such a resource does not indicate that the field value is UNDEF, but rather that the value is the same
      * as what it was previously set to by the last non-sparse resource.
+     * <p>
+     * The following content types are defined:
+     *
+     * <li><b>ADD</b> resource being added; contains (assumed) all fields</li>
+     * <li><b>DELETE</b> resource being deleted; contains id and type only</li>
+     * <li><b>UPDATE</b> resource being updated; contains id, type and changed fields</li>
+     * <li><b>ERROR</b> resource with error; contents unknown</li>
+     * <li><b>FULL_STATE</b> existing resource being downloaded; contains all fields</li>
      */
-    private transient boolean hasSparseData;
+    private transient ContentType contentType;
 
     private @Nullable String type;
     private @Nullable String id;
@@ -107,7 +117,15 @@ public class Resource {
     private @Nullable Dynamics dynamics;
     private @Nullable @SerializedName("contact_report") ContactReport contactReport;
     private @Nullable @SerializedName("tamper_reports") List<TamperReport> tamperReports;
-    private @Nullable String state;
+    private @Nullable JsonElement state;
+    private @Nullable @SerializedName("script_id") String scriptId;
+
+    /**
+     * Constructor
+     */
+    public Resource() {
+        contentType = ContentType.FULL_STATE;
+    }
 
     /**
      * Constructor
@@ -115,6 +133,7 @@ public class Resource {
      * @param resourceType
      */
     public Resource(@Nullable ResourceType resourceType) {
+        this();
         if (Objects.nonNull(resourceType)) {
             setType(resourceType);
         }
@@ -344,6 +363,14 @@ public class Resource {
     }
 
     /**
+     * Return the resource's metadata category.
+     */
+    public CategoryType getCategory() {
+        MetaData metaData = getMetaData();
+        return Objects.nonNull(metaData) ? metaData.getCategory() : CategoryType.NULL;
+    }
+
+    /**
      * Return an HSB where the HS part is derived from the color xy JSON element (only), so the B part is 100%
      *
      * @return an HSBType.
@@ -373,6 +400,10 @@ public class Resource {
         return Objects.isNull(contactReport) ? UnDefType.NULL
                 : ContactStateType.CONTACT == contactReport.getContactState() ? OpenClosedType.CLOSED
                         : OpenClosedType.OPEN;
+    }
+
+    public ContentType getContentType() {
+        return contentType;
     }
 
     public int getControlId() {
@@ -630,60 +661,68 @@ public class Resource {
     }
 
     /**
-     * Check if the scene resource contains a 'status.active' element. If such an element is present, returns a Boolean
-     * Optional whose value depends on the value of that element, or an empty Optional if it is not.
+     * Check if the scene resource contains a 'status.active' element. Returns a Boolean if such an element is present,
+     * whose value depends on the value of that element, or null if it is not.
      *
-     * @return true, false, or empty.
+     * @return true, false, or null.
      */
-    public Optional<Boolean> getSceneActive() {
+    public @Nullable Boolean getSceneActive() {
         if (ResourceType.SCENE == getType()) {
             JsonElement status = this.status;
             if (Objects.nonNull(status) && status.isJsonObject()) {
                 JsonElement active = ((JsonObject) status).get("active");
                 if (Objects.nonNull(active) && active.isJsonPrimitive()) {
-                    return Optional.of(!"inactive".equalsIgnoreCase(active.getAsString()));
+                    return !"inactive".equalsIgnoreCase(active.getAsString());
                 }
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     /**
-     * If the getSceneActive() optional result is empty return 'UnDefType.NULL'. Otherwise if the optional result is
-     * present and 'true' (i.e. the scene is active) return the scene name. Or finally (the optional result is present
-     * and 'false') return 'UnDefType.UNDEF'.
+     * Return the scriptId if any.
+     */
+    public @Nullable String getScriptId() {
+        return scriptId;
+    }
+
+    /**
+     * Depending on the returned value from getSceneActive() this method returns 'UnDefType.NULL' for 'null',
+     * 'UnDefType.UNDEF' for 'false' or when 'true' (i.e. the scene is active) return the scene name.
      *
-     * @return either 'UnDefType.NULL', a StringType containing the (active) scene name, or 'UnDefType.UNDEF'.
+     * @return either a StringType containing the (active) scene name, 'UnDefType.UNDEF' or 'UnDefType.NULL'.
      */
     public State getSceneState() {
-        return getSceneActive().map(a -> a ? new StringType(getName()) : UnDefType.UNDEF).orElse(UnDefType.NULL);
+        Boolean sceneActive = getSceneActive();
+        return sceneActive != null ? sceneActive ? new StringType(getName()) : UnDefType.UNDEF : UnDefType.NULL;
     }
 
     /**
      * Check if the smart scene resource contains a 'state' element. If such an element is present, returns a Boolean
-     * Optional whose value depends on the value of that element, or an empty Optional if it is not.
+     * whose value depends on the value of that element, or null if it is not.
      *
-     * @return true, false, or empty.
+     * @return true, false, or null.
      */
-    public Optional<Boolean> getSmartSceneActive() {
-        if (ResourceType.SMART_SCENE == getType()) {
-            String state = this.state;
+    public @Nullable Boolean getSmartSceneActive() {
+        if (ResourceType.SMART_SCENE == getType() && (state instanceof JsonPrimitive statePrimitive)) {
+            String state = statePrimitive.getAsString();
             if (Objects.nonNull(state)) {
-                return Optional.of(SmartSceneState.ACTIVE == SmartSceneState.of(state));
+                return SmartSceneState.ACTIVE == SmartSceneState.of(state);
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     /**
-     * If the getSmartSceneActive() optional result is empty return 'UnDefType.NULL'. Otherwise if the optional result
-     * is present and 'true' (i.e. the scene is active) return the smart scene name. Or finally (the optional result is
-     * present and 'false') return 'UnDefType.UNDEF'.
+     * Depending on the returned value from getSmartSceneActive() this method returns 'UnDefType.NULL' for 'null',
+     * 'UnDefType.UNDEF' for 'false' or when 'true' (i.e. the scene is active) return the scene name.
      *
-     * @return either 'UnDefType.NULL', a StringType containing the (active) scene name, or 'UnDefType.UNDEF'.
+     * @return either a StringType containing the (active) scene name, 'UnDefType.UNDEF' or 'UnDefType.NULL'.
      */
     public State getSmartSceneState() {
-        return getSmartSceneActive().map(a -> a ? new StringType(getName()) : UnDefType.UNDEF).orElse(UnDefType.NULL);
+        Boolean smartSceneActive = getSmartSceneActive();
+        return smartSceneActive != null ? smartSceneActive ? new StringType(getName()) : UnDefType.UNDEF
+                : UnDefType.NULL;
     }
 
     public List<ResourceReference> getServiceReferences() {
@@ -785,17 +824,12 @@ public class Resource {
     }
 
     public boolean hasFullState() {
-        return !hasSparseData;
+        return ContentType.FULL_STATE == contentType;
     }
 
-    /**
-     * Mark that the resource has sparse data.
-     *
-     * @return this instance.
-     */
-    public Resource markAsSparse() {
-        hasSparseData = true;
-        return this;
+    public boolean hasName() {
+        MetaData metaData = getMetaData();
+        return Objects.nonNull(metaData) && Objects.nonNull(metaData.getName());
     }
 
     public Resource setAlerts(Alerts alert) {
@@ -815,6 +849,11 @@ public class Resource {
 
     public Resource setContactReport(ContactReport contactReport) {
         this.contactReport = contactReport;
+        return this;
+    }
+
+    public Resource setContentType(ContentType contentType) {
+        this.contentType = contentType;
         return this;
     }
 

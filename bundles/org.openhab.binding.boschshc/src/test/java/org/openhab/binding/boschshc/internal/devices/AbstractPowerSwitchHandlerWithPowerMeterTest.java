@@ -29,6 +29,7 @@ import javax.measure.quantity.Power;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
@@ -56,14 +57,15 @@ public abstract class AbstractPowerSwitchHandlerWithPowerMeterTest<T extends Abs
     private @Captor @NonNullByDefault({}) ArgumentCaptor<QuantityType<Energy>> energyCaptor;
 
     @BeforeEach
-    public void beforeEach() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+    public void beforeEach(TestInfo testInfo)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         PowerMeterServiceState powerMeterServiceState = new PowerMeterServiceState();
         powerMeterServiceState.powerConsumption = 12.34d;
         powerMeterServiceState.energyConsumption = 56.78d;
         lenient().when(getBridgeHandler().getState(anyString(), eq("PowerMeter"), same(PowerMeterServiceState.class)))
                 .thenReturn(powerMeterServiceState);
 
-        super.beforeEach();
+        super.beforeEach(testInfo);
     }
 
     @Test

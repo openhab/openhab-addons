@@ -36,6 +36,8 @@ import org.openhab.core.types.UnDefType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import inet.ipaddr.mac.MACAddress;
+
 /**
  * The {@link WifiStationHandler} is responsible for handling everything associated to
  * any Freebox thing types except the bridge thing type.
@@ -55,21 +57,36 @@ public class WifiStationHandler extends HostHandler {
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
+        poll();
+    }
+
+    @Override
+    protected void internalForcePoll() throws FreeboxException {
+        super.internalForcePoll();
+        poll();
+    }
+
+    private void poll() throws FreeboxException {
+        MACAddress mac = getMac();
+        if (mac == null) {
+            throw new FreeboxException(
+                    "internalPoll is not possible because MAC address is undefined for the thing " + thing.getUID());
+        }
 
         // Search if the wifi-host is hosted on server access-points
-        Optional<Station> station = getManager(APManager.class).getStation(getMac());
+        Optional<Station> station = getManager(APManager.class).getStation(mac);
         if (station.isPresent()) {
             Station data = station.get();
-            updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, data.getLastSeen());
+            updateChannelDateTimeState(GROUP_CONNECTIVITY, LAST_SEEN, data.getLastSeen());
             updateChannelString(GROUP_WIFI, WIFI_HOST, SERVER_HOST);
             updateWifiStationChannels(data.signal(), data.getSsid(), data.rxRate(), data.txRate());
             return;
         }
 
         // Search if it is hosted by a repeater
-        Optional<LanHost> wifiHost = getManager(RepeaterManager.class).getHost(getMac());
+        Optional<LanHost> wifiHost = getManager(RepeaterManager.class).getHost(mac);
         if (wifiHost.isPresent()) {
-            updateChannelDateTimeState(CONNECTIVITY, LAST_SEEN, wifiHost.get().getLastSeen());
+            updateChannelDateTimeState(GROUP_CONNECTIVITY, LAST_SEEN, wifiHost.get().getLastSeen());
             LanAccessPoint lanAp = wifiHost.get().accessPoint();
             if (lanAp != null) {
                 updateChannelString(GROUP_WIFI, WIFI_HOST, "%s-%s".formatted(lanAp.type(), lanAp.uid()));

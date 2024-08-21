@@ -31,7 +31,7 @@ import org.openhab.core.thing.ThingUID;
 
 /**
  * Tests for {@link ShellyThingCreator}.
- * 
+ *
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
@@ -136,7 +136,9 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_MOTION, "", THING_TYPE_SHELLYMOTION_STR), //
                 // Plus Series
                 Arguments.of(SHELLYDT_PLUS1, "", THING_TYPE_SHELLYPLUS1_STR), //
+                Arguments.of(SHELLYDT_PLUS1G3, "", THING_TYPE_SHELLYPLUS1_STR), //
                 Arguments.of(SHELLYDT_PLUS1PM, "", THING_TYPE_SHELLYPLUS1PM_STR), //
+                Arguments.of(SHELLYDT_PLUS1PMG3, "", THING_TYPE_SHELLYPLUS1PM_STR), //
                 Arguments.of(SHELLYDT_PLUS1UL, "", THING_TYPE_SHELLYPLUS1_STR), //
                 Arguments.of(SHELLYDT_PLUS1PMUL, "", THING_TYPE_SHELLYPLUS1PM_STR), //
                 Arguments.of("SNSW-002P16EU", "relay", THING_TYPE_SHELLYPLUS2PM_RELAY_STR), //
@@ -149,17 +151,20 @@ public class ShellyThingCreatorTest {
                 Arguments.of(SHELLYDT_PLUSPLUGUS, "", THING_TYPE_SHELLYPLUSPLUGUS_STR), //
                 Arguments.of(SHELLYDT_PLUSI4DC, "", THING_TYPE_SHELLYPLUSI4DC_STR), //
                 Arguments.of(SHELLYDT_PLUSI4, "", THING_TYPE_SHELLYPLUSI4_STR), //
+                Arguments.of(SHELLYDT_PLUSI4G3, "", THING_TYPE_SHELLYPLUSI4_STR), //
                 Arguments.of(SHELLYDT_PLUSHT, "", THING_TYPE_SHELLYPLUSHT_STR), //
                 Arguments.of(SHELLYDT_PLUSHTG3, "", THING_TYPE_SHELLYPLUSHTG3_STR), //
                 Arguments.of(SHELLYDT_PLUSSMOKE, "", THING_TYPE_SHELLYPLUSSMOKE_STR), //
                 Arguments.of(SHELLYDT_PLUSUNI, "", THING_TYPE_SHELLYUNI_STR), //
                 Arguments.of(SHELLYDT_PLUSDIMMERUS, "", THING_TYPE_SHELLYPLUSDIMMERUS_STR), //
                 Arguments.of(SHELLYDT_PLUSDIMMER10V, "", THING_TYPE_SHELLYPLUSDIMMER10V_STR), //
+                Arguments.of(SHELLYDT_PLUSDIMMER0110VG3, "", THING_TYPE_SHELLYPLUSDIMMER10V_STR), //
+
                 // Plus Mini Series
                 Arguments.of(SHELLYDT_MINI1, "", THING_TYPE_SHELLY1MINI_STR), //
                 Arguments.of(SHELLYDT_MINIPM, "", THING_TYPE_SHELLYPMMINI_STR), //
                 Arguments.of(SHELLYDT_MINI1PM, "", THING_TYPE_SHELLY1PMMINI_STR), //
-                Arguments.of(SHELLYDT_MINI1G3_1, "", THING_TYPE_SHELLY1MINI_STR), //
+                Arguments.of(SHELLYDT_MINIG3_1, "", THING_TYPE_SHELLY1MINI_STR), //
                 Arguments.of(SHELLYDT_MINIG3_PM, "", THING_TYPE_SHELLYPMMINI_STR), //
                 Arguments.of(SHELLYDT_MINIG3_1PM, "", THING_TYPE_SHELLY1PMMINI_STR), //
                 // Pro Series

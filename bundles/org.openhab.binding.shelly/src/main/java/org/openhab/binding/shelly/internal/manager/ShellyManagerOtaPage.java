@@ -118,7 +118,7 @@ public class ShellyManagerOtaPage extends ShellyManagerPage {
 
             if ("yes".equalsIgnoreCase(update)) {
                 // do the update
-                th.setThingOffline(ThingStatusDetail.FIRMWARE_UPDATING, "offline.status-error-fwupgrade");
+                th.setThingOfflineAndDisconnect(ThingStatusDetail.FIRMWARE_UPDATING, "offline.status-error-fwupgrade");
                 html += loadHTML(FWUPDATE2_HTML, properties);
 
                 new Thread(() -> { // schedule asynchronous reboot

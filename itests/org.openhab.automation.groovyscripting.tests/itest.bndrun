@@ -74,8 +74,6 @@ Fragment-Host: org.openhab.automation.groovyscripting
 	org.objectweb.asm.tree.analysis;version='[9.6.0,9.6.1)',\
 	org.objectweb.asm.util;version='[9.6.0,9.6.1)',\
 	org.ops4j.pax.logging.pax-logging-api;version='[2.2.7,2.2.8)',\
-	de.focus_shift.jollyday-core;version='[0.28.1,0.28.2)',\
-	de.focus_shift.jollyday-jackson;version='[0.28.1,0.28.2)',\
 	org.openhab.automation.groovyscripting;version='[4.3.0,4.3.1)',\
 	org.openhab.automation.groovyscripting.tests;version='[4.3.0,4.3.1)',\
 	org.openhab.core;version='[4.3.0,4.3.1)',\
@@ -88,5 +86,8 @@ Fragment-Host: org.openhab.automation.groovyscripting
 	org.openhab.core.test;version='[4.3.0,4.3.1)',\
 	org.openhab.core.thing;version='[4.3.0,4.3.1)',\
 	org.openhab.core.transform;version='[4.3.0,4.3.1)',\
-	stax2-api;version='[4.2.2,4.2.3)'
+	stax2-api;version='[4.2.2,4.2.3)',\
+	de.focus_shift.jollyday-core;version='[0.30.0,0.30.1)',\
+	de.focus_shift.jollyday-jackson;version='[0.30.0,0.30.1)',\
+	org.jsr-305;version='[3.0.2,3.0.3)'
 

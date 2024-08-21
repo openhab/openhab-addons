@@ -16,10 +16,13 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.characteristics.Characteristic;
+import io.github.hapjava.characteristics.impl.common.ServiceLabelNamespaceCharacteristic;
+import io.github.hapjava.services.impl.ServiceLabelService;
 
 /**
  * Bare accessory (for being the root of a multi-service accessory).
@@ -32,5 +35,13 @@ public class HomekitAccessoryGroupImpl extends AbstractHomekitAccessoryImpl {
             List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater, HomekitSettings settings)
             throws IncompleteAccessoryException {
         super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+
+        getCharacteristic(ServiceLabelNamespaceCharacteristic.class)
+                .ifPresent(c -> getServices().add(new ServiceLabelService(c)));
     }
 }

@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.measure.Quantity;
 import javax.measure.Unit;
@@ -50,6 +51,7 @@ import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -99,6 +101,8 @@ import io.github.hapjava.characteristics.impl.common.IsConfiguredCharacteristic;
 import io.github.hapjava.characteristics.impl.common.IsConfiguredEnum;
 import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 import io.github.hapjava.characteristics.impl.common.ObstructionDetectedCharacteristic;
+import io.github.hapjava.characteristics.impl.common.ProgrammableSwitchEnum;
+import io.github.hapjava.characteristics.impl.common.ProgrammableSwitchEventCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusActiveCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusFaultCharacteristic;
 import io.github.hapjava.characteristics.impl.common.StatusFaultEnum;
@@ -117,6 +121,10 @@ import io.github.hapjava.characteristics.impl.fan.TargetFanStateCharacteristic;
 import io.github.hapjava.characteristics.impl.fan.TargetFanStateEnum;
 import io.github.hapjava.characteristics.impl.filtermaintenance.FilterLifeLevelCharacteristic;
 import io.github.hapjava.characteristics.impl.filtermaintenance.ResetFilterIndicationCharacteristic;
+import io.github.hapjava.characteristics.impl.garagedoor.CurrentDoorStateCharacteristic;
+import io.github.hapjava.characteristics.impl.garagedoor.CurrentDoorStateEnum;
+import io.github.hapjava.characteristics.impl.garagedoor.TargetDoorStateCharacteristic;
+import io.github.hapjava.characteristics.impl.garagedoor.TargetDoorStateEnum;
 import io.github.hapjava.characteristics.impl.humiditysensor.CurrentRelativeHumidityCharacteristic;
 import io.github.hapjava.characteristics.impl.humiditysensor.TargetRelativeHumidityCharacteristic;
 import io.github.hapjava.characteristics.impl.inputsource.CurrentVisibilityStateCharacteristic;
@@ -131,6 +139,10 @@ import io.github.hapjava.characteristics.impl.lightbulb.BrightnessCharacteristic
 import io.github.hapjava.characteristics.impl.lightbulb.ColorTemperatureCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.HueCharacteristic;
 import io.github.hapjava.characteristics.impl.lightbulb.SaturationCharacteristic;
+import io.github.hapjava.characteristics.impl.lock.LockCurrentStateCharacteristic;
+import io.github.hapjava.characteristics.impl.lock.LockCurrentStateEnum;
+import io.github.hapjava.characteristics.impl.lock.LockTargetStateCharacteristic;
+import io.github.hapjava.characteristics.impl.lock.LockTargetStateEnum;
 import io.github.hapjava.characteristics.impl.slat.CurrentTiltAngleCharacteristic;
 import io.github.hapjava.characteristics.impl.slat.TargetTiltAngleCharacteristic;
 import io.github.hapjava.characteristics.impl.television.ClosedCaptionsCharacteristic;
@@ -195,6 +207,7 @@ public class HomekitCharacteristicFactory {
             put(CONFIGURED, HomekitCharacteristicFactory::createIsConfiguredCharacteristic);
             put(CONFIGURED_NAME, HomekitCharacteristicFactory::createConfiguredNameCharacteristic);
             put(COOLING_THRESHOLD_TEMPERATURE, HomekitCharacteristicFactory::createCoolingThresholdCharacteristic);
+            put(CURRENT_DOOR_STATE, HomekitCharacteristicFactory::createCurrentDoorStateCharacteristic);
             put(CURRENT_HEATING_COOLING_STATE,
                     HomekitCharacteristicFactory::createCurrentHeatingCoolingStateCharacteristic);
             put(CURRENT_FAN_STATE, HomekitCharacteristicFactory::createCurrentFanStateCharacteristic);
@@ -220,6 +233,8 @@ public class HomekitCharacteristicFactory {
             put(INPUT_DEVICE_TYPE, HomekitCharacteristicFactory::createInputDeviceTypeCharacteristic);
             put(INPUT_SOURCE_TYPE, HomekitCharacteristicFactory::createInputSourceTypeCharacteristic);
             put(LOCK_CONTROL, HomekitCharacteristicFactory::createLockPhysicalControlsCharacteristic);
+            put(LOCK_CURRENT_STATE, HomekitCharacteristicFactory::createLockCurrentStateCharacteristic);
+            put(LOCK_TARGET_STATE, HomekitCharacteristicFactory::createLockTargetStateCharacteristic);
             put(MANUFACTURER, HomekitCharacteristicFactory::createManufacturerCharacteristic);
             put(MODEL, HomekitCharacteristicFactory::createModelCharacteristic);
             put(MUTE, HomekitCharacteristicFactory::createMuteCharacteristic);
@@ -231,6 +246,7 @@ public class HomekitCharacteristicFactory {
             put(PM10_DENSITY, HomekitCharacteristicFactory::createPM10DensityCharacteristic);
             put(PM25_DENSITY, HomekitCharacteristicFactory::createPM25DensityCharacteristic);
             put(POWER_MODE, HomekitCharacteristicFactory::createPowerModeCharacteristic);
+            put(PROGRAMMABLE_SWITCH_EVENT, HomekitCharacteristicFactory::createProgrammableSwitchEventCharacteristic);
             put(REMAINING_DURATION, HomekitCharacteristicFactory::createRemainingDurationCharacteristic);
             put(REMOTE_KEY, HomekitCharacteristicFactory::createRemoteKeyCharacteristic);
             put(RELATIVE_HUMIDITY, HomekitCharacteristicFactory::createRelativeHumidityCharacteristic);
@@ -242,6 +258,7 @@ public class HomekitCharacteristicFactory {
             put(SULPHUR_DIOXIDE_DENSITY, HomekitCharacteristicFactory::createSulphurDioxideDensityCharacteristic);
             put(SWING_MODE, HomekitCharacteristicFactory::createSwingModeCharacteristic);
             put(TAMPERED_STATUS, HomekitCharacteristicFactory::createStatusTamperedCharacteristic);
+            put(TARGET_DOOR_STATE, HomekitCharacteristicFactory::createTargetDoorStateCharacteristic);
             put(TARGET_FAN_STATE, HomekitCharacteristicFactory::createTargetFanStateCharacteristic);
             put(TARGET_HEATING_COOLING_STATE,
                     HomekitCharacteristicFactory::createTargetHeatingCoolingStateCharacteristic);
@@ -313,9 +330,9 @@ public class HomekitCharacteristicFactory {
      *            associated with, which has already been set.
      * @return
      */
-    public static <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(HomekitTaggedItem item,
+    public static <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(HomekitTaggedItem item,
             Class<T> klazz, @Nullable List<T> customEnumList, boolean inverted) {
-        EnumMap<T, String> map = new EnumMap(klazz);
+        EnumMap<T, Object> map = new EnumMap(klazz);
         var dataTypes = item.getBaseItem().getAcceptedDataTypes();
         boolean switchType = dataTypes.contains(OnOffType.class);
         boolean contactType = dataTypes.contains(OpenClosedType.class);
@@ -327,14 +344,29 @@ public class HomekitCharacteristicFactory {
         }
         String onValue = switchType ? OnOffType.ON.toString() : OpenClosedType.OPEN.toString();
         String offValue = switchType ? OnOffType.OFF.toString() : OpenClosedType.CLOSED.toString();
+        @Nullable
+        T offEnumValue = null, onEnumValue = null;
+
+        var configuration = item.getConfiguration();
+        boolean configurationDefinesEnumValues = false;
+        if (configuration != null && !configuration.isEmpty()) {
+            for (var k : klazz.getEnumConstants()) {
+                if (configuration.containsKey(k.toString())) {
+                    configurationDefinesEnumValues = true;
+                    break;
+                }
+            }
+        }
 
         for (var k : klazz.getEnumConstants()) {
             if (numberType) {
                 int code = k.getCode();
-                if ((switchType || contactType) && code == 0) {
+                if ((switchType || contactType) && code == 0 && !configurationDefinesEnumValues) {
                     map.put(k, inverted ? onValue : offValue);
-                } else if ((switchType || contactType) && code == 1) {
+                    offEnumValue = k;
+                } else if ((switchType || contactType) && code == 1 && !configurationDefinesEnumValues) {
                     map.put(k, inverted ? offValue : onValue);
+                    onEnumValue = k;
                 } else if (percentType && code == 0) {
                     map.put(k, "OFF");
                 } else if (percentType && code == 1) {
@@ -346,12 +378,24 @@ public class HomekitCharacteristicFactory {
                 map.put(k, k.toString());
             }
         }
-        var configuration = item.getConfiguration();
-        if (configuration != null) {
+        if (configuration != null && !configuration.isEmpty()) {
             map.forEach((k, current_value) -> {
-                final Object newValue = configuration.get(k.toString());
-                if (newValue instanceof String || newValue instanceof Number) {
-                    map.put(k, newValue.toString());
+                Object newValue = configuration.get(k.toString());
+                if (newValue instanceof String || newValue instanceof Number || newValue instanceof List) {
+                    if (newValue instanceof Number) {
+                        newValue = newValue.toString();
+                    } else if (newValue instanceof List listValue) {
+                        newValue = listValue.stream().map(v -> {
+                            // they probably put "NULL" in the YAML in MainUI;
+                            // and they meant it as a string to match the UnDefType.NULL
+                            if (v == null) {
+                                return "NULL";
+                            } else {
+                                return v.toString();
+                            }
+                        }).collect(Collectors.toList());
+                    }
+                    map.put(k, Objects.requireNonNull(newValue));
                     if (customEnumList != null) {
                         customEnumList.add(k);
                     }
@@ -359,24 +403,30 @@ public class HomekitCharacteristicFactory {
             });
         }
         if (customEnumList != null && customEnumList.isEmpty()) {
-            customEnumList.addAll(map.keySet());
+            if (switchType || contactType) {
+                // Switches and Contacts automatically filter the valid values to the first two
+                customEnumList.add(Objects.requireNonNull(offEnumValue));
+                customEnumList.add(Objects.requireNonNull(onEnumValue));
+            } else {
+                customEnumList.addAll(map.keySet());
+            }
         }
         LOGGER.debug("Created {} mapping for item {} ({}): {}", klazz.getSimpleName(), item.getName(),
                 item.getBaseItem().getClass().getSimpleName(), map);
         return map;
     }
 
-    public static <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(HomekitTaggedItem item,
+    public static <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(HomekitTaggedItem item,
             Class<T> klazz) {
         return createMapping(item, klazz, null, false);
     }
 
-    public static <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(HomekitTaggedItem item,
+    public static <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(HomekitTaggedItem item,
             Class<T> klazz, @Nullable List<T> customEnumList) {
         return createMapping(item, klazz, customEnumList, false);
     }
 
-    public static <T extends Enum<T> & CharacteristicEnum> Map<T, String> createMapping(HomekitTaggedItem item,
+    public static <T extends Enum<T> & CharacteristicEnum> Map<T, Object> createMapping(HomekitTaggedItem item,
             Class<T> klazz, boolean inverted) {
         return createMapping(item, klazz, null, inverted);
     }
@@ -391,8 +441,7 @@ public class HomekitCharacteristicFactory {
      * @param <T> type of the result derived from
      * @return key for the value
      */
-    public static <T> T getKeyFromMapping(HomekitTaggedItem item, Map<T, String> mapping, T defaultValue) {
-        final State state = item.getItem().getState();
+    public static <T> T getKeyFromMapping(HomekitTaggedItem item, State state, Map<T, Object> mapping, T defaultValue) {
         LOGGER.trace("getKeyFromMapping: characteristic {}, state {}, mapping {}", item.getAccessoryType().getTag(),
                 state, mapping);
 
@@ -415,14 +464,23 @@ public class HomekitCharacteristicFactory {
             return defaultValue;
         }
 
-        return mapping.entrySet().stream().filter(entry -> value.equalsIgnoreCase(entry.getValue())).findAny()
-                .map(Map.Entry::getKey).orElseGet(() -> {
-                    LOGGER.warn(
-                            "Wrong value {} for {} characteristic of the item {}. Expected one of following {}. Returning {}.",
-                            state.toString(), item.getAccessoryType().getTag(), item.getName(), mapping.values(),
-                            defaultValue);
-                    return defaultValue;
-                });
+        return mapping.entrySet().stream().filter(entry -> {
+            Object mappingValue = entry.getValue();
+            if (mappingValue instanceof String stringValue) {
+                return value.equalsIgnoreCase(stringValue);
+            } else if (mappingValue instanceof List listValue) {
+                return listValue.stream().filter(listEntry -> value.equalsIgnoreCase(listEntry.toString())).findAny()
+                        .isPresent();
+            } else {
+                LOGGER.warn("Found unexpected enum value type {}; this is a bug.", mappingValue.getClass());
+                return false;
+            }
+        }).findAny().map(Map.Entry::getKey).orElseGet(() -> {
+            LOGGER.warn(
+                    "Wrong value {} for {} characteristic of the item {}. Expected one of following {}. Returning {}.",
+                    state.toString(), item.getAccessoryType().getTag(), item.getName(), mapping.values(), defaultValue);
+            return defaultValue;
+        });
     }
 
     // supporting methods
@@ -447,17 +505,31 @@ public class HomekitCharacteristicFactory {
     }
 
     private static <T extends CharacteristicEnum> CompletableFuture<T> getEnumFromItem(HomekitTaggedItem item,
-            Map<T, String> mapping, T defaultValue) {
-        return CompletableFuture.completedFuture(getKeyFromMapping(item, mapping, defaultValue));
+            Map<T, Object> mapping, T defaultValue) {
+        return CompletableFuture
+                .completedFuture(getKeyFromMapping(item, item.getItem().getState(), mapping, defaultValue));
     }
 
-    public static <T extends Enum<T>> void setValueFromEnum(HomekitTaggedItem taggedItem, T value, Map<T, String> map) {
+    public static <T extends Enum<T>> void setValueFromEnum(HomekitTaggedItem taggedItem, T value, Map<T, Object> map) {
+        Object mapValue = map.get(value);
+        // if the mapping has multiple values for this enum, just use the first one for the command sent to the item
+        if (mapValue instanceof List listValue) {
+            if (listValue.isEmpty()) {
+                mapValue = null;
+            } else {
+                mapValue = listValue.get(0);
+            }
+        }
+        if (mapValue == null) {
+            LOGGER.warn("Unable to find mapping value for {} for item {}", value, taggedItem.getName());
+            return;
+        }
         if (taggedItem.getBaseItem() instanceof NumberItem) {
-            taggedItem.send(new DecimalType(Objects.requireNonNull(map.get(value))));
+            taggedItem.send(new DecimalType(mapValue.toString()));
         } else if (taggedItem.getBaseItem() instanceof SwitchItem) {
-            taggedItem.send(OnOffType.from(Objects.requireNonNull(map.get(value))));
+            taggedItem.send(OnOffType.from(mapValue.toString()));
         } else {
-            taggedItem.send(new StringType(map.get(value)));
+            taggedItem.send(new StringType(mapValue.toString()));
         }
     }
 
@@ -818,6 +890,27 @@ public class HomekitCharacteristicFactory {
                 getUnsubscriber(taggedItem, COOLING_THRESHOLD_TEMPERATURE, updater));
     }
 
+    private static CurrentDoorStateCharacteristic createCurrentDoorStateCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        if (taggedItem.getBaseItem() instanceof RollershutterItem) {
+            return new CurrentDoorStateCharacteristic(() -> {
+                if (taggedItem.getItem().getState() instanceof PercentType percentType
+                        && percentType.equals(PercentType.HUNDRED)) {
+                    return CompletableFuture.completedFuture(CurrentDoorStateEnum.CLOSED);
+                }
+                return CompletableFuture.completedFuture(CurrentDoorStateEnum.OPEN);
+            }, getSubscriber(taggedItem, CURRENT_DOOR_STATE, updater),
+                    getUnsubscriber(taggedItem, CURRENT_DOOR_STATE, updater));
+        } else {
+            List<CurrentDoorStateEnum> validValues = new ArrayList<>();
+            var map = createMapping(taggedItem, CurrentDoorStateEnum.class, validValues, true);
+            return new CurrentDoorStateCharacteristic(
+                    () -> getEnumFromItem(taggedItem, map, CurrentDoorStateEnum.CLOSED),
+                    getSubscriber(taggedItem, CURRENT_DOOR_STATE, updater),
+                    getUnsubscriber(taggedItem, CURRENT_DOOR_STATE, updater));
+        }
+    }
+
     private static CurrentHeatingCoolingStateCharacteristic createCurrentHeatingCoolingStateCharacteristic(
             HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
         List<CurrentHeatingCoolingStateEnum> validValues = new ArrayList<>();
@@ -1059,6 +1152,23 @@ public class HomekitCharacteristicFactory {
                 getUnsubscriber(taggedItem, LOCK_CONTROL, updater));
     }
 
+    private static LockCurrentStateCharacteristic createLockCurrentStateCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        var map = createMapping(taggedItem, LockCurrentStateEnum.class);
+        return new LockCurrentStateCharacteristic(() -> getEnumFromItem(taggedItem, map, LockCurrentStateEnum.UNKNOWN),
+                getSubscriber(taggedItem, LOCK_CURRENT_STATE, updater),
+                getUnsubscriber(taggedItem, LOCK_CURRENT_STATE, updater));
+    }
+
+    private static LockTargetStateCharacteristic createLockTargetStateCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        var map = createMapping(taggedItem, LockTargetStateEnum.class);
+        return new LockTargetStateCharacteristic(() -> getEnumFromItem(taggedItem, map, LockTargetStateEnum.UNSECURED),
+                (value) -> setValueFromEnum(taggedItem, value, map),
+                getSubscriber(taggedItem, LOCK_TARGET_STATE, updater),
+                getUnsubscriber(taggedItem, LOCK_TARGET_STATE, updater));
+    }
+
     private static ManufacturerCharacteristic createManufacturerCharacteristic(HomekitTaggedItem taggedItem,
             HomekitAccessoryUpdater updater) {
         return new ManufacturerCharacteristic(() -> {
@@ -1158,6 +1268,80 @@ public class HomekitCharacteristicFactory {
             HomekitAccessoryUpdater updater) {
         var map = createMapping(taggedItem, PowerModeEnum.class, true);
         return new PowerModeCharacteristic((value) -> setValueFromEnum(taggedItem, value, map));
+    }
+
+    // this characteristic is unique in a few ways, so we can't use the "normal" helpers:
+    // * you don't return a "current" value, just the value of the most recent event
+    // * NULL/invalid values are very much expected, and should silently _not_ trigger an event
+    // * every update to the item should trigger an event, not just changes
+
+    private static ProgrammableSwitchEventCharacteristic createProgrammableSwitchEventCharacteristic(
+            HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater) {
+        // have to build the map custom, since SINGLE_PRESS starts at 0
+        Map<ProgrammableSwitchEnum, Object> map = new EnumMap(ProgrammableSwitchEnum.class);
+        List<ProgrammableSwitchEnum> validValues = new ArrayList<>();
+
+        if (taggedItem.getBaseItem().getAcceptedDataTypes().contains(OnOffType.class)) {
+            map.put(ProgrammableSwitchEnum.SINGLE_PRESS, OnOffType.ON.toString());
+            validValues.add(ProgrammableSwitchEnum.SINGLE_PRESS);
+        } else if (taggedItem.getBaseItem().getAcceptedDataTypes().contains(OpenClosedType.class)) {
+            map.put(ProgrammableSwitchEnum.SINGLE_PRESS, OpenClosedType.OPEN.toString());
+            validValues.add(ProgrammableSwitchEnum.SINGLE_PRESS);
+        } else {
+            map = createMapping(taggedItem, ProgrammableSwitchEnum.class, validValues, false);
+        }
+
+        var helper = new ProgrammableSwitchEventCharacteristicHelper(taggedItem, updater, map);
+
+        return new ProgrammableSwitchEventCharacteristic(validValues.toArray(new ProgrammableSwitchEnum[0]),
+                helper::getValue, helper::subscribe, getUnsubscriber(taggedItem, PROGRAMMABLE_SWITCH_EVENT, updater));
+    }
+
+    private static class ProgrammableSwitchEventCharacteristicHelper {
+        private @Nullable ProgrammableSwitchEnum lastValue = null;
+        private final HomekitTaggedItem taggedItem;
+        private final Map<ProgrammableSwitchEnum, Object> map;
+        private final HomekitAccessoryUpdater updater;
+
+        ProgrammableSwitchEventCharacteristicHelper(HomekitTaggedItem taggedItem, HomekitAccessoryUpdater updater,
+                Map<ProgrammableSwitchEnum, Object> map) {
+            this.taggedItem = taggedItem;
+            this.map = map;
+            this.updater = updater;
+        }
+
+        public CompletableFuture<ProgrammableSwitchEnum> getValue() {
+            return CompletableFuture.completedFuture(lastValue);
+        }
+
+        public void subscribe(HomekitCharacteristicChangeCallback cb) {
+            updater.subscribeToUpdates((GenericItem) taggedItem.getItem(), PROGRAMMABLE_SWITCH_EVENT.getTag(),
+                    state -> {
+                        // perform inversion here, so logic below only needs to deal with the
+                        // canonical style
+                        if (state instanceof OnOffType && taggedItem.isInverted()) {
+                            if (state.equals(OnOffType.ON)) {
+                                state = OnOffType.OFF;
+                            } else {
+                                state = OnOffType.ON;
+                            }
+                        } else if (state instanceof OpenClosedType && taggedItem.isInverted()) {
+                            if (state.equals(OpenClosedType.OPEN)) {
+                                state = OpenClosedType.CLOSED;
+                            } else {
+                                state = OpenClosedType.OPEN;
+                            }
+                        }
+                        // if "not pressed", don't send an event
+                        if (state instanceof UnDefType || (state instanceof OnOffType && state.equals(OnOffType.OFF))
+                                || (state instanceof OpenClosedType && state.equals(OpenClosedType.CLOSED))) {
+                            lastValue = null;
+                            return;
+                        }
+                        lastValue = getKeyFromMapping(taggedItem, state, map, ProgrammableSwitchEnum.SINGLE_PRESS);
+                        cb.changed();
+                    });
+        }
     }
 
     private static RemainingDurationCharacteristic createRemainingDurationCharacteristic(HomekitTaggedItem taggedItem,
@@ -1287,6 +1471,29 @@ public class HomekitCharacteristicFactory {
         return new SwingModeCharacteristic(() -> getEnumFromItem(taggedItem, map, SwingModeEnum.SWING_DISABLED),
                 (value) -> setValueFromEnum(taggedItem, value, map), getSubscriber(taggedItem, SWING_MODE, updater),
                 getUnsubscriber(taggedItem, SWING_MODE, updater));
+    }
+
+    private static TargetDoorStateCharacteristic createTargetDoorStateCharacteristic(HomekitTaggedItem taggedItem,
+            HomekitAccessoryUpdater updater) {
+        if (taggedItem.getBaseItem() instanceof RollershutterItem) {
+            return new TargetDoorStateCharacteristic(() -> {
+                if (taggedItem.getItem().getState() instanceof PercentType percentType
+                        && percentType.equals(PercentType.HUNDRED)) {
+                    return CompletableFuture.completedFuture(TargetDoorStateEnum.CLOSED);
+                }
+                return CompletableFuture.completedFuture(TargetDoorStateEnum.OPEN);
+            }, (targetState) -> taggedItem
+                    .send(targetState.equals(TargetDoorStateEnum.OPEN) ? UpDownType.UP : UpDownType.DOWN),
+                    getSubscriber(taggedItem, TARGET_DOOR_STATE, updater),
+                    getUnsubscriber(taggedItem, TARGET_DOOR_STATE, updater));
+        } else {
+            List<TargetDoorStateEnum> validValues = new ArrayList<>();
+            var map = createMapping(taggedItem, TargetDoorStateEnum.class, validValues, true);
+            return new TargetDoorStateCharacteristic(() -> getEnumFromItem(taggedItem, map, TargetDoorStateEnum.CLOSED),
+                    (targetState) -> setValueFromEnum(taggedItem, targetState, map),
+                    getSubscriber(taggedItem, TARGET_DOOR_STATE, updater),
+                    getUnsubscriber(taggedItem, TARGET_DOOR_STATE, updater));
+        }
     }
 
     private static TargetFanStateCharacteristic createTargetFanStateCharacteristic(HomekitTaggedItem taggedItem,

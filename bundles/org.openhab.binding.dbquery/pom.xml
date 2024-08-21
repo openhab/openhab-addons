@@ -18,6 +18,9 @@
     <bnd.importpackage>
       !javax.annotation;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*,!org.bouncycastle.*,!org.openjsse.*
     </bnd.importpackage>
+    <influx2.version>7.0.0</influx2.version>
+    <io.reactivex.rxjava3>3.1.8</io.reactivex.rxjava3>
+    <retrofit.version>2.10.0</retrofit.version>
   </properties>
 
   <dependencies>
@@ -25,27 +28,59 @@
     <dependency>
       <groupId>com.influxdb</groupId>
       <artifactId>influxdb-client-java</artifactId>
-      <version>1.6.0</version>
+      <version>${influx2.version}</version>
     </dependency>
     <dependency>
       <artifactId>influxdb-client-core</artifactId>
       <groupId>com.influxdb</groupId>
-      <version>1.6.0</version>
+      <version>${influx2.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.influxdb</groupId>
+      <artifactId>influxdb-client-utils</artifactId>
+      <version>${influx2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.influxdb</groupId>
+      <artifactId>flux-dsl</artifactId>
+      <version>${influx2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.influxdb</groupId>
+      <artifactId>influxdb-client-flux</artifactId>
+      <version>${influx2.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
       <artifactId>converter-gson</artifactId>
-      <groupId>com.squareup.retrofit2</groupId>
-      <version>2.5.0</version>
+      <version>${retrofit.version}</version>
     </dependency>
     <dependency>
-      <artifactId>converter-scalars</artifactId>
       <groupId>com.squareup.retrofit2</groupId>
-      <version>2.5.0</version>
+      <artifactId>converter-scalars</artifactId>
+      <version>${retrofit.version}</version>
     </dependency>
+    <dependency>
+      <artifactId>retrofit</artifactId>
+      <groupId>com.squareup.retrofit2</groupId>
+      <version>${retrofit.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>adapter-rxjava3</artifactId>
+      <version>${retrofit.version}</version>
+    </dependency>
+
     <dependency> <!-- also used for querydb library -->
       <artifactId>gson</artifactId>
       <groupId>com.google.code.gson</groupId>
       <version>${gson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.findbugs</groupId>
+      <artifactId>jsr305</artifactId>
+      <version>3.0.2</version>
     </dependency>
     <dependency>
       <artifactId>gson-fire</artifactId>
@@ -67,7 +102,7 @@
     <dependency>
       <artifactId>commons-csv</artifactId>
       <groupId>org.apache.commons</groupId>
-      <version>1.6</version>
+      <version>1.10.0</version>
     </dependency>
     <dependency>
       <artifactId>json</artifactId>
@@ -80,34 +115,29 @@
       <version>${okhttp3.version}</version>
     </dependency>
     <dependency>
-      <artifactId>retrofit</artifactId>
-      <groupId>com.squareup.retrofit2</groupId>
-      <version>2.6.2</version>
-    </dependency>
-    <dependency>
-      <artifactId>jsr305</artifactId>
-      <groupId>com.google.code.findbugs</groupId>
-      <version>3.0.2</version>
-    </dependency>
-    <dependency>
       <artifactId>logging-interceptor</artifactId>
       <groupId>com.squareup.okhttp3</groupId>
       <version>${okhttp3.version}</version>
     </dependency>
     <dependency>
+      <groupId>io.reactivex.rxjava3</groupId>
       <artifactId>rxjava</artifactId>
-      <groupId>io.reactivex.rxjava2</groupId>
-      <version>2.2.17</version>
+      <version>${io.reactivex.rxjava3}</version>
     </dependency>
     <dependency>
       <artifactId>reactive-streams</artifactId>
       <groupId>org.reactivestreams</groupId>
-      <version>1.0.3</version>
+      <version>1.0.4</version>
     </dependency>
     <dependency>
+      <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations</artifactId>
-      <groupId>io.swagger</groupId>
-      <version>1.5.22</version>
+      <version>2.2.22</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib</artifactId>
+      <version>${kotlin.version}</version>
     </dependency>
     <!-- end influxdb-client-java -->
   </dependencies>

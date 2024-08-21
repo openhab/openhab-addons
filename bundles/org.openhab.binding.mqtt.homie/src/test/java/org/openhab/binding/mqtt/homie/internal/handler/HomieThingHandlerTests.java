@@ -62,6 +62,7 @@ import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes.DataT
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -99,7 +100,8 @@ public class HomieThingHandlerTests {
     private @NonNullByDefault({}) Thing thing;
     private @NonNullByDefault({}) HomieThingHandler thingHandler;
 
-    private final MqttChannelTypeProvider channelTypeProvider = spy(new MqttChannelTypeProvider(thingTypeRegistryMock));
+    private final MqttChannelTypeProvider channelTypeProvider = spy(
+            new MqttChannelTypeProvider(thingTypeRegistryMock, new VolatileStorageService()));
     private final MqttChannelStateDescriptionProvider stateDescriptionProvider = new MqttChannelStateDescriptionProvider();
 
     private final String deviceID = ThingChannelConstants.TEST_HOMIE_THING.getId();
