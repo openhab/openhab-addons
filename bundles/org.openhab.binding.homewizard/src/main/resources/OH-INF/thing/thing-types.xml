@@ -192,7 +192,7 @@
 		<description>
 			This channel provides the most recently reported total imported water in m^3.
 		</description>
-        <state readOnly="true" pattern="%.3f %unit%"/>
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 	<channel-type id="current_water">
@@ -201,7 +201,7 @@
 		<description>
 			This channel provides the most recently reported current water usage in liters per minute.
 		</description>
-        <state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="power_switch">
@@ -226,7 +226,7 @@
 		<description>
 			This channel provides access to the brightness of the ring of the Energysocket
 		</description>
-        <state readOnly="true" pattern="%.0f %unit%"/>
+		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

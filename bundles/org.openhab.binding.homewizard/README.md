@@ -8,15 +8,19 @@ There are two important points of attention: the local API of each device must b
 
 ### Local API
 
-The local API of a device can be enabled from the HomeWizard app. Go to Settings in the app, then Meters and select the device you want to enable. On this page enable the local API.
+The local API of a device can be enabled from the HomeWizard app.
+Go to Settings in the app, then Meters and select the device you want to enable.
+On this page enable the local API.
 
 ### Fixed Address
 
-The devices support mDNS discovery but the binding does not support that yet. As a result the devices should be reachable through a hostname or a fixed IP address. Since the devices themselves have no option to set a fixed IP address you will need a different solution, for instance having your router hand out an IP address based upon the MAC address of the devices.
+The devices support mDNS discovery but the binding does not support that yet.
+As a result the devices should be reachable through a hostname or a fixed IP address.
+Since the devices themselves have no option to set a fixed IP address you will need a different solution, for instance having your router hand out an IP address based upon the MAC address of the devices.
 
 ## Supported Things
 
-The binding offers three Things, providing support for the P1 meter, the Watermeter and the Energy Socket. 
+The binding offers three Things, providing support for the P1 meter, the Watermeter and the Energy Socket.
 
 | Thing         | Device              | Description                                                                                       |
 |---------------|---------------------|---------------------------------------------------------------------------------------------------|
@@ -42,21 +46,6 @@ All devices can be configured through the web interface.
 Note that update rate of the P1 Meter itself depends on the frequency of the telegrams it receives from the Smart Meter.
 For DSMR5 meters this is generally once per second, for older versions the frequency is much lower.
 
-Example of configuration through a .thing file:
-
-```
-Thing homewizard:p1_wifi_meter:my_p1 [ ipAddress="192.178.1.67", refreshDelay=5 ]
-```
-
-```
-Thing homewizard:energy_socket:my_socket [ ipAddress="192.178.1.61", refreshDelay=5 ]
-```
-
-```
-Thing homewizard:watermeter:my_water [ ipAddress="192.178.1.27", refreshDelay=15 ]
-```
-
-
 ## Channels
 
 | Channel ID             | Item Type                 | Description                                                                                |Available|
@@ -75,9 +64,19 @@ Thing homewizard:watermeter:my_water [ ipAddress="192.178.1.27", refreshDelay=15
 | current_water          | Number:VolumetricFlowRate | Current water usage.                                                                       | W       |
 | power_switch           | Switch                    | Controls the power switch of the socket.                                                   | E       |
 | power_lock             | Switch                    | Controls the lock of the power switch (un/locking both the API and the physical button)    | E       |
-| ring_brightness        | Dimmer                    | Controls the brightness of the ring on the socket                                          | E       |
+| ring_brightness        | Number:Dimensionless      | Controls the brightness of the ring on the socket                                          | E       |
 
-Example of configuration through a .items file:
+## Full Example
+
+### `homewizard.things` Example
+
+```java
+Thing homewizard:p1_wifi_meter:my_p1 [ ipAddress="192.178.1.67", refreshDelay=5 ]
+Thing homewizard:energy_socket:my_socket [ ipAddress="192.178.1.61", refreshDelay=5 ]
+Thing homewizard:watermeter:my_water [ ipAddress="192.178.1.27", refreshDelay=15 ]
+```
+
+### `homewizard.items` Example
 
 ```java
 Number:Energy Energy_Import_T1 "Imported Energy T1 [%.0f kWh]" {channel="homewizard:p1_wifi_meter:my_meter:total_energy_import_t1" }
