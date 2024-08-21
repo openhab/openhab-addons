@@ -35,6 +35,7 @@ This binding does not provide discovery service.
 To retrieve data, Linky thing will be need to be linked to a LinkyBridge. LinkyBridge can be today select between enedis-web, myelectricaldata and enedis.
 
 ### enedis-web bridge
+
 If you select enedis-web bridge, you will need :
 
 - To create an Enedis account : https://mon-compte-client.enedis.fr/
@@ -102,8 +103,8 @@ Don't select the two linky in the same procedure, it will not work !
 
   ![connectlinky-myelectricaldata-step3b](doc/connectlinky-myelectricaldata-step3b.png)<br/>
 
-
 If you select enedis bridge, you will need :
+
 - To create an Enedis account : https://mon-compte-client.enedis.fr/
 
 Follow these steps to initialize the token. you can access the procedure from the connectlinky page available from your openhab: https://home.myopenhab.org/connectlinky/index.
