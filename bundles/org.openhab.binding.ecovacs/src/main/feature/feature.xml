@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="org.openhab.binding.ecovacs-${project.version}" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+	<repository>mvn:org.openhab.core.features.karaf/org.openhab.core.features.karaf.openhab-core/${ohc.version}/xml/features</repository>
+
+	<feature name="openhab-binding-ecovacs" description="Ecovacs Binding" version="${project.version}">
+		<feature>openhab-runtime-base</feature>
+		<feature dependency="true">openhab.tp-hivemqclient</feature>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-tcp/4.3.3</bundle>
+		<bundle dependency="true">mvn:org.jxmpp/jxmpp-core/0.6.3</bundle>
+		<bundle dependency="true">mvn:org.jxmpp/jxmpp-jid/0.6.3</bundle>
+		<bundle dependency="true">mvn:org.jxmpp/jxmpp-util-cache/0.6.3</bundle>
+		<bundle dependency="true">mvn:org.minidns/minidns-core/0.3.3</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-core/4.3.3</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-im/4.3.3</bundle>
+		<bundle dependency="true">mvn:org.igniterealtime.smack/smack-extensions/4.3.3</bundle>
+		<bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xpp3/1.1.4c_7</bundle>
+		<bundle start-level="80">mvn:org.igniterealtime.smack/smack-resolver-javax/4.3.3</bundle>
+		<bundle start-level="80">mvn:org.igniterealtime.smack/smack-java7/4.3.3</bundle>
+		<bundle start-level="80">mvn:org.igniterealtime.smack/smack-sasl-javax/4.3.3</bundle>
+		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.ecovacs/${project.version}</bundle>
+	</feature>
+</features>

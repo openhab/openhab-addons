@@ -95,8 +95,8 @@ demo.things:
 
 ```java
 Bridge flicbutton:flicd-bridge:local-flicd {
- Thing button flic_livingroom "Yellow Button Living Room" [address = "60:13:B3:02:18:BD"]
- Thing button flic_kitchen "Black Button Kitchen" [address = "B5:7E:59:78:86:9F"]
+    Thing button flic_livingroom "Yellow Button Living Room" [address = "60:13:B3:02:18:BD"]
+    Thing button flic_kitchen "Black Button Kitchen" [address = "B5:7E:59:78:86:9F"]
 }
 ```
 

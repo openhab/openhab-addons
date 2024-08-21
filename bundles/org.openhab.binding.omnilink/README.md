@@ -9,7 +9,7 @@ It connects to many other devices through serial ports or wired contacts and exp
 The OmniPro/Lumina controller acts as a "bridge" for accessing other connected devices.
 
 | Omni type                  | Hardware Type                                    | Things                            |
-|:---------------------------|:-------------------------------------------------|:----------------------------------|
+| :------------------------- | :----------------------------------------------- | :-------------------------------- |
 | Controller                 | Omni (Pro II, IIe, LTe), Lumina                  | `controller` (omni, lumina)       |
 | Lights                     | Built-in, UPB, HLC                               | `unit`, `dimmable`, `upb`, `room` |
 | Thermostats                | Omnistat, Omnistat2                              | `thermostat`                      |
@@ -24,7 +24,6 @@ The OmniPro/Lumina controller acts as a "bridge" for accessing other connected d
 | Output                     | Built-in/Hardwire                                | `output`                          |
 | Access Control Reader Lock | Leviton Access Control Reader                    | `lock`                            |
 
-
 ## Discovery
 
 ### Controller
@@ -37,12 +36,14 @@ Once a connection can be established to a controller, all connected devices will
 
 ## Thing Configuration
 
+<!-- markdownlint-disable MD038 -->
 An Omni or Lumina controller requires the IP address (`ipAddress`), optional port (`port` defaults to 4369), and 2 encryption keys (`key1`, `key2`).
 The hexadecimal pairs in the encryption keys are typically delimited using a colon`:`, but dashes `-`, spaces ` ` or no delimiter may be used.
+<!-- markdownlint-enable MD038 -->
 
 In the thing file, this looks like:
 
-```
+```java
 Bridge omnilink:controller:home [ ipAddress="127.0.0.1", port=4369, key1="XXXXXXXXXXXXXXXX", key2="XXXXXXXXXXXXXXXX" ] {
     // Add your things here
 }
@@ -55,7 +56,7 @@ The devices are identified by the device number that the OmniLink bridge assigns
 The devices support some of the following channels:
 
 | Channel Type ID             | Item Type            | Description                                                                                  | Thing types supporting this channel                 |
-|-----------------------------|----------------------|----------------------------------------------------------------------------------------------|-----------------------------------------------------|
+| --------------------------- | -------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------- |
 | `activate_keypad_emergency` | Number               | Activate a burglary, fire, or auxiliary keypad emergency alarm on Omni based models.         | `area`                                              |
 | `alarm_burglary`            | Switch               | Indicates if a burglary alarm is active.                                                     | `area`                                              |
 | `alarm_fire`                | Switch               | Indicates if a fire alarm is active.                                                         | `area`                                              |
@@ -129,19 +130,19 @@ The devices support some of the following channels:
 
 The devices support some of the following trigger channels:
 
-| Channel Type ID               | Description                                                                          | Thing types supporting this channel |
-|-------------------------------|--------------------------------------------------------------------------------------|-------------------------------------|
-| `all_on_off_event`            | Event sent when an all on/off event occurs.                                          | `area`, `lumina_area`               |
-| `phone_line_event`            | Event sent when the phone line changes state.                                        | `controller`                        |
-| `ac_power_event`              | Event sent when AC trouble conditions are detected.                                  | `controller`                        |
-| `battery_event`               | Event sent when battery trouble conditions are detected.                             | `controller`                        |
-| `dcm_event`                   | Event sent when digital communicator trouble conditions are detected.                | `controller`                        |
-| `energy_cost_event`           | Event sent when the cost of energy changes.                                          | `controller`                        |
-| `camera_trigger_event`        | Event sent when a camera trigger is detected.                                        | `controller`                        |
-| `upb_link_activated_event`    | Event sent when a UPB link is activated.                                             | `controller`                        |
-| `upb_link_deactivated_event`  | Event sent when a UPB link is deactivated.                                           | `controller`                        |
-| `activated_event`             | Event sent when a button is activated.                                               | `button`                            |
-| `switch_press_event`          | Event sent when an ALC, UPB, Radio RA, or Starlite switch is pressed.                | `dimmable`, `upb`                   |
+| Channel Type ID              | Description                                                           | Thing types supporting this channel |
+| ---------------------------- | --------------------------------------------------------------------- | ----------------------------------- |
+| `all_on_off_event`           | Event sent when an all on/off event occurs.                           | `area`, `lumina_area`               |
+| `phone_line_event`           | Event sent when the phone line changes state.                         | `controller`                        |
+| `ac_power_event`             | Event sent when AC trouble conditions are detected.                   | `controller`                        |
+| `battery_event`              | Event sent when battery trouble conditions are detected.              | `controller`                        |
+| `dcm_event`                  | Event sent when digital communicator trouble conditions are detected. | `controller`                        |
+| `energy_cost_event`          | Event sent when the cost of energy changes.                           | `controller`                        |
+| `camera_trigger_event`       | Event sent when a camera trigger is detected.                         | `controller`                        |
+| `upb_link_activated_event`   | Event sent when a UPB link is activated.                              | `controller`                        |
+| `upb_link_deactivated_event` | Event sent when a UPB link is deactivated.                            | `controller`                        |
+| `activated_event`            | Event sent when a button is activated.                                | `button`                            |
+| `switch_press_event`         | Event sent when an ALC, UPB, Radio RA, or Starlite switch is pressed. | `dimmable`, `upb`                   |
 
 ## Rule Actions
 
@@ -150,18 +151,28 @@ There is a separate instance for each contoller, which can be retrieved through:
 
 :::: tabs
 
+::: tab DSL
+
+```java
+val omnilinkActions = getActions("omnilink", "omnilink:controller:home")
+```
+
+:::
+
 ::: tab JavaScript
 
-``` javascript
+```javascript
 var omnilinkActions = actions.get("omnilink", "omnilink:controller:home");
 ```
 
 :::
 
-::: tab DSL
+::: tab JRuby
 
-``` php
-val omnilinkActions = getActions("omnilink", "omnilink:controller:home")
+In JRuby, Action methods are available directly on the Thing object.
+
+```ruby
+omni_link = things["omnilink:controller:home"]
 ```
 
 :::
@@ -173,18 +184,26 @@ Once this action instance is retrieved, you can invoke the `synchronizeControlle
 
 :::: tabs
 
+::: tab DSL
+
+```java
+omnilinkActions.synchronizeControllerTime("America/Denver")
+```
+
+:::
+
 ::: tab JavaScript
 
-``` javascript
+```javascript
 omnilinkActions.synchronizeControllerTime("America/Denver");
 ```
 
 :::
 
-::: tab DSL
+::: tab JRuby
 
-``` php
-omnilinkActions.synchronizeControllerTime("America/Denver")
+```ruby
+omni_link.synchronize_controller_time("America/Denver")
 ```
 
 :::
@@ -195,7 +214,7 @@ omnilinkActions.synchronizeControllerTime("America/Denver")
 
 ### Example `omnilink.things`
 
-```
+```java
 Bridge omnilink:controller:home [ ipAddress="127.0.0.1", port=4369, key1="XXXXXXXXXXXXXXXX", key2="XXXXXXXXXXXXXXXX" ] {
     Thing area         MainArea         "Main Area"              @   "Home"                    [ number=1 ]
     Thing upb          UpKitTable       "Table Lights"           @   "Upstairs Kitchen"        [ number=4 ]
@@ -221,7 +240,7 @@ Bridge omnilink:controller:home [ ipAddress="127.0.0.1", port=4369, key1="XXXXXX
 
 ### Example `omnilink.items`
 
-```
+```java
 /*
  * Alarms / Areas
  */
@@ -302,7 +321,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `therm-status.map`
 
-```
+```text
 0=Idle
 1=Heating
 2=Cooling
@@ -310,7 +329,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `therm-tempmode.map`
 
-```
+```text
 0=Off
 1=Heat
 2=Cool
@@ -320,7 +339,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `therm-fanmode.map`
 
-```
+```text
 0=Auto
 1=On
 2=Cycle
@@ -328,7 +347,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `therm-holdmode.map`
 
-```
+```text
 0=Off
 1=Hold
 2=Vacation hold
@@ -336,7 +355,7 @@ DateTime   OmniProTime   "Last Time Update [%1$ta %1$tR]"   <time>   {channel="o
 
 ### Example `area-modes.map`
 
-```
+```text
 0=Off
 1=Day
 2=Night

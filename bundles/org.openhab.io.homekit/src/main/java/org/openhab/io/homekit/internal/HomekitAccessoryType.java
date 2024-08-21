@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,39 +23,46 @@ import java.util.Optional;
  * @author Andy Lintner - Initial contribution
  */
 public enum HomekitAccessoryType {
-    HUMIDITY_SENSOR("HumiditySensor"),
-    LIGHTBULB("Lighting"),
-    SWITCH("Switchable"),
-    TEMPERATURE_SENSOR("TemperatureSensor"),
-    THERMOSTAT("Thermostat"),
-    CONTACT_SENSOR("ContactSensor"),
-    VALVE("Valve"),
-    LEAK_SENSOR("LeakSensor"),
-    MOTION_SENSOR("MotionSensor"),
-    OCCUPANCY_SENSOR("OccupancySensor"),
-    WINDOW_COVERING("WindowCovering"),
-    DOOR("Door"),
-    WINDOW("Window"),
-    SMOKE_SENSOR("SmokeSensor"),
-    CARBON_MONOXIDE_SENSOR("CarbonMonoxideSensor"),
-    CARBON_DIOXIDE_SENSOR("CarbonDioxideSensor"),
+    ACCESSORY_GROUP("AccessoryGroup"),
+    DUMMY("Dummy"),
+
+    AIR_QUALITY_SENSOR("AirQualitySensor"),
     BASIC_FAN("BasicFan"),
+    BATTERY("Battery"),
+    CARBON_DIOXIDE_SENSOR("CarbonDioxideSensor"),
+    CARBON_MONOXIDE_SENSOR("CarbonMonoxideSensor"),
+    CONTACT_SENSOR("ContactSensor"),
+    DOOR("Door"),
     FAN("Fan"),
-    LOCK("Lock"),
-    SECURITY_SYSTEM("SecuritySystem"),
-    OUTLET("Outlet"),
-    SPEAKER("Speaker"),
-    SMART_SPEAKER("SmartSpeaker"),
+    FAUCET("Faucet"),
+    FILTER_MAINTENANCE("Filter"),
     GARAGE_DOOR_OPENER("GarageDoorOpener"),
     HEATER_COOLER("HeaterCooler"),
+    HUMIDITY_SENSOR("HumiditySensor"),
+    INPUT_SOURCE("InputSource"),
+    IRRIGATION_SYSTEM("IrrigationSystem"),
+    LEAK_SENSOR("LeakSensor"),
     LIGHT_SENSOR("LightSensor"),
-    AIR_QUALITY_SENSOR("AirQualitySensor"),
-    BATTERY("Battery"),
-    FILTER_MAINTENANCE("Filter"),
-    FAUCET("Faucet"),
+    LIGHTBULB("Lighting"),
+    LOCK("Lock"),
     MICROPHONE("Microphone"),
+    MOTION_SENSOR("MotionSensor"),
+    OCCUPANCY_SENSOR("OccupancySensor"),
+    OUTLET("Outlet"),
+    SECURITY_SYSTEM("SecuritySystem"),
     SLAT("Slat"),
-    DUMMY("Dummy");
+    SMART_SPEAKER("SmartSpeaker"),
+    SMOKE_SENSOR("SmokeSensor"),
+    SPEAKER("Speaker"),
+    STATELESS_PROGRAMMABLE_SWITCH("StatelessProgrammableSwitch"),
+    SWITCH("Switchable"),
+    TELEVISION("Television"),
+    TELEVISION_SPEAKER("TelevisionSpeaker"),
+    TEMPERATURE_SENSOR("TemperatureSensor"),
+    THERMOSTAT("Thermostat"),
+    VALVE("Valve"),
+    WINDOW("Window"),
+    WINDOW_COVERING("WindowCovering");
 
     private static final Map<String, HomekitAccessoryType> TAG_MAP = new HashMap<>();
 

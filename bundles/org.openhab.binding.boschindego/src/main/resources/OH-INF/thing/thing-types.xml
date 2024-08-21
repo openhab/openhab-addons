@@ -4,9 +4,19 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
+	<bridge-type id="account">
+		<label>SingleKey ID</label>
+		<description>SingleKey ID account</description>
+	</bridge-type>
+
 	<thing-type id="indego">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
 		<label>Bosch Indego</label>
 		<description>Indego which supports the connect feature.</description>
+
 		<channels>
 			<channel id="state" typeId="state"/>
 			<channel id="textualstate" typeId="textualstate"/>
@@ -23,15 +33,17 @@
 			<channel id="gardenSize" typeId="gardenSize"/>
 			<channel id="gardenMap" typeId="gardenMap"/>
 		</channels>
+
+		<properties>
+			<property name="vendor">Bosch</property>
+		</properties>
+
+		<representation-property>serialNumber</representation-property>
+
 		<config-description>
-			<parameter name="username" type="text" required="true">
-				<label>Username</label>
-				<description>Username for the Bosch Indego account.</description>
-			</parameter>
-			<parameter name="password" type="text" required="true">
-				<context>password</context>
-				<label>Password</label>
-				<description>Password for the Bosch Indego account.</description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The serial number of the connected Indego mower.</description>
 			</parameter>
 			<parameter name="refresh" type="integer" min="60">
 				<label>Idle Refresh Interval</label>
@@ -93,6 +105,7 @@
 				<option value="518">@text/indego.state.border-cut</option>
 				<option value="519">@text/indego.state.idle-in-lawn</option>
 				<option value="523">@text/indego.state.spotmow</option>
+				<option value="524">@text/indego.state.mowing-randomly</option>
 				<option value="768">@text/indego.state.returning-to-dock</option>
 				<option value="769">@text/indego.state.returning-to-dock</option>
 				<option value="770">@text/indego.state.returning-to-dock</option>

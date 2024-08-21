@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -128,7 +128,8 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
         NOVY_DOWN(3, NOVY),
         NOVY_LIGHT(4, NOVY),
         NOVY_LEARN(5, NOVY),
-        NOVY_RESET_FILTER(6, NOVY);
+        NOVY_RESET_FILTER(6, NOVY),
+        NOVY_MOOD_LIGHT(7, NOVY);
 
         private final int command;
         private final Integer speed;
@@ -405,6 +406,7 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 case "NATURAL_FLOW":
                 case "PAIR":
                 case "RESET_FILTER":
+                case "MOOD_LIGHT":
                 case "SPEED_1":
                 case "SPEED_2":
                 case "SPEED_3":
@@ -440,8 +442,8 @@ public class RFXComFanMessage extends RFXComDeviceMessageImpl<RFXComFanMessage.S
                 case "OFF":
                     return Commands.valueOf(stringCommand);
             }
-        } else if (type instanceof DecimalType) {
-            Commands speedCommand = Commands.bySpeed(subType, ((DecimalType) type).intValue());
+        } else if (type instanceof DecimalType decimalCommand) {
+            Commands speedCommand = Commands.bySpeed(subType, decimalCommand.intValue());
             if (speedCommand != null) {
                 return speedCommand;
             }

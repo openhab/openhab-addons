@@ -27,7 +27,7 @@ The `reader` Thing has the following configuration parameters:
 | `customPatterns`              | String  |   no     |                                  | Search patterns separated by \| character for custom events.                            |
 | `customBlacklistingPatterns`  | String  |   no     |                                  | Search patterns for blacklisting unwanted custom events separated by \| character.      |
 
-Search patterns follows [Java regular expression syntax](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/util/regex/Pattern.html).
+Search patterns follows [Java regular expression syntax](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/regex/Pattern.html).
 Be aware that search patterns are case sensitive.
 
 ## Channels

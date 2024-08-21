@@ -4,18 +4,31 @@ Binding to query a [solarwatt](https://www.solarwatt.de/) [energy manager](https
 
 All supported values and devices were discovered while playing with my own energy manager.
 
+## Supported devices
+
+* Solarwatt Energymanager; ie. the DIN rail mounted device in your house distribution.
+
+## Not supported by this binding
+
+* Solarwatt Manager/Manager Flex; ie. the black square device that is wall mounted.
+ 
+The Solarwatt Manager already contains an OpenHAB installation which can be connected to
+other installations via [Remote openHAB Binding](https://www.openhab.org/addons/bindings/remoteopenhab/).
+
+
 ## Supported Things
 
-| Thing Type ID | Devices |
-|------|---------------|
-| energymanager | EnergyManager itself. |
-| location | Location part of the EnergyManager. | 
-| pvplant | Power producing part of the EnergyManager. |
-| gridflow | Grid interaction part of the EnergyManager. |
-| inverter | inverter producing AC current; e.g. MyReserve, Fronius |
-| batteryconverter | battery storage systems; e.g. MyReserve |
-| powermeter | powermeters; e.g. S0BusCounter, MyReserve |
-| evstation | electric-vehicle charging station; e.g. Keba Wallbox |
+| Thing Type ID    | Devices                                                |
+|------------------|--------------------------------------------------------|
+| energymanager    | EnergyManager itself.                                  |
+| location         | Location part of the EnergyManager.                    |
+| pvplant          | Power producing part of the EnergyManager.             |
+| gridflow         | Grid interaction part of the EnergyManager.            |
+| inverter         | inverter producing AC current; e.g. MyReserve, Fronius |
+| batteryconverter | battery storage systems; e.g. MyReserve                |
+| powermeter       | powermeters; e.g. S0BusCounter, MyReserve              |
+| evstation        | electric-vehicle charging station; e.g. Keba Wallbox   |
+| smartheater      | Radiators for PV systems; e.g. EGO SmartHeater         |
 
 ## Discovery
 
@@ -26,126 +39,138 @@ The attached devices and supported channels are discovered automatically.
 
 ### EnergyManager
 
-| Property | Default | Required | Description |
-|----------|---------|----------|-------------|
-| hostname | None | Yes | hostname or ip-address of the energy manager. |
-| refresh | 30 | No | Refresh interval in seconds for the current values of the channels. |
-| rescan | 5 | No | Rescan interval in minutes for the redetection of channgels and things. |
+| Property | Default | Required | Description                                                             |
+| -------- | ------- | -------- | ----------------------------------------------------------------------- |
+| hostname | None    | Yes      | hostname or ip-address of the energy manager.                           |
+| refresh  | 30      | No       | Refresh interval in seconds for the current values of the channels.     |
+| rescan   | 5       | No       | Rescan interval in minutes for the redetection of channgels and things. |
 
 ### Child Things
 
-| Property | Default | Required | Description |
-|----------|---------|----------|-------------|
-| guid | None | Yes | Guid of the device as used by the solarwatt energymanager. |
+| Property | Default | Required | Description                                                |
+| -------- | ------- | -------- | ---------------------------------------------------------- |
+| guid     | None    | Yes      | Guid of the device as used by the solarwatt energymanager. |
 
 ## Channels
 
 ### EnergyManager
 
-| Channel Type ID | Item Type | Description |
-|-----------------|-----------|-------------|
-|timestamp | Number | Milliseconds since the epoch set to the last NTP time sync |
-|datetime | DateTime | Date and time of the last NTP time sync in the timezone of the energy manager |
-|idTimezone | String | Timezone the energy manager is running in. All  timestamps are milliseconds since the epoch within this timezone |
-|fractionCPULoadTotal | Number:Dimensionless | Total CPU load in % |
-|fractionCPULoadUser | Number:Dimensionless | Userspace CPU load in % |
-|fractionCPULoadKernel | Number:Dimensionless | Kernelspace CPU load in % |
-|fractionCPULoadAverageLastMinute | Number:Dimensionless | Average 1 minute CPU load in % |
-|fractionCPULoadAverageLastFiveMinutes | Number:Dimensionless | Average 5 minute CPU load in % |
-|fractionCPULoadAverageLastFifteenMinutes | Number:Dimensionless | Average 15 minute CPU load in % |
+| Channel Type ID                          | Item Type            | Description                                                                                                      |
+| ---------------------------------------- | -------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| timestamp                                | Number               | Milliseconds since the epoch set to the last NTP time sync                                                       |
+| datetime                                 | DateTime             | Date and time of the last NTP time sync in the timezone of the energy manager                                    |
+| idTimezone                               | String               | Timezone the energy manager is running in. All  timestamps are milliseconds since the epoch within this timezone |
+| fractionCPULoadTotal                     | Number:Dimensionless | Total CPU load in %                                                                                              |
+| fractionCPULoadUser                      | Number:Dimensionless | Userspace CPU load in %                                                                                          |
+| fractionCPULoadKernel                    | Number:Dimensionless | Kernelspace CPU load in %                                                                                        |
+| fractionCPULoadAverageLastMinute         | Number:Dimensionless | Average 1 minute CPU load in %                                                                                   |
+| fractionCPULoadAverageLastFiveMinutes    | Number:Dimensionless | Average 5 minute CPU load in %                                                                                   |
+| fractionCPULoadAverageLastFifteenMinutes | Number:Dimensionless | Average 15 minute CPU load in %                                                                                  |
 
 ### PVPlant
 
-| Channel Type ID | Item Type | Description |
-|-----------------|-----------|-------------|
-| powerACOut | Number:Power | Energy produced by the PV in watts |
-| workACOut | Number:Energy | Energy produced by the PV in watt hours |
+| Channel Type ID | Item Type     | Description                             |
+| --------------- | ------------- | --------------------------------------- |
+| powerACOut      | Number:Power  | Energy produced by the PV in watts      |
+| workACOut       | Number:Energy | Energy produced by the PV in watt hours |
 
 ### Location
 
-| Channel Type ID | Item Type | Description |
-|-----------------|-----------|-------------|
-| powerBuffered | Number:Power | Power flow into the storage system
-| powerSelfConsumed | Number:Power | Power consumed direct from PV plus energy stored
-| powerSelfSupplied | Number:Power | Power consumed direct from PV plus energy consumed from storage
-| powerConsumedFromGrid | Number:Power | Power consumed from the grid  
-| powerConsumedFromStorage | Number:Power | Power consumed from storage
-| powerConsumedUnmetered | Number:Power | Power consumed in the inner side (outer consumers are subtracted)
-| powerConsumed | Number:Power | Total power consumed. All inner and outer consumers.
-| powerDirectConsumed | Number:Power | Power consumed directly from PV without buffering
-| powerProduced | Number:Power | Power produced by the PV
-| powerOut | Number:Power | Power delivered to the grid  
-| powerDirectConsumed | Number:Power | Power consumed directly without energy put into storage or taken from storage
-| workBuffered | Number:Energy | Energy flow into the storage system
-| workSelfConsumed | Number:Energy | Energy consumed direct from PV plus energy stored
-| workSelfSupplied | Number:Energy | Energy consumed direct from PV plus energy consumed from storage
-| workConsumedFromGrid | Number:Energy | Energy consumed from the grid  
-| workConsumedFromStorage | Number:Energy | Energy consumed from storage
-| workConsumedUnmetered | Number:Energy | Energy consumed in the inner side (outer consumers are subtracted)
-| workConsumed | Number:Energy | Total energy consumed. All inner and outer consumers.
-| workDirectConsumed | Number:Energy | Energy consumed directly from PV without buffering
-| workProduced | Number:Energy | Energy produced by the PV
-| workOut | Number:Energy | Energy delivered to the grid  
-| workDirectConsumed | Number:Energy | Energy consumed directly without energy put into storage or taken from storage
+| Channel Type ID          | Item Type     | Description                                                                    |
+| ------------------------ | ------------- | ------------------------------------------------------------------------------ |
+| powerBuffered            | Number:Power  | Power flow into the storage system                                             |
+| powerSelfConsumed        | Number:Power  | Power consumed direct from PV plus energy stored                               |
+| powerSelfSupplied        | Number:Power  | Power consumed direct from PV plus energy consumed from storage                |
+| powerConsumedFromGrid    | Number:Power  | Power consumed from the grid                                                   |
+| powerConsumedFromStorage | Number:Power  | Power consumed from storage                                                    |
+| powerConsumedUnmetered   | Number:Power  | Power consumed in the inner side (outer consumers are subtracted)              |
+| powerConsumed            | Number:Power  | Total power consumed. All inner and outer consumers.                           |
+| powerDirectConsumed      | Number:Power  | Power consumed directly from PV without buffering                              |
+| powerProduced            | Number:Power  | Power produced by the PV                                                       |
+| powerOut                 | Number:Power  | Power delivered to the grid                                                    |
+| powerDirectConsumed      | Number:Power  | Power consumed directly without energy put into storage or taken from storage  |
+| workBuffered             | Number:Energy | Energy flow into the storage system                                            |
+| workSelfConsumed         | Number:Energy | Energy consumed direct from PV plus energy stored                              |
+| workSelfSupplied         | Number:Energy | Energy consumed direct from PV plus energy consumed from storage               |
+| workConsumedFromGrid     | Number:Energy | Energy consumed from the grid                                                  |
+| workConsumedFromStorage  | Number:Energy | Energy consumed from storage                                                   |
+| workConsumedUnmetered    | Number:Energy | Energy consumed in the inner side (outer consumers are subtracted)             |
+| workConsumed             | Number:Energy | Total energy consumed. All inner and outer consumers.                          |
+| workDirectConsumed       | Number:Energy | Energy consumed directly from PV without buffering                             |
+| workProduced             | Number:Energy | Energy produced by the PV                                                      |
+| workOut                  | Number:Energy | Energy delivered to the grid                                                   |
+| workDirectConsumed       | Number:Energy | Energy consumed directly without energy put into storage or taken from storage |
 
 ### PowerMeter, S0Counter, MyReservePowerMeter
 
-| Channel Type ID | Item Type | Description |
-|-----------------|-----------|-------------|
-| channelDirectionMetering | String | Representing which energy flow directions are metered. One off *IN*, *OUT*, *BIDIRECTIONAL* 
-| powerIn | Number:Power | Power metered flowing into the consumer
-| powerOut | Number:Power | Power metered flowing out of the producer  
-| workIn | Number:Energy | Energy metered flowing into the consumer
-| workOut | Number:Energy | Energy metered flowing out of the producer  
-| consumptionEnergySum | Number:Energy | Total energy in watt hours 
+| Channel Type ID          | Item Type     | Description                                                                                 |
+| ------------------------ | ------------- | ------------------------------------------------------------------------------------------- |
+| channelDirectionMetering | String        | Representing which energy flow directions are metered. One off _IN_, _OUT_, _BIDIRECTIONAL_ |
+| powerIn                  | Number:Power  | Power metered flowing into the consumer                                                     |
+| powerOut                 | Number:Power  | Power metered flowing out of the producer                                                   |
+| workIn                   | Number:Energy | Energy metered flowing into the consumer                                                    |
+| workOut                  | Number:Energy | Energy metered flowing out of the producer                                                  |
+| consumptionEnergySum     | Number:Energy | Total energy in watt hours                                                                  |
 
 ### Inverter, MyReserveInverter, SunSpecInverter
 
-| Channel Type ID | Item Type | Description |
-|-----------------|-----------|-------------|
-| powerACOutMax | Number:Power | Maximum power production 
-| powerACOutLimit | Number:Power | Limit of power production
-| powerACOut | Number:Power | Power delivered by the inverter
-| workACOut | Number:Energy | Energy delivered by the inverter
-| powerInstallledPeak | Number:Power | Technical peak power available 
+| Channel Type ID     | Item Type     | Description                      |
+| ------------------- | ------------- | -------------------------------- |
+| powerACOutMax       | Number:Power  | Maximum power production         |
+| powerACOutLimit     | Number:Power  | Limit of power production        |
+| powerACOut          | Number:Power  | Power delivered by the inverter  |
+| workACOut           | Number:Energy | Energy delivered by the inverter |
+| powerInstallledPeak | Number:Power  | Technical peak power available   |
 
 ### BatteryConverter, MyReserve
 
-All of *Inverter* plus
+All of _Inverter_ plus
 
-| Channel Type ID | Item Type | Description |
-|-----------------|-----------|-------------|
-| powerACIn | Number:Power | Power fed into battery
-| workACIn | Number:Energy | Energy fed into battery
-| stateOfCharge | Number | Charging state of battery in percent
-| stateOfHealth | Number | Internal health metric in percent
-| temperatureBattery | Number:Temperature | Temperature of the battery in celsius
-| modeConverter | Switch | Current mode of converter. *ON* or *OFF*
-| voltageBatteryCellMin | Number:Voltage | minimum voltage of all batteries
-| voltageBatteryCellMean | Number:Voltage | mean voltage of all batteries
-| voltageBatteryCellMax | Number:Voltage | maximum voltage of all batteries
+| Channel Type ID        | Item Type          | Description                              |
+| ---------------------- | ------------------ | ---------------------------------------- |
+| powerACIn              | Number:Power       | Power fed into battery                   |
+| workACIn               | Number:Energy      | Energy fed into battery                  |
+| stateOfCharge          | Number             | Charging state of battery in percent     |
+| stateOfHealth          | Number             | Internal health metric in percent        |
+| temperatureBattery     | Number:Temperature | Temperature of the battery in celsius    |
+| modeConverter          | Switch             | Current mode of converter. _ON_ or _OFF_ |
+| voltageBatteryCellMin  | Number:Voltage     | minimum voltage of all batteries         |
+| voltageBatteryCellMean | Number:Voltage     | mean voltage of all batteries            |
+| voltageBatteryCellMax  | Number:Voltage     | maximum voltage of all batteries         |
 
 ### EVStation, KebaEv
 
-| Channel Type ID | Item Type | Description |
-|-----------------|-----------|-------------|
-| powerACIn | Number:Power | Power consumed by the charger
-| workACIn | Number:Energy | Energy consumed by the charger
-| workACInSession | Number:Energy | Work consumed during current/last charging session
-| modeStation | String | Current mode of the charger. One off *STANDBY*, *CHARGING*, *OFF*
-| connectivityStatus | String | Current state of the charging connection. One off *ONLINE* or *OFFLINE*
+| Channel Type ID    | Item Type     | Description                                                             |
+| ------------------ | ------------- | ----------------------------------------------------------------------- |
+| powerACIn          | Number:Power  | Power consumed by the charger                                           |
+| workACIn           | Number:Energy | Energy consumed by the charger                                          |
+| workACInSession    | Number:Energy | Work consumed during current/last charging session                      |
+| modeStation        | String        | Current mode of the charger. One off _STANDBY_, _CHARGING_, _OFF_       |
+| connectivityStatus | String        | Current state of the charging connection. One off _ONLINE_ or _OFFLINE_ |
 
 ### GridFlow
 
-| Channel Type ID | Item Type | Description |
-|-----------------|-----------|-------------|
-| feedInLimit | Number:Dimensionless | Current derating setting in percent
+| Channel Type ID | Item Type            | Description                         |
+| --------------- | -------------------- | ----------------------------------- |
+| feedInLimit     | Number:Dimensionless | Current derating setting in percent |
+
+### SmartHeater
+
+| Channel Type ID   | Item Type          | Description                            |
+|-------------------|--------------------|----------------------------------------|
+| workACIn          | Number:Energy      | Energy fed into smart heater           |
+| powerACIn         | Number:Power       | Power fed into smart heater            |
+| temperature       | Number:Temperature | Current heating temperature in celsius |
+| temperatureBoiler | Number:Temperature | Current boiler temperature in celsius  |
+| temperatureSet    | Number:Temperature | Set temperature                        |
+| temperatureSetMin | Number:Temperature | Minimum adjustable temperature         |
+| temperatureSetMax | Number:Temperature | Maximum adjustable temperature         |
 
 ## Example
 
 demo.things:
 
-```
+```java
 Bridge solarwatt:energymanager:56f4ac2fa2 [hostname="192.168.0.64", refresh=30, rescan=5]
 // the individual things configured with their energy manager guid
 Thing solarwatt:batteryconverter:56f4ac2fa2:5c7d5929-8fa4-42c5-8737-48bef77b61f5 [guid="5c7d5929-8fa4-42c5-8737-48bef77b61f5"] (solarwatt:energymanager:56f4ac2fa2)
@@ -155,7 +180,7 @@ Thing solarwatt:evstation:56f4ac2fa2:urn-keba-evstation-20652876 [guid="urn:keba
 
 demo.items:
 
-```
+```java
 // Location DeviceClass com.kiwigrid.devices.location.Location Guid b4e4978b96404e61977bfacd3eab299d
 Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerBuffered "PowerBuffered [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerBuffered"}
 Number:Power Solarwatt_Location_b4e4978b96404e61977bfacd3eab299d_PowerBufferedFromGrid "PowerBufferedFromGrid [%.2f W]" <energy> ["Measurement", "Power"] {channel="solarwatt:location:56f4ac2fa2:b4e4978b-9640-4e61-977b-facd3eab299d:powerBufferedFromGrid"}
@@ -249,4 +274,13 @@ Number Solarwatt_Manager_ERC05000008007_FractionCPULoadAverageLastFifteenMinutes
 // Gridflow com.kiwigrid.kiwiapp.gridflow.GridFlow
 Number Solarwatt_Gridflow_UrnKiwigridGridflowERC05000008007_CurrentLimit "CurrentLimit [%d A]" <energy> ["Point"]  {channel="solarwatt:gridflow:56f4ac2fa2:urn-kiwigrid-gridflow-ERC05-000008007:currentLimit"}
 Number Solarwatt_Gridflow_UrnKiwigridGridflowERC05000008007_FeedInLimit "FeedInLimit [%d %%]" <status> ["Point"]  {channel="solarwatt:gridflow:56f4ac2fa2:urn-kiwigrid-gridflow-ERC05-000008007:feedInLimit"}
+
+// SmartHeater com.kiwigrid.devices.smartheater.SmartHeater
+Number:Power Solarwatt_Smartheater_UrnEgoSmartheater62018833_PowerACIn "SmartHeater powerACIn [%.2f W]" <energy> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:powerACIn" }
+Number:Energy Solarwatt_Smartheater_UrnEgoSmartheater62018833_WorkACIn "SmartHeater workACIn [%.2f Wh]" <energy> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:workACIn" }
+Number:Temperature Solarwatt_Smartheater_UrnEgoSmartheater62018833_TemperatureBoiler "SmartHeater temperatureBoiler [%.1f °C]" <temperature> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:temperatureBoiler" }
+Number:Temperature Solarwatt_Smartheater_UrnEgoSmartheater62018833_Temperature "SmartHeater temperature [%.1f °C]" <temperature> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:temperature" }
+Number:Temperature Solarwatt_Smartheater_UrnEgoSmartheater62018833_TemperatureSet "SmartHeater temperatureSet [%.1f °C]" <temperature> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:temperatureSet" }
+Number:Temperature Solarwatt_Smartheater_UrnEgoSmartheater62018833_TemperatureSetMax "SmartHeater temperatureSetMax [%.1f °C]" <temperature> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:temperatureSetMax" }
+Number:Temperature Solarwatt_Smartheater_UrnEgoSmartheater62018833_TemperatureSetMin "SmartHeater temperatureSetMin [%.1f °C]" <temperature> { channel="solarwatt:smartheater:urn-ego-smartheater-62018833:temperatureSetMin" }
 ```

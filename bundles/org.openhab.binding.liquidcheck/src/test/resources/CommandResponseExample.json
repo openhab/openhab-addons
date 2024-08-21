@@ -1,0 +1,12 @@
+{
+    "header":{
+        "namespace":"Device.Control",
+        "name":"StartMeasure.Response",
+        "messageId":"6D6A415C-A116FF36",
+        "payloadVersion":"1",
+        "authorization":"1C9DC262BE70-001092EA-4D4KU4ID5ZCXPNTQJ3V8HD"
+    },
+    "context":{
+        "status" : "success"
+    }
+}

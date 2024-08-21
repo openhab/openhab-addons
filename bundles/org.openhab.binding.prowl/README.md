@@ -25,20 +25,20 @@ The broker thing has only one channel keeping the number of free push messages, 
 
 ## Example
 
-_*.things_
+### Things
 
-```
+```java
 Thing prowl:broker:mybroker "Prowl Broker" [ apiKey="0000000000000000000000000000000000000000" ]
 ```
 
-_*.rules_
+### Rules
 
 Once you have created the broker thing with a valid API key, you can use the Prowl service in your rules.  
 First you need to create an instance of the broker just before any call or on the top rules level. (replace the _mybroker_ with the right name of your instance).
-Then you can call method _pushNotification_, which requires two parameters - _event_ and _description_. 
-There is also an optional third parameter _priority_ which represents the message priority (very low) -2,-1,0,1,2 (emergency). The default priority is 0. 
+Then you can call method _pushNotification_, which requires two parameters - _event_ and _description_.
+There is also an optional third parameter _priority_ which represents the message priority (very low) -2,-1,0,1,2 (emergency). The default priority is 0.
 
-```
+```java
 val prowl = getActions("prowl","prowl:broker:mybroker")  
 prowl.pushNotification("Event", "This is the description of the event")
 prowl.pushNotification("Emergency Event", "This is the description of the event", 2)

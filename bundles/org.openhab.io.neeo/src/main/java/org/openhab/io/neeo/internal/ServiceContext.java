@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,9 +15,8 @@ package org.openhab.io.neeo.internal;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.binding.BindingInfoRegistry;
+import org.openhab.core.addon.AddonInfoRegistry;
 import org.openhab.core.events.EventPublisher;
 import org.openhab.core.io.transport.mdns.MDNSClient;
 import org.openhab.core.items.ItemRegistry;
@@ -26,6 +25,7 @@ import org.openhab.core.thing.ThingRegistry;
 import org.openhab.core.thing.link.ItemChannelLinkRegistry;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ThingTypeRegistry;
+import org.openhab.core.util.StringUtils;
 import org.openhab.io.neeo.internal.models.NeeoThingUID;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.http.HttpService;
@@ -48,7 +48,7 @@ public class ServiceContext {
     private final ItemRegistry itemRegistry;
 
     /** The binding info registry. */
-    private final BindingInfoRegistry bindingInfoRegistry;
+    private final AddonInfoRegistry addonInfoRegistry;
 
     /** The thing registry. */
     private final ThingRegistry thingRegistry;
@@ -80,7 +80,7 @@ public class ServiceContext {
      * @param componentContext a non-null component context
      * @param httpService a non-null http service
      * @param itemRegistry a non-null item registry
-     * @param bindingInfoRegistry a non-null binding information registry
+     * @param addonInfoRegistry a non-null addon information registry
      * @param thingRegistry a non-null thing registry
      * @param thingTypeRegistry a non-null thing type registry
      * @param itemChannelLinkRegistry a non-null item channel link registry
@@ -90,13 +90,13 @@ public class ServiceContext {
      * @param networkAddressService a non-null network address service
      */
     public ServiceContext(ComponentContext componentContext, HttpService httpService, ItemRegistry itemRegistry,
-            BindingInfoRegistry bindingInfoRegistry, ThingRegistry thingRegistry, ThingTypeRegistry thingTypeRegistry,
+            AddonInfoRegistry addonInfoRegistry, ThingRegistry thingRegistry, ThingTypeRegistry thingTypeRegistry,
             ItemChannelLinkRegistry itemChannelLinkRegistry, ChannelTypeRegistry channelTypeRegistry,
             MDNSClient mdnsClient, EventPublisher eventPublisher, NetworkAddressService networkAddressService) {
         Objects.requireNonNull(componentContext, "componentContext cannot be null");
         Objects.requireNonNull(httpService, "httpService cannot be null");
         Objects.requireNonNull(itemRegistry, "itemRegistry cannot be null");
-        Objects.requireNonNull(bindingInfoRegistry, "bindingInfoRegistry cannot be null");
+        Objects.requireNonNull(addonInfoRegistry, "addonInfoRegistry cannot be null");
         Objects.requireNonNull(thingRegistry, "thingRegistry cannot be null");
         Objects.requireNonNull(thingTypeRegistry, "thingTypeRegistry cannot be null");
         Objects.requireNonNull(itemChannelLinkRegistry, "itemChannelLinkRegistry cannot be null");
@@ -108,7 +108,7 @@ public class ServiceContext {
         this.componentContext = componentContext;
         this.httpService = httpService;
         this.itemRegistry = itemRegistry;
-        this.bindingInfoRegistry = bindingInfoRegistry;
+        this.addonInfoRegistry = addonInfoRegistry;
         this.thingRegistry = thingRegistry;
         this.thingTypeRegistry = thingTypeRegistry;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
@@ -160,8 +160,8 @@ public class ServiceContext {
      *
      * @return the binding info registry
      */
-    public BindingInfoRegistry getBindingInfoRegistry() {
-        return bindingInfoRegistry;
+    public AddonInfoRegistry getAddonInfoRegistry() {
+        return addonInfoRegistry;
     }
 
     /**
@@ -238,7 +238,7 @@ public class ServiceContext {
         NeeoUtil.requireNotEmpty(thingType, "thingType cannot be null");
 
         for (int i = 0; i < 100; i++) {
-            final String id = RandomStringUtils.randomAlphanumeric(8);
+            final String id = StringUtils.getRandomAlphanumeric(8);
             final NeeoThingUID uid = new NeeoThingUID(thingType, id);
             if (getThingRegistry().get(uid.asThingUID()) == null) {
                 return uid;

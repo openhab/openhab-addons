@@ -1,0 +1,110 @@
+{
+	"vehicle": [
+		"doorLockStatusOverall",
+		"windowStatusOverall",
+		"doorStatusOverall",
+		"ignitionstate",
+		"parkbrakestatus"
+	],
+	"doors": [
+		"doorstatusfrontright",
+		"doorstatusfrontleft",
+		"doorstatusrearright",
+		"doorstatusrearleft",
+		"decklidstatus",
+		"engineHoodStatus",
+		"sunroofstatus",
+		"sunroofStatusFrontBlind",
+		"sunroofStatusRearBlind",
+		"rooftopstatus",
+		"Sunroof Command"
+	],
+	"lock": [
+		"doorlockstatusfrontright",
+		"doorlockstatusfrontleft",
+		"doorlockstatusrearright",
+		"doorlockstatusrearleft",
+		"doorlockstatusdecklid",
+        "doorlockstatusgas",
+		"lock unlock command"
+	],
+	"windows": [
+		"windowstatusfrontright",
+		"windowstatusfrontleft",
+		"windowstatusrearright",
+		"windowstatusrearleft",
+		"windowStatusRearRightBlind",
+		"windowStatusRearLeftBlind",
+		"windowStatusRearBlind",
+		"flipWindowStatus",
+		"open close command"
+	],
+	"hvac": [
+		"precondNow",
+		"precondSeatFrontRight",
+		"precondSeatFrontLeft",
+		"precondSeatRearRight",
+		"precondSeatRearLeft",
+        "temperaturePoints",
+		"Precond Now Command",
+		"Precond set Temperature Command"
+	],
+	"service": [
+		"starterBatteryState",
+		"warningbrakefluid",
+		"warningwashwater",
+		"warningbrakeliningwear",
+		"tirewarningsrdk",
+		"warningcoolantlevellow",
+		"warningenginelight",
+        "serviceintervaldays"
+	],
+	"range": [
+		"odo",
+		"overallRange",
+		"soc",
+		"tanklevelpercent"
+	],
+	"charge": [
+		"chargeFlapDCStatus",
+		"chargeCouplerACStatus",
+		"chargeCouplerDCStatus",
+		"chargeCouplerDCLockStatus",
+		"chargingactive",
+		"chargingstatus",
+		"chargingPower",
+		"endofchargetime",
+		"chargePrograms",
+		"Max SoC Command"
+	],
+	"trip": [
+		"distanceStart",
+		"drivenTimeStart",
+		"averageSpeedStart",
+		"electricconsumptionstart"
+	],
+	"position": [
+		"positionHeading",
+		"positionLat",
+		"positionLong",
+		"SigPos Command"
+	],
+	"tires": [
+		"tireSensorAvailable",
+		"tirepressureFrontRight",
+		"tirepressureFrontLeft",
+		"tirepressureRearLeft",
+		"tirepressureRearRight",
+		"tireMarkerFrontRight",
+		"tireMarkerFrontLeft",
+		"tireMarkerRearRight",
+		"tireMarkerRearLeft",
+		"tirePressMeasTimestamp"
+	],
+	"unassigned": []
+}
+
+
+
+
+

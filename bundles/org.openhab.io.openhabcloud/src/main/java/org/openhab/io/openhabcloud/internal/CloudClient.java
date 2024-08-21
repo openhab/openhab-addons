@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,10 +22,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -37,6 +40,7 @@ import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.URIUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.openhab.core.OpenHAB;
@@ -51,6 +55,7 @@ import io.socket.client.Manager;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import io.socket.engineio.client.Transport;
+import io.socket.engineio.client.transports.WebSocket;
 import io.socket.parser.Packet;
 import io.socket.parser.Parser;
 import okhttp3.OkHttpClient.Builder;
@@ -66,8 +71,18 @@ import okhttp3.logging.HttpLoggingInterceptor.Level;
  *
  * @author Victor Belov - Initial contribution
  * @author Kai Kreuzer - migrated code to new Jetty client and ESH APIs
+ * @author Dan Cunningham - Extended notification enhancements
  */
 public class CloudClient {
+
+    private static final long RECONNECT_MIN = 2_000;
+
+    private static final long RECONNECT_MAX = 60_000;
+
+    private static final double RECONNECT_JITTER = 0.75;
+
+    private static final long READ_TIMEOUT = 60_0000;
+
     /*
      * Logger for this class
      */
@@ -109,11 +124,6 @@ public class CloudClient {
     private boolean isConnected;
 
     /*
-     * This variable holds version of local openHAB
-     */
-    private String openHABVersion;
-
-    /*
      * This variable holds instance of Socket.IO client class which provides communication
      * with the openHAB Cloud
      */
@@ -139,10 +149,14 @@ public class CloudClient {
 
     /*
      * Delay reconnect scheduler pool
-     * 
+     *
      */
     protected final ScheduledExecutorService scheduler = ThreadPoolManager
             .getScheduledPool(ThreadPoolManager.THREAD_POOL_NAME_COMMON);
+
+    @SuppressWarnings("null")
+    private final AtomicReference<Optional<ScheduledFuture<?>>> reconnectFuture = new AtomicReference<>(
+            Optional.empty());
 
     /**
      * Constructor of CloudClient
@@ -161,9 +175,9 @@ public class CloudClient {
         this.remoteAccessEnabled = remoteAccessEnabled;
         this.exposedItems = exposedItems;
         this.jettyClient = httpClient;
-        reconnectBackoff.setMin(1000);
-        reconnectBackoff.setMax(30_000);
-        reconnectBackoff.setJitter(0.5);
+        reconnectBackoff.setMin(RECONNECT_MIN);
+        reconnectBackoff.setMax(RECONNECT_MAX);
+        reconnectBackoff.setJitter(RECONNECT_JITTER);
     }
 
     /**
@@ -173,17 +187,25 @@ public class CloudClient {
     public void connect() {
         try {
             Options options = new Options();
+            options.transports = new String[] { WebSocket.NAME };
+            options.reconnection = true;
+            options.reconnectionAttempts = Integer.MAX_VALUE;
+            options.reconnectionDelay = RECONNECT_MIN;
+            options.reconnectionDelayMax = RECONNECT_MAX;
+            options.randomizationFactor = RECONNECT_JITTER;
+            options.timeout = READ_TIMEOUT;
+            Builder okHttpBuilder = new Builder();
+            okHttpBuilder.readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS);
             if (logger.isTraceEnabled()) {
                 // When trace level logging is enabled, we activate further logging of HTTP calls
                 // of the Socket.IO library
-                Builder okHttpBuilder = new Builder();
                 HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
                 loggingInterceptor.setLevel(Level.BASIC);
                 okHttpBuilder.addInterceptor(loggingInterceptor);
                 okHttpBuilder.addNetworkInterceptor(loggingInterceptor);
-                options.callFactory = okHttpBuilder.build();
-                options.webSocketFactory = okHttpBuilder.build();
             }
+            options.callFactory = okHttpBuilder.build();
+            options.webSocketFactory = okHttpBuilder.build();
             socket = IO.socket(baseURL, options);
             URL parsed = new URL(baseURL);
             protocol = parsed.getProtocol();
@@ -217,8 +239,7 @@ public class CloudClient {
                 })//
                 .on(Manager.EVENT_CONNECT_ERROR, args -> {
                     if (args.length > 0) {
-                        if (args[0] instanceof Exception) {
-                            Exception e = (Exception) args[0];
+                        if (args[0] instanceof Exception e) {
                             logger.debug(
                                     "Error connecting to the openHAB Cloud instance: {} {}. Should reconnect automatically.",
                                     e.getClass().getSimpleName(), e.getMessage());
@@ -236,8 +257,8 @@ public class CloudClient {
                 .on(Manager.EVENT_PACKET, args -> {
                     int packetTypeIndex = -1;
                     String type = "<unexpected packet type>";
-                    if (args.length == 1 && args[0] instanceof Packet<?>) {
-                        packetTypeIndex = ((Packet<?>) args[0]).type;
+                    if (args.length == 1 && args[0] instanceof Packet<?> packet) {
+                        packetTypeIndex = packet.type;
 
                         if (packetTypeIndex < Parser.types.length) {
                             type = Parser.types[packetTypeIndex];
@@ -262,8 +283,7 @@ public class CloudClient {
                 .on(Socket.EVENT_RECONNECT,
                         args -> logger.debug("Socket.IO re-connected successfully (attempt {})", args[0]))//
                 .on(Socket.EVENT_RECONNECT_ERROR, args -> {
-                    if (args[0] instanceof Exception) {
-                        Exception e = (Exception) args[0];
+                    if (args[0] instanceof Exception e) {
                         logger.debug("Socket.IO re-connect attempt error: {} {}", e.getClass().getSimpleName(),
                                 e.getMessage());
                     } else {
@@ -273,19 +293,22 @@ public class CloudClient {
                 .on(Socket.EVENT_RECONNECT_FAILED,
                         args -> logger.debug("Socket.IO re-connect attempts failed. Stopping reconnection."))//
                 .on(Socket.EVENT_DISCONNECT, args -> {
-                    if (args.length > 0) {
-                        logger.warn("Socket.IO disconnected: {}", args[0]);
-                    } else {
-                        logger.warn("Socket.IO disconnected");
-                    }
+                    String message = args.length > 0 ? args[0].toString() : "";
+                    logger.warn("Socket.IO disconnected: {}", message);
                     isConnected = false;
                     onDisconnect();
+                    // https://github.com/socketio/socket.io-client/commit/afb952d854e1d8728ce07b7c3a9f0dee2a61ef4e
+                    if ("io server disconnect".equals(message)) {
+                        socket.close();
+                        long delay = reconnectBackoff.duration();
+                        logger.warn("Reconnecting after {} ms.", delay);
+                        scheduleReconnect(delay);
+                    }
                 })//
                 .on(Socket.EVENT_ERROR, args -> {
                     if (CloudClient.this.socket.connected()) {
                         if (args.length > 0) {
-                            if (args[0] instanceof Exception) {
-                                Exception e = (Exception) args[0];
+                            if (args[0] instanceof Exception e) {
                                 logger.warn("Error during communication: {} {}", e.getClass().getSimpleName(),
                                         e.getMessage());
                             } else {
@@ -311,8 +334,7 @@ public class CloudClient {
                         long delay = reconnectBackoff.duration();
                         // Try reconnecting on connection errors
                         if (args.length > 0) {
-                            if (args[0] instanceof Exception) {
-                                Exception e = (Exception) args[0];
+                            if (args[0] instanceof Exception e) {
                                 logger.warn(
                                         "Error connecting to the openHAB Cloud instance: {} {}. Reconnecting after {} ms.",
                                         e.getClass().getSimpleName(), e.getMessage(), delay);
@@ -325,12 +347,7 @@ public class CloudClient {
                             logger.warn("Error connecting to the openHAB Cloud instance. Reconnecting.");
                         }
                         socket.close();
-                        scheduler.schedule(new Runnable() {
-                            @Override
-                            public void run() {
-                                socket.connect();
-                            }
-                        }, delay, TimeUnit.MILLISECONDS);
+                        scheduleReconnect(delay);
                     }
                 })//
 
@@ -525,7 +542,7 @@ public class CloudClient {
             try {
                 headerValue = requestHeadersJson.getString(headerName);
                 logger.debug("Jetty set header {} = {}", headerName, headerValue);
-                if (!headerName.equalsIgnoreCase("Content-Length")) {
+                if (!"Content-Length".equalsIgnoreCase(headerName)) {
                     request.header(headerName, headerValue);
                 }
             } catch (JSONException e) {
@@ -571,17 +588,82 @@ public class CloudClient {
      * @param userId openHAB Cloud user id
      * @param message notification message text
      * @param icon name of the icon for this notification
-     * @param severity severity name for this notification
+     * @param tag name for this notification (formerly severity)
+     * @param title for the notification
+     * @param referenceId an identifier used to collapse and hide notifications
+     * @param onClickAction the action to perform when clicked
+     * @param mediaAttachmentUrl the media to attach to a notification
+     * @param actionButton1 an action button in the format "Title=Action"
+     * @param actionButton2 an action button in the format "Title=Action"
+     * @param actionButton3 an action button in the format "Title=Action"
      */
-    public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String severity) {
+    public void sendNotification(String userId, String message, @Nullable String icon, @Nullable String tag,
+            @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
+            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
+            @Nullable String actionButton3) {
+        sendNotificationInternal(userId, message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl,
+                actionButton1, actionButton2, actionButton3);
+    }
+
+    /**
+     * This method sends broadcast notification to the openHAB Cloud
+     *
+     * @param message notification message text
+     * @param icon name of the icon for this notification
+     * @param tag name for this notification (formerly severity)
+     * @param title for this notification
+     * @param referenceId an identifier used to collapse and hide notifications
+     * @param onClickAction the action to perform when clicked
+     * @param mediaAttachmentUrl the media to attach to a notification
+     * @param actionButton1 an action button in the format "Title=Action"
+     * @param actionButton2 an action button in the format "Title=Action"
+     * @param actionButton3 an action button in the format "Title=Action"
+     */
+    public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String tag,
+            @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
+            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
+            @Nullable String actionButton3) {
+        sendNotificationInternal(null, message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl,
+                actionButton1, actionButton2, actionButton3);
+    }
+
+    private void sendNotificationInternal(@Nullable String userId, String message, @Nullable String icon,
+            @Nullable String tag, @Nullable String title, @Nullable String referenceId, @Nullable String onClickAction,
+            @Nullable String mediaAttachmentUrl, @Nullable String actionButton1, @Nullable String actionButton2,
+            @Nullable String actionButton3) {
         if (isConnected()) {
             JSONObject notificationMessage = new JSONObject();
             try {
-                notificationMessage.put("userId", userId);
+                if (userId != null) {
+                    notificationMessage.put("userId", userId);
+                }
+
+                notificationMessage.put("type", "notification");
                 notificationMessage.put("message", message);
-                notificationMessage.put("icon", icon);
-                notificationMessage.put("severity", severity);
-                socket.emit("notification", notificationMessage);
+
+                if (icon != null) {
+                    notificationMessage.put("icon", icon);
+                }
+                if (tag != null) {
+                    notificationMessage.put("tag", tag);
+                }
+                if (referenceId != null) {
+                    notificationMessage.put("reference-id", referenceId);
+                }
+                if (title != null) {
+                    notificationMessage.put("title", title);
+                }
+                if (onClickAction != null) {
+                    notificationMessage.put("on-click", onClickAction);
+                }
+                if (mediaAttachmentUrl != null) {
+                    notificationMessage.put("media-attachment-url", mediaAttachmentUrl);
+                }
+                JSONArray actionArray = createActionArray(actionButton1, actionButton2, actionButton3);
+                if (!actionArray.isEmpty()) {
+                    notificationMessage.put("actions", actionArray);
+                }
+                socket.emit(userId == null ? "broadcastnotification" : "notification", notificationMessage);
             } catch (JSONException e) {
                 logger.debug("{}", e.getMessage());
             }
@@ -614,20 +696,59 @@ public class CloudClient {
     }
 
     /**
-     * This method sends broadcast notification to the openHAB Cloud
+     * This method hides a notification by its reference id for a single user
      *
-     * @param message notification message text
-     * @param icon name of the icon for this notification
-     * @param severity severity name for this notification
+     * @param userId openHAB Cloud user id
+     * @param referenceId the reference id
      */
-    public void sendBroadcastNotification(String message, @Nullable String icon, @Nullable String severity) {
+    public void hideNotificationByReferenceId(String userId, String referenceId) {
+        hideNotificationInternal(userId, referenceId, null);
+    }
+
+    /**
+     * This method hides a notification by its reference id for all users
+     *
+     * @param referenceId the reference id
+     */
+    public void hideBroadcastNotificationByReferenceId(String referenceId) {
+        hideNotificationInternal(null, referenceId, null);
+    }
+
+    /**
+     * This method hides a notification by its tag for all users
+     *
+     * @param userId openHAB Cloud user id
+     * @param tag severity name for this notification
+     */
+    public void hideNotificationByTag(String userId, String tag) {
+        hideNotificationInternal(userId, null, tag);
+    }
+
+    /**
+     * This method hides a notification by its tag for all users
+     *
+     * @param tag name for this notification
+     */
+    public void hideBroadcastNotificationByTag(String tag) {
+        hideNotificationInternal(null, null, tag);
+    }
+
+    private void hideNotificationInternal(@Nullable String userId, @Nullable String referenceId, @Nullable String tag) {
         if (isConnected()) {
             JSONObject notificationMessage = new JSONObject();
             try {
-                notificationMessage.put("message", message);
-                notificationMessage.put("icon", icon);
-                notificationMessage.put("severity", severity);
-                socket.emit("broadcastnotification", notificationMessage);
+                notificationMessage.put("type", "hideNotification");
+
+                if (userId != null) {
+                    notificationMessage.put("userId", userId);
+                }
+                if (referenceId != null) {
+                    notificationMessage.put("reference-id", referenceId);
+                }
+                if (tag != null) {
+                    notificationMessage.put("tag", tag);
+                }
+                socket.emit(userId == null ? "broadcastnotification" : "notification", notificationMessage);
             } catch (JSONException e) {
                 logger.debug("{}", e.getMessage());
             }
@@ -671,19 +792,21 @@ public class CloudClient {
      */
     public void shutdown() {
         logger.info("Shutting down openHAB Cloud service connection");
+        reconnectFuture.get().ifPresent(future -> future.cancel(true));
         socket.disconnect();
-    }
-
-    public String getOpenHABVersion() {
-        return openHABVersion;
-    }
-
-    public void setOpenHABVersion(String openHABVersion) {
-        this.openHABVersion = openHABVersion;
     }
 
     public void setListener(CloudClientListener listener) {
         this.listener = listener;
+    }
+
+    private void scheduleReconnect(long delay) {
+        reconnectFuture.getAndSet(Optional.of(scheduler.schedule(new Runnable() {
+            @Override
+            public void run() {
+                socket.connect();
+            }
+        }, delay, TimeUnit.MILLISECONDS))).ifPresent(future -> future.cancel(true));
     }
 
     private JSONObject getJSONHeaders(HttpFields httpFields) {
@@ -696,6 +819,23 @@ public class CloudClient {
             logger.warn("Error forming response headers: {}", e.getMessage());
         }
         return headersJSON;
+    }
+
+    private JSONArray createActionArray(@Nullable String... actionStrings) {
+        JSONArray actionArray = new JSONArray();
+        for (String actionString : actionStrings) {
+            if (actionString == null) {
+                continue;
+            }
+            String[] parts = actionString.split("=", 2);
+            if (parts.length == 2) {
+                JSONObject action = new JSONObject();
+                action.put("title", parts[0]);
+                action.put("action", parts[1]);
+                actionArray.put(action);
+            }
+        }
+        return actionArray;
     }
 
     private static String censored(String secret) {

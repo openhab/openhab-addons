@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="amberelectric"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="service">
+		<label>Amber Electric</label>
+		<description>Amber Electric - wholesale access to power prices</description>
+
+		<channels>
+			<channel id="electricity-price" typeId="electricity-price"/>
+			<channel id="controlled-load-price" typeId="electricity-price">
+				<label>Current Controlled Load Price</label>
+				<description>Current price to import power for Controlled Load</description>
+			</channel>
+			<channel id="feed-in-price" typeId="electricity-price">
+				<label>Current Feed-In Price</label>
+				<description>Current price to export power to the grid</description>
+			</channel>
+			<channel id="electricity-status" typeId="electricity-status"/>
+			<channel id="controlled-load-status" typeId="electricity-status">
+				<label>Current Controlled Load Status</label>
+				<description>Current price status of Controlled Load</description>
+			</channel>
+			<channel id="feed-in-status" typeId="electricity-status">
+				<label>Current Feed-In Status</label>
+				<description>Current price status of Feed-In</description>
+			</channel>
+			<channel id="nem-time" typeId="nemtime"/>
+			<channel id="spike" typeId="spike"/>
+			<channel id="renewables" typeId="renewables"/>
+		</channels>
+
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<label>API Key</label>
+				<description>API key from the Amber website</description>
+			</parameter>
+			<parameter name="nmi" type="text">
+				<label>NMI</label>
+				<description>NMI for your address (Optional)</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="60" unit="s">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds</description>
+				<default>60</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="electricity-price">
+		<item-type>Number:EnergyPrice</item-type>
+		<label>Current Electricity Price</label>
+		<description>Current price to import power from the grid</description>
+		<category>Price</category>
+		<state readOnly="true" pattern="%.3f %unit%"/>
+	</channel-type>
+	<channel-type id="electricity-status">
+		<item-type>String</item-type>
+		<label>Current Electricity Status</label>
+		<description>Current price status of grid import</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="nem-time">
+		<item-type>String</item-type>
+		<label>NEM Time</label>
+		<description>NEM time of last pricing update</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="renewables">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Current Renewables</label>
+		<description>Current level of renewables in the grid</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+	<channel-type id="spike">
+		<item-type>Switch</item-type>
+		<label>Energy Price Spike</label>
+		<description>Report if the grid has a current price spike</description>
+		<state readOnly="true"/>
+	</channel-type>
+</thing:thing-descriptions>

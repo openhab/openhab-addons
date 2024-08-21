@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.deconz.internal.discovery;
 
 import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -34,15 +35,16 @@ import org.openhab.binding.deconz.internal.handler.SensorThermostatThingHandler;
 import org.openhab.binding.deconz.internal.handler.SensorThingHandler;
 import org.openhab.binding.deconz.internal.types.GroupType;
 import org.openhab.binding.deconz.internal.types.LightType;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Activate;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,37 +54,41 @@ import org.slf4j.LoggerFactory;
  *
  * @author David Graeff - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ThingDiscoveryService.class)
 @NonNullByDefault
-public class ThingDiscoveryService extends AbstractDiscoveryService implements DiscoveryService, ThingHandlerService {
+public class ThingDiscoveryService extends AbstractThingHandlerDiscoveryService<DeconzBridgeHandler>
+        implements DiscoveryService {
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
             .of(LightThingHandler.SUPPORTED_THING_TYPE_UIDS, SensorThingHandler.SUPPORTED_THING_TYPES,
                     SensorThermostatThingHandler.SUPPORTED_THING_TYPES)
             .flatMap(Set::stream).collect(Collectors.toSet());
     private final Logger logger = LoggerFactory.getLogger(ThingDiscoveryService.class);
 
-    private @Nullable DeconzBridgeHandler handler;
     private @Nullable ScheduledFuture<?> scanningJob;
     private @Nullable ThingUID bridgeUID;
 
+    @Activate
     public ThingDiscoveryService() {
-        super(SUPPORTED_THING_TYPES_UIDS, 30);
+        super(DeconzBridgeHandler.class, SUPPORTED_THING_TYPES_UIDS, 30);
     }
 
     @Override
     public void startScan() {
-        final DeconzBridgeHandler handler = this.handler;
-        if (handler != null) {
-            handler.getBridgeFullState().thenAccept(fullState -> {
-                stopScan();
-                removeOlderResults(getTimestampOfLastScan());
-                fullState.ifPresent(state -> {
-                    state.sensors.forEach(this::addSensor);
-                    state.lights.forEach(this::addLight);
-                    state.groups.forEach(this::addGroup);
-                });
-
+        thingHandler.getBridgeFullState().thenAccept(fullState -> {
+            stopScan();
+            fullState.ifPresent(state -> {
+                state.sensors.forEach(this::addSensor);
+                state.lights.forEach(this::addLight);
+                state.groups.forEach(this::addGroup);
             });
-        }
+
+        });
+    }
+
+    @Override
+    protected synchronized void stopScan() {
+        removeOlderResults(getTimestampOfLastScan());
+        super.stopScan();
     }
 
     @Override
@@ -127,14 +133,17 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         properties.put(CONFIG_ID, groupId);
 
         switch (groupType) {
-            case LIGHT_GROUP:
-                thingTypeUID = THING_TYPE_LIGHTGROUP;
-                break;
-            default:
+            case LIGHT_GROUP -> thingTypeUID = THING_TYPE_LIGHTGROUP;
+            case LUMINAIRE, LIGHT_SOURCE, ROOM -> {
+                logger.debug("Group {} ({}), type {} ignored.", group.id, group.name, group.type);
+                return;
+            }
+            default -> {
                 logger.debug(
                         "Found group: {} ({}), type {} but no thing type defined for that type. This should be reported.",
                         group.id, group.name, group.type);
                 return;
+            }
         }
 
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, group.id);
@@ -179,42 +188,24 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
         }
 
         switch (lightType) {
-            case ON_OFF_LIGHT:
-            case ON_OFF_PLUGIN_UNIT:
-            case SMART_PLUG:
-                thingTypeUID = THING_TYPE_ONOFF_LIGHT;
-                break;
-            case DIMMABLE_LIGHT:
-            case DIMMABLE_PLUGIN_UNIT:
-                thingTypeUID = THING_TYPE_DIMMABLE_LIGHT;
-                break;
-            case COLOR_TEMPERATURE_LIGHT:
-                thingTypeUID = THING_TYPE_COLOR_TEMPERATURE_LIGHT;
-                break;
-            case COLOR_DIMMABLE_LIGHT:
-            case COLOR_LIGHT:
-                thingTypeUID = THING_TYPE_COLOR_LIGHT;
-                break;
-            case EXTENDED_COLOR_LIGHT:
-                thingTypeUID = THING_TYPE_EXTENDED_COLOR_LIGHT;
-                break;
-            case WINDOW_COVERING_DEVICE:
-                thingTypeUID = THING_TYPE_WINDOW_COVERING;
-                break;
-            case WARNING_DEVICE:
-                thingTypeUID = THING_TYPE_WARNING_DEVICE;
-                break;
-            case DOORLOCK:
-                thingTypeUID = THING_TYPE_DOORLOCK;
-                break;
-            case CONFIGURATION_TOOL:
+            case ON_OFF_LIGHT, ON_OFF_PLUGIN_UNIT, SMART_PLUG -> thingTypeUID = THING_TYPE_ONOFF_LIGHT;
+            case DIMMABLE_LIGHT, DIMMABLE_PLUGIN_UNIT -> thingTypeUID = THING_TYPE_DIMMABLE_LIGHT;
+            case COLOR_TEMPERATURE_LIGHT -> thingTypeUID = THING_TYPE_COLOR_TEMPERATURE_LIGHT;
+            case COLOR_DIMMABLE_LIGHT, COLOR_LIGHT -> thingTypeUID = THING_TYPE_COLOR_LIGHT;
+            case EXTENDED_COLOR_LIGHT -> thingTypeUID = THING_TYPE_EXTENDED_COLOR_LIGHT;
+            case WINDOW_COVERING_DEVICE, WINDOW_COVERING_CONTROLLER -> thingTypeUID = THING_TYPE_WINDOW_COVERING;
+            case WARNING_DEVICE -> thingTypeUID = THING_TYPE_WARNING_DEVICE;
+            case DOORLOCK -> thingTypeUID = THING_TYPE_DOORLOCK;
+            case CONFIGURATION_TOOL -> {
                 // ignore configuration tool device
                 return;
-            default:
+            }
+            default -> {
                 logger.debug(
                         "Found light: {} ({}), type {} but no thing type defined for that type. This should be reported.",
                         light.modelid, light.name, light.type);
                 return;
+            }
         }
 
         ThingUID uid = new ThingUID(thingTypeUID, bridgeUID, light.uniqueid.replaceAll("[^a-z0-9\\[\\]]", ""));
@@ -261,6 +252,8 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             }
         } else if (sensor.type.contains("LightLevel")) { // ZHALightLevel
             thingTypeUID = THING_TYPE_LIGHT_SENSOR;
+        } else if (sensor.type.contains("ZHAAirQuality")) { // ZHAAirQuality
+            thingTypeUID = THING_TYPE_AIRQUALITY_SENSOR;
         } else if (sensor.type.contains("ZHATemperature")) { // ZHATemperature
             thingTypeUID = THING_TYPE_TEMPERATURE_SENSOR;
         } else if (sensor.type.contains("ZHAHumidity")) { // ZHAHumidity
@@ -279,10 +272,10 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
             thingTypeUID = THING_TYPE_VIBRATION_SENSOR; // ZHAVibration
         } else if (sensor.type.contains("ZHABattery")) {
             thingTypeUID = THING_TYPE_BATTERY_SENSOR; // ZHABattery
+        } else if (sensor.type.contains("ZHAMoisture")) {
+            thingTypeUID = THING_TYPE_MOISTURE_SENSOR; // ZHAMoisture
         } else if (sensor.type.contains("ZHAThermostat")) {
             thingTypeUID = THING_TYPE_THERMOSTAT; // ZHAThermostat
-        } else if (sensor.type.contains("ZHAAirQuality")) {
-            thingTypeUID = THING_TYPE_AIRQUALITY_SENSOR;
         } else {
             logger.debug("Unknown type {}", sensor.type);
             return;
@@ -297,25 +290,14 @@ public class ThingDiscoveryService extends AbstractDiscoveryService implements D
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof DeconzBridgeHandler) {
-            this.handler = (DeconzBridgeHandler) handler;
-            this.bridgeUID = handler.getThing().getUID();
-        }
+    public void initialize() {
+        bridgeUID = thingHandler.getThing().getUID();
+        super.initialize();
     }
 
     @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return handler;
-    }
-
-    @Override
-    public void activate() {
-        super.activate(null);
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 }

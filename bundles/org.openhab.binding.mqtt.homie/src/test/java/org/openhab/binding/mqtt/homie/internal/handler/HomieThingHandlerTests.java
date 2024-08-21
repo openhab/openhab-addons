@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -41,12 +41,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.ChannelState;
+import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.mapping.AbstractMqttAttributeClass;
 import org.openhab.binding.mqtt.generic.mapping.SubscribeFieldToMQTTtopic;
 import org.openhab.binding.mqtt.generic.tools.ChildMap;
 import org.openhab.binding.mqtt.generic.tools.DelayedBatchProcessing;
-import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.handler.AbstractBrokerHandler;
 import org.openhab.binding.mqtt.homie.ChannelStateHelper;
 import org.openhab.binding.mqtt.homie.ThingHandlerHelper;
@@ -62,18 +62,21 @@ import org.openhab.binding.mqtt.homie.internal.homie300.PropertyAttributes.DataT
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.test.storage.VolatileStorageService;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingStatusInfo;
+import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.thing.binding.builder.ThingBuilder;
 import org.openhab.core.thing.type.ChannelKind;
+import org.openhab.core.thing.type.ChannelType;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
+import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.thing.type.ThingTypeRegistry;
-import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
-import org.openhab.core.types.TypeParser;
 
 /**
  * Tests cases for {@link HomieThingHandler}.
@@ -91,11 +94,15 @@ public class HomieThingHandlerTests {
     private @Mock @NonNullByDefault({}) ScheduledExecutorService schedulerMock;
     private @Mock @NonNullByDefault({}) ScheduledFuture<?> scheduledFutureMock;
     private @Mock @NonNullByDefault({}) ThingTypeRegistry thingTypeRegistryMock;
+    private @Mock @NonNullByDefault({}) ChannelTypeRegistry channelTypeRegistryMock;
+    private @Mock @NonNullByDefault({}) ChannelType channelTypeMock;
 
     private @NonNullByDefault({}) Thing thing;
     private @NonNullByDefault({}) HomieThingHandler thingHandler;
 
-    private final MqttChannelTypeProvider channelTypeProvider = new MqttChannelTypeProvider(thingTypeRegistryMock);
+    private final MqttChannelTypeProvider channelTypeProvider = spy(
+            new MqttChannelTypeProvider(thingTypeRegistryMock, new VolatileStorageService()));
+    private final MqttChannelStateDescriptionProvider stateDescriptionProvider = new MqttChannelStateDescriptionProvider();
 
     private final String deviceID = ThingChannelConstants.TEST_HOMIE_THING.getId();
     private final String deviceTopic = "homie/" + deviceID;
@@ -111,8 +118,11 @@ public class HomieThingHandlerTests {
         config.put("basetopic", "homie");
         config.put("deviceid", deviceID);
 
-        thing = ThingBuilder.create(MqttBindingConstants.HOMIE300_MQTT_THING, TEST_HOMIE_THING.getId())
-                .withConfiguration(config).build();
+        ThingTypeUID type = new ThingTypeUID(MqttBindingConstants.BINDING_ID,
+                MqttBindingConstants.HOMIE300_MQTT_THING.getId() + "_dynamic");
+        doAnswer(i -> ThingTypeBuilder.instance(type, "Homie Thing")).when(channelTypeProvider).derive(any(), any());
+
+        thing = ThingBuilder.create(type, TEST_HOMIE_THING.getId()).withConfiguration(config).build();
         thing.setStatusInfo(thingStatus);
 
         // Return the mocked connection object if the bridge handler is asked for it
@@ -127,7 +137,8 @@ public class HomieThingHandlerTests {
         doReturn(false).when(scheduledFutureMock).isDone();
         doReturn(scheduledFutureMock).when(schedulerMock).schedule(any(Runnable.class), anyLong(), any(TimeUnit.class));
 
-        final HomieThingHandler handler = new HomieThingHandler(thing, channelTypeProvider, 1000, 30, 5);
+        final HomieThingHandler handler = new HomieThingHandler(thing, channelTypeProvider, stateDescriptionProvider,
+                channelTypeRegistryMock, 1000, 30, 5);
         thingHandler = spy(handler);
         thingHandler.setCallback(callbackMock);
         final Device device = new Device(thing.getUID(), thingHandler, spy(new DeviceAttributes()),
@@ -258,25 +269,19 @@ public class HomieThingHandlerTests {
 
         StringType updateValue = new StringType("UPDATE");
         thingHandler.handleCommand(property.channelUID, updateValue);
-
-        assertThat(property.getChannelState().getCache().getChannelState().toString(), is("UPDATE"));
         verify(connectionMock, times(1)).publish(any(), any(), anyInt(), anyBoolean());
 
         // Check non writable property
         property.attributes.settable = false;
         property.attributesReceived();
         // Assign old value
-        Value value = property.getChannelState().getCache();
-        Command command = TypeParser.parseCommand(value.getSupportedCommandTypes(), "OLDVALUE");
-        if (command != null) {
-            property.getChannelState().getCache().update(command);
-            // Try to update with new value
-            updateValue = new StringType("SOMETHINGNEW");
-            thingHandler.handleCommand(property.channelUID, updateValue);
-            // Expect old value and no MQTT publish
-            assertThat(property.getChannelState().getCache().getChannelState().toString(), is("OLDVALUE"));
-            verify(connectionMock, times(1)).publish(any(), any(), anyInt(), anyBoolean());
-        }
+        property.getChannelState().getCache().update(new StringType("OLDVALUE"));
+        // Try to update with new value
+        updateValue = new StringType("SOMETHINGNEW");
+        thingHandler.handleCommand(property.channelUID, updateValue);
+        // Expect old value and no MQTT publish
+        assertThat(property.getChannelState().getCache().getChannelState().toString(), is("OLDVALUE"));
+        verify(connectionMock, times(1)).publish(any(), any(), anyInt(), anyBoolean());
     }
 
     public Object createSubscriberAnswer(InvocationOnMock invocation) {
@@ -322,6 +327,10 @@ public class HomieThingHandlerTests {
     public void propertiesChanged() throws InterruptedException, ExecutionException {
         thingHandler.device.initialize("homie", "device", new ArrayList<>());
         ThingHandlerHelper.setConnection(thingHandler, connectionMock);
+
+        doReturn("String").when(channelTypeMock).getItemType();
+        doReturn(ChannelKind.STATE).when(channelTypeMock).getKind();
+        doReturn(channelTypeMock).when(channelTypeRegistryMock).getChannelType(any());
 
         // Create mocked homie device tree with one node and one property
         doAnswer(this::createSubscriberAnswer).when(thingHandler.device.attributes).createSubscriber(any(), any(),

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,11 +16,12 @@ import static org.openhab.binding.dmx.internal.DmxBindingConstants.CHANNEL_MUTE;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.dmx.internal.action.DmxActions;
 import org.openhab.binding.dmx.internal.action.FadeAction;
 import org.openhab.binding.dmx.internal.action.ResumeAction;
@@ -47,19 +48,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
-
+@NonNullByDefault
 public abstract class DmxBridgeHandler extends BaseBridgeHandler {
     public static final int DEFAULT_REFRESH_RATE = 20;
 
     private final Logger logger = LoggerFactory.getLogger(DmxBridgeHandler.class);
 
-    protected Universe universe;
+    protected Universe universe = new Universe(0); // default universe
 
-    private ScheduledFuture<?> senderJob;
+    private @Nullable ScheduledFuture<?> senderJob;
     private boolean isMuted = false;
     private int refreshTime = 1000 / DEFAULT_REFRESH_RATE;
 
-    public DmxBridgeHandler(Bridge dmxBridge) {
+    protected DmxBridgeHandler(Bridge dmxBridge) {
         super(dmxBridge);
     }
 
@@ -68,7 +69,7 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
         switch (channelUID.getId()) {
             case CHANNEL_MUTE:
                 if (command instanceof OnOffType) {
-                    isMuted = ((OnOffType) command).equals(OnOffType.ON);
+                    isMuted = command.equals(OnOffType.ON);
                 } else {
                     logger.debug("command {} not supported in channel {}:mute", command.getClass(),
                             this.thing.getUID());
@@ -106,15 +107,6 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
      */
     public int getUniverseId() {
         return universe.getUniverseId();
-    }
-
-    /**
-     * rename the universe associated with this bridge
-     *
-     * @param universeId the new DMX universe id
-     */
-    protected void renameUniverse(int universeId) {
-        universe.rename(universeId);
     }
 
     @Override
@@ -156,18 +148,24 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
             uninstallScheduler();
         }
         if (refreshTime > 0) {
-            senderJob = scheduler.scheduleAtFixedRate(() -> {
-                logger.trace("runnable packet sender for universe {} called, state {}/{}", universe.getUniverseId(),
-                        getThing().getStatus(), isMuted);
-                if (!isMuted) {
-                    sendDmxData();
-                } else {
-                    logger.trace("bridge {} is muted", getThing().getUID());
-                }
-            }, 1, refreshTime, TimeUnit.MILLISECONDS);
+            senderJob = scheduler.scheduleAtFixedRate(this::refresh, 1, refreshTime, TimeUnit.MILLISECONDS);
             logger.trace("started scheduler for thing {}", this.thing.getUID());
         } else {
             logger.info("refresh disabled for thing {}", this.thing.getUID());
+        }
+    }
+
+    private void refresh() {
+        try {
+            logger.trace("runnable packet sender for universe {} called, state {}/{}", universe.getUniverseId(),
+                    getThing().getStatus(), isMuted);
+            if (!isMuted) {
+                sendDmxData();
+            } else {
+                logger.trace("bridge {} is muted", getThing().getUID());
+            }
+        } catch (RuntimeException e) {
+            logger.debug("failed to send DMX data: ", e);
         }
     }
 
@@ -228,9 +226,7 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
         int universeId = minUniverseId;
         universeId = Util.coerceToRange(universeConfig, minUniverseId, maxUniverseId, logger, "universeId");
 
-        if (universe == null) {
-            universe = new Universe(universeId);
-        } else if (universe.getUniverseId() != universeId) {
+        if (universe.getUniverseId() != universeId) {
             universe.rename(universeId);
         }
     }
@@ -264,7 +260,7 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
         }
 
         // do action
-        Integer channelCounter = 0;
+        int channelCounter = 0;
         for (DmxChannel channel : channels) {
             if (resumeAfter) {
                 channel.suspendAction();
@@ -284,6 +280,6 @@ public abstract class DmxBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(DmxActions.class);
+        return List.of(DmxActions.class);
     }
 }

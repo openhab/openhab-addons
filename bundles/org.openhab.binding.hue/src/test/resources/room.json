@@ -1,0 +1,175 @@
+{
+	"errors": [],
+	"data": [
+		{
+			"id": "dcbc740d-1e4f-48aa-ad02-3e17f1f4eebb",
+			"id_v1": "/groups/3",
+			"children": [
+				{
+					"rid": "0d47bd3d-d82b-4a21-893c-299bff18e22a",
+					"rtype": "device"
+				},
+				{
+					"rid": "7da8bcc7-6e69-46c4-a2e1-e0c2de8e2270",
+					"rtype": "device"
+				}
+			],
+			"services": [
+				{
+					"rid": "08947162-67be-4ed5-bfce-f42dade42416",
+					"rtype": "grouped_light"
+				}
+			],
+			"metadata": {
+				"name": "Back Bedroom",
+				"archetype": "bedroom"
+			},
+			"type": "room"
+		},
+		{
+			"id": "b8d28681-eba1-4156-85e2-96c9c5179fba",
+			"id_v1": "/groups/12",
+			"children": [
+				{
+					"rid": "18212397-8c4d-4373-8f59-c047b80994ac",
+					"rtype": "device"
+				},
+				{
+					"rid": "7bf2175d-0bb8-48dc-a7b4-775d3af3dfc9",
+					"rtype": "device"
+				},
+				{
+					"rid": "9680e1fa-3b1d-4979-94ba-1a0a0e7a47b8",
+					"rtype": "device"
+				}
+			],
+			"services": [
+				{
+					"rid": "0aec7082-c40e-4435-ab01-7b387468f7f9",
+					"rtype": "grouped_light"
+				}
+			],
+			"metadata": {
+				"name": "Kitchen",
+				"archetype": "kitchen"
+			},
+			"type": "room"
+		},
+		{
+			"id": "8b529073-36dd-409b-8006-80df304048ea",
+			"id_v1": "/groups/7",
+			"children": [
+				{
+					"rid": "2cf59d54-8624-445f-9a01-aac19682b954",
+					"rtype": "device"
+				},
+				{
+					"rid": "37c25501-53e4-4e01-b1bb-2f5ee6e7e258",
+					"rtype": "device"
+				},
+				{
+					"rid": "346a2c5a-b736-497e-aed2-0dd7a7daff52",
+					"rtype": "device"
+				},
+				{
+					"rid": "055f6ba3-0354-4765-b23e-287b505f2cd2",
+					"rtype": "device"
+				},
+				{
+					"rid": "266759fc-aaac-4eea-af5d-f226a146c119",
+					"rtype": "device"
+				}
+			],
+			"services": [
+				{
+					"rid": "a98c217f-ce07-4bc5-990f-24df6eaa043b",
+					"rtype": "grouped_light"
+				}
+			],
+			"metadata": {
+				"name": "Dining Room",
+				"archetype": "dining"
+			},
+			"type": "room"
+		},
+		{
+			"id": "c6da8ba8-123e-4d6c-ba58-576f9ac0d98b",
+			"id_v1": "/groups/2",
+			"children": [
+				{
+					"rid": "0b4c9bdb-3f46-485b-8337-e5649c03b9e2",
+					"rtype": "device"
+				},
+				{
+					"rid": "78c2c794-7bdd-4a95-a7e8-4ee7b9af28bd",
+					"rtype": "device"
+				},
+				{
+					"rid": "e0aafa22-59ab-4467-b603-632d92d2c15b",
+					"rtype": "device"
+				},
+				{
+					"rid": "e41beec5-0340-4700-9094-8244f9a8ed0d",
+					"rtype": "device"
+				}
+			],
+			"services": [
+				{
+					"rid": "ef9470ca-7e96-4fe0-84f2-a10783df9af0",
+					"rtype": "grouped_light"
+				}
+			],
+			"metadata": {
+				"name": "Living Room",
+				"archetype": "living_room"
+			},
+			"type": "room"
+		},
+		{
+			"id": "8cec1e2f-bcc9-45c9-a0aa-bc9c30c68b64",
+			"id_v1": "/groups/5",
+			"children": [
+				{
+					"rid": "01de467b-29a0-48fc-b711-fd9c079bd429",
+					"rtype": "device"
+				}
+			],
+			"services": [
+				{
+					"rid": "03b1effe-6521-4579-8734-f0d11ce28ed0",
+					"rtype": "grouped_light"
+				}
+			],
+			"metadata": {
+				"name": "Top Staircase",
+				"archetype": "staircase"
+			},
+			"type": "room"
+		},
+		{
+			"id": "1758470a-71b3-4d71-b992-cbb3c64d2d03",
+			"id_v1": "/groups/13",
+			"children": [
+				{
+					"rid": "adeb3425-6a6b-49a0-8262-129126de7941",
+					"rtype": "device"
+				},
+				{
+					"rid": "d8da96f0-0637-40bc-a89d-65ac47bceb0a",
+					"rtype": "device"
+				}
+			],
+			"services": [
+				{
+					"rid": "3913b23e-4ba8-4ebd-965d-e15c7b3213ce",
+					"rtype": "grouped_light"
+				}
+			],
+			"metadata": {
+				"name": "Front Bedroom",
+				"archetype": "bedroom"
+			},
+			"type": "room"
+		}
+	]
+}

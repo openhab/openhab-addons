@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,24 +25,26 @@ import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.client.ClientBuilder;
 
-import org.openhab.binding.lametrictime.api.Configuration;
-import org.openhab.binding.lametrictime.api.LaMetricTime;
-import org.openhab.binding.lametrictime.api.local.ApplicationActivationException;
-import org.openhab.binding.lametrictime.api.local.LaMetricTimeLocal;
-import org.openhab.binding.lametrictime.api.local.NotificationCreationException;
-import org.openhab.binding.lametrictime.api.local.UpdateException;
-import org.openhab.binding.lametrictime.api.local.model.Application;
-import org.openhab.binding.lametrictime.api.local.model.Audio;
-import org.openhab.binding.lametrictime.api.local.model.Bluetooth;
-import org.openhab.binding.lametrictime.api.local.model.Device;
-import org.openhab.binding.lametrictime.api.local.model.Display;
-import org.openhab.binding.lametrictime.api.local.model.Widget;
-import org.openhab.binding.lametrictime.api.model.enums.BrightnessMode;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeConfigStatusMessage;
 import org.openhab.binding.lametrictime.internal.LaMetricTimeUtil;
 import org.openhab.binding.lametrictime.internal.StateDescriptionOptionsProvider;
 import org.openhab.binding.lametrictime.internal.WidgetRef;
+import org.openhab.binding.lametrictime.internal.api.Configuration;
+import org.openhab.binding.lametrictime.internal.api.LaMetricTime;
+import org.openhab.binding.lametrictime.internal.api.dto.enums.BrightnessMode;
+import org.openhab.binding.lametrictime.internal.api.local.ApplicationActivationException;
+import org.openhab.binding.lametrictime.internal.api.local.LaMetricTimeLocal;
+import org.openhab.binding.lametrictime.internal.api.local.NotificationCreationException;
+import org.openhab.binding.lametrictime.internal.api.local.UpdateException;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Application;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Audio;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Bluetooth;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Device;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Display;
+import org.openhab.binding.lametrictime.internal.api.local.dto.Widget;
 import org.openhab.binding.lametrictime.internal.config.LaMetricTimeConfiguration;
 import org.openhab.core.config.core.status.ConfigStatusMessage;
 import org.openhab.core.library.types.OnOffType;
@@ -68,6 +70,7 @@ import org.slf4j.LoggerFactory;
  * @author Gregory Moyer - Initial contribution
  * @author Kai Kreuzer - Improved status handling, introduced refresh job and app state update
  */
+@NonNullByDefault
 public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
 
     private static final long CONNECTION_CHECK_INTERVAL = 60;
@@ -78,8 +81,10 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
 
     private final ClientBuilder clientBuilder;
 
+    @NonNullByDefault({})
     private LaMetricTime clock;
 
+    @Nullable
     private ScheduledFuture<?> connectionJob;
 
     public LaMetricTimeHandler(Bridge bridge, StateDescriptionOptionsProvider stateDescriptionProvider,
@@ -87,10 +92,6 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
         super(bridge);
         this.clientBuilder = clientBuilder;
         this.stateDescriptionProvider = stateDescriptionProvider;
-
-        if (stateDescriptionProvider == null) {
-            logger.warn("State description provider is null");
-        }
     }
 
     @Override
@@ -213,9 +214,8 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
         Audio audio = clock.getLocalApi().getAudio();
         if (command instanceof RefreshType) {
             updateState(channelUID, new PercentType(audio.getVolume()));
-        } else if (command instanceof PercentType) {
+        } else if (command instanceof PercentType percentTypeCommand) {
             try {
-                PercentType percentTypeCommand = (PercentType) command;
                 int volume = percentTypeCommand.intValue();
                 if (volume >= 0 && volume != audio.getVolume()) {
                     audio.setVolume(volume);
@@ -255,8 +255,7 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
 
     private void updateBluetoothValue(ChannelUID channelUID, Command command, Bluetooth bluetooth) {
         try {
-            if (command instanceof OnOffType && channelUID.getId().equals(CHANNEL_BLUETOOTH_ACTIVE)) {
-                OnOffType onOffCommand = (OnOffType) command;
+            if (command instanceof OnOffType onOffCommand && channelUID.getId().equals(CHANNEL_BLUETOOTH_ACTIVE)) {
                 if (onOffCommand == OnOffType.ON && !bluetooth.isActive()) {
                     bluetooth.setActive(true);
                     clock.getLocalApi().updateBluetooth(bluetooth);
@@ -295,8 +294,8 @@ public class LaMetricTimeHandler extends ConfigStatusBridgeHandler {
     private void updateDisplayValue(ChannelUID channelUID, Command command) {
         try {
             if (channelUID.getId().equals(CHANNEL_DISPLAY_BRIGHTNESS)) {
-                if (command instanceof PercentType) {
-                    int brightness = ((PercentType) command).intValue();
+                if (command instanceof PercentType percentCommand) {
+                    int brightness = percentCommand.intValue();
                     logger.debug("Set Brightness to {}.", brightness);
                     Display newDisplay = clock.setBrightness(brightness);
                     updateState(CHANNEL_DISPLAY_BRIGHTNESS_MODE, new StringType(newDisplay.getBrightnessMode()));

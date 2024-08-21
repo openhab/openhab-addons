@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -151,5 +151,29 @@ public class MapTransformationServiceTest extends JavaTest {
 
         // ensure modified configuration is applied
         assertEquals("fermé", processor.transform(NON_DEFAULTED_TRANSFORMATION_DE, SOURCE_CLOSED));
+    }
+
+    @Test
+    public void oneLineInlineMapTest() throws TransformationException {
+        String transformation = "|key1=semicolons_are_the_separators ; key2 = value2";
+        assertEquals("value2", processor.transform(transformation, "key2"));
+    }
+
+    @Test
+    public void multiLineInlineMapTest() throws TransformationException {
+        String transformation = "|key1=semicolons_arent_separators;1 \n key2 = value;2";
+        assertEquals("value;2", processor.transform(transformation, "key2"));
+    }
+
+    @Test
+    public void defaultInlineTest() throws TransformationException {
+        String transformation = "|key1=value1;key2=value;=default";
+        assertEquals("default", processor.transform(transformation, "nonexistent"));
+    }
+
+    @Test
+    public void defaultSourceInlineTest() throws TransformationException {
+        String transformation = "|key1=value1;key2=value;=_source_";
+        assertEquals("nonexistent", processor.transform(transformation, "nonexistent"));
     }
 }

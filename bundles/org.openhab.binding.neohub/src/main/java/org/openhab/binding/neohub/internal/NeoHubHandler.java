@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.neohub.internal;
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -30,6 +31,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.neohub.internal.NeoHubAbstractDeviceData.AbstractRecord;
 import org.openhab.binding.neohub.internal.NeoHubBindingConstants.NeoHubReturnResult;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -59,10 +61,15 @@ import com.google.gson.JsonSyntaxException;
 public class NeoHubHandler extends BaseBridgeHandler {
 
     private static final String SEE_README = "See documentation chapter \"Connection Refused Errors\"";
+    private static final int MAX_FAILED_SEND_ATTEMPTS = 2;
+    private static final Duration MIN_RESTART_DELAY = Duration.ofSeconds(10);
+    private static final Duration MAX_RESTART_DELAY = Duration.ofHours(1);
 
     private final Logger logger = LoggerFactory.getLogger(NeoHubHandler.class);
 
     private final Map<String, Boolean> connectionStates = new HashMap<>();
+
+    private WebSocketFactory webSocketFactory;
 
     private @Nullable NeoHubConfiguration config;
     private @Nullable NeoHubSocketBase socket;
@@ -86,9 +93,13 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
     private ApiVersion apiVersion = ApiVersion.LEGACY;
     private boolean isApiOnline = false;
+    private int failedSendAttempts = 0;
+    private Duration restartDelay = Duration.from(MIN_RESTART_DELAY);
+    private @Nullable ScheduledFuture<?> restartTask;
 
-    public NeoHubHandler(Bridge bridge) {
+    public NeoHubHandler(Bridge bridge, WebSocketFactory webSocketFactory) {
         super(bridge);
+        this.webSocketFactory = webSocketFactory;
     }
 
     @Override
@@ -142,21 +153,12 @@ public class NeoHubHandler extends BaseBridgeHandler {
             logger.debug("hub '{}' preferLegacyApi={}", getThing().getUID(), config.preferLegacyApi);
         }
 
-        // create a web or TCP socket based on the port number in the configuration
-        NeoHubSocketBase socket;
-        try {
-            if (config.useWebSocket) {
-                socket = new NeoHubWebSocket(config);
-            } else {
-                socket = new NeoHubSocket(config);
-            }
-        } catch (NeoHubException e) {
-            logger.debug("\"hub '{}' error creating web/tcp socket: '{}'", getThing().getUID(), e.getMessage());
+        this.config = config;
+        NeoHubSocketBase socket = createSocket();
+        if (socket == null) {
             return;
         }
-
         this.socket = socket;
-        this.config = config;
 
         /*
          * Try to 'ping' the hub, and if there is a 'connection refused', it is probably due to the mobile App |
@@ -200,10 +202,39 @@ public class NeoHubHandler extends BaseBridgeHandler {
         startFastPollingBurst();
     }
 
+    /**
+     * Create a web or TCP socket based on the configuration setting
+     */
+    private @Nullable NeoHubSocketBase createSocket() {
+        NeoHubConfiguration config = this.config;
+        if (config == null) {
+            logger.debug("\"hub '{}' configuration is null", getThing().getUID());
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR);
+        } else {
+            try {
+                if (config.useWebSocket) {
+                    return new NeoHubWebSocket(config, webSocketFactory, thing.getUID());
+                } else {
+                    return new NeoHubSocket(config, thing.getUID().getAsString());
+                }
+            } catch (IOException e) {
+                logger.debug("\"hub '{}' error creating web/tcp socket: '{}'", getThing().getUID(), e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            }
+        }
+        return null;
+    }
+
     @Override
     public void dispose() {
         if (logger.isDebugEnabled()) {
-            logger.debug("hub '{}' stop background polling..", getThing().getUID());
+            logger.debug("hub '{}' shutting down..", getThing().getUID());
+        }
+
+        closeSocket();
+        ScheduledFuture<?> restartTask = this.restartTask;
+        if (restartTask != null) {
+            restartTask.cancel(true);
         }
 
         // clean up the lazy polling scheduler
@@ -219,18 +250,20 @@ public class NeoHubHandler extends BaseBridgeHandler {
             fast.cancel(true);
             this.fastPollingScheduler = null;
         }
+    }
 
+    private void closeSocket() {
         NeoHubSocketBase socket = this.socket;
+        this.socket = null;
         if (socket != null) {
             try {
                 socket.close();
             } catch (IOException e) {
             }
-            this.socket = null;
         }
     }
 
-    /*
+    /**
      * device handlers call this to initiate a burst of fast polling requests (
      * improves response time to users when openHAB changes a channel value )
      */
@@ -255,7 +288,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
             startFastPollingBurst();
 
             return NeoHubReturnResult.SUCCEEDED;
-        } catch (Exception e) {
+        } catch (IOException | NeoHubException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
             logger.warn(MSG_FMT_SET_VALUE_ERR, getThing().getUID(), commandStr, e.getMessage());
             return NeoHubReturnResult.ERR_COMMUNICATION;
@@ -270,8 +303,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
     protected @Nullable NeoHubAbstractDeviceData fromNeoHubGetDeviceData() {
         NeoHubSocketBase socket = this.socket;
 
-        if (socket == null || config == null) {
-            logger.warn(MSG_HUB_CONFIG, getThing().getUID());
+        if (socket == null) {
             return null;
         }
 
@@ -303,19 +335,20 @@ public class NeoHubHandler extends BaseBridgeHandler {
 
             if (getThing().getStatus() != ThingStatus.ONLINE) {
                 updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE);
+                restartDelay = Duration.from(MIN_RESTART_DELAY);
             }
 
             // check if we also need to discard and update systemData
             NeoHubReadDcbResponse systemData = this.systemData;
             if (systemData != null) {
-                if (deviceData instanceof NeoHubLiveDeviceData) {
+                if (deviceData instanceof NeoHubLiveDeviceData liveDeviceData) {
                     /*
                      * note: time-stamps are measured in seconds from 1970-01-01T00:00:00Z
                      *
                      * new API: discard systemData if its time-stamp is older than the system
                      * time-stamp on the hub
                      */
-                    if (systemData.timeStamp < ((NeoHubLiveDeviceData) deviceData).getTimestampSystem()) {
+                    if (systemData.timeStamp < liveDeviceData.getTimestampSystem()) {
                         this.systemData = null;
                     }
                 } else {
@@ -331,11 +364,27 @@ public class NeoHubHandler extends BaseBridgeHandler {
             }
 
             return deviceData;
-        } catch (Exception e) {
+        } catch (IOException | NeoHubException e) {
             logger.warn(MSG_FMT_DEVICE_POLL_ERR, getThing().getUID(), e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
-            return null;
+            scheduleRestart();
         }
+        return null;
+    }
+
+    private synchronized void scheduleRestart() {
+        closeSocket();
+        restartTask = scheduler.schedule(() -> {
+            NeoHubSocketBase socket = createSocket();
+            this.socket = socket;
+            if (!Thread.interrupted() && socket == null) { // keep trying..
+                restartDelay = restartDelay.plus(restartDelay);
+                if (restartDelay.compareTo(MAX_RESTART_DELAY) > 0) {
+                    restartDelay = Duration.from(MAX_RESTART_DELAY);
+                }
+                scheduleRestart();
+            }
+        }, restartDelay.toSeconds(), TimeUnit.SECONDS);
     }
 
     /**
@@ -376,13 +425,13 @@ public class NeoHubHandler extends BaseBridgeHandler {
             }
 
             return systemData;
-        } catch (Exception e) {
+        } catch (IOException | NeoHubException e) {
             logger.warn(MSG_FMT_SYSTEM_POLL_ERR, getThing().getUID(), e.getMessage());
             return null;
         }
     }
 
-    /*
+    /**
      * this is the callback used by the lazy polling scheduler.. fetches the info
      * for all devices from the NeoHub, and passes the results the respective device
      * handlers
@@ -394,13 +443,24 @@ public class NeoHubHandler extends BaseBridgeHandler {
         }
 
         NeoHubAbstractDeviceData deviceData = fromNeoHubGetDeviceData();
-        if (deviceData != null) {
+        if (deviceData == null) {
+            if (fastPollingCallsToGo.get() == 0) {
+                failedSendAttempts++;
+                if (failedSendAttempts < MAX_FAILED_SEND_ATTEMPTS) {
+                    logger.debug("lazyPollingSchedulerExecute() deviceData:null, running again");
+                    scheduler.submit(() -> lazyPollingSchedulerExecute());
+                }
+            }
+            return;
+        } else {
+            failedSendAttempts = 0;
+
             // dispatch deviceData to each of the hub's owned devices ..
             List<Thing> children = getThing().getThings();
             for (Thing child : children) {
                 ThingHandler device = child.getHandler();
-                if (device instanceof NeoBaseHandler) {
-                    ((NeoBaseHandler) device).toBaseSendPollResponse(deviceData);
+                if (device instanceof NeoBaseHandler neoBaseHandler) {
+                    neoBaseHandler.toBaseSendPollResponse(deviceData);
                 }
             }
 
@@ -448,7 +508,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         }
     }
 
-    /*
+    /**
      * this is the callback used by the fast polling scheduler.. checks if a fast
      * polling burst is scheduled, and if so calls lazyPollingSchedulerExecute
      */
@@ -458,7 +518,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         }
     }
 
-    /*
+    /**
      * select whether to use the old "deprecated" API or the new API
      */
     private void selectApi() {
@@ -516,7 +576,7 @@ public class NeoHubHandler extends BaseBridgeHandler {
         this.isApiOnline = true;
     }
 
-    /*
+    /**
      * get the Engineers data
      */
     public @Nullable NeoHubGetEngineersData fromNeoHubGetEngineersData() {

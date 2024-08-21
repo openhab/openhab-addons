@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="hccrubbishcollection" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>HCC Rubbish Collection Binding</name>
+	<description>Get the rubbish collection dates for Hamilton City Council (New Zealand).</description>
+	<connection>cloud</connection>
+	<countries>nz</countries>
+
+</addon:addon>

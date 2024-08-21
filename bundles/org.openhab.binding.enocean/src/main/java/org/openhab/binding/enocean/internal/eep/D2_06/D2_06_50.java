@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -29,6 +31,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Thomas Lauterbach - Initial contribution
  */
+@NonNullByDefault
 public class D2_06_50 extends _VLDMessage {
 
     public D2_06_50() {
@@ -112,9 +115,8 @@ public class D2_06_50 extends _VLDMessage {
     }
 
     @Override
-    protected String convertToEventImpl(String channelId, String channelTypeId, String lastEvent,
+    protected @Nullable String convertToEventImpl(String channelId, String channelTypeId, @Nullable String lastEvent,
             Configuration config) {
-
         // Alarm
         if (bytes[0] == 0x02) {
             switch (channelId) {
@@ -130,7 +132,6 @@ public class D2_06_50 extends _VLDMessage {
     @Override
     public State convertToStateImpl(String channelId, String channelTypeId, Function<String, State> getCurrentStateFunc,
             Configuration config) {
-
         // Window status
         if (bytes[0] == 0x01) {
             switch (channelId) {
@@ -141,7 +142,7 @@ public class D2_06_50 extends _VLDMessage {
                 case CHANNEL_BATTERY_LEVEL:
                     return new DecimalType(bytes[6] & 0x7f);
                 case CHANNEL_BATTERYLOW:
-                    return getBit(bytes[6], 7) ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(getBit(bytes[6], 7));
             }
         }
 

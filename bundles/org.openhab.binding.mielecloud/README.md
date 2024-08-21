@@ -7,7 +7,7 @@ The latter can be requested from the [Miele Developer Portal](https://www.miele.
 ## Supported Things
 
 Most Miele appliances that directly connect to the cloud via a Wi-Fi module are supported.
-Appliances connecting to the XGW3000 gateway via ZigBee are also supported when registered with the cloud account.
+Appliances connecting to the XGW3000 gateway via Zigbee are also supported when registered with the cloud account.
 However they might be better supported by the [gateway-based Miele binding](https://www.openhab.org/addons/bindings/miele/).
 Depending on the age of your appliance the functionality of the binding might be limited.
 Appliances from recent generations will support all functionality.
@@ -151,6 +151,8 @@ Channel ID and channel type ID match unless noted.
 | plate_power_step_raw | Number | The raw power level of the heating plate. | Yes |
 | door_state | Switch | Indicates if the door of the device is open. | Yes |
 | door_alarm | Switch | Indicates if the door alarm of the device is active. | Yes |
+| water_consumption_current | Number | The amount of water used by the current running program up to the present moment. | Yes |
+| energy_consumption_current | Number | The amount of energy used by the current running program up to the present moment. | Yes |
 | battery_level | Number | The battery level of the robotic vacuum cleaner. | Yes |
 
 ### Coffee System
@@ -215,6 +217,8 @@ Channel ID and channel type ID match unless noted.
 - error_state
 - info_state
 - door_state
+- water_consumption_current
+- energy_consumption_current
 
 ### Tumble Dryer
 
@@ -242,6 +246,7 @@ Channel ID and channel type ID match unless noted.
 - light_switch
 - light_can_be_controlled
 - door_state
+- energy_consumption_current
 
 ### Freezer
 
@@ -387,6 +392,8 @@ Channel ID and channel type ID match unless noted.
 - light_switch
 - light_can_be_controlled
 - door_state
+- water_consumption_current
+- energy_consumption_current
 
 ### Washing Machine
 
@@ -415,6 +422,8 @@ Channel ID and channel type ID match unless noted.
 - light_switch
 - light_can_be_controlled
 - door_state
+- water_consumption_current
+- energy_consumption_current
 
 ### Wine Storage
 

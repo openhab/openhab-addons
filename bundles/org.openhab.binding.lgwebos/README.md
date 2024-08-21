@@ -36,11 +36,12 @@ WebOS TV has three configuration parameters.
 
 Parameters:
 
-| Name       | Description                                                                                         |
-|------------|-----------------------------------------------------------------------------------------------------|
-| host       | Hostname or IP address of TV                                                                        |
-| key        | Key exchanged with TV after pairing (enter it after you paired the device)                          |
-| macAddress | The MAC address of your TV to turn on via Wake On Lan (WOL). The binding will attempt to detect it. |
+| Name       | Description                                                                                                                                                                    |
+|------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| host       | Hostname or IP address of TV                                                                                                                                                   |
+| key        | Key exchanged with TV after pairing (enter it after you paired the device)                                                                                                     |
+| macAddress | The MAC address of your TV to turn on via Wake On Lan (WOL). The binding will attempt to detect it.                                                                            |
+| useTLS     | Enable Transport Layer Security. This is required by latest firmware versions and should work with older versions as well. In case of compatibility issues it can be disabled. |
 
 ### Configuration in .things file
 

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="airq" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>air-Q Binding</name>
+	<description>This is the binding for air-Q devices. The air-Q device contains several sensors measuring gases in the
+		air and other ambiance parameters like noise or temperature. With this binding you can integrate those values into
+		your openHAB system and change parametrs of the air-Q device.</description>
+	<connection>local</connection>
+
+</addon:addon>

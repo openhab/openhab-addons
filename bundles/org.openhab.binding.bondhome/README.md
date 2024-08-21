@@ -12,6 +12,7 @@ The easiest way is to open the Bond Home app on your mobile device, tap on your 
 | bondFan          | An RF or IR remote controlled ceiling fan with or without a light |
 | bondFireplace    | An RF or IR remote controlled fireplace with or without a fan     |
 | bondGenericThing | A generic RF or IR remote controlled device                       |
+| bondLight        | An RF or IR remote controlled light                               |
 | bondShades       | An RF or IR remote controlled motorized shade                     |
 
 ## Discovery
@@ -102,4 +103,5 @@ Switch GreatFan_Switch "Great Room Fan" { channel="bondhome:bondFan:BD123456:0d1
 Dimmer GreatFan_Dimmer "Great Room Fan" { channel="bondhome:bondFan:BD123456:0d11f00:fan#speed" }
 String GreatFan_Rotation "Great Room Fan Rotation" { channel="bondhome:bondFan:BD123456:0d11f00:fan#direction" }
 Switch GreatFanLight_Switch "Great Room Fan Light" { channel="bondhome:bondFan:BD123456:0d11f00:light#power" }
+Switch RF_Outlet_Lamp "Remote Control Outlet" { channel="bondhome:bondLight:BD123456:ce1fe38:light#power" }
 ```

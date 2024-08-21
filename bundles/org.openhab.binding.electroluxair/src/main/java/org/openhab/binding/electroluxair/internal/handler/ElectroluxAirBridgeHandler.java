@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,10 +12,9 @@
  */
 package org.openhab.binding.electroluxair.internal.handler;
 
-import static org.openhab.binding.electroluxair.internal.ElectroluxAirBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.electroluxair.internal.ElectroluxAirBindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,6 +36,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.openhab.core.types.RefreshType;
 
 import com.google.gson.Gson;
 
@@ -49,7 +49,7 @@ import com.google.gson.Gson;
 @NonNullByDefault
 public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Collections.singleton(THING_TYPE_BRIDGE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
 
     private int refreshTimeInSeconds = 300;
 
@@ -99,7 +99,7 @@ public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(ElectroluxAirDiscoveryService.class);
+        return Set.of(ElectroluxAirDiscoveryService.class);
     }
 
     @Override
@@ -147,6 +147,8 @@ public class ElectroluxAirBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        return;
+        if (CHANNEL_STATUS.equals(channelUID.getId()) && command instanceof RefreshType) {
+            scheduler.schedule(this::refreshAndUpdateStatus, 1, TimeUnit.SECONDS);
+        }
     }
 }

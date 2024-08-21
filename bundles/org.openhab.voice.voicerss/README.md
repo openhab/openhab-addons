@@ -1,7 +1,5 @@
 # VoiceRSS Text-to-Speech
 
-## Overview
-
 VoiceRSS is an Internet based TTS service hosted at <https://api.voicerss.org>.
 You must obtain an API Key to get access to this service.
 The free version allows you to make up to 350 requests per day; for more you may need a commercial subscription.
@@ -168,9 +166,10 @@ It supports the following audio formats: MP3, OGG, AAC and WAV.
 
 ## Caching
 
-The VoiceRSS extension does cache audio files from previous requests, to reduce traffic, improve performance, reduce number of requests and provide same time offline capability.
+The VoiceRSS TTS service uses the openHAB TTS cache to cache audio files produced from the most recent queries in order to reduce traffic, improve performance and reduce number of requests.
 
-For convenience, there is a tool where the audio cache can be generated in advance, to have a prefilled cache when starting this extension.
+An additional and specific cache can be prepared in advance to provide offline capability for predefined queries.
+For convenience, there is a tool where this cache can be generated in advance, to have a prefilled cache when starting this service.
 You have to copy the generated data to your userdata/voicerss/cache folder.
 
 Synopsis of this tool:

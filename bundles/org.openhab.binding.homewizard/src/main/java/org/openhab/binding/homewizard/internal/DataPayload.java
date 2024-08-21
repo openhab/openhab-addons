@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -340,12 +340,15 @@ public class DataPayload {
 
     @Override
     public String toString() {
-        return String.format("Data [smrVersion: %d meterModel: %s wifiSsid: %s wifiStrength: %d"
-                + " totalEnergyImportT1Kwh: %f totalEnergyImportT2Kwh: %f totalEnergyExportT1Kwh: %f totalEnergyExportT2Kwh: %f"
-                + " activePowerW: %f activePowerL1W: %f activePowerL2W: %f activePowerL3W: %f totalGasM3: %f gasTimestamp: %.0f"
-                + " totalWaterM3: %f currentWaterLPM: %f]", smrVersion, meterModel, wifiSsid, wifiStrength,
-                totalEnergyImportT1Kwh, totalEnergyImportT2Kwh, totalEnergyExportT1Kwh, totalEnergyExportT2Kwh,
-                activePowerW, activePowerL1W, activePowerL2W, activePowerL3W, totalGasM3, gasTimestamp, totalWaterM3,
-                currentWaterLPM);
+        return String.format(
+                """
+                        Data [smrVersion: %d meterModel: %s wifiSsid: %s wifiStrength: %d"
+                        totalEnergyImportT1Kwh: %f totalEnergyImportT2Kwh: %f totalEnergyExportT1Kwh: %f totalEnergyExportT2Kwh: %f"
+                        activePowerW: %f activePowerL1W: %f activePowerL2W: %f activePowerL3W: %f totalGasM3: %f gasTimestamp: %.0f"
+                        totalWaterM3: %f currentWaterLPM: %f]
+                        """,
+                smrVersion, meterModel, wifiSsid, wifiStrength, totalEnergyImportT1Kwh, totalEnergyImportT2Kwh,
+                totalEnergyExportT1Kwh, totalEnergyExportT2Kwh, activePowerW, activePowerL1W, activePowerL2W,
+                activePowerL3W, totalGasM3, gasTimestamp, totalWaterM3, currentWaterLPM);
     }
 }

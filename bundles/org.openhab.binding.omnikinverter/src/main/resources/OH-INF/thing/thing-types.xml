@@ -9,20 +9,85 @@
 		<description>Thing for OmnikInverter Binding</description>
 
 		<channels>
+
 			<channel id="power" typeId="power"/>
-			<channel id="powerAC1" typeId="powerAC1"/>
-			<channel id="powerAC2" typeId="powerAC2"/>
-			<channel id="powerAC3" typeId="powerAC3"/>
-			<channel id="currentPV1" typeId="currentPV1"/>
-			<channel id="currentPV2" typeId="currentPV2"/>
-			<channel id="currentPV3" typeId="currentPV3"/>
-			<channel id="voltagePV1" typeId="voltagePV1"/>
-			<channel id="voltagePV2" typeId="voltagePV2"/>
-			<channel id="voltagePV3" typeId="voltagePV3"/>
+			<channel id="powerAC1" typeId="powerAC">
+				<label>Instantaneous Power AC1</label>
+				<description>The instantaneous power for output channel 1</description>
+			</channel>
+			<channel id="powerAC2" typeId="powerAC">
+				<label>Instantaneous Power AC2</label>
+				<description>The instantaneous power for output channel 2</description>
+			</channel>
+			<channel id="powerAC3" typeId="powerAC">
+				<label>Instantaneous Power AC3</label>
+				<description>The instantaneous power for output channel 3</description>
+			</channel>
+			<channel id="voltageAC1" typeId="voltageAC">
+				<label>Voltage AC1</label>
+				<description>The voltage for output channel 1</description>
+			</channel>
+			<channel id="voltageAC2" typeId="voltageAC">
+				<label>Voltage AC2</label>
+				<description>The voltage for output channel 2</description>
+			</channel>
+			<channel id="voltageAC3" typeId="voltageAC">
+				<label>Voltage AC3</label>
+				<description>The voltage for output channel 3</description>
+			</channel>
+			<channel id="currentAC1" typeId="currentAC">
+				<label>Current AC1</label>
+				<description>The current for output channel 1</description>
+			</channel>
+			<channel id="currentAC2" typeId="currentAC">
+				<label>Current AC2</label>
+				<description>The current for output channel 2</description>
+			</channel>
+			<channel id="currentAC3" typeId="currentAC">
+				<label>Current AC3</label>
+				<description>The current for output channel 3</description>
+			</channel>
+			<channel id="frequencyAC1" typeId="frequencyAC">
+				<label>Frequency AC1</label>
+				<description>The frequency for output channel 1</description>
+			</channel>
+			<channel id="frequencyAC2" typeId="frequencyAC">
+				<label>Frequency AC2</label>
+				<description>The frequency for output channel 2</description>
+			</channel>
+			<channel id="frequencyAC3" typeId="frequencyAC">
+				<label>Frequency AC3</label>
+				<description>The frequency for output channel 3</description>
+			</channel>
+			<channel id="currentPV1" typeId="currentPV">
+				<label>Current PV1</label>
+				<description>The current on input string 1</description>
+			</channel>
+			<channel id="currentPV2" typeId="currentPV">
+				<label>Current PV2</label>
+				<description>The current on input string 2</description>
+			</channel>
+			<channel id="currentPV3" typeId="currentPV">
+				<label>Current PV3</label>
+				<description>The current on input string 3</description>
+			</channel>
+			<channel id="voltagePV1" typeId="voltagePV">
+				<label>Voltage PV1</label>
+				<description>The voltage on the input string 1</description>
+			</channel>
+			<channel id="voltagePV2" typeId="voltagePV">
+				<label>Voltage PV2</label>
+				<description>The voltage on the input string 2</description>
+			</channel>
+			<channel id="voltagePV3" typeId="voltagePV">
+				<label>Voltage PV3</label>
+				<description>The voltage on the input string 3</description>
+			</channel>
 			<channel id="energyToday" typeId="energyToday"/>
 			<channel id="energyTotal" typeId="energyTotal"/>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="hoursTotal" typeId="hoursTotal"/>
 		</channels>
-
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<label>Hostname</label>
@@ -39,67 +104,43 @@
 				<description>The serial of the Omnik inverter's Wifi module. This the number part only.</description>
 			</parameter>
 		</config-description>
-
 	</thing-type>
+
 
 	<channel-type id="power">
 		<item-type>Number:Power</item-type>
 		<label>Instantaneous Power</label>
-		<description>The instantaneous power generation for output 1</description>
+		<description>Deprecated! See channel 'powerAC1'</description>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="powerAC1">
+	<channel-type id="powerAC">
 		<item-type>Number:Power</item-type>
-		<label>Instantaneous Power AC1</label>
-		<description>The instantaneous power generation for output 1</description>
+		<label>Instantaneous Power AC</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="powerAC2">
-		<item-type>Number:Power</item-type>
-		<label>Instantaneous Power AC2</label>
-		<description>The instantaneous power generation for output 2</description>
+	<channel-type id="voltageAC">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage AC</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="powerAC3">
-		<item-type>Number:Power</item-type>
-		<label>Instantaneous Power AC3</label>
-		<description>The instantaneous power generation for output 3</description>
+	<channel-type id="currentAC">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current AC</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="currentPV1">
-		<item-type>Number:Current</item-type>
-		<label>Current PV1</label>
-		<description>The current on input string 1</description>
+	<channel-type id="frequencyAC">
+		<item-type>Number:Frequency</item-type>
+		<label>Frequency AC</label>
+		<state readOnly="true" pattern="%.2f %unit%"/>
+	</channel-type>
+	<channel-type id="currentPV">
+		<item-type>Number:ElectricCurrent</item-type>
+		<label>Current PV</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
-	<channel-type id="currentPV2">
-		<item-type>Number:Current</item-type>
-		<label>Current PV2</label>
-		<description>The current on input string 2</description>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="currentPV3">
-		<item-type>Number:Current</item-type>
-		<label>Current PV3</label>
-		<description>The current on input string 3</description>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="voltagePV1">
-		<item-type>Number:Voltage</item-type>
-		<label>Voltage PV1</label>
-		<description>The voltage on input string 1</description>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="voltagePV2">
-		<item-type>Number:Voltage</item-type>
-		<label>Voltage PV2</label>
-		<description>The voltage on input string 2</description>
-		<state readOnly="true" pattern="%.1f %unit%"/>
-	</channel-type>
-	<channel-type id="voltagePV3">
-		<item-type>Number:Voltage</item-type>
-		<label>The voltage on input string 3</label>
-		<description>The voltage PV3</description>
+	<channel-type id="voltagePV">
+		<item-type>Number:ElectricPotential</item-type>
+		<label>Voltage PV</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="energyToday">
@@ -112,7 +153,28 @@
 		<item-type>Number:Energy</item-type>
 		<label>Total Generated Energy</label>
 		<description>The amount of generated energy in total</description>
-		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
-
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Current Temperature</label>
+		<description>The temperature from the sensor</description>
+		<category>Temperature</category>
+		<tags>
+			<tag>Measurement</tag>
+			<tag>Temperature</tag>
+		</tags>
+		<state readOnly="true" pattern="%.f %unit%"/>
+	</channel-type>
+	<channel-type id="hoursTotal">
+		<item-type>Number:Time</item-type>
+		<label>Running Hours</label>
+		<description>The total amount of running hours</description>
+		<state readOnly="true" pattern="%.f %unit%"/>
+	</channel-type>
+	<channel-type id="hoursTotal">
+		<item-type>Number:Time</item-type>
+		<label>Running Hours</label>
+		<description>The total amount of running hours</description>
+		<state readOnly="true" pattern="%.f %unit%"/>
+	</channel-type>
 </thing:thing-descriptions>

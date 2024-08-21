@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,7 +18,6 @@ import java.util.Set;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelGroupTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
-import org.openhab.core.thing.type.ThingType;
 
 /**
  * Allows external definition of
@@ -33,9 +32,10 @@ public interface HomematicThingTypeExcluder {
     /**
      * Returns list of ThingTypes to be excluded. Clients which implement this
      * are henceforth responsible to ...
+     * <ul>
      * <li>provide any excluded ThingType on their own - e.g. in a custom
      * {@link org.openhab.core.thing.binding.ThingTypeProvider} or by
-     * defining those {@link ThingType}s in XML.</li>
+     * defining those {@link org.openhab.core.thing.type.ThingType}s in XML.</li>
      * <li>provide {@link org.openhab.core.thing.type.ChannelType}s
      * which are introduced by the provided thing-types</li>
      * <li>ensure compatibility and completeness of those thing-types (for any
@@ -44,20 +44,21 @@ public interface HomematicThingTypeExcluder {
      * {@link org.openhab.core.thing.Channel}) which can be handled by
      * the binding (see
      * {@link org.openhab.binding.homematic.internal.handler.HomematicThingHandler})</li>
+     * </ul>
      *
      * @return {@link ThingTypeUID}s of ThingTypes that are supposed to be
      *         excluded from the binding's thing-type generation
      */
-    public Set<ThingTypeUID> getExcludedThingTypes();
+    Set<ThingTypeUID> getExcludedThingTypes();
 
     /**
      * Check for the given {@link ThingTypeUID} whether it is excluded by this
      * {@link HomematicThingTypeExcluder} or not
      *
      * @param thingType a specific ThingType, specified by its {@link ThingTypeUID}
-     * @return <i>true</i>, if the {@link ThingType} is excluded
+     * @return <i>true</i>, if the {@link org.openhab.core.thing.type.ThingType} is excluded
      */
-    public boolean isThingTypeExcluded(ThingTypeUID thingType);
+    boolean isThingTypeExcluded(ThingTypeUID thingType);
 
     /**
      * Check for the given {@link ChannelTypeUID} whether it is excluded by this
@@ -67,7 +68,7 @@ public interface HomematicThingTypeExcluder {
      * @return <i>true</i>, if the {@link org.openhab.core.thing.type.ChannelType} is
      *         excluded
      */
-    public boolean isChannelTypeExcluded(ChannelTypeUID channelType);
+    boolean isChannelTypeExcluded(ChannelTypeUID channelType);
 
     /**
      * Check for the given {@link ChannelGroupTypeUID} whether it is excluded by
@@ -78,7 +79,7 @@ public interface HomematicThingTypeExcluder {
      *         {@link org.openhab.core.thing.type.ChannelGroupType} is
      *         excluded
      */
-    public boolean isChannelGroupTypeExcluded(ChannelGroupTypeUID channelGroupType);
+    boolean isChannelGroupTypeExcluded(ChannelGroupTypeUID channelGroupType);
 
     /**
      * Check for the given config-description-{@link URI} whether it is excluded by
@@ -88,5 +89,5 @@ public interface HomematicThingTypeExcluder {
      * @return <i>true</i>, if the {@link org.openhab.core.config.core.ConfigDescription} is
      *         excluded
      */
-    public boolean isConfigDescriptionExcluded(URI configDescriptionURI);
+    boolean isConfigDescriptionExcluded(URI configDescriptionURI);
 }

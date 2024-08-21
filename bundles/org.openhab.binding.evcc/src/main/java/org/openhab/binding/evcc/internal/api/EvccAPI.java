@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,8 +31,10 @@ import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link EvccAPI} is responsible for API calls to evcc.
- * 
+ * API requests were written for evcc version 0.123.1
+ *
  * @author Florian Hotze - Initial contribution
+ * @author Luca Arnecke - Update to evcc version 0.123.1
  */
 @NonNullByDefault
 public class EvccAPI {
@@ -46,7 +48,7 @@ public class EvccAPI {
 
     /**
      * Make a HTTP request.
-     * 
+     *
      * @param url full request URL
      * @param method request method, e.g. GET, POST
      * @return the response body
@@ -84,17 +86,39 @@ public class EvccAPI {
         }
     }
 
+    // Site API calls.
+    public String setPrioritySoC(int prioritySoc) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "prioritysoc/" + prioritySoc, "POST");
+    }
+
+    public String setBufferSoC(int bufferSoC) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "buffersoc/" + bufferSoC, "POST");
+    }
+
+    public String setBufferStartSoC(int bufferStartSoC) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "bufferstartsoc/" + bufferStartSoC, "POST");
+    }
+
+    public String setResidualPower(int residualPower) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "residualpower/" + residualPower, "POST");
+    }
+
+    public String setBatteryDischargeControl(boolean batteryDischargeControl) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "batterydischargecontrol/" + batteryDischargeControl, "POST");
+    }
+
     // Loadpoint specific API calls.
     public String setMode(int loadpoint, String mode) throws EvccApiException {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/mode/" + mode, "POST");
     }
 
-    public String setMinSoC(int loadpoint, int minSoC) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/minsoc/" + minSoC, "POST");
+    public String setLimitEnergy(int loadpoint, float limitEnergy) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/limitenergy/" + limitEnergy,
+                "POST");
     }
 
-    public String setTargetSoC(int loadpoint, int targetSoC) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetsoc/" + targetSoC, "POST");
+    public String setLimitSoC(int loadpoint, int limitSoC) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/limitsoc/" + limitSoC, "POST");
     }
 
     public String setPhases(int loadpoint, int phases) throws EvccApiException {
@@ -109,13 +133,21 @@ public class EvccAPI {
         return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/maxcurrent/" + maxCurrent, "POST");
     }
 
-    public String setTargetCharge(int loadpoint, float targetSoC, ZonedDateTime targetTime) throws EvccApiException {
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetcharge/" + targetSoC + "/"
-                + targetTime.toLocalDateTime().format(formatter), "POST");
+    // Vehicle specific API calls.
+    public String setVehicleMinSoC(String vehicleName, int minSoC) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicleName + "/minsoc/" + minSoC, "POST");
     }
 
-    public String unsetTargetCharge(int loadpoint) throws EvccApiException {
-        return httpRequest(this.host + EVCC_REST_API + "loadpoints/" + loadpoint + "/targetcharge", "DELETE");
+    public String setVehicleLimitSoC(String vehicleName, int limitSoC) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicleName + "/limitsoc/" + limitSoC, "POST");
+    }
+
+    public String setVehiclePlan(String vehicleName, int planSoC, ZonedDateTime planTime) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicleName + "/plan/soc/" + planSoC + "/"
+                + planTime.toLocalDateTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "Z", "POST");
+    }
+
+    public String removeVehiclePlan(String vehicleName) throws EvccApiException {
+        return httpRequest(this.host + EVCC_REST_API + "vehicles/" + vehicleName + "/plan/soc", "DELETE");
     }
 }

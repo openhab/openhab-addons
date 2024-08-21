@@ -6,7 +6,7 @@ It also supports selecting favorites and play them on players or groups within t
 The binding first establishes a connection to one of the players of the HEOS-Network and use them as a bridge.
 After a connection is established, the binding searches for all available players and groups via the bridge.
 To keep the network traffic low it is recommended to establish only one connection via one bridge.
-Connection to the bridge is done via a Telnet connection.
+Connection to the bridge is done via a Telnet connection on port 1255.
 
 ## Supported Things
 
@@ -58,7 +58,7 @@ This is required to load the favorites, playlists and so on from personal settin
 If no login information is provided these features can't be used.
 
 ```java
-Bridge heos:bridge:main "name" [ipAddress="192.168.0.1", unsername="xxx", password="123456"]
+Bridge heos:bridge:main "name" [ipAddress="192.168.0.1", username="xxx", password="123456"]
 ```
 
 ### Player Configuration
@@ -79,7 +79,7 @@ PID behind the heos:player:--- should be changed as required.
 It is recommended to use the Player PID.
 If the PID isn't known it can be discovered by establishing a Telnet connection (port 1255) to one player and search for available players (Command: heos://player/get_players) within the network.
 Another way is to use the UI to discover the Player via the bridge and get the PID.
-For further details refer to the [HEOS CLI](https://rn.dmglobal.com/euheos/HEOS_CLI_ProtocolSpecification_2021.pdf) specification.
+For further details refer to the [HEOS CLI](https://rn.dmglobal.com/usmodel/HEOS_CLI_ProtocolSpecification-Version-1.17.pdf) specification.
 
 ### Group Configuration
 
@@ -103,9 +103,9 @@ To ensure that the players and groups are attached to the bridge the definition 
 
 ```java
 Bridge heos:bridge:main "Bridge" [ipAddress="192.168.0.1", username="userName", password="123456"] {
- player Kitchen "Kitchen"[pid="434523813"]
- player LivingRoom "Living Room"[pid="918797451"]
- group 813793755 "Ground Level"[members="434523813;918797451"]
+    player Kitchen "Kitchen"[pid="434523813"]
+    player LivingRoom "Living Room"[pid="918797451"]
+    group 813793755 "Ground Level"[members="434523813;918797451"]
 }
 ```
 
@@ -269,16 +269,16 @@ String LivingRoom_Playlists {channel="heos:player:main:LivingRoom:Playlists"}
 ### demo.sitemap
 
 ```perl
-   Frame label="LivingRoom" {
-     Default item=LivingRoom_Control
-     Default item=LivingRoom_Mute
-     Default item=LivingRoom_Volume
-     Default item=LivingRoom_Title
-     Default item=LivingRoom_Interpret
-     Default item=LivingRoom_Album
-        Selection item=LivingRoom_Favorites     label="Favorite" icon="music"
-        Selection item=LivingRoom_Playlists     label="Playlist" icon="music"
-    }
+Frame label="LivingRoom" {
+    Default item=LivingRoom_Control
+    Default item=LivingRoom_Mute
+    Default item=LivingRoom_Volume
+    Default item=LivingRoom_Title
+    Default item=LivingRoom_Interpret
+    Default item=LivingRoom_Album
+    Selection item=LivingRoom_Favorites label="Favorite" icon="music"
+    Selection item=LivingRoom_Playlists label="Playlist" icon="music"
+}
 ```
 
 ## Detailed Explanation
@@ -318,17 +318,18 @@ Rule for kitchen:
 
 ```java
 rule "Play AuxIn from Living Room"
- when
-  Item HeosKitchen_InputSelect received command
- then
-  if (receivedCommand.toString == "aux_in_1") {
-   sendCommand(HeosKitchen_Input, "aux_in_1")
-
-  } if (receivedCommand.toString == "LivingRoom") {
-   sendCommand(HeosBridge_Play_Living, ON)
-   sendCommand(HeosKitchen_Input, "aux_in_1")
-   sendCommand(HeosBridge_Play_Living, OFF) //Switch player channel off again to be sure that it is OFF
-  }
+when
+    Item HeosKitchen_InputSelect received command
+then
+    if (receivedCommand.toString == "aux_in_1") {
+        sendCommand(HeosKitchen_Input, "aux_in_1")
+    }
+    if (receivedCommand.toString == "LivingRoom") {
+        sendCommand(HeosBridge_Play_Living, ON)
+        sendCommand(HeosKitchen_Input, "aux_in_1")
+        sendCommand(HeosBridge_Play_Living, OFF) //Switch player channel off again to be sure that it is OFF
+    }
+end
 ```
 
 Sitemap:
@@ -373,18 +374,18 @@ Sitemap:
 ```perl
 Frame label="Heos Group" visibility=[HeosGroup_Status==ONLINE] {
 
- Default item=HeosGroup1_Player
- Default item=HeosGroup1_Volume
- Default item=HeosGroup1_Mute
- Default item=HeosGroup1_Favorites
- Default item=HeosGroup1_Playlist
+    Default item=HeosGroup1_Player
+    Default item=HeosGroup1_Volume
+    Default item=HeosGroup1_Mute
+    Default item=HeosGroup1_Favorites
+    Default item=HeosGroup1_Playlist
 
- Text item=HeosGroup1_Song {
-  Default item=HeosGroup1_Song
-  Default item=HeosGroup1_Artist
-  Default item=HeosGroup1_Album
-  Image item=HeosGroup1_Cover url=""
- }
+    Text item=HeosGroup1_Song {
+        Default item=HeosGroup1_Song
+        Default item=HeosGroup1_Artist
+        Default item=HeosGroup1_Album
+        Image item=HeosGroup1_Cover url=""
+    }
 
 }
 ```

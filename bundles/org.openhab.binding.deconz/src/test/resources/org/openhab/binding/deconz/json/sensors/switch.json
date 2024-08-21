@@ -1,0 +1,24 @@
+{
+  "config": {
+    "alert": "none",
+    "battery": 7,
+    "group": "8",
+    "on": true,
+    "reachable": true
+  },
+  "ep": 1,
+  "etag": "43c4c267ebf1239c94791be02d3927c8",
+  "lastannounced": null,
+  "lastseen": null,
+  "manufacturername": "IKEA of Sweden",
+  "mode": 3,
+  "modelid": "TRADFRI remote control",
+  "name": "TRÅDFR Laura",
+  "state": {
+    "buttonevent": 1002,
+    "lastupdated": "2022-02-15T13:36:16.271"
+  },
+  "swversion": "2.3.014",
+  "type": "ZHASwitch",
+  "uniqueid": "90:fd:9f:ff:fe:17:75:a3-01-1000"
+}

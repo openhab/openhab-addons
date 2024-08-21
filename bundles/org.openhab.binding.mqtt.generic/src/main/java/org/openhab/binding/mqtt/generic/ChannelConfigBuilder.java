@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,6 +55,13 @@ public class ChannelConfigBuilder {
     public ChannelConfigBuilder withCommandTopic(@Nullable String topic) {
         if (topic != null) {
             config.commandTopic = topic;
+        }
+        return this;
+    }
+
+    public ChannelConfigBuilder withStopCommandTopic(@Nullable String topic) {
+        if (topic != null) {
+            config.stopCommandTopic = topic;
         }
         return this;
     }

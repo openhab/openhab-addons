@@ -1,7 +1,7 @@
 # Xiaomi Mi Smart Home Binding
 
 This binding allows your openHAB to communicate with the Xiaomi Smart Home Suite.
-It consists of devices communicating over a ZigBee network with a ZigBee - WiFi gateway.
+It consists of devices communicating over a Zigbee network with a Zigbee - WiFi gateway.
 
 The devices are very affordable and you can get them from your favourite Chinese markets like [AliExpress](https://www.aliexpress.com/) or [GearBest](https://www.gearbest.com).
 The sensors run on a coin cell battery for over a year.
@@ -543,7 +543,7 @@ In case you want to check if the communication between the machine and the gatew
 - make sure you have **netcat** installed
 - Enter ```netcat -ukl 9898```
 - At least every 10 seconds you should see a message coming in from the gateway which looks like
-```{"cmd":"heartbeat","model":"gateway","sid":"`xxx","short_id":"0","token":"xxx","data":"{\"ip\":\"`xxx\"}"}```
+  ```{"cmd":"heartbeat","model":"gateway","sid":"`xxx","short_id":"0","token":"xxx","data":"{\"ip\":\"`xxx\"}"}```
 
 #### Multiple network interfaces
 

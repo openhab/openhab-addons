@@ -46,8 +46,8 @@ Thing pushbullet:bot:r2d2 "R2D2" @ "Somewhere" [ token = "verysecretwonttellyou"
 This binding includes rule actions for sending notes.
 Two different actions available:
 
-* `sendPushbulletNote(String recipient, String messsage)`
-* `sendPushbulletNote(String recipient, String title, String messsage)`
+- `sendPushbulletNote(String recipient, String messsage)`
+- `sendPushbulletNote(String recipient, String title, String messsage)`
 
 Since there is a separate rule action instance for each `bot` thing, this needs to be retrieved through `getActions(scope, thingUID)`.
 The first parameter always has to be `pushbullet` and the second is the full Thing UID of the bot that should be used.
@@ -58,7 +58,7 @@ If it is not specified or properly formatted, the note will be broadcast to all 
 
 Examples:
 
-```
+```java
 val actions = getActions("pushbullet", "pushbullet:bot:r2d2")
 val result = actions.sendPushbulletNote("someone@example.com", "R2D2 talks here...", "This is the pushed note.")
 ```
@@ -148,7 +148,7 @@ This action does not evaluate the rate limiting headers though.
 This project is being translated on transifex.
 If you want to help, please join the project at the URL:
 
-- https://www.transifex.com/hakan42/openhab-binding-pushbullet/dashboard/
+- <https://www.transifex.com/hakan42/openhab-binding-pushbullet/dashboard/>
 
 ## Libraries
 

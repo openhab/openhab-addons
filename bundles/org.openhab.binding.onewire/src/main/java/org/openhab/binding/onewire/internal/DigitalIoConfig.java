@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,8 +13,6 @@
 package org.openhab.binding.onewire.internal;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.CHANNEL_DIGITAL;
-
-import java.util.Arrays;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.onewire.internal.owserver.OwserverDeviceParameter;
@@ -84,9 +82,9 @@ public class DigitalIoConfig {
 
     public State convertState(Boolean rawValue) {
         if (ioLogic == DigitalIoLogic.NORMAL) {
-            return rawValue ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(rawValue);
         } else {
-            return rawValue ? OnOffType.OFF : OnOffType.ON;
+            return OnOffType.from(!rawValue);
         }
     }
 
@@ -100,6 +98,6 @@ public class DigitalIoConfig {
 
     @Override
     public String toString() {
-        return String.format("path=%s, mode=%s, logic=%s", Arrays.asList(getParameter()), ioMode, ioLogic);
+        return String.format("path=%s, mode=%s, logic=%s", getParameter(), ioMode, ioLogic);
     }
 }

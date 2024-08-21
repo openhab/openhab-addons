@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
     private final BPUPListener udpListener;
     private final BondHttpApi api;
 
-    private @Nullable BondBridgeConfiguration config;
+    private BondBridgeConfiguration config = new BondBridgeConfiguration();
 
     private @Nullable BondDiscoveryService discoveryService;
 
@@ -99,16 +99,15 @@ public class BondBridgeHandler extends BaseBridgeHandler {
     }
 
     private void initializeThing() {
-        BondBridgeConfiguration localConfig = config;
-        if (localConfig.localToken == null) {
+        if (config.localToken.isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error.incorrect-local-token");
             this.initializer = null;
             return;
         }
-        if (localConfig.ipAddress == null) {
+        if (config.ipAddress.isEmpty()) {
             try {
-                String lookupAddress = localConfig.serialNumber + ".local";
+                String lookupAddress = config.serialNumber + ".local";
                 logger.debug("Attempting to get IP address for Bond Bridge {}", lookupAddress);
                 InetAddress ia = InetAddress.getByName(lookupAddress);
                 String ip = ia.getHostAddress();
@@ -124,7 +123,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
             }
         } else {
             try {
-                InetAddress.getByName(localConfig.ipAddress);
+                InetAddress.getByName(config.ipAddress);
             } catch (UnknownHostException ignored) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/offline.conf-error.invalid-host");
@@ -171,8 +170,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
         super.childHandlerInitialized(childHandler, childThing);
-        if (childHandler instanceof BondDeviceHandler) {
-            BondDeviceHandler handler = (BondDeviceHandler) childHandler;
+        if (childHandler instanceof BondDeviceHandler handler) {
             synchronized (handlers) {
                 // Start the BPUP update service after the first child device is added
                 startUDPListenerJob();
@@ -185,8 +183,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (childHandler instanceof BondDeviceHandler) {
-            BondDeviceHandler handler = (BondDeviceHandler) childHandler;
+        if (childHandler instanceof BondDeviceHandler handler) {
             synchronized (handlers) {
                 handlers.remove(handler);
                 if (handlers.isEmpty()) {
@@ -201,10 +198,9 @@ public class BondBridgeHandler extends BaseBridgeHandler {
     /**
      * Forwards a push update to a device
      *
-     * @param the {@link BPUPUpdate object}
+     * @param pushUpdate the {@link BPUPUpdate object}
      */
     public void forwardUpdateToThing(BPUPUpdate pushUpdate) {
-
         updateStatus(ThingStatus.ONLINE);
 
         BondDeviceState updateState = pushUpdate.deviceState;
@@ -212,7 +208,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
         String deviceId = null;
         String topicType = null;
         if (topic != null) {
-            String parts[] = topic.split("/");
+            String[] parts = topic.split("/");
             deviceId = parts[1];
             topicType = parts[2];
         }
@@ -234,7 +230,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
                 logger.trace("could not read topic type from push update or type was not state.");
             }
         } else {
-            logger.warn("Can not read device Id from push update.");
+            logger.trace("Cannot read device Id from push update.");
         }
     }
 
@@ -242,14 +238,13 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      * Returns the Id of the bridge associated with the handler
      */
     public String getBridgeId() {
-        String serialNumber = config.serialNumber;
-        return serialNumber == null ? "" : serialNumber;
+        return config.serialNumber;
     }
 
     /**
      * Returns the Ip Address of the bridge associated with the handler as a string
      */
-    public @Nullable String getBridgeIpAddress() {
+    public String getBridgeIpAddress() {
         return config.ipAddress;
     }
 
@@ -257,8 +252,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      * Returns the local token of the bridge associated with the handler as a string
      */
     public String getBridgeToken() {
-        String localToken = config.localToken;
-        return localToken == null ? "" : localToken;
+        return config.localToken;
     }
 
     /**
@@ -288,9 +282,11 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      * Called by the UDP listener when it gets a proper response.
      */
     public void setBridgeOnline(String bridgeAddress) {
-        BondBridgeConfiguration localConfig = config;
-        if (localConfig.ipAddress == null || !localConfig.ipAddress.equals(bridgeAddress)) {
-            logger.debug("IP address of Bond {} has changed to {}", localConfig.serialNumber, bridgeAddress);
+        if (!config.isValid()) {
+            logger.warn("Configuration error, cannot set the bridge online without configuration");
+            return;
+        } else if (!config.ipAddress.equals(bridgeAddress)) {
+            logger.debug("IP address of Bond {} has changed to {}", config.serialNumber, bridgeAddress);
             Configuration c = editConfiguration();
             c.put(CONFIG_IP_ADDRESS, bridgeAddress);
             updateConfiguration(c);
@@ -334,7 +330,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(BondDiscoveryService.class);
+        return Set.of(BondDiscoveryService.class);
     }
 
     public void setDiscoveryService(BondDiscoveryService discoveryService) {

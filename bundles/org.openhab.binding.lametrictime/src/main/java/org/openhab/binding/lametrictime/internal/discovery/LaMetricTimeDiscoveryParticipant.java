@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,11 +15,12 @@ package org.openhab.binding.lametrictime.internal.discovery;
 import static org.openhab.binding.lametrictime.internal.LaMetricTimeBindingConstants.THING_TYPE_DEVICE;
 import static org.openhab.binding.lametrictime.internal.config.LaMetricTimeConfiguration.HOST;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.jupnp.model.meta.RemoteDevice;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -37,17 +38,18 @@ import org.slf4j.LoggerFactory;
  * @author Gregory Moyer - Initial contribution
  */
 @Component
+@NonNullByDefault
 public class LaMetricTimeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     private Logger logger = LoggerFactory.getLogger(LaMetricTimeDiscoveryParticipant.class);
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(THING_TYPE_DEVICE);
+        return Set.of(THING_TYPE_DEVICE);
     }
 
     @Override
-    public DiscoveryResult createResult(RemoteDevice device) {
+    public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         ThingUID uid = getThingUID(device);
         if (uid == null) {
             return null;
@@ -67,7 +69,7 @@ public class LaMetricTimeDiscoveryParticipant implements UpnpDiscoveryParticipan
     }
 
     @Override
-    public ThingUID getThingUID(RemoteDevice device) {
+    public @Nullable ThingUID getThingUID(RemoteDevice device) {
         try {
             String manufacturer = device.getDetails().getManufacturerDetails().getManufacturer();
             String modelName = device.getDetails().getModelDetails().getModelName();

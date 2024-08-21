@@ -3,7 +3,7 @@
 This binding is used to integrate the OpenTherm Gateway into openHAB.
 The OpenTherm Gateway is a module designed by Schelte Bron that can be connected to units that support communication using the OpenTherm protocol, such as boiler or ventilation / heat recovery unit.
 
-More information on the OpenTherm Gateway device can be found at https://otgw.tclcode.com/
+More information on the OpenTherm Gateway device can be found at <https://otgw.tclcode.com/>
 
 ## Discovery
 
@@ -177,7 +177,7 @@ With openHAB rules, you can use the `sendcommand` channel of the `openthermgatew
 
 Example:
 
-```
+```java
 SendCommand.sendCommand("PM=10")
 ```
 
@@ -185,9 +185,9 @@ This will cause the OpenTherm Gateway to send a READ-DATA message to the slave d
 
 ## Full Example
 
-### demo.things 
+### demo.things
 
-```
+```java
 Bridge openthermgateway:openthermgateway:1 "OpenTherm Gateway" [ ipaddress="192.168.1.100", port="8000", connectionRetryInterval=60 ] {
     Thing boiler remeha "Remeha Avanta 28c"
     Thing ventilationheatrecovery brink "Brink Renovent Excellent 300"
@@ -196,13 +196,13 @@ Bridge openthermgateway:openthermgateway:1 "OpenTherm Gateway" [ ipaddress="192.
 
 ### demo.items for `openthermgateway`
 
-```
+```java
 Text SendCommand "Send command channel" { channel="openthermgateway:openthermgateway:1:sendcommand" }
 ```
 
 ### demo.items for `boiler`
 
-```
+```java
 Number:Temperature RoomTemperature "Room Temperature [%.1f %unit%]" <temperature> { channel="openthermgateway:boiler:1:remeha:roomtemp }
 Number:Temperature RoomSetpoint "Room Setpoint [%.1f %unit%]" <temperature> { channel="openthermgateway:boiler:1:remeha:roomsetpoint }
 Number:Temperature TemporaryRoomSetpointOverride "Temporary Room Setpoint Override [%.1f %unit%]" <temperature> { channel="openthermgateway:boiler:1:remeha:temperaturetemporary }
@@ -257,7 +257,7 @@ Number:Dimensionless FaultHistoryBufferEntry "Fault History Buffer Entry" { chan
 
 ### demo.items for `ventilationheatrecovery`
 
-```
+```java
 Switch VentilationEnabled "Ventilation Enabled" <switch> { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_ventilationenable }
 Number:Dimensionless BypassPosition "Bypass Position" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_bypassposition }
 Number:Dimensionless BypassMode "Bypass Mode" { channel="openthermgateway:ventilationheatrecovery:1:brink:vh_bypassmode }
@@ -303,7 +303,7 @@ Number:Dimensionless FaultHistoryBufferEntry "Fault History Buffer Entry" { chan
 
 ### demo.sitemap
 
-```
+```perl
 sitemap demo label="Main Menu" {
     Frame label="Boiler" {
         Text item="RoomTemperature" icon="temperature" label="Room Temperature [%.1f %unit%]"
@@ -420,9 +420,9 @@ So if you upgrade your system from openHAB v3.2 (or lower) to v3.3 (or higher), 
 
 - Change the `channel=".."` configuration entries of all your Items from referring to the ThingUID of the old `otgw` Thing to refer instead to the ThingUID of the respective newly created `boiler` Thing.
 
-**Old Thing Definition and respective Item Definition (example)**
+### Old Thing Definition and respective Item Definition (example)
 
-```
+```java
 Thing openthermgateway:otgw:yourGatewayId [ ipaddress="192.168.1.100", port=8000, connectionRetryInterval=60 ]
 
 e.g.
@@ -430,9 +430,9 @@ Number:Temperature Boiler_DHW_Temperature "Boiler DHW Temperature [%.1f %unit%]"
 &c.
 ```
 
-**New Thing Definition and respective and Item Definition (example)**
+### New Thing Definition and respective and Item Definition (example)
 
-```
+```java
 Bridge openthermgateway:openthermgateway:yourGatewayId "OpenTherm Gateway" @ "Kitchen" [ipaddress="192.168.1.100", port=20108, connectionRetryInterval=60] {
     Thing boiler remeha "Boiler" @ "Kitchen"
 }

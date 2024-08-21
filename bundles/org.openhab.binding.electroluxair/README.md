@@ -2,8 +2,6 @@
 
 This is an openHAB binding for the Pure A9 Air Purifier, by Electrolux.
 
-This binding uses the Electrolux Delta REST API.
-
 ![Electrolux Pure A9](doc/electrolux_pure_a9.png)
 
 ## Supported Things
@@ -26,15 +24,15 @@ Only the bridge require manual configuration. The Electrolux Pure A9 thing can b
 
 | Parameter | Description                                                  | Type   | Default  | Required |
 |-----------|--------------------------------------------------------------|--------|----------|----------|
-| username  | The username used to connect to the Electrolux Wellbeing app | String | NA       | yes      |
-| password  | The password used to connect to the Electrolux Wellbeing app | String | NA       | yes      |
+| username  | The username used to connect to the Electrolux app           | String | NA       | yes      |        
+| password  | The password used to connect to the Electrolux app           | String | NA       | yes      |
 | refresh   | Specifies the refresh interval in second                     | Number | 600      | yes      |
 
 #### Electrolux Pure A9
 
 | Parameter | Description                                                             | Type   | Default  | Required |
 |-----------|-------------------------------------------------------------------------|--------|----------|----------|
-| deviceId  | Product ID of your Electrolux Pure A9 found in Electrolux Wellbeing app | Number | NA       | yes      |
+| deviceId  | Product ID of your Electrolux Pure A9 found in Electrolux app           | Number | NA       | yes      |
 
 ## Channels
 
@@ -42,20 +40,22 @@ Only the bridge require manual configuration. The Electrolux Pure A9 thing can b
 
 The following channels are supported:
 
-| Channel Type ID             | Item Type             | Description                                                                  |
-|-----------------------------|-----------------------|------------------------------------------------------------------------------|
-| temperature                 | Number:Temperature    | This channel reports the current temperature.                                |
-| humidity                    | Number:Dimensionless  | This channel reports the current humidity in percentage.                     |
-| tvoc                        | Number:Density        | This channel reports the total Volatile Organic Compounds in microgram/m3.   |
-| pm1                         | Number:Dimensionless  | This channel reports the Particulate Matter 1 in ppb.                        |
-| pm2_5                       | Number:Dimensionless  | This channel reports the Particulate Matter 2.5 in ppb.                      |
-| pm10                        | Number:Dimensionless  | This channel reports the Particulate Matter 10 in ppb.                       |
-| co2                         | Number:Dimensionless  | This channel reports the CO2 level in ppm.                                   |
-| fanSpeed                    | Number                | This channel sets and reports the current fan speed (1-9).                   |
-| filterLife                  | Number:Dimensionless  | This channel reports the remaining filter life in %.                         |
-| ionizer                     | Switch                | This channel sets and reports the status of the ionizer function (On/Off).   |
-| doorOpen                    | Contact               | This channel reports the status of door (Opened/Closed).                     |
-| workMode                    | String                | This channel sets and reports the current work mode (Auto, Manual, PowerOff.)|
+| Channel Type ID             | Item Type             | Description                                                                    |
+|-----------------------------|-----------------------|--------------------------------------------------------------------------------|
+| temperature                 | Number:Temperature    | This channel reports the current temperature.                                  |
+| humidity                    | Number:Dimensionless  | This channel reports the current humidity in percentage.                       |
+| tvoc                        | Number:Density        | This channel reports the total Volatile Organic Compounds in microgram/m3.     |
+| pm1                         | Number:Dimensionless  | This channel reports the Particulate Matter 1 in ppb.                          |
+| pm2_5                       | Number:Dimensionless  | This channel reports the Particulate Matter 2.5 in ppb.                        |
+| pm10                        | Number:Dimensionless  | This channel reports the Particulate Matter 10 in ppb.                         |
+| co2                         | Number:Dimensionless  | This channel reports the CO2 level in ppm.                                     |
+| fanSpeed                    | Number                | This channel sets and reports the current fan speed (1-9).                     |
+| filterLife                  | Number:Dimensionless  | This channel reports the remaining filter life in %.                           |
+| ionizer                     | Switch                | This channel sets and reports the status of the Ionizer function (On/Off).     |
+| doorOpen                    | Contact               | This channel reports the status of door (Opened/Closed).                       |
+| workMode                    | String                | This channel sets and reports the current work mode (Auto, Manual, PowerOff.)  |
+| uiLIght                     | Switch                | This channel sets and reports the status of the UI Light function (On/Off).    |
+| safetyLock                  | Switch                | This channel sets and reports the status of the Safety Lock  function (On/Off).|
 
 ## Full Example
 
@@ -83,4 +83,10 @@ Contact ElectroluxAirDoor "Electrolux Air Door Status" {channel="electroluxair:e
 String ElectroluxAirWorkModeSetting "ElectroluxAir Work Mode Setting" {channel="electroluxair:electroluxpurea9:myAPI:myElectroluxPureA9:workMode"}
 // Fan speed
 Number ElectroluxAirFanSpeed "Electrolux Air Fan Speed Setting" {channel="electroluxair:electroluxpurea9:myAPI:myElectroluxPureA9:fanSpeed"}
+// UI Light
+Switch ElectroluxAirUILight "Electrolux Air UI Light Setting" {channel="electroluxair:electroluxpurea9:myAPI:myElectroluxPureA9:uiLight"}
+// Ionizer
+Switch ElectroluxAirIonizer "Electrolux Air Ionizer Setting" {channel="electroluxair:electroluxpurea9:myAPI:myElectroluxPureA9:ionizer"}
+// Safety Lock
+Switch ElectroluxAirSafetyLock "Electrolux Air Safety Lock Setting" {channel="electroluxair:electroluxpurea9:myAPI:myElectroluxPureA9:safetyLock"}
 ```

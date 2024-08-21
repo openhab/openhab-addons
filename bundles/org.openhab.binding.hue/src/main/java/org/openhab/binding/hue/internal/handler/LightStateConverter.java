@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,20 +12,25 @@
  */
 package org.openhab.binding.hue.internal.handler;
 
+import javax.measure.quantity.Temperature;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.dto.ColorTemperature;
-import org.openhab.binding.hue.internal.dto.State;
-import org.openhab.binding.hue.internal.dto.State.AlertMode;
-import org.openhab.binding.hue.internal.dto.State.ColorMode;
-import org.openhab.binding.hue.internal.dto.State.Effect;
-import org.openhab.binding.hue.internal.dto.StateUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.ColorTemperature;
+import org.openhab.binding.hue.internal.api.dto.clip1.State;
+import org.openhab.binding.hue.internal.api.dto.clip1.State.AlertMode;
+import org.openhab.binding.hue.internal.api.dto.clip1.State.ColorMode;
+import org.openhab.binding.hue.internal.api.dto.clip1.State.Effect;
+import org.openhab.binding.hue.internal.api.dto.clip1.StateUpdate;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
+import org.openhab.core.util.ColorUtil;
 
 /**
  * The {@link LightStateConverter} is responsible for mapping to/from jue types.
@@ -161,14 +166,14 @@ public class LightStateConverter {
     }
 
     /**
-     * Transforms the given {@link DecimalType} into a light state containing
-     * the color temperature in Kelvin.
+     * Transforms the given color temperature in Kelvin into a Hue Light {@link State}.
      *
-     * @param decimalType color temperature in Kelvin
+     * @param kelvinValue color temperature in Kelvin
+     * @param capabilities color temperature capabilities (e.g. min and max values)
      * @return light state containing the color temperature
      */
-    public static StateUpdate toColorTemperatureLightState(DecimalType decimalType, ColorTemperature capabilities) {
-        return new StateUpdate().setColorTemperature(kelvinToMired(decimalType.intValue()), capabilities);
+    public static StateUpdate toColorTemperatureLightState(int kelvinValue, ColorTemperature capabilities) {
+        return new StateUpdate().setColorTemperature(kelvinToMired(kelvinValue), capabilities);
     }
 
     /**
@@ -207,14 +212,14 @@ public class LightStateConverter {
     }
 
     /**
-     * Transforms Hue Light {@link State} into {@link DecimalType} representing
+     * Transforms Hue Light {@link State} into {@link QuantityType} representing
      * the color temperature in Kelvin.
      *
      * @param lightState light state
-     * @return percent type representing the color temperature in Kelvin
+     * @return quantity type representing the color temperature in Kelvin
      */
-    public static DecimalType toColorTemperature(State lightState) {
-        return new DecimalType(miredToKelvin(lightState.getColorTemperature()));
+    public static QuantityType<Temperature> toColorTemperature(State lightState) {
+        return new QuantityType<>(miredToKelvin(lightState.getColorTemperature()), Units.KELVIN);
     }
 
     /**
@@ -272,7 +277,7 @@ public class LightStateConverter {
 
     private static HSBType fromXYtoHSBType(State lightState) {
         float[] xy = lightState.getXY();
-        HSBType hsb = HSBType.fromXY(xy[0], xy[1]);
+        HSBType hsb = ColorUtil.xyToHsb(new double[] { xy[0], xy[1] });
 
         int brightnessInPercent = (int) Math.ceil(lightState.getBrightness() / BRIGHTNESS_FACTOR);
         brightnessInPercent = restrictToBounds(brightnessInPercent);
@@ -289,7 +294,7 @@ public class LightStateConverter {
      *            <li>{@value #ALERT_MODE_NONE}.
      *            <li>{@value #ALERT_MODE_SELECT}.
      *            <li>{@value #ALERT_MODE_LONG_SELECT}.
-     *            <ul>
+     *            </ul>
      * @return light state containing the {@link AlertMode} or <b><code>null </code></b> if the provided
      *         {@link StringType} represents unsupported mode.
      */

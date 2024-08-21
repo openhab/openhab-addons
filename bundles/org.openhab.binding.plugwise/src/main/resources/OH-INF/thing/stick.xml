@@ -6,7 +6,7 @@
 
 	<bridge-type id="stick">
 		<label>Plugwise Stick</label>
-		<description>A ZigBee USB controller used for communicating with the Circle+</description>
+		<description>A Zigbee USB controller used for communicating with the Circle+</description>
 		<representation-property>macAddress</representation-property>
 		<config-description-ref uri="bridge-type:plugwise:stick"/>
 	</bridge-type>

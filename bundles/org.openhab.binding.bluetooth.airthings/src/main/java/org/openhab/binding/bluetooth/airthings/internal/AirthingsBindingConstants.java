@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,23 +12,11 @@
  */
 package org.openhab.binding.bluetooth.airthings.internal;
 
-import java.math.BigInteger;
 import java.util.Set;
-
-import javax.measure.Unit;
-import javax.measure.quantity.Dimensionless;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
-import org.openhab.core.library.dimension.Density;
-import org.openhab.core.library.unit.SIUnits;
-import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ThingTypeUID;
-
-import tech.units.indriya.format.SimpleUnitFormat;
-import tech.units.indriya.function.MultiplyConverter;
-import tech.units.indriya.unit.ProductUnit;
-import tech.units.indriya.unit.TransformedUnit;
 
 /**
  * The {@link AirthingsBindingConstants} class defines common constants, which are
@@ -37,6 +25,7 @@ import tech.units.indriya.unit.TransformedUnit;
  * @author Pauli Anttila - Initial contribution
  * @author Kai Kreuzer - Added Airthings Wave Mini support
  * @author Davy Wong - Added Airthings Wave Gen 1 support
+ * @author Arne Seime - Added Airthings Wave Radon / Wave 2 support
  */
 @NonNullByDefault
 public class AirthingsBindingConstants {
@@ -48,9 +37,11 @@ public class AirthingsBindingConstants {
             BluetoothBindingConstants.BINDING_ID, "airthings_wave_mini");
     public static final ThingTypeUID THING_TYPE_AIRTHINGS_WAVE_GEN1 = new ThingTypeUID(
             BluetoothBindingConstants.BINDING_ID, "airthings_wave_gen1");
+    public static final ThingTypeUID THING_TYPE_AIRTHINGS_WAVE_RADON = new ThingTypeUID(
+            BluetoothBindingConstants.BINDING_ID, "airthings_wave_radon");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIRTHINGS_WAVE_PLUS,
-            THING_TYPE_AIRTHINGS_WAVE_MINI, THING_TYPE_AIRTHINGS_WAVE_GEN1);
+            THING_TYPE_AIRTHINGS_WAVE_MINI, THING_TYPE_AIRTHINGS_WAVE_GEN1, THING_TYPE_AIRTHINGS_WAVE_RADON);
 
     // Channel IDs
     public static final String CHANNEL_ID_HUMIDITY = "humidity";
@@ -60,14 +51,4 @@ public class AirthingsBindingConstants {
     public static final String CHANNEL_ID_TVOC = "tvoc";
     public static final String CHANNEL_ID_RADON_ST_AVG = "radon_st_avg";
     public static final String CHANNEL_ID_RADON_LT_AVG = "radon_lt_avg";
-
-    public static final Unit<Dimensionless> PARTS_PER_BILLION = new TransformedUnit<>(Units.ONE,
-            MultiplyConverter.ofRational(BigInteger.ONE, BigInteger.valueOf(1000000000)));
-    public static final Unit<Density> BECQUEREL_PER_CUBIC_METRE = new ProductUnit<>(
-            Units.BECQUEREL.divide(SIUnits.CUBIC_METRE));
-
-    static {
-        SimpleUnitFormat.getInstance().label(PARTS_PER_BILLION, "ppb");
-        SimpleUnitFormat.getInstance().label(BECQUEREL_PER_CUBIC_METRE, "Bq/m³");
-    }
 }

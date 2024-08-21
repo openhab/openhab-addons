@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,10 +23,12 @@ import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.RawType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.CommandDescriptionBuilder;
 import org.openhab.core.types.State;
 import org.openhab.core.types.StateDescriptionFragmentBuilder;
+import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -94,11 +96,11 @@ public abstract class Value {
         return state;
     }
 
-    public String getMQTTpublishValue(@Nullable String pattern) {
+    public String getMQTTpublishValue(Command command, @Nullable String pattern) {
         if (pattern == null) {
-            return state.format("%s");
+            return command.format("%s");
         }
-        return state.format(pattern);
+        return command.format(pattern);
     }
 
     /**
@@ -118,22 +120,38 @@ public abstract class Value {
     }
 
     /**
-     * Updates the internal value state with the given command.
+     * Updates the internal value state with the given state.
      *
-     * @param command The command to update the internal value.
+     * @param newState The new state to update the internal value.
      * @exception IllegalArgumentException Thrown if for example a text is assigned to a number type.
      */
-    public abstract void update(Command command) throws IllegalArgumentException;
+    public void update(State newState) throws IllegalArgumentException {
+        state = newState;
+    }
 
     /**
-     * Returns the given command if it cannot be handled by {@link #update(Command)}
-     * or {@link #update(byte[])} and need to be posted straight to the framework instead.
-     * Returns null otherwise.
+     * Parses a given command into the proper type for this Value type. This will usually be a State,
+     * but can be a Command.
      *
-     * @param command The command to decide about
+     * @param command The command to parse.
+     * @exception IllegalArgumentException Thrown if for example a text is assigned to a number type.
      */
-    public @Nullable Command isPostOnly(Command command) {
-        return null;
+    public abstract Command parseCommand(Command command) throws IllegalArgumentException;
+
+    /**
+     * Parses a given command from MQTT into the proper type for this Value type. This will usually
+     * be a State, but can be a non-State Command, in which case the channel will be commanded instead
+     * of updated, regardless of postCommand setting. The default implementation just calls
+     * parseCommand, so that both directions have the same logic.
+     *
+     * @param command The command to parse.
+     * @exception IllegalArgumentException Thrown if for example a text is assigned to a number type.
+     */
+    public Type parseMessage(Command command) throws IllegalArgumentException {
+        if (command instanceof StringType string && string.toString().isEmpty()) {
+            return UnDefType.NULL;
+        }
+        return parseCommand(command);
     }
 
     /**
@@ -142,7 +160,7 @@ public abstract class Value {
      * @param data The binary payload to update the internal value.
      * @exception IllegalArgumentException Thrown if for example a text is assigned to a number type.
      */
-    public void update(byte data[]) throws IllegalArgumentException {
+    public void update(byte[] data) throws IllegalArgumentException {
         String mimeType = null;
 
         // URLConnection.guessContentTypeFromStream(input) is not sufficient to detect all JPEG files

@@ -22,7 +22,7 @@ There are two different styles of operation, depending on whether or not you hav
 
 ### Non-Authenticated
 
-If ZoneMinder authentication is not used, the User and Password parameters should be empty in the *ZoneMinder Server* thing configuration.
+If ZoneMinder authentication is not used, the User and Password parameters should be empty in the _ZoneMinder Server_ thing configuration.
 No other configuration is required.
 
 ### Authenticated
@@ -34,7 +34,7 @@ Then, enter the user name and password into the ZoneMinder Server thing configur
 ## Discovery
 
 The server bridge must be added manually.
-Once the server bridge is configured with a valid ZoneMinder host name or IP address, 
+Once the server bridge is configured with a valid ZoneMinder host name or IP address,
 all monitors associated with the ZoneMinder server will be discovered.
 
 ## Thing Configuration
@@ -77,6 +77,7 @@ The following configuration parameters are available on the Monitor thing:
 | imageUrl       | String      | Image URL for monitor id specified by imageMonitorId. Channel is UNDEF if the monitor id is not set, or if an OFF command is sent to the imageMonitorId channel. |
 | videoMonitorId | String      | Monitor ID to use for selecting a video URL. Also, sending an OFF command to this channel will reset the monitor id and url to UNDEF.  |
 | videoUrl       | String      | Video URL for monitor id specified by videoMonitorId. Channel is UNDEF if the monitor id is not set, or if an OFF command is sent to the videoMonitorId channel. |
+| runState       | String      | Set the run state for the ZoneMinder server |
 
 ### Monitor Thing
 
@@ -110,17 +111,17 @@ The following configuration parameters are available on the Monitor thing:
 
 ## Thing Actions
 
-### triggerAlarm
+### triggerAlarm (with Duration)
 
 The `triggerAlarm` action triggers an alarm that runs for the number of seconds specified by the parameter `duration`.
 
-##### triggerAlarm - trigger an alarm
+#### triggerAlarm - trigger an alarm
 
 ```java
 void triggerAlarm(Number duration)
 ```
 
-```
+```text
 Parameters:
 duration - The number of seconds for which the alarm should run.
 ```
@@ -130,7 +131,7 @@ duration - The number of seconds for which the alarm should run.
 The `triggerAlarm` action triggers an alarm that runs for the number of seconds specified
 in the Monitor thing configuration.
 
-##### triggerAlarm - trigger an alarm
+#### triggerAlarm - trigger an alarm
 
 ```java
 void triggerAlarm()
@@ -140,7 +141,7 @@ void triggerAlarm()
 
 The `cancelAlarm` action cancels a running alarm.
 
-##### cancelAlarm - cancel an alarm
+#### cancelAlarm - cancel an alarm
 
 ```java
 void cancelAlarm()
@@ -155,7 +156,7 @@ The API must be enabled in the ZoneMinder configuration using the **OPT_USE_API*
 
 ### Things
 
-```
+```java
 Bridge zoneminder:server:server [ host="192.168.1.100", refreshInterval=5, defaultAlarmDuration=120, discoveryEnabled=true, useDefaultUrlPath=true ]
 
 Thing zoneminder:monitor:1 "Monitor 1" (zoneminder:server:server) [ monitorId="1", imageRefreshInterval=10, alarmDuration=180 ]
@@ -165,12 +166,13 @@ Thing zoneminder:monitor:2 "Monitor 2" (zoneminder:server:server) [ monitorId="2
 
 ### Items
 
-```
+```java
 // Server
 String ZmServer_ImageMonitorId "Image Monitor Id [%s]" { channel="zoneminder:server:server:imageMonitorId" }
 String ZmServer_ImageUrl "Image Url [%s]" { channel="zoneminder:server:server:imageUrl" }
 String ZmServer_VideoMonitorId "Video Monitor Id [%s]" { channel="zm:server:server:videoMonitorId" }
 String ZmServer_VideoUrl "Video Url [%s]" { channel="zoneminder:server:server:videoUrl" }
+String ZmServer_RunState "Run State [%s]" { channel="zoneminder:server:server:runState" }
 
 // Monitor
 String      ZM_Monitor1_Id           "Monitor Id [%s]"              { channel="zoneminder:monitor:1:id" }
@@ -200,8 +202,7 @@ Number:Time ZM_Monitor1_Length       "Event Length [%.2f]"          { channel="z
 
 ### Sitemap
 
-
-```
+```perl
 Selection item=ZmServer_ImageMonitorId
 Image item=ZmServer_ImageUrl
 Selection item=ZmServer_VideoMonitorId
@@ -214,9 +215,9 @@ Image item=ZM_Monitor1_Image
 
 ### Rules
 
-The following examples assume you have a motion sensor that is linked to an item called *MotionSensorAlarm*.
+The following examples assume you have a motion sensor that is linked to an item called _MotionSensorAlarm_.
 
-```
+```java
 rule "Record When Motion Detected Using Channel"
 when
     Item MotionSensorAlarm changed to ON
@@ -225,7 +226,7 @@ then
 end
 ```
 
-```
+```java
 rule "Record for 120 Seconds When Motion Detected"
 when
     Item MotionSensorAlarm changed to ON
@@ -235,7 +236,7 @@ then
 end
 ```
 
-```
+```java
 rule "Record When Motion Detected"
 when
     Item MotionSensorAlarm changed to ON
@@ -245,7 +246,7 @@ then
 end
 ```
 
-```
+```java
 rule "Record When Motion Detection Cleared"
 when
     Item MotionSensorAlarm changed to OFF
@@ -255,7 +256,7 @@ then
 end
 ```
 
-```
+```java
 val monitors = newArrayList("1", "3", "4", "6")
 var int index = 0
 

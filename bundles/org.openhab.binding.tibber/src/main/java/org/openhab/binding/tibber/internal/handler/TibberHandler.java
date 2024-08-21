@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,9 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledFuture;
@@ -44,6 +47,7 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.Units;
+import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -52,11 +56,13 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
+import org.openhab.core.types.TimeSeries;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
@@ -94,8 +100,10 @@ public class TibberHandler extends BaseThingHandler {
         versionString = FrameworkUtil.getBundle(this.getClass()).getVersion().toString();
         logger.debug("Binding version: {}", versionString);
 
-        getTibberParameters();
-        startRefresh(tibberConfig.getRefresh());
+        scheduler.execute(() -> {
+            getTibberParameters();
+            startRefresh(tibberConfig.getRefresh());
+        });
     }
 
     @Override
@@ -104,6 +112,24 @@ public class TibberHandler extends BaseThingHandler {
             startRefresh(tibberConfig.getRefresh());
         } else {
             logger.debug("Tibber API is read-only and does not handle commands");
+        }
+    }
+
+    @Override
+    public void channelLinked(ChannelUID channelUID) {
+        if (channelUID.getAsString().contains("live_") && !isConnected() && "true".equals(rtEnabled)) {
+            try {
+                startLiveStream();
+            } catch (IOException e) {
+                logger.debug("Unable to start live data: {}", e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void channelUnlinked(ChannelUID channelUID) {
+        if (channelUID.getAsString().contains("live_") && !liveChannelsLinked() && isConnected()) {
+            close();
         }
     }
 
@@ -129,23 +155,22 @@ public class TibberHandler extends BaseThingHandler {
                         REQUEST_TIMEOUT);
 
                 JsonObject object = (JsonObject) JsonParser.parseString(jsonResponse);
-                rtEnabled = object.getAsJsonObject("data").getAsJsonObject("viewer").getAsJsonObject("home")
-                        .getAsJsonObject("features").get("realTimeConsumptionEnabled").toString();
+                JsonObject dObject = object.getAsJsonObject("data");
+                if (dObject != null) {
+                    JsonObject viewerObject = dObject.getAsJsonObject("viewer");
+                    if (viewerObject != null) {
+                        JsonObject homeObject = viewerObject.getAsJsonObject("home");
+                        if (homeObject != null) {
+                            JsonObject featuresObject = homeObject.getAsJsonObject("features");
+                            if (featuresObject != null) {
+                                rtEnabled = featuresObject.get("realTimeConsumptionEnabled").toString();
+                            }
+                        }
+                    }
+                }
 
-                if ("true".equals(rtEnabled)) {
-                    logger.debug("Pulse associated with HomeId: Live stream will be started");
-
-                    InputStream wsURL = tibberQuery.getWebsocketUrl();
-                    String wsResponse = HttpUtil.executeUrl("POST", BASE_URL, httpHeader, wsURL, null, REQUEST_TIMEOUT);
-
-                    JsonObject wsobject = (JsonObject) JsonParser.parseString(wsResponse);
-                    subscriptionURL = wsobject.getAsJsonObject("data").getAsJsonObject("viewer")
-                            .get("websocketSubscriptionUrl").toString().replaceAll("^\"|\"$", "");
-                    logger.debug("Subscribing to: {}", subscriptionURL);
-
-                    open();
-                } else {
-                    logger.debug("No Pulse associated with HomeId: No live stream will be started");
+                if (liveChannelsLinked() && "true".equals(rtEnabled)) {
+                    startLiveStream();
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -187,7 +212,14 @@ public class TibberHandler extends BaseThingHandler {
                             .getAsJsonObject("home").getAsJsonObject("currentSubscription").getAsJsonObject("priceInfo")
                             .getAsJsonArray("tomorrow");
                     updateState(TOMORROW_PRICES, new StringType(tomorrow.toString()));
-                } catch (JsonSyntaxException e) {
+                    JsonArray today = rootJsonObject.getAsJsonObject("data").getAsJsonObject("viewer")
+                            .getAsJsonObject("home").getAsJsonObject("currentSubscription").getAsJsonObject("priceInfo")
+                            .getAsJsonArray("today");
+                    updateState(TODAY_PRICES, new StringType(today.toString()));
+
+                    TimeSeries timeSeries = buildTimeSeries(today, tomorrow);
+                    sendTimeSeries(CURRENT_TOTAL, timeSeries);
+                } catch (JsonSyntaxException | DateTimeParseException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                             "Error communicating with Tibber API: " + e.getMessage());
                 }
@@ -251,6 +283,29 @@ public class TibberHandler extends BaseThingHandler {
         }
     }
 
+    /**
+     * Builds the {@link TimeSeries} that represents the future tibber prices.
+     *
+     * @param today The prices for today
+     * @param tomorrow The prices for tomorrow.
+     * @return The {@link TimeSeries} with future values.
+     */
+    private TimeSeries buildTimeSeries(JsonArray today, JsonArray tomorrow) {
+        final TimeSeries timeSeries = new TimeSeries(TimeSeries.Policy.REPLACE);
+        mapTimeSeriesEntries(today, timeSeries);
+        mapTimeSeriesEntries(tomorrow, timeSeries);
+        return timeSeries;
+    }
+
+    private void mapTimeSeriesEntries(JsonArray prices, TimeSeries timeSeries) {
+        for (JsonElement entry : prices) {
+            JsonObject entryObject = entry.getAsJsonObject();
+            final Instant startsAt = ZonedDateTime.parse(entryObject.get("startsAt").getAsString()).toInstant();
+            final DecimalType value = new DecimalType(entryObject.get("total").getAsString());
+            timeSeries.add(startsAt, value);
+        }
+    }
+
     public void startRefresh(int refresh) {
         if (pollingJob == null) {
             pollingJob = scheduler.scheduleWithFixedDelay(() -> {
@@ -265,9 +320,31 @@ public class TibberHandler extends BaseThingHandler {
 
     public void updateRequest() throws IOException {
         getURLInput(BASE_URL);
-        if ("true".equals(rtEnabled) && !isConnected()) {
-            logger.debug("Attempting to reopen Websocket connection");
-            open();
+        if (liveChannelsLinked() && "true".equals(rtEnabled) && !isConnected()) {
+            startLiveStream();
+        }
+    }
+
+    private boolean liveChannelsLinked() {
+        return getThing().getChannels().stream().map(Channel::getUID)
+                .filter((channelUID -> channelUID.getAsString().contains("live_"))).anyMatch(this::isLinked);
+    };
+
+    private void getSubscriptionUrl() throws IOException {
+        TibberPriceConsumptionHandler tibberQuery = new TibberPriceConsumptionHandler();
+        InputStream wsURL = tibberQuery.getWebsocketUrl();
+        String wsResponse = HttpUtil.executeUrl("POST", BASE_URL, httpHeader, wsURL, null, REQUEST_TIMEOUT);
+
+        JsonObject wsobject = (JsonObject) JsonParser.parseString(wsResponse);
+        JsonObject dataObject = wsobject.getAsJsonObject("data");
+        if (dataObject != null) {
+            JsonObject viewerObject = dataObject.getAsJsonObject("viewer");
+            if (viewerObject != null) {
+                JsonElement subscriptionElement = viewerObject.get("websocketSubscriptionUrl");
+                if (subscriptionElement != null) {
+                    subscriptionURL = subscriptionElement.toString().replaceAll("^\"|\"$", "");
+                }
+            }
         }
     }
 
@@ -318,6 +395,20 @@ public class TibberHandler extends BaseThingHandler {
             }
         }
         super.dispose();
+    }
+
+    private void startLiveStream() throws IOException {
+        logger.debug("Attempting to open Websocket connection");
+        getSubscriptionUrl();
+
+        if (subscriptionURL == null || subscriptionURL.isBlank()) {
+            logger.debug("Unexpected subscription result from the server");
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                    "Unexpected subscription result from the server");
+        } else {
+            logger.debug("Connecting Subscription to: {}", subscriptionURL);
+            open();
+        }
     }
 
     public void open() {
@@ -424,7 +515,6 @@ public class TibberHandler extends BaseThingHandler {
     }
 
     @WebSocket
-    @NonNullByDefault
     public class TibberWebSocketListener {
 
         @OnWebSocketConnect
@@ -488,11 +578,21 @@ public class TibberHandler extends BaseThingHandler {
                 if (myObject.has("lastMeterConsumption")) {
                     updateChannel(LIVE_LASTMETERCONSUMPTION, myObject.get("lastMeterConsumption").toString());
                 }
+                if (myObject.has("lastMeterProduction")) {
+                    updateChannel(LIVE_LASTMETERPRODUCTION, myObject.get("lastMeterProduction").toString());
+                }
                 if (myObject.has("accumulatedConsumption")) {
                     updateChannel(LIVE_ACCUMULATEDCONSUMPTION, myObject.get("accumulatedConsumption").toString());
                 }
+                if (myObject.has("accumulatedConsumptionLastHour")) {
+                    updateChannel(LIVE_ACCUMULATEDCONSUMPTION_THIS_HOUR,
+                            myObject.get("accumulatedConsumptionLastHour").toString());
+                }
                 if (myObject.has("accumulatedCost")) {
                     updateChannel(LIVE_ACCUMULATEDCOST, myObject.get("accumulatedCost").toString());
+                }
+                if (myObject.has("accumulatedReward")) {
+                    updateChannel(LIVE_ACCUMULATEREWARD, myObject.get("accumulatedReward").toString());
                 }
                 if (myObject.has("currency")) {
                     updateState(LIVE_CURRENCY, new StringType(myObject.get("currency").toString()));
@@ -530,6 +630,10 @@ public class TibberHandler extends BaseThingHandler {
                 if (myObject.has("accumulatedProduction")) {
                     updateChannel(LIVE_ACCUMULATEDPRODUCTION, myObject.get("accumulatedProduction").toString());
                 }
+                if (myObject.has("accumulatedProductionLastHour")) {
+                    updateChannel(LIVE_ACCUMULATEDPRODUCTION_THIS_HOUR,
+                            myObject.get("accumulatedProductionLastHour").toString());
+                }
                 if (myObject.has("minPowerProduction")) {
                     updateChannel(LIVE_MINPOWERPRODUCTION, myObject.get("minPowerProduction").toString());
                 }
@@ -552,8 +656,8 @@ public class TibberHandler extends BaseThingHandler {
         public void startSubscription() {
             String query = "{\"id\":\"1\",\"type\":\"subscribe\",\"payload\":{\"variables\":{},\"extensions\":{},\"operationName\":null,\"query\":\"subscription {\\n liveMeasurement(homeId:\\\""
                     + tibberConfig.getHomeid()
-                    + "\\\") {\\n timestamp\\n power\\n lastMeterConsumption\\n accumulatedConsumption\\n accumulatedCost\\n currency\\n minPower\\n averagePower\\n maxPower\\n"
-                    + "voltagePhase1\\n voltagePhase2\\n voltagePhase3\\n currentL1\\n currentL2\\n currentL3\\n powerProduction\\n accumulatedProduction\\n minPowerProduction\\n maxPowerProduction\\n }\\n }\\n\"}}";
+                    + "\\\") {\\n timestamp\\n power\\n lastMeterConsumption\\n lastMeterProduction\\n accumulatedConsumption\\n accumulatedConsumptionLastHour\\n accumulatedCost\\n accumulatedReward\\n currency\\n minPower\\n averagePower\\n maxPower\\n"
+                    + "voltagePhase1\\n voltagePhase2\\n voltagePhase3\\n currentL1\\n currentL2\\n currentL3\\n powerProduction\\n accumulatedProduction\\n accumulatedProductionLastHour\\n minPowerProduction\\n maxPowerProduction\\n }\\n }\\n\"}}";
             try {
                 TibberWebSocketListener socket = TibberHandler.this.socket;
                 if (socket != null) {

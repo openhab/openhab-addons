@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,6 +28,8 @@ import org.openhab.binding.dali.internal.protocol.DaliStandardCommand;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -62,25 +64,36 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                 } else {
                     throw new DaliException("unknown device type");
                 }
-                if (command instanceof DecimalType) {
+                int mirek;
+                if (command instanceof DecimalType decimalCommand) {
                     // Color temperature in DALI is represented in mirek ("reciprocal megakelvin")
                     // It is one million times the reciprocal of the color temperature (in Kelvin)
-                    final int mirek = (int) (1E6f
-                            / (Math.min(Math.max(((DecimalType) command).intValue(), 1000), 20000)));
-                    final byte mirekLsb = (byte) (mirek & 0xff);
-                    final byte mirekMsb = (byte) ((mirek >> 8) & 0xff);
-                    // Write mirek value to the DTR0+DTR1 registers
-                    daliHandler.sendCommand(DaliStandardCommand.createSetDTR0Command(mirekLsb));
-                    daliHandler.sendCommand(DaliStandardCommand.createSetDTR1Command(mirekMsb));
-                    // Indicate that the follwing command is a DT8 (WW/CW and single-channel RGB) command
-                    daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
-                    // Set the color temperature to the value in DTR0+DTR1
-                    daliHandler.sendCommand(DaliStandardCommand.createSetColorTemperatureCommand(address));
-                    // Finish the command sequence
-                    daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
-                    daliHandler.sendCommand(DaliStandardCommand.createActivateCommand(address));
-
+                    mirek = (int) (1E6f / (Math.min(Math.max(decimalCommand.intValue(), 1000), 20000)));
+                } else if (command instanceof QuantityType quantityCommand) {
+                    // ensure it's in the correct units
+                    QuantityType<?> commandQuantity = quantityCommand.toInvertibleUnit(Units.MIRED);
+                    if (commandQuantity == null) {
+                        logger.warn("Unable to convert command {} to mireks", command);
+                        return;
+                    }
+                    mirek = commandQuantity.intValue();
+                } else {
+                    logger.warn("Unable to convert command {} to mireks", command);
+                    return;
                 }
+
+                final byte mirekLsb = (byte) (mirek & 0xff);
+                final byte mirekMsb = (byte) ((mirek >> 8) & 0xff);
+                // Write mirek value to the DTR0+DTR1 registers
+                daliHandler.sendCommand(DaliStandardCommand.createSetDTR0Command(mirekLsb));
+                daliHandler.sendCommand(DaliStandardCommand.createSetDTR1Command(mirekMsb));
+                // Indicate that the follwing command is a DT8 (WW/CW and single-channel RGB) command
+                daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
+                // Set the color temperature to the value in DTR0+DTR1
+                daliHandler.sendCommand(DaliStandardCommand.createSetColorTemperatureCommand(address));
+                // Finish the command sequence
+                daliHandler.sendCommand(DaliStandardCommand.createSetDeviceTypeCommand(8));
+                daliHandler.sendCommand(DaliStandardCommand.createActivateCommand(address));
 
                 DaliAddress readAddress = address;
                 if (readDeviceTargetId != null) {
@@ -103,15 +116,14 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                     if (msb != null && !msb.mask && lsb != null && !lsb.mask) {
                         final int msbValue = msb.value != null ? msb.value : 0;
                         final int lsbValue = lsb.value != null ? lsb.value : 0;
-                        final int mirek = ((msbValue & 0xff) << 8) | (lsbValue & 0xff);
-                        final int kelvin = (int) (1E6f / mirek);
-                        updateState(channelUID, new DecimalType(kelvin));
+                        final int mirekState = ((msbValue & 0xff) << 8) | (lsbValue & 0xff);
+                        final int kelvin = (int) (1E6f / mirekState);
+                        updateState(channelUID, new QuantityType(kelvin, Units.KELVIN));
                     }
                 }).exceptionally(e -> {
                     logger.warn("Error querying device status: {}", e.getMessage());
                     return null;
                 });
-
             } else if (CHANNEL_COLOR.equals(channelUID.getId())) {
                 DaliAddress address;
                 if (THING_TYPE_DEVICE_DT8.equals(this.thing.getThingTypeUID())) {
@@ -121,8 +133,8 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                 } else {
                     throw new DaliException("unknown device type");
                 }
-                if (command instanceof HSBType) {
-                    PercentType[] rgb = ((HSBType) command).toRGB();
+                if (command instanceof HSBType hsbCommand) {
+                    PercentType[] rgb = hsbCommand.toRGB();
                     final int r = (int) (254 * (rgb[0].floatValue() / 100));
                     final int g = (int) (254 * (rgb[1].floatValue() / 100));
                     final int b = (int) (254 * (rgb[2].floatValue() / 100));
@@ -176,7 +188,6 @@ public class DaliDt8DeviceHandler extends DaliDeviceHandler {
                     logger.warn("Error querying device status: {}", e.getMessage());
                     return null;
                 });
-
             } else {
                 super.handleCommand(channelUID, command);
             }

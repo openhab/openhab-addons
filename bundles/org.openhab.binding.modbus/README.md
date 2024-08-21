@@ -1038,8 +1038,8 @@ Devices may respond with an error or no error but invalid register data so this 
 Turn your poller thing into multiple things to cover smaller ranges to work around this problem.
 
 - there's potentially many more or less weird inconsistencies with some devices.
-If you fail to read a register or you only ever get invalid values (such as 00 or FF bytes), try with various poller lengths such as the exact length of a register in question or twice the amount.
-In extreme cases you might even need more than a poller for a single register so you have two or more poller with two or more data things and need to combine these into another item using a rule.
+  If you fail to read a register or you only ever get invalid values (such as 00 or FF bytes), try with various poller lengths such as the exact length of a register in question or twice the amount.
+  In extreme cases you might even need more than a poller for a single register so you have two or more poller with two or more data things and need to combine these into another item using a rule.
 
 ## Changes From Modbus 1.x Binding
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -152,7 +153,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
     public void deviceDiscovered(BluetoothDevice device) {
         logger.debug("Discovered bluetooth device '{}': {}", device.getName(), device);
 
-        DiscoveryCache cache = discoveryCaches.computeIfAbsent(device.getAddress(), addr -> new DiscoveryCache());
+        DiscoveryCache cache = Objects
+                .requireNonNull(discoveryCaches.computeIfAbsent(device.getAddress(), addr -> new DiscoveryCache()));
         cache.handleDiscovery(device);
     }
 
@@ -190,7 +192,11 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             // we remove any discoveries that have been published for this device
             BluetoothAdapter adapter = device.getAdapter();
             if (discoveryFutures.containsKey(adapter)) {
-                discoveryFutures.remove(adapter).future.thenAccept(result -> retractDiscoveryResult(adapter, result));
+                @Nullable
+                SnapshotFuture ssFuture = discoveryFutures.remove(adapter);
+                if (ssFuture != null) {
+                    ssFuture.future.thenAccept(result -> retractDiscoveryResult(adapter, result));
+                }
             }
             if (discoveryFutures.isEmpty()) {
                 return null;
@@ -253,6 +259,8 @@ public class BluetoothDiscoveryService extends AbstractDiscoveryService implemen
             if (discoveryFutures.containsKey(adapter)) {
                 // now we need to make sure that we remove the old discovered result if it is different from the new
                 // one.
+
+                @Nullable
                 SnapshotFuture oldSF = discoveryFutures.get(adapter);
                 future = oldSF.future.thenCombine(future, (oldResult, newResult) -> {
                     logger.trace("\n old: {}\n new: {}", oldResult, newResult);

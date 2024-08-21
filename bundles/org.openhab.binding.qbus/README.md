@@ -18,8 +18,8 @@ The following things are supported by the Qbus binding:
 - `onOff`: Bistabiel, Timer1-3, Interval
 - `thermostats`: Thermostats - normal and PID
 - `scene`: Scenes
-- `co2`: CO2 
-- `rollershutter`: Rollershutter 
+- `co2`: CO2
+- `rollershutter`: Rollershutter
 - `rollershutter_slats`: Rollerhutter with slats
 
 For now the following Qbus things are not yet supported but will come:
@@ -34,14 +34,13 @@ For now the following Qbus things are not yet supported but will come:
 - Energy monitor
 - Weather station
 
-
 ## Discovery
 
 The discovery service is not yet implemented but the System Manager III software of Qbus generates things and item files from the programming, which you can use directly in openHAB.
 
 ## Bridge configuration
 
-```
+```java
 Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, serverCheck=10 ] {
 ...
 }
@@ -53,7 +52,6 @@ Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, serverC
 | `sn`          |           | YES      | The serial number of your controller                                                                                                 |
 | `port`        | 8447      | YES      | The communication port of the client/server                                                                                          |
 | `serverCheck` | 10        | NO       | Refresh time - After x minutes there will be a check if server is still running and if client is still connected. If not - reconnect |
-
 
 ## Things configuration
 
@@ -69,12 +67,11 @@ Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, serverC
 | `thermostat`          | measured      | Yes       | This is the channel for thermostats currenttemp        |
 | `thermostat`          | mode          | No        | This is the channel for thermostats mode               |
 
-
 ## Full Example
 
 ### Things
 
-```
+```java
 Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, serverCheck=10 ] {
     dimmer                   1      "ToonzaalLED"       [ dimmerId=100 ]
     onOff                    30     "Toonzaal230V"      [ bistabielId=76 ]
@@ -88,7 +85,7 @@ Bridge qbus:bridge:CTD001122 [ addr="localhost", sn="001122", port=8447, serverC
 
 ### Items
 
-```
+```java
 Dimmer              ToonzaalLED                 <light>                         ["Light"]           {channel="qbus:dimmer:CTD001122:1:brightness"}
 Switch              Toonzaal230V                <light>                         ["Switch"]          {channel="qbus:onOff:CTD001122:30:switch"}
 Group gThermostaat ["HVAC"]

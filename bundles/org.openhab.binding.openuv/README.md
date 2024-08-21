@@ -56,11 +56,21 @@ The OpenUV Report thing that is retrieved has these channels:
 | SafeExposure | Number:Time         | Safe exposure time for Fitzpatrick Skin Types.  |
 | elevation    | Number:Angle        | Current Sun elevation.                          |
 
-The elevation channel will be used as an input in order to limit API queries to OpenUV. If not used, 
+The elevation channel will be used as an input in order to limit API queries to OpenUV. If not used,
 the binding will not consider it. When value is provided queries will only be issued if the elevation is > 0°.
 This is quite useful with a free OpenUV account (50 req/day included): in this case, and with the elevation channel configured, a 20 minutes refresh interval should be ok (in Europe the longest day is around 15 hours).
 
 Thing can be extended with as many SafeExposure channels as needed for each skin type.
+
+## Provided icon set
+
+This binding has its own IconProvider and makes available the following list of icons
+
+| Icon Name          | Dynamic | Illustration |
+|--------------------|---------|--------------|
+| oh:openuv:ozone    |   No    | ![](src/main/resources/icon/ozone.svg) |
+| oh:openuv:uv-alarm |   Yes   | ![](src/main/resources/icon/uv-alarm.svg) |
+| oh:openuv:uv-index |   Yes   | ![](src/main/resources/icon/uv-index.svg) |
 
 ## Examples
 

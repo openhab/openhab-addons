@@ -5,6 +5,7 @@
 	<feature name="openhab-binding-epsonprojector" description="Epson Projector Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
 		<feature>openhab-transport-serial</feature>
+		<feature>openhab-core-config-discovery-sddp</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.epsonprojector/${project.version}</bundle>
 	</feature>
 </features>

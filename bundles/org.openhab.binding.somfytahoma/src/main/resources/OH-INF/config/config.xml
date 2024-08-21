@@ -69,5 +69,35 @@
 			<description>Specifies the delay in milliseconds between subsequent retries after a command failure</description>
 			<default>1000</default>
 		</parameter>
+
+		<parameter name="devMode" type="boolean" required="false">
+			<label>Developer mode</label>
+			<description>Enables the direct control of your devices over the lan using the local API endpoint. See
+				https://github.com/Somfy-Developer/Somfy-TaHoma-Developer-Mode</description>
+			<default>false</default>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="ip" type="text" required="false">
+			<label>Gateway IP</label>
+			<description>Local IP address of gateway. Relevant only if developer mode is enabled. If not provided, the binding
+				will try to autodetect it</description>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="pin" type="text" required="false">
+			<label>Gateway PIN</label>
+			<description>Gateway PIN in format ABCD-EFGH-IJKL. Relevant only if developer mode is enabled. If not provided, the
+				binding will try to autodetect it</description>
+			<advanced>true</advanced>
+		</parameter>
+
+		<parameter name="token" type="text" required="false">
+			<label>Local token</label>
+			<description>Local token. Relevant only if developer mode is enabled. If not provided, the binding
+				will try to
+				generate it using the gateway IP and PIN</description>
+			<advanced>true</advanced>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

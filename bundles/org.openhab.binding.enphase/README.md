@@ -22,18 +22,47 @@ The binding auto detects which data is available and will report this in the log
 ## Discovery
 
 The binding can discover Envoy gateways, micro inverters and relays.
+If login access is needed the Bridge `envoy` needs to be configured after discovering and adding before other things can be discovered.
+In that case, after configuring the login, run discovery again.
 
 ## Thing Configuration
 
-The Envoy gateway thing `envoy` has the following configuration options:
+### Bridge configuration
+
+Depending on the software version of the Envoy gateway thing `envoy` there are different configuration options needed.
+Newer versions of the Envoy software (> version 7) require a different authentication method.
+Because the configuration is different, different bridge things are available.
+
+The following options are relevant for all envoy versions:
 
 | parameter    | required | description                                                                                                 |
 |--------------|----------|-------------------------------------------------------------------------------------------------------------|
 | serialNumber | yes      | The serial number of the Envoy gateway which can be found on the gateway                                    |
 | hostname     | no       | The host name/ip address of the Envoy gateway. Leave empty to auto detect                                   |
+| refresh      | no       | Period between data updates. The default is the same 5 minutes the data is actually refreshed on the Envoy  |
+
+#### Envoy below version 7
+
+For Envoy versions below 7 has the following authentication configuration options are relevant:
+
+| parameter    | required | description                                                                                                 |
+|--------------|----------|-------------------------------------------------------------------------------------------------------------|
 | username     | no       | The user name to the Envoy gateway. Leave empty when using the default user name                            |
 | password     | no       | The password to the Envoy gateway. Leave empty when using the default password                              |
-| refresh      | no       | Period between data updates. The default is the same 5 minutes the data is actual refreshed on the Envoy    |
+
+#### Envoy from version 7
+
+For Envoy versions 7 and newer has the following authentication configuration options are relevant:
+
+| parameter    | required | description                                                                                                 |
+|--------------|----------|-------------------------------------------------------------------------------------------------------------|
+| autoJwt      | yes      | Specify if the JWT access token should be obtained by logging in or if the jwt is provided manually         |
+| username     | yes/no   | The user name to the Entrez server. Required if auto Jwt is true                                            |
+| password     | yes/no   | The password to the Entrez server. Required if auto Jwt is true                                             |
+| siteName     | yes/no   | The name of the site. Can be found above the Site Id in the Enphase app. Required when autoJwt is true      |
+| jwt          | yes/no   | The jwt is required if autoJWT is false, if it's true jwt is not used                                       |
+
+### Thing configuration
 
 The micro inverter `inverter` and `relay` things have only 1 parameter:
 

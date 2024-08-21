@@ -78,6 +78,11 @@
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>
+		<parameter name="nullValue" type="text">
+			<label>NULL Value</label>
+			<description>If the received MQTT value matches this, treat it as NULL.</description>
+			<advanced>true</advanced>
+		</parameter>
 
 		<parameter name="allowedStates" type="text">
 			<label>Allowed States</label>

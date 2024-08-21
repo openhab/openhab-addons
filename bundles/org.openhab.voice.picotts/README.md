@@ -1,7 +1,5 @@
 # Pico Text-to-Speech
 
-## Overview
-
 The Pico Text-to-Speech (TTS) service uses the TTS binary from SVOX for producing spoken text.
 
 You manually need to install the pico2wave binary in order for this service to work correctly. You can,
@@ -51,3 +49,7 @@ org.openhab.voice:defaultVoice=picotts:frFR
 ## Supported Audio Formats
 
 The Pico service produces audio streams using WAV containers and PCM (signed) codec with 16bit depth.
+
+## Caching
+
+The Pico TTS service uses the openHAB TTS cache to cache audio files produced from the most recent queries in order to reduce traffic, improve performance and reduce number of requests.

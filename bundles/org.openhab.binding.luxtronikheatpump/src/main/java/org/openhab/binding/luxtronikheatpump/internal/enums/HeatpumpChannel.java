@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -1259,6 +1259,14 @@ public enum HeatpumpChannel {
     CHANNEL_BA_BW_AKT(4, "hotWaterMode", NumberItem.class, null, true, HeatpumpVisibility.BRAUWASSER),
 
     /**
+     * Target heating return temperature if heat pump is set to fixed temperature
+     * (will directly set the target return temperature, no automatic changes depending on outside temperature)
+     * (original: Rücklauf FestwerteHK)
+     */
+    CHANNEL_EINST_HZFTRL_AKT(17, "temperatureHeatingFixedReturnTarget", NumberItem.class, SIUnits.CELSIUS, true,
+            HeatpumpVisibility.HEIZUNG),
+
+    /**
      * Thermal disinfection (Monday)
      * (original: Thermische Desinfektion (Montag))
      */
@@ -1410,11 +1418,7 @@ public enum HeatpumpChannel {
 
         int code = visiblity.getCode();
 
-        if (visibilityValues.length < code || visibilityValues[code] == 1) {
-            return true;
-        }
-
-        return false;
+        return (visibilityValues.length < code || visibilityValues[code] == 1);
     }
 
     public static HeatpumpChannel fromString(String heatpumpCommand) throws InvalidChannelException {

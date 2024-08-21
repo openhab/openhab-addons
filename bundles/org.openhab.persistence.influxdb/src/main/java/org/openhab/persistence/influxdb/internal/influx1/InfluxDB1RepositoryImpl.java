@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,18 +29,23 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.influxdb.InfluxDB;
+import org.influxdb.InfluxDBException;
 import org.influxdb.InfluxDBFactory;
+import org.influxdb.dto.BatchPoints;
 import org.influxdb.dto.Point;
 import org.influxdb.dto.Pong;
 import org.influxdb.dto.Query;
 import org.influxdb.dto.QueryResult;
+import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
+import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
-import org.openhab.persistence.influxdb.internal.InfluxRow;
-import org.openhab.persistence.influxdb.internal.UnnexpectedConditionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.influxdb.exceptions.InfluxException;
 
 /**
  * Implementation of {@link InfluxDBRepository} for InfluxDB 1.0
@@ -53,12 +58,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
     private final Logger logger = LoggerFactory.getLogger(InfluxDB1RepositoryImpl.class);
-    private InfluxDBConfiguration configuration;
-    @Nullable
-    private InfluxDB client;
+    private final InfluxDBConfiguration configuration;
+    private final FilterCriteriaQueryCreator queryCreator;
+    private @Nullable InfluxDB client;
 
-    public InfluxDB1RepositoryImpl(InfluxDBConfiguration configuration) {
+    public InfluxDB1RepositoryImpl(InfluxDBConfiguration configuration,
+            InfluxDBMetadataService influxDBMetadataService) {
         this.configuration = configuration;
+        this.queryCreator = new InfluxDB1FilterCriteriaQueryCreatorImpl(configuration, influxDBMetadataService);
     }
 
     @Override
@@ -68,23 +75,31 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
 
     @Override
     public boolean connect() {
-        final InfluxDB createdClient = InfluxDBFactory.connect(configuration.getUrl(), configuration.getUser(),
-                configuration.getPassword());
-        createdClient.setDatabase(configuration.getDatabaseName());
-        createdClient.setRetentionPolicy(configuration.getRetentionPolicy());
-        createdClient.enableBatch(200, 100, TimeUnit.MILLISECONDS);
-        this.client = createdClient;
+        try {
+            final InfluxDB createdClient = InfluxDBFactory.connect(configuration.getUrl(), configuration.getUser(),
+                    configuration.getPassword());
+            createdClient.setDatabase(configuration.getDatabaseName());
+            createdClient.setRetentionPolicy(configuration.getRetentionPolicy());
+            createdClient.enableBatch(200, 100, TimeUnit.MILLISECONDS);
+            this.client = createdClient;
+        } catch (InfluxException | InfluxDBException e) {
+            logger.debug("Connection failed", e);
+            return false;
+        }
         return checkConnectionStatus();
     }
 
     @Override
     public void disconnect() {
+        final InfluxDB currentClient = client;
+        if (currentClient != null) {
+            currentClient.close();
+        }
         this.client = null;
     }
 
     @Override
     public boolean checkConnectionStatus() {
-        boolean dbStatus = false;
         final InfluxDB currentClient = client;
         if (currentClient != null) {
             try {
@@ -92,119 +107,119 @@ public class InfluxDB1RepositoryImpl implements InfluxDBRepository {
                 String version = pong.getVersion();
                 // may be check for version >= 0.9
                 if (version != null && !version.contains("unknown")) {
-                    dbStatus = true;
                     logger.debug("database status is OK, version is {}", version);
+                    return true;
                 } else {
                     logger.warn("database ping error, version is: \"{}\" response time was \"{}\"", version,
                             pong.getResponseTime());
-                    dbStatus = false;
                 }
             } catch (RuntimeException e) {
-                dbStatus = false;
-                logger.error("database connection failed", e);
-                handleDatabaseException(e);
+                logger.warn("database error: {}", e.getMessage(), e);
             }
         } else {
             logger.warn("checkConnection: database is not connected");
         }
-        return dbStatus;
-    }
-
-    private void handleDatabaseException(Exception e) {
-        logger.warn("database error: {}", e.getMessage(), e);
+        return false;
     }
 
     @Override
-    public void write(InfluxPoint point) {
+    public boolean write(List<InfluxPoint> influxPoints) {
         final InfluxDB currentClient = this.client;
-        if (currentClient != null) {
-            Point clientPoint = convertPointToClientFormat(point);
-            currentClient.write(configuration.getDatabaseName(), configuration.getRetentionPolicy(), clientPoint);
-        } else {
-            logger.warn("Write point {} ignored due to client isn't connected", point);
+        if (currentClient == null) {
+            return false;
         }
+        try {
+            List<Point> points = influxPoints.stream().map(this::convertPointToClientFormat).filter(Optional::isPresent)
+                    .map(Optional::get).toList();
+            BatchPoints batchPoints = BatchPoints.database(configuration.getDatabaseName())
+                    .retentionPolicy(configuration.getRetentionPolicy()).points(points).build();
+            currentClient.write(batchPoints);
+        } catch (InfluxException | InfluxDBException e) {
+            logger.debug("Writing to database failed", e);
+            return false;
+        }
+        return true;
     }
 
-    private Point convertPointToClientFormat(InfluxPoint point) {
+    @Override
+    public boolean remove(FilterCriteria filter) {
+        logger.warn("Removing data is not supported in InfluxDB v1.");
+        return false;
+    }
+
+    private Optional<Point> convertPointToClientFormat(InfluxPoint point) {
         Point.Builder clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime().toEpochMilli(),
                 TimeUnit.MILLISECONDS);
-        setPointValue(point.getValue(), clientPoint);
-        point.getTags().entrySet().forEach(e -> clientPoint.tag(e.getKey(), e.getValue()));
-        return clientPoint.build();
-    }
-
-    private void setPointValue(@Nullable Object value, Point.Builder point) {
-        if (value instanceof String) {
-            point.addField(FIELD_VALUE_NAME, (String) value);
-        } else if (value instanceof Number) {
-            point.addField(FIELD_VALUE_NAME, (Number) value);
-        } else if (value instanceof Boolean) {
-            point.addField(FIELD_VALUE_NAME, (Boolean) value);
+        Object value = point.getValue();
+        if (value instanceof String string) {
+            clientPoint.addField(FIELD_VALUE_NAME, string);
+        } else if (value instanceof Number number) {
+            clientPoint.addField(FIELD_VALUE_NAME, number);
+        } else if (value instanceof Boolean boolean1) {
+            clientPoint.addField(FIELD_VALUE_NAME, boolean1);
         } else if (value == null) {
-            point.addField(FIELD_VALUE_NAME, (String) null);
+            clientPoint.addField(FIELD_VALUE_NAME, "null");
         } else {
-            throw new UnnexpectedConditionException("Not expected value type");
+            logger.warn("Could not convert {}, discarding this datapoint", point);
+            return Optional.empty();
         }
+        point.getTags().forEach(clientPoint::tag);
+        return Optional.of(clientPoint.build());
     }
 
     @Override
-    public List<InfluxRow> query(String query) {
-        final InfluxDB currentClient = client;
-        if (currentClient != null) {
-            Query parsedQuery = new Query(query, configuration.getDatabaseName());
-            List<QueryResult.Result> results = currentClient.query(parsedQuery, TimeUnit.MILLISECONDS).getResults();
-            return convertClientResutToRepository(results);
-        } else {
-            logger.warn("Returning empty list because queryAPI isn't present");
-            return Collections.emptyList();
+    public List<InfluxRow> query(FilterCriteria filter, String retentionPolicy) {
+        try {
+            final InfluxDB currentClient = client;
+            if (currentClient != null) {
+                String query = queryCreator.createQuery(filter, retentionPolicy);
+                logger.trace("Query {}", query);
+                Query parsedQuery = new Query(query, configuration.getDatabaseName());
+                List<QueryResult.Result> results = currentClient.query(parsedQuery, TimeUnit.MILLISECONDS).getResults();
+                return convertClientResultToRepository(results);
+            } else {
+                throw new InfluxException("API not present");
+            }
+        } catch (InfluxException | InfluxDBException e) {
+            logger.warn("Failed to execute query '{}': {}", filter, e.getMessage());
+            return List.of();
         }
     }
 
-    private List<InfluxRow> convertClientResutToRepository(List<QueryResult.Result> results) {
+    private List<InfluxRow> convertClientResultToRepository(List<QueryResult.Result> results) {
         List<InfluxRow> rows = new ArrayList<>();
         for (QueryResult.Result result : results) {
-            List<QueryResult.Series> seriess = result.getSeries();
+            List<QueryResult.Series> allSeries = result.getSeries();
             if (result.getError() != null) {
                 logger.warn("{}", result.getError());
                 continue;
             }
-            if (seriess == null) {
+            if (allSeries == null) {
                 logger.debug("query returned no series");
             } else {
-                for (QueryResult.Series series : seriess) {
-                    logger.trace("series {}", series.toString());
-                    List<List<@Nullable Object>> valuess = series.getValues();
-                    if (valuess == null) {
+                for (QueryResult.Series series : allSeries) {
+                    logger.trace("series {}", series);
+                    String defaultItemName = series.getName();
+                    List<List<Object>> allValues = series.getValues();
+                    if (allValues == null) {
                         logger.debug("query returned no values");
                     } else {
                         List<String> columns = series.getColumns();
                         logger.trace("columns {}", columns);
                         if (columns != null) {
-                            Integer timestampColumn = null;
-                            Integer valueColumn = null;
-                            Integer itemNameColumn = null;
-                            for (int i = 0; i < columns.size(); i++) {
-                                String columnName = columns.get(i);
-                                if (columnName.equals(COLUMN_TIME_NAME_V1)) {
-                                    timestampColumn = i;
-                                } else if (columnName.equals(COLUMN_VALUE_NAME_V1)) {
-                                    valueColumn = i;
-                                } else if (columnName.equals(TAG_ITEM_NAME)) {
-                                    itemNameColumn = i;
-                                }
-                            }
-                            if (valueColumn == null || timestampColumn == null) {
+                            int timestampColumn = columns.indexOf(COLUMN_TIME_NAME_V1);
+                            int valueColumn = columns.indexOf(COLUMN_VALUE_NAME_V1);
+                            int itemNameColumn = columns.indexOf(TAG_ITEM_NAME);
+                            if (valueColumn == -1 || timestampColumn == -1) {
                                 throw new IllegalStateException("missing column");
                             }
-                            for (int i = 0; i < valuess.size(); i++) {
-                                Double rawTime = (Double) Objects.requireNonNull(valuess.get(i).get(timestampColumn));
+                            for (List<Object> valueObject : allValues) {
+                                Double rawTime = (Double) valueObject.get(timestampColumn);
                                 Instant time = Instant.ofEpochMilli(rawTime.longValue());
-                                @Nullable
-                                Object value = valuess.get(i).get(valueColumn);
-                                var currentI = i;
-                                String itemName = Optional.ofNullable(itemNameColumn)
-                                        .flatMap(inc -> Optional.ofNullable((String) valuess.get(currentI).get(inc)))
-                                        .orElse(series.getName());
+                                Object value = valueObject.get(valueColumn);
+                                String itemName = itemNameColumn == -1 ? defaultItemName
+                                        : Objects.requireNonNullElse((String) valueObject.get(itemNameColumn),
+                                                defaultItemName);
                                 logger.trace("adding historic item {}: time {} value {}", itemName, time, value);
                                 rows.add(new InfluxRow(time, itemName, value));
                             }

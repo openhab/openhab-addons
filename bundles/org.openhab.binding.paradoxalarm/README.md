@@ -4,10 +4,10 @@ This binding is intended to provide basic support for Paradox Alarm system.
 
 With the power of openHAB this binding can be used for complex decision rules combining motion/magnetic sensor or whole partitions states with different scenarios.
 
-Examples: 
+Examples:
 
-* All partitions are armed, therefore there is no one at home. 
-* Window is opened for more than 10 minutes and temperature outside is bellow XXX degrees, send mail/any other supported notification to particular people.
+- All partitions are armed, therefore there is no one at home.
+- Window is opened for more than 10 minutes and temperature outside is bellow XXX degrees, send mail/any other supported notification to particular people.
 
 ## Supported Paradox panels/systems
 
@@ -52,7 +52,7 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 |--------|------------------------------------------------------------------------------------|
 | LOGOUT | Logs out and disconnects from Paradox alarm system                                 |
 | LOGIN  | Creates socket if necessary, connects to paradox system and uses the logon data from the thing parameters to connect.|
-| RESET  | Does logout and then login with recreation of communicator objects inside the code.| 
+| RESET  | Does logout and then login with recreation of communicator objects inside the code.|
 
 ### Entities (zones, partitions) configuration parameters:
 
@@ -76,7 +76,8 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | Channel                  | Type    | Description                                                                                   |
 |--------------------------|---------|-----------------------------------------------------------------------------------------------|
 | partitionLabel           | String  | Label of partition inside Paradox configuration                                               |
-| state                    | String  |State of partition (armed, disarmed, in alarm)                                                 |
+| state                    | String  | Calculated overall state of the partition (Armed, Disarmed, In Alarm)                         |
+| detailedState            | String  | Calculated detailed state of the partition based on partition state bits (see below table for possible values)             |
 | additionalState          | String  | This used to be a channel where all different states were consolidated as semi-colon separated string. With implementation of each state as channel additional states should be no longer used. (deprecated channel)                             |
 | readyToArm               | Switch  | Partition is Ready to arm                                                                     |
 | inExitDelay              | Switch  | Partition is in Exit delay                                                                    |
@@ -95,13 +96,31 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 | allZonesClosed           | Contact | All zones in partition are currently closed                                                   |
 | command                  | String  | Command to be send to partition. Can be (ARM, DISARM, FORCE_ARM, INSTANT_ARM, STAY_ARM, BEEP) |
 
+### Partition detailed state possible values:
+| Overall state value      | Detailed state value (depending on the sub-state)                                            |
+|--------------------------|----------------------------------------------------------------------------------------------|
+| InAlarm                  | Silent Alarm, Audible Alarm, Fire Alarm, In Alarm (if none of the first three)               |
+| Armed                    | Away Armed, Stay Armed, NoEntry Armed, Armed (if none of the first three)                    |
+| Disarmed                 | Disarmed                                                                                     |
+
 ### Zone channels:
 
-| Channel         | Type    | Description                                                                    |
-|-----------------|---------|--------------------------------------------------------------------------------|
-| zoneLabel       | String  | Label of zone inside Paradox configuration                                     |
-| openedState     | Contact | Zone opened / closed                                                           |
-| tamperedState   | Switch  | Zone is tampered / not tampered                                                |
+| Channel                            | Type    | Description                                                                    |
+|------------------------------------|---------|--------------------------------------------------------------------------------|
+| zoneLabel                          | String  | Label of zone inside Paradox configuration                                     |
+| openedState                        | Contact | Zone opened / closed                                                           |
+| tamperedState                      | Switch  | Zone is tampered                                                               |
+| supervisionTrouble                 | Switch  | Zone is in supervision trouble                                                 |
+| inTxDelay                          | Switch  | Zone is in txDelay                                                             |
+| shutdown                           | Switch  | Zone is shutdown                                                               |
+| bypassed                           | Switch  | Zone is bypassed                                                               |
+| hasActivatedIntellizoneDelay       | Switch  | Zone is has an activated Intellizone delay                                     |
+| hasActivatedEntryDelay             | Switch  | Zone is has an activated entry delay                                           |
+| presentlyInAlarm                   | Switch  | Zone is currently in alarm                                                     |
+| generatedAlarm                     | Switch  | Zone has generated an alarm                                                    |
+| command                            | String  | Command for zone. Can be (BYPASS, CLEAR_BYPASS)                                |
+
+
 ## Example things configuration
 
 ```java
@@ -159,10 +178,10 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
             Selection item=paradoxSendCommand mappings=["LOGOUT"="Logout", "LOGIN"="Login", "RESET"="Reset"]
         }
         Frame label="Panel" {
-				Text item=paradoxTime
-				Text item=paradoxAcVoltage
-				Text item=paradoxDcVoltage
-				Text item=paradoxBatteryVoltage
+            Text item=paradoxTime
+            Text item=paradoxAcVoltage
+            Text item=paradoxDcVoltage
+            Text item=paradoxBatteryVoltage
         }
         Frame label="Partitions" {
             Text item=partition1State valuecolor=[partition1State=="Disarmed"="green", partition1State=="Armed"="red"]
@@ -181,8 +200,8 @@ Currently binding supports the following panels: EVO192, EVO48(not tested), EVO9
 
 This binding would not be possible without the reverse engineering of the byte level protocol and the development by other authors in python, C# and other languages. Many thanks to the following authors and their respective GitHub repositories for their development that helped in creating this binding:
 
-João Paulo Barraca - https://github.com/ParadoxAlarmInterface/pai
+João Paulo Barraca - <https://github.com/ParadoxAlarmInterface/pai>
 
 Jean Henning - repository not available
 
-Tertuish - https://github.com/Tertiush/ParadoxIP150v2 / https://github.com/Tertiush/ParadoxIP150
+Tertuish - <https://github.com/Tertiush/ParadoxIP150v2> / <https://github.com/Tertiush/ParadoxIP150>

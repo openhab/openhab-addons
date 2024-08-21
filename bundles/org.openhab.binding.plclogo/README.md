@@ -27,7 +27,7 @@ For this reason, the binding does not do an automatic background discovery, but 
 
 Every Siemens LOGO! PLC is configured as bridge:
 
-```
+```java
 Bridge plclogo:device:<DeviceId> [ address="<ip>", family="<0BA7/0BA8>", localTSAP="0x<number>", remoteTSAP="0x<number>", refresh=<number> ]
 ```
 
@@ -51,7 +51,7 @@ Binding supports four types of things: digital, analog, memory and datetime.
 
 The configuration pattern for digital things is:
 
-```
+```java
 Thing digital <ThingId> "Label" @ "Location" [ kind="<kind>", force=<true/false> ]
 ```
 
@@ -62,8 +62,8 @@ Thing digital <ThingId> "Label" @ "Location" [ kind="<kind>", force=<true/false>
 
 Follow block kinds are allowed for digital things:
 
-| Type           | `0BA7` | `0BA8` | 
-| -------------- | :----: | ------ | 
+| Type           | `0BA7` | `0BA8` |
+| -------------- | :----: | ------ |
 | Input          | `I`    | `I`    |
 | Output         | `Q`    | `Q`    |
 | Marker         | `M`    | `M`    |
@@ -74,7 +74,7 @@ Follow block kinds are allowed for digital things:
 
 The configuration pattern for analog things is:
 
-```
+```java
 Thing analog <ThingId>  "Label" @ "Location" [ kind="<kind>", threshold=<number>, force=<true/false> ]
 ```
 
@@ -86,7 +86,7 @@ Thing analog <ThingId>  "Label" @ "Location" [ kind="<kind>", threshold=<number>
 
 Follow block kinds are allowed for analog things:
 
-| Type           | `0BA7` | `0BA8` | 
+| Type           | `0BA7` | `0BA8` |
 | -------------- | :----: | ------ |
 | Input          | `AI`   | `AI`   |
 | Output         | `AQ`   | `AQ`   |
@@ -98,7 +98,7 @@ Follow block kinds are allowed for analog things:
 
 The configuration pattern for analog things is:
 
-```
+```java
 Thing memory <ThingId>  "Label" @ "Location" [ block="<name>", threshold=<number>, force=<true/false> ]
 ```
 
@@ -117,7 +117,7 @@ Parameter `threshold` will be taken into account for Byte, Word and DWord, i.e N
 
 The configuration pattern for datetime things is:
 
-```
+```java
 Thing datetime <ThingId>  "Label" @ "Location" [ block="<name>", type=<type>, force=<true/false> ]
 ```
 
@@ -136,7 +136,7 @@ The date this case will be taken from openHAB host.
 
 The configuration pattern for pulse things is:
 
-```
+```java
 Thing pulse <ThingId>  "Label" @ "Location" [ block="<name>", observe="<name>", pulse=<number> ]
 ```
 
@@ -168,7 +168,7 @@ For both use cases: if `block` was `0` then `1` is send and vice versa.
 
 Each device have currently three channels `diagnostic`, `rtc` and `weekday`:
 
-```
+```java
 channel="plclogo:device:<DeviceId>:diagnostic"
 channel="plclogo:device:<DeviceId>:rtc"
 channel="plclogo:device:<DeviceId>:weekday"
@@ -185,7 +185,7 @@ Since the smallest resolution provided by LOGO! is one second, `rtc` channel wil
 
 Format pattern for digital channels is
 
-```
+```java
 channel="plclogo:digital:<DeviceId>:<ThingId>:<Channel>"
 ```
 
@@ -203,7 +203,7 @@ Dependent on configured LOGO! PLC and thing kind, follow channels are available:
 
 Format pattern for analog channels is
 
-```
+```java
 channel="plclogo:analog:<DeviceId>:<ThingId>:<Channel>"
 ```
 
@@ -221,7 +221,7 @@ Dependent on configured LOGO! PLC and thing kind, follow channels are available:
 
 Format pattern for memory channels for bit values is
 
-```
+```java
 channel="plclogo:memory:<DeviceId>:<ThingId>:<state/value>"
 ```
 
@@ -238,7 +238,7 @@ Dependent on configured LOGO! PLC and thing kind, follow channels are available:
 
 Format pattern depends for date/time channels is
 
-```
+```java
 channel="plclogo:datetime:<DeviceId>:<ThingId>:<date/time>"
 ```
 
@@ -254,7 +254,7 @@ Channel `date` is available, if thing is configured as `"date"`.
 Is thing configured as `"time"`, then channel `time` is provided.
 Raw block data is provided via `value` channel, independed from thing configuration:
 
-```
+```java
 channel="plclogo:datetime:<DeviceId>:<ThingId>:value"
 ```
 
@@ -262,13 +262,13 @@ channel="plclogo:datetime:<DeviceId>:<ThingId>:value"
 
 Format pattern depends for pulse channels is
 
-```
+```java
 channel="plclogo:pulse:<DeviceId>:<ThingId>:state"
 ```
 
 Additionally the state of observed block data is provided via `observed` channel
 
-```
+```java
 channel="plclogo:pulse:<DeviceId>:<ThingId>:observed"
 ```
 
@@ -290,7 +290,7 @@ Configuration of one Siemens LOGO!
 
 logo.things:
 
-```
+```java
 Bridge plclogo:device:Logo [ address="192.168.0.1", family="0BA8", localTSAP="0x3000", remoteTSAP="0x2000", refresh=100 ]
 {
   Thing digital  Inputs  [ kind="I" ]
@@ -304,7 +304,7 @@ Bridge plclogo:device:Logo [ address="192.168.0.1", family="0BA8", localTSAP="0x
 
 logo.items:
 
-```
+```java
 Contact LogoI1   { channel="plclogo:digital:Logo:Inputs:I1" }
 Contact LogoI2   { channel="plclogo:digital:Logo:Inputs:I2" }
 Switch  LogoQ1   { channel="plclogo:digital:Logo:Outputs:Q1" }
@@ -326,7 +326,7 @@ Configuration of two Siemens LOGO!
 
 logo.things:
 
-```
+```java
 Bridge plclogo:device:Logo1 [ address="192.168.0.1", family="0BA8", localTSAP="0x3000", remoteTSAP="0x2000", refresh=100 ]
 {
   Thing digital Inputs  [ kind="I" ]
@@ -345,7 +345,7 @@ Bridge plclogo:device:Logo2 [ address="192.168.0.2", family="0BA8", localTSAP="0
 
 logo.items:
 
-```
+```java
 Contact Logo1_I1    { channel="plclogo:digital:Logo1:Inputs:I1" }
 Contact Logo1_I2    { channel="plclogo:digital:Logo1:Inputs:I2" }
 Switch  Logo1_Q1    { channel="plclogo:digital:Logo1:Outputs:Q1" }
@@ -367,11 +367,11 @@ DateTime Logo2_RTC  { channel="plclogo:device:Logo2:rtc"}
 
 ## Troubleshooting
 
-**LOGO! bridge will not go online**
+### LOGO! bridge will not go online
 
 Be sure to have only one bridge for each LOGO! device.
 
-**Log shows reader was created but no communication with LOGO! possible**
+### Log shows reader was created but no communication with LOGO! possible
 
 Check TSAP values: localTSAP and remoteTSAP should not be the same.
 You have to choose different addresses.
@@ -382,6 +382,6 @@ If all configuration parameters were checked and fine, it maybe possible that th
 To recover stop openHAB, cold boot your LOGO! (power off/on) and reflash the program with LOGO! SoftComfort.
 Then restart openHAB and check logging for a created reader.
 
-**RTC value differs from the value shown in LOGO! (0BA7)**
+### RTC value differs from the value shown in LOGO! (0BA7)
 
 This is no bug! Since there is no way to read the RTC from a 0BA7, the binding simply returns the local time of openHAB host.

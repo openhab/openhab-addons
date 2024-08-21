@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -135,7 +136,7 @@ public class LGWebOSHandler extends BaseThingHandler
             return;
         }
 
-        LGWebOSTVSocket s = new LGWebOSTVSocket(webSocketClient, this, host, c.getPort(), scheduler);
+        LGWebOSTVSocket s = new LGWebOSTVSocket(webSocketClient, this, host, c.getUseTLS(), scheduler);
         s.setListener(this);
         socket = s;
 
@@ -190,19 +191,18 @@ public class LGWebOSHandler extends BaseThingHandler
 
             // it is irrelevant which service is queried. Only need to send some packets over the wire
 
-            keepAliveJob = scheduler
-                    .scheduleWithFixedDelay(() -> getSocket().getRunningApp(new ResponseListener<AppInfo>() {
+            keepAliveJob = scheduler.scheduleWithFixedDelay(() -> getSocket().getRunningApp(new ResponseListener<>() {
 
-                        @Override
-                        public void onSuccess(AppInfo responseObject) {
-                            // ignore - actual response is not relevant here
-                        }
+                @Override
+                public void onSuccess(AppInfo responseObject) {
+                    // ignore - actual response is not relevant here
+                }
 
-                        @Override
-                        public void onError(String message) {
-                            // ignore
-                        }
-                    }), keepAliveInterval, keepAliveInterval, TimeUnit.MILLISECONDS);
+                @Override
+                public void onError(String message) {
+                    // ignore
+                }
+            }), keepAliveInterval, keepAliveInterval, TimeUnit.MILLISECONDS);
 
         }
     }
@@ -373,7 +373,7 @@ public class LGWebOSHandler extends BaseThingHandler
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(LGWebOSActions.class);
+        return Set.of(LGWebOSActions.class);
     }
 
     /**

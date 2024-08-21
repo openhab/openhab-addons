@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solax"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="cloud-connect-inverter">
+
+		<label>Cloud Connect Inverter</label>
+		<description>The inverter representation that is retrieved from Solax cloud API</description>
+
+		<channels>
+			<channel id="inverter-output-power" typeId="system.electric-power">
+				<label>Inverter Input/Output Power</label>
+				<description>Power to/from the inverter</description>
+			</channel>
+			<channel id="pv1-power" typeId="system.electric-power">
+				<label>PV 1 Power</label>
+				<description>Electric power of PV String 1</description>
+			</channel>
+			<channel id="pv2-power" typeId="system.electric-power">
+				<label>PV 2 Power</label>
+				<description>Electric power of PV String 2</description>
+			</channel>
+			<channel id="pv3-power" typeId="system.electric-power">
+				<label>PV 3 Power</label>
+				<description>Electric power of PV String 3</description>
+			</channel>
+			<channel id="pv4-power" typeId="system.electric-power">
+				<label>PV 4 Power</label>
+				<description>Electric power of PV String 4</description>
+			</channel>
+			<channel id="pv-total-power" typeId="system.electric-power">
+				<label>PV Total Power</label>
+				<description>The sum of PV powers from all PV strings</description>
+			</channel>
+			<channel id="battery-level" typeId="system.battery-level">
+				<label>Battery Level</label>
+				<description>The battery state of charge in percent</description>
+			</channel>
+			<channel id="battery-power" typeId="system.electric-power">
+				<label>Battery Power</label>
+				<description>Power to/from the battery</description>
+			</channel>
+			<channel id="feed-in-power" typeId="system.electric-power">
+				<label>Feed-In Power</label>
+				<description>Power to/from the electricity network.</description>
+			</channel>
+			<channel id="total-feed-in-energy" typeId="system.electric-energy">
+				<label>Total Feed-In Energy</label>
+				<description>Total energy feed-in to the electricity network.</description>
+			</channel>
+			<channel id="total-consumption" typeId="system.electric-energy">
+				<label>Total Consumed Energy</label>
+				<description>Total Energy consumed from the electricity network.</description>
+			</channel>
+			<channel id="inverter-meter2-power" typeId="system.electric-power">
+				<label>Meter2 Power</label>
+				<description>Inverter power on meter2.</description>
+			</channel>
+			<channel id="inverter-eps-power-r" typeId="system.electric-power">
+				<label>EPS power R</label>
+				<description>Inverter AC EPS power R</description>
+			</channel>
+			<channel id="inverter-eps-power-s" typeId="system.electric-power">
+				<label>EPS power S</label>
+				<description>Inverter AC EPS power S</description>
+			</channel>
+			<channel id="inverter-eps-power-t" typeId="system.electric-power">
+				<label>EPS power T</label>
+				<description>Inverter AC EPS power T</description>
+			</channel>
+
+			<channel id="today-energy" typeId="system.electric-energy">
+				<label>Yield today</label>
+				<description>Inverter output energy for the day</description>
+			</channel>
+			<channel id="total-energy" typeId="system.electric-energy">
+				<label>Yield total</label>
+				<description>Total inverter output energy</description>
+			</channel>
+
+			<channel id="last-update-time" typeId="last-retrieve-time-stamp"/>
+
+			<channel id="inverter-workmode" typeId="inverter-workmode-cloud">
+				<label>Inverter Workmode</label>
+				<description>Inverter Workmode</description>
+			</channel>
+
+			<channel id="raw-data" typeId="raw-data-type"/>
+		</channels>
+
+		<config-description>
+			<parameter name="refreshInterval" type="integer" min="9" max="600">
+				<label>Refresh Interval</label>
+				<description>Refresh interval in seconds. (Cloud API is limited to max 10 calls per minute and 10000 times per day)</description>
+				<default>30</default>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password for accessing cloud API (the serial number of the Wi-Fi module)</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="token" type="text" required="true">
+				<label>Token</label>
+				<description>Token to access the Solax cloud API</description>
+				<context>password</context>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

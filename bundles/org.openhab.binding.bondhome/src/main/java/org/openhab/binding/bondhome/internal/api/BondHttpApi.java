@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -90,12 +90,10 @@ public class BondHttpApi {
      * @throws BondException
      */
     public List<String> getDevices() throws BondException {
-
         List<String> list = new ArrayList<>();
         String json = request("/v2/devices/");
         try {
-            JsonParser parser = new JsonParser();
-            JsonElement element = parser.parse(json);
+            JsonElement element = JsonParser.parseString(json);
             JsonObject obj = element.getAsJsonObject();
             Set<Map.Entry<String, JsonElement>> entries = obj.entrySet();
             for (Map.Entry<String, JsonElement> entry : entries) {
@@ -122,7 +120,9 @@ public class BondHttpApi {
         String json = request("/v2/devices/" + deviceId);
         logger.trace("BondHome device info : {}", json);
         try {
-            return Objects.requireNonNull(gson.fromJson(json, BondDevice.class));
+            BondDevice device = Objects.requireNonNull(gson.fromJson(json, BondDevice.class));
+            device.actions.removeIf(Objects::isNull);
+            return device;
         } catch (JsonParseException e) {
             logger.debug("Could not parse device {}'s JSON '{}'", deviceId, json, e);
             throw new BondException("@text/offline.comm-error.unparseable-response");
@@ -169,7 +169,7 @@ public class BondHttpApi {
      * Executes a device action
      *
      * @param deviceId The ID of the device
-     * @param actionId The Bond action
+     * @param action The Bond action
      * @param argument An additional argument for the actions (such as the fan speed)
      */
     public synchronized void executeDeviceAction(String deviceId, BondDeviceAction action, @Nullable Integer argument) {
@@ -194,7 +194,7 @@ public class BondHttpApi {
         try {
             response = request.send();
         } catch (Exception e) {
-            logger.warn("Unable to execute device action {} against device {}: {}", deviceId, action, e.getMessage());
+            logger.debug("Unable to execute device action {} against device {}: {}", deviceId, action, e.getMessage());
             return;
         }
 
@@ -218,8 +218,8 @@ public class BondHttpApi {
                 final Request request = httpClient.newRequest(url).method(HttpMethod.GET).header("BOND-Token",
                         bridgeHandler.getBridgeToken());
                 ContentResponse response;
-                response = request.send();
-                String encoding = response.getEncoding() != null ? response.getEncoding().replaceAll("\"", "").trim()
+                response = request.timeout(BOND_API_TIMEOUT_MS, TimeUnit.MILLISECONDS).send();
+                String encoding = response.getEncoding() != null ? response.getEncoding().replace("\"", "").trim()
                         : StandardCharsets.UTF_8.name();
                 try {
                     httpResponse = new String(response.getContent(), encoding);
@@ -252,7 +252,7 @@ public class BondHttpApi {
                     logger.debug("Repeated Bond API calls to {} failed.", uri);
                     bridgeHandler.setBridgeOffline(ThingStatusDetail.COMMUNICATION_ERROR,
                             "@text/offline.comm-error.api-call-failed");
-                    throw new BondException("@text/offline.conf-error.api-call-failed", true);
+                    throw new BondException("@text/offline.comm-error.api-call-failed", true);
                 }
             }
         } while (true);

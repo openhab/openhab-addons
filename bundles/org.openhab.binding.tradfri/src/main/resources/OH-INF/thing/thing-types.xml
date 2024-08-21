@@ -176,11 +176,132 @@
 		<config-description-ref uri="thing-type:tradfri:device"/>
 	</thing-type>
 
+	<thing-type id="0007">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Air Purifier</label>
+		<description>This represents the air purifier sensors and controls.</description>
+
+		<channels>
+			<channel id="fan_speed" typeId="fan-speed"/>
+			<channel id="fan_mode" typeId="fan-mode"/>
+			<channel id="disable_led" typeId="disable-led"/>
+			<channel id="lock_button" typeId="lock-button"/>
+			<channel id="air_quality_pm25" typeId="air-quality-pm25"/>
+			<channel id="air_quality_rating" typeId="air-quality-rating"/>
+			<channel id="filter_check_next" typeId="filter-check-next"/>
+			<channel id="filter_check_alarm" typeId="filter-check-alarm"/>
+			<channel id="filter_uptime" typeId="filter-uptime"/>
+		</channels>
+
+		<representation-property>id</representation-property>
+
+		<config-description-ref uri="thing-type:tradfri:device"/>
+	</thing-type>
+
 	<channel-type id="position">
 		<item-type>Rollershutter</item-type>
 		<label>Position</label>
 		<description>Control the position of the blind or curtain in percent from 0 (open) to 100 (closed).</description>
 		<category>Blinds</category>
+	</channel-type>
+
+	<channel-type id="fan-mode">
+		<item-type>Number:Dimensionless</item-type>
+
+		<label>Fan Speed Mode</label>
+		<description>Controls the configured fan speed.</description>
+
+		<state pattern="%d">
+			<options>
+				<option value="0">Power Off</option>
+				<option value="1">Automatic</option>
+				<option value="10">Speed 1</option>
+				<option value="20">Speed 2</option>
+				<option value="30">Speed 3</option>
+				<option value="40">Speed 4</option>
+				<option value="50">Speed 5</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="fan-speed">
+		<item-type>Number:Dimensionless</item-type>
+
+		<label>Current Fan Speed</label>
+		<description>Displays the current fan speed (0..50).</description>
+		<category>Fan</category>
+
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="disable-led">
+		<item-type>Switch</item-type>
+
+		<label>Disable LED</label>
+		<description>Disables the LED's on the Air Purifier.</description>
+	</channel-type>
+
+	<channel-type id="lock-button">
+		<item-type>Switch</item-type>
+
+		<label>Lock Physical Button</label>
+		<description>When ON, locks the physical button on the device.</description>
+	</channel-type>
+
+	<channel-type id="air-quality-pm25">
+		<item-type>Number:Dimensionless</item-type>
+
+		<label>PM 2.5</label>
+		<description>Density of Particulate Matter of 2.5μm measured by the Air Purifier, in ppm.</description>
+
+		<state readOnly="true" pattern="%d ppm"/>
+	</channel-type>
+
+	<channel-type id="air-quality-rating">
+		<item-type>Number:Dimensionless</item-type>
+
+		<label>Air Quality</label>
+		<description>An evaluation of the Air Quality between 1 (Good) and 3 (Bad).</description>
+
+		<state readOnly="true" pattern="%d">
+			<options>
+				<option value="1">Good</option>
+				<option value="2">OK</option>
+				<option value="3">Bad</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="filter-check-next">
+		<item-type>Number:Time</item-type>
+
+		<label>Next Filter Check</label>
+		<description>The number of minutes before the next filter check (or time since check is required if below 0).</description>
+		<category>Time</category>
+
+		<state readOnly="true" pattern="%.2f d"/>
+	</channel-type>
+
+	<channel-type id="filter-check-alarm">
+		<item-type>Switch</item-type>
+
+		<label>Filter Check Alarm</label>
+		<description>When this value is ON, you need to perform a filter check.</description>
+
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="filter-uptime">
+		<item-type>Number:Time</item-type>
+
+		<label>Filter Uptime</label>
+		<description>The duration for which the current filter was used.</description>
+		<category>Time</category>
+
+		<state readOnly="true" pattern="%.2f week"/>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -13,7 +13,7 @@
 		</parameter>
 		<parameter name="messageWaitTime" type="integer" min="0" max="500" step="50">
 			<label>Message Wait Time</label>
-			<description>The time to wait between messages sent on the ZigBee network (in ms)</description>
+			<description>The time to wait between messages sent on the Zigbee network (in ms)</description>
 			<default>150</default>
 			<unitLabel>ms</unitLabel>
 		</parameter>
@@ -67,7 +67,7 @@
 		</parameter>
 		<parameter name="temporarilyNotInNetwork" type="boolean" required="false">
 			<label>Temporarily Not in Network</label>
-			<description>Stops searching for an unplugged device on the ZigBee network traffic</description>
+			<description>Stops searching for an unplugged device on the Zigbee network traffic</description>
 			<default>false</default>
 			<advanced>true</advanced>
 		</parameter>

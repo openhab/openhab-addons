@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.binding.tr064.internal.phonebook;
 
 import java.math.BigDecimal;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -97,17 +98,17 @@ public class PhonebookProfile implements StateProfile {
                 phonebookName = UIDUtils.decode(phonebookParams[1]);
             }
             if (matchCountParam != null) {
-                if (matchCountParam instanceof BigDecimal) {
-                    matchCount = ((BigDecimal) matchCountParam).intValue();
-                } else if (matchCountParam instanceof String) {
-                    matchCount = Integer.parseInt((String) matchCountParam);
+                if (matchCountParam instanceof BigDecimal bigDecimal) {
+                    matchCount = bigDecimal.intValue();
+                } else if (matchCountParam instanceof String string) {
+                    matchCount = Integer.parseInt(string);
                 }
             }
             if (phoneNumberIndexParam != null) {
-                if (phoneNumberIndexParam instanceof BigDecimal) {
-                    phoneNumberIndex = ((BigDecimal) phoneNumberIndexParam).intValue();
-                } else if (phoneNumberIndexParam instanceof String) {
-                    phoneNumberIndex = Integer.parseInt((String) phoneNumberIndexParam);
+                if (phoneNumberIndexParam instanceof BigDecimal bigDecimal) {
+                    phoneNumberIndex = bigDecimal.intValue();
+                } else if (phoneNumberIndexParam instanceof String string) {
+                    phoneNumberIndex = Integer.parseInt(string);
                 }
             }
         } catch (IllegalArgumentException e) {
@@ -139,15 +140,13 @@ public class PhonebookProfile implements StateProfile {
         }
         if (state instanceof StringType) {
             Optional<String> match = resolveNumber(state.toString());
-            State newState = match.map(name -> (State) new StringType(name)).orElse(state);
-            // Compare by reference to check if the name is mapped to the same state
-            if (newState == state) {
+            State newState = Objects.requireNonNull(match.map(name -> (State) new StringType(name)).orElse(state));
+            if (newState.equals(state)) {
                 logger.debug("Number '{}' not found in phonebook '{}' from provider '{}'", state, phonebookName,
                         thingUID);
             }
             callback.sendUpdate(newState);
-        } else if (state instanceof StringListType) {
-            StringListType stringList = (StringListType) state;
+        } else if (state instanceof StringListType stringList) {
             try {
                 String phoneNumber = stringList.getValue(phoneNumberIndex);
                 Optional<String> match = resolveNumber(phoneNumber);

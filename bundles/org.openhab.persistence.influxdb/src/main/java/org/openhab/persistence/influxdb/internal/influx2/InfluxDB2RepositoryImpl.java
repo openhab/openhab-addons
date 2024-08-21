@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,24 +15,30 @@ package org.openhab.persistence.influxdb.internal.influx2;
 import static org.openhab.persistence.influxdb.internal.InfluxDBConstants.*;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.influxdb.InfluxDBIOException;
+import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.persistence.influxdb.internal.FilterCriteriaQueryCreator;
 import org.openhab.persistence.influxdb.internal.InfluxDBConfiguration;
 import org.openhab.persistence.influxdb.internal.InfluxDBConstants;
+import org.openhab.persistence.influxdb.internal.InfluxDBMetadataService;
 import org.openhab.persistence.influxdb.internal.InfluxDBRepository;
 import org.openhab.persistence.influxdb.internal.InfluxPoint;
-import org.openhab.persistence.influxdb.internal.InfluxRow;
-import org.openhab.persistence.influxdb.internal.UnnexpectedConditionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.influxdb.client.DeleteApi;
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.InfluxDBClientOptions;
@@ -41,6 +47,7 @@ import com.influxdb.client.WriteApi;
 import com.influxdb.client.domain.Ready;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
+import com.influxdb.exceptions.InfluxException;
 import com.influxdb.query.FluxTable;
 
 /**
@@ -51,38 +58,33 @@ import com.influxdb.query.FluxTable;
 @NonNullByDefault
 public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
     private final Logger logger = LoggerFactory.getLogger(InfluxDB2RepositoryImpl.class);
-    private InfluxDBConfiguration configuration;
-    @Nullable
-    private InfluxDBClient client;
-    @Nullable
-    private QueryApi queryAPI;
-    @Nullable
-    private WriteApi writeAPI;
+    private final InfluxDBConfiguration configuration;
+    private final InfluxDBMetadataService influxDBMetadataService;
+    private final FilterCriteriaQueryCreator queryCreator;
 
-    public InfluxDB2RepositoryImpl(InfluxDBConfiguration configuration) {
+    private @Nullable InfluxDBClient client;
+    private @Nullable QueryApi queryAPI;
+    private @Nullable WriteApi writeAPI;
+    private @Nullable DeleteApi deleteAPI;
+
+    public InfluxDB2RepositoryImpl(InfluxDBConfiguration configuration,
+            InfluxDBMetadataService influxDBMetadataService) {
         this.configuration = configuration;
+        this.influxDBMetadataService = influxDBMetadataService;
+        this.queryCreator = new InfluxDB2FilterCriteriaQueryCreatorImpl(configuration, influxDBMetadataService);
     }
 
-    /**
-     * Returns if the client has been successfully connected to server
-     *
-     * @return True if it's connected, otherwise false
-     */
     @Override
     public boolean isConnected() {
-        return client != null;
+        InfluxDBClient client = this.client;
+        return client != null && client.ping();
     }
 
-    /**
-     * Connect to InfluxDB server
-     *
-     * @return True if successful, otherwise false
-     */
     @Override
     public boolean connect() {
         InfluxDBClientOptions.Builder optionsBuilder = InfluxDBClientOptions.builder().url(configuration.getUrl())
                 .org(configuration.getDatabaseName()).bucket(configuration.getRetentionPolicy());
-        char[] token = configuration.getTokenAsCharArray();
+        char[] token = configuration.getToken().toCharArray();
         if (token.length > 0) {
             optionsBuilder.authenticateToken(token);
         } else {
@@ -92,15 +94,16 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
 
         final InfluxDBClient createdClient = InfluxDBClientFactory.create(clientOptions);
         this.client = createdClient;
-        logger.debug("Succesfully connected to InfluxDB. Instance ready={}", createdClient.ready());
+
         queryAPI = createdClient.getQueryApi();
-        writeAPI = createdClient.getWriteApi();
+        writeAPI = createdClient.makeWriteApi();
+        deleteAPI = createdClient.getDeleteApi();
+
+        logger.debug("Successfully connected to InfluxDB. Instance pingable={}", createdClient.ping());
+
         return checkConnectionStatus();
     }
 
-    /**
-     * Disconnect from InfluxDB server
-     */
     @Override
     public void disconnect() {
         final InfluxDBClient currentClient = this.client;
@@ -110,17 +113,20 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         this.client = null;
     }
 
-    /**
-     * Check if connection is currently ready
-     *
-     * @return True if its ready, otherwise false
-     */
     @Override
     public boolean checkConnectionStatus() {
         final InfluxDBClient currentClient = client;
         if (currentClient != null) {
+            boolean isUp = false;
             Ready ready = currentClient.ready();
-            boolean isUp = ready != null && ready.getStatus() == Ready.StatusEnum.READY;
+            if (ready != null) {
+                isUp = ready.getStatus() == Ready.StatusEnum.READY;
+            } else {
+                logger.debug(
+                        "Failure resolving database readiness. Falling back to ping check. This is normal when using InfluxDB Cloud Serverless.");
+                isUp = currentClient.ping();
+            }
+
             if (isUp) {
                 logger.debug("database status is OK");
             } else {
@@ -133,68 +139,101 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         }
     }
 
-    /**
-     * Write point to database
-     *
-     * @param point
-     */
     @Override
-    public void write(InfluxPoint point) {
+    public boolean write(List<InfluxPoint> influxPoints) {
         final WriteApi currentWriteAPI = writeAPI;
-        if (currentWriteAPI != null) {
-            currentWriteAPI.writePoint(convertPointToClientFormat(point));
-        } else {
-            logger.warn("Write point {} ignored due to writeAPI isn't present", point);
+        if (currentWriteAPI == null) {
+            return false;
         }
-    }
-
-    private Point convertPointToClientFormat(InfluxPoint point) {
-        Point clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime(), WritePrecision.MS);
-        setPointValue(point.getValue(), clientPoint);
-        point.getTags().entrySet().forEach(e -> clientPoint.addTag(e.getKey(), e.getValue()));
-        return clientPoint;
-    }
-
-    private void setPointValue(@Nullable Object value, Point point) {
-        if (value instanceof String) {
-            point.addField(FIELD_VALUE_NAME, (String) value);
-        } else if (value instanceof Number) {
-            point.addField(FIELD_VALUE_NAME, (Number) value);
-        } else if (value instanceof Boolean) {
-            point.addField(FIELD_VALUE_NAME, (Boolean) value);
-        } else if (value == null) {
-            point.addField(FIELD_VALUE_NAME, (String) null);
-        } else {
-            throw new UnnexpectedConditionException("Not expected value type");
+        try {
+            List<Point> clientPoints = influxPoints.stream().map(this::convertPointToClientFormat)
+                    .filter(Optional::isPresent).map(Optional::get).toList();
+            currentWriteAPI.writePoints(clientPoints);
+        } catch (InfluxException | InfluxDBIOException e) {
+            logger.debug("Writing to database failed", e);
+            return false;
         }
+        return true;
     }
 
-    /**
-     * Executes Flux query
-     *
-     * @param query Query
-     * @return Query results
-     */
     @Override
-    public List<InfluxRow> query(String query) {
-        final QueryApi currentQueryAPI = queryAPI;
-        if (currentQueryAPI != null) {
-            List<FluxTable> clientResult = currentQueryAPI.query(query);
-            return convertClientResutToRepository(clientResult);
-        } else {
-            logger.warn("Returning empty list because queryAPI isn't present");
-            return Collections.emptyList();
+    public boolean remove(FilterCriteria filter) {
+        final DeleteApi currentDeleteApi = deleteAPI;
+        if (currentDeleteApi == null) {
+            return false;
         }
+
+        if (filter.getState() != null) {
+            logger.warn("Deleting by value is not supported in InfluxDB v2.");
+            return false;
+        }
+        OffsetDateTime start = Objects.requireNonNullElse(filter.getBeginDate(), ZonedDateTime.now().minusYears(100))
+                .toOffsetDateTime();
+        OffsetDateTime stop = Objects.requireNonNullElse(filter.getEndDate(), ZonedDateTime.now().plusYears(100))
+                .toOffsetDateTime();
+
+        // create predicate
+        String predicate = "";
+        String itemName = filter.getItemName();
+        if (itemName != null) {
+            String name = influxDBMetadataService.getMeasurementNameOrDefault(itemName, itemName);
+            String measurementName = configuration.isReplaceUnderscore() ? name.replace('_', '.') : name;
+            predicate = "(_measurement=\"" + measurementName + "\")";
+        }
+
+        try {
+            deleteAPI.delete(start, stop, predicate, configuration.getRetentionPolicy(),
+                    configuration.getDatabaseName());
+        } catch (InfluxException | InfluxDBIOException e) {
+            logger.debug("Deleting from database failed", e);
+            return false;
+        }
+
+        return true;
     }
 
-    private List<InfluxRow> convertClientResutToRepository(List<FluxTable> clientResult) {
-        return clientResult.stream().flatMap(this::mapRawResultToHistoric).collect(Collectors.toList());
+    private Optional<Point> convertPointToClientFormat(InfluxPoint point) {
+        Point clientPoint = Point.measurement(point.getMeasurementName()).time(point.getTime(), WritePrecision.MS);
+        @Nullable
+        Object value = point.getValue();
+        if (value instanceof String string) {
+            clientPoint.addField(FIELD_VALUE_NAME, string);
+        } else if (value instanceof Number number) {
+            clientPoint.addField(FIELD_VALUE_NAME, number);
+        } else if (value instanceof Boolean boolean1) {
+            clientPoint.addField(FIELD_VALUE_NAME, boolean1);
+        } else if (value == null) {
+            clientPoint.addField(FIELD_VALUE_NAME, (String) null);
+        } else {
+            logger.warn("Could not convert {}, discarding this datapoint)", clientPoint);
+            return Optional.empty();
+        }
+        point.getTags().forEach(clientPoint::addTag);
+        return Optional.of(clientPoint);
+    }
+
+    @Override
+    public List<InfluxRow> query(FilterCriteria filter, String retentionPolicy) {
+        try {
+            final QueryApi currentQueryAPI = queryAPI;
+            if (currentQueryAPI != null) {
+                String query = queryCreator.createQuery(filter, retentionPolicy);
+                logger.trace("Query {}", query);
+                List<FluxTable> clientResult = currentQueryAPI.query(query);
+                return clientResult.stream().flatMap(this::mapRawResultToHistoric).toList();
+            } else {
+                throw new InfluxException("API not present");
+            }
+        } catch (InfluxException | InfluxDBIOException e) {
+            logger.warn("Failed to execute query '{}': {}", filter, e.getMessage());
+            return List.of();
+        }
     }
 
     private Stream<InfluxRow> mapRawResultToHistoric(FluxTable rawRow) {
         return rawRow.getRecords().stream().map(r -> {
             String itemName = (String) r.getValueByKey(InfluxDBConstants.TAG_ITEM_NAME);
-            if (itemName == null) { // use measurement name if item is not tagged
+            if (itemName == null) {
                 itemName = r.getMeasurement();
             }
             Object value = r.getValueByKey(COLUMN_VALUE_NAME_V2);
@@ -203,11 +242,6 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
         });
     }
 
-    /**
-     * Return all stored item names with it's count of stored points
-     *
-     * @return Map with <ItemName,ItemCount> entries
-     */
     @Override
     public Map<String, Integer> getStoredItemsCount() {
         final QueryApi currentQueryAPI = queryAPI;
@@ -221,9 +255,10 @@ public class InfluxDB2RepositoryImpl implements InfluxDBRepository {
                     + "  |> group()";
 
             List<FluxTable> queryResult = currentQueryAPI.query(query);
-            queryResult.stream().findFirst().orElse(new FluxTable()).getRecords().forEach(row -> {
-                result.put((String) row.getValueByKey(TAG_ITEM_NAME), ((Number) row.getValue()).intValue());
-            });
+            Objects.requireNonNull(queryResult.stream().findFirst().orElse(new FluxTable())).getRecords()
+                    .forEach(row -> {
+                        result.put((String) row.getValueByKey(TAG_ITEM_NAME), ((Number) row.getValue()).intValue());
+                    });
             return result;
         } else {
             logger.warn("Returning empty result  because queryAPI isn't present");

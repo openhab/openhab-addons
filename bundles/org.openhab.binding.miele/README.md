@@ -2,14 +2,14 @@
 
 This binding integrates Miele@home appliances.
 Miele@home allows controlling Miele appliances that are equipped with special communication modules.
-There are devices that communicate through ZigBee and others that use WiFi.
+There are devices that communicate through Zigbee and others that use WiFi.
 
 See [www.miele.de](https://www.miele.de) for the list of available appliances.
 
 ## Supported Things
 
 This binding requires the XGW3000 gateway from Miele as all integration with openHAB is done through this gateway.
-While users with ZigBee-enabled Miele appliances usually own such a gateway, this is often not the case for people that have only WiFi-enabled appliances.
+While users with Zigbee-enabled Miele appliances usually own such a gateway, this is often not the case for people that have only WiFi-enabled appliances.
 
 The types of appliances that are supported by this binding are:
 
@@ -45,18 +45,18 @@ discovery.miele:removalGracePeriod=30
 
 ### Thing Configuration for Miele XGW3000
 
-| Configuration Parameter | Description   |
-|-------------------------|---------------|
-| ipAddress               | Network address of the Miele@home gateway |
+| Configuration Parameter | Description                                                                                                                      |
+|-------------------------|----------------------------------------------------------------------------------------------------------------------------------|
+| ipAddress               | Network address of the Miele@home gateway                                                                                        |
 | interface               | Network address of openHAB host interface where the binding will listen for multicast events coming from the Miele@home gateway. |
-| userName                | Name of a registered Miele@home user. |
-| password                | Password for the registered Miele@home user. |
-| language                | Language for state, program and phase texts. Leave blank for system language. |
+| userName                | Name of a registered Miele@home user.                                                                                            |
+| password                | Password for the registered Miele@home user.                                                                                     |
+| language                | Language for state, program and phase texts. Leave blank for system language.                                                    |
 
 ### Thing Configuration for appliance
 
-| Configuration Parameter | Description   |
-|-------------------------|---------------|
+| Configuration Parameter | Description                                              |
+|-------------------------|----------------------------------------------------------|
 | uid                     | Unique identifier for specific appliance on the gateway. |
 
 Each appliance needs the device UID as a configuration parameter.
@@ -112,27 +112,31 @@ Channels available for each appliance type are listed below.
 | phase               | String               | Read       | Current phase of the program running on the appliance               |
 | rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
+| info                | Switch               | Read       | Signals information, check appliance for details                    |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                        |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 
 #### Dishwasher
 
-| Channel             | Type                 | Read/write | Description                                                         |
-|---------------------|----------------------|------------|---------------------------------------------------------------------|
-| state               | String               | Read       | Current status of the appliance                                     |
-| rawState            | Number               | Read       | Current status of the appliance as raw number                       |
-| program             | String               | Read       | Current program or function running on the appliance                |
-| rawProgram          | Number               | Read       | Current program or function running on the appliance as raw number  |
-| phase               | String               | Read       | Current phase of the program running on the appliance               |
-| rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
-| start               | DateTime             | Read       | Programmed start time of the program                                |
-| end                 | DateTime             | Read       | End time of the program (programmed or running)                     |
-| duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
-| elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
-| finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
-| door                | Contact              | Read       | Current state of the door of the appliance                          |
-| switch              | Switch               | Write      | Switch the appliance on or off                                      |
-| powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
-| waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance |
+| Channel             | Type                 | Read/write | Description                                                          |
+|---------------------|----------------------|------------|----------------------------------------------------------------------|
+| state               | String               | Read       | Current status of the appliance                                      |
+| rawState            | Number               | Read       | Current status of the appliance as raw number                        |
+| program             | String               | Read       | Current program or function running on the appliance                 |
+| rawProgram          | Number               | Read       | Current program or function running on the appliance as raw number   |
+| phase               | String               | Read       | Current phase of the program running on the appliance                |
+| rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number  |
+| start               | DateTime             | Read       | Programmed start time of the program                                 |
+| end                 | DateTime             | Read       | End time of the program (programmed or running)                      |
+| duration            | Number:Time          | Read       | Duration of the program running on the appliance                     |
+| elapsed             | Number:Time          | Read       | Time elapsed in the program running on the appliance                 |
+| finish              | Number:Time          | Read       | Time to finish the program running on the appliance                  |
+| door                | Contact              | Read       | Current state of the door of the appliance                           |
+| info                | Switch               | Read       | Signals information, check appliance for details                     |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                         |
+| switch              | Switch               | Write      | Switch the appliance on or off                                       |
+| energyConsumption   | Number:Energy        | Read       | Energy consumption by the currently running program on the appliance |
+| waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance  |
 
 ##### Programs
 
@@ -172,6 +176,8 @@ Channels available for each appliance type are listed below.
 | current             | Number:Temperature   | Read       | Current temperature in the fridge                                   |
 | target              | Number:Temperature   | Read       | Target temperature to be reached by the fridge                      |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
+| info                | Switch               | Read       | Signals information, check appliance for details                    |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                        |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 
 #### Fridge/Freezer combination
@@ -189,6 +195,8 @@ Channels available for each appliance type are listed below.
 | fridgecurrent       | Number:Temperature   | Read       | Current temperature in the fridge compartment                       |
 | fridgetarget        | Number:Temperature   | Read       | Target temperature to be reached by the fridge compartment          |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
+| info                | Switch               | Read       | Signals information, check appliance for details                    |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                        |
 | start               | Switch               | Write      | Switch the appliance on or off                                      |
 
 #### Hob
@@ -239,14 +247,16 @@ Channels available for each appliance type are listed below.
 | rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
 | start               | DateTime             | Read       | Programmed start time of the program                                |
 | end                 | DateTime             | Read       | End time of the program (programmed or running)                     |
-| duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
-| elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
-| finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
+| duration            | Number:Time          | Read       | Duration of the program running on the appliance                    |
+| elapsed             | Number:Time          | Read       | Time elapsed in the program running on the appliance                |
+| finish              | Number:Time          | Read       | Time to finish the program running on the appliance                 |
 | target              | Number:Temperature   | Read       | Target temperature to be reached by the oven                        |
 | measured            | Number:Temperature   | Read       | Actual measured temperature in the oven                             |
 | temp1               | Number:Temperature   | Read       | Program temperature in the oven 1                                   |
 | temp2               | Number:Temperature   | Read       | Program temperature in the oven 2                                   |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
+| info                | Switch               | Read       | Signals information, check appliance for details                    |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                        |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 | stop                | Switch               | Write      | Stop the appliance                                                  |
 
@@ -282,10 +292,12 @@ See oven.
 | rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
 | start               | DateTime             | Read       | Programmed start time of the program                                |
 | end                 | DateTime             | Read       | End time of the program (programmed or running)                     |
-| duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
-| elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
-| finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
+| duration            | Number:Time          | Read       | Duration of the program running on the appliance                    |
+| elapsed             | Number:Time          | Read       | Time elapsed in the program running on the appliance                |
+| finish              | Number:Time          | Read       | Time to finish the program running on the appliance                 |
 | door                | Contact              | Read       | Current state of the door of the appliance                          |
+| info                | Switch               | Read       | Signals information, check appliance for details                    |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                        |
 | switch              | Switch               | Write      | Switch the appliance on or off                                      |
 | step                | Number               | Read       | Current step in the program running on the appliance                |
 
@@ -336,26 +348,29 @@ See oven.
 
 #### Washing Machine
 
-| Channel             | Type                 | Read/write | Description                                                         |
-|---------------------|----------------------|------------|---------------------------------------------------------------------|
-| state               | String               | Read       | Current status of the appliance                                     |
-| rawState            | Number               | Read       | Current status of the appliance as raw number                       |
-| program             | String               | Read       | Current program or function running on the appliance                |
-| rawProgram          | Number               | Read       | Current program or function running on the appliance as raw number  |
-| type                | String               | Read       | Type of the program running on the appliance                        |
-| phase               | String               | Read       | Current phase of the program running on the appliance               |
-| rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number |
-| start               | DateTime             | Read       | Programmed start time of the program                                |
-| end                 | DateTime             | Read       | End time of the program (programmed or running)                     |
-| duration            | DateTime             | Read       | Duration of the program running on the appliance                    |
-| elapsed             | DateTime             | Read       | Time elapsed in the program running on the appliance                |
-| finish              | DateTime             | Read       | Time to finish the program running on the appliance                 |
-| door                | Contact              | Read       | Current state of the door of the appliance                          |
-| switch              | Switch               | Write      | Switch the appliance on or off                                      |
-| target              | Number:Temperature   | Read       | Temperature of the selected program (10 °C = cold)                  |
-| spinningspeed       | String               | Read       | Spinning speed in the program running on the appliance              |
-| powerConsumption    | Number:Power         | Read       | Power consumption by the currently running program on the appliance |
-| waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance |
+| Channel             | Type                 | Read/write | Description                                                          |
+|---------------------|----------------------|------------|----------------------------------------------------------------------|
+| state               | String               | Read       | Current status of the appliance                                      |
+| rawState            | Number               | Read       | Current status of the appliance as raw number                        |
+| program             | String               | Read       | Current program or function running on the appliance                 |
+| rawProgram          | Number               | Read       | Current program or function running on the appliance as raw number   |
+| type                | String               | Read       | Type of the program running on the appliance                         |
+| phase               | String               | Read       | Current phase of the program running on the appliance                |
+| rawPhase            | Number               | Read       | Current phase of the program running on the appliance as raw number  |
+| start               | DateTime             | Read       | Programmed start time of the program                                 |
+| end                 | DateTime             | Read       | End time of the program (programmed or running)                      |
+| duration            | Number:Time          | Read       | Duration of the program running on the appliance                     |
+| elapsed             | Number:Time          | Read       | Time elapsed in the program running on the appliance                 |
+| finish              | Number:Time          | Read       | Time to finish the program running on the appliance                  |
+| door                | Contact              | Read       | Current state of the door of the appliance                           |
+| info                | Switch               | Read       | Signals information, check appliance for details                     |
+| failure             | Switch               | Read       | Signals failure, check appliance for details                         |
+| switch              | Switch               | Write      | Switch the appliance on or off                                       |
+| target              | Number:Temperature   | Read       | Temperature of the selected program (10 °C = cold)                   |
+| spinningspeed       | String               | Read       | Spinning speed in the program running on the appliance               |
+| energyConsumption   | Number:Energy        | Read       | Energy consumption by the currently running program on the appliance |
+| waterConsumption    | Number:Volume        | Read       | Water consumption by the currently running program on the appliance  |
+| laundryWeight       | Number:Mass          | Read       | Weight of the laundry inside the appliance                           |
 
 ##### Programs
 
@@ -426,49 +441,49 @@ Bridge miele:xgw3000:home [ipAddress="192.168.0.18", interface="192.168.0.5"] {
 ## items/miele.items
 
 ```java
-String Dishwasher_State                                     {channel="miele:dishwasher:home:dishwasher:state"}
-Number Dishwasher_RawState                                  {channel="miele:dishwasher:home:dishwasher:rawState"}
-String Dishwasher_Program "Program [%s]"                    {channel="miele:dishwasher:home:dishwasher:program"}
-String Dishwasher_Phase "Phase [%s]"                        {channel="miele:dishwasher:home:dishwasher:phase"}
-DateTime Dishwasher_ElapsedTime "Elapsed time" <time>       {channel="miele:dishwasher:home:dishwasher:elapsed"}
-DateTime Dishwasher_FinishTime "Remaining time" <time>      {channel="miele:dishwasher:home:dishwasher:finish"}
-Number:Power Dishwasher_PowerConsumption                    {channel="miele:dishwasher:home:dishwasher:powerConsumption"}
-Number:Volume Dishwasher_WaterConsumption                   {channel="miele:dishwasher:home:dishwasher:waterConsumption"}
+String Dishwasher_State                                       {channel="miele:dishwasher:home:dishwasher:state"}
+Number Dishwasher_RawState                                    {channel="miele:dishwasher:home:dishwasher:rawState"}
+String Dishwasher_Program "Program [%s]"                      {channel="miele:dishwasher:home:dishwasher:program"}
+String Dishwasher_Phase "Phase [%s]"                          {channel="miele:dishwasher:home:dishwasher:phase"}
+Number:Time Dishwasher_ElapsedTime "Elapsed time" <time>      {channel="miele:dishwasher:home:dishwasher:elapsed"}
+Number:Time Dishwasher_FinishTime "Remaining time" <time>     {channel="miele:dishwasher:home:dishwasher:finish"}
+Number:Energy Dishwasher_EnergyConsumption                    {channel="miele:dishwasher:home:dishwasher:energyConsumption"}
+Number:Volume Dishwasher_WaterConsumption                     {channel="miele:dishwasher:home:dishwasher:waterConsumption"}
 
-String Fridge_State                                         {channel="miele:fridge:home:fridge:state"}
-Contact Fridge_Door                                         {channel="miele:fridge:home:fridge:door"}
-Switch Fridge_SuperCool                                     {channel="miele:fridge:home:fridge:supercool"}
-Number:Temperature Fridge_CurrentTemperature <temperature>  {channel="miele:fridge:home:fridge:current"}
-Number:Temperature Fridge_TargetTemperature  <temperature>  {channel="miele:fridge:home:fridge:target"}
-Switch Fridge_Start                                         {channel="miele:fridge:home:fridge:start"}
+String Fridge_State                                           {channel="miele:fridge:home:fridge:state"}
+Contact Fridge_Door                                           {channel="miele:fridge:home:fridge:door"}
+Switch Fridge_SuperCool                                       {channel="miele:fridge:home:fridge:supercool"}
+Number:Temperature Fridge_CurrentTemperature <temperature>    {channel="miele:fridge:home:fridge:current"}
+Number:Temperature Fridge_TargetTemperature  <temperature>    {channel="miele:fridge:home:fridge:target"}
+Switch Fridge_Start                                           {channel="miele:fridge:home:fridge:start"}
 
-String Oven_State                                           {channel="miele:oven:home:oven:state"}
-Number Oven_RawState                                        {channel="miele:oven:home:oven:rawState"}
-String Oven_Program "Program [%s]"                          {channel="miele:oven:home:oven:program"}
-String Oven_Phase "Phase [%s]"                              {channel="miele:oven:home:oven:phase"}
-DateTime Oven_ElapsedTime "Elapsed time" <time>             {channel="miele:oven:home:oven:elapsed"}
-DateTime Oven_FinishTime "Remaining time" <time>            {channel="miele:oven:home:oven:finish"}
-Number:Temperature Oven_CurrentTemperature <temperature>    {channel="miele:oven:home:oven:measured"}
-Number:Temperature Oven_TargetTemperature <temperature>     {channel="miele:oven:home:oven:target"}
-Switch Oven_Stop                                            {channel="miele:oven:home:oven:stop"}
+String Oven_State                                             {channel="miele:oven:home:oven:state"}
+Number Oven_RawState                                          {channel="miele:oven:home:oven:rawState"}
+String Oven_Program "Program [%s]"                            {channel="miele:oven:home:oven:program"}
+String Oven_Phase "Phase [%s]"                                {channel="miele:oven:home:oven:phase"}
+Number:Time Oven_ElapsedTime "Elapsed time" <time>            {channel="miele:oven:home:oven:elapsed"}
+Number:Time Oven_FinishTime "Remaining time" <time>           {channel="miele:oven:home:oven:finish"}
+Number:Temperature Oven_CurrentTemperature <temperature>      {channel="miele:oven:home:oven:measured"}
+Number:Temperature Oven_TargetTemperature <temperature>       {channel="miele:oven:home:oven:target"}
+Switch Oven_Stop                                              {channel="miele:oven:home:oven:stop"}
 
-String WashingMachine_State                                 {channel="miele:washingmachine:home:washingmachine:state"}
-Number WashingMachine_RawState                              {channel="miele:washingmachine:home:washingmachine:rawState"}
-String WashingMachine_Program "Program [%s]"                {channel="miele:washingmachine:home:washingmachine:program"}
-String WashingMachine_Phase "Phase [%s]"                    {channel="miele:washingmachine:home:washingmachine:phase"}
-Number:Temperature WashingMachine_Temperature <temperature> {channel="miele:washingmachine:home:washingmachine:target"}
-String WashingMachine_SpinningSpeed                         {channel="miele:washingmachine:home:washingmachine:spinningspeed"}
-DateTime WashingMachine_ElapsedTime "Elapsed time" <time>   {channel="miele:washingmachine:home:washingmachine:elapsed"}
-DateTime WashingMachine_FinishTime "Remaining time" <time>  {channel="miele:washingmachine:home:washingmachine:finish"}
-Number:Power WashingMachine_PowerConsumption                {channel="miele:washingmachine:home:washingmachine:powerConsumption"}
-Number:Volume WashingMachine_WaterConsumption               {channel="miele:washingmachine:home:washingmachine:waterConsumption"}
+String WashingMachine_State                                   {channel="miele:washingmachine:home:washingmachine:state"}
+Number WashingMachine_RawState                                {channel="miele:washingmachine:home:washingmachine:rawState"}
+String WashingMachine_Program "Program [%s]"                  {channel="miele:washingmachine:home:washingmachine:program"}
+String WashingMachine_Phase "Phase [%s]"                      {channel="miele:washingmachine:home:washingmachine:phase"}
+Number:Temperature WashingMachine_Temperature <temperature>   {channel="miele:washingmachine:home:washingmachine:target"}
+String WashingMachine_SpinningSpeed                           {channel="miele:washingmachine:home:washingmachine:spinningspeed"}
+Number:Time WashingMachine_ElapsedTime "Elapsed time" <time>  {channel="miele:washingmachine:home:washingmachine:elapsed"}
+Number:Time WashingMachine_FinishTime "Remaining time" <time> {channel="miele:washingmachine:home:washingmachine:finish"}
+Number:Energy WashingMachine_EnergyConsumption                {channel="miele:washingmachine:home:washingmachine:energyConsumption"}
+Number:Volume WashingMachine_WaterConsumption                 {channel="miele:washingmachine:home:washingmachine:waterConsumption"}
 
-String TumbleDryer_State                                    {channel="miele:tumbledryer:home:tumbledryer:state"}
-Number TumbleDryer_RawState                                 {channel="miele:tumbledryer:home:tumbledryer:rawState"}
-String TumbleDryer_Program "Program [%s]"                   {channel="miele:tumbledryer:home:tumbledryer:program"}
-String TumbleDryer_Phase "Phase [%s]"                       {channel="miele:tumbledryer:home:tumbledryer:phase"}
-DateTime TumbleDryer_ElapsedTime "Elapsed time" <time>      {channel="miele:tumbledryer:home:tumbledryer:elapsed"}
-DateTime TumbleDryer_FinishTime "Remaining time" <time>     {channel="miele:tumbledryer:home:tumbledryer:finish"}
+String TumbleDryer_State                                      {channel="miele:tumbledryer:home:tumbledryer:state"}
+Number TumbleDryer_RawState                                   {channel="miele:tumbledryer:home:tumbledryer:rawState"}
+String TumbleDryer_Program "Program [%s]"                     {channel="miele:tumbledryer:home:tumbledryer:program"}
+String TumbleDryer_Phase "Phase [%s]"                         {channel="miele:tumbledryer:home:tumbledryer:phase"}
+Number:Time TumbleDryer_ElapsedTime "Elapsed time" <time>     {channel="miele:tumbledryer:home:tumbledryer:elapsed"}
+Number:Time TumbleDryer_FinishTime "Remaining time" <time>    {channel="miele:tumbledryer:home:tumbledryer:finish"}
 ```
 
 ## sitemaps/miele.sitemap
@@ -490,7 +505,7 @@ sitemap miele label="Miele" {
             Text item=WashingMachine_Phase visibility=[WashingMachine_Phase!=UNDEF]
             Text item=WashingMachine_ElapsedTime
             Text item=WashingMachine_FinishTime
-            Text item=WashingMachine_PowerConsumption
+            Text item=WashingMachine_EnergyConsumption
             Text item=WashingMachine_WaterConsumption
         }
         Text item=TumbleDryer_State label="Tumble Dryer [%s]" icon="dryer" {
@@ -504,7 +519,7 @@ sitemap miele label="Miele" {
             Text itemDishwasher_Phase visibility=[Dishwasher_Phase!=UNDEF]
             Text item=Dishwasher_ElapsedTime
             Text item=Dishwasher_FinishTime
-            Text item=Dishwasher_PowerConsumption
+            Text item=Dishwasher_EnergyConsumption
             Text item=Dishwasher_WaterConsumption
         }
         Text item=Fridge_CurrentTemperature label="Fridge" icon="climate" {

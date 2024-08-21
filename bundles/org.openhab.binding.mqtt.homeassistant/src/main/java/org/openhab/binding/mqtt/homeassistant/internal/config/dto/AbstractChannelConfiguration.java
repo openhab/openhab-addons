@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -33,8 +33,9 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public abstract class AbstractChannelConfiguration {
     public static final char PARENT_TOPIC_PLACEHOLDER = '~';
+    private static final String DEFAULT_THING_NAME = "Home Assistant Device";
 
-    protected String name;
+    protected @Nullable String name;
 
     protected String icon = "";
     protected int qos; // defaults to 0 according to HA specification
@@ -54,6 +55,9 @@ public abstract class AbstractChannelConfiguration {
     protected String payloadNotAvailable = "offline";
     @SerializedName("availability_template")
     protected @Nullable String availabilityTemplate;
+
+    @SerializedName("enabled_by_default")
+    protected boolean enabledByDefault = true;
 
     /**
      * A list of MQTT topics subscribed to receive availability (online/offline) updates. Must not be used together with
@@ -90,6 +94,9 @@ public abstract class AbstractChannelConfiguration {
         if (result == null) {
             result = name;
         }
+        if (result == null) {
+            result = DEFAULT_THING_NAME;
+        }
         return result;
     }
 
@@ -124,7 +131,7 @@ public abstract class AbstractChannelConfiguration {
         return properties;
     }
 
-    public String getName() {
+    public @Nullable String getName() {
         return name;
     }
 
@@ -166,6 +173,10 @@ public abstract class AbstractChannelConfiguration {
     @Nullable
     public String getAvailabilityTemplate() {
         return availabilityTemplate;
+    }
+
+    public boolean isEnabledByDefault() {
+        return enabledByDefault;
     }
 
     @Nullable

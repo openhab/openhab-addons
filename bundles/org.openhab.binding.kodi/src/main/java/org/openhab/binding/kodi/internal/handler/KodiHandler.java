@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Paul Frank - Initial contribution
  * @author Christoph Weitkamp - Added channels for opening PVR TV or Radio streams
- * @author Andreas Reinhardt & Christoph Weitkamp - Added channels for thumbnail and fanart
+ * @author Andreas Reinhardt and Christoph Weitkamp - Added channels for thumbnail and fanart
  * @author Christoph Weitkamp - Improvements for playing audio notifications
  * @author Meng Yiqi - Added selection of audio and subtitle
  */
@@ -134,8 +134,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
 
     private int getIntConfigParameter(String key, int defaultValue) {
         Object obj = this.getConfig().get(key);
-        if (obj instanceof Number) {
-            return ((Number) obj).intValue();
+        if (obj instanceof Number numberValue) {
+            return numberValue.intValue();
         } else if (obj instanceof String) {
             return Integer.parseInt(obj.toString());
         }
@@ -160,8 +160,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_VOLUME:
-                if (command instanceof PercentType) {
-                    connection.setVolume(((PercentType) command).intValue());
+                if (command instanceof PercentType percentCommand) {
+                    connection.setVolume(percentCommand.intValue());
                 } else if (command.equals(IncreaseDecreaseType.INCREASE)) {
                     connection.increaseVolume();
                 } else if (command.equals(IncreaseDecreaseType.DECREASE)) {
@@ -213,8 +213,8 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_PLAYNOTIFICATION:
-                if (command instanceof StringType) {
-                    playNotificationSoundURI((StringType) command);
+                if (command instanceof StringType stringCommand) {
+                    playNotificationSoundURI(stringCommand, true);
                     updateState(CHANNEL_PLAYNOTIFICATION, UnDefType.UNDEF);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     updateState(CHANNEL_PLAYNOTIFICATION, UnDefType.UNDEF);
@@ -307,14 +307,14 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
             case CHANNEL_AUDIO_CODEC:
                 break;
             case CHANNEL_AUDIO_INDEX:
-                if (command instanceof DecimalType) {
-                    connection.setAudioStream(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    connection.setAudioStream(decimalCommand.intValue());
                 }
                 break;
             case CHANNEL_VIDEO_CODEC:
             case CHANNEL_VIDEO_INDEX:
-                if (command instanceof DecimalType) {
-                    connection.setVideoStream(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    connection.setVideoStream(decimalCommand.intValue());
                 }
                 break;
             case CHANNEL_SUBTITLE_ENABLED:
@@ -325,13 +325,13 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
                 }
                 break;
             case CHANNEL_SUBTITLE_INDEX:
-                if (command instanceof DecimalType) {
-                    connection.setSubtitle(((DecimalType) command).intValue());
+                if (command instanceof DecimalType decimalCommand) {
+                    connection.setSubtitle(decimalCommand.intValue());
                 }
                 break;
             case CHANNEL_CURRENTTIME:
-                if (command instanceof QuantityType) {
-                    connection.setTime(((QuantityType<?>) command).intValue());
+                if (command instanceof QuantityType quantityCommand) {
+                    connection.setTime(quantityCommand.intValue());
                 }
                 break;
             case CHANNEL_CURRENTTIMEPERCENTAGE:
@@ -456,12 +456,15 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
      * Play the notification by 1) saving the state of the player, 2) stopping the current
      * playlist item, 3) adding the notification as a new playlist item, 4) playing the new
      * playlist item, and 5) restoring the player to its previous state.
+     * set manageVolume to true if the binding must handle volume change by itself
      */
-    public void playNotificationSoundURI(StringType uri) {
+    public void playNotificationSoundURI(StringType uri, boolean manageVolume) {
         // save the current state of the player
         logger.trace("Saving current player state");
         KodiPlayerState playerState = new KodiPlayerState();
-        playerState.setSavedVolume(connection.getVolume());
+        if (manageVolume) {
+            playerState.setSavedVolume(connection.getVolume());
+        }
         playerState.setPlaylistID(connection.getActivePlaylist());
         playerState.setSavedState(connection.getState());
 
@@ -482,10 +485,12 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         }
 
         // set notification sound volume
-        logger.trace("Setting up player for notification");
-        int notificationVolume = getNotificationSoundVolume().intValue();
-        connection.setVolume(notificationVolume);
-        waitForVolume(notificationVolume);
+        if (manageVolume) {
+            logger.trace("Setting up player for notification");
+            int notificationVolume = getNotificationSoundVolume().intValue();
+            connection.setVolume(notificationVolume);
+            waitForVolume(notificationVolume);
+        }
 
         // add the notification uri to the playlist and play it
         logger.trace("Playing notification");
@@ -504,8 +509,10 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
         waitForPlaylistState(KodiPlaylistState.REMOVED);
 
         // restore previous volume
-        connection.setVolume(playerState.getSavedVolume());
-        waitForVolume(playerState.getSavedVolume());
+        if (manageVolume) {
+            connection.setVolume(playerState.getSavedVolume());
+            waitForVolume(playerState.getSavedVolume());
+        }
 
         // resume playing save playlist item if player wasn't stopped
         logger.trace("Restoring player state");
@@ -551,10 +558,10 @@ public class KodiHandler extends BaseThingHandler implements KodiEventListener {
      */
     private boolean waitForState(KodiState state) {
         int timeoutMaxCount = getConfigAs(KodiConfig.class).getNotificationTimeout().intValue(), timeoutCount = 0;
-        logger.trace("Waiting up to {} ms for state '{}' to be set ...", timeoutMaxCount * 100, state);
+        logger.trace("Waiting up to {} ms for state '{}' to be set ...", timeoutMaxCount * 1000, state);
         while (!state.equals(connection.getState()) && timeoutCount < timeoutMaxCount) {
             try {
-                Thread.sleep(100);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 break;
             }

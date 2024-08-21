@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,6 +21,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Scott Hanson - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ChromecastActions.class)
 @ThingActionsScope(name = "chromecast")
 @NonNullByDefault
 public class ChromecastActions implements ThingActions {
@@ -50,7 +53,7 @@ public class ChromecastActions implements ThingActions {
             logger.warn("Handler is null, cannot play.");
             return false;
         } else {
-            return handler.playURL(url, null);
+            return handler.playURL(null, url, null);
         }
     }
 
@@ -68,7 +71,7 @@ public class ChromecastActions implements ThingActions {
             logger.warn("Handler is null, cannot tweet.");
             return false;
         } else {
-            return handler.playURL(url, mediaType);
+            return handler.playURL(null, url, mediaType);
         }
     }
 
@@ -82,8 +85,8 @@ public class ChromecastActions implements ThingActions {
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ChromecastHandler) {
-            this.handler = (ChromecastHandler) handler;
+        if (handler instanceof ChromecastHandler chromecastHandler) {
+            this.handler = chromecastHandler;
         }
     }
 

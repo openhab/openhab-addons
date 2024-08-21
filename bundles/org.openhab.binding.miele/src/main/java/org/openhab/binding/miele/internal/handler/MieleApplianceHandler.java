@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.miele.internal.handler;
 import static org.openhab.binding.miele.internal.MieleBindingConstants.*;
 
 import java.time.Instant;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
@@ -38,6 +37,8 @@ import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -192,7 +193,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
             if (bridgeHandler != null) {
                 bridgeHandler.unregisterApplianceStatusListener(applianceId, this);
             }
-            applianceId = null;
+            this.applianceId = null;
         }
         startTimeStabilizer.clear();
         finishTimeStabilizer.clear();
@@ -264,8 +265,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                     byte[] extendedStateBytes = DeviceUtil.stringToBytes(dp.Value);
                     logger.trace("Extended device state for {}: {}", getThing().getUID(),
                             DeviceUtil.bytesToHex(extendedStateBytes));
-                    if (this instanceof ExtendedDeviceStateListener) {
-                        ((ExtendedDeviceStateListener) this).onApplianceExtendedStateChanged(extendedStateBytes);
+                    if (this instanceof ExtendedDeviceStateListener listener) {
+                        listener.onApplianceExtendedStateChanged(extendedStateBytes);
                     }
                 }
                 return;
@@ -335,9 +336,7 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
         try {
             long minutesFromNow = Long.valueOf(value);
             if (minutesFromNow > 0) {
-                ZonedDateTime remaining = ZonedDateTime.ofInstant(Instant.ofEpochSecond(minutesFromNow * 60),
-                        ZoneId.of("UTC"));
-                updateState(channelUid, new DateTimeType(remaining.withZoneSameLocal(timeZoneProvider.getTimeZone())));
+                updateState(channelUid, new QuantityType<>(minutesFromNow, Units.MINUTE));
                 return;
             }
         } catch (NumberFormatException e) {
@@ -365,7 +364,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
 
         // Switch is trigger channel, but current state can be deduced from state.
         ChannelUID channelUid = new ChannelUID(getThing().getUID(), SWITCH_CHANNEL_ID);
-        State state = OnOffType.from(dp.Value.equals(String.valueOf(STATE_RUNNING)));
+        State state = OnOffType.from(dp.Value.equals(String.valueOf(STATE_RUNNING))
+                || dp.Value.equals(String.valueOf(STATE_END)) || dp.Value.equals(String.valueOf(STATE_RINSE_HOLD)));
         logger.trace("Update state of {} to {} through '{}'", channelUid, state, dp.Name);
         updateState(channelUid, state);
     }
@@ -442,8 +442,8 @@ public abstract class MieleApplianceHandler<E extends Enum<E> & ApplianceChannel
                 return null;
             }
             ThingHandler handler = bridge.getHandler();
-            if (handler instanceof MieleBridgeHandler) {
-                this.bridgeHandler = (MieleBridgeHandler) handler;
+            if (handler instanceof MieleBridgeHandler mieleBridgeHandler) {
+                this.bridgeHandler = mieleBridgeHandler;
             }
         }
         return this.bridgeHandler;

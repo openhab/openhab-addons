@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,9 +17,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.snmp.internal.types.SnmpChannelMode;
+import org.openhab.binding.snmp.internal.types.SnmpDatatype;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.State;
@@ -38,6 +41,7 @@ import org.snmp4j.smi.VariableBinding;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@NonNullByDefault
 public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
 
     @Test
@@ -45,11 +49,23 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
         VariableBinding variable;
 
         variable = handleCommandSwitchChannel(SnmpDatatype.STRING, OnOffType.ON, "on", "off", true);
+
+        if (variable == null) {
+            fail("'variable' is null");
+            return;
+        }
+
         assertEquals(new OID(TEST_OID), variable.getOid());
         assertTrue(variable.getVariable() instanceof OctetString);
         assertEquals("on", ((OctetString) variable.getVariable()).toString());
 
         variable = handleCommandSwitchChannel(SnmpDatatype.STRING, OnOffType.OFF, "on", "off", true);
+
+        if (variable == null) {
+            fail("'variable' is null");
+            return;
+        }
+
         assertEquals(new OID(TEST_OID), variable.getOid());
         assertTrue(variable.getVariable() instanceof OctetString);
         assertEquals("off", ((OctetString) variable.getVariable()).toString());
@@ -61,8 +77,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
     @Test
     public void testSwitchChannelsProperlyUpdatingOnValue() throws IOException {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.STRING, "on", "off");
-        PDU responsePDU = new PDU(PDU.RESPONSE,
-                Collections.singletonList(new VariableBinding(new OID(TEST_OID), new OctetString("on"))));
+        PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID), new OctetString("on"))));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
         verifyResponse(OnOffType.ON);
@@ -71,8 +86,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
     @Test
     public void testSwitchChannelsProperlyUpdatingOffValue() throws IOException {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.INT32, "0", "3");
-        PDU responsePDU = new PDU(PDU.RESPONSE,
-                Collections.singletonList(new VariableBinding(new OID(TEST_OID), new Integer32(3))));
+        PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID), new Integer32(3))));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
         verifyResponse(OnOffType.OFF);
@@ -82,8 +96,8 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
     public void testSwitchChannelsProperlyUpdatingHexValue() throws IOException {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.HEXSTRING, "AA bb 11",
                 "cc ba 1d");
-        PDU responsePDU = new PDU(PDU.RESPONSE, Collections
-                .singletonList(new VariableBinding(new OID(TEST_OID), OctetString.fromHexStringPairs("aabb11"))));
+        PDU responsePDU = new PDU(PDU.RESPONSE,
+                List.of(new VariableBinding(new OID(TEST_OID), OctetString.fromHexStringPairs("aabb11"))));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
         verifyResponse(OnOffType.ON);
@@ -92,8 +106,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
     @Test
     public void testSwitchChannelsIgnoresArbitraryValue() throws IOException {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.COUNTER64, "0", "12223");
-        PDU responsePDU = new PDU(PDU.RESPONSE,
-                Collections.singletonList(new VariableBinding(new OID(TEST_OID), new Counter64(17))));
+        PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID), new Counter64(17))));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
         verify(thingHandlerCallback, never()).stateUpdated(eq(CHANNEL_UID), any());
@@ -103,8 +116,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
     @Test
     public void testSwitchChannelSendsUndefExceptionValue() throws IOException {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.COUNTER64, "0", "12223");
-        PDU responsePDU = new PDU(PDU.RESPONSE,
-                Collections.singletonList(new VariableBinding(new OID(TEST_OID), Null.noSuchInstance)));
+        PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID), Null.noSuchInstance)));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
         verifyResponse(UnDefType.UNDEF);
@@ -114,8 +126,7 @@ public class SwitchChannelTest extends AbstractSnmpTargetHandlerTest {
     public void testSwitchChannelSendsConfiguredExceptionValue() throws IOException {
         setup(SnmpBindingConstants.CHANNEL_TYPE_UID_SWITCH, SnmpChannelMode.READ, SnmpDatatype.COUNTER64, "0", "12223",
                 "OFF");
-        PDU responsePDU = new PDU(PDU.RESPONSE,
-                Collections.singletonList(new VariableBinding(new OID(TEST_OID), Null.noSuchInstance)));
+        PDU responsePDU = new PDU(PDU.RESPONSE, List.of(new VariableBinding(new OID(TEST_OID), Null.noSuchInstance)));
         ResponseEvent event = new ResponseEvent("test", null, null, responsePDU, null);
         thingHandler.onResponse(event);
         verifyResponse(OnOffType.OFF);

@@ -3,19 +3,21 @@
 Z-Way is a software to configure and control a Z-Wave network.
 The software comes with a full stack from Z-Wave transceiver with certified firmware to a REST API on high level.
 
-Z-Way comes in three parts [cf. [Z-Wave.Me]([Z-Wave.Me](https://www.z-wave.me/index.php?id=1))]:
+[Z-Way](https://www.z-wave.me/z-way) comes in three parts:
 
--   a firmware that runs on the Z-Wave transceiver chip
--   the communication stack that runs on different host Operating Systems
--   an automation engine and optionally a web server to implement a User Interface
+- a firmware that runs on the Z-Wave transceiver chip
+- the communication stack that runs on different host Operating Systems
+- an automation engine and optionally a web server to implement a User Interface
 
 All parts together represents a smart home controller for Z-Wave.
 
-The entire infrastructure is maintained and developed by [Z-Wave.Me](https://www.z-wave.me/index.php?id=1) with the help of a large community.
+The entire infrastructure is maintained and developed by [Z-Wave.Me](https://www.z-wave.me/) with the help of a large community.
+
+A detailed step-by-step description of the binding configuration is also available on the [Z-Wave.Me Support site](https://help.z-wave.me/en/knowledge_base/art/149/cat/88/)
 
 Please note the **known issues** below.
 
-### Approach
+## Approach
 
 The idea behind is the integration of Z-Wave through a bridge (Z-Way controller).
 The existing, certified Z-Way stack can be used to build, configure and control the Z-Wave network.
@@ -33,19 +35,19 @@ In Z-Way there are devices which represent physical devices and (virtual) device
 The difference is that physical devices usually have several functions.
 Z-Way server constructs (virtual) devices for each function, such as motion sensors or door contacts.
 In openHAB, these functions are bundled into physical devices and represented as things with channels for each function.
-This type of thing is a *Z-Wave Device*.
-On the other hand all virtual devices are mapped to *Z-Way Virtual Devices* with exactly one channel.
+This type of thing is a _Z-Wave Device_.
+On the other hand all virtual devices are mapped to _Z-Way Virtual Devices_ with exactly one channel.
 
--   *Z-Way Server* (Bridge) represents a bridge with general settings and communication tasks.
--   *Z-Way Virtual Device* represents one (virtual) device with the corresponding channel. A bridge is necessary as an intermediary between openHAB thing and Z-Way device.
--   *Z-Wave Device* represents a device of real world. Each device function will be mapped to a separate channel. The bridge is necessary as an intermediary between openHAB thing and Z-Way device.
+- _Z-Way Server_ (Bridge) represents a bridge with general settings and communication tasks.
+- _Z-Way Virtual Device_ represents one (virtual) device with the corresponding channel. A bridge is necessary as an intermediary between openHAB thing and Z-Way device.
+- _Z-Wave Device_ represents a device of real world. Each device function will be mapped to a separate channel. The bridge is necessary as an intermediary between openHAB thing and Z-Way device.
 
 ## Discovery
 
 A discovery service for Z-Way servers scans local network and must always be started manually.
 Z-Way doesn't support any discovery protocol like UPnP for this purpose.
 That is why first all IP addresses in local network are checked on port 8083.
-If the server answers, a ZAutomation request (*/ZAutomation/api/v1/status*) is performed to ensure, the found server runs Z-Way.
+If the server answers, a ZAutomation request (_/ZAutomation/api/v1/status_) is performed to ensure, the found server runs Z-Way.
 
 Another discovery service provides available devices (a configured bridge is necessary).
 The device discovery service is performed at a specified interval, but can also be started manually.
@@ -76,7 +78,7 @@ Besides the username and password all required Z-Way information are found durin
 
 Only the Z-Way server can be configured textual:
 
-```
+```java
 Bridge zway:zwayServer:192_168_2_42 [ zwayServerIpAddress="localhost", zwayServerPort=8083, zwayServerProtocol="http", zwayServerUsername="admin", zwayServerPassword="admin", pollingInterval=3600 ] {
     // associated things have to be created with the UI
 }
@@ -88,7 +90,6 @@ Bridge zway:zwayServer:192_168_2_42 [ zwayServerIpAddress="localhost", zwayServe
 |--------------------|-----------|---------|-----------------------------|
 | deviceId           | X         |         | Device ID of virtual device |
 | bridge reference   | X         |         |                             |
-
 
 ### Z-Wave Device
 
@@ -110,7 +111,7 @@ The following channels are currently supported.
 | sensorHumidity         | Number    | Humidity      | SensorMultilevel - humidity                                                                                                                 |
 | sensorBarometer        | Number    | Pressure      | SensorMultilevel - barometer                                                                                                                |
 | sensorUltraviolet      | Number    | Light         | SensorMultilevel - ultraviolet                                                                                                              |
-| sensorCO2              | Number    | CarbonDioxide | SensorMultilevel - *Special case:* no probe type for carbon dioxide sensors available - probe title *CO2 Level* acts as selection criterion |
+| sensorCO2              | Number    | CarbonDioxide | SensorMultilevel - _Special case:_ no probe type for carbon dioxide sensors available - probe title _CO2 Level_ acts as selection criterion |
 | sensorEnergy           | Number    | Energy        | SensorMultilevel - energy                                                                                                                   |
 | sensorMeterKWh         | Number    | Energy        | SensorMultilevel - meterElectric_kilowatt_per_hour                                                                                          |
 | sensorMeterW           | Number    | Energy        | SensorMultilevel - meterElectric_watt                                                                                                       |
@@ -120,14 +121,14 @@ The following channels are currently supported.
 | sensorTamper           | Switch    | Alarm         | SensorBinary - tamper                                                                                                                       |
 | sensorDoorWindow       | Contact   | Contact       | SensorBinary - door-window                                                                                                                  |
 | sensorMotion           | Switch    | Motion        | SensorBinary - general_purpose, motion                                                                                                      |
-| switchPowerOutlet      | Switch    | PowerOutlet   | SwitchBinary - *Special case:* no probe type for power outlet available - icon *switch* acts as selection criterion                         |
+| switchPowerOutlet      | Switch    | PowerOutlet   | SwitchBinary - _Special case:_ no probe type for power outlet available - icon _switch_ acts as selection criterion                         |
 | switchColorTemperature | Dimmer    | ColorLight    | SwitchMultilevel - switchColor_soft_white, switchColor_cold_white                                                                           |
 | thermostatMode         | Switch    | Temperature   | SwitchBinary - thermostat_mode                                                                                                              |
 
 Currently unsupported Z-Way probe types:
 
--   SensorBinary: cooling, all alarm types (resulting from Z-Wave command class AlarmSensor(deprecated) and Alarm)
--   SensorMultilevel: meterElectric_pulse_count, meterElectric_voltage, meterElectric_ampere, meterElectric_power_factor
+- SensorBinary: cooling, all alarm types (resulting from Z-Wave command class AlarmSensor(deprecated) and Alarm)
+- SensorMultilevel: meterElectric_pulse_count, meterElectric_voltage, meterElectric_ampere, meterElectric_power_factor
 
 ### Universial channels for the devices
 
@@ -145,7 +146,6 @@ The following channels represent universial channels if no further device inform
 | switchControl    | Switch    | Switch      | SwitchControl, ToggleButton, SwitchToggle |
 | thermostat       | Number    | Temperature | Thermostat                                |
 | sensorDiscrete   | Number    | -           | SensorDiscrete                            |
-
 
 Unsupported Z-Way device types: Camera, SensorMultiline, Text. The integration of these types isn't planned.
 
@@ -167,7 +167,7 @@ Based on the location ID of Z-Way device, the name of the Z-Way room is then all
 
 ### Known issues
 
--   The Z-Way Binding only works, when simple mode of item linking is enabled during thing creation.
+- The Z-Way Binding only works, when simple mode of item linking is enabled during thing creation.
 
 ### Structure of Z-Way Binding
 
@@ -175,14 +175,14 @@ Based on the location ID of Z-Way device, the name of the Z-Way room is then all
 
 ### Features
 
--   Discovery of the Z-Way server and devices
--   Control of the Z-Wave devices in openHAB
--   Receive updates of sensor data and actuator states in openHAB
+- Discovery of the Z-Way server and devices
+- Control of the Z-Wave devices in openHAB
+- Receive updates of sensor data and actuator states in openHAB
 
 ### Restrictions
 
--   Z-Way device types (especially the probe types) supported by openHAB channels with detailed information (scale types and so on) are not complete.
--   Configuration of the Z-Wave network by the binding is currently not possible (physical device configuration)
--   Only polling is available. Further versions will contain other mechanisms under usage of the WebSocket implementation of Z-Way or MQTT.
+- Z-Way device types (especially the probe types) supported by openHAB channels with detailed information (scale types and so on) are not complete.
+- Configuration of the Z-Wave network by the binding is currently not possible (physical device configuration)
+- Only polling is available. Further versions will contain other mechanisms under usage of the WebSocket implementation of Z-Way or MQTT.
 
 ![BMWi](doc/BMWi_4C_Gef_en.jpg)

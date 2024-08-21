@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.solaredge.internal;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -100,5 +99,16 @@ public class SolarEdgeBindingConstants {
     public static final long WEB_REQUEST_INTERVAL = TimeUnit.SECONDS.toMillis(5);
     public static final int WEB_REQUEST_QUEUE_MAX_SIZE = 20;
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_GENERIC);
+    // Status Keys
+    public static final String STATUS_INVALID_SOLAR_ID = "@text/status.invalid.solarId";
+    public static final String STATUS_INVALID_TOKEN = "@text/status.invalid.token";
+    public static final String STATUS_UNKNOWN_ERROR = "@text/status.unknown.error";
+    public static final String STATUS_INVALID_TOKEN_LENGTH = "@text/status.invalid.token.length";
+    public static final String STATUS_INVALID_API_KEY_LENGTH = "@text/status.invalid.api.key.length";
+    public static final String STATUS_REQUEST_LIMIT_EXCEEDED = "@text/status.request.limit.exceeded [\""
+            + WEB_REQUEST_PUBLIC_API_DAY_LIMIT + "\"]";
+    public static final String STATUS_NO_METER_CONFIGURED = "@text/status.no.meter.configured";
+    public static final String STATUS_WAITING_FOR_LOGIN = "@text/status.waiting.for.login";
+
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_GENERIC);
 }

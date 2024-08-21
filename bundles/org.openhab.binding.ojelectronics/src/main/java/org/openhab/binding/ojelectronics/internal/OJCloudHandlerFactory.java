@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,6 @@ package org.openhab.binding.ojelectronics.internal;
 
 import static org.openhab.binding.ojelectronics.internal.BindingConstants.THING_TYPE_OJCLOUD;
 
-import java.util.Collections;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -40,7 +39,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.ojelectronics", service = ThingHandlerFactory.class)
 public class OJCloudHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_OJCLOUD);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OJCLOUD);
 
     private final HttpClient httpClient;
 
@@ -65,8 +64,7 @@ public class OJCloudHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected @Nullable ThingHandler createHandler(Thing thing) {
         if (SUPPORTED_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
-            OJCloudHandler handler = new OJCloudHandler((Bridge) thing, httpClient);
-            return handler;
+            return new OJCloudHandler((Bridge) thing, httpClient);
         }
         return null;
     }

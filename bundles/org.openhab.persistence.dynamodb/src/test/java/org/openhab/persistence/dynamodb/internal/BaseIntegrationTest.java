@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,6 @@ import org.mockito.Mockito;
 import org.openhab.core.common.registry.RegistryChangeListener;
 import org.openhab.core.i18n.UnitProvider;
 import org.openhab.core.internal.i18n.I18nProviderImpl;
-import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.GroupItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
@@ -93,28 +92,15 @@ public class BaseIntegrationTest extends JavaTest {
     protected static final Unit<Dimensionless> DIMENSIONLESS_ITEM_UNIT = Units.ONE;
     private static @Nullable URI endpointOverride;
 
-    protected static UnitProvider UNIT_PROVIDER;
+    protected static final UnitProvider UNIT_PROVIDER;
     static {
         ComponentContext context = Mockito.mock(ComponentContext.class);
         BundleContext bundleContext = Mockito.mock(BundleContext.class);
-        Hashtable<String, Object> properties = new Hashtable<String, Object>();
+        Hashtable<String, Object> properties = new Hashtable<>();
         properties.put("measurementSystem", SIUnits.MEASUREMENT_SYSTEM_NAME);
         when(context.getProperties()).thenReturn(properties);
         when(context.getBundleContext()).thenReturn(bundleContext);
         UNIT_PROVIDER = new I18nProviderImpl(context);
-    }
-
-    /**
-     * Whether tests are run in Continuous Integration environment, i.e. Jenkins or Travis CI
-     *
-     * Travis CI is detected using CI environment variable, see https://docs.travis-ci.com/user/environment-variables/
-     * Jenkins CI is detected using JENKINS_HOME environment variable
-     *
-     * @return
-     */
-    protected static boolean isRunningInCI() {
-        String jenkinsHome = System.getenv("JENKINS_HOME");
-        return "true".equals(System.getenv("CI")) || (jenkinsHome != null && !jenkinsHome.isBlank());
     }
 
     private static boolean credentialsSet() {
@@ -136,10 +122,9 @@ public class BaseIntegrationTest extends JavaTest {
 
     @Override
     protected void waitForAssert(Runnable runnable) {
-        // Longer timeouts and slower polling with real dynamodb
-        // Non-CI tests against local server are with lower timeout.
-        waitForAssert(runnable, hasFakeServer() ? isRunningInCI() ? 30_000L : 10_000L : 120_000L,
-                hasFakeServer() ? 500 : 1000L);
+        // Use longer timeouts and slower polling with real dynamodb when credentials are set.
+        // Otherwise, test against a local server with lower timeouts.
+        waitForAssert(runnable, hasFakeServer() ? 30_000L : 120_000L, hasFakeServer() ? 500 : 1000L);
     }
 
     @BeforeAll
@@ -147,12 +132,12 @@ public class BaseIntegrationTest extends JavaTest {
         ITEMS.put("dimmer", new DimmerItem("dimmer"));
         ITEMS.put("number", new NumberItem("number"));
 
-        NumberItem temperatureItem = new NumberItem("Number:Temperature", "numberTemperature");
+        NumberItem temperatureItem = new NumberItem("Number:Temperature", "numberTemperature", UNIT_PROVIDER);
         ITEMS.put("numberTemperature", temperatureItem);
         GroupItem groupTemperature = new GroupItem("groupNumberTemperature", temperatureItem);
         ITEMS.put("groupNumberTemperature", groupTemperature);
 
-        NumberItem dimensionlessItem = new NumberItem("Number:Dimensionless", "numberDimensionless");
+        NumberItem dimensionlessItem = new NumberItem("Number:Dimensionless", "numberDimensionless", UNIT_PROVIDER);
         ITEMS.put("numberDimensionless", dimensionlessItem);
         GroupItem groupDimensionless = new GroupItem("groupNumberDimensionless", dimensionlessItem);
         ITEMS.put("groupNumberDimensionless", groupDimensionless);
@@ -170,8 +155,6 @@ public class BaseIntegrationTest extends JavaTest {
         ITEMS.put("location", new LocationItem("location"));
         ITEMS.put("player_playpause", new PlayerItem("player_playpause"));
         ITEMS.put("player_rewindfastforward", new PlayerItem("player_rewindfastforward"));
-
-        injectItemServices();
     }
 
     @BeforeAll
@@ -192,7 +175,7 @@ public class BaseIntegrationTest extends JavaTest {
      * @param tablePrefix
      * @return new persistence service
      */
-    protected synchronized static DynamoDBPersistenceService newService(@Nullable Boolean legacy, boolean cleanLocal,
+    protected static synchronized DynamoDBPersistenceService newService(@Nullable Boolean legacy, boolean cleanLocal,
             @Nullable URI overrideLocalURI, @Nullable String table, @Nullable String tablePrefix) {
         final DynamoDBPersistenceService service;
         Map<String, Object> config = getConfig(legacy, table, tablePrefix);
@@ -248,7 +231,6 @@ public class BaseIntegrationTest extends JavaTest {
                 if (item == null) {
                     throw new ItemNotFoundException(name);
                 }
-                injectItemServices(item);
                 return item;
             }
 
@@ -326,21 +308,10 @@ public class BaseIntegrationTest extends JavaTest {
             public void removeRegistryHook(RegistryHook<Item> hook) {
                 throw new UnsupportedOperationException();
             }
-        }, localEndpointOverride);
+        }, UNIT_PROVIDER, localEndpointOverride);
 
         service.activate(null, config);
         return service;
-    }
-
-    protected static void injectItemServices() {
-        ITEMS.values().forEach(BaseIntegrationTest::injectItemServices);
-    }
-
-    protected static void injectItemServices(Item item) {
-        if (item instanceof GenericItem) {
-            GenericItem genericItem = (GenericItem) item;
-            genericItem.setUnitProvider(UNIT_PROVIDER);
-        }
     }
 
     private static Map<String, Object> getConfig(@Nullable Boolean legacy, @Nullable String table,

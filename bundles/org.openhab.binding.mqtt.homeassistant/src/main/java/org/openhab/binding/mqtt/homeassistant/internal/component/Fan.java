@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,6 +15,7 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.values.OnOffValue;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 
 import com.google.gson.annotations.SerializedName;
@@ -40,6 +41,8 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
 
         @SerializedName("state_topic")
         protected @Nullable String stateTopic;
+        @SerializedName("command_template")
+        protected @Nullable String commandTemplate;
         @SerializedName("command_topic")
         protected String commandTopic = "";
         @SerializedName("payload_on")
@@ -48,15 +51,15 @@ public class Fan extends AbstractComponent<Fan.ChannelConfiguration> {
         protected String payloadOff = "OFF";
     }
 
-    public Fan(ComponentFactory.ComponentConfiguration componentConfiguration) {
-        super(componentConfiguration, ChannelConfiguration.class);
+    public Fan(ComponentFactory.ComponentConfiguration componentConfiguration, boolean newStyleChannels) {
+        super(componentConfiguration, ChannelConfiguration.class, newStyleChannels);
 
         OnOffValue value = new OnOffValue(channelConfiguration.payloadOn, channelConfiguration.payloadOff);
-        buildChannel(SWITCH_CHANNEL_ID, value, channelConfiguration.getName(),
+        buildChannel(SWITCH_CHANNEL_ID, ComponentChannelType.SWITCH, value, getName(),
                 componentConfiguration.getUpdateListener())
-                        .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
-                        .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
-                                channelConfiguration.getQos())
-                        .build();
+                .stateTopic(channelConfiguration.stateTopic, channelConfiguration.getValueTemplate())
+                .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
+                        channelConfiguration.getQos(), channelConfiguration.commandTemplate)
+                .build();
     }
 }

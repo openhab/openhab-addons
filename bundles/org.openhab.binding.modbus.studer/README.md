@@ -2,7 +2,7 @@
 
 This extension adds support for the Studer protocol.
 
-Studer Innotec, founded in 1987 by Roland Studer, is an ISO certified company that develops and manufactures inverters, inverter/chargers and MPPT solar charge controllers to communicate over the Modbus protocol entirely in Switzerland
+Studer Innotec, founded in 1987 by Roland Studer, is an ISO-certified company that develops and manufactures inverters, inverter/chargers and MPPT solar charge controllers to communicate over the Modbus protocol entirely in Switzerland.
 
 For a list of certified products see this page: <https://www.studer-innotec.com/>
 
@@ -13,7 +13,7 @@ Note, that the things will show up under the Modbus binding.
 
 | Thing Type IDs | Description                                                                                                          | Picture                             |
 |----------------|----------------------------------------------------------------------------------------------------------------------|-------------------------------------|
-| bsp            | For BSP that offer a highly precise measuring for Xtender, VarioTrack and VarioString systems                        | ![BSP](doc/bsp.png)                 |
+| bsp            | For BSP that offers a highly precise measuring for Xtender, VarioTrack and VarioString systems                       | ![BSP](doc/bsp.png)                 |
 | xtender        | For the Xtender models for system capacities from 0.5kVA to 72kVA that allow for the optimal use of available energy | ![Xtender](doc/xtender.png)         |
 | variotrack     | For the VarioTrack models of MPPT solar charge controllers for systems with solar PV capacity from 1 - 75kWp         | ![VarioTrack](doc/variotrack.png)   |
 | variostring    | For the VarioString models of MPPT solar charge controllers for systems with solar PV capacity from 4                | ![VarioString](doc/variostring.png) |
@@ -29,7 +29,6 @@ Please refer to your device's vendor documentation how model blocks are laid for
 
 OR: If there is no offset configured (default config) on the dip switch in RS-485, the following are mostly interesting for getting things up and running:
 
-|--------|-----------------------|
 | Offset | Device                |
 |--------|-----------------------|
 | 10     | Multicast Xtender     |
@@ -39,11 +38,10 @@ OR: If there is no offset configured (default config) on the dip switch in RS-48
 | 40     | Multicast Variostring |
 | 41-55  | Variostring 1-15      |
 | 61     | BSP/Xcom-CAN          |
-|--------|-----------------------|
 
-More Details about that can be found in the technical specification and appendix for Studer RTU Modbus protocol. Check default config (dip switches 1 and 2 off) while configuring the pin-out on the RS-485!
+More Details about that can be found in the technical specification and appendix for Studer RTU Modbus protocol. Check the default config (dip switches 1 and 2 off) while configuring the pin-out on the RS-485!
 
-Multicast writes on any devices of given class, but reads only on the first available device (Not Summary!). As currently there are no writes available, 10/20/40 is useless for now.
+Multicast writes on any devices of given class, but reads only on the first available device (Not Summary!). Currently, there are no writes available, 10/20/40 is useless for now.
 
 The following parameters are valid for all thing types:
 
@@ -54,7 +52,7 @@ The following parameters are valid for all thing types:
 
 ## Channels
 
-The following Channels, and their associated channel types are shown below divided by device.
+The following channels and their associated channel types are shown below divided by device.
 
 ### BSP
 
@@ -70,7 +68,7 @@ All channels read for a BSP device
 
 ### Xtender
 
-All channels read for a Xtender device
+All channels read for an Xtender device
 
 | Channel           | Type                     | Description             |
 | ----------------- | ------------------------ | ----------------------- |

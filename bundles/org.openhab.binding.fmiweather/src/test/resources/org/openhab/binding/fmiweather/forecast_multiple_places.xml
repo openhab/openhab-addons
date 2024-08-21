@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- when regenerating test results, update date below (otherwise forecast will be nan) -->
-<!-- https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::hirlam::surface::point::multipointcoverage&latlon=60.09726,19.93481&latlon=61.09726,19.9&starttime=2021-05-27T10:10:00Z&endtime=2021-05-30T20:10:00Z&timestep=360&parameters=Temperature,Humidity -->
+<!-- https://opendata.fmi.fi/wfs?service=WFS&version=2.0.0&request=getFeature&storedquery_id=fmi::forecast::harmonie::surface::point::multipointcoverage&latlon=60.09726,19.93481&latlon=61.09726,19.9&starttime=2022-11-13T10:10:00Z&endtime=2022-11-16T20:10:00Z&timestep=360&parameters=Temperature,Humidity -->
 <wfs:FeatureCollection
-    timeStamp="2021-05-27T17:41:39Z"
+    timeStamp="2022-11-12T11:06:10Z"
     numberMatched="1"
     numberReturned="1"
     xmlns:wfs="http://www.opengis.net/wfs/2.0"
@@ -26,68 +26,68 @@
     http://www.opengis.net/swe/2.0 http://schemas.opengis.net/sweCommon/2.0/swe.xsd
     http://inspire.ec.europa.eu/schemas/omso/3.0 https://inspire.ec.europa.eu/schemas/omso/3.0/SpecialisedObservations.xsd
     http://inspire.ec.europa.eu/schemas/ompr/3.0 https://inspire.ec.europa.eu/schemas/ompr/3.0/Processes.xsd
-    http://xml.fmi.fi/namespace/om/atmosphericfeatures/1.1 http://xml.fmi.fi/schema/om/atmosphericfeatures/1.1/atmosphericfeatures.xsd">
+    http://xml.fmi.fi/namespace/om/atmosphericfeatures/1.1 https://xml.fmi.fi/schema/om/atmosphericfeatures/1.1/atmosphericfeatures.xsd">
 
     <wfs:member>
-        <omso:GridSeriesObservation gml:id="WFS-cmhTLeo3jidbXDhaWbELfUba1KOJTowuYWbbpdOs2_llx4efR060aeWzDtdOufXlmw48rp1w36d3R0629dnTTw36d3THv7ZeWHPlhaWLLn07qmnbltS_wpXbxvHCY2PlzrUi0Kcd06aMmrhnZd2Spp25bUv8KV88eTRHBm07sk7Lh5ZefSth2ackhmZ8u_Tk51nM2DRi3Zsqxp2Gc6NeXz338sl_f2y8u_LT0w4tmWJpbMvbLsqeeGWpmbN.PDsy1qZtN.NJXdemZw1tuHxE08.mHdjy0rV0IDW26efPTuz1MvjpWNOwzmVt35MuyszRp5bMO1lcMPLDtrWqZdvDLyw9OvLLWhI67dOTT08tzn038suTj1y8vN_TkrzCzbdLp1m38suPDz6OnWjTy2Ydrp1z68s2HHldOuG_Tu6OnW3rs6aeG_Tu6Y9_bLyw58rQ6aduWn0y8J0Vmh007ctrfuy1jVakMA--">
-                     <om:phenomenonTime>
+        <omso:GridSeriesObservation gml:id="WFS-8qcSxDq_NAcNVmfLmsZYRbIcMXyJTowu4WbbpdOs2_llx4efR060YeW3fu05XTrn15ZsOPK6dcN.nd0dOtvXZ008N.nd0x7.2Xlhz5YWliy59O6pp25bU38Kta8bxwmNj5c61ItCnHdOmjNk2Z2XdkqaduW1N_CrYPHk0RwZtO7JOy4eWXn0rYdmnJIZmfLv05OdZzNg0Yt2bKsadhnOjXl899_LJf39svLvy09MOLZliaWzL2y7KnnhlqZmzfjw7MtambTfjSV3XpmcNbbh8RNPPph3Y8tK1dCA1tunnz07s9TL46VjTsM5lbd.TLsr40YeW3fu05b_PHh3ZNO7D204b_PryzYceVlcMPLDtrWqZdvDLyw9OvLLWhI67dOTT08tzn038suTj1y8vN_Tkr3CzbdLp1m38suPDz6OnWjDy2792nK6dc.vLNhx5XTrhv07ujp1t67Omnhv07umPf2y8sOfK0Omnblp9MvCdFZodNO3La37stY1WpDA">
+	                 <om:phenomenonTime>
                 <gml:TimePeriod gml:id="time-interval-1-1">
-                    <gml:beginPosition>2021-05-27T12:00:00Z</gml:beginPosition>
-                    <gml:endPosition>2021-05-30T18:00:00Z</gml:endPosition>
+                    <gml:beginPosition>2022-11-13T12:00:00Z</gml:beginPosition>
+                    <gml:endPosition>2022-11-16T18:00:00Z</gml:endPosition>
                 </gml:TimePeriod>
             </om:phenomenonTime>
             <om:resultTime>
                 <gml:TimeInstant gml:id="time-1-1">
-                    <gml:timePosition>2021-05-27T15:06:06Z</gml:timePosition>
+                    <gml:timePosition>2022-11-12T09:10:13Z</gml:timePosition>
                 </gml:TimeInstant>
             </om:resultTime>
 
-        <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/hirlam"/>
+	    <om:procedure xlink:href="http://xml.fmi.fi/inspire/process/harmonie_scandinavia_surface"/>
             <om:parameter>
                 <om:NamedValue>
-                    <om:name xlink:href="http://xml.fmi.fi/inspire/process/hirlam"/>
+                    <om:name xlink:href="http://xml.fmi.fi/inspire/process/harmonie_scandinavia_surface"/>
                     <om:value>
                         <gml:TimeInstant gml:id="analysis-time-1-1">
-                            <gml:timePosition>2021-05-27T12:00:00Z</gml:timePosition>
+                            <gml:timePosition>2022-11-12T06:00:00Z</gml:timePosition>
                         </gml:TimeInstant>
                     </om:value>
                 </om:NamedValue>
             </om:parameter>
             <om:observedProperty  xlink:href="https://opendata.fmi.fi/meta?observableProperty=forecast&amp;param=Temperature,Humidity&amp;language=eng"/>
-                    <om:featureOfInterest>
+	                <om:featureOfInterest>
                 <sams:SF_SpatialSamplingFeature gml:id="enn-s-1-1-">
           <sam:sampledFeature>
-        <target:LocationCollection gml:id="sampled-target-1-1">
-            <target:member>
-            <target:Location gml:id="forloc-geoid-3041732-pos">
-                <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">3041732</gml:identifier>
-            <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Mariehamn</gml:name>
-            <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">3041732</gml:name>
-            <target:representativePoint xlink:href="#point-3041732"/>
-            <target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Finland</target:country>
-            <target:timezone>Europe/Mariehamn</target:timezone>
-            <target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Maarianhamina</target:region>
-            </target:Location></target:member>
-            <target:member>
-            <target:Location gml:id="forloc-geoid-NaN-pos">
-                <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">NaN</gml:identifier>
-            <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">19.9,61.0973</gml:name>
-            <gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">NaN</gml:name>
-            <target:representativePoint xlink:href="#point-NaN"/>
-            <target:country codeSpace="http://xml.fmi.fi/namespace/location/country"></target:country>
-            <target:timezone>Europe/Helsinki</target:timezone>
-
-            </target:Location></target:member>
-        </target:LocationCollection>
-       </sam:sampledFeature>
+		<target:LocationCollection gml:id="sampled-target-1-1">
+		    <target:member>
+		    <target:Location gml:id="forloc-geoid-3041732-pos">
+		        <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">3041732</gml:identifier>
+			<gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">Mariehamn</gml:name>
+			<gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">3041732</gml:name>
+			<target:representativePoint xlink:href="#point-3041732"/>
+			<target:country codeSpace="http://xml.fmi.fi/namespace/location/country">Finland</target:country>
+			<target:timezone>Europe/Mariehamn</target:timezone>
+			<target:region codeSpace="http://xml.fmi.fi/namespace/location/region">Maarianhamina</target:region>	   			
+		    </target:Location></target:member>
+		    <target:member>
+		    <target:Location gml:id="forloc-geoid-NaN-pos">
+		        <gml:identifier codeSpace="http://xml.fmi.fi/namespace/stationcode/geoid">NaN</gml:identifier>
+			<gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/name">19.9,61.0973</gml:name>
+			<gml:name codeSpace="http://xml.fmi.fi/namespace/locationcode/geoid">NaN</gml:name>
+			<target:representativePoint xlink:href="#point-NaN"/>
+			<target:country codeSpace="http://xml.fmi.fi/namespace/location/country"></target:country>
+			<target:timezone>Europe/Helsinki</target:timezone>
+				   			
+		    </target:Location></target:member>
+		</target:LocationCollection>
+ 	   </sam:sampledFeature>
                 <sams:shape>
                     <gml:MultiPoint gml:id="sf-1-1-">
-                        <gml:pointMembers>
-                           <gml:Point gml:id="point-3041732" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                        <gml:pointMembers>	
+                           <gml:Point gml:id="point-3041732" srsName="http://www.opengis.net/def/crs/EPSG/0/4326" srsDimension="2">
                                <gml:name>Mariehamn</gml:name>
                                <gml:pos>60.09726 19.93481 </gml:pos>
-                           </gml:Point>
-                           <gml:Point gml:id="point-NaN" srsName="http://www.opengis.net/def/crs/EPSG/0/4258" srsDimension="2">
+                           </gml:Point>	
+                           <gml:Point gml:id="point-NaN" srsName="http://www.opengis.net/def/crs/EPSG/0/4326" srsDimension="2">
                                <gml:name>19.9,61.0973</gml:name>
                                <gml:pos>61.09726 19.90000 </gml:pos>
                            </gml:Point>
@@ -99,36 +99,36 @@
               <om:result>
         <gmlcov:MultiPointCoverage gml:id="mpcv-1-1">
           <gml:domainSet>
-            <gmlcov:SimpleMultiPoint gml:id="mp-1-1" srsName="http://xml.fmi.fi/gml/crs/compoundCRS.php?crs=4258&amp;time=unixtime" srsDimension="3">
+            <gmlcov:SimpleMultiPoint gml:id="mp-1-1" srsName="http://xml.fmi.fi/gml/crs/compoundCRS.php?crs=4326&amp;time=unixtime" srsDimension="3">
               <gmlcov:positions>
-                60.09726 19.93481  1622116800
-                60.09726 19.93481  1622138400
-                60.09726 19.93481  1622160000
-                60.09726 19.93481  1622181600
-                60.09726 19.93481  1622203200
-                60.09726 19.93481  1622224800
-                60.09726 19.93481  1622246400
-                60.09726 19.93481  1622268000
-                60.09726 19.93481  1622289600
-                60.09726 19.93481  1622311200
-                60.09726 19.93481  1622332800
-                60.09726 19.93481  1622354400
-                60.09726 19.93481  1622376000
-                60.09726 19.93481  1622397600                
-                61.09726 19.90000  1622116800
-                61.09726 19.90000  1622138400
-                61.09726 19.90000  1622160000
-                61.09726 19.90000  1622181600
-                61.09726 19.90000  1622203200
-                61.09726 19.90000  1622224800
-                61.09726 19.90000  1622246400
-                61.09726 19.90000  1622268000
-                61.09726 19.90000  1622289600
-                61.09726 19.90000  1622311200
-                61.09726 19.90000  1622332800
-                61.09726 19.90000  1622354400
-                61.09726 19.90000  1622376000
-                61.09726 19.90000  1622397600
+                60.09726 19.93481  1668340800
+                60.09726 19.93481  1668362400
+                60.09726 19.93481  1668384000
+                60.09726 19.93481  1668405600
+                60.09726 19.93481  1668427200
+                60.09726 19.93481  1668448800
+                60.09726 19.93481  1668470400
+                60.09726 19.93481  1668492000
+                60.09726 19.93481  1668513600
+                60.09726 19.93481  1668535200
+                60.09726 19.93481  1668556800
+                60.09726 19.93481  1668578400
+                60.09726 19.93481  1668600000
+                60.09726 19.93481  1668621600
+                61.09726 19.90000  1668340800
+                61.09726 19.90000  1668362400
+                61.09726 19.90000  1668384000
+                61.09726 19.90000  1668405600
+                61.09726 19.90000  1668427200
+                61.09726 19.90000  1668448800
+                61.09726 19.90000  1668470400
+                61.09726 19.90000  1668492000
+                61.09726 19.90000  1668513600
+                61.09726 19.90000  1668535200
+                61.09726 19.90000  1668556800
+                61.09726 19.90000  1668578400
+                61.09726 19.90000  1668600000
+                61.09726 19.90000  1668621600
                 </gmlcov:positions>
             </gmlcov:SimpleMultiPoint>
           </gml:domainSet>
@@ -136,34 +136,34 @@
             <gml:DataBlock>
               <gml:rangeParameters/>
               <gml:doubleOrNilReasonTupleList>
-                7.75 93.76
-                7.94 93.24
-                6.72 98.22
-                8.22 93.93
-                11.37 75.78
-                9.69 58.91
-                6.42 80.42
-                9.52 54.11
-                11.04 40.29
-                9.69 46.42
-                NaN NaN
-                NaN NaN
-                NaN NaN
-                NaN NaN                
-                7.46 93.44
-                6.56 95.3
-                6.2 96.15
-                5.15 93.77
-                5.05 93.0
-                5.96 82.1
-                6.2 81.95
-                5.94 81.37
-                5.69 85.41
-                5.47 87.8
-                NaN NaN
-                NaN NaN
-                NaN NaN
-                NaN NaN
+                9.2 73.9 
+                4.8 98.0 
+                7.4 92.7 
+                5.6 94.9 
+                7.7 91.4 
+                7.9 92.1 
+                7.6 95.0 
+                NaN NaN 
+                NaN NaN 
+                NaN NaN 
+                NaN NaN 
+                NaN NaN 
+                NaN NaN 
+                NaN NaN 
+                7.6 84.8 
+                7.6 89.9 
+                8.0 92.4 
+                6.2 99.3 
+                7.6 88.3 
+                7.3 88.7 
+                6.1 93.9 
+                NaN NaN 
+                NaN NaN 
+                NaN NaN 
+                NaN NaN 
+                NaN NaN 
+                NaN NaN 
+                NaN NaN 
                 </gml:doubleOrNilReasonTupleList>
             </gml:DataBlock>
           </gml:rangeSet>
@@ -183,5 +183,5 @@
 
         </omso:GridSeriesObservation>
     </wfs:member>
-
+  
 </wfs:FeatureCollection>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="solax"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="local-connect-inverter">
+
+		<label>Local Connect Inverter</label>
+		<description>The inverter representation that supports local connections via HTTP</description>
+
+		<channels>
+			<!-- Single phase specific channels -->
+			<channel id="inverter-output-power" typeId="system.electric-power">
+				<label>Inverter Input/Output Power</label>
+				<description>Power to/from the inverter</description>
+			</channel>
+			<channel id="inverter-current" typeId="system.electric-current">
+				<label>Inverter Input/Output Current</label>
+				<description>Current to/from the inverter</description>
+			</channel>
+			<channel id="inverter-voltage" typeId="system.electric-voltage">
+				<label>Inverter Voltage</label>
+				<description>Voltage of the inverter</description>
+			</channel>
+			<channel id="inverter-frequency" typeId="frequency"/>
+
+			<!-- Three phase specific channels -->
+			<channel id="inverter-output-power-phase1" typeId="system.electric-power">
+				<label>Inverter Input/Output Power Phase 1</label>
+				<description>Power to/from the inverter phase 1</description>
+			</channel>
+			<channel id="inverter-output-power-phase2" typeId="system.electric-power">
+				<label>Inverter Input/Output Power Phase 2</label>
+				<description>Power to/from the inverter phase 2</description>
+			</channel>
+			<channel id="inverter-output-power-phase3" typeId="system.electric-power">
+				<label>Inverter Input/Output Power Phase 3</label>
+				<description>Power to/from the inverter phase 3</description>
+			</channel>
+			<channel id="inverter-total-output-power" typeId="system.electric-power">
+				<label>Inverter Input/Output Total Power</label>
+				<description>Power to/from the inverter on all phases</description>
+			</channel>
+			<channel id="inverter-current-phase1" typeId="system.electric-current">
+				<label>Inverter Input/Output Current Phase 1</label>
+				<description>Current to/from the inverter phase 1</description>
+			</channel>
+			<channel id="inverter-current-phase2" typeId="system.electric-current">
+				<label>Inverter Input/Output Current Phase 2</label>
+				<description>Current to/from the inverter phase 2</description>
+			</channel>
+			<channel id="inverter-current-phase3" typeId="system.electric-current">
+				<label>Inverter Input/Output Current Phase 3</label>
+				<description>Current to/from the inverter phase 3</description>
+			</channel>
+			<channel id="inverter-voltage-phase1" typeId="system.electric-voltage">
+				<label>Inverter Voltage Phase 1</label>
+				<description>Voltage of the inverter's phase 1</description>
+			</channel>
+			<channel id="inverter-voltage-phase2" typeId="system.electric-voltage">
+				<label>Inverter Voltage Phase 2</label>
+				<description>Voltage of the inverter's phase 2</description>
+			</channel>
+			<channel id="inverter-voltage-phase3" typeId="system.electric-voltage">
+				<label>Inverter Voltage Phase 3</label>
+				<description>Voltage of the inverter's phase 3</description>
+			</channel>
+			<channel id="inverter-frequency-phase1" typeId="frequency">
+				<label>Inverter Frequency Phase 1</label>
+				<description>Frequency of the inverter's phase 1</description>
+			</channel>
+			<channel id="inverter-frequency-phase2" typeId="frequency">
+				<label>Inverter Frequency Phase 2</label>
+				<description>Frequency of the inverter's phase 2</description>
+			</channel>
+			<channel id="inverter-frequency-phase3" typeId="frequency">
+				<label>Inverter Frequency Phase 3</label>
+				<description>Frequency of the inverter's phase 3</description>
+			</channel>
+
+			<!-- Generic channels -->
+			<channel id="pv1-voltage" typeId="system.electric-voltage">
+				<label>PV 1 Voltage</label>
+				<description>Electric voltage of PV String 1</description>
+			</channel>
+			<channel id="pv2-voltage" typeId="system.electric-voltage">
+				<label>PV 2 Voltage</label>
+				<description>Electric voltage of PV String 2</description>
+			</channel>
+			<channel id="pv1-current" typeId="system.electric-current">
+				<label>PV 1 Current</label>
+				<description>Electric current of PV String 1</description>
+			</channel>
+			<channel id="pv2-current" typeId="system.electric-current">
+				<label>PV 2 Current</label>
+				<description>Electric current of PV String 2</description>
+			</channel>
+			<channel id="pv1-power" typeId="system.electric-power">
+				<label>PV 1 Power</label>
+				<description>Electric power of PV String 1</description>
+			</channel>
+			<channel id="pv2-power" typeId="system.electric-power">
+				<label>PV 2 Power</label>
+				<description>Electric power of PV String 2</description>
+			</channel>
+			<channel id="pv-total-power" typeId="system.electric-power">
+				<label>PV Total Power</label>
+				<description>The sum of PV powers from all strings</description>
+			</channel>
+			<channel id="pv-total-current" typeId="system.electric-current">
+				<label>PV Total Current</label>
+				<description>The sum of PV currents from all strings</description>
+			</channel>
+
+			<channel id="inverter-temperature1" typeId="inverter-temperature">
+				<label>Inverter Temperature 1</label>
+				<description>Temperature 1 of the inverter</description>
+			</channel>
+			<channel id="inverter-temperature2" typeId="inverter-temperature">
+				<label>Inverter Temperature 2</label>
+				<description>Temperature 2 of the inverter</description>
+			</channel>
+			<channel id="inverter-workmode" typeId="inverter-workmode">
+				<label>Inverter Workmode</label>
+				<description>Inverter Workmode</description>
+			</channel>
+
+			<channel id="battery-power" typeId="system.electric-power">
+				<label>Battery Power</label>
+				<description>Power to/from the battery</description>
+			</channel>
+			<channel id="battery-current" typeId="system.electric-current">
+				<label>Battery Current</label>
+				<description>Electric current to/from the battery</description>
+			</channel>
+			<channel id="battery-voltage" typeId="system.electric-voltage">
+				<label>Battery Voltage</label>
+				<description>Electric voltage of the battery</description>
+			</channel>
+			<channel id="battery-temperature" typeId="battery-temperature">
+				<label>Battery Temperature</label>
+				<description>Temperature of the battery</description>
+			</channel>
+			<channel id="battery-level" typeId="system.battery-level">
+				<label>Battery Level</label>
+				<description>The battery state of charge in percent</description>
+			</channel>
+			<channel id="feed-in-power" typeId="system.electric-power">
+				<label>Feed-In Power</label>
+				<description>Power to/from the electricity network.</description>
+			</channel>
+
+			<channel id="power-usage" typeId="system.electric-power">
+				<label>Power Usage</label>
+				<description>Current power consumption of the building</description>
+			</channel>
+			<channel id="total-energy" typeId="system.electric-energy">
+				<label>Total Energy</label>
+				<description>Total energy output from the inverter</description>
+			</channel>
+			<channel id="total-battery-discharge-energy" typeId="system.electric-energy">
+				<label>Total Battery Discharge Energy</label>
+				<description>Total energy from the battery output</description>
+			</channel>
+			<channel id="total-battery-charge-energy" typeId="system.electric-energy">
+				<label>Total Battery Charge Energy</label>
+				<description>Total energy charged to the battery</description>
+			</channel>
+			<channel id="total-pv-energy" typeId="system.electric-energy">
+				<label>Total PV Energy</label>
+				<description>Total energy produced by the PV</description>
+			</channel>
+			<channel id="total-consumption" typeId="system.electric-energy">
+				<label>Total Consumption</label>
+				<description>Total energy consumed from the building</description>
+			</channel>
+			<channel id="total-feed-in-energy" typeId="system.electric-energy">
+				<label>Total Feed-In Consumption</label>
+				<description>Total energy consumed from the electricity provider</description>
+			</channel>
+			<channel id="today-energy" typeId="system.electric-energy">
+				<label>Today Energy</label>
+				<description>Energy output from the inverter for the day</description>
+			</channel>
+			<channel id="today-battery-discharge-energy" typeId="system.electric-energy">
+				<label>Today Battery Discharge Energy</label>
+				<description>Total energy from the battery output for the day</description>
+			</channel>
+			<channel id="today-battery-charge-energy" typeId="system.electric-energy">
+				<label>Today Battery Charge Energy</label>
+				<description>Total energy charged to the battery for the day</description>
+			</channel>
+			<channel id="today-feed-in-energy" typeId="system.electric-energy">
+				<label>Today Feed-In Energy</label>
+				<description>Energy consumed from the electricity provider for the day</description>
+			</channel>
+			<channel id="today-consumption" typeId="system.electric-energy">
+				<label>Today Consumption</label>
+				<description>Energy consumed for the day</description>
+			</channel>
+
+			<channel id="last-update-time" typeId="last-retrieve-time-stamp"/>
+
+			<channel id="raw-data" typeId="raw-data-type"/>
+		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">2</property>
+		</properties>
+
+		<config-description>
+			<parameter name="refreshInterval" type="integer" min="1" max="600">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>10</default>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Password for accessing the Wi-Fi module (the serial number of the Wi-Fi module)</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="hostname" type="text" required="true">
+				<label>Network Address</label>
+				<description>IP address or the host name of the Wi-Fi module</description>
+				<context>network-address</context>
+			</parameter>
+		</config-description>
+	</thing-type>
+</thing:thing-descriptions>

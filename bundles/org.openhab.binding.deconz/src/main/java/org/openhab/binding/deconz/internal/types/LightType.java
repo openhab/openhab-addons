@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Type of a light as reported by the REST API for usage in {@link org.openhab.binding.deconz.internal.dto.LightMessage}
+ * Type of a light as reported by the REST API for usage in
+ * {@link org.openhab.binding.deconz.internal.dto.LightMessage}
  *
  * @author Jan N. Klug - Initial contribution
  */
@@ -37,6 +38,7 @@ public enum LightType {
     DIMMABLE_LIGHT("Dimmable light"),
     DIMMABLE_PLUGIN_UNIT("Dimmable plug-in unit"),
     WINDOW_COVERING_DEVICE("Window covering device"),
+    WINDOW_COVERING_CONTROLLER("Window covering controller"),
     CONFIGURATION_TOOL("Configuration tool"),
     WARNING_DEVICE("Warning device"),
     DOORLOCK("Door Lock"),
@@ -46,7 +48,7 @@ public enum LightType {
             .collect(Collectors.toMap(v -> v.type, v -> v));
     private static final Logger LOGGER = LoggerFactory.getLogger(LightType.class);
 
-    private String type;
+    private final String type;
 
     LightType(String type) {
         this.type = type;

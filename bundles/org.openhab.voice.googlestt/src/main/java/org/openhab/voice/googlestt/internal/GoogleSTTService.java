@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
+import org.openhab.core.audio.utils.AudioWaveUtils;
 import org.openhab.core.auth.client.oauth2.AccessTokenResponse;
 import org.openhab.core.auth.client.oauth2.OAuthClientService;
 import org.openhab.core.auth.client.oauth2.OAuthException;
@@ -48,6 +49,7 @@ import org.osgi.framework.Constants;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
@@ -117,6 +119,14 @@ public class GoogleSTTService implements STTService {
         updateConfig();
     }
 
+    @Deactivate
+    protected void dispose() {
+        if (oAuthService != null) {
+            oAuthFactory.ungetOAuthService(SERVICE_PID);
+            oAuthService = null;
+        }
+    }
+
     @Override
     public String getId() {
         return SERVICE_ID;
@@ -135,12 +145,8 @@ public class GoogleSTTService implements STTService {
     @Override
     public Set<AudioFormat> getSupportedFormats() {
         return Set.of(
-                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 16000L),
-                new AudioFormat(AudioFormat.CONTAINER_OGG, "OPUS", null, null, null, 8000L),
-                new AudioFormat(AudioFormat.CONTAINER_OGG, "OPUS", null, null, null, 12000L),
-                new AudioFormat(AudioFormat.CONTAINER_OGG, "OPUS", null, null, null, 16000L),
-                new AudioFormat(AudioFormat.CONTAINER_OGG, "OPUS", null, null, null, 24000L),
-                new AudioFormat(AudioFormat.CONTAINER_OGG, "OPUS", null, null, null, 48000L));
+                new AudioFormat(AudioFormat.CONTAINER_NONE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 16000L),
+                new AudioFormat(AudioFormat.CONTAINER_WAVE, AudioFormat.CODEC_PCM_SIGNED, false, 16, null, 16000L));
     }
 
     @Override
@@ -157,6 +163,10 @@ public class GoogleSTTService implements STTService {
     }
 
     private void updateConfig() {
+        if (oAuthService != null) {
+            oAuthFactory.ungetOAuthService(SERVICE_PID);
+            oAuthService = null;
+        }
         String clientId = this.config.clientId;
         String clientSecret = this.config.clientSecret;
         if (!clientId.isBlank() && !clientSecret.isBlank()) {
@@ -233,10 +243,8 @@ public class GoogleSTTService implements STTService {
         // Gather stream info and send config
         AudioFormat streamFormat = audioStream.getFormat();
         RecognitionConfig.AudioEncoding streamEncoding;
-        if (AudioFormat.WAV.isCompatible(streamFormat)) {
+        if (AudioFormat.PCM_SIGNED.isCompatible(streamFormat) || AudioFormat.WAV.isCompatible(streamFormat)) {
             streamEncoding = RecognitionConfig.AudioEncoding.LINEAR16;
-        } else if (AudioFormat.OGG.isCompatible(streamFormat)) {
-            streamEncoding = RecognitionConfig.AudioEncoding.OGG_OPUS;
         } else {
             logger.debug("Unsupported format {}", streamFormat);
             return;
@@ -255,12 +263,21 @@ public class GoogleSTTService implements STTService {
         long startTime = System.currentTimeMillis();
         long maxTranscriptionMillis = (config.maxTranscriptionSeconds * 1000L);
         long maxSilenceMillis = (config.maxSilenceSeconds * 1000L);
-        int readBytes = 6400;
-        while (!aborted.get()) {
-            byte[] data = new byte[readBytes];
-            int dataN = audioStream.read(data);
+        final int bufferSize = 6400;
+        int numBytesRead;
+        int remaining = bufferSize;
+        if (AudioFormat.CONTAINER_WAVE.equals(streamFormat.getContainer())) {
+            AudioWaveUtils.removeFMT(audioStream);
+        }
+        byte[] audioBuffer = new byte[bufferSize];
+        while (!aborted.get() && !responseObserver.isDone()) {
+            numBytesRead = audioStream.read(audioBuffer, bufferSize - remaining, remaining);
             if (aborted.get()) {
                 logger.debug("Stops listening, aborted");
+                break;
+            }
+            if (numBytesRead == -1) {
+                logger.debug("End of stream");
                 break;
             }
             if (isExpiredInterval(maxTranscriptionMillis, startTime)) {
@@ -272,18 +289,17 @@ public class GoogleSTTService implements STTService {
                 logger.debug("Stops listening, max silence time reached");
                 break;
             }
-            if (dataN != readBytes) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                }
+            if (numBytesRead != remaining) {
+                remaining = remaining - numBytesRead;
                 continue;
             }
+            remaining = bufferSize;
             StreamingRecognizeRequest dataRequest = StreamingRecognizeRequest.newBuilder()
-                    .setAudioContent(ByteString.copyFrom(data)).build();
-            logger.debug("Sending audio data {}", dataN);
+                    .setAudioContent(ByteString.copyFrom(audioBuffer)).build();
+            logger.debug("Sending audio data {}", bufferSize);
             clientStream.send(dataRequest);
         }
+        audioStream.close();
     }
 
     private void sendStreamConfig(ClientStream<StreamingRecognizeRequest> clientStream,
@@ -335,6 +351,7 @@ public class GoogleSTTService implements STTService {
         private float confidenceSum = 0;
         private int responseCount = 0;
         private long lastInputTime = 0;
+        private boolean done = false;
 
         public TranscriptionListener(STTListener sttListener, GoogleSTTConfiguration config, AtomicBoolean aborted) {
             this.sttListener = sttListener;
@@ -374,7 +391,7 @@ public class GoogleSTTService implements STTService {
                     responseCount++;
                     // when in single utterance mode we can just get one final result so complete
                     if (config.singleUtteranceMode) {
-                        onComplete();
+                        done = true;
                     }
                 }
             });
@@ -388,10 +405,8 @@ public class GoogleSTTService implements STTService {
                 String transcript = transcriptBuilder.toString();
                 if (!transcript.isBlank()) {
                     sttListener.sttEventReceived(new SpeechRecognitionEvent(transcript, averageConfidence));
-                } else if (!config.noResultsMessage.isBlank()) {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
                 } else {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent("No results"));
+                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.noResultsMessage));
                 }
             }
         }
@@ -401,14 +416,12 @@ public class GoogleSTTService implements STTService {
             logger.warn("Recognition error: ", t);
             if (!aborted.getAndSet(true)) {
                 sttListener.sttEventReceived(new RecognitionStopEvent());
-                if (!config.errorMessage.isBlank()) {
-                    sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
-                } else {
-                    String errorMessage = t.getMessage();
-                    sttListener.sttEventReceived(
-                            new SpeechRecognitionErrorEvent(errorMessage != null ? errorMessage : "Unknown error"));
-                }
+                sttListener.sttEventReceived(new SpeechRecognitionErrorEvent(config.errorMessage));
             }
+        }
+
+        public boolean isDone() {
+            return done;
         }
 
         public long getLastInputTime() {

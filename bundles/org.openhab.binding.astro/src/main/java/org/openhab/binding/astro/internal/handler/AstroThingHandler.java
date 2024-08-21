@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -168,8 +167,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
      */
     public void publishChannelIfLinked(ChannelUID channelUID) {
         Planet planet = getPlanet();
-        if (isLinked(channelUID.getId()) && planet != null) {
-            final Channel channel = getThing().getChannel(channelUID.getId());
+        if (isLinked(channelUID) && planet != null) {
+            final Channel channel = getThing().getChannel(channelUID);
             if (channel == null) {
                 logger.error("Cannot find channel for {}", channelUID);
                 return;
@@ -273,8 +272,8 @@ public abstract class AstroThingHandler extends BaseThingHandler {
     private boolean isPositionalChannelLinked() {
         List<String> positionalChannels = Arrays.asList(getPositionalChannelIds());
         for (Channel channel : getThing().getChannels()) {
-            String id = channel.getUID().getId();
-            if (isLinked(id) && positionalChannels.contains(id)) {
+            ChannelUID id = channel.getUID();
+            if (isLinked(id) && positionalChannels.contains(id.getId())) {
                 return true;
             }
         }
@@ -295,8 +294,6 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     /**
      * Adds the provided {@link Job} to the queue (cannot be {@code null})
-     *
-     * @return {@code true} if the {@code job} is added to the queue, otherwise {@code false}
      */
     public void schedule(Job job, Calendar eventAt) {
         long sleepTime;
@@ -366,6 +363,6 @@ public abstract class AstroThingHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singletonList(AstroActions.class);
+        return List.of(AstroActions.class);
     }
 }

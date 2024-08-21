@@ -13,7 +13,7 @@ There are two things:
 
 ## Discovery
 
-After the ojcloud bridge is succesfully initialized all thermostats will be discovered.
+After the ojcloud bridge is successfully initialized all thermostats will be discovered.
 
 ### OJ Electronics Bridge configuration (ojcloud)
 
@@ -23,7 +23,6 @@ After the ojcloud bridge is succesfully initialized all thermostats will be disc
 | password              | password from the OJElectronics App (required)                           |
 | apiKey                | API key. You get the key from your local distributor.                    |
 | apiUrl                | URL of the API endpoint. Optional, the default value should always work. |
-| refreshDelayInSeconds | Refresh interval in seconds. Optional, the default value is 30 seconds.  |
 | customerId            | Customer ID. Optional, the default value should always work.             |
 | softwareVersion       | Software version. Optional, the default value should always work.        |
 
@@ -60,7 +59,7 @@ This example shows how to configure the OJElecttronics binding.
 
 ### demo.things
 
-```
+```java
 Bridge ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserName", password="MyPassword", apiKey="The Key" ] {
     Thing owd5 myThermostat [ serialNumber="123" ]
 }
@@ -68,17 +67,16 @@ Bridge ojelectronics:ojcloud:myCloud "My Cloud" @ "My Home" [ userName="MyUserNa
 
 ### demo.items
 
-```
+```java
 Number Bath_Floor_Temperature "Bathroom: Floor Temperature" {channel="ojelectronics:owd5:myCloud:myThermostat:floorTemperature"}
 String Bath_Mode "Bathroom: Mode" {channel="ojelectronics:owd5:myCloud:myThermostat:regulationMode"}
 ```
 
 ### demo.sitemap
 
-```
+```perl
 sitemap myHome label="my Home"{
   Text item=Bath_Floor_Temperature
   Text item=Bath_Mode
 }
 ```
-

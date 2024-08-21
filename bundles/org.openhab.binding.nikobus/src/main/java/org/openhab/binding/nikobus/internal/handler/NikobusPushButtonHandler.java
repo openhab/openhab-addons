@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -195,8 +195,8 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         }
 
         ThingHandler thingHandler = thing.getHandler();
-        if (thingHandler instanceof NikobusModuleHandler) {
-            return (NikobusModuleHandler) thingHandler;
+        if (thingHandler instanceof NikobusModuleHandler nikobusModuleHandler) {
+            return nikobusModuleHandler;
         }
         return null;
     }
@@ -256,10 +256,10 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
         }
 
         SwitchModuleGroup getGroup() {
-            if (getSegment(2).equals("1")) {
+            if ("1".equals(getSegment(2))) {
                 return FIRST;
             }
-            if (getSegment(2).equals("2")) {
+            if ("2".equals(getSegment(2))) {
                 return SECOND;
             }
             throw new IllegalArgumentException("Unexpected group found " + getSegment(2));
@@ -299,9 +299,9 @@ public class NikobusPushButtonHandler extends NikobusBaseThingHandler {
             processNext(currentTimeMillis);
         }
 
-        abstract protected void reset(long currentTimeMillis);
+        protected abstract void reset(long currentTimeMillis);
 
-        abstract protected void processNext(long currentTimeMillis);
+        protected abstract void processNext(long currentTimeMillis);
     }
 
     public static class TriggerButtonConfig {

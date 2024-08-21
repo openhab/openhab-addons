@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -162,33 +162,28 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
 
         if (id.equals(PrgConstants.CHANNEL_ZONELOWERSTOP)) {
             protocolHandler.setZoneLowerStop();
-
         } else if (id.equals(PrgConstants.CHANNEL_ZONERAISESTOP)) {
             protocolHandler.setZoneRaiseStop();
-
         } else if (id.equals(PrgConstants.CHANNEL_TIMECLOCK)) {
-            if (command instanceof DateTimeType) {
-                final ZonedDateTime zdt = ((DateTimeType) command).getZonedDateTime();
+            if (command instanceof DateTimeType dateTime) {
+                final ZonedDateTime zdt = dateTime.getZonedDateTime();
                 protocolHandler.setTime(GregorianCalendar.from(zdt));
             } else {
                 logger.error("Received a TIMECLOCK channel command with a non DateTimeType: {}", command);
             }
         } else if (id.startsWith(PrgConstants.CHANNEL_SCHEDULE)) {
-            if (command instanceof DecimalType) {
-                final int schedule = ((DecimalType) command).intValue();
+            if (command instanceof DecimalType scheduleCommand) {
+                final int schedule = scheduleCommand.intValue();
                 protocolHandler.selectSchedule(schedule);
             } else {
                 logger.error("Received a SCHEDULE channel command with a non DecimalType: {}", command);
             }
-
         } else if (id.startsWith(PrgConstants.CHANNEL_SUPERSEQUENCESTART)) {
             protocolHandler.startSuperSequence();
-
         } else if (id.startsWith(PrgConstants.CHANNEL_SUPERSEQUENCEPAUSE)) {
             protocolHandler.pauseSuperSequence();
         } else if (id.startsWith(PrgConstants.CHANNEL_SUPERSEQUENCERESUME)) {
             protocolHandler.resumeSuperSequence();
-
         } else {
             logger.error("Unknown/Unsupported Channel id: {}", id);
         }
@@ -207,16 +202,12 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
 
         if (id.equals(PrgConstants.CHANNEL_TIMECLOCK)) {
             protocolHandler.refreshTime();
-
         } else if (id.equals(PrgConstants.CHANNEL_SCHEDULE)) {
             protocolHandler.refreshSchedule();
-
         } else if (id.equals(PrgConstants.CHANNEL_SUNRISE)) {
             protocolHandler.refreshSunriseSunset();
-
         } else if (id.equals(PrgConstants.CHANNEL_SUNSET)) {
             protocolHandler.refreshSunriseSunset();
-
         } else if (id.equals(PrgConstants.CHANNEL_SUPERSEQUENCESTATUS)) {
             protocolHandler.reportSuperSequenceStatus();
         } else if (id.equals(PrgConstants.CHANNEL_SUPERSEQUENCENEXTSTEP)) {
@@ -277,7 +268,6 @@ public class PrgBridgeHandler extends BaseBridgeHandler {
                     return;
                 }
             }
-
         } catch (Exception e) {
             logger.error("Exception during connection attempt", e);
         }

@@ -132,6 +132,7 @@
 				<option value="TIVO">TIVO</option>
 				<option value="LIVETV">LIVETV</option>
 				<option value="GUIDE">GUIDE</option>
+				<option value="BACK">BACK</option>
 				<option value="INFO">INFO</option>
 				<option value="EXIT">EXIT</option>
 				<option value="THUMBSUP">THUMBSUP</option>
@@ -165,6 +166,7 @@
 				<option value="CC_ON">CC_ON</option>
 				<option value="CC_OFF">CC_OFF</option>
 				<option value="FIND_REMOTE">FIND_REMOTE</option>
+				<option value="STANDBY">STANDBY</option>
 				<option value="ASPECT_CORRECTION_FULL">ASPECT_CORRECTION_FULL</option>
 				<option value="ASPECT_CORRECTION_PANEL">ASPECT_CORRECTION_PANEL</option>
 				<option value="ASPECT_CORRECTION_ZOOM">ASPECT_CORRECTION_ZOOM</option>

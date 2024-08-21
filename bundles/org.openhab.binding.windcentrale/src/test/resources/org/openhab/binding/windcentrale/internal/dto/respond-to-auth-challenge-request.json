@@ -1,0 +1,10 @@
+{
+  "ChallengeName": "PASSWORD_VERIFIER",
+  "ClientId": "clientId123",
+  "ChallengeResponses": {
+    "USERNAME": "username@acme.com",
+    "PASSWORD_CLAIM_SECRET_BLOCK": "passwordClaimSecretBlock456",
+    "PASSWORD_CLAIM_SIGNATURE": "passwordClaimSignature789",
+    "TIMESTAMP": "Thu Apr 6 07:16:19 UTC 2023"
+  }
+}

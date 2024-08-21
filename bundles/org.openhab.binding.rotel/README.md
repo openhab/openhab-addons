@@ -4,15 +4,15 @@ This binding can be used to control a Rotel audio device like a surround process
 
 The binding supports different kinds of connections:
 
-* serial connection,
-* serial over IP connection,
-* IP connection (for models providing a network interface).
+- serial connection,
+- serial over IP connection,
+- IP connection (for models providing a network interface).
 
 The binding supports all kinds of Rotel protocols:
 
-* HEX protocol,
-* Old ASCII protocol (named v1 in the binding),
-* Recent ASCII protocol (named v2 in the binding).
+- HEX protocol,
+- Old ASCII protocol (named v1 in the binding),
+- Recent ASCII protocol (named v2 in the binding).
 
 For users without serial connector on server side, of course you can add a serial to USB adapter.
 
@@ -22,7 +22,7 @@ You can connect it for example to a Raspberry Pi and use [ser2net Linux tool](ht
 Recent devices provide a network interface (RJ45 connector).
 So you can use the device IP to connect to the device, keeping 9590 as default port.
 
-The binding has been tested with a RSP-1066 and a RSP-1570.
+The binding has been tested with an RSP-1066, an RSP-1570 and an RX-1052.
 
 ## Supported Things
 
@@ -72,6 +72,7 @@ This binding supports the following thing types:
 | rt09       | Connection to the Rotel RT-09 tuner                                           |
 | rt11       | Connection to the Rotel RT-11 tuner                                           |
 | rt1570     | Connection to the Rotel RT-1570 tuner                                         |
+| rx1052     | Connection to the Rotel RX-1052 stereo receiver                               |
 | s5         | Connection to the Rotel Michi S5 stereo amplifier                             |
 | t11        | Connection to the Rotel T11 tuner                                             |
 | t14        | Connection to the Rotel T14 tuner                                             |
@@ -95,6 +96,7 @@ The thing requires the following configuration parameters:
 | Parameter Label         | Parameter ID     | Description                                           | Accepted values |
 |-------------------------|------------------|-------------------------------------------------------|-----------------|
 | Serial Port             | serialPort       | Serial port to use for connecting to the Rotel device | |
+| Baud Rate               | baudRate         | Baud rate to use for connecting to the Rotel device   | 19200, 38400    |
 | Address                 | host             | Host name or IP address of the Rotel device (IP connection) or the machine connected to the Rotel device (serial over IP) | |
 | Port                    | port             | Communication port (IP or serial over IP). For IP connection to the Rotel device, keep the default port (9590) | |
 | Protocol Version        | Protocol         | Choose one of the two protocol versions (depends on your device firmware). Default is ASCII_V2 | ASCII_V1 or ASCII_V2 |
@@ -135,17 +137,16 @@ Some have additional parameters listed in the next table:
 | rsx1550    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5, inputLabelMulti |
 | rsx1560    | inputLabelCd, inputLabelTuner, inputLabelTape, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5, inputLabelMulti |
 | rsx1562    | inputLabelCd, inputLabelTuner, inputLabelUsb, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4, inputLabelVideo5, inputLabelVideo6, inputLabelMulti |
-
+| rx1052     | baudRate, inputLabelVideo1, inputLabelVideo2, inputLabelVideo3, inputLabelVideo4 |
 Some notes:
 
-* On Linux, you may get an error stating the serial port cannot be opened when the Rotel binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
-* Also on Linux you may have issues with the USB if using two serial USB devices e.g. Rotel and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
-* Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is Rotel device specific):
+- On Linux, you may get an error stating the serial port cannot be opened when the Rotel binding tries to load.  You can get around this by adding the `openhab` user to the `dialout` group like this: `usermod -a -G dialout openhab`.
+- Also on Linux you may have issues with the USB if using two serial USB devices e.g. Rotel and RFXcom. See the [general documentation about serial port configuration](/docs/administration/serial.html) for more on symlinking the USB ports.
+- Here is an example of ser2net.conf you can use to share your serial port /dev/ttyUSB0 on IP port 4444 using [ser2net Linux tool](https://sourceforge.net/projects/ser2net/) (take care, the baud rate is Rotel device specific):
 
-```
+```text
 4444:raw:0:/dev/ttyUSB0:19200 8DATABITS NONE 1STOPBIT
 ```
-
 
 ## Channels
 
@@ -155,7 +156,7 @@ The following channels are available:
 |--------------|---------------------|-----------|---------------------------------------|------------------------------------|
 | power, mainZone#power, allZones#power, zone2#power, zone3#power, zone4#power | Power               | Switch    | Power ON/OFF the equipment or the zone | ON, OFF                            |
 | source, mainZone#source, zone1#source, zone2#source, zone3#source, zone4#source | Source Input        | String    | Select the source input               | CD, TUNER, TAPE, VIDEO1, VIDEO2, VIDEO3, VIDEO4, VIDEO5, VIDEO6, VIDEO7, VIDEO8, USB, PCUSB, MULTI, PHONO, BLUETOOTH, AUX, AUX1, AUX2, AUX1_COAX, AUX1_OPTICAL, COAX1, COAX2, COAX3, OPTICAL1, OPTICAL2, OPTICAL3, XLR, RCD, FM, DAB, PLAYFI, IRADIO, NETWORK, INPUTA, INPUTB, INPUTC, INPUTD |
-| mainZone#recordSource | Record Source       | String    | Select the source to be recorded      | CD, TUNER, TAPE, VIDEO1, VIDEO2, VIDEO3, VIDEO4, VIDEO5, VIDEO6, USB, MAIN |
+| mainZone#recordSource | Record Source       | String    | Select the source to be recorded      | CD, TUNER, TAPE, VIDEO1, VIDEO2, VIDEO3, VIDEO4, VIDEO5, VIDEO6, USB, PHONO, MAIN |
 | dsp, mainZone#dsp | DSP Mode            | String    | Select the DSP mode                   | NONE, STEREO3, STEREO5, STEREO7, STEREO9, STEREO11, MUSIC1, MUSIC2, MUSIC3, MUSIC4, PROLOGIC, PLIICINEMA, PLIIMUSIC, PLIIGAME, PLIIXCINEMA, PLIIXMUSIC, PLIIXGAME, PLIIZ, NEO6MUSIC, NEO6CINEMA, ATMOS, NEURALX, BYPASS |
 | mainZone#volumeUpDown, zone2#volumeUpDown | Volume              | Number    | Increase or decrease the volume       | INCREASE, DECREASE, value |
 | volume, mainZone#volume, zone1#volume, zone2#volume, zone3#volume, zone4#volume | Volume              | Dimmer    | Adjust the volume                     | value between 0 and 100 |
@@ -222,6 +223,7 @@ Here are the list of channels available for each thing type:
 | rt09       | power, source, playControl, brightness                                                                  |
 | rt11       | power, source, radioPreset, brightness                                                                  |
 | rt1570     | power, source, radioPreset, brightness                                                                  |
+| rx1052     | mainZone#power, mainZone#source, mainZone#recordSource, mainZone#volume, mainZone#mute, mainZone#bass, mainZone#treble, mainZone#speakera, mainZone#speakerb, mainZone#line1, mainZone#otherCommand, zone2#power, zone2#source, zone2#volume, zone2#mute, zone3#power, zone3#source, zone3#volume, zone3#mute, zone4#power, zone4#source, zone4#volume, zone4#mute |
 | s5         | power, brightness                                                                                       |
 | t11        | power, source, radioPreset, brightness                                                                  |
 | t14        | power, source, radioPreset, brightness                                                                  |
@@ -271,6 +273,7 @@ Here are the available commands for the otherCommand channel depending on the th
 | rsx1550            | DSP_TOGGLE, PROLOGIC_TOGGLE, DOLBY_TOGGLE, PLII_PANORAMA_TOGGLE, PLII_DIMENSION_UP, PLII_DIMENSION_DOWN, PLII_CENTER_WIDTH_UP, PLII_CENTER_WIDTH_DOWN, DDEX_TOGGLE, NEO6_TOGGLE, NEXT_MODE, TUNE_UP, TUNE_DOWN, PRESET_UP, PRESET_DOWN, FREQUENCY_UP, FREQUENCY_DOWN, MEMORY, BAND_TOGGLE, AM, FM, TUNE_PRESET_TOGGLE, TUNING_MODE_SELECT, PRESET_MODE_SELECT, FREQUENCY_DIRECT, PRESET_SCAN, TUNER_DISPLAY, RDS_PTY, RDS_TP, RDS_TA, FM_MONO_TOGGLE, ZONE2_TUNE_UP, ZONE2_TUNE_DOWN, ZONE2_PRESET_UP, ZONE2_PRESET_DOWN, ZONE2_FREQUENCY_UP, ZONE2_FREQUENCY_DOWN, ZONE2_BAND_TOGGLE, ZONE2_AM, ZONE2_FM, ZONE2_TUNE_PRESET_TOGGLE, ZONE2_TUNING_MODE_SELECT, ZONE2_PRESET_MODE_SELECT, ZONE2_PRESET_SCAN, ZONE2_FM_MONO_TOGGLE, ZONE3_TUNE_UP, ZONE3_TUNE_DOWN, ZONE3_PRESET_UP, ZONE3_PRESET_DOWN, ZONE3_FREQUENCY_UP, ZONE3_FREQUENCY_DOWN, ZONE3_BAND_TOGGLE, ZONE3_AM, ZONE3_FM, ZONE3_TUNE_PRESET_TOGGLE, ZONE3_TUNING_MODE_SELECT, ZONE3_PRESET_MODE_SELECT, ZONE3_PRESET_SCAN, ZONE3_FM_MONO_TOGGLE, ZONE4_TUNE_UP, ZONE4_TUNE_DOWN, ZONE4_PRESET_UP, ZONE4_PRESET_DOWN, ZONE4_FREQUENCY_UP, ZONE4_FREQUENCY_DOWN, ZONE4_BAND_TOGGLE, ZONE4_AM, ZONE4_FM, ZONE4_TUNE_PRESET_TOGGLE, ZONE4_TUNING_MODE_SELECT, ZONE4_PRESET_MODE_SELECT, ZONE4_PRESET_SCAN, ZONE4_FM_MONO_TOGGLE, KEY1, KEY2, KEY3, KEY4, KEY5, KEY6, KEY7, KEY8, KEY9, KEY0, ZONE2_KEY1, ZONE2_KEY2, ZONE2_KEY3, ZONE2_KEY4, ZONE2_KEY5, ZONE2_KEY6, ZONE2_KEY7, ZONE2_KEY8, ZONE2_KEY9, ZONE2_KEY0, ZONE3_KEY1, ZONE3_KEY2, ZONE3_KEY3, ZONE3_KEY4, ZONE3_KEY5, ZONE3_KEY6, ZONE3_KEY7, ZONE3_KEY8, ZONE3_KEY9, ZONE3_KEY0, ZONE4_KEY1, ZONE4_KEY2, ZONE4_KEY3, ZONE4_KEY4, ZONE4_KEY5, ZONE4_KEY6, ZONE4_KEY7, ZONE4_KEY8, ZONE4_KEY9, ZONE4_KEY0, MENU, UP, DOWN, LEFT, RIGHT, ENTER, RECORD_FONCTION_SELECT, TONE_CONTROL_SELECT, DYNAMIC_RANGE, DIGITAL_INPUT_SELECT, ZONE_TOGGLE, CENTER_TRIM, SUB_TRIM, SURROUND_TRIM, CINEMA_EQ_TOGGLE, POWER_OFF_ALL_ZONES, PARTY_MODE_TOGGLE, ZONE2_PARTY_MODE_TOGGLE, ZONE3_PARTY_MODE_TOGGLE, ZONE4_PARTY_MODE_TOGGLE, OUTPUT_RESOLUTION, HDMI_AMP_MODE, HDMI_TV_MODE, RESET_FACTORY |
 | rsx1560            | DSP_TOGGLE, PROLOGIC_TOGGLE, DOLBY_TOGGLE, PLII_PANORAMA_TOGGLE, PLII_DIMENSION_UP, PLII_DIMENSION_DOWN, PLII_CENTER_WIDTH_UP, PLII_CENTER_WIDTH_DOWN, DDEX_TOGGLE, NEO6_TOGGLE, NEXT_MODE, TUNE_UP, TUNE_DOWN, PRESET_UP, PRESET_DOWN, FREQUENCY_UP, FREQUENCY_DOWN, MEMORY, BAND_TOGGLE, AM, FM, TUNE_PRESET_TOGGLE, TUNING_MODE_SELECT, PRESET_MODE_SELECT, FREQUENCY_DIRECT, PRESET_SCAN, TUNER_DISPLAY, RDS_PTY, RDS_TP, RDS_TA, FM_MONO_TOGGLE, ZONE2_TUNE_UP, ZONE2_TUNE_DOWN, ZONE2_PRESET_UP, ZONE2_PRESET_DOWN, ZONE2_FREQUENCY_UP, ZONE2_FREQUENCY_DOWN, ZONE2_BAND_TOGGLE, ZONE2_AM, ZONE2_FM, ZONE2_TUNE_PRESET_TOGGLE, ZONE2_TUNING_MODE_SELECT, ZONE2_PRESET_MODE_SELECT, ZONE2_PRESET_SCAN, ZONE2_FM_MONO_TOGGLE, ZONE3_TUNE_UP, ZONE3_TUNE_DOWN, ZONE3_PRESET_UP, ZONE3_PRESET_DOWN, ZONE3_FREQUENCY_UP, ZONE3_FREQUENCY_DOWN, ZONE3_BAND_TOGGLE, ZONE3_AM, ZONE3_FM, ZONE3_TUNE_PRESET_TOGGLE, ZONE3_TUNING_MODE_SELECT, ZONE3_PRESET_MODE_SELECT, ZONE3_PRESET_SCAN, ZONE3_FM_MONO_TOGGLE, ZONE4_TUNE_UP, ZONE4_TUNE_DOWN, ZONE4_PRESET_UP, ZONE4_PRESET_DOWN, ZONE4_FREQUENCY_UP, ZONE4_FREQUENCY_DOWN, ZONE4_BAND_TOGGLE, ZONE4_AM, ZONE4_FM, ZONE4_TUNE_PRESET_TOGGLE, ZONE4_TUNING_MODE_SELECT, ZONE4_PRESET_MODE_SELECT, ZONE4_PRESET_SCAN, ZONE4_FM_MONO_TOGGLE, KEY1, KEY2, KEY3, KEY4, KEY5, KEY6, KEY7, KEY8, KEY9, KEY0, ZONE2_KEY1, ZONE2_KEY2, ZONE2_KEY3, ZONE2_KEY4, ZONE2_KEY5, ZONE2_KEY6, ZONE2_KEY7, ZONE2_KEY8, ZONE2_KEY9, ZONE2_KEY0, ZONE3_KEY1, ZONE3_KEY2, ZONE3_KEY3, ZONE3_KEY4, ZONE3_KEY5, ZONE3_KEY6, ZONE3_KEY7, ZONE3_KEY8, ZONE3_KEY9, ZONE3_KEY0, ZONE4_KEY1, ZONE4_KEY2, ZONE4_KEY3, ZONE4_KEY4, ZONE4_KEY5, ZONE4_KEY6, ZONE4_KEY7, ZONE4_KEY8, ZONE4_KEY9, ZONE4_KEY0, MENU, UP, DOWN, LEFT, RIGHT, ENTER, RECORD_FONCTION_SELECT, TONE_CONTROL_SELECT, DYNAMIC_RANGE, DIGITAL_INPUT_SELECT, ZONE_TOGGLE, CENTER_TRIM, SUB_TRIM, SURROUND_TRIM, CINEMA_EQ_TOGGLE, POWER_OFF_ALL_ZONES, PARTY_MODE_TOGGLE, ZONE2_PARTY_MODE_TOGGLE, ZONE3_PARTY_MODE_TOGGLE, ZONE4_PARTY_MODE_TOGGLE, OUTPUT_RESOLUTION, HDMI_AMP_MODE, HDMI_TV_MODE, RESET_FACTORY |
 | rsx1562            | STEREO_BYPASS_TOGGLE, DSP_TOGGLE, PROLOGIC_TOGGLE, DOLBY_TOGGLE, PLII_PANORAMA_TOGGLE, PLII_DIMENSION_UP, PLII_DIMENSION_DOWN, PLII_CENTER_WIDTH_UP, PLII_CENTER_WIDTH_DOWN, DDEX_TOGGLE, NEO6_TOGGLE, NEXT_MODE, TUNE_UP, TUNE_DOWN, PRESET_UP, PRESET_DOWN, FREQUENCY_UP, FREQUENCY_DOWN, MEMORY, BAND_TOGGLE, AM, FM, TUNE_PRESET_TOGGLE, TUNING_MODE_SELECT, PRESET_MODE_SELECT, FREQUENCY_DIRECT, PRESET_SCAN, TUNER_DISPLAY, RDS_PTY, RDS_TP, RDS_TA, FM_MONO_TOGGLE, ZONE2_TUNE_UP, ZONE2_TUNE_DOWN, ZONE2_PRESET_UP, ZONE2_PRESET_DOWN, ZONE2_FREQUENCY_UP, ZONE2_FREQUENCY_DOWN, ZONE2_BAND_TOGGLE, ZONE2_AM, ZONE2_FM, ZONE2_TUNE_PRESET_TOGGLE, ZONE2_TUNING_MODE_SELECT, ZONE2_PRESET_MODE_SELECT, ZONE2_PRESET_SCAN, ZONE2_FM_MONO_TOGGLE, ZONE3_TUNE_UP, ZONE3_TUNE_DOWN, ZONE3_PRESET_UP, ZONE3_PRESET_DOWN, ZONE3_FREQUENCY_UP, ZONE3_FREQUENCY_DOWN, ZONE3_BAND_TOGGLE, ZONE3_AM, ZONE3_FM, ZONE3_TUNE_PRESET_TOGGLE, ZONE3_TUNING_MODE_SELECT, ZONE3_PRESET_MODE_SELECT, ZONE3_PRESET_SCAN, ZONE3_FM_MONO_TOGGLE, ZONE4_TUNE_UP, ZONE4_TUNE_DOWN, ZONE4_PRESET_UP, ZONE4_PRESET_DOWN, ZONE4_FREQUENCY_UP, ZONE4_FREQUENCY_DOWN, ZONE4_BAND_TOGGLE, ZONE4_AM, ZONE4_FM, ZONE4_TUNE_PRESET_TOGGLE, ZONE4_TUNING_MODE_SELECT, ZONE4_PRESET_MODE_SELECT, ZONE4_PRESET_SCAN, ZONE4_FM_MONO_TOGGLE, KEY1, KEY2, KEY3, KEY4, KEY5, KEY6, KEY7, KEY8, KEY9, KEY0, ZONE2_KEY1, ZONE2_KEY2, ZONE2_KEY3, ZONE2_KEY4, ZONE2_KEY5, ZONE2_KEY6, ZONE2_KEY7, ZONE2_KEY8, ZONE2_KEY9, ZONE2_KEY0, ZONE3_KEY1, ZONE3_KEY2, ZONE3_KEY3, ZONE3_KEY4, ZONE3_KEY5, ZONE3_KEY6, ZONE3_KEY7, ZONE3_KEY8, ZONE3_KEY9, ZONE3_KEY0, ZONE4_KEY1, ZONE4_KEY2, ZONE4_KEY3, ZONE4_KEY4, ZONE4_KEY5, ZONE4_KEY6, ZONE4_KEY7, ZONE4_KEY8, ZONE4_KEY9, ZONE4_KEY0, MENU, EXIT, UP_PRESSED, UP_RELEASED, DOWN_PRESSED, DOWN_RELEASED, LEFT_PRESSED, LEFT_RELEASED, RIGHT_PRESSED, RIGHT_RELEASED, ENTER, RECORD_FONCTION_SELECT, TONE_CONTROL_SELECT, DYNAMIC_RANGE, DIGITAL_INPUT_SELECT, ZONE_TOGGLE, CENTER_TRIM, SUB_TRIM, SURROUND_TRIM, CINEMA_EQ_TOGGLE, POWER_OFF_ALL_ZONES, PARTY_MODE_TOGGLE, ZONE2_PARTY_MODE_TOGGLE, ZONE3_PARTY_MODE_TOGGLE, ZONE4_PARTY_MODE_TOGGLE, OUTPUT_RESOLUTION, HDMI_AMP_MODE, HDMI_TV_MODE, ROOM_EQ_TOGGLE, SPEAKER_SETTING_TOGGLE, RESET_FACTORY |
+| rx1052             | TUNE_UP, TUNE_DOWN, PRESET_UP, PRESET_DOWN, FREQUENCY_UP, FREQUENCY_DOWN, MEMORY, BAND_TOGGLE, AM, FM, TUNE_PRESET_TOGGLE, TUNING_MODE_SELECT, PRESET_MODE_SELECT, FREQUENCY_DIRECT, PRESET_SCAN, FM_MONO_TOGGLE, ZONE2_TUNE_UP, ZONE2_TUNE_DOWN, ZONE2_PRESET_UP, ZONE2_PRESET_DOWN, ZONE2_FREQUENCY_UP, ZONE2_FREQUENCY_DOWN, ZONE2_BAND_TOGGLE, ZONE2_AM, ZONE2_FM, ZONE2_TUNE_PRESET_TOGGLE, ZONE2_TUNING_MODE_SELECT, ZONE2_PRESET_MODE_SELECT, ZONE2_PRESET_SCAN, ZONE2_FM_MONO_TOGGLE, ZONE3_TUNE_UP, ZONE3_TUNE_DOWN, ZONE3_PRESET_UP, ZONE3_PRESET_DOWN, ZONE3_FREQUENCY_UP, ZONE3_FREQUENCY_DOWN, ZONE3_BAND_TOGGLE, ZONE3_AM, ZONE3_FM, ZONE3_TUNE_PRESET_TOGGLE, ZONE3_TUNING_MODE_SELECT, ZONE3_PRESET_MODE_SELECT, ZONE3_PRESET_SCAN, ZONE3_FM_MONO_TOGGLE, ZONE4_TUNE_UP, ZONE4_TUNE_DOWN, ZONE4_PRESET_UP, ZONE4_PRESET_DOWN, ZONE4_FREQUENCY_UP, ZONE4_FREQUENCY_DOWN, ZONE4_BAND_TOGGLE, ZONE4_AM, ZONE4_FM, ZONE4_TUNE_PRESET_TOGGLE, ZONE4_TUNING_MODE_SELECT, ZONE4_PRESET_MODE_SELECT, ZONE4_PRESET_SCAN, ZONE4_FM_MONO_TOGGLE, KEY1, KEY2, KEY3, KEY4, KEY5, KEY6, KEY7, KEY8, KEY9, KEY0, ZONE2_KEY1, ZONE2_KEY2, ZONE2_KEY3, ZONE2_KEY4, ZONE2_KEY5, ZONE2_KEY6, ZONE2_KEY7, ZONE2_KEY8, ZONE2_KEY9, ZONE2_KEY0, ZONE3_KEY1, ZONE3_KEY2, ZONE3_KEY3, ZONE3_KEY4, ZONE3_KEY5, ZONE3_KEY6, ZONE3_KEY7, ZONE3_KEY8, ZONE3_KEY9, ZONE3_KEY0, ZONE4_KEY1, ZONE4_KEY2, ZONE4_KEY3, ZONE4_KEY4, ZONE4_KEY5, ZONE4_KEY6, ZONE4_KEY7, ZONE4_KEY8, ZONE4_KEY9, ZONE4_KEY0, POWER_OFF_ALL_ZONES, PARTY_MODE_TOGGLE, ZONE2_PARTY_MODE_TOGGLE, ZONE3_PARTY_MODE_TOGGLE, ZONE4_PARTY_MODE_TOGGLE, RECORD_FONCTION_SELECT, TONE_CONTROL_SELECT, ZONE_TOGGLE |
 | x3                 | PLAY, PAUSE, STOP, TRACK_FWD, TRACK_BACK                                      |
 | x5                 | PLAY, PAUSE, STOP, TRACK_FWD, TRACK_BACK                                      |
 
@@ -278,7 +281,7 @@ Here are the available commands for the otherCommand channel depending on the th
 
 example.things using serial connection:
 
-```
+```java
 Thing rotel:rsp1066:preamp "RSP-1066" [ serialPort="COM1", inputLabelVideo1="VID 1", inputLabelVideo2="VID 2", inputLabelVideo3="VID 3", inputLabelVideo4="VID 4", inputLabelVideo5="VID 5" ]
 
 Thing rotel:rsp1570:preamp "RSP-1570" [ serialPort="COM2" ]
@@ -292,7 +295,7 @@ Thing rotel:a14:amp "A14" [ serialPort="/dev/ttyUSB0" ]
 
 example.things using serial over IP connection:
 
-```
+```java
 Thing rotel:rsp1066:preamp "RSP-1066" [ host="192.168.0.200", port=3000, inputLabelVideo1="VID 1", inputLabelVideo2="VID 2", inputLabelVideo3="VID 3", inputLabelVideo4="VID 4", inputLabelVideo5="VID 5" ]
 
 Thing rotel:rsp1570:preamp "RSP-1570" [ host="192.168.0.201", port=3000, inputLabelCd="CD", inputLabelTuner="TUNER", inputLabelTape="TAPE", inputLabelVideo1="VIDEO 1", inputLabelVideo2="VIDEO 2", inputLabelVideo3="VIDEO 3", inputLabelVideo4="VIDEO 4", inputLabelVideo5="VIDEO 5", inputLabelMulti="MULTI" ]
@@ -304,7 +307,7 @@ Thing rotel:cd14:cd "CD14" [ host="192.168.0.203", port=3000 ]
 
 example.items:
 
-```
+```java
 Switch preamp_power "Power" { channel="rotel:rsp1066:preamp:mainZone#power" }
 String preamp_source "Source Input [%s]" { channel="rotel:rsp1066:preamp:mainZone#source" }
 String preamp_rec "Record Source [%s]" { channel="rotel:rsp1066:preamp:mainZone#recordSource" }
@@ -362,7 +365,7 @@ Dimmer cd_brightness "Display brightness" { channel="rotel:cd14:cd:brightness" }
 
 example.sitemap:
 
-```
+```perl
 Switch item=preamp_power
 Selection item=preamp_source
 Selection item=preamp_rec

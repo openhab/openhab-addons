@@ -1,6 +1,6 @@
 # Atlona Binding
 
-This binding integrates [Atlona](https://www.atlona.com) AT-UHD-PRO3 or AT-PRO3HD66M HDBaseT matrix switches into your openHAB installation.
+This binding integrates [Atlona](https://www.atlona.com) AT-UHD-PRO3 or AT-PRO3HD HDBaseT matrix switches into your openHAB installation.
 
 ## Supported Things
 
@@ -12,13 +12,14 @@ This binding supports the following thing types:
 | pro3-66m      | Thing      | The [AT-UHD-PRO3-66M 6x6 HDBaseT matrix](https://atlona.com/product/at-uhd-pro3-66m/)       |
 | pro3-88m      | Thing      | The [AT-UHD-PRO3-88M 8x8 HDBaseT matrix](https://atlona.com/product/at-uhd-pro3-88m/)       |
 | pro3-1616m    | Thing      | The [AT-UHD-PRO3-1616M 16x16 HDBaseT matrix](https://atlona.com/product/at-uhd-pro3-1616m/) |
+| pro3-hd44m    | Thing      | The [AT-PRO3HD44M 4x4 HDBaseT matrix](https://atlona.com/product/at-pro3hd44m/)             |
 | pro3-hd66m    | Thing      | The [AT-PRO3HD66M 6x6 HDBaseT matrix](https://atlona.com/product/at-pro3hd66m/)             |
 
 ## Discovery
 
-The Atlona AT-UHD-PRO3 switch can be discovered by starting a discovery scan in the UI and then logging into your switch and pressing the "SDDP" button on the "Network" tab.
-The "SDDP" (simple device discovery protocol) button will initiate the discovery process.
-If "Telnet Login" is enabled ("Network" tab from the switch configuration UI), you will need to set the username and password in the configuration of the newly discovered thing before a connection can be made.
+Supported things should be discovered automatically upon receipt of periodic SDDP announcements from the switch. 
+If the thing is not discovered automatically, login to the switch configuration UI and press the "SDDP" button on the "Network" tab to force the switch to send the SDDP announcement.
+If "Telnet Login" is enabled in the switch configuration, you will need to set the username and password in the newly discovered thing before a connection can be made.
 
 ## Thing Configuration
 
@@ -148,6 +149,16 @@ The following channels are available:
 | pro3-1616m | volume11#volumemute                                             | Switch    | RW     | Mutes/Unmutes audio port #11                                                              |
 | pro3-1616m | volume12#volume                                                 | Number    | RW     | Sets the volume of audio port #12 to the specified decibel level (between -79db to +15db) |
 | pro3-1616m | volume12#volumemute                                             | Switch    | RW     | Mutes/Unmutes audio port #12                                                              |
+|            |                                                                 |           |        |                                                                                           |
+| pro3-hd44m | primary#power                                                   | Switch    | RW     | Matrix Power Switch                                                                       |
+| pro3-hd44m | primary#panellock                                               | Switch    | RW     | Sets the front panel locked or unlocked                                                   |
+| pro3-hd44m | primary#irenable                                                | Switch    | RW     | Enables/Disabled the front panel IR                                                       |
+| pro3-hd44m | primary#presetcmd                                               | Switch    | W      | Sends a preset command ('saveX', 'recallX', 'clearX') - see notes below                   |
+| pro3-hd44m | primary#matrixcmd                                               | Switch    | W      | Sends a matrix command ('resetmatrix', 'resetports', 'allportsX') - see notes below       |
+| pro3-hd44m | port1#portoutput                                                | Number    | RW     | Sets output port #1 to the specified input port                                           |
+| pro3-hd44m | port2#portoutput                                                | Number    | RW     | Sets output port #2 to the specified input port                                           |
+| pro3-hd44m | port3#portoutput                                                | Number    | RW     | Sets output port #3 to the specified input port                                           |
+| pro3-hd44m | port4#portoutput                                                | Number    | RW     | Sets output port #4 to the specified input port                                           |
 |            |                                                                 |           |        |                                                                                           |
 | pro3-hd66m | primary#power                                                   | Switch    | RW     | Matrix Power Switch                                                                       |
 | pro3-hd66m | primary#panellock                                               | Switch    | RW     | Sets the front panel locked or unlocked                                                   |

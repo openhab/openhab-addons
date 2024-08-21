@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="ftpupload" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>FTP Upload Binding</name>
+	<description>This binding is for receiving files via FTP.</description>
+	<connection>local</connection>
+
+	<config-description>
+		<parameter name="port" type="integer" min="1" max="65535">
+			<label>TCP Port</label>
+			<description>TCP port of the FTP server</description>
+			<default>2121</default>
+		</parameter>
+		<parameter name="idleTimeout" type="integer" min="0" max="65535">
+			<label>Idle Timeout</label>
+			<description>The number of seconds before an inactive client is disconnected. If this value is set to 0, the idle
+				time is disabled.</description>
+			<default>60</default>
+		</parameter>
+		<parameter name="passivePorts" type="text">
+			<label>Passive Port Range</label>
+			<description>A string of passive ports, can contain a single port (as an integer), multiple ports seperated by
+				commas
+				(e.g. 123,124,125) or ranges of ports, including open ended ranges (e.g. 123-125, 30000-, -1023).
+				Combinations for
+				single ports and ranges is also supported. Empty (default) allows all ports as passive ports.</description>
+			<default></default>
+			<advanced>true</advanced>
+		</parameter>
+	</config-description>
+</addon:addon>

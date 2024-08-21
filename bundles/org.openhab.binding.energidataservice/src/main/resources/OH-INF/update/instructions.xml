@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="energidataservice:service">
+
+		<instruction-set targetVersion="1">
+			<add-channel id="reduced-electricity-tax" groupIds="electricity">
+				<type>energidataservice:datahub-price</type>
+				<label>Reduced Electricity Tax</label>
+				<description>Current reduced electricity tax in DKK per kWh. For electric heating customers only.</description>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<add-channel id="grid-tariff" groupIds="electricity">
+				<type>energidataservice:datahub-price</type>
+				<label>Grid Tariff</label>
+				<description>Current grid tariff in DKK per kWh.</description>
+			</add-channel>
+			<add-channel id="transmission-grid-tariff" groupIds="electricity">
+				<type>energidataservice:datahub-price</type>
+				<label>Transmission Grid Tariff</label>
+				<description>Current transmission grid tariff in DKK per kWh.</description>
+			</add-channel>
+			<remove-channel id="net-tariff" groupIds="electricity"/>
+			<remove-channel id="transmission-net-tariff" groupIds="electricity"/>
+		</instruction-set>
+
+		<instruction-set targetVersion="3">
+			<update-channel id="spot-price" groupIds="electricity">
+				<type>energidataservice:spot-price</type>
+				<label>Spot Price</label>
+				<description>Spot price in DKK or EUR per kWh.</description>
+			</update-channel>
+			<update-channel id="grid-tariff" groupIds="electricity">
+				<type>energidataservice:datahub-price</type>
+				<label>Grid Tariff</label>
+				<description>Grid tariff in DKK per kWh.</description>
+			</update-channel>
+			<update-channel id="system-tariff" groupIds="electricity">
+				<type>energidataservice:datahub-price</type>
+				<label>System Tariff</label>
+				<description>System tariff in DKK per kWh.</description>
+			</update-channel>
+			<update-channel id="transmission-grid-tariff" groupIds="electricity">
+				<type>energidataservice:datahub-price</type>
+				<label>Transmission Grid Tariff</label>
+				<description>Transmission grid tariff in DKK per kWh.</description>
+			</update-channel>
+			<update-channel id="electricity-tax" groupIds="electricity">
+				<type>energidataservice:datahub-price</type>
+				<label>Electricity Tax</label>
+				<description>Electricity tax in DKK per kWh.</description>
+			</update-channel>
+			<update-channel id="reduced-electricity-tax" groupIds="electricity">
+				<type>energidataservice:datahub-price</type>
+				<label>Reduced Electricity Tax</label>
+				<description>Reduced electricity tax in DKK per kWh. For electric heating customers only.</description>
+			</update-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="4">
+			<remove-channel id="hourly-prices" groupIds="electricity"/>
+		</instruction-set>
+
+		<instruction-set targetVersion="5">
+			<add-channel id="co2-emission-prognosis" groupIds="electricity">
+				<type>energidataservice:co2-emission</type>
+				<label>CO₂ Emission Prognosis</label>
+				<description>Estimated prognosis for CO₂ emission following the day-ahead market in g/kWh.</description>
+			</add-channel>
+			<add-channel id="co2-emission-realtime" groupIds="electricity">
+				<type>energidataservice:co2-emission</type>
+				<label>CO₂ Emission Realtime</label>
+				<description>Near up-to-date history for CO₂ emission from electricity consumed in Denmark in g/kWh.</description>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="6">
+			<add-channel id="event" groupIds="electricity">
+				<type>energidataservice:event</type>
+			</add-channel>
+		</instruction-set>
+
+	</thing-type>
+
+</update:update-descriptions>

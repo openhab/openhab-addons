@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,11 +17,13 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 
 import org.openhab.core.audio.AudioException;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.FixedLengthAudioStream;
+import org.openhab.core.common.Disposable;
 import org.openhab.core.voice.Voice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,8 +33,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Kelly Davis - Initial contribution and API
  * @author Kai Kreuzer - Refactored to use AudioStream and fixed audio format to produce
+ * @author Laurent Garnier - Add dispose method to delete the temporary file
  */
-class MacTTSAudioStream extends FixedLengthAudioStream {
+class MacTTSAudioStream extends FixedLengthAudioStream implements Disposable {
 
     private final Logger logger = LoggerFactory.getLogger(MacTTSAudioStream.class);
 
@@ -128,7 +131,7 @@ class MacTTSAudioStream extends FixedLengthAudioStream {
     private String generateOutputFilename() throws AudioException {
         File tempFile;
         try {
-            tempFile = File.createTempFile(Integer.toString(text.hashCode()), ".wav");
+            tempFile = Files.createTempFile(Integer.toString(text.hashCode()), ".wav").toFile();
             tempFile.deleteOnExit();
         } catch (IOException e) {
             throw new AudioException("Unable to create temp file.", e);
@@ -173,6 +176,19 @@ class MacTTSAudioStream extends FixedLengthAudioStream {
             return getFileInputStream(file);
         } else {
             throw new AudioException("No temporary audio file available.");
+        }
+    }
+
+    @Override
+    public void dispose() throws IOException {
+        if (file != null && file.exists()) {
+            try {
+                if (!file.delete()) {
+                    logger.warn("Failed to delete the file {}", file.getAbsolutePath());
+                }
+            } catch (SecurityException e) {
+                logger.warn("Failed to delete the file {}: {}", file.getAbsolutePath(), e.getMessage());
+            }
         }
     }
 }

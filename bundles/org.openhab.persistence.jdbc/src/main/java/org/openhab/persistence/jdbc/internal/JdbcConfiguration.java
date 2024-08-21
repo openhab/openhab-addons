@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -125,8 +126,9 @@ public class JdbcConfiguration {
         logger.debug("JDBC::updateConfig: url={}", url);
 
         // set database type and database type class
-        setDBDAOClass(parsedURL.getProperty("dbShortcut")); // derby, h2, hsqldb, mariadb, mysql, postgresql,
-                                                            // sqlite, timescaledb
+        setDBDAOClass(Objects.requireNonNull(parsedURL.getProperty("dbShortcut"))); // derby, h2, hsqldb, mariadb,
+                                                                                    // mysql, postgresql,
+        // sqlite, timescaledb
         // set user
         if (user != null && !user.isBlank()) {
             dBDAO.databaseProps.setProperty("dataSource.user", user);
@@ -234,7 +236,7 @@ public class JdbcConfiguration {
         }
 
         // test if JDBC driver bundle is available
-        testJDBCDriver(dn);
+        testJDBCDriver(Objects.requireNonNull(dn));
 
         logger.debug("JDBC::updateConfig: configuration complete. service={}", getName());
 
@@ -321,7 +323,7 @@ public class JdbcConfiguration {
                         warn += "\tDerby:     version >= 10.14.2.0 from          https://mvnrepository.com/artifact/org.apache.derby/derby\n";
                         break;
                     case "h2":
-                        warn += "\tH2:        version >= 1.4.189 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
+                        warn += "\tH2:        version >= 2.2.224 from            https://mvnrepository.com/artifact/com.h2database/h2\n";
                         break;
                     case "hsqldb":
                         warn += "\tHSQLDB:    version >= 2.3.3 from              https://mvnrepository.com/artifact/org.hsqldb/hsqldb\n";
@@ -330,13 +332,13 @@ public class JdbcConfiguration {
                         warn += "\tMariaDB:   version >= 3.0.8 from              https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client\n";
                         break;
                     case "mysql":
-                        warn += "\tMySQL:     version >= 8.0.30 from             https://mvnrepository.com/artifact/mysql/mysql-connector-java\n";
+                        warn += "\tMySQL:     version >= 8.2.0 from              https://mvnrepository.com/artifact/com.mysql/mysql-connector-j\n";
                         break;
                     case "postgresql":
-                        warn += "\tPostgreSQL:version >= 42.4.3 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
+                        warn += "\tPostgreSQL:version >= 42.4.4 from             https://mvnrepository.com/artifact/org.postgresql/postgresql\n";
                         break;
                     case "sqlite":
-                        warn += "\tSQLite:    version >= 3.16.1 from             https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
+                        warn += "\tSQLite:    version >= 3.42.0.0 from           https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc\n";
                         break;
                 }
             }

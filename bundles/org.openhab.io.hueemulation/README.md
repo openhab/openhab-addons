@@ -155,6 +155,7 @@ You must either
 * port forward your openHAB installation to port 80,
   (`iptables -t nat -A PREROUTING -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 8080`)
 * install a reverse proxy on port 80, for example nginx with the following configuration:
+
   ```
   server {
     listen 80;
@@ -167,10 +168,12 @@ You must either
     }
   }
   ```
+
 * or let openHAB run on port 80 (the entire java process requires elevated privileges).
 
 * For Amazon Echo the pairing process may fail due to a 302 response from openHAB, this can be resolved by using a reverse proxy to change the request url from `/api` to `/api/`, for example nginx with the following configuration:
-```
+
+  ```
   server {
     listen 80;
     location /api {
@@ -178,6 +181,7 @@ You must either
     }
   }
   ```
+
 Please open port 80 tcp and port 1900 udp in your firewall installation.
 
 You can test if the hue emulation does its job by enabling pairing mode including the option "Amazon Echo device discovery fix".

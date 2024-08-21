@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import static org.mockito.Mockito.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -26,6 +27,8 @@ import org.openhab.binding.mielecloud.internal.webservice.api.json.Device;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceIdentLabel;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DeviceType;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.DryingStep;
+import org.openhab.binding.mielecloud.internal.webservice.api.json.EcoFeedback;
+import org.openhab.binding.mielecloud.internal.webservice.api.json.EnergyConsumption;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Ident;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Light;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.PlateStep;
@@ -40,12 +43,13 @@ import org.openhab.binding.mielecloud.internal.webservice.api.json.Status;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Temperature;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.Type;
 import org.openhab.binding.mielecloud.internal.webservice.api.json.VentilationStep;
+import org.openhab.binding.mielecloud.internal.webservice.api.json.WaterConsumption;
 
 /**
  * @author Björn Lange - Initial contribution
  * @author Benjamin Bolte - Add pre-heat finished, plate step, door state, door alarm and info state channels and map
  *         signal flags from API
- * @author Björn Lange - Add elapsed time channel, robotic vacuum cleaner
+ * @author Björn Lange - Add elapsed time channel, robotic vacuum cleaner, eco feedback
  */
 @NonNullByDefault
 public class DeviceStateTest {
@@ -848,7 +852,7 @@ public class DeviceStateTest {
         when(plateStepMock.getValueLocalized()).thenReturn(Optional.empty());
 
         State state = mock(State.class);
-        when(state.getPlateStep()).thenReturn(Collections.singletonList(plateStepMock));
+        when(state.getPlateStep()).thenReturn(List.of(plateStepMock));
         when(state.getStatus()).thenReturn(Optional.of(status));
 
         Device device = mock(Device.class);
@@ -1108,7 +1112,7 @@ public class DeviceStateTest {
 
         State state = mock(State.class);
         when(state.getStatus()).thenReturn(Optional.of(status));
-        when(state.getElapsedTime()).thenReturn(Optional.of(Collections.singletonList(2)));
+        when(state.getElapsedTime()).thenReturn(Optional.of(List.of(2)));
 
         Device device = mock(Device.class);
         when(device.getState()).thenReturn(Optional.of(state));
@@ -1863,7 +1867,7 @@ public class DeviceStateTest {
 
         // Test TargetTemperature:
         Temperature targetTemperatureMock = mock(Temperature.class);
-        when(state.getTargetTemperature()).thenReturn(Collections.singletonList(targetTemperatureMock));
+        when(state.getTargetTemperature()).thenReturn(List.of(targetTemperatureMock));
         when(targetTemperatureMock.getValueLocalized()).thenReturn(Optional.of(200));
         // when:
         Optional<Integer> targetTemperature = deviceState.getTargetTemperature(0);
@@ -1872,7 +1876,7 @@ public class DeviceStateTest {
 
         // Test Temperature:
         Temperature temperature = mock(Temperature.class);
-        when(state.getTemperature()).thenReturn(Collections.singletonList(temperature));
+        when(state.getTemperature()).thenReturn(List.of(temperature));
         when(temperature.getValueLocalized()).thenReturn(Optional.of(200));
         // when:
         Optional<Integer> t = deviceState.getTemperature(0);
@@ -2104,6 +2108,336 @@ public class DeviceStateTest {
 
         // then:
         assertFalse(lightState.isPresent());
+    }
+
+    @Test
+    public void testGetCurrentWaterConsumptionWhenEcoFeedbackIsNotPresent() {
+        // given:
+        Status status = mock(Status.class);
+        when(status.getValueRaw()).thenReturn(Optional.of(StateType.ON.getCode()));
+
+        State state = mock(State.class);
+        when(state.getStatus()).thenReturn(Optional.of(status));
+        when(state.getEcoFeedback()).thenReturn(Optional.empty());
+
+        Device device = mock(Device.class);
+        when(device.getState()).thenReturn(Optional.of(state));
+
+        DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
+
+        // when:
+        Optional<Quantity> waterConsumption = deviceState.getCurrentWaterConsumption();
+
+        // then:
+        assertFalse(waterConsumption.isPresent());
+    }
+
+    @Test
+    public void testGetCurrentWaterConsumptionWhenCurrentWaterConsumptionIsNotPresent() {
+        // given:
+        Status status = mock(Status.class);
+        when(status.getValueRaw()).thenReturn(Optional.of(StateType.ON.getCode()));
+
+        EcoFeedback ecoFeedback = mock(EcoFeedback.class);
+        when(ecoFeedback.getCurrentWaterConsumption()).thenReturn(Optional.empty());
+
+        State state = mock(State.class);
+        when(state.getStatus()).thenReturn(Optional.of(status));
+        when(state.getEcoFeedback()).thenReturn(Optional.of(ecoFeedback));
+
+        Device device = mock(Device.class);
+        when(device.getState()).thenReturn(Optional.of(state));
+
+        DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
+
+        // when:
+        Optional<Quantity> waterConsumption = deviceState.getCurrentWaterConsumption();
+
+        // then:
+        assertFalse(waterConsumption.isPresent());
+    }
+
+    @Test
+    public void testGetCurrentWaterConsumptionWhenCurrentWaterConsumptionIsEmpty() {
+        // given:
+        Status status = mock(Status.class);
+        when(status.getValueRaw()).thenReturn(Optional.of(StateType.ON.getCode()));
+
+        WaterConsumption currentWaterConsumption = mock(WaterConsumption.class);
+        when(currentWaterConsumption.getUnit()).thenReturn(Optional.empty());
+        when(currentWaterConsumption.getValue()).thenReturn(Optional.empty());
+
+        EcoFeedback ecoFeedback = mock(EcoFeedback.class);
+        when(ecoFeedback.getCurrentWaterConsumption()).thenReturn(Optional.of(currentWaterConsumption));
+
+        State state = mock(State.class);
+        when(state.getStatus()).thenReturn(Optional.of(status));
+        when(state.getEcoFeedback()).thenReturn(Optional.of(ecoFeedback));
+
+        Device device = mock(Device.class);
+        when(device.getState()).thenReturn(Optional.of(state));
+
+        DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
+
+        // when:
+        Optional<Quantity> waterConsumption = deviceState.getCurrentWaterConsumption();
+
+        // then:
+        assertFalse(waterConsumption.isPresent());
+    }
+
+    @Test
+    public void testGetCurrentWaterConsumptionWhenValueIsNotPresent() {
+        // given:
+        Status status = mock(Status.class);
+        when(status.getValueRaw()).thenReturn(Optional.of(StateType.ON.getCode()));
+
+        WaterConsumption currentWaterConsumption = mock(WaterConsumption.class);
+        when(currentWaterConsumption.getUnit()).thenReturn(Optional.of("l"));
+        when(currentWaterConsumption.getValue()).thenReturn(Optional.empty());
+
+        EcoFeedback ecoFeedback = mock(EcoFeedback.class);
+        when(ecoFeedback.getCurrentWaterConsumption()).thenReturn(Optional.of(currentWaterConsumption));
+
+        State state = mock(State.class);
+        when(state.getStatus()).thenReturn(Optional.of(status));
+        when(state.getEcoFeedback()).thenReturn(Optional.of(ecoFeedback));
+
+        Device device = mock(Device.class);
+        when(device.getState()).thenReturn(Optional.of(state));
+
+        DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
+
+        // when:
+        Optional<Quantity> waterConsumption = deviceState.getCurrentWaterConsumption();
+
+        // then:
+        assertFalse(waterConsumption.isPresent());
+    }
+
+    @Test
+    public void testGetCurrentWaterConsumptionWhenUnitIsNotPresent() {
+        // given:
+        Status status = mock(Status.class);
+        when(status.getValueRaw()).thenReturn(Optional.of(StateType.ON.getCode()));
+
+        WaterConsumption currentWaterConsumption = mock(WaterConsumption.class);
+        when(currentWaterConsumption.getUnit()).thenReturn(Optional.empty());
+        when(currentWaterConsumption.getValue()).thenReturn(Optional.of(0.5));
+
+        EcoFeedback ecoFeedback = mock(EcoFeedback.class);
+        when(ecoFeedback.getCurrentWaterConsumption()).thenReturn(Optional.of(currentWaterConsumption));
+
+        State state = mock(State.class);
+        when(state.getStatus()).thenReturn(Optional.of(status));
+        when(state.getEcoFeedback()).thenReturn(Optional.of(ecoFeedback));
+
+        Device device = mock(Device.class);
+        when(device.getState()).thenReturn(Optional.of(state));
+
+        DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
+
+        // when:
+        Quantity waterConsumption = deviceState.getCurrentWaterConsumption().get();
+
+        // then:
+        assertEquals(0.5, waterConsumption.getValue());
+        assertFalse(waterConsumption.getUnit().isPresent());
+    }
+
+    @Test
+    public void testGetCurrentWaterConsumption() {
+        // given:
+        Status status = mock(Status.class);
+        when(status.getValueRaw()).thenReturn(Optional.of(StateType.ON.getCode()));
+
+        WaterConsumption currentWaterConsumption = mock(WaterConsumption.class);
+        when(currentWaterConsumption.getUnit()).thenReturn(Optional.of("l"));
+        when(currentWaterConsumption.getValue()).thenReturn(Optional.of(0.5));
+
+        EcoFeedback ecoFeedback = mock(EcoFeedback.class);
+        when(ecoFeedback.getCurrentWaterConsumption()).thenReturn(Optional.of(currentWaterConsumption));
+
+        State state = mock(State.class);
+        when(state.getStatus()).thenReturn(Optional.of(status));
+        when(state.getEcoFeedback()).thenReturn(Optional.of(ecoFeedback));
+
+        Device device = mock(Device.class);
+        when(device.getState()).thenReturn(Optional.of(state));
+
+        DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
+
+        // when:
+        Quantity waterConsumption = deviceState.getCurrentWaterConsumption().get();
+
+        // then:
+        assertEquals(0.5, waterConsumption.getValue());
+        assertEquals(Optional.of("l"), waterConsumption.getUnit());
+    }
+
+    @Test
+    public void testGetCurrentEnergyConsumptionWhenEcoFeedbackIsNotPresent() {
+        // given:
+        Status status = mock(Status.class);
+        when(status.getValueRaw()).thenReturn(Optional.of(StateType.ON.getCode()));
+
+        State state = mock(State.class);
+        when(state.getStatus()).thenReturn(Optional.of(status));
+        when(state.getEcoFeedback()).thenReturn(Optional.empty());
+
+        Device device = mock(Device.class);
+        when(device.getState()).thenReturn(Optional.of(state));
+
+        DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
+
+        // when:
+        Optional<Quantity> energyConsumption = deviceState.getCurrentEnergyConsumption();
+
+        // then:
+        assertFalse(energyConsumption.isPresent());
+    }
+
+    @Test
+    public void testGetCurrentEnergyConsumptionWhenCurrentEnergyConsumptionIsNotPresent() {
+        // given:
+        Status status = mock(Status.class);
+        when(status.getValueRaw()).thenReturn(Optional.of(StateType.ON.getCode()));
+
+        EcoFeedback ecoFeedback = mock(EcoFeedback.class);
+        when(ecoFeedback.getCurrentEnergyConsumption()).thenReturn(Optional.empty());
+
+        State state = mock(State.class);
+        when(state.getStatus()).thenReturn(Optional.of(status));
+        when(state.getEcoFeedback()).thenReturn(Optional.of(ecoFeedback));
+
+        Device device = mock(Device.class);
+        when(device.getState()).thenReturn(Optional.of(state));
+
+        DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
+
+        // when:
+        Optional<Quantity> energyConsumption = deviceState.getCurrentEnergyConsumption();
+
+        // then:
+        assertFalse(energyConsumption.isPresent());
+    }
+
+    @Test
+    public void testGetCurrentEnergyConsumptionWhenCurrentEnergyConsumptionIsEmpty() {
+        // given:
+        Status status = mock(Status.class);
+        when(status.getValueRaw()).thenReturn(Optional.of(StateType.ON.getCode()));
+
+        EnergyConsumption currentEnergyConsumption = mock(EnergyConsumption.class);
+        when(currentEnergyConsumption.getUnit()).thenReturn(Optional.empty());
+        when(currentEnergyConsumption.getValue()).thenReturn(Optional.empty());
+
+        EcoFeedback ecoFeedback = mock(EcoFeedback.class);
+        when(ecoFeedback.getCurrentEnergyConsumption()).thenReturn(Optional.of(currentEnergyConsumption));
+
+        State state = mock(State.class);
+        when(state.getStatus()).thenReturn(Optional.of(status));
+        when(state.getEcoFeedback()).thenReturn(Optional.of(ecoFeedback));
+
+        Device device = mock(Device.class);
+        when(device.getState()).thenReturn(Optional.of(state));
+
+        DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
+
+        // when:
+        Optional<Quantity> energyConsumption = deviceState.getCurrentEnergyConsumption();
+
+        // then:
+        assertFalse(energyConsumption.isPresent());
+    }
+
+    @Test
+    public void testGetCurrentEnergyConsumptionWhenValueIsNotPresent() {
+        // given:
+        Status status = mock(Status.class);
+        when(status.getValueRaw()).thenReturn(Optional.of(StateType.ON.getCode()));
+
+        EnergyConsumption currentEnergyConsumption = mock(EnergyConsumption.class);
+        when(currentEnergyConsumption.getUnit()).thenReturn(Optional.of("kWh"));
+        when(currentEnergyConsumption.getValue()).thenReturn(Optional.empty());
+
+        EcoFeedback ecoFeedback = mock(EcoFeedback.class);
+        when(ecoFeedback.getCurrentEnergyConsumption()).thenReturn(Optional.of(currentEnergyConsumption));
+
+        State state = mock(State.class);
+        when(state.getStatus()).thenReturn(Optional.of(status));
+        when(state.getEcoFeedback()).thenReturn(Optional.of(ecoFeedback));
+
+        Device device = mock(Device.class);
+        when(device.getState()).thenReturn(Optional.of(state));
+
+        DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
+
+        // when:
+        Optional<Quantity> energyConsumption = deviceState.getCurrentEnergyConsumption();
+
+        // then:
+        assertFalse(energyConsumption.isPresent());
+    }
+
+    @Test
+    public void testGetCurrentEnergyConsumptionWhenUnitIsNotPresent() {
+        // given:
+        Status status = mock(Status.class);
+        when(status.getValueRaw()).thenReturn(Optional.of(StateType.ON.getCode()));
+
+        EnergyConsumption currentEnergyConsumption = mock(EnergyConsumption.class);
+        when(currentEnergyConsumption.getUnit()).thenReturn(Optional.empty());
+        when(currentEnergyConsumption.getValue()).thenReturn(Optional.of(0.5));
+
+        EcoFeedback ecoFeedback = mock(EcoFeedback.class);
+        when(ecoFeedback.getCurrentEnergyConsumption()).thenReturn(Optional.of(currentEnergyConsumption));
+
+        State state = mock(State.class);
+        when(state.getStatus()).thenReturn(Optional.of(status));
+        when(state.getEcoFeedback()).thenReturn(Optional.of(ecoFeedback));
+
+        Device device = mock(Device.class);
+        when(device.getState()).thenReturn(Optional.of(state));
+
+        DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
+
+        // when:
+        Quantity energyConsumption = deviceState.getCurrentEnergyConsumption().get();
+
+        // then:
+        assertEquals(0.5, energyConsumption.getValue());
+        assertFalse(energyConsumption.getUnit().isPresent());
+    }
+
+    @Test
+    public void testGetCurrentEnergyConsumption() {
+        // given:
+        Status status = mock(Status.class);
+        when(status.getValueRaw()).thenReturn(Optional.of(StateType.ON.getCode()));
+
+        EnergyConsumption currentEnergyConsumption = mock(EnergyConsumption.class);
+        when(currentEnergyConsumption.getUnit()).thenReturn(Optional.of("kWh"));
+        when(currentEnergyConsumption.getValue()).thenReturn(Optional.of(0.5));
+
+        EcoFeedback ecoFeedback = mock(EcoFeedback.class);
+        when(ecoFeedback.getCurrentEnergyConsumption()).thenReturn(Optional.of(currentEnergyConsumption));
+
+        State state = mock(State.class);
+        when(state.getStatus()).thenReturn(Optional.of(status));
+        when(state.getEcoFeedback()).thenReturn(Optional.of(ecoFeedback));
+
+        Device device = mock(Device.class);
+        when(device.getState()).thenReturn(Optional.of(state));
+
+        DeviceState deviceState = new DeviceState(DEVICE_IDENTIFIER, device);
+
+        // when:
+        Quantity energyConsumption = deviceState.getCurrentEnergyConsumption().get();
+
+        // then:
+        assertEquals(0.5, energyConsumption.getValue());
+        assertEquals(Optional.of("kWh"), energyConsumption.getUnit());
     }
 
     @Test

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,13 +24,13 @@ import org.openhab.core.thing.ThingTypeUID;
  * The {@link DaikinBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
- * @author Tim Waterhouse <tim@timwaterhouse.com> - Initial contribution
- * @author Paul Smedley <paul@smedley.id.au> - Modifications to support Airbase Controllers
+ * @author Tim Waterhouse - Initial contribution
+ * @author Paul Smedley - Modifications to support Airbase Controllers
  */
 @NonNullByDefault
 public class DaikinBindingConstants {
 
-    private static final String BINDING_ID = "daikin";
+    public static final String BINDING_ID = "daikin";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_AC_UNIT = new ThingTypeUID(BINDING_ID, "ac_unit");
@@ -63,6 +63,10 @@ public class DaikinBindingConstants {
 
     public static final String CHANNEL_AC_SPECIALMODE = "specialmode";
     public static final String CHANNEL_AC_STREAMER = "streamer";
+
+    public static final String CHANNEL_AC_DEMAND_MODE = "demandcontrolmode";
+    public static final String CHANNEL_AC_DEMAND_MAX_POWER = "demandcontrolmaxpower";
+    public static final String CHANNEL_AC_DEMAND_SCHEDULE = "demandcontrolschedule";
 
     // additional channels for Airbase Controller
     public static final String CHANNEL_AIRBASE_AC_FAN_SPEED = "airbasefanspeed";
