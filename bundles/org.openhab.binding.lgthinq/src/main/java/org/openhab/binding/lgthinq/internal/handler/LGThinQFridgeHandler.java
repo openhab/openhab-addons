@@ -275,18 +275,13 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         FridgeCapability cap = getCapabilities();
-        if (!cap.getIcePlusMap().isEmpty() && getThing().getChannel(icePlusChannelUID) == null) {
-            createDynChannel(FR_CHANNEL_ICE_PLUS, icePlusChannelUID, "Switch");
-        }
-        if (!cap.getExpressFreezeModeMap().isEmpty() && getThing().getChannel(expressFreezeModeChannelUID) == null) {
-            createDynChannel(FR_CHANNEL_EXPRESS_FREEZE_MODE, expressFreezeModeChannelUID, "String");
-        }
-        if (cap.isExpressCoolModePresent() && getThing().getChannel(expressCoolModeChannelUID) == null) {
-            createDynChannel(FR_CHANNEL_EXPRESS_COOL_MODE, expressCoolModeChannelUID, "Switch");
-        }
-        if (cap.isEcoFriendlyModePresent() && getThing().getChannel(vacationModeChannelUID) == null) {
-            createDynChannel(FR_CHANNEL_VACATION_MODE, vacationModeChannelUID, "Switch");
-        }
+        manageDynChannel(icePlusChannelUID, FR_CHANNEL_ICE_PLUS, "Switch", !cap.getIcePlusMap().isEmpty());
+        manageDynChannel(expressFreezeModeChannelUID, FR_CHANNEL_EXPRESS_FREEZE_MODE, "String",
+                !cap.getExpressFreezeModeMap().isEmpty());
+        manageDynChannel(expressCoolModeChannelUID, FR_CHANNEL_EXPRESS_COOL_MODE, "Switch",
+                cap.isExpressCoolModePresent());
+        manageDynChannel(vacationModeChannelUID, FR_CHANNEL_VACATION_MODE, "Switch", cap.isEcoFriendlyModePresent());
+
         Unit<Temperature> unTemp = getTemperatureUnit(getLastShot());
         if (SIUnits.CELSIUS.equals(unTemp)) {
             loadChannelTempStateOption(cap.getFridgeTempCMap(), fridgeTempChannelUID, unTemp);
@@ -296,17 +291,11 @@ public class LGThinQFridgeHandler extends LGThinQAbstractDeviceHandler<FridgeCap
             loadChannelTempStateOption(cap.getFreezerTempFMap(), freezerTempChannelUID, unTemp);
         }
         loadChannelStateOption(cap.getActiveSavingMap(), activeSavingChannelUID);
-
         loadChannelStateOption(cap.getExpressFreezeModeMap(), expressFreezeModeChannelUID);
-
         loadChannelStateOption(cap.getActiveSavingMap(), activeSavingChannelUID);
-
         loadChannelStateOption(cap.getSmartSavingMap(), smartSavingModeChannelUID);
-
         loadChannelStateOption(cap.getTempUnitMap(), tempUnitUID);
-
         loadChannelStateOption(CAP_FR_FRESH_AIR_FILTER_MAP, freshAirFilterChannelUID);
-
         loadChannelStateOption(CAP_FR_WATER_FILTER, waterFilterChannelUID);
     }
 

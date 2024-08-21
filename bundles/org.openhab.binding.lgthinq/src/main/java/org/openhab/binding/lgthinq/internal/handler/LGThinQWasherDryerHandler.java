@@ -280,7 +280,7 @@ public class LGThinQWasherDryerHandler
                 remoteStartEnabledChannels.addAll(dynChannels);
 
             }
-        } else if (remoteStartEnabledChannels.size() > 0) {
+        } else if (!remoteStartEnabledChannels.isEmpty()) {
             ThingBuilder builder = editThing().withoutChannels(remoteStartEnabledChannels);
             updateThing(builder.build());
             remoteStartEnabledChannels.clear();
