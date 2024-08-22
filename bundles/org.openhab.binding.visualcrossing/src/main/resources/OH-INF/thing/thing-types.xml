@@ -10,7 +10,7 @@
 
 		<channel-groups>
 			<channel-group id="basic" typeId="basic-channel-group"/>
-			<channel-group id="currentConditions" typeId="current-conditions-channel-group"/>
+			<channel-group id="current-conditions" typeId="current-conditions-channel-group"/>
 			<channel-group id="day01" typeId="day-channel-group">
 				<label>Day T+1</label>
 			</channel-group>

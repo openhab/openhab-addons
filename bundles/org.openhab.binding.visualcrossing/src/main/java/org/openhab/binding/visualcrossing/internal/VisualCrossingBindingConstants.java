@@ -41,7 +41,7 @@ public class VisualCrossingBindingConstants {
         }
 
         public static final class CurrentConditions {
-            private static final String CHANNEL_ID = "currentConditions";
+            private static final String CHANNEL_ID = "current-conditions";
 
             public static final String DATE_TIME = CHANNEL_ID + "#date-time";
             public static final String TIME_STAMP = CHANNEL_ID + "#time-stamp";

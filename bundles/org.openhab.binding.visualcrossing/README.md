@@ -168,154 +168,154 @@ itemType="String",
 label="Description",
 description="Longer text descriptions suitable for displaying in weather displays."
         ]
-Type visualcrossing:time-channel : currentConditions#date-time [
+Type visualcrossing:time-channel : current-conditions#date-time [
 itemType="String",
 label="Time",
 description="In format HH:mm:ss"
         ]
-Type visualcrossing:time-stamp-channel : currentConditions#time-stamp [
+Type visualcrossing:time-stamp-channel : current-conditions#time-stamp [
 itemType="Number",
 label="Time Stamp"
         ]
-Type system:outdoor-temperature : currentConditions#temperature [
+Type system:outdoor-temperature : current-conditions#temperature [
 itemType="Number:Temperature",
 label="Temperatura na zewnątrz",
 description="Temperature at the location. Daily values are average values (mean) for the day.",
 tags="Measurement, Temperature"
         ]
-Type system:outdoor-temperature : currentConditions#feels-like [
+Type system:outdoor-temperature : current-conditions#feels-like [
 itemType="Number:Temperature",
 label="Feels Like",
 description="What the temperature feels like accounting for heat index or wind chill.",
 tags="Measurement, Temperature"
         ]
-Type system:atmospheric-humidity : currentConditions#humidity [
+Type system:atmospheric-humidity : current-conditions#humidity [
 itemType="Number:Dimensionless",
 label="Wilgotność atmosferyczna",
 description="Obecna wilgotność względna atmosfery",
 tags="Humidity, Measurement"
         ]
-Type system:outdoor-temperature : currentConditions#dew [
+Type system:outdoor-temperature : current-conditions#dew [
 itemType="Number:Temperature",
 label="Dew",
 description="Dew point temperature",
 tags="Measurement, Temperature"
         ]
-Type visualcrossing:precip-channel : currentConditions#precip [
+Type visualcrossing:precip-channel : current-conditions#precip [
 itemType="Number:Length",
 label="Precip",
 description="The amount of liquid precipitation that fell or is predicted to fall."
         ]
-Type visualcrossing:precip-prob-channel : currentConditions#precip-prob [
+Type visualcrossing:precip-prob-channel : current-conditions#precip-prob [
 itemType="Number:Dimensionless",
 label="Precip Prob",
 description="The likelihood of measurable precipitation ranging from 0% to 100%."
         ]
-Type visualcrossing:precip-type-channel : currentConditions#precip-type [
+Type visualcrossing:precip-type-channel : current-conditions#precip-type [
 itemType="String",
 label="Precip Type",
 description="An array indicating the type(s) of precipitation expected or that occurred."
         ]
-Type visualcrossing:snow-channel : currentConditions#snow [
+Type visualcrossing:snow-channel : current-conditions#snow [
 itemType="Number:Length",
 label="Snow",
 description="The amount of snow that fell or is predicted to fall."
         ]
-Type visualcrossing:snow-channel : currentConditions#snow-depth [
+Type visualcrossing:snow-channel : current-conditions#snow-depth [
 itemType="Number:Length",
 label="Snow Depth",
 description="The depth of snow on the ground."
         ]
-Type system:wind-speed : currentConditions#wind-gust [
+Type system:wind-speed : current-conditions#wind-gust [
 itemType="Number:Speed",
 label="Wind Gust",
 description="Instantaneous wind speed at a location.",
 tags="Measurement, Wind"
         ]
-Type system:wind-speed : currentConditions#wind-speed [
+Type system:wind-speed : current-conditions#wind-speed [
 itemType="Number:Speed",
 label="Prędkość wiatru",
 description="The sustained wind speed measured as the average windspeed.",
 tags="Measurement, Wind"
         ]
-Type system:wind-direction : currentConditions#wind-dir [
+Type system:wind-direction : current-conditions#wind-dir [
 itemType="Number:Angle",
 label="Kierunek wiatru",
 description="Direction from which the wind is blowing.",
 tags="Measurement, Wind"
         ]
-Type system:barometric-pressure : currentConditions#pressure [
+Type system:barometric-pressure : current-conditions#pressure [
 itemType="Number:Pressure",
 label="Ciśnienie barometryczne",
 description="The sea level atmospheric or barometric pressure in millibars.",
 tags="Measurement, Pressure"
         ]
-Type visualcrossing:visibility-channel : currentConditions#visibility [
+Type visualcrossing:visibility-channel : current-conditions#visibility [
 itemType="Number:Length",
 label="Visibility",
 description="Distance at which distant objects are visible."
         ]
-Type visualcrossing:cloud-cover-channel : currentConditions#cloud-cover [
+Type visualcrossing:cloud-cover-channel : current-conditions#cloud-cover [
 itemType="Number:Dimensionless",
 label="Cloud Cover",
 description="How much of the sky is covered in cloud ranging from 0–100%."
         ]
-Type visualcrossing:solar-radiation-channel : currentConditions#solar-radiation [
+Type visualcrossing:solar-radiation-channel : current-conditions#solar-radiation [
 itemType="Number:Intensity",
 label="Solar Radiation",
 description="The solar radiation power at the instantaneous moment of the observation."
         ]
-Type visualcrossing:solar-energy-channel : currentConditions#solar-energy [
+Type visualcrossing:solar-energy-channel : current-conditions#solar-energy [
 itemType="Number",
 label="Solar Energy",
 description="Indicates the total energy from the sun that builds up over an hour or day."
         ]
-Type visualcrossing:uv-index-channel : currentConditions#uv-index [
+Type visualcrossing:uv-index-channel : current-conditions#uv-index [
 itemType="Number",
 label="UV Index",
 description="A value between 0 and 10 indicating the level of ultra violet (UV) exposure."
         ]
-Type visualcrossing:conditions-channel : currentConditions#conditions [
+Type visualcrossing:conditions-channel : current-conditions#conditions [
 itemType="String",
 label="Conditions",
 description="Textual representation of the weather conditions."
         ]
-Type visualcrossing:icon-channel : currentConditions#icon [
+Type visualcrossing:icon-channel : current-conditions#icon [
 itemType="String",
 label="Icon",
 description="A fixed, machine readable summary that can be used to display an icon."
         ]
-Type visualcrossing:stations-channel : currentConditions#stations [
+Type visualcrossing:stations-channel : current-conditions#stations [
 itemType="String",
 label="Stations",
 description="The weather stations used when collecting an historical observation record."
         ]
-Type visualcrossing:source-channel : currentConditions#source [
+Type visualcrossing:source-channel : current-conditions#source [
 itemType="String",
 label="Source",
 description="The type of weather data used for this weather object."
         ]
-Type visualcrossing:sunrise-channel : currentConditions#sunrise [
+Type visualcrossing:sunrise-channel : current-conditions#sunrise [
 itemType="String",
 label="Sunrise",
 description="The formatted time of the sunrise."
         ]
-Type visualcrossing:time-stamp-channel : currentConditions#sunrise-epoch [
+Type visualcrossing:time-stamp-channel : current-conditions#sunrise-epoch [
 itemType="Number",
 label="Sunrise Epoch",
 description="Sunrise time specified as number of seconds since 1st January 1970 in UTC time."
         ]
-Type visualcrossing:sunset-channel : currentConditions#sunset [
+Type visualcrossing:sunset-channel : current-conditions#sunset [
 itemType="String",
 label="Sunset",
 description="The formatted time of the sunset."
         ]
-Type visualcrossing:time-stamp-channel : currentConditions#sunset-epoch [
+Type visualcrossing:time-stamp-channel : current-conditions#sunset-epoch [
 itemType="Number",
 label="Sunset Epoch",
 description="Sunset time specified as number of seconds since 1st January 1970 in UTC time."
         ]
-Type visualcrossing:moon-phase-channel : currentConditions#moon-phase [
+Type visualcrossing:moon-phase-channel : current-conditions#moon-phase [
 itemType="Number",
 label="Moon Phase",
 description="Represents the fractional portion through the current moon lunation cycle."
