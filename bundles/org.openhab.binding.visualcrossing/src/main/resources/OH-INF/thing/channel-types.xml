@@ -1974,9 +1974,7 @@
 		<label>Moon Phase</label>
 		<description>
 			Represents the fractional portion through the current moon lunation cycle ranging from 0 (the new moon)
-			to 0.5 (the full moon) and back to 1 (the next new moon). See How to include sunrise, sunset, moon phase, moonrise
-			and moonset data into your API requests
-			(https://www.visualcrossing.com/resources/documentation/weather-api/how-to-include-sunrise-sunset-and-moon-phase-data-into-your-api-requests/)
+			to 0.5 (the full moon) and back to 1 (the next new moon).
 		</description>
 		<state readOnly="true" min="0" max="1"/>
 	</channel-type>
