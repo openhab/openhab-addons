@@ -41,9 +41,9 @@ import org.osgi.service.component.annotations.Reference;
 public class VisualCrossingHandlerFactory extends BaseThingHandlerFactory {
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(WEATHER_THING_TYPE);
-    protected final @NonNullByDefault({}) HttpClientFactory httpClientFactory;
-    protected final @NonNullByDefault({}) LocaleProvider localeProvider;
-    protected final @NonNullByDefault({}) LocationProvider locationProvider;
+    private final HttpClientFactory httpClientFactory;
+    private final LocaleProvider localeProvider;
+    private final LocationProvider locationProvider;
 
     @Activate
     public VisualCrossingHandlerFactory(@Reference HttpClientFactory httpClientFactory,
