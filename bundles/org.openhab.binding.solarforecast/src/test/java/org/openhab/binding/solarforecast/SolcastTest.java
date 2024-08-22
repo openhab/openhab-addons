@@ -14,6 +14,7 @@ package org.openhab.binding.solarforecast;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -28,6 +29,7 @@ import javax.measure.quantity.Energy;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.SolarForecastException;
@@ -38,6 +40,7 @@ import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMod
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastBridgeHandler;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastPlaneHandler;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastPlaneMock;
+import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.internal.BridgeImpl;
@@ -58,6 +61,21 @@ class SolcastTest {
 
     public static final String TOO_LATE_INDICATOR = "too late";
     public static final String DAY_MISSING_INDICATOR = "not available in forecast";
+
+    @BeforeAll
+    static void setFixedTimeJul17() {
+        // Instant matching the date of test resources
+        Instant fixedInstant = Instant.parse("2022-07-17T21:00:00Z");
+        Clock fixedClock = Clock.fixed(fixedInstant, TEST_ZONE);
+        Utils.setClock(fixedClock);
+    }
+
+    static void setFixedTimeJul18() {
+        // Instant matching the date of test resources
+        Instant fixedInstant = Instant.parse("2022-07-18T14:23:00Z");
+        Clock fixedClock = Clock.fixed(fixedInstant, TEST_ZONE);
+        Utils.setClock(fixedClock);
+    }
 
     /**
      * "2022-07-18T00:00+02:00[Europe/Berlin]": 0,
@@ -497,16 +515,18 @@ class SolcastTest {
 
     @Test
     void testPowerTimeSeries() {
+        setFixedTimeJul18();
+        Instant now = Instant.now(Utils.getClock());
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
-        ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(TEST_ZONE);
-        SolcastObject sco = new SolcastObject("sc-test", content, now.toInstant(), TIMEZONEPROVIDER);
+        SolcastObject sco = new SolcastObject("sc-test", content, now, TIMEZONEPROVIDER);
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         sco.join(content);
 
         TimeSeries powerSeries = sco.getPowerTimeSeries(QueryMode.Average);
         List<QuantityType<?>> estimateL = new ArrayList<>();
-        assertEquals(672, powerSeries.size());
+        assertEquals(302, powerSeries.size());
         powerSeries.getStates().forEachOrdered(entry -> {
+            assertTrue(entry.timestamp().isAfter(Instant.now(Utils.getClock())));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
@@ -519,8 +539,9 @@ class SolcastTest {
 
         TimeSeries powerSeries10 = sco.getPowerTimeSeries(QueryMode.Pessimistic);
         List<QuantityType<?>> estimate10 = new ArrayList<>();
-        assertEquals(672, powerSeries10.size());
+        assertEquals(302, powerSeries10.size());
         powerSeries10.getStates().forEachOrdered(entry -> {
+            assertTrue(entry.timestamp().isAfter(Instant.now(Utils.getClock())));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
@@ -533,8 +554,9 @@ class SolcastTest {
 
         TimeSeries powerSeries90 = sco.getPowerTimeSeries(QueryMode.Optimistic);
         List<QuantityType<?>> estimate90 = new ArrayList<>();
-        assertEquals(672, powerSeries90.size());
+        assertEquals(302, powerSeries90.size());
         powerSeries90.getStates().forEachOrdered(entry -> {
+            assertTrue(entry.timestamp().isAfter(Instant.now(Utils.getClock())));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kW", ((QuantityType<?>) s).getUnit().toString());
@@ -555,16 +577,18 @@ class SolcastTest {
 
     @Test
     void testEnergyTimeSeries() {
+        setFixedTimeJul18();
+        Instant now = Instant.now(Utils.getClock());
         String content = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
-        ZonedDateTime now = LocalDateTime.of(2022, 7, 18, 16, 23).atZone(TEST_ZONE);
-        SolcastObject sco = new SolcastObject("sc-test", content, now.toInstant(), TIMEZONEPROVIDER);
+        SolcastObject sco = new SolcastObject("sc-test", content, now, TIMEZONEPROVIDER);
         content = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
         sco.join(content);
 
         TimeSeries energySeries = sco.getEnergyTimeSeries(QueryMode.Average);
         List<QuantityType<?>> estimateL = new ArrayList<>();
-        assertEquals(672, energySeries.size()); // 18 values each day for 2 days
+        assertEquals(302, energySeries.size()); // 48 values each day for next 7 days
         energySeries.getStates().forEachOrdered(entry -> {
+            assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kWh", ((QuantityType<?>) s).getUnit().toString());
@@ -577,8 +601,9 @@ class SolcastTest {
 
         TimeSeries energySeries10 = sco.getEnergyTimeSeries(QueryMode.Pessimistic);
         List<QuantityType<?>> estimate10 = new ArrayList<>();
-        assertEquals(672, energySeries10.size()); // 18 values each day for 2 days
+        assertEquals(302, energySeries10.size()); // 48 values each day for next 7 days
         energySeries10.getStates().forEachOrdered(entry -> {
+            assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kWh", ((QuantityType<?>) s).getUnit().toString());
@@ -591,8 +616,9 @@ class SolcastTest {
 
         TimeSeries energySeries90 = sco.getEnergyTimeSeries(QueryMode.Optimistic);
         List<QuantityType<?>> estimate90 = new ArrayList<>();
-        assertEquals(672, energySeries90.size()); // 18 values each day for 2 days
+        assertEquals(302, energySeries90.size()); // 48 values each day for next 7 days
         energySeries90.getStates().forEachOrdered(entry -> {
+            assertTrue(Utils.isAfterOrEqual(entry.timestamp(), now));
             State s = entry.state();
             assertTrue(s instanceof QuantityType<?>);
             assertEquals("kWh", ((QuantityType<?>) s).getUnit().toString());
@@ -613,6 +639,7 @@ class SolcastTest {
 
     @Test
     void testCombinedPowerTimeSeries() {
+        setFixedTimeJul18();
         BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITE, "bridge");
         SolcastBridgeHandler scbh = new SolcastBridgeHandler(bi, new TimeZP());
         bi.setHandler(scbh);
@@ -632,8 +659,8 @@ class SolcastTest {
 
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#power-estimate");
         TimeSeries ts2 = cm2.getTimeSeries("solarforecast:sc-plane:thing:average#power-estimate");
-        assertEquals(336, ts1.size(), "TimeSeries size");
-        assertEquals(336, ts2.size(), "TimeSeries size");
+        assertEquals(302, ts1.size(), "TimeSeries size");
+        assertEquals(302, ts2.size(), "TimeSeries size");
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
         while (iter1.hasNext()) {
@@ -651,6 +678,7 @@ class SolcastTest {
 
     @Test
     void testCombinedEnergyTimeSeries() {
+        setFixedTimeJul18();
         BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITE, "bridge");
         SolcastBridgeHandler scbh = new SolcastBridgeHandler(bi, new TimeZP());
         bi.setHandler(scbh);
@@ -672,8 +700,8 @@ class SolcastTest {
 
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#energy-estimate");
         TimeSeries ts2 = cm2.getTimeSeries("solarforecast:sc-plane:thing:average#energy-estimate");
-        assertEquals(336, ts1.size(), "TimeSeries size");
-        assertEquals(336, ts2.size(), "TimeSeries size");
+        assertEquals(302, ts1.size(), "TimeSeries size");
+        assertEquals(302, ts2.size(), "TimeSeries size");
 
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
@@ -692,6 +720,7 @@ class SolcastTest {
 
     @Test
     void testSingleEnergyTimeSeries() {
+        setFixedTimeJul18();
         BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITE, "bridge");
         SolcastBridgeHandler scbh = new SolcastBridgeHandler(bi, new TimeZP());
         bi.setHandler(scbh);
@@ -707,7 +736,7 @@ class SolcastTest {
         scbh.getData();
 
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#energy-estimate");
-        assertEquals(336, ts1.size(), "TimeSeries size");
+        assertEquals(302, ts1.size(), "TimeSeries size");
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         while (iter1.hasNext()) {
             TimeSeries.Entry e1 = iter1.next();
