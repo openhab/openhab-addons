@@ -22,7 +22,7 @@ _This should be mainly about its mandatory and optional configuration parameters
 _Note that it is planned to generate some part of this based on the XML files
 within ```src/main/resources/OH-INF/thing``` of your binding._
 
-### `sample` Thing Configuration
+### `weather` Thing Configuration
 
 | Name     | Type | Description                                                                                                                                                                                                                                               | Default | Required | Advanced |
 |----------|------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------|----------|----------|
