@@ -103,7 +103,7 @@ public class FreeboxOsHandlerFactory extends BaseThingHandlerFactory {
 
     @Modified
     public void configChanged(Map<String, Object> config) {
-        String timeout = (String) config.getOrDefault(TIMEOUT, "8");
+        String timeout = (String) config.getOrDefault(TIMEOUT, "10");
         apiHandler.setTimeout(TimeUnit.SECONDS.toMillis(Long.parseLong(timeout)));
 
         callbackURL = (String) config.getOrDefault(CALLBACK_URL, "");
