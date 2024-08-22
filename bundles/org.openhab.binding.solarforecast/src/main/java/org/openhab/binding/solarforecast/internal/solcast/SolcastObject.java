@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
  * The {@link SolcastObject} holds complete data for forecast
  *
  * @author Bernd Weymann - Initial contribution
+ * @author Bernd Weymann - TimeSeries delivers only future values, otherwise past values are overwritten
  */
 @NonNullByDefault
 public class SolcastObject implements SolarForecast {
@@ -214,8 +215,12 @@ public class SolcastObject implements SolarForecast {
     public TimeSeries getEnergyTimeSeries(QueryMode mode) {
         TreeMap<ZonedDateTime, Double> dtm = getDataMap(mode);
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
+        Instant now = Instant.now(Utils.getClock());
         dtm.forEach((timestamp, energy) -> {
-            ts.add(timestamp.toInstant(), Utils.getEnergyState(getActualEnergyValue(timestamp, mode)));
+            Instant entryTimestamp = timestamp.toInstant();
+            if (Utils.isAfterOrEqual(entryTimestamp, now)) {
+                ts.add(entryTimestamp, Utils.getEnergyState(getActualEnergyValue(timestamp, mode)));
+            }
         });
         return ts;
     }
@@ -264,8 +269,12 @@ public class SolcastObject implements SolarForecast {
     public TimeSeries getPowerTimeSeries(QueryMode mode) {
         TreeMap<ZonedDateTime, Double> dtm = getDataMap(mode);
         TimeSeries ts = new TimeSeries(Policy.REPLACE);
+        Instant now = Instant.now(Utils.getClock());
         dtm.forEach((timestamp, power) -> {
-            ts.add(timestamp.toInstant(), Utils.getPowerState(power));
+            Instant entryTimestamp = timestamp.toInstant();
+            if (Utils.isAfterOrEqual(entryTimestamp, now)) {
+                ts.add(entryTimestamp, Utils.getPowerState(power));
+            }
         });
         return ts;
     }
