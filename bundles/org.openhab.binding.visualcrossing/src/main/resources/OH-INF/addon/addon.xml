@@ -10,5 +10,6 @@
 		data. Our Weather API (https://www.visualcrossing.com/weather-api) is designed to integrate easily into any app or
 		code, and our prices are lower than any other provider in the industry.
 	</description>
+	<connection>cloud</connection>
 
 </addon:addon>

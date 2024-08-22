@@ -16,12 +16,6 @@ organization from an independent event planner to a global enterprise.
 
 ## Thing Configuration
 
-_Describe what is needed to manually configure a thing, either through the UI or via a thing-file._
-_This should be mainly about its mandatory and optional configuration parameters._
-
-_Note that it is planned to generate some part of this based on the XML files
-within ```src/main/resources/OH-INF/thing``` of your binding._
-
 ### `weather` Thing Configuration
 
 | Name     | Type | Description                                                                                                                                                                                                                                               | Default | Required | Advanced |
