@@ -93,7 +93,6 @@ public class LinkyAuthServlet extends HttpServlet {
             this.myelectricaldataStep1 = readTemplate("myelectricaldata-step1.html");
             this.myelectricaldataStep2 = readTemplate("myelectricaldata-step2.html");
             this.myelectricaldataStep3 = readTemplate("myelectricaldata-step3.html");
-
         } catch (IOException e) {
             throw new LinkyException("unable to initialize auth servlet", e);
         }
@@ -111,7 +110,7 @@ public class LinkyAuthServlet extends HttpServlet {
 
         if (url == null) {
             throw new FileNotFoundException(
-                    String.format("Cannot find '%s' - failed to initialize Linky servlet", templateName));
+                    String.format("Cannot find {}' - failed to initialize Linky servlet".formatted(templateName)));
         } else {
             try (InputStream inputStream = url.openStream()) {
                 return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
