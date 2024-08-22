@@ -17,6 +17,8 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
 
+import static org.openhab.core.thing.ChannelUID.CHANNEL_GROUP_SEPARATOR;
+
 /**
  * The {@link VisualCrossingBindingConstants} class defines common constants, which are
  * used across the whole binding.
@@ -34,44 +36,44 @@ public class VisualCrossingBindingConstants {
 
     public static final class Channels {
         public static final class BasicChannelGroup {
-            private static final String CHANNEL_ID = "basic";
+            private static final String CHANNEL_ID = "basic"+ CHANNEL_GROUP_SEPARATOR;
 
-            public static final String COST = CHANNEL_ID + "#cost";
-            public static final String DESCRIPTION = CHANNEL_ID + "#description";
+            public static final String COST = CHANNEL_ID + "cost";
+            public static final String DESCRIPTION = CHANNEL_ID + "description";
         }
 
         public static final class CurrentConditions {
-            private static final String CHANNEL_ID = "current-conditions";
+            private static final String CHANNEL_ID = "current-conditions"+ CHANNEL_GROUP_SEPARATOR;
 
-            public static final String DATE_TIME = CHANNEL_ID + "#date-time";
-            public static final String TIME_STAMP = CHANNEL_ID + "#time-stamp";
-            public static final String TEMPERATURE = CHANNEL_ID + "#temperature";
-            public static final String FEELS_LIKE = CHANNEL_ID + "#feels-like";
-            public static final String HUMIDITY = CHANNEL_ID + "#humidity";
-            public static final String DEW = CHANNEL_ID + "#dew";
-            public static final String PRECIP = CHANNEL_ID + "#precip";
-            public static final String PRECIP_PROB = CHANNEL_ID + "#precip-prob";
-            public static final String PRECIP_TYPE = CHANNEL_ID + "#precip-type";
-            public static final String SNOW = CHANNEL_ID + "#snow";
-            public static final String SNOW_DEPTH = CHANNEL_ID + "#snow-depth";
-            public static final String WIND_GUST = CHANNEL_ID + "#wind-gust";
-            public static final String WIND_SPEED = CHANNEL_ID + "#wind-speed";
-            public static final String WIND_DIR = CHANNEL_ID + "#wind-dir";
-            public static final String PRESSURE = CHANNEL_ID + "#pressure";
-            public static final String VISIBILITY = CHANNEL_ID + "#visibility";
-            public static final String CLOUD_COVER = CHANNEL_ID + "#cloud-cover";
-            public static final String SOLAR_RADIATION = CHANNEL_ID + "#solar-radiation";
-            public static final String SOLAR_ENERGY = CHANNEL_ID + "#solar-energy";
-            public static final String UV_INDEX = CHANNEL_ID + "#uv-index";
-            public static final String CONDITIONS = CHANNEL_ID + "#conditions";
-            public static final String ICON = CHANNEL_ID + "#icon";
-            public static final String STATIONS = CHANNEL_ID + "#stations";
-            public static final String SOURCE = CHANNEL_ID + "#source";
-            public static final String SUNRISE = CHANNEL_ID + "#sunrise";
-            public static final String SUNRISE_EPOCH = CHANNEL_ID + "#sunrise-epoch";
-            public static final String SUNSET = CHANNEL_ID + "#sunset";
-            public static final String SUNSET_EPOCH = CHANNEL_ID + "#sunset-epoch";
-            public static final String MOON_PHASE = CHANNEL_ID + "#moon-phase";
+            public static final String DATE_TIME = CHANNEL_ID + "date-time";
+            public static final String TIME_STAMP = CHANNEL_ID + "time-stamp";
+            public static final String TEMPERATURE = CHANNEL_ID + "temperature";
+            public static final String FEELS_LIKE = CHANNEL_ID + "feels-like";
+            public static final String HUMIDITY = CHANNEL_ID + "humidity";
+            public static final String DEW = CHANNEL_ID + "dew";
+            public static final String PRECIP = CHANNEL_ID + "precip";
+            public static final String PRECIP_PROB = CHANNEL_ID + "precip-prob";
+            public static final String PRECIP_TYPE = CHANNEL_ID + "precip-type";
+            public static final String SNOW = CHANNEL_ID + "snow";
+            public static final String SNOW_DEPTH = CHANNEL_ID + "snow-depth";
+            public static final String WIND_GUST = CHANNEL_ID + "wind-gust";
+            public static final String WIND_SPEED = CHANNEL_ID + "wind-speed";
+            public static final String WIND_DIR = CHANNEL_ID + "wind-dir";
+            public static final String PRESSURE = CHANNEL_ID + "pressure";
+            public static final String VISIBILITY = CHANNEL_ID + "visibility";
+            public static final String CLOUD_COVER = CHANNEL_ID + "cloud-cover";
+            public static final String SOLAR_RADIATION = CHANNEL_ID + "solar-radiation";
+            public static final String SOLAR_ENERGY = CHANNEL_ID + "solar-energy";
+            public static final String UV_INDEX = CHANNEL_ID + "uv-index";
+            public static final String CONDITIONS = CHANNEL_ID + "conditions";
+            public static final String ICON = CHANNEL_ID + "icon";
+            public static final String STATIONS = CHANNEL_ID + "stations";
+            public static final String SOURCE = CHANNEL_ID + "source";
+            public static final String SUNRISE = CHANNEL_ID + "sunrise";
+            public static final String SUNRISE_EPOCH = CHANNEL_ID + "sunrise-epoch";
+            public static final String SUNSET = CHANNEL_ID + "sunset";
+            public static final String SUNSET_EPOCH = CHANNEL_ID + "sunset-epoch";
+            public static final String MOON_PHASE = CHANNEL_ID + "moon-phase";
         }
 
         public static final class ChannelDay {
