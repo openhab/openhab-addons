@@ -69,7 +69,7 @@ public class ApiHandler {
     private final HttpClient httpClient;
     private final Gson gson;
 
-    private long timeoutInMs = TimeUnit.SECONDS.toMillis(8);
+    private long timeoutInMs = TimeUnit.SECONDS.toMillis(10);
 
     public ApiHandler(HttpClientFactory httpClientFactory, TimeZoneProvider timeZoneProvider) {
         this.gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
