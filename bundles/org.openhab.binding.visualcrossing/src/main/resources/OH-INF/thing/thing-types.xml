@@ -67,8 +67,7 @@
 			<parameter name="location" type="text">
 				<label>Location</label>
 				<description>Is the address, partial address or latitude,longitude location for which to retrieve weather data. You
-					can also use US ZIP Codes. If you would like to submit multiple locations in the same request, consider our
-					Multiple Location Timeline Weather API.</description>
+					can also use US ZIP Codes.</description>
 			</parameter>
 			<parameter name="lang" type="text">
 				<label>Language</label>
