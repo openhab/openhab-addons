@@ -80,7 +80,7 @@ removed.
 | temperature         | Number:Temperature | RO         | Current temperature in the room                                                                                                                                                                                                                                                                 |
 | expected-temperature | Number:Temperature | RW         | Sets the desired temperature in the room                                                                                                                                                                                                                                                        |
 | it600-work-type-channel    | String             | RW         | Sets the work type for the device. OFF - device is turned off MANUAL - schedules are turned off, following a manual temperature set, AUTOMATIC - schedules are turned on, following schedule, TEMPORARY_MANUAL - schedules are turned on, following manual temperature until the next schedule. |
-| it600-running-state     | Switch             | RO         | Is the device running |
+| running-state     | Switch             | RO         | Is the device running |
 
 ## Full Example
 
