@@ -46,10 +46,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public class RokuCommunicator {
-    private final Logger logger = LoggerFactory.getLogger(RokuCommunicator.class);
-
     private static final int REQUEST_TIMEOUT = 5000;
 
+    private final Logger logger = LoggerFactory.getLogger(RokuCommunicator.class);
     private final HttpClient httpClient;
 
     private final String urlKeyPress;
