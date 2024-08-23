@@ -29,6 +29,8 @@ import org.openhab.persistence.jdbc.internal.utils.StringUtilsExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import oracle.sql.TIMESTAMP;
+
 /**
  * Extended Database Configuration class for Oracle Database. Class represents
  * the extended database-specific configuration. Overrides and supplements the
@@ -140,11 +142,11 @@ public class JdbcOracleDAO extends JdbcBaseDAO {
      * INFO: https://github.com/brettwooldridge/HikariCP
      */
     private void initDbProps() {
+        // Tuning for performance and draining connection on ADB
+        // See https://blogs.oracle.com/developers/post/hikaricp-best-practices-for-oracle-database-and-spring-boot
         System.setProperty("com.zaxxer.hikari.aliveBypassWindowMs", "-1");
-
-        // Performance Tuning
-        // Setting as system property because Hikari does not pass on these connection properties from datasource
-        // properties
+        // Setting as system property because HikariCP as instantiated through Yank does not pass on these connection
+        // properties from dataSource properties to the connection
         System.setProperty("oracle.jdbc.defaultConnectionValidation", "LOCAL");
         System.setProperty("oracle.jdbc.defaultRowPrefetch", "20");
 
@@ -245,7 +247,7 @@ public class JdbcOracleDAO extends JdbcBaseDAO {
 
     @Override
     protected ZonedDateTime objectAsZonedDateTime(Object v) {
-        if (v instanceof oracle.sql.TIMESTAMP objectAsOracleTimestamp) {
+        if (v instanceof TIMESTAMP objectAsOracleTimestamp) {
             try {
                 return objectAsOracleTimestamp.timestampValue().toInstant().atZone(ZoneId.systemDefault());
             } catch (SQLException e) {
