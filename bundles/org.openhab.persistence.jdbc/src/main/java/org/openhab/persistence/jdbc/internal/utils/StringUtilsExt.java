@@ -44,7 +44,7 @@ public class StringUtilsExt {
     public static String replaceArrayMerge(String str, String separate, Object[] separators) {
         String s = str;
         for (int i = 0; i < separators.length; i++) {
-            s = s.replaceFirst(separate, (String) separators[i]);
+            s = s.replaceAll(separate, (String) separators[i]);
         }
         return s;
     }
@@ -55,7 +55,7 @@ public class StringUtilsExt {
     public static String replaceArrayMerge(String str, String[] separate, String[] separators) {
         String s = str;
         for (int i = 0; i < separators.length; i++) {
-            s = s.replaceFirst(separate[i], separators[i]);
+            s = s.replaceAll(separate[i], separators[i]);
         }
         return s;
     }
@@ -69,7 +69,7 @@ public class StringUtilsExt {
 
     /**
      * <b>JDBC-URI Examples:</b><br/>
-     * 
+     *
      * <pre>
      * {@code
      * jdbc:dbShortcut:c:/dev/databaseName<br/>
@@ -161,24 +161,26 @@ public class StringUtilsExt {
             props.put("pathQuery", dbURI.getQuery());
         }
 
-        String path = "";
         if (dbURI.getPath() != null) {
+            String path = "";
             String gp = dbURI.getPath();
             String st = "/";
-            if (gp.indexOf("/") <= 1) {
+            if (gp.indexOf(st) <= 1) {
                 if (substrPos(gp, st).size() > 1) {
                     path = stringBeforeLastSubstr(gp, st) + st;
-                } else {
+                } else if (substrPos(gp, st).size() > 0) {
                     path = stringBeforeSubstr(gp, st) + st;
+                } else {
+                    path = gp + st;
                 }
             }
             if (dbURI.getScheme() != null && dbURI.getScheme().length() == 1) {
                 path = dbURI.getScheme() + ":" + path;
             }
             props.put("serverPath", path);
-        }
-        if (dbURI.getPath() != null) {
-            props.put("databaseName", stringAfterLastSubstr(dbURI.getPath(), "/"));
+            if (gp.indexOf(st) >= 0) {
+                props.put("databaseName", stringAfterLastSubstr(gp, "/"));
+            }
         }
         if (dbURI.getPort() != -1) {
             props.put("portNumber", dbURI.getPort() + "");
