@@ -684,30 +684,12 @@ public class Clip2ThingHandler extends BaseThingHandler {
             }
         } else {
             if (SUPPORTED_SCENE_TYPES.contains(resource.getType())) {
-                switch (resource.getContentType()) {
-                    case ADD:
-                        if (getResourceReference().equals(resource.getGroup())) {
-                            resourceConsumed = true;
-                            resource.setContentType(ContentType.FULL_STATE);
-                            sceneContributorsCache.put(resource.getId(), resource);
-                            sceneResourceEntries.put(resource.getName(), resource);
-                            updateSceneChannelStateDescription();
-                        }
-                        break;
-                    case DELETE:
-                        Resource deletedScene = sceneContributorsCache.remove(resource.getId());
-                        if (Objects.nonNull(deletedScene)) {
-                            resourceConsumed = true;
-                            sceneResourceEntries.remove(deletedScene.getName());
-                            updateSceneChannelStateDescription();
-                        }
-                    default:
-                }
+                resourceConsumed = checkSceneResourceAddDelete(resource);
             }
             Resource cachedResource = getResourceFromCache(resource);
             if (cachedResource != null) {
                 Setters.setResource(resource, cachedResource);
-                resourceConsumed |= (!updateChannels || updateChannels(resource));
+                resourceConsumed = (updateChannels ? updateChannels(resource) : true) || resourceConsumed;
                 putResourceToCache(resource);
                 if (ResourceType.LIGHT == resource.getType() && !updateLightPropertiesDone) {
                     updateLightProperties(resource);
@@ -717,6 +699,36 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (resourceConsumed) {
             logger.debug("{} -> onResource() consumed resource {}", resourceId, resource);
         }
+    }
+
+    /**
+     * Check if a scene resource is of type 'ADD or 'DELETE' and either add it to, or delete it from, the two scene
+     * resource caches; and refresh the scene channel state description selection options.
+     *
+     * @param sceneResource the respective scene resource
+     * @return true if the scene was added or deleted
+     */
+    private boolean checkSceneResourceAddDelete(Resource sceneResource) {
+        switch (sceneResource.getContentType()) {
+            case ADD:
+                if (getResourceReference().equals(sceneResource.getGroup())) {
+                    sceneResource.setContentType(ContentType.FULL_STATE);
+                    sceneContributorsCache.put(sceneResource.getId(), sceneResource);
+                    sceneResourceEntries.put(sceneResource.getName(), sceneResource);
+                    updateSceneChannelStateDescription();
+                    return true;
+                }
+                break;
+            case DELETE:
+                Resource deletedScene = sceneContributorsCache.remove(sceneResource.getId());
+                if (Objects.nonNull(deletedScene)) {
+                    sceneResourceEntries.remove(deletedScene.getName());
+                    updateSceneChannelStateDescription();
+                    return true;
+                }
+            default:
+        }
+        return false;
     }
 
     private void putResourceToCache(Resource resource) {
