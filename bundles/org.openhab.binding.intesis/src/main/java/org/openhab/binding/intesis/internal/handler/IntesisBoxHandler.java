@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,8 +24,6 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -93,7 +91,6 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
         config = getConfigAs(IntesisBoxConfiguration.class);
 
         if (!config.ipAddress.isEmpty()) {
-
             updateStatus(ThingStatus.UNKNOWN);
             scheduler.submit(() -> {
 
@@ -107,14 +104,13 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                     intesisLocalApi.sendId();
                     intesisLocalApi.sendLimitsQuery();
                     intesisLocalApi.sendAlive();
-
                 } catch (IOException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
                     return;
                 }
                 updateStatus(ThingStatus.ONLINE);
             });
-            pollingTask = scheduler.scheduleWithFixedDelay(this::polling, 3, 45, TimeUnit.SECONDS);
+            pollingTask = scheduler.scheduleWithFixedDelay(this::polling, 3, config.pollingInterval, TimeUnit.SECONDS);
         } else {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "No IP address specified)");
         }
@@ -176,9 +172,8 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 }
                 break;
             case CHANNEL_TYPE_TARGETTEMP:
-                if (command instanceof QuantityType) {
-                    QuantityType<?> celsiusTemperature = (QuantityType<?>) command;
-                    celsiusTemperature = celsiusTemperature.toUnit(SIUnits.CELSIUS);
+                if (command instanceof QuantityType quantityCommand) {
+                    QuantityType<?> celsiusTemperature = quantityCommand.toUnit(SIUnits.CELSIUS);
                     if (celsiusTemperature != null) {
                         double doubleValue = celsiusTemperature.doubleValue();
                         logger.trace("targetTemp double value = {}", doubleValue);
@@ -237,18 +232,18 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 break;
 
             case "SETPTEMP":
-                if (value.equals("32768")) {
+                if ("32768".equals(value)) {
                     value = "0";
                 }
                 updateState(CHANNEL_TYPE_TARGETTEMP,
-                        new QuantityType<Temperature>(Double.valueOf(value) / 10.0d, SIUnits.CELSIUS));
+                        new QuantityType<>(Double.valueOf(value) / 10.0d, SIUnits.CELSIUS));
                 break;
             case "AMBTEMP":
                 if (Double.valueOf(value).isNaN()) {
                     value = "0";
                 }
                 updateState(CHANNEL_TYPE_AMBIENTTEMP,
-                        new QuantityType<Temperature>(Double.valueOf(value) / 10.0d, SIUnits.CELSIUS));
+                        new QuantityType<>(Double.valueOf(value) / 10.0d, SIUnits.CELSIUS));
                 break;
             case "MODE":
                 updateState(CHANNEL_TYPE_MODE, new StringType(value));
@@ -277,7 +272,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
 
     private void handleMessage(String data) {
         logger.debug("handleMessage(): Message received - {}", data);
-        if (data.equals("ACK") || data.equals("")) {
+        if ("ACK".equals(data) || "".equals(data)) {
             return;
         }
         if (data.startsWith(ID + ':')) {
@@ -295,7 +290,7 @@ public class IntesisBoxHandler extends BaseThingHandler implements IntesisBoxCha
                 case LIMITS:
                     logger.debug("handleMessage(): Limits received - {}", data);
                     String function = message.getFunction();
-                    if (function.equals("SETPTEMP")) {
+                    if ("SETPTEMP".equals(function)) {
                         List<Double> limits = message.getLimitsValue().stream().map(l -> Double.valueOf(l) / 10.0d)
                                 .collect(Collectors.toList());
                         if (limits.size() == 2) {

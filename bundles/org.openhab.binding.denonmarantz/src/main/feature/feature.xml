@@ -4,8 +4,7 @@
 
 	<feature name="openhab-binding-denonmarantz" description="Denon / Marantz Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature>openhab-transport-mdns</feature>
-		<feature dependency="true">openhab.tp-jaxb</feature>
+		<feature>openhab-transport-upnp</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.denonmarantz/${project.version}</bundle>
 	</feature>
 </features>

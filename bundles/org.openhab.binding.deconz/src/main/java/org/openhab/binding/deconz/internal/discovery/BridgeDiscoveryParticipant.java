@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,7 +16,6 @@ import static org.openhab.binding.deconz.internal.BindingConstants.*;
 
 import java.net.URI;
 import java.net.URL;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -48,7 +47,7 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
     @Override
     public Set<ThingTypeUID> getSupportedThingTypeUIDs() {
-        return Collections.singleton(BRIDGE_TYPE);
+        return Set.of(BRIDGE_TYPE);
     }
 
     @Override
@@ -58,7 +57,7 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
             return null;
         }
         URL descriptorURL = device.getIdentity().getDescriptorURL();
-        String UDN = device.getIdentity().getUdn().getIdentifierString();
+        String udn = device.getIdentity().getUdn().getIdentifierString();
 
         // Friendly name is like "name (host)"
         String name = device.getDetails().getFriendlyName();
@@ -75,7 +74,7 @@ public class BridgeDiscoveryParticipant implements UpnpDiscoveryParticipant {
 
         properties.put(CONFIG_HOST, host);
         properties.put(CONFIG_HTTP_PORT, port);
-        properties.put(PROPERTY_UDN, UDN);
+        properties.put(PROPERTY_UDN, udn);
 
         return DiscoveryResultBuilder.create(uid).withProperties(properties).withLabel(name)
                 .withRepresentationProperty(PROPERTY_UDN).build();

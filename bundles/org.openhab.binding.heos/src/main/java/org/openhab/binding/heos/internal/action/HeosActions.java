@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,6 +25,8 @@ import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
 import org.openhab.core.thing.binding.ThingHandler;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,18 +35,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author Martin van Wingerden - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = HeosActions.class)
 @ThingActionsScope(name = "heos")
 @NonNullByDefault
 public class HeosActions implements ThingActions {
 
-    private final static Logger logger = LoggerFactory.getLogger(HeosActions.class);
+    private static final Logger logger = LoggerFactory.getLogger(HeosActions.class);
 
     private @Nullable HeosBridgeHandler handler;
 
     @Override
     public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof HeosBridgeHandler) {
-            this.handler = (HeosBridgeHandler) handler;
+        if (handler instanceof HeosBridgeHandler bridgeHandler) {
+            this.handler = bridgeHandler;
         }
     }
 

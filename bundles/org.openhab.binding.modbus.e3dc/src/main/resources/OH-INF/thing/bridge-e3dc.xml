@@ -22,6 +22,10 @@
 				<description>Refresh Rate of E3DC values in Milliseconds</description>
 				<default>2000</default>
 			</parameter>
+			<parameter name="batteryCapacity" type="decimal">
+				<label>Battery Capacity</label>
+				<description>Capacity of the built in battery in kWh</description>
+			</parameter>
 		</config-description>
 	</bridge-type>
 </thing:thing-descriptions>

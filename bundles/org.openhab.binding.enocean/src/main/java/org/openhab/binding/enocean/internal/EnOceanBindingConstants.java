@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
- * The {@link EnOceanBinding} class defines common constants, which are
+ * The {@link EnOceanBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Daniel Weber - Initial contribution
@@ -61,6 +61,7 @@ public class EnOceanBindingConstants {
     public static final ThingTypeUID THING_TYPE_TEMPERATURESENSOR = new ThingTypeUID(BINDING_ID, "temperatureSensor");
     public static final ThingTypeUID THING_TYPE_TEMPERATUREHUMIDITYSENSOR = new ThingTypeUID(BINDING_ID,
             "temperatureHumiditySensor");
+    public static final ThingTypeUID THING_TYPE_GASSENSOR = new ThingTypeUID(BINDING_ID, "gasSensor");
     public static final ThingTypeUID THING_TYPE_AUTOMATEDMETERSENSOR = new ThingTypeUID(BINDING_ID,
             "automatedMeterSensor");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
@@ -83,10 +84,10 @@ public class EnOceanBindingConstants {
     public static final Set<ThingTypeUID> SUPPORTED_DEVICE_THING_TYPES_UIDS = Set.of(THING_TYPE_PUSHBUTTON,
             THING_TYPE_ROCKERSWITCH, THING_TYPE_CLASSICDEVICE, THING_TYPE_CENTRALCOMMAND, THING_TYPE_ROOMOPERATINGPANEL,
             THING_TYPE_MECHANICALHANDLE, THING_TYPE_CONTACT, THING_TYPE_MEASUREMENTSWITCH, THING_TYPE_TEMPERATURESENSOR,
-            THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_GENERICTHING, THING_TYPE_ROLLERSHUTTER,
-            THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR, THING_TYPE_LIGHTSENSOR,
-            THING_TYPE_ENVIRONMENTALSENSOR, THING_TYPE_AUTOMATEDMETERSENSOR, THING_TYPE_THERMOSTAT,
-            THING_TYPE_MULTFUNCTIONSMOKEDETECTOR, THING_TYPE_HEATRECOVERYVENTILATION,
+            THING_TYPE_TEMPERATUREHUMIDITYSENSOR, THING_TYPE_GASSENSOR, THING_TYPE_GENERICTHING,
+            THING_TYPE_ROLLERSHUTTER, THING_TYPE_OCCUPANCYSENSOR, THING_TYPE_LIGHTTEMPERATUREOCCUPANCYSENSOR,
+            THING_TYPE_LIGHTSENSOR, THING_TYPE_ENVIRONMENTALSENSOR, THING_TYPE_AUTOMATEDMETERSENSOR,
+            THING_TYPE_THERMOSTAT, THING_TYPE_MULTFUNCTIONSMOKEDETECTOR, THING_TYPE_HEATRECOVERYVENTILATION,
             THING_TYPE_WINDOWSASHHANDLESENSOR);
 
     // List of all Channel Type Ids, these type ids are also used as channel ids during dynamic creation of channels
@@ -103,6 +104,11 @@ public class EnOceanBindingConstants {
     public static final String CHANNEL_ANGLE = "angle";
     public static final String CHANNEL_TEMPERATURE = "temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";
+    public static final String CHANNEL_CO2 = "co2";
+    public static final String CHANNEL_CO = "co";
+    public static final String CHANNEL_TVOC = "totalVolatileOrganicCompounds";
+    public static final String CHANNEL_VOC = "volatileOrganicCompounds";
+    public static final String CHANNEL_VOC_ID = "volatileOrganicCompoundsId";
     public static final String CHANNEL_SETPOINT = "setPoint";
     public static final String CHANNEL_FANSPEEDSTAGE = "fanSpeedStage";
     public static final String CHANNEL_OCCUPANCY = "occupancy";
@@ -215,6 +221,7 @@ public class EnOceanBindingConstants {
     public static final String CHANNEL_EXHAUSTAIRFANAIRFLOWRATE = "exhaustAirFanAirFlowRate";
     public static final String CHANNEL_SUPPLYFANSPEED = "supplyFanSpeed";
     public static final String CHANNEL_EXHAUSTFANSPEED = "exhaustFanSpeed";
+    public static final String CHANNEL_DAYNIGHTMODESTATE = "dayNightModeState";
 
     public static final Map<String, EnOceanChannelDescription> CHANNELID2CHANNELDESCRIPTION = Map.ofEntries(
             Map.entry(CHANNEL_GENERAL_SWITCHING,
@@ -243,9 +250,21 @@ public class EnOceanBindingConstants {
             Map.entry(CHANNEL_HUMIDITY,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_HUMIDITY),
                             CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_CO2,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_CO2), CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_CO,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_CO), CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_VOC,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VOC), CoreItemFactory.NUMBER)),
+            Map.entry(CHANNEL_VOC_ID,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_VOC_ID),
+                            CoreItemFactory.STRING)),
+            Map.entry(CHANNEL_TVOC,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_TVOC),
+                            CoreItemFactory.NUMBER)),
             Map.entry(CHANNEL_FANSPEEDSTAGE,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_FANSPEEDSTAGE),
-                            CoreItemFactory.STRING)),
+                            CoreItemFactory.NUMBER)),
             Map.entry(CHANNEL_OCCUPANCY,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_OCCUPANCY),
                             CoreItemFactory.SWITCH)),
@@ -557,6 +576,9 @@ public class EnOceanBindingConstants {
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_EXHAUSTFANSPEED),
                             CoreItemFactory.NUMBER + ItemUtil.EXTENSION_SEPARATOR
                                     + Dimensionless.class.getSimpleName())),
+            Map.entry(CHANNEL_DAYNIGHTMODESTATE,
+                    new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_DAYNIGHTMODESTATE),
+                            CoreItemFactory.NUMBER)),
 
             Map.entry(CHANNEL_STATUS_REQUEST_EVENT,
                     new EnOceanChannelDescription(new ChannelTypeUID(BINDING_ID, CHANNEL_STATUS_REQUEST_EVENT), null,
@@ -576,7 +598,7 @@ public class EnOceanBindingConstants {
 
     // Bridge properties
     public static final String PROPERTY_BASE_ID = "Base ID";
-    public static final String PROPERTY_REMAINING_WRITE_CYCLES_Base_ID = "Remaining Base ID Write Cycles";
+    public static final String PROPERTY_REMAINING_WRITE_CYCLES_BASE_ID = "Remaining Base ID Write Cycles";
     public static final String PROPERTY_APP_VERSION = "APP Version";
     public static final String PROPERTY_API_VERSION = "API Version";
     public static final String PROPERTY_CHIP_ID = "Chip ID";
@@ -594,9 +616,9 @@ public class EnOceanBindingConstants {
     public static final String PARAMETER_ENOCEANID = "enoceanId";
 
     // Channel config parameter
-    public static final String PARAMETER_CHANNEL_TeachInMSG = "teachInMSG";
-    public static final String PARAMETER_CHANNEL_Duration = "duration";
-    public static final String PARAMETER_CHANNEL_SwitchMode = "switchMode";
+    public static final String PARAMETER_CHANNEL_TEACHINMSG = "teachInMSG";
+    public static final String PARAMETER_CHANNEL_DURATION = "duration";
+    public static final String PARAMETER_CHANNEL_SWITCHMODE = "switchMode";
 
     // Manufacturer Ids - used to recognize special EEPs during auto discovery
     public static final int ELTAKOID = 0x00d;

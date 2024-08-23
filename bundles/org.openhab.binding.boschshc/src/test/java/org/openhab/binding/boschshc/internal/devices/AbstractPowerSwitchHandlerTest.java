@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,26 +12,36 @@
  */
 package org.openhab.binding.boschshc.internal.devices;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import javax.measure.quantity.Energy;
-import javax.measure.quantity.Power;
-
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.binding.boschshc.internal.services.powerswitch.PowerSwitchState;
 import org.openhab.binding.boschshc.internal.services.powerswitch.dto.PowerSwitchServiceState;
 import org.openhab.core.library.types.OnOffType;
-import org.openhab.core.library.types.QuantityType;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingUID;
+import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
+import org.openhab.core.types.RefreshType;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -43,67 +53,91 @@ import com.google.gson.JsonParser;
  *
  * @param <T> type of the handler to be tested
  */
+@NonNullByDefault
 public abstract class AbstractPowerSwitchHandlerTest<T extends AbstractPowerSwitchHandler>
         extends AbstractBoschSHCDeviceHandlerTest<T> {
 
-    @Captor
-    private ArgumentCaptor<PowerSwitchServiceState> serviceStateCaptor;
+    private @Captor @NonNullByDefault({}) ArgumentCaptor<PowerSwitchServiceState> serviceStateCaptor;
 
-    @Captor
-    private ArgumentCaptor<QuantityType<Power>> powerCaptor;
+    @BeforeEach
+    @Override
+    public void beforeEach(TestInfo testInfo)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        PowerSwitchServiceState powerSwitchServiceState = new PowerSwitchServiceState();
+        powerSwitchServiceState.switchState = PowerSwitchState.ON;
+        lenient().when(getBridgeHandler().getState(anyString(), eq("PowerSwitch"), same(PowerSwitchServiceState.class)))
+                .thenReturn(powerSwitchServiceState);
 
-    @Captor
-    private ArgumentCaptor<QuantityType<Energy>> energyCaptor;
+        super.beforeEach(testInfo);
+    }
 
     @Test
-    public void testHandleCommand()
+    public void testHandleCommandPowerSwitchChannel()
             throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-
-        getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_POWER_SWITCH),
-                OnOffType.ON);
+        getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.ON);
         verify(getBridgeHandler()).putState(eq(getDeviceID()), eq("PowerSwitch"), serviceStateCaptor.capture());
         PowerSwitchServiceState state = serviceStateCaptor.getValue();
         assertSame(PowerSwitchState.ON, state.switchState);
 
-        getFixture().handleCommand(new ChannelUID(new ThingUID(getThingTypeUID(), "abcdef"),
-                BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.OFF);
+        getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.OFF);
         verify(getBridgeHandler(), times(2)).putState(eq(getDeviceID()), eq("PowerSwitch"),
                 serviceStateCaptor.capture());
         state = serviceStateCaptor.getValue();
         assertSame(PowerSwitchState.OFF, state.switchState);
     }
 
-    @Test
-    public void testUpdateChannel_PowerSwitchState() {
-        JsonElement jsonObject = JsonParser
-                .parseString("{\n" + "  \"@type\": \"powerSwitchState\",\n" + "  \"switchState\": \"ON\"\n" + "}");
-        getFixture().processUpdate("PowerSwitch", jsonObject);
-        verify(getCallback()).stateUpdated(
-                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.ON);
+    @ParameterizedTest
+    @MethodSource("org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils#getExecutionAndTimeoutAndInterruptedExceptionArguments()")
+    public void testHandleCommandPowerSwitchChannelHandleExceptions(Exception e)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        when(getBridgeHandler().putState(any(), any(), any())).thenThrow(e);
 
-        jsonObject = JsonParser
-                .parseString("{\n" + "  \"@type\": \"powerSwitchState\",\n" + "  \"switchState\": \"OFF\"\n" + "}");
-        getFixture().processUpdate("PowerSwitch", jsonObject);
-        verify(getCallback()).stateUpdated(
-                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.OFF);
+        getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.ON);
+
+        verify(getCallback()).statusUpdated(any(Thing.class),
+                argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
+                        && status.getStatusDetail().equals(ThingStatusDetail.COMMUNICATION_ERROR)));
     }
 
     @Test
-    public void testUpdateChannel_PowerMeterServiceState() {
-        JsonElement jsonObject = JsonParser.parseString("{\n" + "  \"@type\": \"powerMeterState\",\n"
-                + "  \"powerConsumption\": \"23\",\n" + "  \"energyConsumption\": 42\n" + "}");
-        getFixture().processUpdate("PowerMeter", jsonObject);
+    public void testUpdateChannelPowerSwitchState() {
+        JsonElement jsonObject = JsonParser
+                .parseString("{\n" + "  \"@type\": \"powerSwitchState\",\n" + "  \"switchState\": \"ON\"\n" + "}");
 
-        verify(getCallback()).stateUpdated(
-                eq(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_POWER_CONSUMPTION)),
-                powerCaptor.capture());
-        QuantityType<Power> powerValue = powerCaptor.getValue();
-        assertEquals(23, powerValue.intValue());
+        getFixture().processUpdate("PowerSwitch", jsonObject);
 
-        verify(getCallback()).stateUpdated(
-                eq(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_ENERGY_CONSUMPTION)),
-                energyCaptor.capture());
-        QuantityType<Energy> energyValue = energyCaptor.getValue();
-        assertEquals(42, energyValue.intValue());
+        // state is updated twice: via short poll in initialize() and via long poll result in this test
+        verify(getCallback(), times(2)).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH),
+                OnOffType.ON);
+
+        jsonObject = JsonParser
+                .parseString("{\n" + "  \"@type\": \"powerSwitchState\",\n" + "  \"switchState\": \"OFF\"\n" + "}");
+
+        getFixture().processUpdate("PowerSwitch", jsonObject);
+
+        verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), OnOffType.OFF);
+    }
+
+    @Test
+    public void testHandleCommandRefreshPowerSwitchChannel() {
+        getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), RefreshType.REFRESH);
+
+        // state is updated twice: via short poll in initialize() and via long poll result in this test
+        verify(getCallback(), times(2)).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH),
+                OnOffType.ON);
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils#getBoschShcAndExecutionAndTimeoutAndInterruptedExceptionArguments()")
+    public void testHandleCommandRefreshPowerSwitchChannelHandleExceptions(Exception e)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
+        when(getBridgeHandler().getState(anyString(), eq("PowerSwitch"), same(PowerSwitchServiceState.class)))
+                .thenThrow(e);
+
+        getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_POWER_SWITCH), RefreshType.REFRESH);
+
+        verify(getCallback()).statusUpdated(any(Thing.class),
+                argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
+                        && status.getStatusDetail().equals(ThingStatusDetail.COMMUNICATION_ERROR)));
     }
 }

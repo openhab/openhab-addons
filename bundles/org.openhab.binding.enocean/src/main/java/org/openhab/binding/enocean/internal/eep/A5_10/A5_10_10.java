@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,15 +12,45 @@
  */
 package org.openhab.binding.enocean.internal.eep.A5_10;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 
 /**
- *
+ * From A5_10_10 up to A5_10_14 temperature is given as a 8Bit value (range: 0..250!).
+ * Therefore higher values mean higher temperatures.
+ * Temperature range 0..40.
+ * 
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class A5_10_10 extends A5_10 {
 
     public A5_10_10(ERP1Message packet) {
         super(packet);
+    }
+
+    @Override
+    protected int getSetPointValue() {
+        return getDB3Value();
+    }
+
+    @Override
+    protected double getMinTemperatureValue() {
+        return 0.0;
+    }
+
+    @Override
+    protected double getMinUnscaledTemperatureValue() {
+        return 0.0;
+    }
+
+    @Override
+    protected double getMaxTemperatureValue() {
+        return 40.0;
+    }
+
+    @Override
+    protected double getMaxUnscaledTemperatureValue() {
+        return 250.0;
     }
 }

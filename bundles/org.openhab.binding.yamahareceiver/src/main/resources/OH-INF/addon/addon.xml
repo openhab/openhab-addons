@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="yamahareceiver" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>YamahaReceiver Binding</name>
+	<description>This is the binding for network enabled Yamaha receivers (without MusicCast support).</description>
+	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>upnp</service-type>
+			<match-properties>
+				<match-property>
+					<name>manufacturer</name>
+					<regex>.*YAMAHA.*</regex>
+				</match-property>
+				<match-property>
+					<name>deviceType</name>
+					<regex>.*MediaRenderer.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
+</addon:addon>

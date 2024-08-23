@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -180,6 +180,9 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
         linkedResourceIds.clear();
         linkedResourceIds.addAll(getAllLinkedChannelsResourceIds());
         logger.debug("Linked resources {}: {}", linkedResourceIds.size(), linkedResourceIds);
+
+        updateStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE,
+                "Initializing communication to the IHC / ELKO controller");
 
         if (controlJob == null || controlJob.isCancelled()) {
             logger.debug("Start control task, interval={}sec", 1);
@@ -408,8 +411,8 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     private List<IhcEnumValue> getEnumValues(WSResourceValue value) {
-        if (value instanceof WSEnumValue) {
-            return enumDictionary.getEnumValues(((WSEnumValue) value).definitionTypeID);
+        if (value instanceof WSEnumValue enumValue) {
+            return enumDictionary.getEnumValues(enumValue.definitionTypeID);
         }
         return null;
     }
@@ -542,8 +545,6 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                     conf.username);
             ihc = new IhcClient(conf.hostname, conf.username, conf.password, conf.timeout, conf.tlsVersion);
             ihc.openConnection();
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE,
-                    "Initializing communication to the IHC / ELKO controller");
             loadProject();
             createChannels();
             updateControllerProperties();
@@ -763,8 +764,8 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
     }
 
     private void checkPotentialButtonPresses(WSResourceValue value) {
-        if (value instanceof WSBooleanValue) {
-            if (((WSBooleanValue) value).value) {
+        if (value instanceof WSBooleanValue booleanValue) {
+            if (booleanValue.value) {
                 // potential button press
                 lastUpdate.put(value.resourceID, LocalDateTime.now());
                 updateTriggers(value.resourceID, Duration.ZERO);
@@ -858,8 +859,7 @@ public class IhcHandler extends BaseThingHandler implements IhcEventListener {
                                 if (params.getChannelTypeId() != null) {
                                     switch (params.getChannelTypeId()) {
                                         case CHANNEL_TYPE_RF_LOW_BATTERY:
-                                            updateState(channelId,
-                                                    dev.getBatteryLevel() == 1 ? OnOffType.OFF : OnOffType.ON);
+                                            updateState(channelId, OnOffType.from(dev.getBatteryLevel() != 1));
                                             break;
                                         case CHANNEL_TYPE_RF_SIGNAL_STRENGTH:
                                             int signalLevel = new SignalLevelConverter(dev.getSignalStrength())

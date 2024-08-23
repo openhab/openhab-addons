@@ -64,11 +64,12 @@ None
 
 ### Zone
 
-| Channel Type ID   | Item Type | Description                                                                                                                                                                                                            |
-|-------------------|-----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Temperature       | Number    | Allows for viewing the current actual temperature of the zone.                                                                                                                                                     |
-| SetPointStatus    | String    | Allows for viewing the current set point mode of the zone.                                                                                                                                                      |
-| SetPoint          | Number    | Allows for viewing and permanently overriding the temperature set point of the zone. Sending 0 cancels any active set point overrides.                                                                                                                                         |
+| Channel Type ID | Item Type          | Description                                                                                                                            |
+|-----------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| Temperature     | Number:Temperature | Allows for viewing the current actual temperature of the zone.                                                                         |
+| SetPointStatus  | String             | Allows for viewing the current set point mode of the zone.                                                                             |
+| SetPoint        | Number:Temperature | Allows for viewing and permanently overriding the temperature set point of the zone. Sending 0 cancels any active set point overrides. |
+                                                                                                                                 |
 
 ## Full Example
 
@@ -89,9 +90,9 @@ Bridge evohome:account:your_account_alias [ username="your_user_name", password=
 String DemoMode                 { channel="evohome:display:your_account_alias:your_display_alias:SystemMode" }
 
 // evohome Heatingzone
-Number DemoZoneTemperature    { channel="evohome:heatingzone:your_account_alias:your_zone_alias:Temperature" }
-String DemoZoneSetPointStatus { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPointStatus" }
-Number DemoZoneSetPoint       { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPoint" }
+Number:Temperature DemoZoneTemperature  { channel="evohome:heatingzone:your_account_alias:your_zone_alias:Temperature" }
+String DemoZoneSetPointStatus           { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPointStatus" }
+Number:Temperature DemoZoneSetPoint     { channel="evohome:heatingzone:your_account_alias:your_zone_alias:SetPoint" }
 ```
 
 ### demo.sitemap

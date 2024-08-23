@@ -9,7 +9,7 @@ All cars compatible with Volvo On Call shall be supported by this binding.
 
 ## Discovery
 
-Once a VocApi Bridge has been created with according credential, vehicles connected to this account will automatically be detected. 
+Once a VocApi Bridge has been created with according credential, vehicles connected to this account will automatically be detected.
 
 ## Binding Configuration
 
@@ -112,7 +112,7 @@ Following channels are currently available:
 
 demo.things:
 
-```
+```java
 Bridge volvooncall:vocapi:glh "VoC Gaël" @ "System" [username="mail@address.org", password="mypassword"]
 {
     Thing vehicle XC60 "XC60" @ "World" [vin="theCarVIN", refreshinterval=5]
@@ -121,7 +121,7 @@ Bridge volvooncall:vocapi:glh "VoC Gaël" @ "System" [username="mail@address.org
 
 demo.items:
 
-```
+```java
 Group gVoc "Volvo On Call" 
 
 Group:Contact:OR(OPEN,CLOSED) gDoorsOpening "Portes"     (gVoc)
@@ -151,7 +151,7 @@ Switch Voc_Fluid_Alert              "Alerte Lave Glace"         <siren>     (gVo
 
 voc.sitemap:
 
-```
+```perl
 sitemap voc label="Volvo On Call" {
     
     Frame label="Etat Véhicule" {
@@ -181,7 +181,7 @@ Multiple actions are supported by this binding. In classic rules these are acces
 
 Example 1a: If Thing has been created using autodiscovery
 
-```
+```java
  val actions = getActions("volvooncall","volvooncall:vehicle:thingId")
  if(null === actions) {
         logInfo("actions", "Actions not found, check thing ID")
@@ -193,7 +193,7 @@ Example 1a: If Thing has been created using autodiscovery
 
 Example 1b: If Thing has been created using script
 
-```
+```java
  val actions = getActions("volvooncall","volvooncall:vehicle:bridgeId:thingId")
  if(null === actions) {
         logInfo("actions", "Actions not found, check thing ID")
@@ -203,46 +203,46 @@ Example 1b: If Thing has been created using script
  }
 ```
 
- ### closeCarCommand()
+### closeCarCommand()
 
 Sends the command to close the car.
 
- ### openCarCommand()
+### openCarCommand()
 
 Sends the command to open the car.
 
- ### engineStartCommand(runtime)
+### engineStartCommand(runtime)
 
 Sends the command to start the engine for a given runtime. Default 5 minutes.
 
  Parameters:
- 
+
 | Name    | Description                                   |
 |---------|-----------------------------------------------|
 | runtime | Integer - Time for the engine to stay on      |
 
- ### heaterStartCommand()
+### heaterStartCommand()
 
 Sends the command to start the car heater (if remoteHeaterSupported).
 
- ### heaterStopCommand()
+### heaterStopCommand()
 
 Sends the command to stop the car heater (if remoteHeaterSupported).
 
- ### preclimatizationStartCommand()
+### preclimatizationStartCommand()
 
 Sends the command to start the car heater (if preclimatizationSupported).
 
- ### preclimatizationStopCommand()
+### preclimatizationStopCommand()
 
 Sends the command to stop the car heater (if preclimatizationSupported).
 
- ### honkBlinkCommand(honk, blink)
+### honkBlinkCommand(honk, blink)
 
 Activates lights and/or the horn of the car
 
  Parameters:
- 
+
 | Name    | Description                               |
 |---------|-------------------------------------------|
 | honk    | Boolean - Activates the car horn          |

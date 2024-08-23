@@ -19,6 +19,10 @@
 			<channel typeId="scene" id="scene"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>uid</representation-property>
 
 		<config-description-ref uri="thing-type:deconz:lightgroup"/>
@@ -28,6 +32,9 @@
 		<item-type>Switch</item-type>
 		<label>All On</label>
 		<description>"On" if all lights in this group are "On", otherwise "Off".</description>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -35,12 +42,18 @@
 		<item-type>Switch</item-type>
 		<label>Any On</label>
 		<description>"On" if any light in this group is "On", otherwise "Off".</description>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
 		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="scene">
 		<item-type>String</item-type>
 		<label>Recall Scene</label>
+		<tags>
+			<tag>Lighting</tag>
+		</tags>
 	</channel-type>
 
 </thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,17 +24,20 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.dto.Capabilities;
-import org.openhab.binding.hue.internal.dto.ColorTemperature;
-import org.openhab.binding.hue.internal.dto.FullLight;
-import org.openhab.binding.hue.internal.dto.State;
-import org.openhab.binding.hue.internal.dto.StateUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.Capabilities;
+import org.openhab.binding.hue.internal.api.dto.clip1.ColorTemperature;
+import org.openhab.binding.hue.internal.api.dto.clip1.Control;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullLight;
+import org.openhab.binding.hue.internal.api.dto.clip1.State;
+import org.openhab.binding.hue.internal.api.dto.clip1.StateUpdate;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -178,7 +181,7 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
                 }
             }
             properties.put(PROPERTY_VENDOR, fullLight.getManufacturerName());
-            properties.put(PRODUCT_NAME, fullLight.getProductName());
+            properties.put(PROPERTY_PRODUCT_NAME, fullLight.getProductName());
             String uniqueID = fullLight.getUniqueID();
             if (uniqueID != null) {
                 properties.put(UNIQUE_ID, uniqueID);
@@ -189,26 +192,34 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
     }
 
     private void initializeCapabilities(@Nullable FullLight fullLight) {
-        if (!capabilitiesInitializedSuccessfully && fullLight != null) {
-            Capabilities capabilities = fullLight.capabilities;
-            if (capabilities != null) {
-                ColorTemperature ct = capabilities.control.ct;
-                if (ct != null) {
-                    colorTemperatureCapabilties = ct;
-
-                    // minimum and maximum are inverted due to mired/Kelvin conversion!
-                    StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
-                            .withMinimum(new BigDecimal(LightStateConverter.miredToKelvin(ct.max))) //
-                            .withMaximum(new BigDecimal(LightStateConverter.miredToKelvin(ct.min))) //
-                            .withStep(new BigDecimal(100)) //
-                            .withPattern("%.0f K") //
-                            .build();
-                    stateDescriptionProvider.setStateDescriptionFragment(
-                            new ChannelUID(thing.getUID(), CHANNEL_COLORTEMPERATURE_ABS), stateDescriptionFragment);
-                }
-            }
-            capabilitiesInitializedSuccessfully = true;
+        if (capabilitiesInitializedSuccessfully || fullLight == null) {
+            return;
         }
+        Capabilities capabilities = fullLight.capabilities;
+        if (capabilities == null) {
+            return;
+        }
+        Control control = capabilities.control;
+        if (control == null) {
+            return;
+        }
+        ColorTemperature ct = control.ct;
+        if (ct == null) {
+            return;
+        }
+        colorTemperatureCapabilties = ct;
+
+        // minimum and maximum are inverted due to mired/Kelvin conversion!
+        StateDescriptionFragment stateDescriptionFragment = StateDescriptionFragmentBuilder.create()
+                .withMinimum(new BigDecimal(LightStateConverter.miredToKelvin(ct.max))) //
+                .withMaximum(new BigDecimal(LightStateConverter.miredToKelvin(ct.min))) //
+                .withStep(new BigDecimal(100)) //
+                .withPattern("%.0f K") //
+                .build();
+        stateDescriptionProvider.setStateDescriptionFragment(
+                new ChannelUID(thing.getUID(), CHANNEL_COLORTEMPERATURE_ABS), stateDescriptionFragment);
+
+        capabilitiesInitializedSuccessfully = true;
     }
 
     @Override
@@ -267,8 +278,18 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
                 }
                 break;
             case CHANNEL_COLORTEMPERATURE_ABS:
-                if (command instanceof DecimalType) {
-                    newState = LightStateConverter.toColorTemperatureLightState((DecimalType) command,
+                if (command instanceof QuantityType) {
+                    QuantityType<?> convertedCommand = ((QuantityType<?>) command).toInvertibleUnit(Units.KELVIN);
+                    if (convertedCommand != null) {
+                        newState = LightStateConverter.toColorTemperatureLightState(convertedCommand.intValue(),
+                                colorTemperatureCapabilties);
+                        newState.setTransitionTime(fadeTime);
+                    } else {
+                        logger.warn("Unable to convert unit from '{}' to '{}'. Skipping command.",
+                                ((QuantityType<?>) command).getUnit(), Units.KELVIN);
+                    }
+                } else if (command instanceof DecimalType) {
+                    newState = LightStateConverter.toColorTemperatureLightState(((DecimalType) command).intValue(),
                             colorTemperatureCapabilties);
                     newState.setTransitionTime(fadeTime);
                 }
@@ -356,6 +377,9 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
                     newState = LightStateConverter.toOnOffEffectState((OnOffType) command);
                 }
                 break;
+            default:
+                logger.debug("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
+                break;
         }
         if (newState != null) {
             // Cache values which we have sent
@@ -369,7 +393,7 @@ public class HueLightHandler extends BaseThingHandler implements HueLightActions
             }
             bridgeHandler.updateLightState(this, light, newState, fadeTime);
         } else {
-            logger.warn("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
+            logger.debug("Unable to handle command '{}' for channel '{}'. Skipping command.", command, channel);
         }
     }
 

@@ -15,6 +15,7 @@
 		<channels>
 			<channel id="label" typeId="partitionLabel"/>
 			<channel id="state" typeId="state"/>
+			<channel id="detailedState" typeId="detailedState"/>
 			<channel id="additionalStates" typeId="additionalState"/>
 			<channel id="readyToArm" typeId="readyToArm"/>
 			<channel id="inExitDelay" typeId="inExitDelay"/>
@@ -33,6 +34,10 @@
 			<channel id="allZonesClosed" typeId="allZonesClosed"/>
 			<channel id="command" typeId="command"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 
 		<config-description>
 			<parameter name="id" type="integer" min="1" max="8" required="true">
@@ -57,6 +62,12 @@
 		<item-type>String</item-type>
 		<label>Partition State</label>
 		<description>State of partition</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+	<channel-type id="detailedState">
+		<item-type>String</item-type>
+		<label>Detailed Partition State</label>
+		<description>The detailed state of partition (contains sub-states like Stay in Armed, Armed no entry, etc)</description>
 		<state readOnly="true" pattern="%s"/>
 	</channel-type>
 	<channel-type id="additionalState">

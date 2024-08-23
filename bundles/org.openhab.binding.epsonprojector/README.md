@@ -9,7 +9,7 @@ This binding supports two thing types based on the connection used: `projector-s
 
 ## Discovery
 
-If the projector has a built-in Ethernet port connected to the same network as the openHAB server and the 'AMX Device Discovery' option is present and enabled in the projector's network menu, the thing will be discovered automatically.
+If the projector has a built-in Ethernet port connected to the same network as the openHAB server and either the 'AMX Device Discovery' or 'Control4 SDDP' options are present and enabled in the projector's network menu, the thing will be discovered automatically.
 Serial port or serial over IP connections must be configured manually.
 
 ## Binding Configuration
@@ -72,36 +72,36 @@ connection: &conEpson
 
 ## Channels
 
-| Channel            | Item Type | Purpose                                                                                    | Values    |
-| ------------------ | --------- | ------------------------------------------------------------------------------------------ | --------- |
-| power              | Switch    | Powers the projector on or off.                                                            |           |
-| powerstate         | String    | Retrieves the textual power state of the projector.                                        | Read only |
-| source             | String    | Retrieve or set the input source.                                                          | See above |
-| aspectratio        | String    | Retrieve or set the aspect ratio.                                                          | See above |
-| colormode          | String    | Retrieve or set the color mode.                                                            | See above |
-| freeze             | Switch    | Turn the freeze screen mode on or off.                                                     |           |
-| mute               | Switch    | Turn the AV mute on or off.                                                                |           |
-| volume             | Dimmer    | Retrieve or set the volume. Scaled to 0-20 or 0-40 on the projector per maxVolume setting. | 0% - 100% |
-| luminance          | String    | Retrieve or set the lamp mode.                                                             | See above |
-| brightness         | Number    | Retrieve or set the brightness.                                                            | -24 - +24 |
-| contrast           | Number    | Retrieve or set the contrast.                                                              | -24 - +24 |
-| density            | Number    | Retrieve or set the density (color saturation).                                            | -32 - +32 |
-| tint               | Number    | Retrieve or set the tint.                                                                  | -32 - +32 |
-| colortemperature   | Number    | Retrieve or set the color temperature.                                                     | 0   - +9  |
-| fleshtemperature   | Number    | Retrieve or set the flesh temperature.                                                     | 0   - +6  |
-| gamma              | String    | Retrieve or set the gamma setting.                                                         | See above |
-| autokeystone       | Switch    | Turn the auto keystone mode on or off.                                                     |           |
-| verticalkeystone   | Number    | Retrieve or set the vertical keystone.                                                     | -30 - +30 |
-| horizontalkeystone | Number    | Retrieve or set the horizontal keystone.                                                   | -30 - +30 |
-| verticalposition   | Number    | Retrieve or set the vertical position.                                                     | -8  - +10 |
-| horizontalposition | Number    | Retrieve or set the horizontal position.                                                   | -23 - +26 |
-| verticalreverse    | Switch    | Turn the vertical reverse mode on or off.                                                  |           |
-| horizontalreverse  | Switch    | Turn the horizontal reverse mode on or off.                                                |           |
-| background         | String    | Retrieve or set the background color/logo.                                                 | See above |
-| keycode            | String    | Send a key operation command to the projector. (2 character code)                          | Send only |
-| lamptime           | Number    | Retrieves the lamp hours.                                                                  | Read only |
-| errcode            | Number    | Retrieves the last error code.                                                             | Read only |
-| errmessage         | String    | Retrieves the description of the last error.                                               | Read only |
+| Channel            | Item Type | Purpose                                                                                    | Values     |
+| ------------------ | --------- | ------------------------------------------------------------------------------------------ | ---------- |
+| power              | Switch    | Powers the projector on or off.                                                            |            |
+| powerstate         | String    | Retrieves the textual power state of the projector.                                        | Read only  |
+| source             | String    | Retrieve or set the input source.                                                          | See above  |
+| aspectratio        | String    | Retrieve or set the aspect ratio.                                                          | See above  |
+| colormode          | String    | Retrieve or set the color mode.                                                            | See above  |
+| freeze             | Switch    | Turn the freeze screen mode on or off.                                                     |            |
+| mute               | Switch    | Turn the AV mute on or off.                                                                |            |
+| volume             | Dimmer    | Retrieve or set the volume. Scaled to 0-20 or 0-40 on the projector per maxVolume setting. | 0% - 100%  |
+| luminance          | String    | Retrieve or set the lamp mode.                                                             | See above  |
+| brightness         | Number    | Retrieve or set the brightness.                                                            | -24 - +24  |
+| contrast           | Number    | Retrieve or set the contrast.                                                              | -24 - +24  |
+| density            | Number    | Retrieve or set the density (color saturation).                                            | -32 - +32  |
+| tint               | Number    | Retrieve or set the tint.                                                                  | -32 - +32  |
+| colortemperature   | Number    | Retrieve or set the color temperature.                                                     | 0   - +9   |
+| fleshtemperature   | Number    | Retrieve or set the flesh temperature.                                                     | 0   - +6   |
+| gamma              | String    | Retrieve or set the gamma setting.                                                         | See above  |
+| autokeystone       | Switch    | Turn the auto keystone mode on or off.                                                     |            |
+| verticalkeystone   | Number    | Retrieve or set the vertical keystone.                                                     | -30 - +30  |
+| horizontalkeystone | Number    | Retrieve or set the horizontal keystone.                                                   | -30 - +30  |
+| verticalposition   | Number    | Retrieve or set the vertical position.                                                     | -8  - +10  |
+| horizontalposition | Number    | Retrieve or set the horizontal position.                                                   | -23 - +26  |
+| verticalreverse    | Switch    | Turn the vertical reverse mode on or off.                                                  |            |
+| horizontalreverse  | Switch    | Turn the horizontal reverse mode on or off.                                                |            |
+| background         | String    | Retrieve or set the background color/logo.                                                 | See above  |
+| keycode            | String    | Send a key operation command to the projector. (2 character code)                          | Write only |
+| lamptime           | Number    | Retrieves the number of hours the lamp has been used.                                      | Read only  |
+| errcode            | Number    | Retrieves the last error code.                                                             | Read only  |
+| errmessage         | String    | Retrieves the description of the last error.                                               | Read only  |
 
 ## Full Example
 
@@ -164,7 +164,9 @@ sitemap epson label="Epson Projector"
         Switch     item=epsonMute    label="AV Mute"
         // Volume can be a Setpoint also
         Slider     item=epsonVolume  label="Volume" minValue=0 maxValue=100 step=1 icon="soundvolume"
+        // This Switch is deprecated in favor of the Buttongrid element below
         Switch     item=epsonKeyCode label="Navigation" icon="screen" mappings=["03"="Menu", "35"="˄", "36"="˅", "37"="<", "38"=">", "16"="Enter"]
+        Buttongrid item=epsonKeyCode label="Navigation" staticIcon=material:tv_remote buttons=[1:1:"03"="Menu", 1:2:"35"="Up"=f7:arrowtriangle_up, 3:2:"36"="Down"=f7:arrowtriangle_down, 2:1:"37"="Left"=f7:arrowtriangle_left, 2:3:"38"="Right"=f7:arrowtriangle_right, 2:2:"16"="Enter"]
     }
     Frame label="Adjust Image" {
         Setpoint   item=epsonBrightness         label="Brightness"

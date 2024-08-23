@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -171,7 +171,7 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             }
         } catch (CGateException e) {
             logger.warn("Cannot load C-Bus network {}", networkID, e);
-            updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.COMMUNICATION_ERROR);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.OFFLINE.COMMUNICATION_ERROR);
         }
         updateStatus();
     }
@@ -235,8 +235,8 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             }
             for (Thing thing : getThing().getThings()) {
                 ThingHandler handler = thing.getHandler();
-                if (handler instanceof CBusGroupHandler) {
-                    ((CBusGroupHandler) handler).updateStatus();
+                if (handler instanceof CBusGroupHandler groupHandler) {
+                    groupHandler.updateStatus();
                 }
             }
         }
@@ -262,8 +262,8 @@ public class CBusNetworkHandler extends BaseBridgeHandler {
             return null;
         }
         ThingHandler handler = bridge.getHandler();
-        if (handler instanceof CBusCGateHandler) {
-            return (CBusCGateHandler) handler;
+        if (handler instanceof CBusCGateHandler gateHandler) {
+            return gateHandler;
         } else {
             logger.debug("No available bridge handler found for bridge: {}.", bridge.getUID());
             return null;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -20,11 +20,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.gpstracker.internal.discovery.TrackerDiscoveryService;
 import org.openhab.binding.gpstracker.internal.handler.TrackerHandler;
-import org.openhab.binding.gpstracker.internal.message.LocationMessage;
 import org.openhab.binding.gpstracker.internal.message.MessageUtil;
-import org.openhab.binding.gpstracker.internal.message.TransitionMessage;
+import org.openhab.binding.gpstracker.internal.message.dto.LocationMessage;
+import org.openhab.binding.gpstracker.internal.message.dto.TransitionMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gabor Bicskei - Initial contribution
  */
+@NonNullByDefault
 public abstract class AbstractCallbackServlet extends HttpServlet {
 
     private static final long serialVersionUID = -2725161358635927815L;
@@ -117,9 +120,8 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
         if (!trackerId.isEmpty()) {
             TrackerHandler recorder = getHandlerById(trackerId);
             if (recorder != null) {
-                if (message instanceof TransitionMessage) {
-                    TransitionMessage tm = (TransitionMessage) message;
-                    recorder.doTransition(tm);
+                if (message instanceof TransitionMessage transitionMessage) {
+                    recorder.doTransition(transitionMessage);
                 } else {
                     recorder.updateLocation(message);
                 }
@@ -139,16 +141,15 @@ public abstract class AbstractCallbackServlet extends HttpServlet {
      * @param trackerId Tracker id.
      * @return Handler for tracker.
      */
-    private TrackerHandler getHandlerById(String trackerId) {
-        if (trackerId != null) {
-            TrackerHandler handler = trackerRegistry.getTrackerHandler(trackerId);
-            if (handler == null) {
-                // handler was not found - adding the tracker to discovery service.
-                discoveryService.addTracker(trackerId);
-            } else {
-                return handler;
-            }
+    private @Nullable TrackerHandler getHandlerById(String trackerId) {
+        TrackerHandler handler = trackerRegistry.getTrackerHandler(trackerId);
+        if (handler == null) {
+            // handler was not found - adding the tracker to discovery service.
+            discoveryService.addTracker(trackerId);
+        } else {
+            return handler;
         }
+
         return null;
     }
 

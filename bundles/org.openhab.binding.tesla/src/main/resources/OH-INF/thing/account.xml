@@ -12,6 +12,7 @@
 			<parameter name="refreshToken" type="text" required="false">
 				<label>Refresh Token</label>
 				<description>Refresh token for account authentication. Please see the documentation on how to get hold of it.</description>
+				<context>password</context>
 			</parameter>
 		</config-description>
 	</bridge-type>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="tellstick" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>Tellstick Binding</name>
+	<description>This is the binding for Telldus Tellstick Basic, Duo, .Net and Z-Net Lite.</description>
+	<connection>hybrid</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>usb</service-type>
+			<match-properties>
+				<match-property>
+					<name>chipId</name>
+					<regex>(?i)1781:0C31</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
+</addon:addon>

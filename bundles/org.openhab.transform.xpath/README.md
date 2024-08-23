@@ -47,10 +47,12 @@ Given a retrieved XML (e.g. from an HIK Vision device with the namespace `xmlns=
 A simple xpath query to fetch the Azimut value does not work as it does not address the namespace.
 
 There are two ways to address the namespace.
+
 * Simple path which may not work in complex XML.
 * With full qualified path.
-* 
-The XPath 
+
+The XPath
+
 * `[name()='PTZStatus']/*[name()='AbsoluteHigh']/*[name()='azimuth']/`
 * `/*[local-name()='PTZStatus' and namespace-uri()='http://www.hikvision.com/ver20/XMLSchema']/*[local-name()='AbsoluteHigh' and namespace-uri()='http://www.hikvision.com/ver20/XMLSchema']/*[local-name()='azimuth' and namespace-uri()='http://www.hikvision.com/ver20/XMLSchema']`
 

@@ -12,9 +12,11 @@
 		<channels>
 			<channel id="batterylevel" typeId="system.battery-level"/>
 			<channel id="batteryavailableenergy" typeId="batteryavailableenergy"/>
+			<channel id="batterystatusupdated" typeId="batterystatusupdated"/>
 			<channel id="plugstatus" typeId="plugstatus"/>
 			<channel id="chargingstatus" typeId="chargingstatus"/>
 			<channel id="chargingmode" typeId="chargingmode"/>
+			<channel id="pause" typeId="pause"/>
 			<channel id="chargingremainingtime" typeId="chargingremainingtime"/>
 			<channel id="estimatedrange" typeId="estimatedrange"/>
 			<channel id="odometer" typeId="odometer"/>
@@ -24,9 +26,22 @@
 			<channel id="image" typeId="image"/>
 			<channel id="location" typeId="system.location"/>
 			<channel id="locationupdated" typeId="locationupdated"/>
+			<channel id="locked" typeId="locked"/>
 		</channels>
-		<config-description>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<config-description>
+			<parameter name="accountType" type="text">
+				<label>Account Type</label>
+				<options>
+					<option value="MYDACIA">MyDacia</option>
+					<option value="MYRENAULT">MyRenault</option>
+				</options>
+				<default>MYRENAULT</default>
+			</parameter>
 			<parameter name="myRenaultUsername" type="text" required="true">
 				<label>MyRenault Username</label>
 			</parameter>
@@ -86,7 +101,7 @@
 			<parameter name="kamereonApiKey" type="text">
 				<label>Kamereon API Key</label>
 				<description>Access code for MyRenault Services.</description>
-				<default>VAX7XYKGfa92yMvXculCkEFyfZbuM7Ss</default>
+				<default>YjkKtHmGfaceeuExUDKGxrLZGGvtVS0J</default>
 			</parameter>
 		</config-description>
 	</thing-type>
@@ -94,7 +109,15 @@
 	<channel-type id="batteryavailableenergy">
 		<item-type>Number:Energy</item-type>
 		<label>Battery Energy Available</label>
+		<category>Energy</category>
 		<state pattern="%.1f %unit%" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="batterystatusupdated">
+		<item-type>DateTime</item-type>
+		<label>Battery Status Updated</label>
+		<description>Timestamp of the last battery status update</description>
+		<category>Time</category>
+		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
 	</channel-type>
 	<channel-type id="plugstatus">
 		<item-type>String</item-type>
@@ -137,6 +160,12 @@
 				<option value="ALWAYS_CHARGING">Instant charge</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="pause">
+		<item-type>Switch</item-type>
+		<label>Pause Charge</label>
+		<description>Pause or resume the charge.</description>
+		<state readOnly="false"></state>
 	</channel-type>
 	<channel-type id="chargingremainingtime">
 		<item-type>Number:Time</item-type>
@@ -189,9 +218,17 @@
 	</channel-type>
 	<channel-type id="locationupdated">
 		<item-type>DateTime</item-type>
-		<label>Location Update</label>
+		<label>Location Updated</label>
 		<description>Timestamp of the last location update</description>
+		<category>Time</category>
 		<state pattern="%1$tH:%1$tM %1$td.%1$tm.%1$tY" readOnly="true"></state>
+	</channel-type>
+	<channel-type id="locked">
+		<item-type>Switch</item-type>
+		<label>Locked</label>
+		<description>Locked status of the car</description>
+		<category>Lock</category>
+		<state readOnly="true"/>
 	</channel-type>
 
 </thing:thing-descriptions>

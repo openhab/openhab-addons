@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -30,11 +31,12 @@ import org.osgi.service.component.annotations.Component;
 /**
  * Discovery for Enocean USB dongles, integrated in USB-serial discovery by implementing a component of type
  * {@link UsbSerialDiscoveryParticipant}.
- * <p/>
+ * <p>
  * Currently, this {@link UsbSerialDiscoveryParticipant} supports the Enocean USB300 dongles.
  *
  * @author Aitor Iturrioz - initial contribution
  */
+@NonNullByDefault
 @Component(service = UsbSerialDiscoveryParticipant.class)
 public class EnOceanUsbSerialDiscoveryParticipant implements UsbSerialDiscoveryParticipant {
 

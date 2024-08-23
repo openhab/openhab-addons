@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="ipcamera:reolink">
+		<instruction-set targetVersion="1">
+			<add-channel id="whiteLED">
+				<type>ipcamera:whiteLED</type>
+			</add-channel>
+			<add-channel id="autoWhiteLED">
+				<type>ipcamera:autoWhiteLED</type>
+			</add-channel>
+			<add-channel id="enableEmail">
+				<type>ipcamera:enableEmail</type>
+			</add-channel>
+			<add-channel id="enablePush">
+				<type>ipcamera:enablePush</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="ipcamera:dahua">
+		<instruction-set targetVersion="1">
+			<add-channel id="whiteLED">
+				<type>ipcamera:whiteLED</type>
+			</add-channel>
+			<add-channel id="autoWhiteLED">
+				<type>ipcamera:autoWhiteLED</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="ipcamera:foscam">
+		<instruction-set targetVersion="1">
+			<add-channel id="carAlarm">
+				<type>ipcamera:carAlarm</type>
+			</add-channel>
+			<add-channel id="humanAlarm">
+				<type>ipcamera:humanAlarm</type>
+			</add-channel>
+			<add-channel id="animalAlarm">
+				<type>ipcamera:animalAlarm</type>
+			</add-channel>
+			<add-channel id="lineCrossingAlarm">
+				<type>ipcamera:lineCrossingAlarm</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>

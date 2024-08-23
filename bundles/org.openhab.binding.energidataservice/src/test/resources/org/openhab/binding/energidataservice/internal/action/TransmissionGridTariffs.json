@@ -1,0 +1,36 @@
+{
+	"total": 1,
+	"filters": "{\"ChargeType\":[\"D03\"],\"GLN_Number\":[\"5790000432752\"],\"Note\":[\"Transmissions nettarif\"]}",
+	"dataset": "DatahubPricelist",
+	"records": [
+		{
+			"ValidFrom": "2023-01-01T00:00:00",
+			"ValidTo": null,
+			"ChargeTypeCode": "40000",
+			"Price1": 0.058,
+			"Price2": null,
+			"Price3": null,
+			"Price4": null,
+			"Price5": null,
+			"Price6": null,
+			"Price7": null,
+			"Price8": null,
+			"Price9": null,
+			"Price10": null,
+			"Price11": null,
+			"Price12": null,
+			"Price13": null,
+			"Price14": null,
+			"Price15": null,
+			"Price16": null,
+			"Price17": null,
+			"Price18": null,
+			"Price19": null,
+			"Price20": null,
+			"Price21": null,
+			"Price22": null,
+			"Price23": null,
+			"Price24": null
+		}
+	]
+}

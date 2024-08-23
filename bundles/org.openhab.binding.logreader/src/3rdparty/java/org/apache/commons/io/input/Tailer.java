@@ -149,7 +149,7 @@ public class Tailer implements Runnable {
     /**
      * Buffer on top of RandomAccessFile.
      */
-    private final byte inbuf[];
+    private final byte[] inbuf;
 
     /**
      * The file which will be tailed.

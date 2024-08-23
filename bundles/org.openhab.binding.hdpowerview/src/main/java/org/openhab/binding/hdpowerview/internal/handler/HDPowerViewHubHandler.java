@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,7 +50,6 @@ import org.openhab.binding.hdpowerview.internal.exceptions.HubException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubInvalidResponseException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubMaintenanceException;
 import org.openhab.binding.hdpowerview.internal.exceptions.HubProcessingException;
-import org.openhab.core.library.CoreItemFactory;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -63,7 +62,6 @@ import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BaseBridgeHandler;
 import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.builder.ChannelBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
@@ -100,7 +98,6 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
     private List<SceneCollection> sceneCollectionCache = new CopyOnWriteArrayList<>();
     private List<ScheduledEvent> scheduledEventCache = new CopyOnWriteArrayList<>();
     private Instant userDataUpdated = Instant.MIN;
-    private Boolean deprecatedChannelsCreated = false;
 
     private final ChannelTypeUID sceneChannelTypeUID = new ChannelTypeUID(HDPowerViewBindingConstants.BINDING_ID,
             HDPowerViewBindingConstants.CHANNELTYPE_SCENE_ACTIVATE);
@@ -177,11 +174,10 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
     private void initializeChannels() {
         // Rebuild dynamic channels and synchronize with cache.
-        updateThing(editThing().withChannels(new ArrayList<Channel>()).build());
+        updateThing(editThing().withChannels(new ArrayList<>()).build());
         sceneCache.clear();
         sceneCollectionCache.clear();
         scheduledEventCache.clear();
-        deprecatedChannelsCreated = false;
     }
 
     public HDPowerViewWebTargets getWebTargets() {
@@ -469,7 +465,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Updating all scene channels, changes detected");
-        sceneCache = new CopyOnWriteArrayList<Scene>(scenes);
+        sceneCache = new CopyOnWriteArrayList<>(scenes);
 
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         allChannels.removeIf(c -> HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES.equals(c.getUID().getGroupId()));
@@ -481,50 +477,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
 
         updateThing(editThing().withChannels(channelBuilder.build()).build());
 
-        createDeprecatedSceneChannels(scenes);
-
         return scenes;
-    }
-
-    /**
-     * Create backwards compatible scene channels if any items configured before release 3.2
-     * are still linked. Users should have a reasonable amount of time to migrate to the new
-     * scene channels that are connected to a channel group.
-     */
-    private void createDeprecatedSceneChannels(List<Scene> scenes) {
-        if (deprecatedChannelsCreated) {
-            // Only do this once.
-            return;
-        }
-        ChannelGroupUID channelGroupUid = new ChannelGroupUID(thing.getUID(),
-                HDPowerViewBindingConstants.CHANNEL_GROUP_SCENES);
-        for (Scene scene : scenes) {
-            String channelId = Integer.toString(scene.id);
-            ChannelUID newChannelUid = new ChannelUID(channelGroupUid, channelId);
-            ChannelUID deprecatedChannelUid = new ChannelUID(getThing().getUID(), channelId);
-            String description = translationProvider.getText("dynamic-channel.scene-activate.deprecated.description",
-                    scene.getName());
-            Channel channel = ChannelBuilder.create(deprecatedChannelUid, CoreItemFactory.SWITCH)
-                    .withType(sceneChannelTypeUID).withLabel(scene.getName()).withDescription(description).build();
-            logger.debug("Creating deprecated channel '{}' ('{}') to probe for linked items", deprecatedChannelUid,
-                    scene.getName());
-            updateThing(editThing().withChannel(channel).build());
-            if (this.isLinked(deprecatedChannelUid) && !this.isLinked(newChannelUid)) {
-                logger.warn("Created deprecated channel '{}' ('{}'), please link items to '{}' instead",
-                        deprecatedChannelUid, scene.getName(), newChannelUid);
-            } else {
-                if (this.isLinked(newChannelUid)) {
-                    logger.debug("Removing deprecated channel '{}' ('{}') since new channel '{}' is linked",
-                            deprecatedChannelUid, scene.getName(), newChannelUid);
-
-                } else {
-                    logger.debug("Removing deprecated channel '{}' ('{}') since it has no linked items",
-                            deprecatedChannelUid, scene.getName());
-                }
-                updateThing(editThing().withoutChannel(deprecatedChannelUid).build());
-            }
-        }
-        deprecatedChannelsCreated = true;
     }
 
     private List<SceneCollection> fetchSceneCollections()
@@ -551,7 +504,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Updating all scene group channels, changes detected");
-        sceneCollectionCache = new CopyOnWriteArrayList<SceneCollection>(sceneCollections);
+        sceneCollectionCache = new CopyOnWriteArrayList<>(sceneCollections);
 
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         allChannels
@@ -590,7 +543,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         }
 
         logger.debug("Updating all automation channels, changes detected");
-        scheduledEventCache = new CopyOnWriteArrayList<ScheduledEvent>(scheduledEvents);
+        scheduledEventCache = new CopyOnWriteArrayList<>(scheduledEvents);
 
         List<Channel> allChannels = new ArrayList<>(getThing().getChannels());
         allChannels
@@ -611,7 +564,7 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
         for (ScheduledEvent scheduledEvent : scheduledEvents) {
             String scheduledEventId = Integer.toString(scheduledEvent.id);
             ChannelUID channelUid = new ChannelUID(channelGroupUid, scheduledEventId);
-            updateState(channelUid, scheduledEvent.enabled ? OnOffType.ON : OnOffType.OFF);
+            updateState(channelUid, OnOffType.from(scheduledEvent.enabled));
         }
     }
 
@@ -648,8 +601,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 continue;
             }
             ThingHandler handler = thing.getHandler();
-            if (handler instanceof HDPowerViewShadeHandler) {
-                ((HDPowerViewShadeHandler) handler).requestRefreshShadePosition();
+            if (handler instanceof HDPowerViewShadeHandler shadeHandler) {
+                shadeHandler.requestRefreshShadePosition();
             } else {
                 int shadeId = item.getValue();
                 logger.debug("Shade '{}' handler not initialized", shadeId);
@@ -667,8 +620,8 @@ public class HDPowerViewHubHandler extends BaseBridgeHandler {
                 continue;
             }
             ThingHandler handler = thing.getHandler();
-            if (handler instanceof HDPowerViewShadeHandler) {
-                ((HDPowerViewShadeHandler) handler).requestRefreshShadeBatteryLevel();
+            if (handler instanceof HDPowerViewShadeHandler shadeHandler) {
+                shadeHandler.requestRefreshShadeBatteryLevel();
             } else {
                 int shadeId = item.getValue();
                 logger.debug("Shade '{}' handler not initialized", shadeId);

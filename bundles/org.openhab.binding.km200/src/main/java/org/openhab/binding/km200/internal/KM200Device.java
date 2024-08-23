@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
@@ -56,11 +55,11 @@ public class KM200Device {
     protected String charSet = "";
 
     /* Needed keys for the communication */
-    protected byte[] cryptKeyInit = ArrayUtils.EMPTY_BYTE_ARRAY;
-    protected byte[] cryptKeyPriv = ArrayUtils.EMPTY_BYTE_ARRAY;
+    protected byte[] cryptKeyInit = new byte[0];
+    protected byte[] cryptKeyPriv = new byte[0];
 
     /* Buderus_MD5Salt */
-    protected byte[] md5Salt = ArrayUtils.EMPTY_BYTE_ARRAY;
+    protected byte[] md5Salt = new byte[0];
 
     /* Device services */
     public Map<String, KM200ServiceObject> serviceTreeMap;
@@ -76,6 +75,7 @@ public class KM200Device {
     public KM200Device(HttpClient httpClient) {
         serviceTreeMap = new HashMap<>();
         getBlacklistMap().add("/gateway/firmware");
+        getBlacklistMap().add("/gateway/registrations");
         virtualList = new ArrayList<>();
         comCryption = new KM200Cryption(this);
         deviceCommunicator = new KM200Comm<>(this, httpClient);
@@ -331,7 +331,8 @@ public class KM200Device {
     public @Nullable JsonObject getServiceNode(String service) {
         String decodedData = null;
         JsonObject nodeRoot = null;
-        byte[] recData = deviceCommunicator.getDataFromService(service.toString());
+        logger.debug("{}: trying to query information.", service);
+        byte[] recData = deviceCommunicator.getDataFromService(service);
         try {
             if (recData == null) {
                 logger.debug("Communication to {} is not possible!", service);
@@ -348,6 +349,7 @@ public class KM200Device {
                 decodedData = "";
                 return nodeRoot;
             } else {
+                logger.debug("{}: trying to decode: {}.", service, recData.toString());
                 decodedData = comCryption.decodeMessage(recData);
                 if (decodedData == null) {
                     logger.warn("Decoding of the KM200 message is not possible!");
@@ -356,9 +358,10 @@ public class KM200Device {
             }
             if (decodedData.length() > 0) {
                 if ("SERVICE NOT AVAILABLE".equals(decodedData)) {
-                    logger.debug("{}: SERVICE NOT AVAILABLE", service);
+                    logger.warn("{}: SERVICE NOT AVAILABLE", service);
                     return null;
                 } else {
+                    logger.debug("{}: trying to parse {}", service, decodedData);
                     nodeRoot = (JsonObject) JsonParser.parseString(decodedData);
                 }
             } else {

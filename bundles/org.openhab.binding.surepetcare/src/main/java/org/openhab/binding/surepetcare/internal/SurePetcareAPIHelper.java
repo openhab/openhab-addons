@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -63,8 +64,6 @@ public class SurePetcareAPIHelper {
 
     private final Logger logger = LoggerFactory.getLogger(SurePetcareAPIHelper.class);
 
-    private static final String API_USER_AGENT = "Mozilla/5.0 (Linux; Android 7.0; SM-G930F Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/64.0.3282.137 Mobile Safari/537.36";
-
     private static final String API_URL = "https://app.api.surehub.io/api";
     private static final String TOPOLOGY_URL = API_URL + "/me/start";
     private static final String PET_BASE_URL = API_URL + "/pet";
@@ -78,8 +77,14 @@ public class SurePetcareAPIHelper {
     private String username = "";
     private String password = "";
 
+    private final String userAgent;
+
     private @NonNullByDefault({}) HttpClient httpClient;
     private SurePetcareTopology topologyCache = new SurePetcareTopology();
+
+    public SurePetcareAPIHelper() {
+        userAgent = "openHAB/" + org.openhab.core.OpenHAB.getVersion();
+    }
 
     /**
      * Sets the httpClient object to be used for API calls to Sure Petcare.
@@ -104,7 +109,8 @@ public class SurePetcareAPIHelper {
             setConnectionHeaders(request);
             request.content(new StringContentProvider(SurePetcareConstants.GSON
                     .toJson(new SurePetcareLoginCredentials(username, password, getDeviceId().toString()))));
-            ContentResponse response = request.send();
+            ContentResponse response = request.timeout(SurePetcareConstants.DEFAULT_HTTP_TIMEOUT, TimeUnit.SECONDS)
+                    .send();
             if (response.getStatus() == HttpURLConnection.HTTP_OK) {
                 SurePetcareLoginResponse loginResponse = SurePetcareConstants.GSON
                         .fromJson(response.getContentAsString(), SurePetcareLoginResponse.class);
@@ -369,7 +375,7 @@ public class SurePetcareAPIHelper {
         request.header(HttpHeader.AUTHORIZATION, "Bearer " + authenticationToken);
         request.header(HttpHeader.CONNECTION, "keep-alive");
         request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
-        request.header(HttpHeader.USER_AGENT, API_USER_AGENT);
+        request.header(HttpHeader.USER_AGENT, userAgent);
         request.header(HttpHeader.REFERER, "https://surepetcare.io/");
         request.header("Origin", "https://surepetcare.io");
         request.header("Referer", "https://surepetcare.io");
@@ -446,7 +452,8 @@ public class SurePetcareAPIHelper {
         while (retries > 0) {
             try {
                 setConnectionHeaders(request);
-                ContentResponse response = request.send();
+                ContentResponse response = request.timeout(SurePetcareConstants.DEFAULT_HTTP_TIMEOUT, TimeUnit.SECONDS)
+                        .send();
                 if ((response.getStatus() == HttpURLConnection.HTTP_OK)
                         || (response.getStatus() == HttpURLConnection.HTTP_CREATED)) {
                     return response;

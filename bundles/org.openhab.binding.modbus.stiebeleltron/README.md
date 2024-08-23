@@ -111,10 +111,10 @@ Bridge modbus:tcp:bridge "Stiebel Modbus TCP"[ host="hostname|ip", port=502, id=
 ### Item Configuration
 
 ```java
-Number:Temperature stiebel_eltron_temperature_ffk            "Temperature FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-temperature" }
-Number:Temperature stiebel_eltron_setpoint_ffk            "Set point FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-temperature-setpoint" }
-Number:Dimensionless stiebel_eltron_humidity_ffk            "Humidity FFK [%.1f %%]" <humidity>   { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-humidity" }
-Number:Temperature stiebel_eltron_dewpoint_ffk            "Dew point FFK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-dewpoint" }
+Number:Temperature stiebel_eltron_temperature_fek            "Temperature FEK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-temperature" }
+Number:Temperature stiebel_eltron_setpoint_fek            "Set point FEK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-temperature-setpoint" }
+Number:Dimensionless stiebel_eltron_humidity_fek            "Humidity FEK [%.1f %%]" <humidity>   { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-humidity" }
+Number:Temperature stiebel_eltron_dewpoint_fek            "Dew point FEK [%.1f °C]" <temperature>    { channel="modbus:heatpump:stiebelEltron:systemInformation#fek-dewpoint" }
 
 Number:Temperature stiebel_eltron_outdoor_temp            "Outdoor temperature [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#outdoor-temperature" }
 Number:Temperature stiebel_eltron_temp_hk1                "Temperature HK1 [%.1f °C]"    { channel="modbus:heatpump:stiebelEltron:systemInformation#hk1-temperature" }
@@ -169,10 +169,10 @@ Text label="Heat pumpt" icon="temperature" {
   Default item=stiebel_eltron_ruecklauf_temp  icon="temperature"
   Default item=stiebel_eltron_temp_water  icon="temperature"
   Default item=stiebel_eltron_setpoint_water icon="temperature"
-  Default item=stiebel_eltron_temperature_ffk  icon="temperature"
-  Default item=stiebel_eltron_setpoint_ffk icon="temperature"
-  Default item=stiebel_eltron_humidity_ffk icon="humidity"
-  Default item=stiebel_eltron_dewpoint_ffk icon="temperature"
+  Default item=stiebel_eltron_temperature_fek  icon="temperature"
+  Default item=stiebel_eltron_setpoint_fek icon="temperature"
+  Default item=stiebel_eltron_humidity_fek icon="humidity"
+  Default item=stiebel_eltron_dewpoint_fek icon="temperature"
   Default item=stiebel_eltron_source_temp icon="temperature"
  }
  Frame label="Paramters" {

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,10 +14,7 @@ package org.openhab.binding.neohub.internal;
 
 import static org.openhab.binding.neohub.internal.NeoHubBindingConstants.*;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
@@ -25,6 +22,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.config.discovery.DiscoveryService;
+import org.openhab.core.io.net.http.WebSocketFactory;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -33,7 +31,9 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 
 /**
  * The {@link NeoHubHandlerFactory} creates things and thing handlers
@@ -44,11 +44,16 @@ import org.osgi.service.component.annotations.Component;
 @Component(configurationPid = "binding.neohub", service = ThingHandlerFactory.class)
 public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(new HashSet<>(Arrays.asList(THING_TYPE_NEOHUB, THING_TYPE_NEOSTAT, THING_TYPE_NEOPLUG,
-                    THING_TYPE_NEOCONTACT, THING_TYPE_NEOTEMPERATURESENSOR)));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_NEOHUB, THING_TYPE_NEOSTAT,
+            THING_TYPE_NEOPLUG, THING_TYPE_NEOCONTACT, THING_TYPE_NEOTEMPERATURESENSOR);
 
+    private final WebSocketFactory webSocketFactory;
     private final Map<ThingUID, ServiceRegistration<?>> discoServices = new HashMap<>();
+
+    @Activate
+    public NeoHubHandlerFactory(final @Reference WebSocketFactory webSocketFactory) {
+        this.webSocketFactory = webSocketFactory;
+    }
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -59,8 +64,8 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if ((thingTypeUID.equals(THING_TYPE_NEOHUB)) && (thing instanceof Bridge)) {
-            NeoHubHandler handler = new NeoHubHandler((Bridge) thing);
+        if ((thingTypeUID.equals(THING_TYPE_NEOHUB)) && (thing instanceof Bridge bridge)) {
+            NeoHubHandler handler = new NeoHubHandler(bridge, webSocketFactory);
             createDiscoveryService(handler);
             return handler;
         }
@@ -86,8 +91,8 @@ public class NeoHubHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     protected synchronized void removeHandler(ThingHandler handler) {
-        if (handler instanceof NeoHubHandler) {
-            destroyDiscoveryService((NeoHubHandler) handler);
+        if (handler instanceof NeoHubHandler neoHubHandler) {
+            destroyDiscoveryService(neoHubHandler);
         }
     }
 

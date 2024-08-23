@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="windcentrale"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="windmill">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="account"/>
+		</supported-bridge-type-refs>
+
+		<label>Windcentrale Windmill</label>
+
+		<channels>
+			<channel id="power-shares" typeId="power-shares"/>
+			<channel id="power-total" typeId="power-total"/>
+			<channel id="power-relative" typeId="power-relative"/>
+			<channel id="energy-total" typeId="energy-total"/>
+			<channel id="run-time" typeId="run-time"/>
+			<channel id="run-percentage" typeId="run-percentage"/>
+			<channel id="wind-speed" typeId="wind-speed"/>
+			<channel id="wind-direction" typeId="wind-direction"/>
+			<channel id="timestamp" typeId="timestamp"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Windcentrale</property>
+		</properties>
+
+		<representation-property>projectCode</representation-property>
+
+		<config-description>
+			<parameter name="name" type="text" required="true">
+				<label>Windmill</label>
+				<options>
+					<option value="De Blauwe Reiger">De Blauwe Reiger</option>
+					<option value="De Boerenzwaluw">De Boerenzwaluw</option>
+					<option value="De Bonte Hen">De Bonte Hen</option>
+					<option value="De Grote Geert">De Grote Geert</option>
+					<option value="De Jonge Held">De Jonge Held</option>
+					<option value="De Ranke Zwaan">De Ranke Zwaan</option>
+					<option value="De Trouwe Wachter">De Trouwe Wachter</option>
+					<option value="De Vier Winden">De Vier Winden</option>
+					<option value="De Witte Juffer">De Witte Juffer</option>
+					<option value="Het Rode Hert">Het Rode Hert</option>
+					<option value="Het Vliegend Hert">Het Vliegend Hert</option>
+				</options>
+				<default>De Blauwe Reiger</default>
+			</parameter>
+			<parameter name="shares" type="integer" min="0" max="11000" required="false">
+				<label>Wind Shares</label>
+				<description>Number of wind shares ("Winddelen")</description>
+				<default>1</default>
+			</parameter>
+			<parameter name="refreshInterval" type="integer" min="1" max="9999" required="false">
+				<label>Refresh Interval</label>
+				<description>Refresh interval for refreshing the data in seconds</description>
+				<default>30</default>
+				<advanced>true</advanced>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<channel-type id="energy-total">
+		<item-type>Number:Energy</item-type>
+		<label>Total Energy</label>
+		<description>Energy produced this year</description>
+		<category>Energy</category>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="power-relative">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Relative Power</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="power-shares">
+		<item-type>Number:Power</item-type>
+		<label>Wind Shares Power</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="power-total">
+		<item-type>Number:Power</item-type>
+		<label>Total Power</label>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="run-time">
+		<item-type>Number:Time</item-type>
+		<label>Run Time</label>
+		<description>Run time this year</description>
+		<state pattern="%.0f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="run-percentage">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Run Percentage</label>
+		<description>Run percentage this year</description>
+		<category>Energy</category>
+		<state pattern="%.1f %unit%" readOnly="true"/>
+	</channel-type>
+	<channel-type id="timestamp">
+		<item-type>DateTime</item-type>
+		<label>Last Updated</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="wind-direction">
+		<item-type>String</item-type>
+		<label>Wind Direction</label>
+		<state pattern="%s" readOnly="true"/>
+	</channel-type>
+	<channel-type id="wind-speed">
+		<item-type>Number</item-type>
+		<label>Wind Speed</label>
+		<category>Wind</category>
+		<state pattern="%d Bft" readOnly="true"/>
+	</channel-type>
+
+</thing:thing-descriptions>

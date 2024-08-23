@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.lgwebos.internal.LGWebOSBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.openhab.binding.lgwebos.internal.handler.LGWebOSHandler;
 import org.openhab.core.io.net.http.WebSocketFactory;
@@ -53,7 +54,7 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
          * Cannot use openHAB's shared web socket client (webSocketFactory.getCommonWebSocketClient()) as we have to
          * change client settings.
          */
-        this.webSocketClient = webSocketFactory.createWebSocketClient("lgwebos");
+        this.webSocketClient = webSocketFactory.createWebSocketClient(BINDING_ID, new SslContextFactory.Client(true));
         this.stateDescriptionProvider = stateDescriptionProvider;
     }
 
@@ -74,15 +75,12 @@ public class LGWebOSHandlerFactory extends BaseThingHandlerFactory {
     @Override
     protected void activate(ComponentContext componentContext) {
         super.activate(componentContext);
-        // LGWebOS TVs only support WEAK cipher suites, thus not using SSL.
-        // SslContextFactory sslContextFactory = new SslContextFactory(true);
-        // sslContextFactory.addExcludeProtocols("tls/1.3");
 
         // reduce timeout from default 15sec
         this.webSocketClient.setConnectTimeout(1000);
 
-        // channel and app listing are json docs up to 4MB
-        this.webSocketClient.getPolicy().setMaxTextMessageSize(4 * 1024 * 1024);
+        // channel and app listing are json docs up to 5MB
+        this.webSocketClient.getPolicy().setMaxTextMessageSize(5 * 1024 * 1024);
 
         // since this is not using openHAB's shared web socket client we need to start and stop
         try {

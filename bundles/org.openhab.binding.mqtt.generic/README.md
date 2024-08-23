@@ -35,7 +35,7 @@ be found on "device123/brightness". In openHAB we call that a **state topic**.
 This pattern is very common, that you have a command and a state topic. A sensor would only have a state topic,
 naturally.
 
-Because every manufacturer can device on his own on which topic his devices publish, this
+Because every manufacturer can decide on his own on which topic his devices publish, this
 binding can unfortunately not provide any auto-discovery means.
 
 If you use an open source IoT device, the chances are high,
@@ -199,6 +199,7 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 - **on**: An optional string (like "Open") that is recognized as `UP` state.
 - **off**: An optional string (like "Close") that is recognized as `DOWN` state.
 - **stop**: An optional string (like "Stop") that is recognized as `STOP` state.
+- **stopCommandTopic**: An optional topic to send `STOP` commands to. If not set, `STOP` commands are sent to the main **commandTopic**.
 
 Internally `UP` is converted to 0%, `DOWN` to 100%.
 If strings are defined for these values, they are used for sending commands to the broker, too.
@@ -255,7 +256,7 @@ Thing mqtt:topic:mything "mything" (mqtt:broker:myInsecureBroker) {
     Type switch : lamp "Kitchen Lamp" [ stateTopic="lamp/enabled", commandTopic="lamp/enabled/set" ]
     Type switch : fancylamp "Fancy Lamp" [ stateTopic="fancy/lamp/state", commandTopic="fancy/lamp/command", on="i-am-on", off="i-am-off" ]
     Type string : alarmpanel "Alarm system" [ stateTopic="alarm/panel/state", commandTopic="alarm/panel/set", allowedStates="ARMED_HOME,ARMED_AWAY,UNARMED" ]
-    Type color : lampcolor "Kitchen Lamp color" [ stateTopic="lamp/color", commandTopic="lamp/color/set", rgb=true ]
+    Type color : lampcolor "Kitchen Lamp color" [ stateTopic="lamp/color", commandTopic="lamp/color/set", colorMode="RGB" ]
     Type dimmer : blind "Blind" [ stateTopic="blind/state", commandTopic="blind/set", min=0, max=5, step=1 ]
 }
 ```
@@ -303,7 +304,7 @@ Please note that value will be discarded and not sent if one transformation fail
 
 This feature is quite powerful in transforming an item state before it is published to the MQTT broker.
 It has the syntax: `%[flags][width]conversion`.
-Find the full documentation on the [Java](https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html) web page.
+Find the full documentation on the [Java](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/util/Formatter.html) web page.
 
 The default is "%s" which means: Output the item state as string.
 

@@ -38,7 +38,7 @@
 				<description>Device port listening to adb connections.</description>
 				<default>5555</default>
 			</parameter>
-			<parameter name="refreshTime" type="integer" min="10" max="120" unit="s" required="true">
+			<parameter name="refreshTime" type="integer" min="5" max="120" unit="s" required="true">
 				<label>Refresh Time</label>
 				<description>Seconds between device status refreshes.</description>
 				<default>30</default>
@@ -75,10 +75,22 @@
 				</options>
 				<advanced>true</advanced>
 			</parameter>
+			<parameter name="volumeStepPercent" type="integer" min="1" max="100">
+				<label>Volume Step Percent</label>
+				<description>Percent to increase/decrease volume.</description>
+				<default>15</default>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="deviceMaxVolume" type="integer" min="1" max="100">
 				<label>Device Max Volume</label>
 				<description>Assumed max volume for devices with android versions that do not expose this value (>=android 11).</description>
 				<default>25</default>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="maxADBTimeouts" type="integer" min="0">
+				<label>Max ADB Timeouts</label>
+				<description>Max ADB command consecutive timeouts to force to reset the connection. (0 for disabled)</description>
+				<default>0</default>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>

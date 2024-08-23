@@ -64,7 +64,7 @@
 		<state readOnly="true" pattern="%.0f"/>
 	</channel-type>
 	<channel-type id="ruuvitag_humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>

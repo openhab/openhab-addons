@@ -14,15 +14,28 @@ When the option "Restricted access" is used, some ports have to be added to the 
 2000;
 2001;
 2010;
+8181;
 8701;
 9292;
 ```
 
 Also the IP of the device running openHAB has to be set to the list of "IP addresses for restricted access".
 
-Also under `Home page > Settings > Control panel` with the menu `Security` the option `Authentication` has to be disabled as the binding does not support the configuration of `username` and `password`for the XML-RPC API.
+Also under `Home page > Settings > Control panel` with the menu `Security` the option `Authentication` has to be disabled if the option 'useAuthentication' is not set.
+This option may be enabled if the option 'useAuthentication' is set and BIN-RPC is not used.
+In this case, a user and password must be created.
+This can be done under `Home page > Settings > Control panel` with the menu `User management`.
+This can be done under `Home page > Settings > Control Panel` in the `User Management` menu.
+The new user should have the following configuration:
 
-If this is not done the binding will not be able to connect to the CCU and the CCU Thing will stay uninitialized and sets a timeout exception:
+- User name - button for login: No
+- Permission level: User
+- Expert mode not visible: Yes
+- Automatically confirm the device message: Yes
+
+The user and password must then be entered in the 'Username' and 'Password' settings.
+
+If this is not done the binding will not be able to connect to the CCU and the CCU Thing will stay uninitialized and sets a timeout exception or a authentication error
 
 ```text
 xxx-xx-xx xx:xx:xx.xxx [hingStatusInfoChangedEvent] - - 'homematic:bridge:xxx' changed from INITIALIZING to OFFLINE (COMMUNICATION_ERROR): java.net.SocketTimeoutException: Connect Timeout
@@ -176,9 +189,18 @@ If set to true, devices are automatically factory reset when their corresponding
 Due to the factory reset, the device will also be unpaired from the gateway, even if "unpairOnDeletion" is set to false! (default = false)
 
 - **bufferSize**
-If a large number of devices are connected to the gateway, the default buffersize of 2048 kB may be too small for communication with the gateway.
-In this case, e.g. the discovery fails.
-With this setting the buffer size can be adjusted. The value is specified in kB.
+  If a large number of devices are connected to the gateway, the default buffersize of 2048 kB may be too small for communication with the gateway.
+  In this case, e.g. the discovery fails.
+  With this setting the buffer size can be adjusted. The value is specified in kB.
+  
+- **useAuthentication**
+Username and password are send to the gateway to authenticate the access to the gateway.
+
+- **userName**
+Username for Authentication to the gateway.
+
+- **password**
+Password for Authentication to the gateway.
 
 The syntax for a bridge is:
 
@@ -672,9 +694,17 @@ In scripts:
 
 :::: tabs
 
+::: tab DSL
+
+```java
+Var_1.sendCommand(REFRESH)
+```
+
+:::
+
 ::: tab JavaScript
 
-``` javascript
+```javascript
 import org.openhab.core.types.RefreshType
 ...
 Var_1.sendCommand(RefreshType.REFRESH)
@@ -682,10 +712,10 @@ Var_1.sendCommand(RefreshType.REFRESH)
 
 :::
 
-::: tab DSL
+::: tab JRuby
 
-``` php
-Var_1.sendCommand(REFRESH)
+```ruby
+Var_1.refresh
 ```
 
 :::
@@ -705,7 +735,7 @@ The problem can be solved by increasing the `bufferSize` value in the bridge con
 openHAB and the CCU are using different values for the same state of a rollershutter.
 Examples: HmIP-BROLL, HmIP-FROLL, HmIP-BBL, HmIP-FBL and HmIP-DRBLI4
 |         | Open | Closed |
-|---------|------|--------|
+| ------- | ---- | ------ |
 | openHAB | 0%   | 100%   |
 | CCU     | 100% | 0%     |
 
@@ -743,3 +773,9 @@ stop org.openhab.binding.homematic
 log:set TRACE org.openhab.binding.homematic
 start org.openhab.binding.homematic
 ```
+
+### Running in Docker
+
+First of all you need to map the `XML-RPC` and `BIN-RPC` Callback Ports to the outside world.
+They must not be mapped to a different port number.
+Next make sure that you set the `Callback Network Address` to the IP where the homematic can reach the exposed ports.

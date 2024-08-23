@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,18 +15,17 @@ package org.openhab.io.homekit.internal.accessories;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.CURRENT_MEDIA_STATE;
 import static org.openhab.io.homekit.internal.HomekitCharacteristicType.TARGET_MEDIA_STATE;
 
-import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import org.openhab.core.library.items.StringItem;
-import org.openhab.core.library.types.StringType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.SmartSpeakerAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.television.CurrentMediaStateEnum;
 import io.github.hapjava.characteristics.impl.television.TargetMediaStateEnum;
@@ -37,25 +36,21 @@ import io.github.hapjava.services.impl.SmartSpeakerService;
  * @author Eugen Freiter - Initial contribution
  */
 public class HomekitSmartSpeakerImpl extends AbstractHomekitAccessoryImpl implements SmartSpeakerAccessory {
-    private final Map<CurrentMediaStateEnum, String> currentMediaState;
-    private final Map<TargetMediaStateEnum, String> targetMediaState;
+    private final Map<CurrentMediaStateEnum, Object> currentMediaState;
+    private final Map<TargetMediaStateEnum, Object> targetMediaState;
 
     public HomekitSmartSpeakerImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
-        currentMediaState = new EnumMap<>(CurrentMediaStateEnum.class);
-        currentMediaState.put(CurrentMediaStateEnum.STOP, "STOP");
-        currentMediaState.put(CurrentMediaStateEnum.PLAY, "PLAY");
-        currentMediaState.put(CurrentMediaStateEnum.PAUSE, "PAUSE");
-        currentMediaState.put(CurrentMediaStateEnum.UNKNOWN, "UNKNOWN");
-        updateMapping(CURRENT_MEDIA_STATE, currentMediaState);
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
+        currentMediaState = createMapping(CURRENT_MEDIA_STATE, CurrentMediaStateEnum.class);
+        targetMediaState = createMapping(TARGET_MEDIA_STATE, TargetMediaStateEnum.class);
+    }
 
-        targetMediaState = new EnumMap<>(TargetMediaStateEnum.class);
-        targetMediaState.put(TargetMediaStateEnum.STOP, "STOP");
-        targetMediaState.put(TargetMediaStateEnum.PLAY, "PLAY");
-        targetMediaState.put(TargetMediaStateEnum.PAUSE, "PAUSE");
-        updateMapping(TARGET_MEDIA_STATE, targetMediaState);
-        getServices().add(new SmartSpeakerService(this));
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new SmartSpeakerService(this));
     }
 
     @Override
@@ -82,8 +77,8 @@ public class HomekitSmartSpeakerImpl extends AbstractHomekitAccessoryImpl implem
 
     @Override
     public CompletableFuture<Void> setTargetMediaState(final TargetMediaStateEnum targetState) {
-        getItem(TARGET_MEDIA_STATE, StringItem.class)
-                .ifPresent(item -> item.send(new StringType(targetMediaState.get(targetState))));
+        HomekitCharacteristicFactory.setValueFromEnum(getCharacteristic(TARGET_MEDIA_STATE).get(), targetState,
+                targetMediaState);
         return CompletableFuture.completedFuture(null);
     }
 

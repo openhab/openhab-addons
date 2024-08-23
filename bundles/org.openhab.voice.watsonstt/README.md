@@ -51,6 +51,7 @@ org.openhab.voice.watsonstt:optOutLogging=false
 org.openhab.voice.watsonstt:smartFormatting=false
 org.openhab.voice.watsonstt:redaction=false
 org.openhab.voice.watsonstt:noResultsMessage="Sorry, I didn't understand you"
+org.openhab.voice.watsonstt:errorMessage="Sorry, something went wrong"
 ```
 
 ### Default Speech-to-Text Configuration

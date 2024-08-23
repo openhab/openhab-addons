@@ -4,7 +4,7 @@ This binding integrates the [Keba KeContact EV Charging Stations](https://www.ke
 
 ## Supported Things
 
-The Keba KeContact P20 and P30 stations which are providing the UDP interface (P20 LSA+ socket, P30 c-series and x-series) are supported by this binding, the thing type id is `kecontact`.
+The Keba KeContact P20 and P30 stations which are providing the UDP interface (P20 LSA+ socket, P30 c-series and x-series or BMW wallbox) are supported by this binding, the thing type id is `kecontact`.
 
 ## Thing Configuration
 
@@ -18,7 +18,8 @@ All devices support the following channels:
 | Channel ID              | Item Type                | Read-only | Description                                                             |
 | ----------------------- | ------------------------ | --------- | ----------------------------------------------------------------------- |
 | state                   | Number                   | yes       | current operational state of the wallbox                                |
-| enabled                 | Switch                   | no        | activation state of the wallbox                                         |
+| enabledsystem           | Switch                   | yes       | activation state of the wallbox (System)                                |
+| enableduser             | Switch                   | no        | activation state of the wallbox (User)                                  |
 | maxpresetcurrent        | Number:ElectricCurrent   | no        | maximum current the charging station should deliver to the EV in A      |
 | maxpresetcurrentrange   | Number:Dimensionless     | no        | maximum current the charging station should deliver to the EV in %      |
 | power                   | Number:Power             | yes       | active power delivered by the charging station                          |
@@ -63,7 +64,8 @@ Number:ElectricCurrent    KebaCurrent           "Maximum supply current [%.3f A]
 Number:ElectricCurrent    KebaSystemCurrent     "Maximum system supply current [%.3f A]"  {channel="keba:kecontact:1:maxsystemcurrent"} 
 Number:ElectricCurrent    KebaFailSafeCurrent   "Failsafe supply current [%.3f A]"        {channel="keba:kecontact:1:failsafecurrent"} 
 Number                    KebaState             "Operating State [%s]"                    {channel="keba:kecontact:1:state"}
-Switch                    KebaSwitch            "Enabled"                                 {channel="keba:kecontact:1:enabled"}
+Switch                    KebaEnabledSystem     "Enabled (System)"                        {channel="keba:kecontact:1:enabledsystem"}
+Switch                    KebaEnabledUser       "Enabled (User)"                          {channel="keba:kecontact:1:enableduser"}  
 Switch                    KebaWallboxPlugged    "Plugged into wallbox"                    {channel="keba:kecontact:1:wallbox"}
 Switch                    KebaVehiclePlugged    "Plugged into vehicle"                    {channel="keba:kecontact:1:vehicle"}
 Switch                    KebaPlugLocked        "Plug locked"                             {channel="keba:kecontact:1:locked"}
@@ -74,7 +76,7 @@ Number:ElectricCurrent    KebaI3                                                
 Number:ElectricPotential  KebaU1                                                          {channel="keba:kecontact:1:U1"}
 Number:ElectricPotential  KebaU2                                                          {channel="keba:kecontact:1:U2"}
 Number:ElectricPotential  KebaU3                                                          {channel="keba:kecontact:1:U3"}
-Number:Power              KebaPower             "Energy during current session [%.1f Wh]" {channel="keba:kecontact:1:power"}
+Number:Power              KebaPower             "Energy during current session [%.1f W]"  {channel="keba:kecontact:1:power"}
 Number:Energy             KebaSessionEnergy                                               {channel="keba:kecontact:1:sessionconsumption"}
 Number:Energy             KebaTotalEnergy       "Energy during all sessions [%.1f Wh]"    {channel="keba:kecontact:1:totalconsumption"}
 Switch                    KebaInputSwitch                                                 {channel="keba:kecontact:1:input"}
@@ -90,7 +92,8 @@ sitemap demo label="Main Menu"
  Text label="Charging Station" {
   Text  item=KebaState
   Text  item=KebaUptime
-  Switch  item=KebaSwitch
+  Switch  item=KebaEnabledSystem
+  Switch  item=KebaEnabledUser
   Switch  item=KebaWallboxPlugged
   Switch  item=KebaVehiclePlugged
   Switch  item=KebaPlugLocked

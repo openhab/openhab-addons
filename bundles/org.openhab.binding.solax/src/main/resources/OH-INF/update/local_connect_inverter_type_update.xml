@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+	<thing-type uid="solax:local-connect-inverter">
+		<instruction-set targetVersion="1">
+			<add-channel id="inverter-output-power-phase1">
+				<type>system:electric-power</type>
+				<label>Inverter Input/Output Power Phase 1</label>
+				<description>Power to/from the inverter phase 1</description>
+			</add-channel>
+			<add-channel id="inverter-output-power-phase2">
+				<type>system:electric-power</type>
+				<label>Inverter Input/Output Power Phase 2</label>
+				<description>Power to/from the inverter phase 2</description>
+			</add-channel>
+			<add-channel id="inverter-output-power-phase3">
+				<type>system:electric-power</type>
+				<label>Inverter Input/Output Power Phase 3</label>
+				<description>Power to/from the inverter phase 3</description>
+			</add-channel>
+			<add-channel id="inverter-total-output-power">
+				<type>system:electric-power</type>
+				<label>Inverter Input/Output Total Power</label>
+				<description>Power to/from the inverter on all phases</description>
+			</add-channel>
+			<add-channel id="inverter-current-phase1">
+				<type>system:electric-current</type>
+				<label>Inverter Input/Output Current Phase 1</label>
+				<description>Current to/from the inverter phase 1</description>
+			</add-channel>
+			<add-channel id="inverter-current-phase2">
+				<type>system:electric-current</type>
+				<label>Inverter Input/Output Current Phase 2</label>
+				<description>Current to/from the inverter phase 2</description>
+			</add-channel>
+			<add-channel id="inverter-current-phase3">
+				<type>system:electric-current</type>
+				<label>Inverter Input/Output Current Phase 3</label>
+				<description>Current to/from the inverter phase 3</description>
+			</add-channel>
+			<add-channel id="inverter-voltage-phase1">
+				<type>system:electric-voltage</type>
+				<label>Inverter Voltage Phase 1</label>
+				<description>Voltage of the inverter's phase 1</description>
+			</add-channel>
+			<add-channel id="inverter-voltage-phase2">
+				<type>system:electric-voltage</type>
+				<label>Inverter Voltage Phase 2</label>
+				<description>Voltage of the inverter's phase 2</description>
+			</add-channel>
+			<add-channel id="inverter-voltage-phase3">
+				<type>system:electric-voltage</type>
+				<label>Inverter Voltage Phase 3</label>
+				<description>Voltage of the inverter's phase 3</description>
+			</add-channel>
+			<add-channel id="inverter-frequency-phase1">
+				<type>system:electric-voltage</type>
+				<label>Inverter Voltage Phase 3</label>
+				<description>Voltage of the inverter's phase 3</description>
+			</add-channel>
+			<add-channel id="inverter-frequency-phase2">
+				<type>system:electric-voltage</type>
+				<label>Inverter Voltage Phase 2</label>
+				<description>Voltage of the inverter's phase 3</description>
+			</add-channel>
+			<add-channel id="inverter-frequency-phase3">
+				<type>system:electric-voltage</type>
+				<label>Inverter Voltage Phase 3</label>
+				<description>Voltage of the inverter's phase 3</description>
+			</add-channel>
+			<add-channel id="power-usage">
+				<type>system:electric-power</type>
+				<label>Power Usage</label>
+				<description>Current power consumption of the building</description>
+			</add-channel>
+			<add-channel id="total-energy">
+				<type>system:electric-energy</type>
+				<label>Total Energy</label>
+				<description>Total energy output from the inverter</description>
+			</add-channel>
+			<add-channel id="total-battery-discharge-energy">
+				<type>system:electric-energy</type>
+				<label>Total Battery Discharge Energy</label>
+				<description>Total energy from the battery output</description>
+			</add-channel>
+			<add-channel id="total-battery-charge-energy">
+				<type>system:electric-energy</type>
+				<label>Total Battery Charge Energy</label>
+				<description>Total energy charged to the battery</description>
+			</add-channel>
+			<add-channel id="total-pv-energy">
+				<type>system:electric-energy</type>
+				<label>Total PV Energy</label>
+				<description>Total energy produced by the PV</description>
+			</add-channel>
+			<add-channel id="total-consumption">
+				<type>system:electric-energy</type>
+				<label>Total Consumption</label>
+				<description>Total energy consumed from the building</description>
+			</add-channel>
+			<add-channel id="total-feed-in-energy">
+				<type>system:electric-energy</type>
+				<label>Total Feed-In Consumption</label>
+				<description>Total energy consumed from the electricity provider</description>
+			</add-channel>
+			<add-channel id="today-energy">
+				<type>system:electric-energy</type>
+				<label>Today Energy</label>
+				<description>Energy output from the inverter for the day</description>
+			</add-channel>
+			<add-channel id="today-battery-discharge-energy">
+				<type>system:electric-energy</type>
+				<label>Today Battery Discharge Energy</label>
+				<description>Total energy from the battery output for the day</description>
+			</add-channel>
+			<add-channel id="today-battery-charge-energy">
+				<type>system:electric-energy</type>
+				<label>Today Battery Charge Energy</label>
+				<description>Total energy charged to the battery for the day</description>
+			</add-channel>
+			<add-channel id="today-feed-in-energy">
+				<type>system:electric-energy</type>
+				<label>Today Feed-In Energy</label>
+				<description>Energy consumed from the electricity provider for the day</description>
+			</add-channel>
+			<add-channel id="today-consumption">
+				<type>system:electric-energy</type>
+				<label>Today Consumption</label>
+				<description>Energy consumed for the day</description>
+			</add-channel>
+		</instruction-set>
+
+		<instruction-set targetVersion="2">
+
+			<add-channel id="inverter-temperature1">
+				<type>solax:inverter-temperature</type>
+				<label>Inverter Temperature 1</label>
+				<description>Temperature 1 of the inverter</description>
+			</add-channel>
+			<add-channel id="inverter-temperature2">
+				<type>solax:inverter-temperature</type>
+				<label>Inverter Temperature 2</label>
+				<description>Temperature 2 of the inverter</description>
+			</add-channel>
+			<add-channel id="inverter-workmode">
+				<type>solax:inverter-workmode</type>
+				<label>Inverter Workmode</label>
+				<description>Inverter Workmode</description>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+</update:update-descriptions>

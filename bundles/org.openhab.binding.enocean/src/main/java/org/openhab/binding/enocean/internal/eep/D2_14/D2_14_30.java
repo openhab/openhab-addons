@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.enocean.internal.EnOceanBindingConstants.*;
 
 import java.util.function.Function;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.enocean.internal.eep.Base._VLDMessage;
 import org.openhab.binding.enocean.internal.messages.ERP1Message;
 import org.openhab.core.config.core.Configuration;
@@ -32,6 +33,7 @@ import org.openhab.core.types.UnDefType;
  *
  * @author Daniel Weber - Initial contribution
  */
+@NonNullByDefault
 public class D2_14_30 extends _VLDMessage {
 
     private final String[] hygroComfortIndexValues = { "GOOD", "MEDIUM", "BAD", "ERROR" };
@@ -66,15 +68,15 @@ public class D2_14_30 extends _VLDMessage {
             Configuration config) {
         switch (channelId) {
             case CHANNEL_SMOKEDETECTION:
-                return getBit(bytes[0], 7) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[0], 7));
             case CHANNEL_SENSORFAULT:
-                return getBit(bytes[0], 6) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[0], 6));
             case CHANNEL_MAINTENANCESTATUS:
-                return getBit(bytes[0], 5) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[0], 5));
             case CHANNEL_SENSORANALYSISHUMIDITYRANGE:
-                return getBit(bytes[0], 4) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[0], 4));
             case CHANNEL_SENSORANALYSISTEMPERATURRANGE:
-                return getBit(bytes[0], 3) ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(getBit(bytes[0], 3));
             case CHANNEL_TIMESINCELASTMAINTENANCE:
                 return new QuantityType<>(((bytes[0] << 5) + (bytes[0] >>> 3)) & 0xFF, Units.WEEK);
             case CHANNEL_BATTERY_LEVEL:

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,15 +16,16 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * This class represents a loadpoint object of the status response (/api/state).
- * This DTO was written for evcc version 0.106.3
+ * This DTO was written for evcc version 0.123.1
  *
  * @author Florian Hotze - Initial contribution
+ * @author Luca Arnecke - Update to evcc version 0.123.1
  */
 public class Loadpoint {
     // Data types from https://github.com/evcc-io/evcc/blob/master/api/api.go
     // and from https://docs.evcc.io/docs/reference/configuration/messaging/#msg
 
-    @SerializedName("activePhases")
+    @SerializedName("phasesActive")
     private int activePhases;
 
     @SerializedName("chargeCurrent")
@@ -57,44 +58,29 @@ public class Loadpoint {
     @SerializedName("enabled")
     private boolean enabled;
 
-    @SerializedName("hasVehicle")
-    private boolean hasVehicle;
-
-    @SerializedName("loadpoint")
-    private int loadpoint;
-
     @SerializedName("maxCurrent")
     private float maxCurrent;
 
     @SerializedName("minCurrent")
     private float minCurrent;
 
-    @SerializedName("minSoC")
-    private float minSoC;
-
     @SerializedName("mode")
     private String mode;
 
-    @SerializedName("phases")
+    @SerializedName("phasesEnabled")
     private int phases;
 
-    @SerializedName("pvAction")
-    private String pvAction;
+    @SerializedName("limitEnergy")
+    private float limitEnergy;
 
-    @SerializedName("pvRemaining")
-    private long pvRemaining;
-
-    @SerializedName("targetSoC")
-    private float targetSoC;
+    @SerializedName("limitSoc")
+    private float limitSoC;
 
     @SerializedName("targetTime")
     private String targetTime;
 
     @SerializedName("title")
     private String title;
-
-    @SerializedName("vehicleCapacity")
-    private float vehicleCapacity;
 
     @SerializedName("vehicleOdometer")
     private float vehicleOdometer;
@@ -105,11 +91,20 @@ public class Loadpoint {
     @SerializedName("vehicleRange")
     private float vehicleRange;
 
-    @SerializedName("vehicleSoC")
+    @SerializedName("vehicleSoc")
     private float vehicleSoC;
 
-    @SerializedName("vehicleTitle")
-    private String vehicleTitle;
+    @SerializedName("vehicleName")
+    private String vehicleName;
+
+    @SerializedName("effectiveLimitSoc")
+    private float effectiveLimitSoC;
+
+    @SerializedName("chargerFeatureHeating")
+    private boolean chargerFeatureHeating;
+
+    @SerializedName("chargerFeatureIntegratedDevice")
+    private boolean chargerFeatureIntegratedDevice;
 
     /**
      * @return number of active phases
@@ -189,20 +184,6 @@ public class Loadpoint {
     }
 
     /**
-     * @return whether vehicle is configured for loadpoint
-     */
-    public boolean getHasVehicle() {
-        return hasVehicle;
-    }
-
-    /**
-     * @return loadpoint id
-     */
-    public int getLoadpoint() {
-        return loadpoint;
-    }
-
-    /**
      * @return maximum current
      */
     public float getMaxCurrent() {
@@ -214,13 +195,6 @@ public class Loadpoint {
      */
     public float getMinCurrent() {
         return minCurrent;
-    }
-
-    /**
-     * @return minimum state of charge
-     */
-    public float getMinSoC() {
-        return minSoC;
     }
 
     /**
@@ -238,24 +212,17 @@ public class Loadpoint {
     }
 
     /**
-     * @return the pv action
+     * @return limit energy
      */
-    public String getPvAction() {
-        return pvAction;
+    public float getLimitEnergy() {
+        return limitEnergy;
     }
 
     /**
-     * @return the pv remaining
+     * @return limit state of charge (SoC)
      */
-    public long getPvRemaining() {
-        return pvRemaining;
-    }
-
-    /**
-     * @return target state of charge (SoC)
-     */
-    public float getTargetSoC() {
-        return targetSoC;
+    public float getLimitSoC() {
+        return limitSoC;
     }
 
     /**
@@ -270,13 +237,6 @@ public class Loadpoint {
      */
     public String getTitle() {
         return title;
-    }
-
-    /**
-     * @return vehicle's capacity
-     */
-    public float getVehicleCapacity() {
-        return vehicleCapacity;
     }
 
     /**
@@ -310,7 +270,28 @@ public class Loadpoint {
     /**
      * @return vehicle's title/name
      */
-    public String getVehicleTitle() {
-        return vehicleTitle;
+    public String getVehicleName() {
+        return vehicleName;
+    }
+
+    /**
+     * @return effective limit state of charge
+     */
+    public float getEffectiveLimitSoC() {
+        return effectiveLimitSoC;
+    }
+
+    /**
+     * @return Charger Feature: Heating
+     */
+    public boolean getChargerFeatureHeating() {
+        return chargerFeatureHeating;
+    }
+
+    /**
+     * @return Charger Feature: Integrated Device
+     */
+    public boolean getChargerFeatureIntegratedDevice() {
+        return chargerFeatureIntegratedDevice;
     }
 }

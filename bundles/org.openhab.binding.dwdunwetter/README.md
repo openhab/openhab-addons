@@ -18,6 +18,7 @@ Each Thing provides one or more warnings for a city.
 | warningCount | 1       | No       | Number of warnings to provide.                                                                                                             |
 
 ### Cell ID
+
 <!-- See page 10-13 (in German) of https://www.dwd.de/DE/wetter/warnungen_aktuell/objekt_einbindung/einbindung_karten_geodienste.pdf?__blob=publicationFile&v=14 for Cell ID documentation. -->
 Use [this list](https://www.dwd.de/DE/leistungen/opendata/help/warnungen/cap_warncellids_csv.csv) of valid IDs, please notice that **only IDs starting with an eight (8) and nine digits are supported** by this binding.
 Exeception for Berlin, where the ID of the city's districts are used. Those start with a seven (7).

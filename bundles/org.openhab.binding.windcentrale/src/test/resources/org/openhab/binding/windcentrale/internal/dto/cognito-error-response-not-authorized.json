@@ -1,0 +1,4 @@
+{
+  "__type": "NotAuthorizedException",
+  "message": "Incorrect username or password."
+}

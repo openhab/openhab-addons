@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * This Class provides the DatagramSocket that listens for eKey packets on the network
- * This will run in a thread and can be interrupted by calling <code>stopListener()<code>
+ * This will run in a thread and can be interrupted by calling <code>stopListener()</code>
  * Before starting the thread initialization is required (mode, ip, port and deliminator)
  *
  * @author Hans-Jörg Merk - Initial contribution
@@ -119,7 +119,8 @@ public class EkeyUdpPacketReceiver {
                         lastPacket = packet.getData();
                         readMessage(lastPacket);
                     } else {
-                        logger.warn("Packet received from unknown source- {}", packet.getData());
+                        logger.warn("Packet received from unknown source (ip={}) - {}",
+                                packet.getAddress().getHostAddress(), packet.getData());
                     }
                 } catch (UnknownHostException e) {
                     logger.debug("Exception during address conversion - {}", e.getMessage());

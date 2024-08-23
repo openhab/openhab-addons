@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,10 +10,14 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.automation.jsscripting.internal.scope;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
@@ -28,7 +32,7 @@ import org.osgi.service.component.annotations.Activate;
  * @author Jonathan Gilbert - Initial contribution
  */
 public abstract class AbstractScriptExtensionProvider implements ScriptExtensionProvider {
-    private Map<String, Function<String, Object>> types;
+    private Map<String, Function<String, Object>> types = new HashMap<>();
     private Map<String, Map<String, Object>> idToTypes = new ConcurrentHashMap<>();
 
     protected abstract String getPresetName();
@@ -41,7 +45,7 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
 
     @Activate
     public void activate(final BundleContext context) {
-        types = new HashMap<>();
+        types.clear();
         initializeTypes(context);
     }
 
@@ -52,7 +56,7 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
 
     @Override
     public Collection<String> getPresets() {
-        return Collections.singleton(getPresetName());
+        return Set.of(getPresetName());
     }
 
     @Override
@@ -62,7 +66,6 @@ public abstract class AbstractScriptExtensionProvider implements ScriptExtension
 
     @Override
     public @Nullable Object get(String scriptIdentifier, String type) throws IllegalArgumentException {
-
         Map<String, Object> forScript = idToTypes.computeIfAbsent(scriptIdentifier, k -> new HashMap<>());
         return forScript.computeIfAbsent(type,
                 k -> Objects.nonNull(types.get(k)) ? types.get(k).apply(scriptIdentifier) : null);

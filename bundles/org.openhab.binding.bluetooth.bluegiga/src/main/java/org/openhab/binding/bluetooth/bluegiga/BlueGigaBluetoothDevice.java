@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,7 +32,6 @@ import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothBindingConstants;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothDescriptor;
-import org.openhab.binding.bluetooth.BluetoothDevice;
 import org.openhab.binding.bluetooth.BluetoothException;
 import org.openhab.binding.bluetooth.BluetoothService;
 import org.openhab.binding.bluetooth.BluetoothUtils;
@@ -59,13 +58,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * An extended {@link BluetoothDevice} class to handle BlueGiga specific information
+ * An extended {@link BaseBluetoothDevice} class to handle BlueGiga specific information
  *
  * @author Chris Jackson - Initial contribution
  */
 @NonNullByDefault
 public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements BlueGigaEventListener {
-    private final long TIMEOUT_SEC = 60;
+    private static final long TIMEOUT_SEC = 60;
 
     private final Logger logger = LoggerFactory.getLogger(BlueGigaBluetoothDevice.class);
 
@@ -131,7 +130,7 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
     };
 
     /**
-     * Creates a new {@link BlueGigaBluetoothDevice} which extends {@link BluetoothDevice} for the BlueGiga
+     * Creates a new {@link BlueGigaBluetoothDevice} which extends {@link BaseBluetoothDevice} for the BlueGiga
      * implementation
      *
      * @param bgHandler the {@link BlueGigaBridgeHandler} that provides the link to the dongle
@@ -357,33 +356,33 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
 
     @Override
     public void bluegigaEventReceived(BlueGigaResponse event) {
-        if (event instanceof BlueGigaScanResponseEvent) {
-            handleScanEvent((BlueGigaScanResponseEvent) event);
+        if (event instanceof BlueGigaScanResponseEvent responseEvent) {
+            handleScanEvent(responseEvent);
         }
 
-        else if (event instanceof BlueGigaGroupFoundEvent) {
-            handleGroupFoundEvent((BlueGigaGroupFoundEvent) event);
+        else if (event instanceof BlueGigaGroupFoundEvent foundEvent) {
+            handleGroupFoundEvent(foundEvent);
         }
 
-        else if (event instanceof BlueGigaFindInformationFoundEvent) {
+        else if (event instanceof BlueGigaFindInformationFoundEvent foundEvent) {
             // A Characteristic has been discovered
-            handleFindInformationFoundEvent((BlueGigaFindInformationFoundEvent) event);
+            handleFindInformationFoundEvent(foundEvent);
         }
 
-        else if (event instanceof BlueGigaProcedureCompletedEvent) {
-            handleProcedureCompletedEvent((BlueGigaProcedureCompletedEvent) event);
+        else if (event instanceof BlueGigaProcedureCompletedEvent completedEvent) {
+            handleProcedureCompletedEvent(completedEvent);
         }
 
-        else if (event instanceof BlueGigaConnectionStatusEvent) {
-            handleConnectionStatusEvent((BlueGigaConnectionStatusEvent) event);
+        else if (event instanceof BlueGigaConnectionStatusEvent statusEvent) {
+            handleConnectionStatusEvent(statusEvent);
         }
 
-        else if (event instanceof BlueGigaDisconnectedEvent) {
-            handleDisconnectedEvent((BlueGigaDisconnectedEvent) event);
+        else if (event instanceof BlueGigaDisconnectedEvent disconnectedEvent) {
+            handleDisconnectedEvent(disconnectedEvent);
         }
 
-        else if (event instanceof BlueGigaAttributeValueEvent) {
-            handleAttributeValueEvent((BlueGigaAttributeValueEvent) event);
+        else if (event instanceof BlueGigaAttributeValueEvent valueEvent) {
+            handleAttributeValueEvent(valueEvent);
         }
     }
 
@@ -548,13 +547,17 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
             characteristic.setService(service);
             handleToCharacteristic.put(handle, characteristic);
         } else {
+            @Nullable
             Integer chrHandle = handleToCharacteristic.floorKey(handle);
             if (chrHandle == null) {
                 logger.debug("BlueGiga: Unable to find characteristic for handle {}", handle);
                 return;
             }
+            @Nullable
             BlueGigaBluetoothCharacteristic characteristic = handleToCharacteristic.get(chrHandle);
-            characteristic.addDescriptor(new BluetoothDescriptor(characteristic, attUUID, handle));
+            if (characteristic != null) {
+                characteristic.addDescriptor(new BluetoothDescriptor(characteristic, attUUID, handle));
+            }
         }
     }
 
@@ -749,9 +752,11 @@ public class BlueGigaBluetoothDevice extends BaseBluetoothDevice implements Blue
         } else {
             // it must be one of the descriptors we need to update
             UUID attUUID = handleToUUID.get(handle);
-            BluetoothDescriptor descriptor = characteristic.getDescriptor(attUUID);
-            notifyListeners(BluetoothEventType.DESCRIPTOR_UPDATED, descriptor,
-                    BluetoothUtils.toByteArray(event.getValue()));
+            if (attUUID != null) {
+                BluetoothDescriptor descriptor = characteristic.getDescriptor(attUUID);
+                notifyListeners(BluetoothEventType.DESCRIPTOR_UPDATED, descriptor,
+                        BluetoothUtils.toByteArray(event.getValue()));
+            }
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,25 +12,26 @@
  */
 package org.openhab.binding.netatmo.internal.handler;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.netatmo.internal.api.data.ModuleType;
+import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FeatureArea;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
 import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.config.NAThingConfiguration;
 import org.openhab.binding.netatmo.internal.handler.capability.Capability;
 import org.openhab.binding.netatmo.internal.handler.capability.CapabilityMap;
 import org.openhab.binding.netatmo.internal.handler.capability.HomeCapability;
-import org.openhab.binding.netatmo.internal.handler.capability.RefreshCapability;
 import org.openhab.binding.netatmo.internal.handler.capability.RestCapability;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.Channel;
@@ -68,6 +69,10 @@ public interface CommonInterface {
 
     void updateState(ChannelUID channelUID, State state);
 
+    default void updateState(String groupId, String id, State state) {
+        updateState(new ChannelUID(getThing().getUID(), groupId, id), state);
+    }
+
     void setThingStatus(ThingStatus thingStatus, ThingStatusDetail thingStatusDetail,
             @Nullable String thingStatusReason);
 
@@ -82,6 +87,10 @@ public interface CommonInterface {
         Bridge bridge = getBridge();
         return bridge != null && bridge.getHandler() instanceof DeviceHandler ? (DeviceHandler) bridge.getHandler()
                 : null;
+    }
+
+    default Optional<ScheduledFuture<?>> schedule(Runnable arg0, Duration delay) {
+        return Optional.of(getScheduler().schedule(arg0, delay.getSeconds(), TimeUnit.SECONDS));
     }
 
     default @Nullable ApiBridgeHandler getAccountHandler() {
@@ -103,11 +112,15 @@ public interface CommonInterface {
     }
 
     default void expireData() {
-        getCapabilities().values().forEach(cap -> cap.expireData());
+        getCapabilities().values().forEach(Capability::expireData);
     }
 
     default String getId() {
-        return (String) getThing().getConfiguration().get(NAThingConfiguration.ID);
+        return getThingConfigAs(NAThingConfiguration.class).getId();
+    }
+
+    default <T> T getThingConfigAs(Class<T> configurationClass) {
+        return getThing().getConfiguration().as(configurationClass);
     }
 
     default Stream<Channel> getActiveChannels() {
@@ -115,33 +128,54 @@ public interface CommonInterface {
                 .filter(channel -> ChannelKind.STATE.equals(channel.getKind()) && isLinked(channel.getUID()));
     }
 
-    default Optional<CommonInterface> getHomeHandler() {
-        CommonInterface bridgeHandler = getBridgeHandler();
-        if (bridgeHandler != null) {
-            return bridgeHandler.getCapabilities().get(HomeCapability.class).isPresent() ? Optional.of(bridgeHandler)
-                    : Optional.empty();
+    default Optional<CommonInterface> recurseUpToHomeHandler(@Nullable CommonInterface handler) {
+        if (handler == null) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        return handler.getCapabilities().get(HomeCapability.class).isPresent() ? Optional.of(handler)
+                : recurseUpToHomeHandler(handler.getBridgeHandler());
+    }
+
+    /**
+     * Recurses down in the home/module/device tree
+     *
+     * @param bridge
+     * @return the list of childs of the bridge
+     */
+    default List<CommonInterface> getAllActiveChildren(Bridge bridge) {
+        List<CommonInterface> result = new ArrayList<>();
+        bridge.getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler).forEach(childHandler -> {
+            if (childHandler != null) {
+                Thing childThing = childHandler.getThing();
+                if (childThing instanceof Bridge bridgeChild) {
+                    result.addAll(getAllActiveChildren(bridgeChild));
+                }
+                result.add((CommonInterface) childHandler);
+            }
+        });
+        return result;
     }
 
     default List<CommonInterface> getActiveChildren() {
-        Thing thing = getThing();
-        if (thing instanceof Bridge) {
-            return ((Bridge) thing).getThings().stream().filter(Thing::isEnabled)
-                    .filter(th -> th.getStatusInfo().getStatusDetail() != ThingStatusDetail.BRIDGE_OFFLINE)
-                    .map(Thing::getHandler).filter(Objects::nonNull).map(CommonInterface.class::cast)
-                    .collect(Collectors.toList());
-        }
-        return List.of();
+        return getThing() instanceof Bridge bridge
+                ? bridge.getThings().stream().filter(Thing::isEnabled)
+                        .filter(th -> th.getStatusInfo().getStatusDetail() != ThingStatusDetail.BRIDGE_OFFLINE)
+                        .map(Thing::getHandler).filter(CommonInterface.class::isInstance)
+                        .map(CommonInterface.class::cast).toList()
+                : List.of();
+    }
+
+    default Stream<CommonInterface> getActiveChildren(FeatureArea area) {
+        return getActiveChildren().stream().filter(child -> child.getModuleType().feature == area);
     }
 
     default <T extends RestCapability<?>> Optional<T> getHomeCapability(Class<T> clazz) {
-        return getHomeHandler().map(handler -> handler.getCapabilities().get(clazz)).orElse(Optional.empty());
+        return Objects.requireNonNull(recurseUpToHomeHandler(this).map(handler -> handler.getCapabilities().get(clazz))
+                .orElse(Optional.empty()));
     }
 
     default void setNewData(NAObject newData) {
-        if (newData instanceof NAThing) {
-            NAThing thingData = (NAThing) newData;
+        if (newData instanceof NAThing thingData) {
             if (getId().equals(thingData.getBridge())) {
                 getActiveChildren().stream().filter(child -> child.getId().equals(thingData.getId())).findFirst()
                         .ifPresent(child -> child.setNewData(thingData));
@@ -172,12 +206,12 @@ public interface CommonInterface {
             String channelName = channelUID.getIdWithoutGroup();
             getCapabilities().values().forEach(cap -> cap.handleCommand(channelName, command));
         } else {
-            getLogger().debug("Command {}, on channel {} dropped - thing is not ONLINE", command, channelUID);
+            getLogger().debug("Command {} on channel {} dropped - thing is not ONLINE", command, channelUID);
         }
     }
 
     default void proceedWithUpdate() {
-        updateReadings().forEach(dataSet -> setNewData(dataSet));
+        updateReadings().forEach(this::setNewData);
     }
 
     default List<NAObject> updateReadings() {
@@ -193,33 +227,19 @@ public interface CommonInterface {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_UNINITIALIZED, null);
         } else if (!ThingStatus.ONLINE.equals(bridge.getStatus())) {
             setThingStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE, null);
-            removeRefreshCapability();
+            getCapabilities().getParentUpdate().ifPresent(Capability::dispose);
+            getCapabilities().getRefresh().ifPresent(Capability::dispose);
         } else {
             setThingStatus(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
-            setRefreshCapability();
-            getCapabilities().values().forEach(cap -> cap.initialize());
-            getScheduler().schedule(() -> {
-                CommonInterface bridgeHandler = getBridgeHandler();
-                if (bridgeHandler != null) {
-                    bridgeHandler.expireData();
-                }
-            }, 1, TimeUnit.SECONDS);
+            getCapabilities().getParentUpdate().ifPresentOrElse(Capability::initialize, () -> {
+                int interval = getThingConfigAs(NAThingConfiguration.class).getRefreshInterval();
+                getCapabilities().getRefresh().ifPresent(cap -> cap.setInterval(Duration.ofSeconds(interval)));
+            });
         }
     }
 
-    default void setRefreshCapability() {
-        ModuleType moduleType = ModuleType.from(getThing().getThingTypeUID());
-        if (ModuleType.ACCOUNT.equals(moduleType.getBridge())) {
-            NAThingConfiguration config = getThing().getConfiguration().as(NAThingConfiguration.class);
-            getCapabilities().put(new RefreshCapability(this, getScheduler(), config.refreshInterval));
-        }
-    }
-
-    default void removeRefreshCapability() {
-        Capability refreshCap = getCapabilities().remove(RefreshCapability.class);
-        if (refreshCap != null) {
-            refreshCap.dispose();
-        }
+    default ModuleType getModuleType() {
+        return ModuleType.from(getThing().getThingTypeUID());
     }
 
     default void commonDispose() {
@@ -227,7 +247,6 @@ public interface CommonInterface {
     }
 
     default void removeChannels(List<Channel> channels) {
-        ThingBuilder builder = editThing().withoutChannels(channels);
-        updateThing(builder.build());
+        updateThing(editThing().withoutChannels(channels).build());
     }
 }

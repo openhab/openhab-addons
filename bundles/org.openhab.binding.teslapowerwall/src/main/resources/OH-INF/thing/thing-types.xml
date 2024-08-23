@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="teslapowerwall"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<thing-type id="tesla-powerwall">
+		<label>Tesla Powerwall</label>
+		<description>Tesla Powerwall</description>
+
+		<channels>
+			<channel id="grid-status" typeId="grid-status"/>
+			<channel id="grid-services" typeId="grid-services"/>
+			<channel id="battery-soe" typeId="battery-soe"/>
+			<channel id="mode" typeId="mode"/>
+			<channel id="reserve" typeId="reserve"/>
+			<channel id="grid-inst-power" typeId="grid-inst-power"/>
+			<channel id="battery-inst-power" typeId="battery-inst-power"/>
+			<channel id="home-inst-power" typeId="home-inst-power"/>
+			<channel id="solar-inst-power" typeId="solar-inst-power"/>
+			<channel id="grid-energy-exported" typeId="grid-energy-exported"/>
+			<channel id="battery-energy-exported" typeId="battery-energy-exported"/>
+			<channel id="home-energy-exported" typeId="home-energy-exported"/>
+			<channel id="solar-energy-exported" typeId="solar-energy-exported"/>
+			<channel id="grid-energy-imported" typeId="grid-energy-imported"/>
+			<channel id="battery-energy-imported" typeId="battery-energy-imported"/>
+			<channel id="home-energy-imported" typeId="home-energy-imported"/>
+			<channel id="solar-energy-imported" typeId="solar-energy-imported"/>
+			<channel id="full-pack-energy" typeId="full-pack-energy"/>
+			<channel id="degradation" typeId="degradation"/>
+		</channels>
+
+		<config-description>
+			<parameter name="hostname" type="text" required="true">
+				<label>Hostname/IP Address</label>
+				<description>The host name or IP address of the Tesla Powerwall.</description>
+			</parameter>
+			<parameter name="email" type="text" required="true">
+				<label>Email</label>
+				<description>Local Powerwall account email</description>
+			</parameter>
+			<parameter name="password" type="text" required="true">
+				<label>Password</label>
+				<description>Local Powerwall account password</description>
+				<context>password</context>
+			</parameter>
+			<parameter name="refresh" type="integer" required="false">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>10</default>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<channel-type id="grid-status">
+		<item-type>String</item-type>
+		<label>Grid Status</label>
+		<description>Current status of the power grid</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="grid-services">
+		<item-type>Switch</item-type>
+		<label>Grid Services</label>
+		<description>Grid services activation status</description>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="battery-soe">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery SOE</label>
+		<description>Current battery state of charge</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="mode">
+		<item-type>String</item-type>
+		<label>Operating Mode</label>
+		<description>Current operating mode</description>
+	</channel-type>
+	<channel-type id="reserve">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Reserve</label>
+		<description>Current battery reserve %</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="grid-inst-power">
+		<item-type>Number:Power</item-type>
+		<label>Instant Grid Power</label>
+		<description>Instantaneous grid power supply</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="battery-inst-power">
+		<item-type>Number:Power</item-type>
+		<label>Instant Battery Power</label>
+		<description>Instantaneous battery power supply</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="home-inst-power">
+		<item-type>Number:Power</item-type>
+		<label>Instant Home Power</label>
+		<description>Instantaneous home power supply</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="solar-inst-power">
+		<item-type>Number:Power</item-type>
+		<label>Instant Solar Power</label>
+		<description>Instantaneous solar power supply</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="grid-energy-exported">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Energy Exported</label>
+		<description>Total grid energy exported</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="battery-energy-exported">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Energy Exported</label>
+		<description>Total battery energy exported</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="home-energy-exported">
+		<item-type>Number:Energy</item-type>
+		<label>Home Energy Exported</label>
+		<description>Total home energy exported</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="solar-energy-exported">
+		<item-type>Number:Energy</item-type>
+		<label>Solar Energy Exported</label>
+		<description>Total solar energy exported</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="grid-energy-imported">
+		<item-type>Number:Energy</item-type>
+		<label>Grid Energy Imported</label>
+		<description>Total grid energy imported</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="battery-energy-imported">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Energy Imported</label>
+		<description>Total battery energy imported</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="home-energy-imported">
+		<item-type>Number:Energy</item-type>
+		<label>Home Energy Imported</label>
+		<description>Total home energy emported</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="solar-energy-imported">
+		<item-type>Number:Energy</item-type>
+		<label>Solar Energy Imported</label>
+		<description>Total solar energy imported</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="full-pack-energy">
+		<item-type>Number:Energy</item-type>
+		<label>Battery Full Pack Energy</label>
+		<description>Battery full pack energy</description>
+		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+	<channel-type id="degradation">
+		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<label>Battery Degradation</label>
+		<description>Current battery degradation %, based on 13.5kW full capacity</description>
+		<state pattern="%.1f %unit%"/>
+	</channel-type>
+
+</thing:thing-descriptions>

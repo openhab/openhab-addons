@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="dscalarm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>DSCAlarm Binding</name>
+	<description>The DSCAlarm binding interfaces with a DSC PowerSeries Alarm System through the EyezOn Envisalink 3/2DS
+		interface or the DSC IT-100 RS-232 interface.</description>
+	<connection>local</connection>
+
+</addon:addon>

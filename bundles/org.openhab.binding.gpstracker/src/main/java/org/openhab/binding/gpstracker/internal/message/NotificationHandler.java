@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,11 +17,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.gpstracker.internal.message.dto.LocationMessage;
+import org.openhab.binding.gpstracker.internal.message.dto.TransitionMessage;
+
 /**
  * Handler for notification messages between trackers.
  *
  * @author Gabor Bicskei - Initial contribution
  */
+@NonNullByDefault
 public class NotificationHandler {
     /**
      * Location notifications need to be sent to the own tracker. Only the last location is saved for each tracker
@@ -43,10 +48,12 @@ public class NotificationHandler {
     public void handleNotification(LocationMessage msg) {
         synchronized (this) {
             String trackerId = msg.getTrackerId();
-            if (msg instanceof TransitionMessage) {
+            if (msg instanceof TransitionMessage message) {
                 List<TransitionMessage> transitionMessages = transitionNotifications.computeIfAbsent(trackerId,
                         k -> new ArrayList<>());
-                transitionMessages.add((TransitionMessage) msg);
+                if (transitionMessages != null) {
+                    transitionMessages.add(message);
+                }
             } else {
                 locationNotifications.put(trackerId, msg);
             }

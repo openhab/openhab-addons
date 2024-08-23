@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -73,7 +73,7 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(KM200GatewayHandler.class);
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_KMDEVICE);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_KMDEVICE);
 
     private final Map<Channel, JsonObject> sendMap = Collections.synchronizedMap(new LinkedHashMap<>());
 
@@ -92,7 +92,6 @@ public class KM200GatewayHandler extends BaseBridgeHandler {
         super(bridge);
         refreshInterval = 120;
         readDelay = 100;
-        updateStatus(ThingStatus.UNINITIALIZED, ThingStatusDetail.CONFIGURATION_PENDING);
         remoteDevice = new KM200Device(httpClient);
         dataHandler = new KM200DataHandler(remoteDevice);
         executor = Executors.newScheduledThreadPool(2, new NamedThreadFactory("org.openhab.binding.km200", true));

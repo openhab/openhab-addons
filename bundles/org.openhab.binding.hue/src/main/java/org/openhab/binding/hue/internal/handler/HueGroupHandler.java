@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,17 +25,19 @@ import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.hue.internal.dto.ColorTemperature;
-import org.openhab.binding.hue.internal.dto.FullGroup;
-import org.openhab.binding.hue.internal.dto.Scene;
-import org.openhab.binding.hue.internal.dto.State;
-import org.openhab.binding.hue.internal.dto.StateUpdate;
+import org.openhab.binding.hue.internal.api.dto.clip1.ColorTemperature;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullGroup;
+import org.openhab.binding.hue.internal.api.dto.clip1.Scene;
+import org.openhab.binding.hue.internal.api.dto.clip1.State;
+import org.openhab.binding.hue.internal.api.dto.clip1.StateUpdate;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.IncreaseDecreaseType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
+import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -225,8 +227,18 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
                 }
                 break;
             case CHANNEL_COLORTEMPERATURE_ABS:
-                if (command instanceof DecimalType) {
-                    newState = LightStateConverter.toColorTemperatureLightState((DecimalType) command,
+                if (command instanceof QuantityType) {
+                    QuantityType<?> convertedCommand = ((QuantityType<?>) command).toInvertibleUnit(Units.KELVIN);
+                    if (convertedCommand != null) {
+                        newState = LightStateConverter.toColorTemperatureLightState(convertedCommand.intValue(),
+                                colorTemperatureCapabilties);
+                        newState.setTransitionTime(fadeTime);
+                    } else {
+                        logger.warn("Unable to convert unit from '{}' to '{}'. Skipping command.",
+                                ((QuantityType<?>) command).getUnit(), Units.KELVIN);
+                    }
+                } else if (command instanceof DecimalType) {
+                    newState = LightStateConverter.toColorTemperatureLightState(((DecimalType) command).intValue(),
                             colorTemperatureCapabilties);
                     newState.setTransitionTime(fadeTime);
                 }
@@ -284,13 +296,14 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
                 }
                 break;
             default:
+                logger.debug("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
                 break;
         }
         if (newState != null) {
             cacheNewState(newState);
             bridgeHandler.updateGroupState(group, newState, fadeTime);
         } else {
-            logger.debug("Command sent to an unknown channel id: {}:{}", getThing().getUID(), channel);
+            logger.debug("Unable to handle command '{}' for channel '{}'. Skipping command.", command, channel);
         }
     }
 
@@ -442,11 +455,11 @@ public class HueGroupHandler extends BaseThingHandler implements HueLightActions
             FullGroup group = handler.getGroupById(groupId);
             if (group != null) {
                 stateOptions = updatedScenes.stream().filter(scene -> scene.isApplicableTo(group))
-                        .map(Scene::toStateOption).collect(Collectors.toList());
-                consoleScenesList = updatedScenes
-                        .stream().filter(scene -> scene.isApplicableTo(group)).map(scene -> "Id is \"" + scene.getId()
-                                + "\" for scene \"" + scene.toStateOption().getLabel() + "\"")
-                        .collect(Collectors.toList());
+                        .map(Scene::toStateOption).toList();
+                consoleScenesList = updatedScenes.stream().filter(scene -> scene.isApplicableTo(group))
+                        .map(scene -> "Id is \"" + scene.getId() + "\" for scene \"" + scene.toStateOption().getLabel()
+                                + "\"")
+                        .toList();
             }
         }
         stateDescriptionOptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_SCENE),

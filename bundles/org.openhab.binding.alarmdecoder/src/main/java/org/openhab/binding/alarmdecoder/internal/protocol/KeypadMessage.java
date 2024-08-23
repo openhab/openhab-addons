@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -82,7 +82,6 @@ public class KeypadMessage extends ADMessage {
             this.nbeeps = Integer.parseInt(parts.get(0).substring(6, 7));
             this.lower = Integer.parseInt(parts.get(0).substring(7, 17), 2);
             this.status = ((upper & 0x1F) << 13) | ((nbeeps & 0x3) << 10) | lower;
-
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("keypad msg contains invalid number: " + e.getMessage(), e);
         }
@@ -144,8 +143,7 @@ public class KeypadMessage extends ADMessage {
             return false;
         } else if (this == obj) {
             return true;
-        } else if (obj instanceof KeypadMessage) {
-            KeypadMessage other = (KeypadMessage) obj;
+        } else if (obj instanceof KeypadMessage other) {
             return this.message.equals(other.message);
         } else {
             return false;

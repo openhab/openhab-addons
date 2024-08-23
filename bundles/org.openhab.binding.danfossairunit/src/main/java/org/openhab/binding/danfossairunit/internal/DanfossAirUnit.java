@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,6 +23,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 import javax.measure.quantity.Dimensionless;
+import javax.measure.quantity.Frequency;
 import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -144,12 +145,12 @@ public class DanfossAirUnit {
         return new PercentType(BigDecimal.valueOf(value * 10));
     }
 
-    public DecimalType getSupplyFanSpeed() throws IOException {
-        return new DecimalType(BigDecimal.valueOf(getWord(REGISTER_4_READ, SUPPLY_FAN_SPEED)));
+    public QuantityType<Frequency> getSupplyFanSpeed() throws IOException {
+        return new QuantityType<>(BigDecimal.valueOf(getWord(REGISTER_4_READ, SUPPLY_FAN_SPEED)), Units.RPM);
     }
 
-    public DecimalType getExtractFanSpeed() throws IOException {
-        return new DecimalType(BigDecimal.valueOf(getWord(REGISTER_4_READ, EXTRACT_FAN_SPEED)));
+    public QuantityType<Frequency> getExtractFanSpeed() throws IOException {
+        return new QuantityType<>(BigDecimal.valueOf(getWord(REGISTER_4_READ, EXTRACT_FAN_SPEED)), Units.RPM);
     }
 
     public PercentType getSupplyFanStep() throws IOException {
@@ -161,15 +162,15 @@ public class DanfossAirUnit {
     }
 
     public OnOffType getBoost() throws IOException {
-        return getBoolean(REGISTER_1_READ, BOOST) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(getBoolean(REGISTER_1_READ, BOOST));
     }
 
     public OnOffType getNightCooling() throws IOException {
-        return getBoolean(REGISTER_1_READ, NIGHT_COOLING) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(getBoolean(REGISTER_1_READ, NIGHT_COOLING));
     }
 
     public OnOffType getBypass() throws IOException {
-        return getBoolean(REGISTER_1_READ, BYPASS) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(getBoolean(REGISTER_1_READ, BYPASS));
     }
 
     public QuantityType<Dimensionless> getHumidity() throws IOException {
@@ -235,16 +236,16 @@ public class DanfossAirUnit {
     }
 
     private DecimalType setNumberTypeRegister(Command cmd, byte[] register) throws IOException {
-        if (cmd instanceof DecimalType) {
-            byte value = (byte) ((DecimalType) cmd).intValue();
+        if (cmd instanceof DecimalType decimalCommand) {
+            byte value = (byte) decimalCommand.intValue();
             set(REGISTER_1_WRITE, register, value);
         }
         return new DecimalType(BigDecimal.valueOf(getByte(REGISTER_1_READ, register)));
     }
 
     private PercentType setPercentTypeRegister(Command cmd, byte[] register) throws IOException {
-        if (cmd instanceof PercentType) {
-            byte value = (byte) ((((PercentType) cmd).intValue() + 5) / 10);
+        if (cmd instanceof PercentType percentCommand) {
+            byte value = (byte) ((percentCommand.intValue() + 5) / 10);
             set(REGISTER_1_WRITE, register, value);
         }
         return new PercentType(BigDecimal.valueOf(getByte(REGISTER_1_READ, register) * 10));
@@ -254,7 +255,7 @@ public class DanfossAirUnit {
         if (cmd instanceof OnOffType) {
             set(REGISTER_1_WRITE, register, OnOffType.ON.equals(cmd) ? (byte) 1 : (byte) 0);
         }
-        return getBoolean(REGISTER_1_READ, register) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(getBoolean(REGISTER_1_READ, register));
     }
 
     private StringType setStringTypeRegister(Command cmd, byte[] register) throws IOException {

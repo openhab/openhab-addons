@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,17 +19,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.openhab.binding.vizio.internal.VizioConfiguration;
 import org.openhab.binding.vizio.internal.VizioException;
 import org.openhab.binding.vizio.internal.VizioStateDescriptionOptionProvider;
 import org.openhab.binding.vizio.internal.communication.VizioCommunicator;
-import org.openhab.binding.vizio.internal.communication.VizioTlsTrustManagerProvider;
 import org.openhab.binding.vizio.internal.dto.app.CurrentApp;
 import org.openhab.binding.vizio.internal.dto.applist.VizioApp;
 import org.openhab.binding.vizio.internal.dto.applist.VizioApps;
@@ -40,7 +41,7 @@ import org.openhab.binding.vizio.internal.dto.inputlist.InputList;
 import org.openhab.binding.vizio.internal.dto.power.PowerMode;
 import org.openhab.binding.vizio.internal.enums.KeyCommand;
 import org.openhab.core.config.core.Configuration;
-import org.openhab.core.io.net.http.TlsTrustManagerProvider;
+import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.library.types.NextPreviousType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
@@ -53,12 +54,11 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
+import org.openhab.core.thing.util.ThingWebClientUtil;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.StateOption;
 import org.openhab.core.types.UnDefType;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceRegistration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,18 +74,19 @@ import com.google.gson.JsonSyntaxException;
 @NonNullByDefault
 public class VizioHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(VizioHandler.class);
-    private final HttpClient httpClient;
+    private final HttpClientFactory httpClientFactory;
+    private @Nullable HttpClient httpClient;
     private final VizioStateDescriptionOptionProvider stateDescriptionProvider;
     private final String dbAppsJson;
 
-    private @Nullable ServiceRegistration<?> serviceRegistration;
     private @Nullable ScheduledFuture<?> refreshJob;
     private @Nullable ScheduledFuture<?> metadataRefreshJob;
 
     private VizioCommunicator communicator;
-    private List<VizioApp> userConfigApps = new ArrayList<VizioApp>();
+    private List<VizioApp> userConfigApps = new ArrayList<>();
     private Object sequenceLock = new Object();
 
+    private int failCount = 0;
     private int pairingDeviceId = -1;
     private int pairingToken = -1;
     private Long currentInputHash = 0L;
@@ -97,13 +98,13 @@ public class VizioHandler extends BaseThingHandler {
     private boolean powerOn = false;
     private boolean debounce = true;
 
-    public VizioHandler(Thing thing, HttpClient httpClient,
+    public VizioHandler(Thing thing, HttpClientFactory httpClientFactory,
             VizioStateDescriptionOptionProvider stateDescriptionProvider, String vizioAppsJson) {
         super(thing);
-        this.httpClient = httpClient;
+        this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.dbAppsJson = vizioAppsJson;
-        this.communicator = new VizioCommunicator(httpClient, EMPTY, -1, EMPTY);
+        this.communicator = new VizioCommunicator(httpClientFactory.getCommonHttpClient(), EMPTY, -1, EMPTY);
     }
 
     @Override
@@ -127,13 +128,22 @@ public class VizioHandler extends BaseThingHandler {
             host = "[" + host + "]";
         }
 
-        this.communicator = new VizioCommunicator(httpClient, host, config.port, authToken != null ? authToken : EMPTY);
-
-        // register trustmanager service to allow httpClient to accept self signed cert from the Vizio TV
-        VizioTlsTrustManagerProvider tlsTrustManagerProvider = new VizioTlsTrustManagerProvider(
-                host + ":" + config.port);
-        serviceRegistration = FrameworkUtil.getBundle(getClass()).getBundleContext()
-                .registerService(TlsTrustManagerProvider.class.getName(), tlsTrustManagerProvider, null);
+        final String httpClientName = ThingWebClientUtil.buildWebClientConsumerName(thing.getUID(), null);
+        try {
+            httpClient = httpClientFactory.createHttpClient(httpClientName, new SslContextFactory.Client(true));
+            final HttpClient localHttpClient = this.httpClient;
+            if (localHttpClient != null) {
+                localHttpClient.start();
+                this.communicator = new VizioCommunicator(localHttpClient, host, config.port,
+                        authToken != null ? authToken : EMPTY);
+            }
+        } catch (Exception e) {
+            logger.error(
+                    "Long running HttpClient for Vizio handler {} cannot be started. Creating Handler failed. Exception: {}",
+                    httpClientName, e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR);
+            return;
+        }
 
         if (authToken == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_PENDING,
@@ -208,10 +218,16 @@ public class VizioHandler extends BaseThingHandler {
                     }
                 }
                 updateStatus(ThingStatus.ONLINE);
+                failCount = 0;
             } catch (VizioException e) {
                 logger.debug("Unable to retrieve Vizio TV power mode info. Exception: {}", e.getMessage(), e);
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                        "@text/offline.communication-error-get-power");
+                // A communication error must occur 3 times before updating the thing status
+                failCount++;
+                if (failCount > 2) {
+                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                            "@text/offline.communication-error-polling");
+                }
+                return;
             }
 
             if (powerOn && (isLinked(VOLUME) || isLinked(MUTE))) {
@@ -254,8 +270,6 @@ public class VizioHandler extends BaseThingHandler {
                 } catch (VizioException e) {
                     logger.debug("Unable to retrieve Vizio TV current audio settings. Exception: {}", e.getMessage(),
                             e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.communication-error-get-audio");
                 }
             }
 
@@ -271,8 +285,6 @@ public class VizioHandler extends BaseThingHandler {
                     }
                 } catch (VizioException e) {
                     logger.debug("Unable to retrieve Vizio TV current input. Exception: {}", e.getMessage(), e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.communication-error-get-input");
                 }
             }
 
@@ -309,8 +321,6 @@ public class VizioHandler extends BaseThingHandler {
                     }
                 } catch (VizioException e) {
                     logger.debug("Unable to retrieve Vizio TV current running app. Exception: {}", e.getMessage(), e);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "@text/offline.communication-error-get-app");
                 }
             }
         }
@@ -363,11 +373,14 @@ public class VizioHandler extends BaseThingHandler {
             this.metadataRefreshJob = null;
         }
 
-        ServiceRegistration<?> localServiceRegistration = serviceRegistration;
-        if (localServiceRegistration != null) {
-            // remove trustmanager service
-            localServiceRegistration.unregister();
-            serviceRegistration = null;
+        try {
+            HttpClient localHttpClient = this.httpClient;
+            if (localHttpClient != null) {
+                localHttpClient.stop();
+            }
+            this.httpClient = null;
+        } catch (Exception e) {
+            logger.debug("Unable to stop Vizio httpClient. Exception: {}", e.getMessage(), e);
         }
     }
 
@@ -389,10 +402,8 @@ public class VizioHandler extends BaseThingHandler {
                                 powerOn = false;
                             }
                         } catch (VizioException e) {
-                            logger.debug("Unable to send power {} command to the Vizio TV, Exception: {}", command,
+                            logger.warn("Unable to send power {} command to the Vizio TV, Exception: {}", command,
                                     e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-set-power");
                         }
                     }
                     break;
@@ -418,12 +429,10 @@ public class VizioHandler extends BaseThingHandler {
                                     .changeVolume(String.format(MODIFY_INT_SETTING_JSON, volume, currentVolumeHash));
                             currentVolumeHash = 0L;
                         } catch (VizioException e) {
-                            logger.debug("Unable to set volume on the Vizio TV, command volume: {}, Exception: {}",
+                            logger.warn("Unable to set volume on the Vizio TV, command volume: {}, Exception: {}",
                                     command, e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-set-volume");
                         } catch (NumberFormatException e) {
-                            logger.debug("Unable to parse command volume value {} as int", command);
+                            logger.warn("Unable to parse command volume value {} as int", command);
                         }
                     }
                     break;
@@ -439,10 +448,8 @@ public class VizioHandler extends BaseThingHandler {
                                 currentMute = false;
                             }
                         } catch (VizioException e) {
-                            logger.debug("Unable to send mute {} command to the Vizio TV, Exception: {}", command,
+                            logger.warn("Unable to send mute {} command to the Vizio TV, Exception: {}", command,
                                     e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-set-mute");
                         }
                     }
                     break;
@@ -462,10 +469,8 @@ public class VizioHandler extends BaseThingHandler {
                                     .changeInput(String.format(MODIFY_STRING_SETTING_JSON, command, currentInputHash));
                             currentInputHash = 0L;
                         } catch (VizioException e) {
-                            logger.debug("Unable to set current source on the Vizio TV, source: {}, Exception: {}",
+                            logger.warn("Unable to set current source on the Vizio TV, source: {}, Exception: {}",
                                     command, e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-set-source");
                         }
                     }
                     break;
@@ -479,14 +484,12 @@ public class VizioHandler extends BaseThingHandler {
                             if (selectedApp.isPresent()) {
                                 communicator.launchApp(selectedApp.get().getConfig());
                             } else {
-                                logger.debug("Unknown app name: '{}', check that it exists in App List configuration",
+                                logger.warn("Unknown app name: '{}', check that it exists in App List configuration",
                                         command);
                             }
                         } catch (VizioException e) {
-                            logger.debug("Unable to launch app name: '{}' on the Vizio TV, Exception: {}", command,
+                            logger.warn("Unable to launch app name: '{}' on the Vizio TV, Exception: {}", command,
                                     e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-launch-app");
                         }
                     }
                     break;
@@ -496,10 +499,8 @@ public class VizioHandler extends BaseThingHandler {
                         try {
                             handleControlCommand(command);
                         } catch (VizioException e) {
-                            logger.debug("Unable to send control command: '{}' to the Vizio TV, Exception: {}", command,
+                            logger.warn("Unable to send control command: '{}' to the Vizio TV, Exception: {}", command,
                                     e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-send-cmd");
                         }
                     }
                     break;
@@ -509,10 +510,8 @@ public class VizioHandler extends BaseThingHandler {
                             KeyCommand keyCommand = KeyCommand.valueOf(command.toString().toUpperCase(Locale.ENGLISH));
                             communicator.sendKeyPress(keyCommand.getJson());
                         } catch (IllegalArgumentException | VizioException e) {
-                            logger.debug("Unable to send keypress to the Vizio TV, key: {}, Exception: {}", command,
+                            logger.warn("Unable to send keypress to the Vizio TV, key: {}, Exception: {}", command,
                                     e.getMessage());
-                            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                    "@text/offline.communication-error-send-key");
                         }
                     }
                     break;
@@ -558,27 +557,31 @@ public class VizioHandler extends BaseThingHandler {
     }
 
     // The remaining methods are used by the console when obtaining the auth token from the TV.
+    public int startPairing(String deviceName) throws VizioException {
+        Random rng = new Random();
+        pairingDeviceId = rng.nextInt(100000);
+
+        pairingToken = communicator.startPairing(deviceName, pairingDeviceId).getItem().getPairingReqToken();
+
+        return pairingToken;
+    }
+
+    public String submitPairingCode(String pairingCode) throws IllegalStateException, VizioException {
+        if (pairingDeviceId < 0 || pairingToken < 0) {
+            throw new IllegalStateException();
+        }
+
+        return communicator.submitPairingCode(pairingDeviceId, pairingCode, pairingToken).getItem().getAuthToken();
+    }
+
     public void saveAuthToken(String authToken) {
+        pairingDeviceId = -1;
+        pairingToken = -1;
+
         // Store the auth token in the configuration and restart the thing
         Configuration configuration = this.getConfig();
         configuration.put(PROPERTY_AUTH_TOKEN, authToken);
         this.updateConfiguration(configuration);
         this.thingUpdated(this.getThing());
-    }
-
-    public int getPairingDeviceId() {
-        return pairingDeviceId;
-    }
-
-    public void setPairingDeviceId(int pairingDeviceId) {
-        this.pairingDeviceId = pairingDeviceId;
-    }
-
-    public int getPairingToken() {
-        return pairingToken;
-    }
-
-    public void setPairingToken(int pairingToken) {
-        this.pairingToken = pairingToken;
     }
 }

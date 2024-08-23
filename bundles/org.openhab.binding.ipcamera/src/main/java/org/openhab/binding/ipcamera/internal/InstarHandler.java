@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -136,7 +136,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                     if (requestUrl.startsWith("/param.cgi?cmd=setasaction&-server=1&enable=1")
                             && content.contains("response=\"200\";")) {// new
                         ipCameraHandler.newInstarApi = true;
-                        ipCameraHandler.logger.debug("Alarm server sucessfully setup for a 2k+ Instar camera");
+                        ipCameraHandler.logger.debug("Alarm server successfully setup for a 2k+ Instar camera");
                         if (ipCameraHandler.cameraConfig.getFfmpegInput().isEmpty()) {
                             ipCameraHandler.rtspUri = "rtsp://" + ipCameraHandler.cameraConfig.getIp()
                                     + "/livestream/12";
@@ -150,7 +150,7 @@ public class InstarHandler extends ChannelDuplexHandler {
                     } else if (requestUrl.startsWith("/param.cgi?cmd=setmdalarm&-aname=server2&-switch=on&-interval=1")
                             && content.startsWith("[Succeed]set ok")) {
                         ipCameraHandler.newInstarApi = false;
-                        ipCameraHandler.logger.debug("Alarm server sucessfully setup for a 1080p Instar camera");
+                        ipCameraHandler.logger.debug("Alarm server successfully setup for a 1080p Instar camera");
                     } else {
                         ipCameraHandler.logger.debug("Unknown reply from URI:{}", requestUrl);
                     }
@@ -197,8 +197,8 @@ public class InstarHandler extends ChannelDuplexHandler {
                         ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=0");
                     } else if (OnOffType.ON.equals(command)) {
                         ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=1");
-                    } else if (command instanceof PercentType) {
-                        int value = ((PercentType) command).toBigDecimal().divide(BigDecimal.TEN).intValue();
+                    } else if (command instanceof PercentType percentCommand) {
+                        int value = percentCommand.toBigDecimal().divide(BigDecimal.TEN).intValue();
                         ipCameraHandler.sendHttpGET("/param.cgi?cmd=setaudioalarmattr&enable=1&threshold=" + value);
                     }
                     return;
@@ -253,8 +253,8 @@ public class InstarHandler extends ChannelDuplexHandler {
                         ipCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=0");
                     } else if (OnOffType.ON.equals(command)) {
                         ipCameraHandler.sendHttpGET("/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=1");
-                    } else if (command instanceof PercentType) {
-                        int value = ((PercentType) command).toBigDecimal().divide(BigDecimal.TEN).intValue();
+                    } else if (command instanceof PercentType percentCommand) {
+                        int value = percentCommand.toBigDecimal().divide(BigDecimal.TEN).intValue();
                         ipCameraHandler.sendHttpGET(
                                 "/cgi-bin/hi3510/param.cgi?cmd=setaudioalarmattr&-aa_enable=1&-aa_value=" + value * 10);
                     }
@@ -381,10 +381,12 @@ public class InstarHandler extends ChannelDuplexHandler {
     // If a camera does not need to poll a request as often as snapshots, it can be
     // added here. Binding steps through the list.
     public ArrayList<String> getLowPriorityRequests() {
-        ArrayList<String> lowPriorityRequests = new ArrayList<String>(7);
+        ArrayList<String> lowPriorityRequests = new ArrayList<>(7);
         lowPriorityRequests.add("/param.cgi?cmd=getaudioalarmattr");
         lowPriorityRequests.add("/cgi-bin/hi3510/param.cgi?cmd=getmdattr");
-        lowPriorityRequests.add("/param.cgi?cmd=getalarmattr");
+        if (ipCameraHandler.newInstarApi) {// old API cameras get a error 404 response to this
+            lowPriorityRequests.add("/param.cgi?cmd=getalarmattr");
+        }
         lowPriorityRequests.add("/param.cgi?cmd=getinfrared");
         lowPriorityRequests.add("/param.cgi?cmd=getoverlayattr&-region=1");
         lowPriorityRequests.add("/param.cgi?cmd=getpirattr");

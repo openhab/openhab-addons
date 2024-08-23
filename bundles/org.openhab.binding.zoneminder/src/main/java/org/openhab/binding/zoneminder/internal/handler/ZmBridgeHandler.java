@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,8 @@ import static org.openhab.binding.zoneminder.internal.ZmBindingConstants.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +50,9 @@ import org.openhab.binding.zoneminder.internal.dto.MonitorItemDTO;
 import org.openhab.binding.zoneminder.internal.dto.MonitorStateDTO;
 import org.openhab.binding.zoneminder.internal.dto.MonitorStatusDTO;
 import org.openhab.binding.zoneminder.internal.dto.MonitorsDTO;
+import org.openhab.binding.zoneminder.internal.dto.RunStateDTO;
+import org.openhab.binding.zoneminder.internal.dto.RunStateDTO.RunState;
+import org.openhab.binding.zoneminder.internal.dto.RunStatesDTO;
 import org.openhab.binding.zoneminder.internal.dto.VersionDTO;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.library.types.OnOffType;
@@ -141,7 +146,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         defaultImageRefreshInterval = config.defaultImageRefreshInterval;
 
         backgroundDiscoveryEnabled = config.discoveryEnabled;
-        logger.debug("Bridge: Background discovery is {}", backgroundDiscoveryEnabled == true ? "ENABLED" : "DISABLED");
+        logger.debug("Bridge: Background discovery is {}", backgroundDiscoveryEnabled ? "ENABLED" : "DISABLED");
 
         host = config.host;
         useSSL = config.useSSL.booleanValue();
@@ -186,6 +191,11 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
             case CHANNEL_VIDEO_MONITOR_ID:
                 handleMonitorIdCommand(command, CHANNEL_VIDEO_MONITOR_ID, CHANNEL_VIDEO_URL, STREAM_VIDEO);
                 break;
+            case CHANNEL_RUN_STATE:
+                if (command instanceof StringType) {
+                    changeRunState(command);
+                }
+                break;
         }
     }
 
@@ -204,9 +214,15 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         }
     }
 
+    private void changeRunState(Command command) {
+        logger.debug("Bridge: Change run state to {}", command);
+        executeGet(buildUrl(String.format("/api/states/change/%s.json",
+                URLEncoder.encode(command.toString(), Charset.defaultCharset()))));
+    }
+
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(MonitorDiscoveryService.class);
+        return Set.of(MonitorDiscoveryService.class);
     }
 
     public boolean isBackgroundDiscoveryEnabled() {
@@ -278,8 +294,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
         try {
             ContentResponse response = request.send();
             if (response.getStatus() == HttpStatus.OK_200) {
-                RawType image = new RawType(response.getContent(), response.getHeaders().get(HttpHeader.CONTENT_TYPE));
-                return image;
+                return new RawType(response.getContent(), response.getHeaders().get(HttpHeader.CONTENT_TYPE));
             } else {
                 errorMsg = String.format("HTTP GET failed: %d, %s", response.getStatus(), response.getReason());
             }
@@ -332,6 +347,7 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
                         m.setLastEvent(getLastEvent(m.getId()));
                     }
                 }
+                updateRunStates();
             }
         } catch (JsonSyntaxException e) {
             logger.debug("Bridge: JsonSyntaxException: {}", e.getMessage(), e);
@@ -388,6 +404,32 @@ public class ZmBridgeHandler extends BaseBridgeHandler {
             logger.debug("Bridge: JsonSyntaxException: {}", e.getMessage(), e);
         }
         return null;
+    }
+
+    private void updateRunStates() {
+        if (!zmAuth.isAuthorized() || !isLinked(CHANNEL_RUN_STATE)) {
+            return;
+        }
+        try {
+            String response = executeGet(buildUrl("/api/states.json"));
+            RunStatesDTO runStates = GSON.fromJson(response, RunStatesDTO.class);
+            if (runStates != null) {
+                List<StateOption> options = new ArrayList<>();
+                for (RunStateDTO runState : runStates.runStatesList) {
+                    RunState state = runState.runState;
+                    logger.debug("Found runstate: id={}, name={}, desc={}, isActive={}", state.id, state.name,
+                            state.definition, state.isActive);
+                    options.add(new StateOption(state.name, state.name));
+                    if ("1".equals(state.isActive)) {
+                        updateState(CHANNEL_RUN_STATE, new StringType(state.name));
+                    }
+                }
+                stateDescriptionProvider.setStateOptions(new ChannelUID(getThing().getUID(), CHANNEL_RUN_STATE),
+                        options);
+            }
+        } catch (JsonSyntaxException e) {
+            logger.debug("Bridge: JsonSyntaxException: {}", e.getMessage(), e);
+        }
     }
 
     private @Nullable VersionDTO getVersion() {

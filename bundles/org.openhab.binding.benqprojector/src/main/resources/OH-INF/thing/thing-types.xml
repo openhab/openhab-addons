@@ -79,6 +79,7 @@
 			<options>
 				<option value="hdmi">HDMI</option>
 				<option value="hdmi2">HDMI2</option>
+				<option value="usbreader">USB Reader</option>
 				<option value="ypbr">Component</option>
 				<option value="rgb">Computer/YPbPr</option>
 				<option value="rgb2">Computer/YPbPr2</option>
@@ -97,6 +98,8 @@
 				<option value="preset">Presentation</option>
 				<option value="srgb">sRGB</option>
 				<option value="bright">Bright</option>
+				<option value="brightcine">Bright Cinema</option>
+				<option value="filmmaker">Filmmaker Mode</option>
 				<option value="livingroom">Living Room</option>
 				<option value="game">Game</option>
 				<option value="cine">Cinema</option>
@@ -109,6 +112,9 @@
 				<option value="isfday">ISF Day</option>
 				<option value="isfnight">ISF Night</option>
 				<option value="threed">3-D</option>
+				<option value="hdr">HDR10</option>
+				<option value="hdr+">HDR10+</option>
+				<option value="hlg">HLG</option>
 			</options>
 		</state>
 	</channel-type>
@@ -123,6 +129,7 @@
 				<option value="auto">Auto</option>
 				<option value="lbox">Letterbox</option>
 				<option value="wide">Wide</option>
+				<option value="2.35">2.35:1</option>
 			</options>
 		</state>
 	</channel-type>
@@ -162,7 +169,7 @@
 	<channel-type id="lamptime">
 		<item-type>Number</item-type>
 		<label>Lamp Time</label>
-		<description>Retrieves the Lamp Hours</description>
+		<description>Retrieves the number of hours the lamp has been used</description>
 		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 

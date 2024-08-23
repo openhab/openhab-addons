@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,6 +35,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ipcamera.internal.Helper;
 import org.openhab.binding.ipcamera.internal.IpCameraDiscoveryService;
+import org.openhab.core.net.NetworkAddressService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,18 +61,22 @@ import io.netty.util.concurrent.GlobalEventExecutor;
  *
  * @author Matthew Skinner - Initial contribution
  */
-
 @NonNullByDefault
+@io.netty.channel.ChannelHandler.Sharable
 public class OnvifDiscovery {
     private IpCameraDiscoveryService ipCameraDiscoveryService;
     private final Logger logger = LoggerFactory.getLogger(OnvifDiscovery.class);
-    public ArrayList<DatagramPacket> listOfReplys = new ArrayList<DatagramPacket>(10);
+    private final NetworkAddressService networkAddressService;
+    public ArrayList<DatagramPacket> listOfReplys = new ArrayList<>(10);
 
-    public OnvifDiscovery(IpCameraDiscoveryService ipCameraDiscoveryService) {
+    public OnvifDiscovery(NetworkAddressService networkAddressService,
+            IpCameraDiscoveryService ipCameraDiscoveryService) {
         this.ipCameraDiscoveryService = ipCameraDiscoveryService;
+        this.networkAddressService = networkAddressService;
     }
 
     public @Nullable List<NetworkInterface> getLocalNICs() {
+        String primaryHostAddress = networkAddressService.getPrimaryIpv4HostAddress();
         List<NetworkInterface> results = new ArrayList<>(2);
         try {
             for (Enumeration<NetworkInterface> enumNetworks = NetworkInterface.getNetworkInterfaces(); enumNetworks
@@ -80,9 +85,17 @@ public class OnvifDiscovery {
                 for (Enumeration<InetAddress> enumIpAddr = networkInterface.getInetAddresses(); enumIpAddr
                         .hasMoreElements();) {
                     InetAddress inetAddress = enumIpAddr.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && inetAddress.getHostAddress().toString().length() < 18
+                    if (!inetAddress.isLoopbackAddress() && inetAddress.getHostAddress().length() < 18
                             && inetAddress.isSiteLocalAddress()) {
-                        results.add(networkInterface);
+                        if (inetAddress.getHostAddress().equals(primaryHostAddress)) {
+                            results.add(networkInterface);
+                            logger.debug("Scanning network {} for any ONVIF cameras", primaryHostAddress);
+                        } else {
+                            logger.debug("Skipping network {} as it was not selected as openHAB's 'Primary Address'",
+                                    inetAddress.getHostAddress());
+                        }
+                    } else {
+                        logger.debug("Skipping network {} as it was not site local", inetAddress.getHostAddress());
                     }
                 }
             }
@@ -96,7 +109,7 @@ public class OnvifDiscovery {
         String temp = url;
         BigDecimal onvifPort = new BigDecimal(80);
 
-        logger.info("Camera found at xAddr:{}", url);
+        logger.info("Camera found at xAddr: {}", url);
         int endIndex = temp.indexOf(" ");// Some xAddr have two urls with a space in between.
         if (endIndex > 0) {
             temp = temp.substring(0, endIndex);// Use only the first url from now on.
@@ -125,13 +138,23 @@ public class OnvifDiscovery {
     void processCameraReplys() {
         for (DatagramPacket packet : listOfReplys) {
             String xml = packet.content().toString(CharsetUtil.UTF_8);
-            logger.trace("Device replied to discovery with:{}", xml);
+            logger.trace("Device replied to discovery with: {}", xml);
             String xAddr = Helper.fetchXML(xml, "", "d:XAddrs>");// Foscam <wsdd:XAddrs> and all other brands <d:XAddrs>
             if (!xAddr.isEmpty()) {
                 searchReply(xAddr, xml);
             } else if (xml.contains("onvif")) {
-                logger.info("Possible ONVIF camera found at:{}", packet.sender().getHostString());
-                ipCameraDiscoveryService.newCameraFound("onvif", packet.sender().getHostString(), 80);
+                String brand;
+                try {
+                    brand = getBrandFromLoginPage(packet.sender().getHostString());
+                } catch (IOException e) {
+                    brand = "onvif";
+                }
+                logger.debug("Possible {} camera found at: {}", brand, packet.sender().getHostString());
+                if ("reolink".equals(brand)) {
+                    ipCameraDiscoveryService.newCameraFound(brand, packet.sender().getHostString(), 8000);
+                } else {
+                    ipCameraDiscoveryService.newCameraFound(brand, packet.sender().getHostString(), 80);
+                }
             }
         }
     }
@@ -141,14 +164,16 @@ public class OnvifDiscovery {
             return "dahua";
         } else if (response.toLowerCase().contains("dahua")) {
             return "dahua";
+        } else if (response.toLowerCase().contains("doorbird")) {
+            return "doorbird";
         } else if (response.toLowerCase().contains("foscam")) {
             return "foscam";
         } else if (response.toLowerCase().contains("hikvision")) {
             return "hikvision";
         } else if (response.toLowerCase().contains("instar")) {
             return "instar";
-        } else if (response.toLowerCase().contains("doorbird")) {
-            return "doorbird";
+        } else if (response.toLowerCase().contains("reolink")) {
+            return "reolink";
         } else if (response.toLowerCase().contains("ipc-")) {
             return "dahua";
         } else if (response.toLowerCase().contains("dh-sd")) {
@@ -174,7 +199,7 @@ public class OnvifDiscovery {
                 response += temp;
             }
             reply.close();
-            logger.trace("Cameras Login page is:{}", response);
+            logger.trace("Cameras Login page is: {}", response);
             brand = checkForBrand(response);
         } catch (MalformedURLException e) {
         } finally {
@@ -195,6 +220,8 @@ public class OnvifDiscovery {
     public void discoverCameras() throws UnknownHostException, InterruptedException {
         List<NetworkInterface> nics = getLocalNICs();
         if (nics == null || nics.isEmpty()) {
+            logger.warn(
+                    "No 'Primary Address' selected to use for camera discovery. Check openHAB's Network Settings page to select a valid Primary Address.");
             return;
         }
         NetworkInterface networkInterface = nics.get(0);

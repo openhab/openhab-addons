@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-type id="charge-flap">
+		<item-type>Number</item-type>
+		<label>Charge Flap</label>
+		<description>Charge Flap Status</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Open</option>
+				<option value="1">Closed</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="coupler-ac">
+		<item-type>Number</item-type>
+		<label>Charge Coupler AC</label>
+		<description>Coupler AC Status</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Plugged</option>
+				<option value="2">Unplugged</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="coupler-dc">
+		<item-type>Number</item-type>
+		<label>Charge Coupler DC</label>
+		<description>Coupler DC Status</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Plugged</option>
+				<option value="2">Unplugged</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="coupler-lock">
+		<item-type>Number</item-type>
+		<label>Charge Coupler Lock</label>
+		<description>Coupler Lock Status</description>
+		<state readOnly="true">
+			<options>
+				<option value="0">Locked</option>
+				<option value="1">Unlocked</option>
+			</options>
+		</state>
+	</channel-type>
+	<channel-type id="active">
+		<item-type>Switch</item-type>
+		<label>Charge Active</label>
+		<state readOnly="true"/>
+	</channel-type>
+	<channel-type id="power">
+		<item-type>Number:Power</item-type>
+		<label>Charge Power</label>
+		<state pattern="%.1f kW" readOnly="true"/>
+	</channel-type>
+	<channel-type id="program">
+		<item-type>Number</item-type>
+		<label>Charge Program</label>
+		<description>Selected Charge Program</description>
+	</channel-type>
+	<channel-type id="end-time">
+		<item-type>DateTime</item-type>
+		<label>Charge End Estimation</label>
+		<state pattern="%1$td.%1$tm. %1$tH:%1$tM" readOnly="true"/>
+	</channel-type>
+	<channel-type id="max-soc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Charge SoC Maximum</label>
+		<state pattern="%d %%"/>
+		<command>
+			<options>
+				<option value="50 %">50 %</option>
+				<option value="60 %">60 %</option>
+				<option value="70 %">70 %</option>
+				<option value="80 %">80 %</option>
+				<option value="90 %">90 %</option>
+				<option value="100 %">100 %</option>
+			</options>
+		</command>
+	</channel-type>
+	<channel-type id="auto-unlock">
+		<item-type>Switch</item-type>
+		<label>Coupler Auto Unlock</label>
+		<description>Auto unlock coupler after charging </description>
+	</channel-type>
+</thing:thing-descriptions>

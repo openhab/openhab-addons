@@ -25,23 +25,23 @@
 			<channel id="power" typeId="power"/>
 			<channel id="commands" typeId="commands"/>
 			<channel id="rpc" typeId="rpc"/>
-			<channel id="testcommands" typeId="testcommands"/>
 			<channel id="testmiot" typeId="testmiot"/>
-
+			<channel id="testcommands" typeId="testcommands"/>
 		</channels>
 	</channel-group-type>
 
 	<channel-type id="testcommands">
 		<item-type>Switch</item-type>
-		<label>(experimental)Execute test to find supported channels</label>
-		<description>Execute test for all known properties to find channels supported by your device. Check your log, share
+		<label>(experimental) Create channels / test properties for unsupported devices (legacy protocol)</label>
+		<description>Execute test for all known properties to find channels supported by your device. This is for older /
+			legacy devices, newer devices mostly use MIOT. Check your log, share
 			your results.</description>
 		<category>settings</category>
 	</channel-type>
 
 	<channel-type id="testmiot">
 		<item-type>Switch</item-type>
-		<label>(experimental) Create experimental support for new MIOT protocol devices</label>
+		<label>(experimental) Create channels for new/unsupported devices (MIOT protocol)</label>
 		<description>Create experimental support for MIOT protocol devices based on the online specification. Check your log,
 			share your results.</description>
 		<category>settings</category>

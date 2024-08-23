@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,22 +15,19 @@ package org.openhab.binding.ojelectronics.internal.services;
 import static org.openhab.binding.ojelectronics.internal.BindingConstants.*;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.ojelectronics.internal.OJCloudHandler;
-import org.openhab.binding.ojelectronics.internal.models.groups.GroupContent;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.binding.ojelectronics.internal.models.groups.GroupContentModel;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
-import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 
 /**
  * DiscoveryService for OJ Components
@@ -38,20 +35,17 @@ import org.osgi.service.component.annotations.Component;
  * @author Christian Kittel - Initial Contribution
  */
 @NonNullByDefault
-@Component(service = DiscoveryService.class, immediate = true, configurationPid = "discovery.ojelectronics")
-public final class OJDiscoveryService extends AbstractDiscoveryService
-        implements DiscoveryService, ThingHandlerService {
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_OJCLOUD);
-    private @Nullable OJCloudHandler bridgeHandler;
-    private @Nullable Collection<GroupContent> groupContents;
+@Component(scope = ServiceScope.PROTOTYPE, service = OJDiscoveryService.class, configurationPid = "discovery.ojelectronics")
+public final class OJDiscoveryService extends AbstractThingHandlerDiscoveryService<OJCloudHandler> {
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_OJCLOUD);
+    private @Nullable Collection<GroupContentModel> groupContents;
 
     /**
      * Creates a new instance of {@link OJDiscoveryService}
      *
      */
     public OJDiscoveryService() throws IllegalArgumentException {
-        super(SUPPORTED_THING_TYPES_UIDS, 10);
+        super(OJCloudHandler.class, SUPPORTED_THING_TYPES_UIDS, 10);
     }
 
     /**
@@ -59,37 +53,23 @@ public final class OJDiscoveryService extends AbstractDiscoveryService
      *
      * @param groupContents Content from API
      */
-    public void setScanResultForDiscovery(List<GroupContent> groupContents) {
+    public void setScanResultForDiscovery(List<GroupContentModel> groupContents) {
         this.groupContents = groupContents;
     }
 
     @Override
     protected void startScan() {
-        final OJCloudHandler bridgeHandler = this.bridgeHandler;
-        final Collection<GroupContent> groupContents = this.groupContents;
-        if (groupContents != null && bridgeHandler != null) {
+        final Collection<GroupContentModel> groupContents = this.groupContents;
+        if (groupContents != null) {
             groupContents.stream().flatMap(content -> content.thermostats.stream())
-                    .forEach(thermostat -> thingDiscovered(bridgeHandler.getThing().getUID(), thermostat.serialNumber));
+                    .forEach(thermostat -> thingDiscovered(thingHandler.getThing().getUID(), thermostat.serialNumber));
         }
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof OJCloudHandler) {
-            final OJCloudHandler bridgeHandler = (OJCloudHandler) handler;
-            this.bridgeHandler = bridgeHandler;
-            bridgeHandler.setDiscoveryService(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void deactivate() {
-        super.deactivate();
+    public void initialize() {
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 
     private void thingDiscovered(ThingUID bridgeUID, String serialNumber) {

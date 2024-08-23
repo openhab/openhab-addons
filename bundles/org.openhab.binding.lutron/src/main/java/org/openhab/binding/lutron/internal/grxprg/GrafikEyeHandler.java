@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -106,61 +106,54 @@ public class GrafikEyeHandler extends BaseThingHandler {
         }
 
         if (id.equals(PrgConstants.CHANNEL_SCENE)) {
-            if (command instanceof DecimalType) {
-                final int scene = ((DecimalType) command).intValue();
+            if (command instanceof DecimalType sceneCommand) {
+                final int scene = sceneCommand.intValue();
                 getProtocolHandler().selectScene(config.getControlUnit(), scene);
             } else {
                 logger.error("Received a SCENE command with a non DecimalType: {}", command);
             }
-
         } else if (id.equals(PrgConstants.CHANNEL_SCENELOCK)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().setSceneLock(config.getControlUnit(), command == OnOffType.ON);
             } else {
                 logger.error("Received a SCENELOCK command with a non OnOffType: {}", command);
             }
-
         } else if (id.equals(PrgConstants.CHANNEL_SCENESEQ)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().setSceneSequence(config.getControlUnit(), command == OnOffType.ON);
             } else {
                 logger.error("Received a SCENESEQ command with a non OnOffType: {}", command);
             }
-
         } else if (id.equals(PrgConstants.CHANNEL_ZONELOCK)) {
             if (command instanceof OnOffType) {
                 getProtocolHandler().setZoneLock(config.getControlUnit(), command == OnOffType.ON);
             } else {
                 logger.error("Received a ZONELOCK command with a non OnOffType: {}", command);
             }
-
         } else if (id.startsWith(PrgConstants.CHANNEL_ZONELOWER)) {
             final Integer zone = getTrailingNbr(id, PrgConstants.CHANNEL_ZONELOWER);
 
             if (zone != null) {
                 getProtocolHandler().setZoneLower(config.getControlUnit(), zone);
             }
-
         } else if (id.startsWith(PrgConstants.CHANNEL_ZONERAISE)) {
             final Integer zone = getTrailingNbr(id, PrgConstants.CHANNEL_ZONERAISE);
 
             if (zone != null) {
                 getProtocolHandler().setZoneRaise(config.getControlUnit(), zone);
             }
-
         } else if (id.equals(PrgConstants.CHANNEL_ZONEFADE)) {
-            if (command instanceof DecimalType) {
-                setFade(((DecimalType) command).intValue());
+            if (command instanceof DecimalType zoneFade) {
+                setFade(zoneFade.intValue());
             } else {
                 logger.error("Received a ZONEFADE command with a non DecimalType: {}", command);
             }
-
         } else if (id.startsWith(PrgConstants.CHANNEL_ZONEINTENSITY)) {
             final Integer zone = getTrailingNbr(id, PrgConstants.CHANNEL_ZONEINTENSITY);
 
             if (zone != null) {
-                if (command instanceof PercentType) {
-                    final int intensity = ((PercentType) command).intValue();
+                if (command instanceof PercentType intensityPercent) {
+                    final int intensity = intensityPercent.intValue();
                     getProtocolHandler().setZoneIntensity(config.getControlUnit(), zone, fade, intensity);
                 } else if (command instanceof OnOffType) {
                     getProtocolHandler().setZoneIntensity(config.getControlUnit(), zone, fade,
@@ -172,7 +165,6 @@ public class GrafikEyeHandler extends BaseThingHandler {
                     logger.error("Received a ZONEINTENSITY command with a non DecimalType: {}", command);
                 }
             }
-
         } else if (id.startsWith(PrgConstants.CHANNEL_ZONESHADE)) {
             final Integer zone = getTrailingNbr(id, PrgConstants.CHANNEL_ZONESHADE);
 
@@ -190,7 +182,6 @@ public class GrafikEyeHandler extends BaseThingHandler {
                     logger.error("Received a ZONEINTENSITY command with a non DecimalType: {}", command);
                 }
             }
-
         } else {
             logger.error("Unknown/Unsupported Channel id: {}", id);
         }
@@ -209,7 +200,6 @@ public class GrafikEyeHandler extends BaseThingHandler {
 
         if (id.equals(PrgConstants.CHANNEL_SCENE)) {
             getProtocolHandler().refreshScene();
-
         } else if (id.equals(PrgConstants.CHANNEL_ZONEINTENSITY)) {
             getProtocolHandler().refreshZoneIntensity(config.getControlUnit());
         } else if (id.equals(PrgConstants.CHANNEL_ZONEFADE)) {

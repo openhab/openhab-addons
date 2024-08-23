@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="asuswrt"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Router Thing Type -->
+	<thing-type id="client">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="router"/>
+		</supported-bridge-type-refs>
+
+		<label>Asuswrt Client</label>
+		<description>Client connected to Asuswrt-Router</description>
+		<channel-groups>
+			<channel-group id="network-info" typeId="clientNetworkGroup"></channel-group>
+			<channel-group id="traffic" typeId="traffic-group"></channel-group>
+		</channel-groups>
+		<properties>
+			<property name="vendor">Vendor</property>
+			<property name="dnsName">DNS Name</property>
+		</properties>
+		<representation-property>macAddress</representation-property>
+
+		<config-description>
+			<parameter name="macAddress" type="text" required="true">
+				<label>MAC Address</label>
+				<description>MAC address of the device</description>
+				<default>00:00:00:00:00:00</default>
+			</parameter>
+			<parameter name="clientNick" type="text" required="false">
+				<label>Nickname</label>
+				<description>Nickname of the device</description>
+			</parameter>
+		</config-description>
+	</thing-type>
+
+	<!-- ############################### CHANNEL-GROUPS ############################### -->
+
+	<channel-group-type id="clientNetworkGroup">
+		<label>Clients</label>
+		<description>Clients connected to router</description>
+		<channels>
+			<channel id="network-state" typeId="is-online-type"></channel>
+			<channel id="ip-address" typeId="ip-address-type">
+				<description>Client IP address</description>
+			</channel>
+			<channel id="ip-method" typeId="ip-proto-type"></channel>
+			<channel id="internet-state" typeId="interne-state-type"></channel>
+			<channel id="client-online-event" typeId="client-online-event-type"></channel>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,8 @@
  */
 package org.openhab.binding.enocean.internal;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.type.ChannelTypeUID;
 
 /**
@@ -21,10 +22,10 @@ import org.openhab.core.thing.type.ChannelTypeUID;
  *         This class holds information for creating a channel of an EnOcean thing like acceptedItemType and
  *         channelTypeUID
  */
+@NonNullByDefault
 public class EnOceanChannelDescription {
     public final ChannelTypeUID channelTypeUID;
     public final String acceptedItemType;
-    @NonNull
     public final String label;
     public final boolean isStateChannel;
     public final boolean autoCreate;
@@ -33,7 +34,7 @@ public class EnOceanChannelDescription {
      * Ctor for an EnOceanChannelDescription
      *
      * @param channelTypeUID ChannelTypeUID of channel
-     * @param acceptedItemType AcceptedItemType of channel like Switch, Dimmer or null if we accept everything
+     * @param itemType ItemType of channel like Switch, Dimmer or null if we accept everything
      */
     public EnOceanChannelDescription(ChannelTypeUID channelTypeUID, String itemType) {
         this(channelTypeUID, itemType, "", true, true);
@@ -43,21 +44,17 @@ public class EnOceanChannelDescription {
      * Ctor for an EnOceanChannelDescription with detailed information
      *
      * @param channelTypeUID ChannelTypeUID of channel
-     * @param acceptedItemType ItemType of channel like Switch, Dimmer
+     * @param itemType ItemType of channel like Switch, Dimmer
      * @param label of created channel
      * @param isStateChannel otherwise created channel is a trigger channel
      * @param autoCreate create channel during thing initialization, otherwise channel is created
      *            manually/predefined
      */
-    public EnOceanChannelDescription(ChannelTypeUID channelTypeUID, String itemType, String label,
+    public EnOceanChannelDescription(ChannelTypeUID channelTypeUID, @Nullable String itemType, @Nullable String label,
             boolean isStateChannel, boolean autoCreate) {
         this.channelTypeUID = channelTypeUID;
-        this.acceptedItemType = itemType;
-        if (label != null) {
-            this.label = label;
-        } else {
-            this.label = "";
-        }
+        this.acceptedItemType = itemType != null ? itemType : "";
+        this.label = label != null ? label : "";
 
         this.isStateChannel = isStateChannel;
         this.autoCreate = autoCreate;

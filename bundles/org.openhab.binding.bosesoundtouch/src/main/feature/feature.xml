@@ -4,8 +4,6 @@
 
 	<feature name="openhab-binding-bosesoundtouch" description="Bose SoundTouch Binding" version="${project.version}">
 		<feature>openhab-runtime-base</feature>
-		<feature>openhab-transport-http</feature>
-		<feature>openhab-transport-mdns</feature>
 		<bundle start-level="80">mvn:org.openhab.addons.bundles/org.openhab.binding.bosesoundtouch/${project.version}</bundle>
 	</feature>
 </features>

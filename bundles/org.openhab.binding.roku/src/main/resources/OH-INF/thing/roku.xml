@@ -13,7 +13,9 @@
 
 		<channels>
 			<channel id="activeApp" typeId="activeApp"/>
+			<channel id="activeAppName" typeId="activeAppName"/>
 			<channel id="button" typeId="button"/>
+			<channel id="control" typeId="control"/>
 			<channel id="playMode" typeId="playMode"/>
 			<channel id="timeElapsed" typeId="timeElapsed"/>
 			<channel id="timeTotal" typeId="timeTotal"/>
@@ -26,6 +28,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -41,8 +44,11 @@
 		</description>
 
 		<channels>
+			<channel id="power" typeId="system.power"/>
 			<channel id="activeApp" typeId="activeApp"/>
+			<channel id="activeAppName" typeId="activeAppName"/>
 			<channel id="button" typeId="buttonTv"/>
+			<channel id="control" typeId="control"/>
 			<channel id="playMode" typeId="playMode"/>
 			<channel id="timeElapsed" typeId="timeElapsed"/>
 			<channel id="timeTotal" typeId="timeTotal"/>
@@ -53,6 +59,7 @@
 			<channel id="programTitle" typeId="programTitle"/>
 			<channel id="programDescription" typeId="programDescription"/>
 			<channel id="programRating" typeId="programRating"/>
+			<channel id="powerState" typeId="powerState"/>
 		</channels>
 
 		<properties>
@@ -62,6 +69,7 @@
 			<property name="Serial Number">unknown</property>
 			<property name="Device Id">unknown</property>
 			<property name="Software Version">unknown</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>uuid</representation-property>
@@ -129,15 +137,29 @@
 				<option value="InputHDMI4">Input HDMI4</option>
 				<option value="InputAV1">Input AV1</option>
 				<option value="PowerOff">Power Off</option>
-				<option value="PowerOn">Power On</option>
+				<option value="POWERON">Power On</option>
 			</options>
 		</state>
+	</channel-type>
+
+	<channel-type id="control">
+		<item-type>Player</item-type>
+		<label>Control</label>
+		<description>Control playback e.g. Play/Pause/Next/Previous</description>
+		<category>Player</category>
 	</channel-type>
 
 	<channel-type id="activeApp">
 		<item-type>String</item-type>
 		<label>Active App</label>
 		<description>The Currently Running App on the Roku</description>
+	</channel-type>
+
+	<channel-type id="activeAppName">
+		<item-type>String</item-type>
+		<label>Active App Name</label>
+		<description>The Currently Running App on the Roku</description>
+		<state readOnly="true"/>
 	</channel-type>
 
 	<channel-type id="playMode">
@@ -209,4 +231,16 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="powerState" advanced="true">
+		<item-type>String</item-type>
+		<label>Power State</label>
+		<description>Power State of the TV</description>
+		<state readOnly="true">
+			<options>
+				<option value="PowerOn">Power On</option>
+				<option value="DisplayOff">Display Off</option>
+				<option value="Ready">Ready</option>
+			</options>
+		</state>
+	</channel-type>
 </thing:thing-descriptions>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import static org.openhab.binding.yioremote.internal.YIOremoteBindingConstants.*
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -68,6 +68,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     private ClientUpgradeRequest yioremoteDockwebSocketClientrequest = new ClientUpgradeRequest();
     private @Nullable URI websocketAddress;
     private YioRemoteDockHandleStatus yioRemoteDockActualStatus = YioRemoteDockHandleStatus.UNINITIALIZED_STATE;
+    private @Nullable Future<?> initJob;
     private @Nullable Future<?> webSocketPollingJob;
     private @Nullable Future<?> webSocketReconnectionPollingJob;
     public String receivedMessage = "";
@@ -90,7 +91,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
-        scheduler.execute(() -> {
+        initJob = scheduler.submit(() -> {
             try {
                 websocketAddress = new URI("ws://" + localConfig.host + ":946");
                 yioRemoteDockActualStatus = YioRemoteDockHandleStatus.AUTHENTICATION_PROCESS;
@@ -176,20 +177,20 @@ public class YIOremoteDockHandler extends BaseThingHandler {
         boolean success = false;
 
         if (message.has("type")) {
-            if (message.get("type").toString().equalsIgnoreCase("\"auth_required\"")) {
+            if ("\"auth_required\"".equalsIgnoreCase(message.get("type").toString())) {
                 success = true;
                 receivedStatus = "Authentication required";
-            } else if (message.get("type").toString().equalsIgnoreCase("\"auth_ok\"")) {
+            } else if ("\"auth_ok\"".equalsIgnoreCase(message.get("type").toString())) {
                 authenticationOk = true;
                 success = true;
                 receivedStatus = "Authentication ok";
-            } else if (message.get("type").toString().equalsIgnoreCase("\"dock\"") && message.has("message")) {
-                if (message.get("message").toString().equalsIgnoreCase("\"pong\"")) {
+            } else if ("\"dock\"".equalsIgnoreCase(message.get("type").toString()) && message.has("message")) {
+                if ("\"pong\"".equalsIgnoreCase(message.get("message").toString())) {
                     heartBeat = true;
                     success = true;
                     receivedStatus = "Heart beat received";
-                } else if (message.get("message").toString().equalsIgnoreCase("\"ir_send\"")) {
-                    if (message.get("success").toString().equalsIgnoreCase("true")) {
+                } else if ("\"ir_send\"".equalsIgnoreCase(message.get("message").toString())) {
+                    if ("true".equalsIgnoreCase(message.get("success").toString())) {
                         receivedStatus = "Send IR Code successfully";
                         success = true;
                     } else {
@@ -202,7 +203,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
                     heartBeat = false;
                     success = false;
                 }
-            } else if (message.get("command").toString().equalsIgnoreCase("\"ir_receive\"")) {
+            } else if ("\"ir_receive\"".equalsIgnoreCase(message.get("command").toString())) {
                 receivedStatus = message.get("code").toString().replace("\"", "");
                 if (receivedStatus.matches("[0-9]?[0-9][;]0[xX][0-9a-fA-F]+[;][0-9]+[;][0-9]")) {
                     irCodeReceivedHandler.setCode(message.get("code").toString().replace("\"", ""));
@@ -240,8 +241,7 @@ public class YIOremoteDockHandler extends BaseThingHandler {
             }
             return result;
         } catch (IllegalArgumentException e) {
-            JsonObject result = new JsonObject();
-            return result;
+            return new JsonObject();
         }
     }
 
@@ -252,13 +252,23 @@ public class YIOremoteDockHandler extends BaseThingHandler {
 
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
-        return Collections.singleton(YIOremoteDockActions.class);
+        return Set.of(YIOremoteDockActions.class);
     }
 
     @Override
     public void dispose() {
+        Future<?> job = initJob;
+        if (job != null) {
+            job.cancel(true);
+            initJob = null;
+        }
         disposeWebsocketPollingJob();
         disposeWebSocketReconnectionPollingJob();
+        try {
+            webSocketClient.stop();
+        } catch (Exception e) {
+            logger.debug("Could not stop webSocketClient,  message {}", e.getMessage());
+        }
     }
 
     @Override
@@ -342,21 +352,19 @@ public class YIOremoteDockHandler extends BaseThingHandler {
     }
 
     private void disposeWebsocketPollingJob() {
-        if (webSocketPollingJob != null) {
-            if (!webSocketPollingJob.isCancelled() && webSocketPollingJob != null) {
-                webSocketPollingJob.cancel(true);
-            }
+        Future<?> job = webSocketPollingJob;
+        if (job != null) {
+            job.cancel(true);
             webSocketPollingJob = null;
         }
     }
 
     private void disposeWebSocketReconnectionPollingJob() {
-        if (webSocketReconnectionPollingJob != null) {
-            if (!webSocketReconnectionPollingJob.isCancelled() && webSocketReconnectionPollingJob != null) {
-                webSocketReconnectionPollingJob.cancel(true);
-            }
+        Future<?> job = webSocketReconnectionPollingJob;
+        if (job != null) {
+            job.cancel(true);
+            webSocketReconnectionPollingJob = null;
         }
-        webSocketReconnectionPollingJob = null;
         logger.debug("disposereconnection");
         reconnectionCounter = 0;
     }

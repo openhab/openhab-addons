@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.netatmo.internal.deserialization;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,6 +33,7 @@ import com.google.gson.JsonElement;
  */
 @NonNullByDefault
 class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
+
     private final Logger logger = LoggerFactory.getLogger(NAPushTypeDeserializer.class);
 
     @Override
@@ -40,15 +42,19 @@ class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
         final String[] elements = string.split("-");
         ModuleType moduleType = ModuleType.UNKNOWN;
         EventType eventType = EventType.UNKNOWN;
+
         if (elements.length == 2) {
             moduleType = fromNetatmoObject(elements[0]);
             eventType = fromEvent(elements[1]);
-        } else {
-            logger.warn("Unexpected syntax received for push_type field : {}", string);
+        } else if (elements.length == 1) {
+            eventType = fromEvent(string);
+            moduleType = eventType.getFirstModule();
         }
+
         if (moduleType.equals(ModuleType.UNKNOWN) || eventType.equals(EventType.UNKNOWN)) {
-            logger.warn("Unknown module or event type : {}, deserialized to '{}-{}'", string, moduleType, eventType);
+            logger.warn("Unknown module or event type: {}, deserialized to '{}-{}'", string, moduleType, eventType);
         }
+
         return new NAPushType(moduleType, eventType);
     }
 
@@ -57,8 +63,8 @@ class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
      * @return moduletype value if found, or else Unknown
      */
     public static ModuleType fromNetatmoObject(String apiName) {
-        return ModuleType.AS_SET.stream().filter(mt -> apiName.equals(mt.apiName)).findFirst()
-                .orElse(ModuleType.UNKNOWN);
+        return Objects.requireNonNull(ModuleType.AS_SET.stream().filter(mt -> apiName.equals(mt.apiName)).findFirst()
+                .orElse(ModuleType.UNKNOWN));
     }
 
     /**
@@ -66,7 +72,7 @@ class NAPushTypeDeserializer implements JsonDeserializer<NAPushType> {
      * @return eventType value if found, or else Unknown
      */
     public static EventType fromEvent(String apiName) {
-        return EventType.AS_SET.stream().filter(et -> apiName.equalsIgnoreCase(et.name())).findFirst()
-                .orElse(EventType.UNKNOWN);
+        return Objects.requireNonNull(EventType.AS_SET.stream().filter(et -> apiName.equalsIgnoreCase(et.name()))
+                .findFirst().orElse(EventType.UNKNOWN));
     }
 }

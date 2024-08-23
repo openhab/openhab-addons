@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,6 +32,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
+import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
 import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
@@ -41,9 +42,11 @@ import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.HandlerConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
+import org.openhab.core.library.types.HSBType;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatusInfo;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
+import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
@@ -75,8 +78,8 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
 
         when(callbackMock.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
 
-        thingHandler = new LatchThingHandler(haThing, channelTypeProvider, transformationServiceProvider,
-                SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+        thingHandler = new LatchThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
+                channelTypeRegistry, transformationServiceProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         thingHandler = spy(thingHandler);
@@ -173,7 +176,26 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
     @SuppressWarnings("null")
     protected static void assertState(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
             String channelId, State state) {
-        assertThat(component.getChannel(channelId).getState().getCache().getChannelState(), is(state));
+        State actualState = component.getChannel(channelId).getState().getCache().getChannelState();
+        if ((actualState instanceof HSBType actualHsb) && (state instanceof HSBType stateHsb)) {
+            assertThat(actualHsb.closeTo(stateHsb, 0.01), is(true));
+        } else {
+            assertThat(actualState, is(state));
+        }
+    }
+
+    protected void spyOnChannelUpdates(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId) {
+        // It's already thingHandler, but not the spy version
+        component.getChannel(channelId).getState().setChannelStateUpdateListener(thingHandler);
+    }
+
+    /**
+     * Assert a channel triggers
+     */
+    protected void assertTriggered(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
+            String channelId, String trigger) {
+        verify(thingHandler).triggerChannel(eq(component.getChannel(channelId).getChannel().getUID()), eq(trigger));
     }
 
     /**
@@ -211,6 +233,15 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
     }
 
     /**
+     * Assert that nothing was published on given topic.
+     *
+     * @param mqttTopic Mqtt topic
+     */
+    protected void assertNothingPublished(String mqttTopic) {
+        verify(bridgeConnection, never()).publish(eq(mqttTopic), any(), anyInt(), anyBoolean());
+    }
+
+    /**
      * Publish payload to all subscribers on specified topic.
      *
      * @param mqttTopic Mqtt topic
@@ -240,7 +271,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
 
     /**
      * Send command to a thing's channel
-     * 
+     *
      * @param component component
      * @param channelId channel
      * @param command command to send
@@ -248,7 +279,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
     protected void sendCommand(AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> component,
             String channelId, Command command) {
         var channel = Objects.requireNonNull(component.getChannel(channelId));
-        thingHandler.handleCommand(channel.getChannelUID(), command);
+        thingHandler.handleCommand(channel.getChannel().getUID(), command);
     }
 
     protected static class LatchThingHandler extends HomeAssistantThingHandler {
@@ -256,9 +287,11 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         private @Nullable AbstractComponent<@NonNull ? extends AbstractChannelConfiguration> discoveredComponent;
 
         public LatchThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider,
+                MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
                 TransformationServiceProvider transformationServiceProvider, int subscribeTimeout,
                 int attributeReceiveTimeout) {
-            super(thing, channelTypeProvider, transformationServiceProvider, subscribeTimeout, attributeReceiveTimeout);
+            super(thing, channelTypeProvider, stateDescriptionProvider, channelTypeRegistry,
+                    transformationServiceProvider, subscribeTimeout, attributeReceiveTimeout);
         }
 
         @Override

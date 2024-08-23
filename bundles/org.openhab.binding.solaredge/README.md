@@ -33,7 +33,7 @@ When using this token, see also `usePrivateApi` and `meterInstalled`.
 E.g. for Firefox, use the built-in [Storage Inspector](https://developer.mozilla.org/en-US/docs/Tools/Storage_Inspector) to retrieve the token.
 
 - **solarId** (required)  
-Id of your inverter at SolarEdge (can be found in the URL after successful login: https://monitoring.solaredge.com/solaredge-web/p/site/ **&lt;solarId&gt;** /#/dashboard)
+Id of your inverter at SolarEdge (can be found in the URL after successful login: <https://monitoring.solaredge.com/solaredge-web/p/site/> **&lt;solarId&gt;** /#/dashboard)
 
 - **usePrivateApi** (optional)  
 can be set to true to use the private API.
@@ -51,11 +51,11 @@ This can be set either to true or false when using the API key. (default = false
 
 - **liveDataPollingInterval** (optional)  
 interval (minutes) in which live data values are retrieved from Solaredge.
-Setting less than 10 minutes is only allowed when using private API. (default = 10) 
+Setting less than 10 minutes is only allowed when using private API. (default = 10)
 
 - **aggregateDataPollingInterval** (optional)  
-interval (minutes) in which aggregate data values are retrieved from Solaredge.
-Setting less than 60 is only allowed when using private API. (default = 60) 
+  interval (minutes) in which aggregate data values are retrieved from Solaredge.
+  Setting less than 60 is only allowed when using private API. (default = 60)
 
 ## Channels
 
@@ -65,7 +65,7 @@ This means you can easily change the desired unit e.g. MWh instead of kWh just i
 Following channels are currently available:
 
 | Channel Type ID                               | Item Type            | Description                                      | Remark                                           |
-|-----------------------------------------------|----------------------|--------------------------------------------------|--------------------------------------------------|
+| --------------------------------------------- | -------------------- | ------------------------------------------------ | ------------------------------------------------ |
 | live#production                               | Number:Power         | Current PV production                            | general available                                |
 | live#pv_status                                | String               | Current PV status                                | requires meter attached and 'meterInstalled' set |
 | live#consumption                              | Number:Power         | Current power consumption                        | requires meter attached and 'meterInstalled' set |
@@ -108,39 +108,38 @@ Following channels are currently available:
 | aggregate_year#import                         | Number:Energy        | Year Aggregate import from grid                  | requires meter attached and 'meterInstalled' set |
 | aggregate_year#export                         | Number:Energy        | Year Aggregate export to grid                    | requires meter attached and 'meterInstalled' set |
 
+## Full Example
 
-## Full Example                                                                                                                                                              
-
-### Thing                                                                                                                                                                    
+### Thing
 
 - minimum configuration
 
-```
+```java
 solaredge:generic:se2200 [ tokenOrApiKey="...", solarId="..."]
 ```
 
 - with pollingIntervals
 
-```
+```java
 solaredge:generic:se2200[ tokenOrApiKey="...", solarId="...", liveDataPollingInterval=..., aggregateDataPollingInterval=... ]
 ```
 
 - maximum version
 
-```
+```java
 solaredge:generic:se2200     [ tokenOrApiKey="secret", solarId="4711", meterInstalled=true, usePrivateApi=true, liveDataPollingInterval=15, aggregateDataPollingInterval=60 ]
 ```
 
 - multiple inverters
 
-```
+```java
 solaredge:generic:home1 [ tokenOrApiKey="...", solarId="..."]
 solaredge:generic:home2  [ tokenOrApiKey="...", solarId="..."]
 ```
 
 ### Items
 
-```
+```java
 Number:Power            SE2200_Live_Production   "PV Produktion [%.2f %unit%]"    {channel="solaredge:generic:se2200:live#production"}
 Number:Dimensionless    SE2200_Live_Level        "Batterieladung"                 {channel="solaredge:generic:se2200:live#battery_level"}
 Number:Energy           SE2200_Day_Production    "PV Produktion [%.2f kWh]"       {channel="solaredge:generic:se2200:aggregate_day#production"}

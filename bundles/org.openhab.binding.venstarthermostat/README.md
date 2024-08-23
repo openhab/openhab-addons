@@ -63,11 +63,10 @@ After adding the Inbox item, enter the user name and password from the physical 
 | schedulePart       | String             | Current Schedule Part                 |                                                        |
 | schedulePartRaw    | Number             | Schedule Part Raw (Read Only)         | 0(Morning) 1(Day) 2(Evening) 3 (Night) 255 (Inactive)  |
 
-
 ### Runtime data
 
-The Venstar thermostat provides data about how many minutes the system has been running in each of the different modes (heat1, heat2, cool1, cool2, aux1, aux2, free cool) every day for the last 7 days. 
-A time stamp is provided with each runtime data set which represents the end of each day. 
+The Venstar thermostat provides data about how many minutes the system has been running in each of the different modes (heat1, heat2, cool1, cool2, aux1, aux2, free cool) every day for the last 7 days.
+A time stamp is provided with each runtime data set which represents the end of each day.
 The binding reads the runtime data and time stamps and provides them all as separate channels.
 
 | Channel                | Type                 | Description                                  | Notes                                                      |
@@ -103,14 +102,13 @@ The binding reads the runtime data and time stamps and provides them all as sepa
 
 ### thermostat.things
 
-```
+```java
 Thing venstarthermostat:colorTouchThermostat:001122334455 "Venstar Thermostat (Guest)" [ username="admin", password="secret", url="https://192.168.1.100", refresh=30 ]
 ```
 
 ### thermostat.items
 
-
-```
+```java
 Number:Temperature Guest_HVAC_Temperature   "Temperature [%d °F]"   {channel="venstarthermostat:colorTouchThermostat:001122334455:temperature"}
 Number:Temperature Guest_HVAC_HeatSetpoint  "Heat Setpoint [%d °F]" {channel="venstarthermostat:colorTouchThermostat:001122334455:heatingSetpoint"}
 Number:Temperature Guest_HVAC_CoolSetpoint  "Cool Setpoint [%d °F]" {channel="venstarthermostat:colorTouchThermostat:001122334455:coolingSetpoint"}
@@ -134,7 +132,7 @@ Number Guest_freeCoolRuntimeDay0                      "Free Cool Day 0 Run Time 
 
 ### thermostat.sitemap
 
-```
+```perl
 sitemap demo label="Venstar Color Thermostat Demo"
 {
    Frame {

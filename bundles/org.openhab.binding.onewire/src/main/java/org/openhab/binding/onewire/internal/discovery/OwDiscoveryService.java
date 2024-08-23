@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,7 +14,7 @@ package org.openhab.binding.onewire.internal.discovery;
 
 import static org.openhab.binding.onewire.internal.OwBindingConstants.*;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,11 +26,13 @@ import org.openhab.binding.onewire.internal.OwException;
 import org.openhab.binding.onewire.internal.SensorId;
 import org.openhab.binding.onewire.internal.device.OwSensorType;
 import org.openhab.binding.onewire.internal.handler.OwserverBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,29 +41,26 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan N. Klug - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = OwDiscoveryService.class)
 @NonNullByDefault
-public class OwDiscoveryService extends AbstractDiscoveryService {
+public class OwDiscoveryService extends AbstractThingHandlerDiscoveryService<OwserverBridgeHandler> {
     private final Logger logger = LoggerFactory.getLogger(OwDiscoveryService.class);
-
-    private final OwserverBridgeHandler owBridgeHandler;
-    private final ThingUID bridgeUID;
 
     Map<SensorId, OwDiscoveryItem> owDiscoveryItems = new HashMap<>();
     Set<SensorId> associatedSensors = new HashSet<>();
 
-    public OwDiscoveryService(OwserverBridgeHandler owBridgeHandler) {
-        super(SUPPORTED_THING_TYPES, 60, false);
-        this.owBridgeHandler = owBridgeHandler;
-        this.bridgeUID = owBridgeHandler.getThing().getUID();
-        logger.debug("registering discovery service for {}", owBridgeHandler);
+    public OwDiscoveryService() {
+        super(OwserverBridgeHandler.class, SUPPORTED_THING_TYPES, 60, false);
     }
 
-    private void scanDirectory(String baseDirectory) {
+    private void scanDirectory(OwserverBridgeHandler bridgeHandler, String baseDirectory) {
+        ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+
         List<SensorId> directoryList;
 
         logger.trace("scanning {} on bridge {}", baseDirectory, bridgeUID);
         try {
-            directoryList = owBridgeHandler.getDirectory(baseDirectory);
+            directoryList = bridgeHandler.getDirectory(baseDirectory);
         } catch (OwException e) {
             logger.info("empty directory '{}' for {}", baseDirectory, bridgeUID);
             return;
@@ -70,13 +69,13 @@ public class OwDiscoveryService extends AbstractDiscoveryService {
         // find all valid sensors
         for (SensorId directoryEntry : directoryList) {
             try {
-                OwDiscoveryItem owDiscoveryItem = new OwDiscoveryItem(owBridgeHandler, directoryEntry);
+                OwDiscoveryItem owDiscoveryItem = new OwDiscoveryItem(bridgeHandler, directoryEntry);
                 if (owDiscoveryItem.getSensorType() == OwSensorType.DS2409) {
                     // scan hub sub-directories
                     logger.trace("found hub {}, scanning sub-directories", directoryEntry);
 
-                    scanDirectory(owDiscoveryItem.getSensorId().getFullPath() + "/main/");
-                    scanDirectory(owDiscoveryItem.getSensorId().getFullPath() + "/aux/");
+                    scanDirectory(bridgeHandler, owDiscoveryItem.getSensorId().getFullPath() + "/main/");
+                    scanDirectory(bridgeHandler, owDiscoveryItem.getSensorId().getFullPath() + "/aux/");
                 } else {
                     // add found sensor to list
                     logger.trace("found sensor {} (type: {})", directoryEntry, owDiscoveryItem.getSensorType());
@@ -93,7 +92,9 @@ public class OwDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     public void startScan() {
-        scanDirectory("/");
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
+
+        scanDirectory(thingHandler, "/");
 
         // remove duplicates
         owDiscoveryItems.entrySet().removeIf(s -> associatedSensors.contains(s.getKey()));
@@ -131,7 +132,8 @@ public class OwDiscoveryService extends AbstractDiscoveryService {
     }
 
     @Override
-    public void deactivate() {
-        removeOlderResults(new Date().getTime());
+    public void dispose() {
+        super.dispose();
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 }

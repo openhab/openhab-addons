@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,15 +29,21 @@ import com.google.gson.annotations.SerializedName;
 @NonNullByDefault
 public class ResponseFieldDTO {
     public enum AlertLevel {
-        UNKNOWN,
         @SerializedName("Vert")
-        GREEN,
+        GREEN("00ff00"),
         @SerializedName("Jaune")
-        YELLOW,
+        YELLOW("ffff00"),
         @SerializedName("Orange")
-        ORANGE,
+        ORANGE("ef6c00"),
         @SerializedName("Rouge")
-        RED;
+        RED("ff0000"),
+        UNKNOWN("3d3c3c");
+
+        public final String color;
+
+        AlertLevel(String color) {
+            this.color = color;
+        }
     }
 
     @SerializedName("nom_reg")
@@ -49,24 +55,24 @@ public class ResponseFieldDTO {
     @SerializedName("nom_dept")
     private String nomDept = "";
     @SerializedName("etat_grand_froid")
-    private AlertLevel grandFroid = AlertLevel.UNKNOWN;;
+    private AlertLevel grandFroid = AlertLevel.UNKNOWN;
     @SerializedName("noversion")
     private String noVersion = "";
     @SerializedName("etat_pluie_inondation")
-    private AlertLevel pluieInondation = AlertLevel.UNKNOWN;;
+    private AlertLevel pluieInondation = AlertLevel.UNKNOWN;
     @SerializedName("etat_neige")
-    private AlertLevel neige = AlertLevel.UNKNOWN;;
+    private AlertLevel neige = AlertLevel.UNKNOWN;
     @SerializedName("etat_vent")
-    private AlertLevel vent = AlertLevel.UNKNOWN;;
+    private AlertLevel vent = AlertLevel.UNKNOWN;
     @SerializedName("etat_inondation")
-    private AlertLevel inondation = AlertLevel.UNKNOWN;;
+    private AlertLevel inondation = AlertLevel.UNKNOWN;
     @SerializedName("etat_avalanches")
-    private AlertLevel avalanches = AlertLevel.UNKNOWN;;
+    private AlertLevel avalanches = AlertLevel.UNKNOWN;
     @SerializedName("etat_orage")
     private AlertLevel orage = AlertLevel.UNKNOWN;
     private int echeance;
     @SerializedName("etat_vague_submersion")
-    private AlertLevel vagueSubmersion = AlertLevel.UNKNOWN;;
+    private AlertLevel vagueSubmersion = AlertLevel.UNKNOWN;
     private String dep = "";
     @SerializedName("vigilancecommentaire_texte")
     private String vigilanceComment = "";

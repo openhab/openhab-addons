@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,7 @@ import org.openhab.binding.mqtt.generic.mapping.ColorMode;
 import org.openhab.binding.mqtt.generic.values.ColorValue;
 import org.openhab.binding.mqtt.generic.values.TextValue;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
+import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannelType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.HSBType;
 import org.openhab.core.library.types.OnOffType;
@@ -53,14 +54,15 @@ public class DefaultSchemaLight extends Light {
     protected @Nullable ComponentChannel rgbChannel;
     protected @Nullable ComponentChannel xyChannel;
 
-    public DefaultSchemaLight(ComponentFactory.ComponentConfiguration builder) {
-        super(builder);
+    public DefaultSchemaLight(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
+        super(builder, newStyleChannels);
     }
 
     @Override
     protected void buildChannels() {
         ComponentChannel localOnOffChannel;
-        localOnOffChannel = onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, onOffValue, "On/Off State", this)
+        localOnOffChannel = onOffChannel = buildChannel(ON_OFF_CHANNEL_ID, ComponentChannelType.SWITCH, onOffValue,
+                "On/Off State", this)
                 .stateTopic(channelConfiguration.stateTopic, channelConfiguration.stateValueTemplate)
                 .commandTopic(channelConfiguration.commandTopic, channelConfiguration.isRetain(),
                         channelConfiguration.getQos())
@@ -69,38 +71,41 @@ public class DefaultSchemaLight extends Light {
         @Nullable
         ComponentChannel localBrightnessChannel = null;
         if (channelConfiguration.brightnessStateTopic != null || channelConfiguration.brightnessCommandTopic != null) {
-            localBrightnessChannel = brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID, brightnessValue,
-                    "Brightness", this)
-                            .stateTopic(channelConfiguration.brightnessStateTopic,
-                                    channelConfiguration.brightnessValueTemplate)
-                            .commandTopic(channelConfiguration.brightnessCommandTopic, channelConfiguration.isRetain(),
-                                    channelConfiguration.getQos())
-                            .withFormat("%.0f").commandFilter(this::handleBrightnessCommand).build(false);
+            localBrightnessChannel = brightnessChannel = buildChannel(BRIGHTNESS_CHANNEL_ID,
+                    ComponentChannelType.DIMMER, brightnessValue, "Brightness", this)
+                    .stateTopic(channelConfiguration.brightnessStateTopic, channelConfiguration.brightnessValueTemplate)
+                    .commandTopic(channelConfiguration.brightnessCommandTopic, channelConfiguration.isRetain(),
+                            channelConfiguration.getQos())
+                    .withFormat("%.0f").commandFilter(this::handleBrightnessCommand).build(false);
         }
 
         if (channelConfiguration.whiteCommandTopic != null) {
-            buildChannel(WHITE_CHANNEL_ID, brightnessValue, "Go directly to white of a specific brightness", this)
+            buildChannel(WHITE_CHANNEL_ID, ComponentChannelType.DIMMER, brightnessValue,
+                    "Go directly to white of a specific brightness", this)
                     .commandTopic(channelConfiguration.whiteCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
                     .isAdvanced(true).build();
         }
 
         if (channelConfiguration.colorModeStateTopic != null) {
-            buildChannel(COLOR_MODE_CHANNEL_ID, new TextValue(), "Current color mode", this)
+            buildChannel(COLOR_MODE_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "Current color mode",
+                    this)
                     .stateTopic(channelConfiguration.colorModeStateTopic, channelConfiguration.colorModeValueTemplate)
                     .build();
         }
 
         if (channelConfiguration.colorTempStateTopic != null || channelConfiguration.colorTempCommandTopic != null) {
-            buildChannel(COLOR_TEMP_CHANNEL_ID, colorTempValue, "Color Temperature", this)
+            buildChannel(COLOR_TEMP_CHANNEL_ID, ComponentChannelType.NUMBER, colorTempValue, "Color Temperature", this)
                     .stateTopic(channelConfiguration.colorTempStateTopic, channelConfiguration.colorTempValueTemplate)
                     .commandTopic(channelConfiguration.colorTempCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
                     .build();
         }
 
-        if (channelConfiguration.effectStateTopic != null || channelConfiguration.effectCommandTopic != null) {
-            buildChannel(EFFECT_CHANNEL_ID, effectValue, "Lighting effect", this)
+        if (effectValue != null
+                && (channelConfiguration.effectStateTopic != null || channelConfiguration.effectCommandTopic != null)) {
+            buildChannel(EFFECT_CHANNEL_ID, ComponentChannelType.STRING, Objects.requireNonNull(effectValue),
+                    "Lighting Effect", this)
                     .stateTopic(channelConfiguration.effectStateTopic, channelConfiguration.effectValueTemplate)
                     .commandTopic(channelConfiguration.effectCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
@@ -109,45 +114,48 @@ public class DefaultSchemaLight extends Light {
 
         if (channelConfiguration.rgbStateTopic != null || channelConfiguration.rgbCommandTopic != null) {
             hasColorChannel = true;
-            hiddenChannels.add(rgbChannel = buildChannel(RGB_CHANNEL_ID, new ColorValue(ColorMode.RGB, null, null, 100),
-                    "RGB state", this)
-                            .stateTopic(channelConfiguration.rgbStateTopic, channelConfiguration.rgbValueTemplate)
-                            .commandTopic(channelConfiguration.rgbCommandTopic, channelConfiguration.isRetain(),
-                                    channelConfiguration.getQos())
-                            .build(false));
+            hiddenChannels.add(rgbChannel = buildChannel(RGB_CHANNEL_ID, ComponentChannelType.COLOR,
+                    new ColorValue(ColorMode.RGB, null, null, 100), "RGB state", this)
+                    .stateTopic(channelConfiguration.rgbStateTopic, channelConfiguration.rgbValueTemplate)
+                    .commandTopic(channelConfiguration.rgbCommandTopic, channelConfiguration.isRetain(),
+                            channelConfiguration.getQos())
+                    .build(false));
         }
 
         if (channelConfiguration.rgbwStateTopic != null || channelConfiguration.rgbwCommandTopic != null) {
             hasColorChannel = true;
-            hiddenChannels.add(buildChannel(RGBW_CHANNEL_ID, new TextValue(), "RGBW state", this)
-                    .stateTopic(channelConfiguration.rgbwStateTopic, channelConfiguration.rgbwValueTemplate)
-                    .commandTopic(channelConfiguration.rgbwCommandTopic, channelConfiguration.isRetain(),
-                            channelConfiguration.getQos())
-                    .build(false));
+            hiddenChannels
+                    .add(buildChannel(RGBW_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "RGBW state", this)
+                            .stateTopic(channelConfiguration.rgbwStateTopic, channelConfiguration.rgbwValueTemplate)
+                            .commandTopic(channelConfiguration.rgbwCommandTopic, channelConfiguration.isRetain(),
+                                    channelConfiguration.getQos())
+                            .build(false));
         }
 
         if (channelConfiguration.rgbwwStateTopic != null || channelConfiguration.rgbwwCommandTopic != null) {
             hasColorChannel = true;
-            hiddenChannels.add(buildChannel(RGBWW_CHANNEL_ID, new TextValue(), "RGBWW state", this)
-                    .stateTopic(channelConfiguration.rgbwwStateTopic, channelConfiguration.rgbwwValueTemplate)
-                    .commandTopic(channelConfiguration.rgbwwCommandTopic, channelConfiguration.isRetain(),
-                            channelConfiguration.getQos())
-                    .build(false));
+            hiddenChannels.add(
+                    buildChannel(RGBWW_CHANNEL_ID, ComponentChannelType.STRING, new TextValue(), "RGBWW state", this)
+                            .stateTopic(channelConfiguration.rgbwwStateTopic, channelConfiguration.rgbwwValueTemplate)
+                            .commandTopic(channelConfiguration.rgbwwCommandTopic, channelConfiguration.isRetain(),
+                                    channelConfiguration.getQos())
+                            .build(false));
         }
 
         if (channelConfiguration.xyStateTopic != null || channelConfiguration.xyCommandTopic != null) {
             hasColorChannel = true;
-            hiddenChannels.add(
-                    xyChannel = buildChannel(XY_CHANNEL_ID, new ColorValue(ColorMode.XYY, null, null, 100), "XY State",
-                            this).stateTopic(channelConfiguration.xyStateTopic, channelConfiguration.xyValueTemplate)
-                                    .commandTopic(channelConfiguration.xyCommandTopic, channelConfiguration.isRetain(),
-                                            channelConfiguration.getQos())
-                                    .build(false));
+            hiddenChannels.add(xyChannel = buildChannel(XY_CHANNEL_ID, ComponentChannelType.COLOR,
+                    new ColorValue(ColorMode.XYY, null, null, 100), "XY State", this)
+                    .stateTopic(channelConfiguration.xyStateTopic, channelConfiguration.xyValueTemplate)
+                    .commandTopic(channelConfiguration.xyCommandTopic, channelConfiguration.isRetain(),
+                            channelConfiguration.getQos())
+                    .build(false));
         }
 
         if (channelConfiguration.hsStateTopic != null || channelConfiguration.hsCommandTopic != null) {
             hasColorChannel = true;
-            hiddenChannels.add(this.hsChannel = buildChannel(HS_CHANNEL_ID, new TextValue(), "Hue and Saturation", this)
+            hiddenChannels.add(this.hsChannel = buildChannel(HS_CHANNEL_ID, ComponentChannelType.STRING,
+                    new TextValue(), "Hue and Saturation", this)
                     .stateTopic(channelConfiguration.hsStateTopic, channelConfiguration.hsValueTemplate)
                     .commandTopic(channelConfiguration.hsCommandTopic, channelConfiguration.isRetain(),
                             channelConfiguration.getQos())
@@ -159,7 +167,7 @@ public class DefaultSchemaLight extends Light {
             if (localBrightnessChannel != null) {
                 hiddenChannels.add(localBrightnessChannel);
             }
-            buildChannel(COLOR_CHANNEL_ID, colorValue, "Color", this)
+            buildChannel(COLOR_CHANNEL_ID, ComponentChannelType.COLOR, colorValue, "Color", this)
                     .commandTopic(DUMMY_TOPIC, channelConfiguration.isRetain(), channelConfiguration.getQos())
                     .commandFilter(this::handleColorCommand).build();
         } else if (localBrightnessChannel != null) {
@@ -225,8 +233,7 @@ public class DefaultSchemaLight extends Light {
     private boolean handleColorCommand(Command command) {
         if (!handleOnOffCommand(command)) {
             return false;
-        } else if (command instanceof HSBType) {
-            HSBType color = (HSBType) command;
+        } else if (command instanceof HSBType color) {
             if (channelConfiguration.hsCommandTopic != null) {
                 // If we don't have a brightness channel, something is probably busted
                 // but don't choke
@@ -251,7 +258,7 @@ public class DefaultSchemaLight extends Light {
                 String xyString = String.format("%f,%f", xy[0].doubleValue(), xy[1].doubleValue());
                 xyChannel.getState().publishValue(new StringType(xyString));
             }
-        } else if (command instanceof PercentType) {
+        } else if (command instanceof PercentType brightness) {
             if (channelConfiguration.brightnessCommandTopic != null) {
                 brightnessChannel.getState().publishValue(command);
             } else {
@@ -262,8 +269,7 @@ public class DefaultSchemaLight extends Light {
                     color = HSBType.WHITE;
                 }
                 HSBType existingColor = (HSBType) color;
-                HSBType newCommand = new HSBType(existingColor.getHue(), existingColor.getSaturation(),
-                        (PercentType) command);
+                HSBType newCommand = new HSBType(existingColor.getHue(), existingColor.getSaturation(), brightness);
                 // re-process
                 handleColorCommand(newCommand);
             }
@@ -284,7 +290,7 @@ public class DefaultSchemaLight extends Light {
                         colorValue.update(newOnState);
                     }
 
-                    listener.updateChannelState(new ChannelUID(getGroupUID(), COLOR_CHANNEL_ID),
+                    listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID),
                             state.equals(OnOffType.ON) ? newOnState : HSBType.BLACK);
                 } else if (brightnessChannel != null) {
                     listener.updateChannelState(new ChannelUID(channel.getThingUID(), BRIGHTNESS_CHANNEL_ID),
@@ -304,8 +310,7 @@ public class DefaultSchemaLight extends Light {
                         colorValue.update(new HSBType(DecimalType.ZERO, PercentType.ZERO,
                                 (PercentType) brightnessValue.getChannelState()));
                     }
-                    listener.updateChannelState(new ChannelUID(getGroupUID(), COLOR_CHANNEL_ID),
-                            colorValue.getChannelState());
+                    listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
                 } else {
                     listener.updateChannelState(channel, state);
                 }
@@ -333,13 +338,11 @@ public class DefaultSchemaLight extends Light {
                     HSBType xyColor = HSBType.fromXY(x, y);
                     colorValue.update(new HSBType(xyColor.getHue(), xyColor.getSaturation(), brightness));
                 }
-                listener.updateChannelState(new ChannelUID(getGroupUID(), COLOR_CHANNEL_ID),
-                        colorValue.getChannelState());
+                listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
                 return;
             case RGB_CHANNEL_ID:
                 colorValue.update((HSBType) state);
-                listener.updateChannelState(new ChannelUID(getGroupUID(), COLOR_CHANNEL_ID),
-                        colorValue.getChannelState());
+                listener.updateChannelState(buildChannelUID(COLOR_CHANNEL_ID), colorValue.getChannelState());
                 break;
             case RGBW_CHANNEL_ID:
             case RGBWW_CHANNEL_ID:

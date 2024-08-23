@@ -310,7 +310,7 @@
 	</channel-type>
 
 	<channel-type id="sensorHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>@text/channel-type.shelly.sensorHumidity.label</label>
 		<description>@text/channel-type.shelly.sensorHumidity.description</description>
 		<category>Humidity</category>
@@ -337,6 +337,12 @@
 		<category>Smoke</category>
 		<state readOnly="true">
 		</state>
+	</channel-type>
+
+	<channel-type id="sensorMute">
+		<item-type>Switch</item-type>
+		<label>@text/channel-type.shelly.sensorMute.label</label>
+		<description>@text/channel-type.shelly.sensorMute.description</description>
 	</channel-type>
 
 	<channel-type id="sensorLux">

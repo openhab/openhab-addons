@@ -32,6 +32,10 @@
 		</properties>
 
 		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial number</label>
+				<description>Identifier of meter </description>
+			</parameter>
 			<parameter name="mcastGroup" type="text" required="true">
 				<label>Multicast Group</label>
 				<description>IP address of the multicast group</description>

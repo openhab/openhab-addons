@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon:addon id="knx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:addon="https://openhab.org/schemas/addon/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/addon/v1.0.0 https://openhab.org/schemas/addon-1.0.0.xsd">
+
+	<type>binding</type>
+	<name>KNX Binding</name>
+	<description>This binding supports connecting to a KNX bus</description>
+	<connection>local</connection>
+
+	<config-description>
+		<parameter name="disableUoM" type="boolean">
+			<default>false</default>
+			<label>Disable UoM</label>
+			<description>This disables Units of Measurement support for incoming values.</description>
+		</parameter>
+	</config-description>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>process</service-type>
+			<match-properties>
+				<match-property>
+					<name>command</name>
+					<regex>(?i).*[/\\](knxd)(\.exe)?$</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+		<discovery-method>
+			<service-type>ip</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>type</name>
+					<value>ipMulticast</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>destIp</name>
+					<value>224.0.23.12</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>destPort</name>
+					<value>3671</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>request</name>
+					<value>0x06 0x10 0x02 0x01 0x00 0x0e 0x08 0x01 $srcIp $srcPort</value>
+				</discovery-parameter>
+				<discovery-parameter>
+					<name>timeoutMs</name>
+					<value>5000</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>response</name>
+					<regex>.*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
+</addon:addon>

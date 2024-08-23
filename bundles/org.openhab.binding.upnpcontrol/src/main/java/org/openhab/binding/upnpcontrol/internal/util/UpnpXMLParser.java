@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,11 +25,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.upnpcontrol.internal.queue.UpnpEntry;
 import org.openhab.binding.upnpcontrol.internal.queue.UpnpEntryRes;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
@@ -153,7 +153,7 @@ public class UpnpXMLParser {
 
     private static class AVTransportEventHandler extends DefaultHandler {
 
-        private final Map<String, String> changes = new HashMap<String, String>();
+        private final Map<String, String> changes = new HashMap<>();
 
         AVTransportEventHandler() {
             // shouldn't be used outside of this package.
@@ -202,7 +202,7 @@ public class UpnpXMLParser {
 
         // Maintain a set of elements it is not useful to complain about.
         // This list will be initialized on the first failure case.
-        private static List<String> ignore = new ArrayList<String>();
+        private static List<String> ignore = new ArrayList<>();
 
         private String id = "";
         private String refId = "";
@@ -406,14 +406,14 @@ public class UpnpXMLParser {
     public static String compileMetadataString(UpnpEntry entry) {
         String id = entry.getId();
         String parentId = entry.getParentId();
-        String title = StringEscapeUtils.escapeXml(entry.getTitle());
+        String title = StringUtils.escapeXml(entry.getTitle());
         String upnpClass = entry.getUpnpClass();
-        String album = StringEscapeUtils.escapeXml(entry.getAlbum());
+        String album = StringUtils.escapeXml(entry.getAlbum());
         String albumArtUri = entry.getAlbumArtUri();
-        String creator = StringEscapeUtils.escapeXml(entry.getCreator());
-        String artist = StringEscapeUtils.escapeXml(entry.getArtist());
-        String publisher = StringEscapeUtils.escapeXml(entry.getPublisher());
-        String genre = StringEscapeUtils.escapeXml(entry.getGenre());
+        String creator = StringUtils.escapeXml(entry.getCreator());
+        String artist = StringUtils.escapeXml(entry.getArtist());
+        String publisher = StringUtils.escapeXml(entry.getPublisher());
+        String genre = StringUtils.escapeXml(entry.getGenre());
         Integer trackNumber = entry.getOriginalTrackNumber();
 
         final MessageFormat messageFormat = new MessageFormat(METADATA_PATTERN);

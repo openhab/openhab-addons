@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class GatewayQueryService implements AutoCloseable {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final Lock REQUEST_LOCK = new ReentrantLock();
 
@@ -73,14 +73,20 @@ public abstract class GatewayQueryService implements AutoCloseable {
 
     protected byte @Nullable [] executeCommand(String command, byte[] request,
             Function<byte[], Boolean> validateResponse) {
+        try {
+            if (!REQUEST_LOCK.tryLock(30, TimeUnit.SECONDS)) {
+                logger.debug("executeCommand({}): timed out while getting the lock", command);
+                return null;
+            }
+        } catch (InterruptedException e) {
+            logger.debug("executeCommand({}): was interrupted while getting the lock", command);
+            return null;
+        }
+
         byte[] buffer = new byte[2028];
         int bytesRead;
 
         try {
-            if (!REQUEST_LOCK.tryLock(30, TimeUnit.SECONDS)) {
-                logger.trace("executeCommand({}): time out while getting lock", command);
-                return null;
-            }
             Socket socket = getConnection();
             if (socket == null) {
                 return null;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2022 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -24,7 +24,7 @@ public interface PacketCapturingHandler {
     /**
      * Callback method to handle a captured packet.
      *
-     * @param macAddress The mac address which sent the packet
+     * @param sourceMacAddress The mac address which sent the packet
      */
-    public void packetCaptured(MacAddress sourceMacAddress);
+    void packetCaptured(MacAddress sourceMacAddress);
 }
