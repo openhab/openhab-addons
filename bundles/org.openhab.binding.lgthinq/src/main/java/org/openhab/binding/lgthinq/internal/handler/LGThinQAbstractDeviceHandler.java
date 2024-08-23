@@ -389,8 +389,8 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
                     .intValue();
         }
         if (getThing().getConfiguration().containsKey("pollingPeriodPowerOffSeconds")) {
-            pollingPeriodOffSeconds = ((BigDecimal) getThing().getConfiguration()
-                    .get("pollingPeriodPowerOffSeconds")).intValue();
+            pollingPeriodOffSeconds = ((BigDecimal) getThing().getConfiguration().get("pollingPeriodPowerOffSeconds"))
+                    .intValue();
         }
         if (getThing().getConfiguration().containsKey("pollingExtraInfoPeriodSeconds")) {
             pollingExtraInfoPeriodSeconds = ((BigDecimal) getThing().getConfiguration()

@@ -12,12 +12,9 @@
  */
 package org.openhab.binding.lgthinq.handler;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 

@@ -14,9 +14,8 @@ package org.openhab.binding.lgthinq.lgservices.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.lgthinq.handler.JsonUtils;
