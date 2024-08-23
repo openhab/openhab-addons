@@ -12,12 +12,12 @@
  */
 package org.openhab.binding.visualcrossing.internal;
 
+import static org.openhab.core.thing.ChannelUID.CHANNEL_GROUP_SEPARATOR;
+
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.thing.ThingTypeUID;
-
-import static org.openhab.core.thing.ChannelUID.CHANNEL_GROUP_SEPARATOR;
 
 /**
  * The {@link VisualCrossingBindingConstants} class defines common constants, which are
@@ -36,17 +36,17 @@ public class VisualCrossingBindingConstants {
 
     public static final class Channels {
         public static final class BasicChannelGroup {
-            private static final String CHANNEL_ID = "basic"+ CHANNEL_GROUP_SEPARATOR;
+            private static final String CHANNEL_ID = "basic" + CHANNEL_GROUP_SEPARATOR;
 
             public static final String COST = CHANNEL_ID + "cost";
             public static final String DESCRIPTION = CHANNEL_ID + "description";
         }
 
         public static final class CurrentConditions {
-            private static final String CHANNEL_ID = "current-conditions"+ CHANNEL_GROUP_SEPARATOR;
+            private static final String CHANNEL_ID = "current-conditions" + CHANNEL_GROUP_SEPARATOR;
 
-            public static final String DATE_TIME = CHANNEL_ID + "date-time";
-            public static final String TIME_STAMP = CHANNEL_ID + "time-stamp";
+            public static final String DATE_TIME = CHANNEL_ID + "datetime";
+            public static final String TIME_STAMP = CHANNEL_ID + "timestamp";
             public static final String TEMPERATURE = CHANNEL_ID + "temperature";
             public static final String FEELS_LIKE = CHANNEL_ID + "feels-like";
             public static final String HUMIDITY = CHANNEL_ID + "humidity";
@@ -83,151 +83,151 @@ public class VisualCrossingBindingConstants {
 
             public ChannelDay(int idx) {
                 var prefix = "day" + (idx < 10 ? "0" : "");
-                this.channelId = prefix + idx;
+                this.channelId = prefix + idx + CHANNEL_GROUP_SEPARATOR;
             }
 
             public String dateTime() {
-                return "%s#date-time".formatted(channelId);
+                return "%sdatetime".formatted(channelId);
             }
 
             public String timeStamp() {
-                return "%s#time-stamp".formatted(channelId);
+                return "%stimestamp".formatted(channelId);
             }
 
             public String temperature() {
-                return "%s#temperature".formatted(channelId);
+                return "%stemperature".formatted(channelId);
             }
 
             public String temperatureMin() {
-                return "%s#temperature-min".formatted(channelId);
+                return "%stemperature-min".formatted(channelId);
             }
 
             public String temperatureMax() {
-                return "%s#temperature-max".formatted(channelId);
+                return "%stemperature-max".formatted(channelId);
             }
 
             public String feelsLike() {
-                return "%s#feels-like".formatted(channelId);
+                return "%sfeels-like".formatted(channelId);
             }
 
             public String feelsLikeMin() {
-                return "%s#feels-like-min".formatted(channelId);
+                return "%sfeels-like-min".formatted(channelId);
             }
 
             public String feelsLikeMax() {
-                return "%s#feels-like-max".formatted(channelId);
+                return "%sfeels-like-max".formatted(channelId);
             }
 
             public String dew() {
-                return "%s#dew".formatted(channelId);
+                return "%sdew".formatted(channelId);
             }
 
             public String humidity() {
-                return "%s#humidity".formatted(channelId);
+                return "%shumidity".formatted(channelId);
             }
 
             public String precip() {
-                return "%s#precip".formatted(channelId);
+                return "%sprecip".formatted(channelId);
             }
 
             public String precipProb() {
-                return "%s#precip-prob".formatted(channelId);
+                return "%sprecip-prob".formatted(channelId);
             }
 
             public String precipType() {
-                return "%s#precip-type".formatted(channelId);
+                return "%sprecip-type".formatted(channelId);
             }
 
             public String precipCover() {
-                return "%s#precip-cover".formatted(channelId);
+                return "%sprecip-cover".formatted(channelId);
             }
 
             public String snow() {
-                return "%s#snow".formatted(channelId);
+                return "%ssnow".formatted(channelId);
             }
 
             public String snowDepth() {
-                return "%s#snow-depth".formatted(channelId);
+                return "%ssnow-depth".formatted(channelId);
             }
 
             public String windGust() {
-                return "%s#wind-gust".formatted(channelId);
+                return "%swind-gust".formatted(channelId);
             }
 
             public String windSpeed() {
-                return "%s#wind-speed".formatted(channelId);
+                return "%swind-speed".formatted(channelId);
             }
 
             public String windDir() {
-                return "%s#wind-dir".formatted(channelId);
+                return "%swind-dir".formatted(channelId);
             }
 
             public String pressure() {
-                return "%s#pressure".formatted(channelId);
+                return "%spressure".formatted(channelId);
             }
 
             public String cloudCover() {
-                return "%s#cloud-cover".formatted(channelId);
+                return "%scloud-cover".formatted(channelId);
             }
 
             public String visibility() {
-                return "%s#visibility".formatted(channelId);
+                return "%svisibility".formatted(channelId);
             }
 
             public String solarRadiation() {
-                return "%s#solar-radiation".formatted(channelId);
+                return "%ssolar-radiation".formatted(channelId);
             }
 
             public String solarEnergy() {
-                return "%s#solar-energy".formatted(channelId);
+                return "%ssolar-energy".formatted(channelId);
             }
 
             public String uvIndex() {
-                return "%s#uv-index".formatted(channelId);
+                return "%suv-index".formatted(channelId);
             }
 
             public String sunrise() {
-                return "%s#sunrise".formatted(channelId);
+                return "%ssunrise".formatted(channelId);
             }
 
             public String sunriseEpoch() {
-                return "%s#sunrise-epoch".formatted(channelId);
+                return "%ssunrise-epoch".formatted(channelId);
             }
 
             public String sunset() {
-                return "%s#sunset".formatted(channelId);
+                return "%ssunset".formatted(channelId);
             }
 
             public String sunsetEpoch() {
-                return "%s#sunset-epoch".formatted(channelId);
+                return "%ssunset-epoch".formatted(channelId);
             }
 
             public String moonPhase() {
-                return "%s#moon-phase".formatted(channelId);
+                return "%smoon-phase".formatted(channelId);
             }
 
             public String conditions() {
-                return "%s#conditions".formatted(channelId);
+                return "%sconditions".formatted(channelId);
             }
 
             public String description() {
-                return "%s#description".formatted(channelId);
+                return "%sdescription".formatted(channelId);
             }
 
             public String icon() {
-                return "%s#icon".formatted(channelId);
+                return "%sicon".formatted(channelId);
             }
 
             public String stations() {
-                return "%s#stations".formatted(channelId);
+                return "%sstations".formatted(channelId);
             }
 
             public String source() {
-                return "%s#source".formatted(channelId);
+                return "%ssource".formatted(channelId);
             }
 
             public String severeRisk() {
-                return "%s#severe-risk".formatted(channelId);
+                return "%ssevere-risk".formatted(channelId);
             }
 
             public Hour hour(int idx) {
@@ -243,103 +243,103 @@ public class VisualCrossingBindingConstants {
                 }
 
                 public String hourDateTime() {
-                    return "%s#%s-date-time".formatted(channelId, hourIdx);
+                    return "%s%s-datetime".formatted(channelId, hourIdx);
                 }
 
                 public String hourTimeStamp() {
-                    return "%s#%s-time-stamp".formatted(channelId, hourIdx);
+                    return "%s%s-timestamp".formatted(channelId, hourIdx);
                 }
 
                 public String hourTemperature() {
-                    return "%s#%s-temperature".formatted(channelId, hourIdx);
+                    return "%s%s-temperature".formatted(channelId, hourIdx);
                 }
 
                 public String hourFeelsLike() {
-                    return "%s#%s-feels-like".formatted(channelId, hourIdx);
+                    return "%s%s-feels-like".formatted(channelId, hourIdx);
                 }
 
                 public String hourHumidity() {
-                    return "%s#%s-humidity".formatted(channelId, hourIdx);
+                    return "%s%s-humidity".formatted(channelId, hourIdx);
                 }
 
                 public String hourDew() {
-                    return "%s#%s-dew".formatted(channelId, hourIdx);
+                    return "%s%s-dew".formatted(channelId, hourIdx);
                 }
 
                 public String hourPrecip() {
-                    return "%s#%s-precip".formatted(channelId, hourIdx);
+                    return "%s%s-precip".formatted(channelId, hourIdx);
                 }
 
                 public String hourPrecipProb() {
-                    return "%s#%s-precip-prob".formatted(channelId, hourIdx);
+                    return "%s%s-precip-prob".formatted(channelId, hourIdx);
                 }
 
                 public String hourPrecipType() {
-                    return "%s#%s-precip-type".formatted(channelId, hourIdx);
+                    return "%s%s-precip-type".formatted(channelId, hourIdx);
                 }
 
                 public String hourSnow() {
-                    return "%s#%s-snow".formatted(channelId, hourIdx);
+                    return "%s%s-snow".formatted(channelId, hourIdx);
                 }
 
                 public String hourSnowDepth() {
-                    return "%s#%s-snow-depth".formatted(channelId, hourIdx);
+                    return "%s%s-snow-depth".formatted(channelId, hourIdx);
                 }
 
                 public String hourWindGust() {
-                    return "%s#%s-wind-gust".formatted(channelId, hourIdx);
+                    return "%s%s-wind-gust".formatted(channelId, hourIdx);
                 }
 
                 public String hourWindSpeed() {
-                    return "%s#%s-wind-speed".formatted(channelId, hourIdx);
+                    return "%s%s-wind-speed".formatted(channelId, hourIdx);
                 }
 
                 public String hourWindDir() {
-                    return "%s#%s-wind-dir".formatted(channelId, hourIdx);
+                    return "%s%s-wind-dir".formatted(channelId, hourIdx);
                 }
 
                 public String hourPressure() {
-                    return "%s#%s-pressure".formatted(channelId, hourIdx);
+                    return "%s%s-pressure".formatted(channelId, hourIdx);
                 }
 
                 public String hourVisibility() {
-                    return "%s#%s-visibility".formatted(channelId, hourIdx);
+                    return "%s%s-visibility".formatted(channelId, hourIdx);
                 }
 
                 public String hourCloudCover() {
-                    return "%s#%s-cloud-cover".formatted(channelId, hourIdx);
+                    return "%s%s-cloud-cover".formatted(channelId, hourIdx);
                 }
 
                 public String hourSolarRadiation() {
-                    return "%s#%s-solar-radiation".formatted(channelId, hourIdx);
+                    return "%s%s-solar-radiation".formatted(channelId, hourIdx);
                 }
 
                 public String hourSolarEnergy() {
-                    return "%s#%s-solar-energy".formatted(channelId, hourIdx);
+                    return "%s%s-solar-energy".formatted(channelId, hourIdx);
                 }
 
                 public String hourUvIndex() {
-                    return "%s#%s-uv-index".formatted(channelId, hourIdx);
+                    return "%s%s-uv-index".formatted(channelId, hourIdx);
                 }
 
                 public String hourSevereRisk() {
-                    return "%s#%s-severe-risk".formatted(channelId, hourIdx);
+                    return "%s%s-severe-risk".formatted(channelId, hourIdx);
                 }
 
                 public String hourConditions() {
-                    return "%s#%s-conditions".formatted(channelId, hourIdx);
+                    return "%s%s-conditions".formatted(channelId, hourIdx);
                 }
 
                 public String hourIcon() {
-                    return "%s#%s-icon".formatted(channelId, hourIdx);
+                    return "%s%s-icon".formatted(channelId, hourIdx);
                 }
 
                 public String hourStations() {
-                    return "%s#%s-stations".formatted(channelId, hourIdx);
+                    return "%s%s-stations".formatted(channelId, hourIdx);
                 }
 
                 public String hourSource() {
-                    return "%s#%s-source".formatted(channelId, hourIdx);
+                    return "%s%s-source".formatted(channelId, hourIdx);
                 }
             }
         }

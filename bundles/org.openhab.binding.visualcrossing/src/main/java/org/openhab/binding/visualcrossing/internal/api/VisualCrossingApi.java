@@ -142,7 +142,11 @@ public class VisualCrossingApi {
             return weatherResponse;
         } catch (JsonSyntaxException e) {
             var target = WeatherResponse.class.getSimpleName();
-            logger.debug("Cannot parse {} from JSON:\n{}", target, response, e);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Cannot parse {} from JSON:\n{}", target, response, e);
+            } else {
+                logger.debug("Cannot parse {} from JSON", target, e);
+            }
             throw new VisualCrossingApiException("Cannot parse %s from JSON!".formatted(target), e);
         }
     }

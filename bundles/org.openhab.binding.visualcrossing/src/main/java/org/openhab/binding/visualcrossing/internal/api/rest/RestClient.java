@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.visualcrossing.internal.api.rest;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -58,7 +60,7 @@ public interface RestClient {
          * @param body The content body.
          */
         public Content(String body) {
-            this(body, "application/json");
+            this(body, APPLICATION_JSON);
         }
     }
 

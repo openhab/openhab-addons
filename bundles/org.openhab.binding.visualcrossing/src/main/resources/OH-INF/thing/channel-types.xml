@@ -17,8 +17,8 @@
 	<channel-group-type id="day-channel-group">
 		<label>Day</label>
 		<channels>
-			<channel id="date-time" typeId="time-channel"/>
-			<channel id="time-stamp" typeId="time-stamp-channel"/>
+			<channel id="datetime" typeId="time-channel"/>
+			<channel id="timestamp" typeId="timestamp-channel"/>
 			<channel id="temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -93,12 +93,12 @@
 				</description>
 			</channel>
 			<channel id="sunrise" typeId="sunrise-channel"/>
-			<channel id="sunrise-epoch" typeId="time-stamp-channel">
+			<channel id="sunrise-epoch" typeId="timestamp-channel">
 				<label>Sunrise Epoch</label>
 				<description>Sunrise time specified as number of seconds since 1st January 1970 in UTC time</description>
 			</channel>
 			<channel id="sunset" typeId="sunset-channel"/>
-			<channel id="sunset-epoch" typeId="time-stamp-channel">
+			<channel id="sunset-epoch" typeId="timestamp-channel">
 				<label>Sunset Epoch</label>
 				<description>Sunset time specified as number of seconds since 1st January 1970 in UTC time</description>
 			</channel>
@@ -111,8 +111,8 @@
 			<channel id="severe-risk" typeId="severe-risk-channel"/>
 
 			<!-- ✅ hour00 ✅ -->
-			<channel id="hour00-date-time" typeId="time-channel"/>
-			<channel id="hour00-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour00-datetime" typeId="time-channel"/>
+			<channel id="hour00-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour00-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -177,8 +177,8 @@
 			<!-- ❌ hour00 ❌ -->
 
 			<!-- ✅ hour01 ✅ -->
-			<channel id="hour01-date-time" typeId="time-channel"/>
-			<channel id="hour01-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour01-datetime" typeId="time-channel"/>
+			<channel id="hour01-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour01-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -243,8 +243,8 @@
 			<!-- ❌ hour01 ❌ -->
 
 			<!-- ✅ hour02 ✅ -->
-			<channel id="hour02-date-time" typeId="time-channel"/>
-			<channel id="hour02-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour02-datetime" typeId="time-channel"/>
+			<channel id="hour02-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour02-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -309,8 +309,8 @@
 			<!-- ❌ hour02 ❌ -->
 
 			<!-- ✅ hour03 ✅ -->
-			<channel id="hour03-date-time" typeId="time-channel"/>
-			<channel id="hour03-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour03-datetime" typeId="time-channel"/>
+			<channel id="hour03-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour03-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -375,8 +375,8 @@
 			<!-- ❌ hour03 ❌ -->
 
 			<!-- ✅ hour04 ✅ -->
-			<channel id="hour04-date-time" typeId="time-channel"/>
-			<channel id="hour04-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour04-datetime" typeId="time-channel"/>
+			<channel id="hour04-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour04-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -441,8 +441,8 @@
 			<!-- ❌ hour04 ❌ -->
 
 			<!-- ✅ hour05 ✅ -->
-			<channel id="hour05-date-time" typeId="time-channel"/>
-			<channel id="hour05-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour05-datetime" typeId="time-channel"/>
+			<channel id="hour05-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour05-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -507,8 +507,8 @@
 			<!-- ❌ hour05 ❌ -->
 
 			<!-- ✅ hour06 ✅ -->
-			<channel id="hour06-date-time" typeId="time-channel"/>
-			<channel id="hour06-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour06-datetime" typeId="time-channel"/>
+			<channel id="hour06-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour06-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -573,8 +573,8 @@
 			<!-- ❌ hour06 ❌ -->
 
 			<!-- ✅ hour07 ✅ -->
-			<channel id="hour07-date-time" typeId="time-channel"/>
-			<channel id="hour07-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour07-datetime" typeId="time-channel"/>
+			<channel id="hour07-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour07-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -639,8 +639,8 @@
 			<!-- ❌ hour07 ❌ -->
 
 			<!-- ✅ hour08 ✅ -->
-			<channel id="hour08-date-time" typeId="time-channel"/>
-			<channel id="hour08-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour08-datetime" typeId="time-channel"/>
+			<channel id="hour08-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour08-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -705,8 +705,8 @@
 			<!-- ❌ hour08 ❌ -->
 
 			<!-- ✅ hour09 ✅ -->
-			<channel id="hour09-date-time" typeId="time-channel"/>
-			<channel id="hour09-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour09-datetime" typeId="time-channel"/>
+			<channel id="hour09-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour09-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -771,8 +771,8 @@
 			<!-- ❌ hour09 ❌ -->
 
 			<!-- ✅ hour10 ✅ -->
-			<channel id="hour10-date-time" typeId="time-channel"/>
-			<channel id="hour10-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour10-datetime" typeId="time-channel"/>
+			<channel id="hour10-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour10-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -837,8 +837,8 @@
 			<!-- ❌ hour10 ❌ -->
 
 			<!-- ✅ hour11 ✅ -->
-			<channel id="hour11-date-time" typeId="time-channel"/>
-			<channel id="hour11-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour11-datetime" typeId="time-channel"/>
+			<channel id="hour11-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour11-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -903,8 +903,8 @@
 			<!-- ❌ hour11 ❌ -->
 
 			<!-- ✅ hour12 ✅ -->
-			<channel id="hour12-date-time" typeId="time-channel"/>
-			<channel id="hour12-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour12-datetime" typeId="time-channel"/>
+			<channel id="hour12-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour12-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -969,8 +969,8 @@
 			<!-- ❌ hour12 ❌ -->
 
 			<!-- ✅ hour13 ✅ -->
-			<channel id="hour13-date-time" typeId="time-channel"/>
-			<channel id="hour13-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour13-datetime" typeId="time-channel"/>
+			<channel id="hour13-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour13-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -1035,8 +1035,8 @@
 			<!-- ❌ hour13 ❌ -->
 
 			<!-- ✅ hour14 ✅ -->
-			<channel id="hour14-date-time" typeId="time-channel"/>
-			<channel id="hour14-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour14-datetime" typeId="time-channel"/>
+			<channel id="hour14-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour14-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -1101,8 +1101,8 @@
 			<!-- ❌ hour14 ❌ -->
 
 			<!-- ✅ hour15 ✅ -->
-			<channel id="hour15-date-time" typeId="time-channel"/>
-			<channel id="hour15-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour15-datetime" typeId="time-channel"/>
+			<channel id="hour15-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour15-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -1167,8 +1167,8 @@
 			<!-- ❌ hour15 ❌ -->
 
 			<!-- ✅ hour16 ✅ -->
-			<channel id="hour16-date-time" typeId="time-channel"/>
-			<channel id="hour16-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour16-datetime" typeId="time-channel"/>
+			<channel id="hour16-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour16-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -1233,8 +1233,8 @@
 			<!-- ❌ hour16 ❌ -->
 
 			<!-- ✅ hour17 ✅ -->
-			<channel id="hour17-date-time" typeId="time-channel"/>
-			<channel id="hour17-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour17-datetime" typeId="time-channel"/>
+			<channel id="hour17-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour17-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -1299,8 +1299,8 @@
 			<!-- ❌ hour17 ❌ -->
 
 			<!-- ✅ hour18 ✅ -->
-			<channel id="hour18-date-time" typeId="time-channel"/>
-			<channel id="hour18-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour18-datetime" typeId="time-channel"/>
+			<channel id="hour18-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour18-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -1365,8 +1365,8 @@
 			<!-- ❌ hour18 ❌ -->
 
 			<!-- ✅ hour19 ✅ -->
-			<channel id="hour19-date-time" typeId="time-channel"/>
-			<channel id="hour19-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour19-datetime" typeId="time-channel"/>
+			<channel id="hour19-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour19-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -1431,8 +1431,8 @@
 			<!-- ❌ hour19 ❌ -->
 
 			<!-- ✅ hour20 ✅ -->
-			<channel id="hour20-date-time" typeId="time-channel"/>
-			<channel id="hour20-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour20-datetime" typeId="time-channel"/>
+			<channel id="hour20-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour20-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -1497,8 +1497,8 @@
 			<!-- ❌ hour20 ❌ -->
 
 			<!-- ✅ hour21 ✅ -->
-			<channel id="hour21-date-time" typeId="time-channel"/>
-			<channel id="hour21-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour21-datetime" typeId="time-channel"/>
+			<channel id="hour21-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour21-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -1563,8 +1563,8 @@
 			<!-- ❌ hour21 ❌ -->
 
 			<!-- ✅ hour22 ✅ -->
-			<channel id="hour22-date-time" typeId="time-channel"/>
-			<channel id="hour22-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour22-datetime" typeId="time-channel"/>
+			<channel id="hour22-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour22-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -1629,8 +1629,8 @@
 			<!-- ❌ hour22 ❌ -->
 
 			<!-- ✅ hour23 ✅ -->
-			<channel id="hour23-date-time" typeId="time-channel"/>
-			<channel id="hour23-time-stamp" typeId="time-stamp-channel"/>
+			<channel id="hour23-datetime" typeId="time-channel"/>
+			<channel id="hour23-timestamp" typeId="timestamp-channel"/>
 			<channel id="hour23-temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.</description>
 			</channel>
@@ -1702,8 +1702,8 @@
 	<channel-group-type id="current-conditions-channel-group">
 		<label>Current Conditions</label>
 		<channels>
-			<channel id="date-time" typeId="time-channel"/>
-			<channel id="time-stamp" typeId="time-stamp-channel"/>
+			<channel id="datetime" typeId="time-channel"/>
+			<channel id="timestamp" typeId="timestamp-channel"/>
 			<channel id="temperature" typeId="system.outdoor-temperature">
 				<description>Temperature at the location. Daily values are average values (mean) for the day.
 				</description>
@@ -1767,13 +1767,13 @@
 			<channel id="stations" typeId="stations-channel"/>
 			<channel id="source" typeId="source-channel"/>
 			<channel id="sunrise" typeId="sunrise-channel"/>
-			<channel id="sunrise-epoch" typeId="time-stamp-channel">
+			<channel id="sunrise-epoch" typeId="timestamp-channel">
 				<label>Sunrise Epoch</label>
 				<description>Sunrise time specified as number of seconds since 1st January 1970 in UTC time
 				</description>
 			</channel>
 			<channel id="sunset" typeId="sunset-channel"/>
-			<channel id="sunset-epoch" typeId="time-stamp-channel">
+			<channel id="sunset-epoch" typeId="timestamp-channel">
 				<label>Sunset Epoch</label>
 				<description>Sunset time specified as number of seconds since 1st January 1970 in UTC time</description>
 			</channel>
@@ -1807,7 +1807,7 @@
 		<description>In format HH:mm:ss</description>
 		<state readOnly="true"/>
 	</channel-type>
-	<channel-type id="time-stamp-channel">
+	<channel-type id="timestamp-channel">
 		<item-type>Number</item-type>
 		<label>Time Stamp</label>
 		<state readOnly="true"/>

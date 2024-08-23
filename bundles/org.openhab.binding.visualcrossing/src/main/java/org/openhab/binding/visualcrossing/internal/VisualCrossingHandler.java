@@ -43,7 +43,7 @@ import org.openhab.binding.visualcrossing.internal.api.dto.CurrentConditions;
 import org.openhab.binding.visualcrossing.internal.api.dto.Day;
 import org.openhab.binding.visualcrossing.internal.api.dto.Hour;
 import org.openhab.binding.visualcrossing.internal.api.dto.WeatherResponse;
-import org.openhab.binding.visualcrossing.internal.api.rest.HttpClient;
+import org.openhab.binding.visualcrossing.internal.api.rest.ApiClient;
 import org.openhab.binding.visualcrossing.internal.api.rest.RestClient;
 import org.openhab.binding.visualcrossing.internal.api.rest.RetryHttpClient;
 import org.openhab.core.i18n.LocaleProvider;
@@ -474,7 +474,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
             return;
         }
 
-        var restClient = (RestClient) new HttpClient(httpClientFactory.getCommonHttpClient());
+        var restClient = (RestClient) new ApiClient(httpClientFactory.getCommonHttpClient());
         if (config.httpRetries > 0) {
             restClient = new RetryHttpClient(restClient, config.httpRetries);
         }

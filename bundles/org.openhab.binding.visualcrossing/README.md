@@ -35,17 +35,17 @@ languages include: ar (Arabic), bg (Bulgiarian), cs (Czech), da (Danish), de (Ge
 
 ### `basic-channel-group`
 
-| Channel     | Type   | Read/Write | Description                 |
-|-------------|--------|------------|-----------------------------|
-| cost        | Switch | R          | This is the control channel |
-| description | Switch | R          | This is the control channel |
+| Channel     | Type   | Read/Write | Description                   |
+|-------------|--------|------------|-------------------------------|
+| cost        | Switch | R          | How much API tokens thing used since start |
+| description | Switch | R          | Longer text descriptions suitable for displaying in weather displays. The descriptions combine the main features of the weather for the day such as precipitation or amount of cloud cover. Daily descriptions are provided for historical and forecast days. When the timeline request includes the model forecast period, a seven day outlook description is provided at the root response level.                              |
 
 ### `day-channel-group`
 
 | Channel         | Type                 | Read/Write | Description                                                                                                                                                                                                                                                                                                                                                                                                                             |
 |-----------------|----------------------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| date-time       | String               | R          |                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| time-stamp      | Number               | R          |                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| datetime       | String               | R          |                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| timestamp      | Number               | R          |                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | temperature     | Number:Temperature   | R          | Temperature at the location. Daily values are average values (mean) for the day                                                                                                                                                                                                                                                                                                                                                         |
 | temperature-min | Number:Temperature   | R          | Minimum temperature at the location                                                                                                                                                                                                                                                                                                                                                                                                     |
 | temperature-max | Number:Temperature   | R          | Maximum temperature at the location                                                                                                                                                                                                                                                                                                                                                                                                     |
@@ -73,9 +73,9 @@ languages include: ar (Arabic), bg (Bulgiarian), cs (Czech), da (Danish), de (Ge
 | sunrise-epoch   |                      | R          |                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | sunset          | String               | R          |                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 | sunset-epoch    |                      | R          |                                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| moon-phase      | Number               | R          | Represents the fractional portion through the current moon lunation cycle ranging from 0 (the new moon) to 0.5 (the full moon) and back to 1 (the next new moon).                       |
+| moon-phase      | Number               | R          | Represents the fractional portion through the current moon lunation cycle ranging from 0 (the new moon) to 0.5 (the full moon) and back to 1 (the next new moon).                                                                                                                                                                                                                                                                       |
 | conditions      | String               | R          | Textual representation of the weather conditions. See [Weather Data Conditions](https://www.visualcrossing.com/resources/documentation/weather-api/weather-condition-fields/)                                                                                                                                                                                                                                                           |
-| description     |                      | R          |                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| description     | String               | R          | Longer text descriptions suitable for displaying in weather displays. The descriptions combine the main features of the weather for the day such as precipitation or amount of cloud cover. Daily descriptions are provided for historical and forecast days. When the timeline request includes the model forecast period, a seven day outlook description is provided at the root response level.                                     |
 | icon            | String               | R          | A fixed, machine readable summary that can be used to display an icon                                                                                                                                                                                                                                                                                                                                                                   |
 | stations        | String               | R          | The weather stations (comma separated) used when collecting an historical observation record                                                                                                                                                                                                                                                                                                                                            |
 | source          | String               | R          | The type of weather data used for this weather object. – Values include historical observation (“obs”), forecast (“fcst”), historical forecast (“histfcst”) or statistical forecast (“stats”). If multiple types are used in the same day, “comb” is used. Today a combination of historical observations and forecast data.                                                                                                            |
@@ -87,8 +87,8 @@ In `day-channel-group` there are 0–23 channels of type `hourXX`
 
 | Channel                | Type                        | Read/Write | Description |
 |------------------------|-----------------------------|------------|-------------|
-| hourXX-date-time       | time-channel                | R          |             |  
-| hourXX-time-stamp      | time-stamp-channel          | R          |             |  
+| hourXX-datetime       | time-channel                | R          |             |  
+| hourXX-timestamp      | timestamp-channel          | R          |             |  
 | hourXX-temperature     | system.outdoor-temperature  | R          |             |  
 | hourXX-feels-like      | system.outdoor-temperature  | R          |             |  
 | hourXX-humidity        | system.atmospheric-humidity | R          |             |  
@@ -117,8 +117,8 @@ In `day-channel-group` there are 0–23 channels of type `hourXX`
 
 | Channel         | Type                        | Read/Write | Description |
 |-----------------|-----------------------------|------------|-------------|
-| date-time       | time-channel                | R          |             |
-| time-stamp      | time-stamp-channel          | R          |             |
+| datetime       | time-channel                | R          |             |
+| timestamp      | timestamp-channel          | R          |             |
 | temperature     | system.outdoor-temperature  | R          |             |
 | feels-like      | system.outdoor-temperature  | R          |             |
 | humidity        | system.atmospheric-humidity | R          |             |
@@ -142,16 +142,12 @@ In `day-channel-group` there are 0–23 channels of type `hourXX`
 | stations        | stations-channel            | R          |             |
 | source          | source-channel              | R          |             |
 | sunrise         | sunrise-channel             | R          |             |
-| sunrise-epoch   | time-stamp-channel          | R          |             |
+| sunrise-epoch   | timestamp-channel          | R          |             |
 | sunset          | sunset-channel              | R          |             |
-| sunset-epoch    | time-stamp-channel          | R          |             |
+| sunset-epoch    | timestamp-channel          | R          |             |
 | moon-phase      | moon-phase-channel          | R          |             |
 
 ## Full Example
-
-_Provide a full usage example based on textual configuration files._
-_*.things, *.items examples are mandatory as textual configuration is well used by many users._
-_*.sitemap examples are optional._
 
 ### Thing Configuration
 
@@ -168,12 +164,12 @@ itemType="String",
 label="Description",
 description="Longer text descriptions suitable for displaying in weather displays."
         ]
-Type visualcrossing:time-channel : current-conditions#date-time [
+Type visualcrossing:time-channel : current-conditions#datetime [
 itemType="String",
 label="Time",
 description="In format HH:mm:ss"
         ]
-Type visualcrossing:time-stamp-channel : current-conditions#time-stamp [
+Type visualcrossing:timestamp-channel : current-conditions#timestamp [
 itemType="Number",
 label="Time Stamp"
         ]
@@ -300,7 +296,7 @@ itemType="String",
 label="Sunrise",
 description="The formatted time of the sunrise."
         ]
-Type visualcrossing:time-stamp-channel : current-conditions#sunrise-epoch [
+Type visualcrossing:timestamp-channel : current-conditions#sunrise-epoch [
 itemType="Number",
 label="Sunrise Epoch",
 description="Sunrise time specified as number of seconds since 1st January 1970 in UTC time."
@@ -310,7 +306,7 @@ itemType="String",
 label="Sunset",
 description="The formatted time of the sunset."
         ]
-Type visualcrossing:time-stamp-channel : current-conditions#sunset-epoch [
+Type visualcrossing:timestamp-channel : current-conditions#sunset-epoch [
 itemType="Number",
 label="Sunset Epoch",
 description="Sunset time specified as number of seconds since 1st January 1970 in UTC time."
