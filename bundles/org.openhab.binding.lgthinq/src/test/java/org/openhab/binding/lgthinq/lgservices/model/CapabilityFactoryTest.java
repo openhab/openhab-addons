@@ -38,18 +38,18 @@ class CapabilityFactoryTest {
     void create() throws IOException, LGThinqException {
         ClassLoader classLoader = JsonUtils.class.getClassLoader();
         assertNotNull(classLoader);
-        URL fileUrl = classLoader.getResource("thinq-washer-v2-cap.json");
-        assertNotNull(fileUrl);
-        File capFile = new File(fileUrl.getFile());
-        JsonNode mapper = objectMapper.readTree(capFile);
-        WasherDryerCapability wpCap = (WasherDryerCapability) CapabilityFactory.getInstance().create(mapper,
-                WasherDryerCapability.class);
-        assertNotNull(wpCap);
-        assertEquals(40, wpCap.getCourses().size());
-        assertTrue(wpCap.getRinseFeat().getValuesMapping().size() > 1);
-        assertTrue(wpCap.getSpinFeat().getValuesMapping().size() > 1);
-        assertTrue(wpCap.getSoilWash().getValuesMapping().size() > 1);
-        assertTrue(wpCap.getTemperatureFeat().getValuesMapping().size() > 1);
-        assertTrue(wpCap.hasDoorLook());
+        try (InputStream inputStream = classLoader.getResourceAsStream("thinq-washer-v2-cap.json")) {
+            assertNotNull(inputStream);
+            JsonNode mapper = objectMapper.readTree(inputStream);
+            WasherDryerCapability wpCap = (WasherDryerCapability) CapabilityFactory.getInstance().create(mapper,
+                    WasherDryerCapability.class);
+            assertNotNull(wpCap);
+            assertEquals(40, wpCap.getCourses().size());
+            assertTrue(wpCap.getRinseFeat().getValuesMapping().size() > 1);
+            assertTrue(wpCap.getSpinFeat().getValuesMapping().size() > 1);
+            assertTrue(wpCap.getSoilWash().getValuesMapping().size() > 1);
+            assertTrue(wpCap.getTemperatureFeat().getValuesMapping().size() > 1);
+            assertTrue(wpCap.hasDoorLook());
+        }
     }
 }
