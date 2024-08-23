@@ -43,16 +43,14 @@ public class JsonUtils {
     }
 
     public static String loadJson(String fileName) {
-        try {
-            ClassLoader classLoader = JsonUtils.class.getClassLoader();
-            URL fileUrl = classLoader.getResource(fileName);
-            if (fileUrl == null) {
+        ClassLoader classLoader = JsonUtils.class.getClassLoader();
+        try (InputStream inputStream = classLoader.getResourceAsStream(fileName)) {
+            if (inputStream == null) {
                 throw new IllegalArgumentException(
                         "Unexpected error. It is not expected this behaviour since json test files must be present: "
                                 + fileName);
             }
-            byte[] encoded = Files.readAllBytes(new File(fileUrl.getFile()).toPath());
-            return new String(encoded, StandardCharsets.UTF_8);
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (IOException e) {
             throw new IllegalArgumentException(
                     "Unexpected error. It is not expected this behaviour since json test files must be present.", e);
