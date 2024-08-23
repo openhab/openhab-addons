@@ -1,6 +1,6 @@
 # LG ThinQ Bridge & Things
 
-This binding was developed to integrate de OpenHab framework to LG ThinQ API. 
+This binding was developed to integrate the LG ThinQ API into openHAB. 
 The ThinQ Bridge is necessary to work as a hub/bridge to discovery and first configure the LG ThinQ devices related with the LG's user account.
 Then, the first thing is to create the LG ThinQ Bridge and then, it will discover all Things you have related in your LG Account.
 
