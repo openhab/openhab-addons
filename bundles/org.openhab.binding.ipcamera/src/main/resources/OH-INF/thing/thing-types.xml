@@ -906,7 +906,7 @@
 			<channel id="itemTaken" typeId="itemTaken"/>
 			<channel id="autoLED" typeId="autoLED"/>
 			<channel id="enableLED" typeId="enableLED"/>
-            <channel id="whiteLED" typeId="whiteLED"/>
+			<channel id="whiteLED" typeId="whiteLED"/>
 			<channel id="autoWhiteLED" typeId="autoWhiteLED"/>
 			<channel id="textOverlay" typeId="textOverlay"/>
 			<channel id="pan" typeId="pan"/>

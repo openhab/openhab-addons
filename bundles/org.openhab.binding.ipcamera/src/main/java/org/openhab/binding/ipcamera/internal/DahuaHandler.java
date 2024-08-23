@@ -379,7 +379,7 @@ public class DahuaHandler extends ChannelDuplexHandler {
                     return;
                 case CHANNEL_MOTION_DETECTION_LEVEL:
                     ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=getConfig&name=MotionDetect["
-                        + nvrChannelAdjusted + "]");
+                            + nvrChannelAdjusted + "]");
                     return;
                 case CHANNEL_EXIT_BUTTON_ENABLED:
                     ipCameraHandler
@@ -454,11 +454,10 @@ public class DahuaHandler extends ChannelDuplexHandler {
                 if (command instanceof PercentType percentCommand) {
                     if (PercentType.ZERO.equals(command)) {
                         ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AudioDetect["
-                            + nvrChannelAdjusted + "].MutationThreold=1");
+                                + nvrChannelAdjusted + "].MutationThreold=1");
                     } else {
                         ipCameraHandler.sendHttpGET("/cgi-bin/configManager.cgi?action=setConfig&AudioDetect["
-                            + nvrChannelAdjusted + "].MutationThreold="
-                                        + percentCommand.intValue());
+                                + nvrChannelAdjusted + "].MutationThreold=" + percentCommand.intValue());
                     }
                 }
                 return;
