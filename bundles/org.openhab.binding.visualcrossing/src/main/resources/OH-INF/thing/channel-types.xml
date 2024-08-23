@@ -1962,10 +1962,7 @@
 	<channel-type id="sunset-channel">
 		<item-type>String</item-type>
 		<label>Sunset</label>
-		<description>The formatted time of the sunset (For example “2022-05-23T20:22:29”). See How to include sunrise,
-			sunset,
-			moon phase, moonrise and moonset data into your API requests
-			(https://www.visualcrossing.com/resources/documentation/weather-api/how-to-include-sunrise-sunset-and-moon-phase-data-into-your-api-requests/)
+		<description>The formatted time of the sunset (For example “2022-05-23T20:22:29”).
 		</description>
 		<state readOnly="true"/>
 	</channel-type>
