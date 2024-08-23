@@ -118,9 +118,8 @@ public class RokuCommunicator {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_DEVICE_INFO;
             if (ctx != null) {
                 final String response = getCommand(urlQryDevice);
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Called {}, got response: {}", urlQryDevice, response);
-                }
+                logger.trace("Called {}, got response: {}", urlQryDevice, response);
+
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
                     XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
@@ -147,9 +146,8 @@ public class RokuCommunicator {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_ACTIVE_APP;
             if (ctx != null) {
                 final String response = getCommand(urlQryActiveApp);
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Called {}, got response: {}", urlQryActiveApp, response);
-                }
+                logger.trace("Called {}, got response: {}", urlQryActiveApp, response);
+
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
                     XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
@@ -176,9 +174,8 @@ public class RokuCommunicator {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_APPS;
             if (ctx != null) {
                 final String response = getCommand(urlQryApps);
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Called {}, got response: {}", urlQryApps, response);
-                }
+                logger.trace("Called {}, got response: {}", urlQryApps, response);
+
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
                     XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
@@ -205,9 +202,8 @@ public class RokuCommunicator {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_PLAYER;
             if (ctx != null) {
                 final String response = getCommand(urlQryPlayer);
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Called {}, got response: {}", urlQryPlayer, response);
-                }
+                logger.trace("Called {}, got response: {}", urlQryPlayer, response);
+
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
                     XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
@@ -234,9 +230,8 @@ public class RokuCommunicator {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_TVCHANNEL;
             if (ctx != null) {
                 final String response = getCommand(urlQryActiveTvChannel);
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Called {}, got response: {}", urlQryActiveTvChannel, response);
-                }
+                logger.trace("Called {}, got response: {}", urlQryActiveTvChannel, response);
+
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
                     XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
@@ -263,9 +258,8 @@ public class RokuCommunicator {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_TVCHANNELS;
             if (ctx != null) {
                 final String response = getCommand(urlQryTvChannels);
-                if (logger.isTraceEnabled()) {
-                    logger.trace("Called {}, got response: {}", urlQryTvChannels, response);
-                }
+                logger.trace("Called {}, got response: {}", urlQryTvChannels, response);
+
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
                     XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
@@ -308,9 +302,7 @@ public class RokuCommunicator {
      */
     private void postCommand(String url) throws RokuHttpException {
         try {
-            if (logger.isTraceEnabled()) {
-                logger.trace("Sending POST command: {}", url);
-            }
+            logger.trace("Sending POST command: {}", url);
             httpClient.POST(url).method(HttpMethod.POST).timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
         } catch (TimeoutException | ExecutionException e) {
             throw new RokuHttpException("Error executing POST command, URL: " + url, e);
