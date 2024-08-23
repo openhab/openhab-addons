@@ -31,10 +31,10 @@ organization from an independent event planner to a global enterprise.
 
 ### `basic-channel-group`
 
-| Channel     | Type   | Read/Write | Description                   |
-|-------------|--------|------------|-------------------------------|
-| cost        | Switch | R          | How much API tokens thing used since start |
-| description | Switch | R          | Longer text descriptions suitable for displaying in weather displays. The descriptions combine the main features of the weather for the day such as precipitation or amount of cloud cover. Daily descriptions are provided for historical and forecast days. When the timeline request includes the model forecast period, a seven day outlook description is provided at the root response level.                              |
+| Channel     | Type   | Read/Write | Description                                                                                                                                                                                                                                                                                                                                                                                         |
+|-------------|--------|------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| cost        | Switch | R          | How much API tokens thing used since start                                                                                                                                                                                                                                                                                                                                                          |
+| description | Switch | R          | Longer text descriptions suitable for displaying in weather displays. The descriptions combine the main features of the weather for the day such as precipitation or amount of cloud cover. Daily descriptions are provided for historical and forecast days. When the timeline request includes the model forecast period, a seven day outlook description is provided at the root response level. |
 
 ### `day-channel-group`
 
