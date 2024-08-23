@@ -54,15 +54,27 @@ public class ModbusTransformation {
     private final @Nullable String constantOutput;
 
     /**
-     * @param transformations a list of transformations to apply. The transformations
-     *            are chained and applied in the order they are given in the list. Each transformation
-     *            can also contain the intersection symbol "∩" to separate multiple transformations in one line.
+     * Creates a transformation object.
      * 
-     *            If the list is null, or the first element is "default", or an empty string, the transformation
-     *            will be considered as an identity transformation (and the input is returned as the output).
+     * The transformations are chained and applied in the order they are given in the list.
+     * Each transformation can also contain the intersection symbol "∩" to separate 
+     * multiple transformations in one line.
      * 
-     *            If the first element is some other value, it is treated as constant and it
-     *            will become the output of the transformation, regardless of the input.
+     * - If the transformationList is null or consists of only blank strings, 
+     *   the output of the transformation will be an empty string regardless of the input.
+     * 
+     * - If first element is "default", the transformation will be considered as 
+     *   an identity transformation, which returns the input as the output.
+     *   Additional elements in the list are ignored.
+     * 
+     * - If the transformationList contains valid transformation syntax, the output
+     *   will be transformed according to the given transformations.
+     * 
+     * - If the first element is some other value, it is treated as a constant and it
+     *   will become the output of the transformation, regardless of the input.
+     *   Additional elements in the list are ignored.
+     * 
+     * @param transformations a list of transformations to apply.
      */
     public ModbusTransformation(@Nullable List<String> transformationList) {
         if (transformationList == null || transformationList.isEmpty()
