@@ -161,26 +161,22 @@ public class StringUtilsExt {
             props.put("pathQuery", dbURI.getQuery());
         }
 
-        if (dbURI.getPath() != null) {
+        String pathURI = dbURI.getPath();
+        if (pathURI != null) {
             String path = "";
-            String gp = dbURI.getPath();
-            String st = "/";
-            if (gp.indexOf(st) <= 1) {
-                if (substrPos(gp, st).size() > 1) {
-                    path = stringBeforeLastSubstr(gp, st) + st;
-                } else if (substrPos(gp, st).size() > 0) {
-                    path = stringBeforeSubstr(gp, st) + st;
+            if ((pathURI.indexOf("/") >= 0) && (pathURI.indexOf("/") <= 1)) {
+                if (pathURI.contains("/")) {
+                    path = stringBeforeLastSubstr(pathURI, "/") + "/";
                 } else {
-                    path = gp + st;
+                    path = stringBeforeSubstr(pathURI, "/") + "/";
                 }
             }
-            if (dbURI.getScheme() != null && dbURI.getScheme().length() == 1) {
-                path = dbURI.getScheme() + ":" + path;
+            String schemeURI = dbURI.getScheme();
+            if (schemeURI != null && schemeURI.length() == 1) {
+                path = schemeURI + ":" + path;
             }
             props.put("serverPath", path);
-            if (gp.indexOf(st) >= 0) {
-                props.put("databaseName", stringAfterLastSubstr(gp, "/"));
-            }
+            props.put("databaseName", pathURI.contains("/") ? stringAfterLastSubstr(pathURI, "/") : pathURI);
         }
         if (dbURI.getPort() != -1) {
             props.put("portNumber", dbURI.getPort() + "");
