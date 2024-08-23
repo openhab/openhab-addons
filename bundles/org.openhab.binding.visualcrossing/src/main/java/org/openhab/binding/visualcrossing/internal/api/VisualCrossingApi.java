@@ -114,7 +114,7 @@ public class VisualCrossingApi {
             unitGroup = METRIC;
         }
         if (dateFrom == null && dateTo != null) {
-            throw new VisualCrossingApiException("When passing dateTo you need to pass dateFrom!");
+            throw new VisualCrossingApiException("When passing dateTo you also need to pass dateFrom!");
         }
 
         var escapedLocation = URLEncoder.encode(location, UTF_8).replaceAll("\\+", "%20");
