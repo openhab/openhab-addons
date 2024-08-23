@@ -36,6 +36,8 @@ import org.openhab.binding.roku.internal.dto.Player;
 import org.openhab.binding.roku.internal.dto.TvChannel;
 import org.openhab.binding.roku.internal.dto.TvChannels;
 import org.openhab.binding.roku.internal.dto.TvChannels.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Methods for accessing the HTTP interface of the Roku
@@ -46,6 +48,7 @@ import org.openhab.binding.roku.internal.dto.TvChannels.Channel;
 public class RokuCommunicator {
     private static final int REQUEST_TIMEOUT = 5000;
 
+    private final Logger logger = LoggerFactory.getLogger(RokuCommunicator.class);
     private final HttpClient httpClient;
 
     private final String urlKeyPress;
@@ -114,6 +117,8 @@ public class RokuCommunicator {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_DEVICE_INFO;
             if (ctx != null) {
                 final String response = getCommand(urlQryDevice);
+                logger.trace("Called {}, got response: {}", urlQryDevice, response);
+
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
                     XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
@@ -140,6 +145,8 @@ public class RokuCommunicator {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_ACTIVE_APP;
             if (ctx != null) {
                 final String response = getCommand(urlQryActiveApp);
+                logger.trace("Called {}, got response: {}", urlQryActiveApp, response);
+
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
                     XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
@@ -166,6 +173,8 @@ public class RokuCommunicator {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_APPS;
             if (ctx != null) {
                 final String response = getCommand(urlQryApps);
+                logger.trace("Called {}, got response: {}", urlQryApps, response);
+
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
                     XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
@@ -192,6 +201,8 @@ public class RokuCommunicator {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_PLAYER;
             if (ctx != null) {
                 final String response = getCommand(urlQryPlayer);
+                logger.trace("Called {}, got response: {}", urlQryPlayer, response);
+
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
                     XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
@@ -218,6 +229,8 @@ public class RokuCommunicator {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_TVCHANNEL;
             if (ctx != null) {
                 final String response = getCommand(urlQryActiveTvChannel);
+                logger.trace("Called {}, got response: {}", urlQryActiveTvChannel, response);
+
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
                     XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
@@ -244,6 +257,8 @@ public class RokuCommunicator {
             JAXBContext ctx = JAXBUtils.JAXBCONTEXT_TVCHANNELS;
             if (ctx != null) {
                 final String response = getCommand(urlQryTvChannels);
+                logger.trace("Called {}, got response: {}", urlQryTvChannels, response);
+
                 Unmarshaller unmarshaller = ctx.createUnmarshaller();
                 if (unmarshaller != null) {
                     XMLStreamReader xsr = JAXBUtils.XMLINPUTFACTORY.createXMLStreamReader(new StringReader(response));
@@ -286,6 +301,7 @@ public class RokuCommunicator {
      */
     private void postCommand(String url) throws RokuHttpException {
         try {
+            logger.trace("Sending POST command: {}", url);
             httpClient.POST(url).method(HttpMethod.POST).timeout(REQUEST_TIMEOUT, TimeUnit.MILLISECONDS).send();
         } catch (TimeoutException | ExecutionException e) {
             throw new RokuHttpException("Error executing POST command, URL: " + url, e);
