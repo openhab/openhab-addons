@@ -21,7 +21,7 @@
 			<channel id="temperature" typeId="it600-temp-channel"/>
 			<channel id="expected-temperature" typeId="it600-expected-temp-channel"/>
 			<channel id="work-type" typeId="it600-work-type-channel"/>
-			<!-- `running-state` added in `update/it600-running-state.xml` -->
+			<channel id="running-state" typeId="it600-running-state"/>
 		</channels>
 		<properties>
 			<property name="thingTypeVersion">1</property>
