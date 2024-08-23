@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<bridge-type id="bridge">
-		<label>LG ThinQ GatewayBridge</label>
+		<label>LGThinQ GW Bridge</label>
 		<description>A connection to a LGThinQ Gateway</description>
 
 		<config-description>
@@ -27,7 +27,7 @@
 				</options>
 			</parameter>
 			<parameter name="country" type="text" required="true">
-				<label>User Country (LG registry)</label>
+				<label>User Country</label>
 				<description>The User Country registered in LG Account</description>
 				<options>
 					<option value="US">United States</option>
@@ -45,11 +45,11 @@
 				</options>
 			</parameter>
 			<parameter name="manualLanguage" type="text" required="false">
-				<label>Manual User Language (LG registry)</label>
+				<label>Manual User Lang.</label>
 				<description>Fill this only if selected "Other" in the Language above</description>
 			</parameter>
 			<parameter name="manualCountry" type="text" required="false">
-				<label>Manual User Country (LG registry)</label>
+				<label>Manual User Country</label>
 				<description>Fill this only if selected "Other" in the Country above</description>
 			</parameter>
 			<parameter name="username" type="text">
@@ -62,12 +62,12 @@
 				<context>password</context>
 			</parameter>
 			<parameter name="poolingIntervalSec" type="integer">
-				<label>Pooling Discovery Interval in Seconds (>300) (0 disabled)</label>
-				<description>Pooling interval to discover new devices from LG Account.</description>
+				<label>Discovery Interval</label>
+				<description>Polling interval to discover new devices from LG Account (in Seconds >300 or 0 disabled).</description>
 				<default>86400</default>
 			</parameter>
 			<parameter name="alternativeServer" type="text">
-				<label>Alternative Gateway Server</label>
+				<label>Alt Gateway Server</label>
 				<description>Only used for proxy/test gateway server.</description>
 			</parameter>
 		</config-description>

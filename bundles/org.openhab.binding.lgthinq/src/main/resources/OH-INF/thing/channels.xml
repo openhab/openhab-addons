@@ -22,7 +22,7 @@
 
 	<channel-type id="hp-air-water-switch">
 		<item-type>Number</item-type>
-		<label>Air/Water Switch</label>
+		<label>Air/Water</label>
 		<description>Define the Temperature Selector based on Water/Air.</description>
 		<state readOnly="true">
 			<options>
@@ -48,15 +48,9 @@
 
 	<channel-type id="extended_info_collector">
 		<item-type>Switch</item-type>
-		<label>Enable Extended Info Collector</label>
+		<label>Info Collector</label>
 		<description>This switch enable collector for energy and filter consumption (if presents)</description>
 		<category>Switch</category>
-	</channel-type>
-
-	<channel-type id="cool_jet">
-		<item-type>Switch</item-type>
-		<label>Cool Jet</label>
-		<category>Temperature</category>
 	</channel-type>
 
 	<channel-type id="cool_jet">
@@ -99,7 +93,7 @@
 
 	<channel-type id="target-temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Target Temperature</label>
+		<label>Target Temp.</label>
 		<description>Target temperature.</description>
 		<category>Temperature</category>
 		<state min="5" max="80" step="1" readOnly="false" pattern="%.1f %unit%"/>
@@ -107,7 +101,7 @@
 
 	<channel-type id="min-temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Minimum Temperature</label>
+		<label>Minimum Temp.</label>
 		<description>Minimum temperature for this mode.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -115,7 +109,7 @@
 
 	<channel-type id="max-temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Maximum Temperature</label>
+		<label>Maximum Temp.</label>
 		<description>Maximum Temperature for this mode.</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
@@ -175,7 +169,7 @@
 
 	<channel-type id="rs-start-stop">
 		<item-type>Switch</item-type>
-		<label>Remote Start/Stop Switch</label>
+		<label>Remote Start/Stop</label>
 		<description>Remote Start/Stop</description>
 	</channel-type>
 
@@ -256,7 +250,7 @@
 	</channel-type>
 	<channel-type id="washer-downloaded-course">
 		<item-type>String</item-type>
-		<label>Washer Downloaded Course</label>
+		<label>Washer Download Course</label>
 		<description>Washer Downloaded Course</description>
 		<state readOnly="true">
 			<options>
@@ -266,14 +260,14 @@
 	</channel-type>
 	<channel-type id="washerdryer-temp-level">
 		<item-type>String</item-type>
-		<label>Temperature Level</label>
+		<label>Temp. Level</label>
 		<description>Target Temperature Level</description>
 		<category>Temperature</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="rs-temperature-level">
 		<item-type>String</item-type>
-		<label>Temperature Level</label>
+		<label>Temp. Level</label>
 		<description>Target Temperature Level</description>
 		<category>Temperature</category>
 	</channel-type>
@@ -381,7 +375,7 @@
 
 	<channel-type id="fridge-freezer-temperature">
 		<item-type>Number:Temperature</item-type>
-		<label>Freezer Setpoint Temperature</label>
+		<label>Freezer Temp.</label>
 		<description>Freezer setpoint temperature</description>
 		<category>Temperature</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>

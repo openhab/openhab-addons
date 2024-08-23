@@ -7,17 +7,21 @@ Then, the first thing is to create the LG ThinQ Bridge and then, it will discove
 ## Supported Things
 This binding support several devices from the LG ThinQ Devices V1 & V2 line. Se the table bellow:
 
-| Device Name     | Versions | Special Functions            | Commands                                        | Obs                                                                                                                                                              |
-|-----------------|----------|------------------------------|-------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Air Conditioner | V1 & V2  | Filter and Energy Monitoring | All features in LG App, except Wind Direction   |                                                                                                                                                                  |
-| Dish Washer     | V2       | None                         | None                                            | Provide only some channels to follow the cycle                                                                                                                   |
-| Dryer Tower     | V1 & V2  | None                         | All features in LG App (including remote start) | LG has a WasherDryer Tower that is 2 in one device.<br/> When this device is discovered by this binding, it's recognized as 2 separated devices Washer and Dryer |
-| Washer Tower    | V1 & V2  | None                         | All features in LG App (including remote start) | LG has a WasherDryer Tower that is 2 in one device.<br/> When this device is discovered by this binding, it's recognized as 2 separated devices Washer and Dryer |
-| Washer Machine  | V1 & V2  | None                         | All features in LG App (including remote start) |                                                                                                                                                                  |
-| Dryer Machine   | V1 & V2  | None                         | All features in LG App (including remote start) |                                                                                                                                                                  |
-| Refrigerator    | V1 & V2  | None                         | All features in LG App                          |                                                                                                                                                                  |
-| Heat Pump       | V1 & V2  | None                         | All features in LG App                          |                                                                                                                                                                  |
+| Device ID | Device Name     | Versions | Special Functions            | Commands                                        | Obs                                                                                                                                                              |
+|-----------|-----------------|----------|------------------------------|-------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 401       | Air Conditioner | V1 & V2  | Filter and Energy Monitoring | All features in LG App, except Wind Direction   |                                                                                                                                                                  |
+| 204       | Dish Washer     | V2       | None                         | None                                            | Provide only some channels to follow the cycle                                                                                                                   |
+| 222       | Dryer Tower     | V1 & V2  | None                         | All features in LG App (including remote start) | LG has a WasherDryer Tower that is 2 in one device.<br/> When this device is discovered by this binding, it's recognized as 2 separated devices Washer and Dryer |
+| 221       | Washer Tower    | V1 & V2  | None                         | All features in LG App (including remote start) | LG has a WasherDryer Tower that is 2 in one device.<br/> When this device is discovered by this binding, it's recognized as 2 separated devices Washer and Dryer |
+| 201       | Washer Machine  | V1 & V2  | None                         | All features in LG App (including remote start) |                                                                                                                                                                  |
+| 202       | Dryer Machine   | V1 & V2  | None                         | All features in LG App (including remote start) |                                                                                                                                                                  |
+| 101       | Refrigerator    | V1 & V2  | None                         | All features in LG App                          |                                                                                                                                                                  |
+| 401HP     | Heat Pump       | V1 & V2  | None                         | All features in LG App                          |                                                                                                                                                                  |
 
+## Bridge Thing
+
+This binding has a Bridge responsible for the discovery and registry of LG Things. The first step to create a thing, is to firstly add the LG Thinq Bridge, that will
+connect the binding to your LG Account and after, the bridge can discovery all devices registered and you are able to add it to OpenHab Things.
 
 ## Discovery
 
@@ -25,10 +29,8 @@ This binding bas auto-discovering for the supported devices
 
 ## Binding Configuration
 
-![LG Bridge Configuration](doc/bridge-configuration.jpg)
-
-The binding is represented by a bridge (LG GatewayBridge) and you must configure the following parameters:
-
+The binding is configured through a bridge (LG GatewayBridge) and you must configure the following parameters:
+    
 | Bridge Parameter           | Description                                                                                                                                                                                        | Obs                                                                                                             |
 |----------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------|
 | User Language              | More frequent languages used                                                                                                                                                                       | If you choose other, you can fill Manual user language (only if your language was not pre-defined in this combo |
@@ -37,15 +39,15 @@ The binding is represented by a bridge (LG GatewayBridge) and you must configure
 | Manual User Country        | The acronym for the country (UK, US, BR, etc)                                                                                                                                                      |                                                                                                                 |
 | LG User name               | The LG user's account (normally an email)                                                                                                                                                          |                                                                                                                 |
 | LG Password                | The LG user's password                                                                                                                                                                             |                                                                                                                 |
-| LG Password                | The LG user's password                                                                                                                                                                             |                                                                                                                 |
-| Pooling Discovery Interval | It the time (in seconds) that the bridge wait to try to fetch de devices registered to the user's account and, if find some new device, will show available to link. Please, choose some long time | greater than 300 seconds                                                                                        |
+| Polling Discovery Interval | It the time (in seconds) that the bridge wait to try to fetch de devices registered to the user's account and, if find some new device, will show available to link. Please, choose some long time | greater than 300 seconds                                                                                        |
 
 
 ## Thing Configuration
 
 All the configurations are pre-defined by the discovery process. But you can customize some parameters to fine-tune the device's state polling process:
+
 Polling period in seconds when the device is off: is the period that the binding wait until hit the LG API to get the latest device's state when the device is actually turned off
-Polling period in seconds when the device is oon: is the period that the binding wait until hit the LG API to get the latest device's state when the device is actually turned on
+Polling period in seconds when the device is on: is the period that the binding wait until hit the LG API to get the latest device's state when the device is actually turned on
 
 ## Channels
 
@@ -185,7 +187,7 @@ OBS: some versions of this device can not support all the channels, depending on
 **Important:** this binding will always interact with the LG API server to get information about the device. This is the Smart ThinQ way to work, there is no other way (like direct access) to the devices. Hence, some side effects will happen in the following situations:
 1. **Internet Link** - if you OpenHab server doesn't have a good internet connection this binding will not work properly! In the same way, if the internet link goes down, your Things and Bridge going to be Offline as well, and you won't be able to control the devices though OpenHab until the link comes back.
 2. **LG ThinQ App** - if you've already used the LG ThinQ App to control your devices and hold it constantly activated in your mobile phone, you may experience some instability because the App (and Binding) will try to lock the device in LG ThinQ API Server to get it's current state. In the app, you may see some information in the device informing that "The device is being used by other" (something like this) and in the OpenHab, the thing can go Offline for a while.
-3. **Pooling time** - both Bridge and Thing use pooling strategy to get the current state information about the registered devices. Note that the Thing pooling time is internal and can't be changed (please, don't change in the source code) and the Bridge can be changed for something greater than 300 seconds, and it's recommended long pooling periods for the Bridge because the discovery process fetch a lot of information from the LG API Server, depending on the number of devices you have registered in your account. 
+3. **Polling time** - both Bridge and Thing use polling strategy to get the current state information about the registered devices. Note that the Thing polling time is internal and can't be changed (please, don't change in the source code) and the Bridge can be changed for something greater than 300 seconds, and it's recommended long polling periods for the Bridge because the discovery process fetch a lot of information from the LG API Server, depending on the number of devices you have registered in your account. 
 About this last point, it's important to know that LG API is not Open & Public, i.e, only LG Official Partners with some agreement have access to their support and documentations. This binding was a hard (very hard actually) work to dig and reverse engineering in the LG's ThinQ API protocol. Because this, you must respect the hardcoded pool period to do not put your account in LG Blacklist.
 
 ## Be nice!

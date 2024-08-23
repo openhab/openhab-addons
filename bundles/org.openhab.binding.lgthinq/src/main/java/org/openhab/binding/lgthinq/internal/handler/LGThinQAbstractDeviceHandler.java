@@ -384,20 +384,20 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
 
     private void loadConfigurations() {
         isThingReconfigured = true;
-        if (getThing().getConfiguration().containsKey("polling-period-poweron-seconds")) {
-            pollingPeriodOnSeconds = ((BigDecimal) getThing().getConfiguration().get("polling-period-poweron-seconds"))
+        if (getThing().getConfiguration().containsKey("pollingPeriodPowerOnSeconds")) {
+            pollingPeriodOnSeconds = ((BigDecimal) getThing().getConfiguration().get("pollingPeriodPowerOnSeconds"))
                     .intValue();
         }
-        if (getThing().getConfiguration().containsKey("polling-period-poweroff-seconds")) {
+        if (getThing().getConfiguration().containsKey("pollingPeriodPowerOffSeconds")) {
             pollingPeriodOffSeconds = ((BigDecimal) getThing().getConfiguration()
-                    .get("polling-period-poweroff-seconds")).intValue();
+                    .get("pollingPeriodPowerOffSeconds")).intValue();
         }
-        if (getThing().getConfiguration().containsKey("polling-extra-info-period-seconds")) {
+        if (getThing().getConfiguration().containsKey("pollingExtraInfoPeriodSeconds")) {
             pollingExtraInfoPeriodSeconds = ((BigDecimal) getThing().getConfiguration()
-                    .get("polling-extra-info-period-seconds")).intValue();
+                    .get("pollingExtraInfoPeriodSeconds")).intValue();
         }
-        if (getThing().getConfiguration().containsKey("poll-extra-info-on-power-off")) {
-            pollExtraInfoOnPowerOff = (Boolean) getThing().getConfiguration().get("poll-extra-info-on-power-off");
+        if (getThing().getConfiguration().containsKey("pollExtraInfoOnPowerOff")) {
+            pollExtraInfoOnPowerOff = (Boolean) getThing().getConfiguration().get("pollExtraInfoOnPowerOff");
         }
         // if the periods are the same, I can define currentPeriod for polling right now. If not, I postpone to the nest
         // snapshot update

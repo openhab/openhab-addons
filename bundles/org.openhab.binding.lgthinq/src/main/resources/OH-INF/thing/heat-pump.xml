@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>LG ThinQ Heat Pump</label>
+		<label>LGThinQ Heat Pump</label>
 		<description>LG ThinQ Heat Pump</description>
 
 		<channel-groups>
@@ -21,11 +21,11 @@
 			<parameter-group name="Settings">
 				<label>Polling</label>
 				<description>Settings required to optimize the polling behaviour.</description>
-				<advanced>false</advanced>
+				<advanced>true</advanced>
 			</parameter-group>
-			<parameter name="polling-period-poweroff-seconds" type="integer" min="10" required="true"
+			<parameter name="pollingPeriodPowerOffSeconds" type="integer" min="10" required="true"
 				groupName="Settings">
-				<label>Polling period in seconds when the device is off</label>
+				<label>Polling when off</label>
 				<description>Seconds to wait to the next polling when device is off. Useful to save up
 					i/o and cpu when your
 					device is
@@ -34,23 +34,23 @@
 				</description>
 				<default>10</default>
 			</parameter>
-			<parameter name="polling-period-poweron-seconds" type="integer" min="10" required="true"
+			<parameter name="pollingPeriodPowerOnSeconds" type="integer" min="10" required="true"
 				groupName="Settings">
-				<label>Polling period in seconds for Device States when device is on</label>
+				<label>Polling when on</label>
 				<description>Seconds to wait to the next polling for device state (dashboard channels)
 				</description>
 				<default>10</default>
 			</parameter>
-			<parameter name="polling-extra-info-period-seconds" type="integer" min="10" required="true"
+			<parameter name="pollingExtraInfoPeriodSeconds" type="integer" min="10" required="true"
 				groupName="Settings">
-				<label>Polling period in seconds for Extra Info</label>
+				<label>Polling period info</label>
 				<description>Seconds to wait to the next polling for Device's Extra Info (energy consumption,
 					remaining filter, etc)
 				</description>
 				<default>60</default>
 			</parameter>
-			<parameter name="poll-extra-info-on-power-off" type="boolean" required="true" groupName="Settings">
-				<label>Enable Extra Info Polling on powered off device</label>
+			<parameter name="pollExtraInfoOnPowerOff" type="boolean" required="true" groupName="Settings">
+				<label>Extra Info</label>
 				<description>If enables, extra info will be fetched even when the device is powered off.
 					It's not so common, since
 					extra info are normally changed only when the device is running.
@@ -75,7 +75,7 @@
 	</channel-group-type>
 
 	<channel-group-type id="hp-extended-information">
-		<label>More Information</label>
+		<label>More Info</label>
 		<description>Show more information about the device.</description>
 		<channels>
 			<channel id="extended_info_collector" typeId="extended_info_collector"/>

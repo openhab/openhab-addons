@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>LG ThinQ Dish Washer</label>
+		<label>LGThinQ Dish Washer</label>
 		<description>LG ThinQ Dish Washer</description>
 		<channel-groups>
 			<channel-group id="dashboard" typeId="dw-dashboard"/>
@@ -19,11 +19,11 @@
 			<parameter-group name="Settings">
 				<label>Polling</label>
 				<description>Settings required to optimize the polling behaviour.</description>
-				<advanced>false</advanced>
+				<advanced>true</advanced>
 			</parameter-group>
-			<parameter name="polling-period-poweroff-seconds" type="integer" min="10" required="true"
+			<parameter name="pollingPeriodPowerOffSeconds" type="integer" min="10" required="true"
 				groupName="Settings">
-				<label>Polling period in seconds when the device is off</label>
+				<label>Polling when off</label>
 				<description>Seconds to wait to the next polling when device is off. Useful to save up
 					i/o and cpu when your
 					device is
@@ -32,9 +32,9 @@
 				</description>
 				<default>10</default>
 			</parameter>
-			<parameter name="polling-period-poweron-seconds" type="integer" min="10" required="true"
+			<parameter name="pollingPeriodPowerOnSeconds" type="integer" min="10" required="true"
 				groupName="Settings">
-				<label>Polling period in seconds for Device States when device is on</label>
+				<label>Polling when on</label>
 				<description>Seconds to wait to the next polling for device state (dashboard channels)
 				</description>
 				<default>10</default>

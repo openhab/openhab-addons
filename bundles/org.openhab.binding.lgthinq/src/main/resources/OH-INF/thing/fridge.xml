@@ -10,7 +10,7 @@
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
-		<label>LG ThinQ Fridge</label>
+		<label>LGThinQ Fridge</label>
 		<description>LG ThinQ Fridge</description>
 
 		<channel-groups>
@@ -30,7 +30,7 @@
 		</channels>
 	</channel-group-type>
 	<channel-group-type id="fr-extended-information">
-		<label>More Information</label>
+		<label>More Info</label>
 		<description>Show more information about the device.</description>
 		<channels>
 			<channel id="fr_fresh_air_filter" typeId="fr_fresh_air_filter"/>

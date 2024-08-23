@@ -127,11 +127,6 @@ public class LGThinQBindingConstants {
 
     // ====================== FRIDGE DEVICE CONSTANTS =============================
     // CHANNEL IDS
-    // public static final String CHANNEL_MOD_OP_ID = "op_mode";
-    // public static final String CHANNEL_FAN_SPEED_ID = "fan_speed";
-    // public static final String CHANNEL_TARGET_TEMP_ID = "target_temperature";
-    // public static final String CHANNEL_CURRENT_TEMP_ID = "current_temperature";
-    // public static final String CHANNEL_COOL_JET_ID = "cool_jet";
     public static final Double FRIDGE_TEMPERATURE_IGNORE_VALUE = 255.0;
     public static final Double FREEZER_TEMPERATURE_IGNORE_VALUE = 255.0;
     public static final String FR_CHANNEL_FRIDGE_TEMP_ID = "fridge-temperature";
