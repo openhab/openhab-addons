@@ -115,6 +115,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
 
+    // flag values for logging resource consumption
+    private static final int FLAG_PROPERTIES_UPDATE = 1;
+    private static final int FLAG_DEPENDENCIES_UPDATE = 2;
+    private static final int FLAG_CACHE_UPDATE = 4;
+    private static final int FLAG_CHANNELS_UPDATE = 8;
+    private static final int FLAG_SCENE_ADD = 16;
+    private static final int FLAG_SCENE_DELETE = 32;
+
     /**
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
      * resource ID (string) and a Resource object containing the last known state. e.g. a DEVICE thing may support a
@@ -668,36 +676,38 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (disposing) {
             return;
         }
-        boolean resourceConsumed = false;
+        int resourceConsumedFlags = 0;
         if (resourceId.equals(resource.getId())) {
             if (resource.hasFullState()) {
                 thisResource = resource;
                 if (!updatePropertiesDone) {
                     updateProperties(resource);
-                    resourceConsumed = updatePropertiesDone;
+                    resourceConsumedFlags = updatePropertiesDone ? FLAG_PROPERTIES_UPDATE : 0;
                 }
             }
             if (!updateDependenciesDone) {
-                resourceConsumed = true;
+                resourceConsumedFlags |= FLAG_DEPENDENCIES_UPDATE;
                 cancelTask(updateDependenciesTask, false);
                 updateDependenciesTask = scheduler.submit(() -> updateDependencies());
             }
         } else {
             if (SUPPORTED_SCENE_TYPES.contains(resource.getType())) {
-                resourceConsumed = checkSceneResourceAddDelete(resource);
+                resourceConsumedFlags = checkSceneResourceAddDelete(resource);
             }
             Resource cachedResource = getResourceFromCache(resource);
             if (cachedResource != null) {
                 Setters.setResource(resource, cachedResource);
-                resourceConsumed = (updateChannels ? updateChannels(resource) : true) || resourceConsumed;
+                resourceConsumedFlags |= FLAG_CACHE_UPDATE;
+                resourceConsumedFlags |= updateChannels && updateChannels(resource) ? FLAG_CHANNELS_UPDATE : 0;
                 putResourceToCache(resource);
                 if (ResourceType.LIGHT == resource.getType() && !updateLightPropertiesDone) {
                     updateLightProperties(resource);
                 }
             }
         }
-        if (resourceConsumed) {
-            logger.debug("{} -> onResource() consumed resource {}", resourceId, resource);
+        if (resourceConsumedFlags != 0) {
+            logger.debug("{} -> onResource() consumed resource {}, flags:{}", resourceId, resource,
+                    resourceConsumedFlags);
         }
     }
 
@@ -706,9 +716,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * resource caches; and refresh the scene channel state description selection options.
      *
      * @param sceneResource the respective scene resource
-     * @return true if the scene was added or deleted
+     * @return a flag value indicating if the scene was added or deleted
      */
-    private boolean checkSceneResourceAddDelete(Resource sceneResource) {
+    private int checkSceneResourceAddDelete(Resource sceneResource) {
         switch (sceneResource.getContentType()) {
             case ADD:
                 if (getResourceReference().equals(sceneResource.getGroup())) {
@@ -716,7 +726,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                     sceneContributorsCache.put(sceneResource.getId(), sceneResource);
                     sceneResourceEntries.put(sceneResource.getName(), sceneResource);
                     updateSceneChannelStateDescription();
-                    return true;
+                    return FLAG_SCENE_ADD;
                 }
                 break;
             case DELETE:
@@ -724,11 +734,11 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 if (Objects.nonNull(deletedScene)) {
                     sceneResourceEntries.remove(deletedScene.getName());
                     updateSceneChannelStateDescription();
-                    return true;
+                    return FLAG_SCENE_DELETE;
                 }
             default:
         }
-        return false;
+        return 0;
     }
 
     private void putResourceToCache(Resource resource) {
