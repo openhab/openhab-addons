@@ -49,9 +49,6 @@ public abstract class HomeWizardStatefulDeviceHandler extends HomeWizardDeviceHa
      */
     abstract protected void handleStatePayload(StatePayload payload);
 
-    /**
-     *
-     */
     protected void pollState() {
         final String stateResult;
 
@@ -84,18 +81,16 @@ public abstract class HomeWizardStatefulDeviceHandler extends HomeWizardDeviceHa
      * @param command The command to send.
      */
     protected @Nullable StatePayload sendStateCommand(String command) {
-        StatePayload statePayload = null;
-        InputStream is = new ByteArrayInputStream(command.getBytes());
-        try {
+        try (InputStream is = new ByteArrayInputStream(command.getBytes())) {
             String updatedState = HttpUtil.executeUrl("PUT", apiURL + "state", is, "application/json", 30000);
-            statePayload = gson.fromJson(updatedState, StatePayload.class);
+            return gson.fromJson(updatedState, StatePayload.class);
         } catch (IOException e) {
             logger.warn("Failed to send command {} to {}", command, apiURL + "state");
+            return null;
         }
-        return statePayload;
     }
 
-    /**
+    /*
      * This overrides the original polling loop by including a request for the current state..
      */
     @Override
