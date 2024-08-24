@@ -47,7 +47,7 @@ public final class AwsCloudBridgeHandler extends AbstractBridgeHandler<AwsCloudB
     @Override
     public Set<String> it600RequiredChannels() {
         return Set.of("ep9:sIT600TH:LocalTemperature_x100", "ep9:sIT600TH:HeatingSetpoint_x100",
-                "ep9:sIT600TH:HoldType");
+                "ep9:sIT600TH:HoldType", "ep9:sIT600TH:RunningState");
     }
 
     @Override

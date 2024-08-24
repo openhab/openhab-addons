@@ -21,7 +21,11 @@
 			<channel id="temperature" typeId="it600-temp-channel"/>
 			<channel id="expected-temperature" typeId="it600-expected-temp-channel"/>
 			<channel id="work-type" typeId="it600-work-type-channel"/>
+			<channel id="running-state" typeId="it600-running-state"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<representation-property>dsn</representation-property>
 		<config-description>
 			<parameter name="dsn" type="text" required="true">
@@ -69,5 +73,10 @@
 				<option value="TEMPORARY_MANUAL">Temporary Manual</option>
 			</options>
 		</state>
+	</channel-type>
+	<channel-type id="it600-running-state">
+		<item-type>Switch</item-type>
+		<label>Running State</label>
+		<description>Is the device running</description>
 	</channel-type>
 </thing:thing-descriptions>
