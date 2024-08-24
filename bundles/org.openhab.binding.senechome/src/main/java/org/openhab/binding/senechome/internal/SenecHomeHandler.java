@@ -138,7 +138,7 @@ public class SenecHomeHandler extends BaseThingHandler {
 
     private <Q extends Quantity<Q>> void updateQtyStateIfAvailable(String channel, String @Nullable [] valueArray,
             int arrayIndex, int scale, Unit<Q> unit, @Nullable BigDecimal divisor) {
-        if (valueArray != null && valueArray.length >= arrayIndex) {
+        if (valueArray != null && valueArray.length > arrayIndex) {
             updateQtyState(channel, valueArray[arrayIndex], scale, unit, divisor);
         }
     }
