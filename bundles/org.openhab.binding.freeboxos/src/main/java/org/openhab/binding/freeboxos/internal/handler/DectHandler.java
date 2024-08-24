@@ -37,6 +37,19 @@ public class DectHandler extends FxsHandler {
     }
 
     @Override
+    protected void internalPoll() throws FreeboxException {
+        if (isLinked(TELEPHONY_SERVICE) || isLinked(DECT_ACTIVE) || isLinked(ALTERNATE_RING)) {
+            Config config = getManager(PhoneManager.class).getConfig();
+            updateConfigChannels(config);
+        }
+
+        if (isLinked(ONHOOK) || isLinked(RINGING) || isLinked(HARDWARE_STATUS) || isLinked(GAIN_RX)
+                || isLinked(GAIN_TX)) {
+            getManager(PhoneManager.class).getStatus(getClientId()).ifPresent(this::updateStatusChannels);
+        }
+    }
+
+    @Override
     protected void updateConfigChannels(Config config) {
         super.updateConfigChannels(config);
         updateChannelOnOff(DECT_ACTIVE, config.dectEnabled());
