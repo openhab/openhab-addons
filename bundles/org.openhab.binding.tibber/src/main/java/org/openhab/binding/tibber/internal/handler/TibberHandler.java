@@ -327,12 +327,13 @@ public class TibberHandler extends BaseThingHandler {
 
     public void updateRequest() throws IOException {
         getURLInput(BASE_URL);
-        if(liveChannelsLinked() && "true".equals(rtEnabled)) {
+        if (liveChannelsLinked() && "true".equals(rtEnabled)) {
             if (lastWebSocketMessage != null && lastWebSocketMessage.plusMinutes(5).isBefore(LocalDateTime.now())) {
-                logger.info("Got no data for 5 minutes from tibber. Last data from tibber on {}. Reconnect WebSocket.", lastWebSocketMessage);
+                logger.info("Got no data for 5 minutes from tibber. Last data from tibber on {}. Reconnect WebSocket.",
+                        lastWebSocketMessage);
                 close();
                 startLiveStream();
-            } else if(isConnected()) {
+            } else if (isConnected()) {
                 logger.debug("Sending Ping Message");
                 session.getRemote().sendPing(ByteBuffer.wrap("OpenHab Ping".getBytes(StandardCharsets.UTF_8)));
             } else if (!isConnected()) {
