@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="electroluxappliances"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="api">
+		<label>Electrolux Group API</label>
+		<description>This bridge represents the web API connector.</description>
+
+		<properties>
+			<property name="vendor">Electrolux</property>
+		</properties>
+
+		<config-description>
+			<parameter name="apiKey" type="text" required="true">
+				<label>API Key</label>
+				<description>Your personal API key.</description>
+			</parameter>
+			<parameter name="accessToken" type="text" required="true">
+				<label>Access Token</label>
+				<description>Your personal Access Token.</description>
+			</parameter>
+			<parameter name="refreshToken" type="text" required="true">
+				<label>Refresh Token</label>
+				<description>Your personal Refresh Token.</description>
+			</parameter>
+			<parameter name="refresh" type="integer" min="10" unit="s">
+				<label>Refresh Interval</label>
+				<description>Specifies the refresh interval in seconds.</description>
+				<default>300</default>
+			</parameter>
+		</config-description>
+	</bridge-type>
+
+	<thing-type id="electroluxairpurifier">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>ElectroluxAir Purifier</label>
+		<description>This thing represents the Electrolux Air Purifier.</description>
+
+		<channels>
+			<channel id="temperature" typeId="temperature"/>
+			<channel id="humidity" typeId="humidity"/>
+			<channel id="tvoc" typeId="tvoc"/>
+			<channel id="pm1" typeId="pm1"/>
+			<channel id="pm2_5" typeId="pm2_5"/>
+			<channel id="pm10" typeId="pm10"/>
+			<channel id="co2" typeId="co2"/>
+			<channel id="filterLife" typeId="filterLife"/>
+			<channel id="doorOpen" typeId="doorOpen"/>
+			<channel id="fanSpeed" typeId="fanSpeed"/>
+			<channel id="workMode" typeId="workMode"/>
+			<channel id="ionizer" typeId="ionizer"/>
+			<channel id="uiLight" typeId="uiLight"/>
+			<channel id="safetyLock" typeId="safetyLock"/>
+			<channel id="status" typeId="status"/>
+			<channel id="connectionState" typeId="connectionState"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Electrolux</property>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The appliance serial number.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+	<thing-type id="electroluxwashingmachine">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="api"/>
+		</supported-bridge-type-refs>
+
+		<label>Electrolux Washing Machine</label>
+		<description>This thing represents the Electrolux Washing Machine.</description>
+
+		<channels>
+			<channel id="doorState" typeId="doorState"/>
+			<channel id="timeToEnd" typeId="timeToEnd"/>
+			<channel id="applianceUiSwVersion" typeId="applianceUiSwVersion"/>
+			<channel id="applianceTotalWorkingTime" typeId="applianceTotalWorkingTime"/>
+			<channel id="optisenseResult" typeId="optisenseResult"/>
+			<channel id="detergentExtradosage" typeId="detergentExtradosage"/>
+			<channel id="softenerExtradosage" typeId="softenerExtradosage"/>
+			<channel id="waterUsage" typeId="waterUsage"/>
+			<channel id="startTime" typeId="startTime"/>
+			<channel id="totalWashCyclesCount" typeId="totalWashCyclesCount"/>
+			<channel id="doorLock" typeId="doorLock"/>
+			<channel id="connectionState" typeId="connectionState"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">Electrolux</property>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
+		<representation-property>serialNumber</representation-property>
+
+		<config-description>
+			<parameter name="serialNumber" type="text" required="true">
+				<label>Serial Number</label>
+				<description>The appliance serial number.</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+
+
+	<channel-type id="status">
+		<item-type>String</item-type>
+		<label>Current Status</label>
+		<description>Information on current status.</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="temperature">
+		<item-type>Number:Temperature</item-type>
+		<label>Temperature</label>
+		<description>The measured temperature.</description>
+		<category>Temperature</category>
+		<state readOnly="true" pattern="%.1f %unit%">
+		</state>
+	</channel-type>
+
+	<channel-type id="humidity">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Humidity</label>
+		<description>The measured humidity.</description>
+		<category>Humidity</category>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="tvoc">
+		<item-type>Number:Dimensionless</item-type>
+		<label>TVOC</label>
+		<description>The total Volatile Organic Compounds.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+
+	<channel-type id="pm1">
+		<item-type>Number:Density</item-type>
+		<label>PM1</label>
+		<description>The Particulate Matter 1 (0.001mm).</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="pm2_5">
+		<item-type>Number:Density</item-type>
+		<label>PM2.5</label>
+		<description>The Particulate Matter 2.5 (0.0025mm).</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="pm10">
+		<item-type>Number:Density</item-type>
+		<label>PM10</label>
+		<description>The Particulate Matter 10 (0.01mm).</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="co2">
+		<item-type>Number:Dimensionless</item-type>
+		<label>CO2</label>
+		<description>The measured CarbonDioxide.</description>
+		<state readOnly="true" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="filterLife">
+		<item-type>Number:Dimensionless</item-type>
+		<label>Filter Life</label>
+		<description>The filter life indication.</description>
+		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>
+	</channel-type>
+
+	<channel-type id="doorOpen">
+		<item-type>Contact</item-type>
+		<label>Door Status</label>
+		<description>The door status Open/Closed.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="fanSpeed">
+		<item-type>Number</item-type>
+		<label>Fan Speed Setting</label>
+		<description>The fan speed setting.</description>
+		<state>
+			<options>
+				<option value="1">Level 1</option>
+				<option value="2">Level 2</option>
+				<option value="3">Level 3</option>
+				<option value="4">Level 4</option>
+				<option value="5">Level 5</option>
+				<option value="6">Level 6</option>
+				<option value="7">Level 7</option>
+				<option value="8">Level 8</option>
+				<option value="9">Level 9</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="workMode">
+		<item-type>String</item-type>
+		<label>Work Mode Setting</label>
+		<description>The work mode setting.</description>
+		<state>
+			<options>
+				<option value="PowerOff">Power Off</option>
+				<option value="Auto">Automatic</option>
+				<option value="Manual">Manual</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="ionizer">
+		<item-type>Switch</item-type>
+		<label>Ionizer Status</label>
+		<description>The ionizer status.</description>
+	</channel-type>
+
+	<channel-type id="uiLight">
+		<item-type>Switch</item-type>
+		<label>UI Light</label>
+		<description>The air quality light status.</description>
+	</channel-type>
+
+	<channel-type id="safetyLock">
+		<item-type>Switch</item-type>
+		<label>Safety Lock</label>
+		<description>The safety lock status.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="doorLock">
+		<item-type>Switch</item-type>
+		<label>Door Lock</label>
+		<description>The door lock status.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="connectionState">
+		<item-type>Switch</item-type>
+		<label>Connection State</label>
+		<description>The connection state status.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="doorState">
+		<item-type>Contact</item-type>
+		<label>Door Status</label>
+		<description>The door status Open/Closed.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="startTime">
+		<item-type>Number:Time</item-type>
+		<label>Start Time</label>
+		<description>The start time of a washing.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="timeToEnd">
+		<item-type>Number:Time</item-type>
+		<label>Time To End</label>
+		<description>The time to end of a program.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="applianceUiSwVersion">
+		<item-type>String</item-type>
+		<label>Appliance UI SW Version</label>
+		<description>The appliance UI SW version.</description>
+		<state readOnly="true" pattern="%s"/>
+	</channel-type>
+
+	<channel-type id="applianceTotalWorkingTime">
+		<item-type>Number:Time</item-type>
+		<label>Appliance Total Working Time</label>
+		<description>The appliance total working time.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="optisenseResult">
+		<item-type>Number</item-type>
+		<label>Optisense Result</label>
+		<description>The optisense result.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="detergentExtradosage">
+		<item-type>Number</item-type>
+		<label>Detergent Extra Dosage</label>
+		<description>The detergent extra dosage.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="softenerExtradosage">
+		<item-type>Number</item-type>
+		<label>Softener Extra Dosage</label>
+		<description>The softener extra dosage.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="waterUsage">
+		<item-type>Number</item-type>
+		<label>Water Usage</label>
+		<description>The water usage.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="totalWashCyclesCount">
+		<item-type>Number</item-type>
+		<label>Total Wash Cycles Count</label>
+		<description>The total wash cycles count.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+
+</thing:thing-descriptions>
