@@ -119,12 +119,12 @@ public class VisualCrossingHandler extends BaseThingHandler {
             var currentConditions = ofNullable(weatherResponse).map(WeatherResponse::currentConditions);
             switch (channelId) {
                 case DATE_TIME -> {
-                    return requireNonNull(currentConditions.map(cc -> newDateTimeType(cc, CurrentConditions::datetime))
-                            .orElse(UNDEF));
+                    return requireNonNull(
+                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::datetime)).orElse(UNDEF));
                 }
                 case TIME_STAMP -> {
                     return requireNonNull(currentConditions
-                            .map(cc -> newDecimalType(cc, CurrentConditions::datetimeEpoch)).orElse(UNDEF));
+                            .map(cc -> newDateTimeType(cc, CurrentConditions::datetimeEpoch)).orElse(UNDEF));
                 }
                 case TEMPERATURE -> {
                     return requireNonNull(
@@ -220,7 +220,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
                 }
                 case SUNRISE_EPOCH -> {
                     return requireNonNull(currentConditions
-                            .map(cc -> newDecimalType(cc, CurrentConditions::sunriseEpoch)).orElse(UNDEF));
+                            .map(cc -> newDateTimeType(cc, CurrentConditions::sunriseEpoch)).orElse(UNDEF));
                 }
                 case SUNSET -> {
                     return requireNonNull(
@@ -228,7 +228,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
                 }
                 case SUNSET_EPOCH -> {
                     return requireNonNull(currentConditions
-                            .map(cc -> newDecimalType(cc, CurrentConditions::sunsetEpoch)).orElse(UNDEF));
+                            .map(cc -> newDateTimeType(cc, CurrentConditions::sunsetEpoch)).orElse(UNDEF));
                 }
                 case MOON_PHASE -> {
                     return requireNonNull(currentConditions.map(cc -> newDecimalType(cc, CurrentConditions::moonphase))
@@ -248,10 +248,10 @@ public class VisualCrossingHandler extends BaseThingHandler {
                 }
                 var day = new ChannelDay(dayIdx);
                 if (channelId.equals(day.dateTime())) {
-                    return newDateTimeType(weatherDay, Day::datetime);
+                    return newStringType(weatherDay, Day::datetime);
                 }
                 if (channelId.equals(day.timeStamp())) {
-                    return newDecimalType(weatherDay, Day::datetimeEpoch);
+                    return newDateTimeType(weatherDay, Day::datetimeEpoch);
                 }
                 if (channelId.equals(day.temperature())) {
                     return newTemperatureType(weatherDay, Day::temp);
@@ -326,13 +326,13 @@ public class VisualCrossingHandler extends BaseThingHandler {
                     return newStringType(weatherDay, Day::sunrise);
                 }
                 if (channelId.equals(day.sunriseEpoch())) {
-                    return newDecimalType(weatherDay, Day::sunriseEpoch);
+                    return newDateTimeType(weatherDay, Day::sunriseEpoch);
                 }
                 if (channelId.equals(day.sunset())) {
                     return newStringType(weatherDay, Day::sunset);
                 }
                 if (channelId.equals(day.sunsetEpoch())) {
-                    return newDecimalType(weatherDay, Day::sunsetEpoch);
+                    return newDateTimeType(weatherDay, Day::sunsetEpoch);
                 }
                 if (channelId.equals(day.moonPhase())) {
                     return newDecimalType(weatherDay, Day::moonphase);
@@ -362,10 +362,10 @@ public class VisualCrossingHandler extends BaseThingHandler {
                     var dayHour = day.hour(hourIdx);
 
                     if (dayHour.hourDateTime().equals(channelId)) {
-                        return newDateTimeType(findHour(hours, hourIdx), Hour::datetime);
+                        return newStringType(findHour(hours, hourIdx), Hour::datetime);
                     }
                     if (dayHour.hourTimeStamp().equals(channelId)) {
-                        return newDecimalType(findHour(hours, hourIdx), Hour::datetimeEpoch);
+                        return newDateTimeType(findHour(hours, hourIdx), Hour::datetimeEpoch);
                     }
                     if (dayHour.hourTemperature().equals(channelId)) {
                         return newTemperatureType(findHour(hours, hourIdx), Hour::temp);

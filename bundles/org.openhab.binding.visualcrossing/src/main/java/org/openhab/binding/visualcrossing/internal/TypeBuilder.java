@@ -18,6 +18,8 @@ import static org.openhab.core.library.unit.SIUnits.*;
 import static org.openhab.core.library.unit.Units.*;
 import static org.openhab.core.types.UnDefType.UNDEF;
 
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.function.Function;
 
@@ -28,16 +30,12 @@ import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Martin Grześlowski - Initial contribution
  */
 @NonNullByDefault
 class TypeBuilder {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TypeBuilder.class);
-
     private static State newStringType(@Nullable String string) {
         return string != null ? new StringType(string) : UNDEF;
     }
@@ -182,22 +180,19 @@ class TypeBuilder {
         return newSolarEnergyType(function.apply(obj));
     }
 
-    private static State newDateTimeType(@Nullable String string) {
-        if (string != null) {
-            try {
-                return new DateTimeType(string);
-            } catch (IllegalArgumentException ex) {
-                LOGGER.debug("Cannot parse DateTimeType from [{}]", string, ex);
-                return UNDEF;
-            }
+    private static State newDateTimeType(@Nullable Number number) {
+        if (number == null) {
+            return UNDEF;
         }
-        return UNDEF;
+        var instant = Instant.ofEpochSecond(number.longValue());
+        var zonedDateTime = instant.atZone(ZoneId.of("UTC"));
+        return new DateTimeType(zonedDateTime);
     }
 
-    public static <T> State newDateTimeType(@Nullable T obj, Function<T, @Nullable String> function) {
+    public static <T> State newDateTimeType(@Nullable T obj, Function<T, @Nullable Number> function) {
         if (obj == null) {
             return UNDEF;
         }
-        return newStringType(function.apply(obj));
+        return newDateTimeType(function.apply(obj));
     }
 }

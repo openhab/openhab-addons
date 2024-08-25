@@ -1802,15 +1802,16 @@
 	</channel-type>
 
 	<channel-type id="time-channel">
-		<item-type>DateTime</item-type>
+		<item-type>String</item-type>
 		<label>Time</label>
 		<description>In format HH:mm:ss</description>
 		<category>time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="timestamp-channel">
-		<item-type>Number</item-type>
+		<item-type>DateTime</item-type>
 		<label>Time Stamp</label>
+		<category>time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="temperature-channel">
