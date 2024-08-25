@@ -19,6 +19,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
+import com.google.gson.Gson;
+
 /**
  * The {@link Settings} is the internal class for inverter common settings information
  * (grid and solar charge / battery discharge schedule) from a Sun Synk Account.
@@ -489,60 +491,61 @@ public class Settings {
     }
 
     public String buildBody() {
-        StringBuilder body = new StringBuilder("{");
-        body.append("\"sn\":\"" + this.data.sn + "\",");
-        body.append("\"safetyType\":\"" + this.data.safetyType + "\",");
-        body.append("\"battMode\":\"" + this.data.battMode + "\",");
-        body.append("\"solarSell\":\"" + this.data.solarSell + "\",");
-        body.append("\"pvMaxLimit\":\"" + this.data.pvMaxLimit + "\",");
-        body.append("\"energyMode\":\"" + this.data.energyMode + "\",");
-        body.append("\"peakAndVallery\":\"" + this.data.peakAndVallery + "\",");
-        body.append("\"sysWorkMode\":\"" + this.data.sysWorkMode + "\",");
-        body.append("\"sellTime1\":\"" + this.timerTime.get(0) + "\",");
-        body.append("\"sellTime2\":\"" + this.timerTime.get(1) + "\",");
-        body.append("\"sellTime3\":\"" + this.timerTime.get(2) + "\",");
-        body.append("\"sellTime4\":\"" + this.timerTime.get(3) + "\",");
-        body.append("\"sellTime5\":\"" + this.timerTime.get(4) + "\",");
-        body.append("\"sellTime6\":\"" + this.timerTime.get(5) + "\",");
-        body.append("\"sellTime1Pac\":\"" + this.batteryPowerLimit.get(0) + "\",");
-        body.append("\"sellTime2Pac\":\"" + this.batteryPowerLimit.get(1) + "\",");
-        body.append("\"sellTime3Pac\":\"" + this.batteryPowerLimit.get(2) + "\",");
-        body.append("\"sellTime4Pac\":\"" + this.batteryPowerLimit.get(3) + "\",");
-        body.append("\"sellTime5Pac\":\"" + this.batteryPowerLimit.get(4) + "\",");
-        body.append("\"sellTime6Pac\":\"" + this.batteryPowerLimit.get(5) + "\",");
-        body.append("\"cap1\":\"" + this.batteryCapacity.get(0) + "\",");
-        body.append("\"cap2\":\"" + this.batteryCapacity.get(1) + "\",");
-        body.append("\"cap3\":\"" + this.batteryCapacity.get(2) + "\",");
-        body.append("\"cap4\":\"" + this.batteryCapacity.get(3) + "\",");
-        body.append("\"cap5\":\"" + this.batteryCapacity.get(4) + "\",");
-        body.append("\"cap6\":\"" + this.batteryCapacity.get(5) + "\",");
-        body.append("\"sellTime1Volt\":\"" + this.data.sellTime1Volt + "\",");
-        body.append("\"sellTime2Volt\":\"" + this.data.sellTime2Volt + "\",");
-        body.append("\"sellTime3Volt\":\"" + this.data.sellTime3Volt + "\",");
-        body.append("\"sellTime4Volt\":\"" + this.data.sellTime4Volt + "\",");
-        body.append("\"sellTime5Volt\":\"" + this.data.sellTime5Volt + "\",");
-        body.append("\"sellTime6Volt\":\"" + this.data.sellTime6Volt + "\",");
-        body.append("\"zeroExportPower\":\"" + this.data.zeroExportPower + "\",");
-        body.append("\"solarMaxSellPower\":\"" + this.data.solarMaxSellPower + "\",");
-        body.append("\"mondayOn\":" + this.data.mondayOn + ",");
-        body.append("\"tuesdayOn\":" + this.data.tuesdayOn + ",");
-        body.append("\"wednesdayOn\":" + this.data.wednesdayOn + ",");
-        body.append("\"thursdayOn\":" + this.data.thursdayOn + ",");
-        body.append("\"fridayOn\":" + this.data.fridayOn + ",");
-        body.append("\"saturdayOn\":" + this.data.saturdayOn + ",");
-        body.append("\"sundayOn\":" + this.data.sundayOn + ",");
-        body.append("\"time1on\":" + this.gridTimeron.get(0) + ",");
-        body.append("\"time2on\":" + this.gridTimeron.get(1) + ",");
-        body.append("\"time3on\":" + this.gridTimeron.get(2) + ",");
-        body.append("\"time4on\":" + this.gridTimeron.get(3) + ",");
-        body.append("\"time5on\":" + this.gridTimeron.get(4) + ",");
-        body.append("\"time6on\":" + this.gridTimeron.get(5) + ",");
-        body.append("\"genTime1on\":" + this.genTimeron.get(0) + ",");
-        body.append("\"genTime2on\":" + this.genTimeron.get(1) + ",");
-        body.append("\"genTime3on\":" + this.genTimeron.get(2) + ",");
-        body.append("\"genTime4on\":" + this.genTimeron.get(3) + ",");
-        body.append("\"genTime5on\":" + this.genTimeron.get(4) + ",");
-        body.append("\"genTime6on\":" + this.genTimeron.get(5) + "}");
-        return body.toString();
+        Gson gson = new Gson();
+        SettingsCommand commandBody = new SettingsCommand();
+        commandBody.sn = this.data.sn;
+        commandBody.safetyType = this.data.safetyType;
+        commandBody.battMode = this.data.battMode;
+        commandBody.solarSell = this.data.solarSell;
+        commandBody.pvMaxLimit = this.data.pvMaxLimit;
+        commandBody.energyMode = this.data.energyMode;
+        commandBody.peakAndVallery = this.data.peakAndVallery;
+        commandBody.sysWorkMode = this.data.sysWorkMode;
+        commandBody.sellTime1 = this.timerTime.get(0);
+        commandBody.sellTime2 = this.timerTime.get(1);
+        commandBody.sellTime3 = this.timerTime.get(2);
+        commandBody.sellTime4 = this.timerTime.get(3);
+        commandBody.sellTime5 = this.timerTime.get(4);
+        commandBody.sellTime6 = this.timerTime.get(5);
+        commandBody.sellTime1Pac = this.batteryPowerLimit.get(0);
+        commandBody.sellTime2Pac = this.batteryPowerLimit.get(1);
+        commandBody.sellTime3Pac = this.batteryPowerLimit.get(2);
+        commandBody.sellTime4Pac = this.batteryPowerLimit.get(3);
+        commandBody.sellTime5Pac = this.batteryPowerLimit.get(4);
+        commandBody.sellTime6Pac = this.batteryPowerLimit.get(5);
+        commandBody.cap1 = this.batteryCapacity.get(0);
+        commandBody.cap2 = this.batteryCapacity.get(1);
+        commandBody.cap3 = this.batteryCapacity.get(2);
+        commandBody.cap4 = this.batteryCapacity.get(3);
+        commandBody.cap5 = this.batteryCapacity.get(4);
+        commandBody.cap6 = this.batteryCapacity.get(5);
+        commandBody.sellTime1Volt = this.data.sellTime1Volt;
+        commandBody.sellTime2Volt = this.data.sellTime2Volt;
+        commandBody.sellTime3Volt = this.data.sellTime3Volt;
+        commandBody.sellTime4Volt = this.data.sellTime4Volt;
+        commandBody.sellTime5Volt = this.data.sellTime5Volt;
+        commandBody.sellTime6Volt = this.data.sellTime6Volt;
+        commandBody.zeroExportPower = this.data.zeroExportPower;
+        commandBody.solarMaxSellPower = this.data.solarMaxSellPower;
+        commandBody.mondayOn = this.data.mondayOn;
+        commandBody.tuesdayOn = this.data.tuesdayOn;
+        commandBody.wednesdayOn = this.data.wednesdayOn;
+        commandBody.thursdayOn = this.data.thursdayOn;
+        commandBody.fridayOn = this.data.fridayOn;
+        commandBody.saturdayOn = this.data.saturdayOn;
+        commandBody.sundayOn = this.data.sundayOn;
+        commandBody.time1on = this.gridTimeron.get(0);
+        commandBody.time2on = this.gridTimeron.get(1);
+        commandBody.time3on = this.gridTimeron.get(2);
+        commandBody.time4on = this.gridTimeron.get(3);
+        commandBody.time5on = this.gridTimeron.get(4);
+        commandBody.time6on = this.gridTimeron.get(5);
+        commandBody.genTime1on = this.genTimeron.get(0);
+        commandBody.genTime2on = this.genTimeron.get(1);
+        commandBody.genTime3on = this.genTimeron.get(2);
+        commandBody.genTime4on = this.genTimeron.get(3);
+        commandBody.genTime5on = this.genTimeron.get(4);
+        commandBody.genTime6on = this.genTimeron.get(5);
+        return gson.toJson(commandBody);
     }
 }

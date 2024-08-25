@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Properties;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
@@ -29,6 +32,8 @@ import org.openhab.binding.sunsynk.internal.api.dto.APIdata;
 import org.openhab.binding.sunsynk.internal.api.dto.Client;
 import org.openhab.binding.sunsynk.internal.api.dto.Details;
 import org.openhab.binding.sunsynk.internal.api.dto.Inverter;
+import org.openhab.binding.sunsynk.internal.api.dto.SunSynkLogin;
+import org.openhab.binding.sunsynk.internal.api.dto.TokenRefresh;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkAuthenticateException;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkInverterDiscoveryException;
 import org.openhab.binding.sunsynk.internal.api.exception.SunSynkTokenException;
@@ -50,6 +55,7 @@ import com.google.gson.JsonSyntaxException;
 public class AccountController {
     private static final int TIMEOUT_IN_MS = 4000;
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
+    private final String BEARER_TYPE = "Bearer";
     private Client sunAccount = new Client();
 
     public AccountController() {
@@ -95,11 +101,11 @@ public class AccountController {
         String response = "";
         String httpsURL = makeLoginURL("oauth/token");
         Properties headers = new Properties();
-        headers.setProperty("Accept", "application/json");
+        headers.setProperty(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
         InputStream stream = new ByteArrayInputStream(payload.getBytes(StandardCharsets.UTF_8));
         try {
-            response = HttpUtil.executeUrl(HttpMethod.POST.asString(), httpsURL, headers, stream, "application/json",
-                    TIMEOUT_IN_MS);
+            response = HttpUtil.executeUrl(HttpMethod.POST.asString(), httpsURL, headers, stream,
+                    MediaType.APPLICATION_JSON, TIMEOUT_IN_MS);
 
             @Nullable
             Client client = gson.fromJson(response, Client.class);
@@ -143,12 +149,13 @@ public class AccountController {
             Gson gson = new Gson();
             Properties headers = new Properties();
             String response = "";
+
             String httpsURL = makeLoginURL(
                     "api/v1/inverters?page=1&limit=10&total=0&status=-1&sn=&plantId=&type=-2&softVer=&hmiVer=&agentCompanyId=-1&gsn=");
-            headers.setProperty("Accept", "application/json");
-            headers.setProperty("Authorization", "Bearer " + APIdata.staticAccessToken);
-            response = HttpUtil.executeUrl(HttpMethod.GET.asString(), httpsURL, headers, null, "application/json",
-                    TIMEOUT_IN_MS);
+            headers.setProperty(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
+            headers.setProperty(HttpHeaders.AUTHORIZATION, BEARER_TYPE + APIdata.staticAccessToken);
+            response = HttpUtil.executeUrl(HttpMethod.GET.asString(), httpsURL, headers, null,
+                    MediaType.APPLICATION_JSON, TIMEOUT_IN_MS);
             @Nullable
             Details maybeDeats = gson.fromJson(response, Details.class);
             if (maybeDeats == null) {
@@ -175,13 +182,15 @@ public class AccountController {
     }
 
     private static String makeLoginBody(String username, String password) {
-        return "{\"username\": \"" + username + "\", \"password\": \"" + password
-                + "\", \"grant_type\": \"password\", \"client_id\": \"csp-web\"}";
+        Gson gson = new Gson();
+        SunSynkLogin login = new SunSynkLogin(username, password);
+        return gson.toJson(login);
     }
 
     private static String makeRefreshBody(String username, String refreshToken) {
-        return "{\"grant_type\": \"refresh_token\", \"username\": \"" + username + "\", \"refresh_token\": \""
-                + refreshToken + "\", \"client_id\": \"csp-web\"}";
+        Gson gson = new Gson();
+        TokenRefresh refresh = new TokenRefresh(username, refreshToken);
+        return gson.toJson(refresh);
     }
 
     @Override

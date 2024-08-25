@@ -21,6 +21,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Properties;
 
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.http.HttpMethod;
@@ -53,6 +56,7 @@ public class DeviceController {
 
     private static final int TIMEOUT_IN_MS = 4000;
     private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
+    private final String BEARER_TYPE = "Bearer";
     private String sn = "";
     private String alias = "";
     private Settings batterySettings = new Settings();
@@ -242,18 +246,18 @@ public class DeviceController {
 
     private String apiPostMethod(String httpsURL, String body, String accessToken) throws IOException {
         Properties headers = new Properties();
-        headers.setProperty("Accept", "application/json");
-        headers.setProperty("Authorization", "Bearer " + accessToken);
+        headers.setProperty(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
+        headers.setProperty(HttpHeaders.AUTHORIZATION, BEARER_TYPE + accessToken);
         InputStream stream = new ByteArrayInputStream(body.getBytes(StandardCharsets.UTF_8));
-        return HttpUtil.executeUrl(HttpMethod.POST.asString(), httpsURL, headers, stream, "application/json",
+        return HttpUtil.executeUrl(HttpMethod.POST.asString(), httpsURL, headers, stream, MediaType.APPLICATION_JSON,
                 TIMEOUT_IN_MS);
     }
 
     private String apiGetMethod(String httpsURL, String accessToken) throws IOException {
         Properties headers = new Properties();
-        headers.setProperty("Accept", "application/json");
-        headers.setProperty("Authorization", "Bearer " + accessToken);
-        return HttpUtil.executeUrl(HttpMethod.GET.asString(), httpsURL, headers, null, "application/json",
+        headers.setProperty(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
+        headers.setProperty(HttpHeaders.AUTHORIZATION, BEARER_TYPE + accessToken);
+        return HttpUtil.executeUrl(HttpMethod.GET.asString(), httpsURL, headers, null, MediaType.APPLICATION_JSON,
                 TIMEOUT_IN_MS);
     }
 
