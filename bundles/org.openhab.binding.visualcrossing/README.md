@@ -83,12 +83,12 @@ In `day-channel-group` there are 0–23 channels of type `hourXX`
 
 | Channel                | Type                        | Read/Write | Description |
 |------------------------|-----------------------------|------------|-------------|
-| hourXX-datetime       | time-channel                | R          |             |  
-| hourXX-timestamp      | timestamp-channel          | R          |             |  
+| hourXX-datetime        | time-channel                | R          |             |  
+| hourXX-timestamp       | timestamp-channel           | R          |             |  
 | hourXX-temperature     | system.outdoor-temperature  | R          |             |  
-| hourXX-feels-like      | system.outdoor-temperature  | R          |             |  
+| hourXX-feels-like      | temperature-channel         | R          |             |  
 | hourXX-humidity        | system.atmospheric-humidity | R          |             |  
-| hourXX-dew             | system.outdoor-temperature  | R          |             |  
+| hourXX-dew             | temperature-channel         | R          |             |  
 | hourXX-precip          | precip-channel              | R          |             |  
 | hourXX-precip-prob     | precip-prob-channel         | R          |             |  
 | hourXX-precip-type     | precip-type-channel         | R          |             |  
@@ -113,12 +113,12 @@ In `day-channel-group` there are 0–23 channels of type `hourXX`
 
 | Channel         | Type                        | Read/Write | Description |
 |-----------------|-----------------------------|------------|-------------|
-| datetime       | time-channel                | R          |             |
-| timestamp      | timestamp-channel          | R          |             |
+| datetime        | time-channel                | R          |             |
+| timestamp       | timestamp-channel           | R          |             |
 | temperature     | system.outdoor-temperature  | R          |             |
-| feels-like      | system.outdoor-temperature  | R          |             |
+| feels-like      | temperature-channel         | R          |             |
 | humidity        | system.atmospheric-humidity | R          |             |
-| dew             | system.outdoor-temperature  | R          |             |
+| dew             | temperature-channel         | R          |             |
 | precip          | precip-channel              | R          |             |
 | precip-prob     | precip-prob-channel         | R          |             |
 | precip-type     | precip-type-channel         | R          |             |
@@ -138,9 +138,9 @@ In `day-channel-group` there are 0–23 channels of type `hourXX`
 | stations        | stations-channel            | R          |             |
 | source          | source-channel              | R          |             |
 | sunrise         | sunrise-channel             | R          |             |
-| sunrise-epoch   | timestamp-channel          | R          |             |
+| sunrise-epoch   | timestamp-channel           | R          |             |
 | sunset          | sunset-channel              | R          |             |
-| sunset-epoch    | timestamp-channel          | R          |             |
+| sunset-epoch    | timestamp-channel           | R          |             |
 | moon-phase      | moon-phase-channel          | R          |             |
 
 ## Full Example
