@@ -318,9 +318,9 @@ description="Represents the fractional portion through the current moon lunation
 ### Item Configuration
 
 ```java
-Group Total_Weather_Data "Total Weather Data" [ "Equipment" ]
-String Total_Weather_Data_Basic_Description "Description" (Total_Weather_Data) [ "Point" ]
-Number Total_Weather_Data_Current_Cost "Current Cost" (Total_Weather_Data) [ "Point" ]
+Group Total_Weather_Data "Total Weather Data" [ "Equipment" ] 
+String Total_Weather_Data_Basic_Description "Description" (Total_Weather_Data) [ "Point" ] {channel=visualcrossing:weather:1405ec5e4f:basic#description"}
+Number Total_Weather_Data_Current_Cost "Current Cost" (Total_Weather_Data) [ "Point" ] {channel=visualcrossing:weather:1405ec5e4f:basic#cost"}
 ```
 
 ### Actions
