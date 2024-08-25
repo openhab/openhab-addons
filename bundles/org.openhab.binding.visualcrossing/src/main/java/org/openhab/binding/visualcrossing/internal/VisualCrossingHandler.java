@@ -119,8 +119,8 @@ public class VisualCrossingHandler extends BaseThingHandler {
             var currentConditions = ofNullable(weatherResponse).map(WeatherResponse::currentConditions);
             switch (channelId) {
                 case DATE_TIME -> {
-                    return requireNonNull(
-                            currentConditions.map(cc -> newDateTimeType(cc, CurrentConditions::datetime)).orElse(UNDEF));
+                    return requireNonNull(currentConditions.map(cc -> newDateTimeType(cc, CurrentConditions::datetime))
+                            .orElse(UNDEF));
                 }
                 case TIME_STAMP -> {
                     return requireNonNull(currentConditions

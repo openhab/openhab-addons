@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 class TypeBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(TypeBuilder.class);
+
     private static State newStringType(@Nullable String string) {
         return string != null ? new StringType(string) : UNDEF;
     }
