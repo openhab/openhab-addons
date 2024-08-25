@@ -28,16 +28,16 @@ import com.google.gson.annotations.SerializedName;
 public class TokenRefresh {
     // {"grant_type":"refresh_token", "username":"xxx", "refresh_token":"xxx", "client_id\":"csp-web\"}
     @SerializedName("grant_type")
-    private String GrantType = "refresh_token";
+    private String grantType = "refresh_token";
     @SerializedName("username")
-    private String UserName = "";
+    private String userName = "";
     @SerializedName("refresh_token")
-    private String RefreshToken = "";
+    private String refreshToken = "";
     @SerializedName("client_id")
-    private String ClintId = "csp-web";
+    private String clientId = "csp-web";
 
     public TokenRefresh(String UserName, String RefreshToken) {
-        this.UserName = UserName;
-        this.RefreshToken = RefreshToken;
+        this.userName = UserName;
+        this.refreshToken = RefreshToken;
     }
 }

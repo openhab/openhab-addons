@@ -28,16 +28,16 @@ import com.google.gson.annotations.SerializedName;
 public class SunSynkLogin {
     // {"username":"xxx", "password":"xxx", "grant_type":"password", "client_id":"csp-web"}
     @SerializedName("username")
-    private String UserName = "";
+    private String userName = "";
     @SerializedName("password")
-    private String PassWord = "";
+    private String passWord = "";
     @SerializedName("grant_type")
-    private String GrantType = "password";
+    private String grantType = "password";
     @SerializedName("client_id")
-    private String ClintId = "csp-web";
+    private String clientId = "csp-web";
 
     public SunSynkLogin(String UserName, String PassWord) {
-        this.UserName = UserName;
-        this.PassWord = PassWord;
+        this.userName = UserName;
+        this.passWord = PassWord;
     }
 }

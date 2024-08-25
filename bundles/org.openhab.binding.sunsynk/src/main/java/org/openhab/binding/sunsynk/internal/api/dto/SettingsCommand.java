@@ -50,7 +50,7 @@ public class SettingsCommand {
     protected int cap5;
     protected int cap6;
     protected String sellTime1Volt = "";
-    protected String sellTime2Volt = "";;
+    protected String sellTime2Volt = "";
     protected String sellTime3Volt = "";
     protected String sellTime4Volt = "";
     protected String sellTime5Volt = "";
