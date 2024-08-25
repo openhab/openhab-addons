@@ -171,6 +171,9 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
                     .build());
         }
         switch (type) {
+            case NOT_EXTENDED:
+                params.add(getMessageConfigParameter(locale));
+                break;
             case EXTENDED:
                 params.add(getMessageConfigParameter(locale));
                 params.add(getIconConfigParameter(locale));
