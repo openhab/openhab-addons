@@ -56,7 +56,7 @@ public class DeviceController {
 
     private static final int TIMEOUT_IN_MS = 4000;
     private final Logger logger = LoggerFactory.getLogger(DeviceController.class);
-    private static final String BEARER_TYPE = "Bearer";
+    private static final String BEARER_TYPE = "Bearer ";
     private String sn = "";
     private String alias = "";
     private Settings batterySettings = new Settings();

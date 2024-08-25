@@ -55,7 +55,7 @@ import com.google.gson.JsonSyntaxException;
 public class AccountController {
     private static final int TIMEOUT_IN_MS = 4000;
     private final Logger logger = LoggerFactory.getLogger(AccountController.class);
-    private static final String BEARER_TYPE = "Bearer";
+    private static final String BEARER_TYPE = "Bearer ";
     private Client sunAccount = new Client();
 
     public AccountController() {
