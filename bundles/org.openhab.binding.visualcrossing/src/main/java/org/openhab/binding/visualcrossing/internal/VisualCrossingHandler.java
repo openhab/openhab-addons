@@ -216,11 +216,19 @@ public class VisualCrossingHandler extends BaseThingHandler {
                 }
                 case SUNRISE -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newDateTimeType(cc, CurrentConditions::sunrise)).orElse(UNDEF));
+                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::sunrise)).orElse(UNDEF));
+                }
+                case SUNRISE_EPOCH -> {
+                    return requireNonNull(currentConditions
+                            .map(cc -> newDecimalType(cc, CurrentConditions::sunriseEpoch)).orElse(UNDEF));
                 }
                 case SUNSET -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newDateTimeType(cc, CurrentConditions::sunset)).orElse(UNDEF));
+                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::sunset)).orElse(UNDEF));
+                }
+                case SUNSET_EPOCH -> {
+                    return requireNonNull(currentConditions
+                            .map(cc -> newDecimalType(cc, CurrentConditions::sunsetEpoch)).orElse(UNDEF));
                 }
                 case MOON_PHASE -> {
                     return requireNonNull(currentConditions.map(cc -> newDecimalType(cc, CurrentConditions::moonphase))
@@ -315,10 +323,16 @@ public class VisualCrossingHandler extends BaseThingHandler {
                     return newDecimalType(weatherDay, Day::uvindex);
                 }
                 if (channelId.equals(day.sunrise())) {
-                    return newDateTimeType(weatherDay, Day::sunrise);
+                    return newStringType(weatherDay, Day::sunrise);
+                }
+                if (channelId.equals(day.sunriseEpoch())) {
+                    return newDecimalType(weatherDay, Day::sunriseEpoch);
                 }
                 if (channelId.equals(day.sunset())) {
-                    return newDateTimeType(weatherDay, Day::sunset);
+                    return newStringType(weatherDay, Day::sunset);
+                }
+                if (channelId.equals(day.sunsetEpoch())) {
+                    return newDecimalType(weatherDay, Day::sunsetEpoch);
                 }
                 if (channelId.equals(day.moonPhase())) {
                     return newDecimalType(weatherDay, Day::moonphase);
