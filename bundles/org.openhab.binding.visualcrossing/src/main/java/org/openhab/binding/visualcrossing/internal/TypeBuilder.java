@@ -82,7 +82,11 @@ class TypeBuilder {
     }
 
     private static State newHumidityType(@Nullable Number humidity) {
-        return humidity != null ? new DecimalType(humidity) : UNDEF;
+        if (humidity == null) {
+            return UNDEF;
+        }
+        var d = humidity.doubleValue();
+        return new DecimalType(d/100.0);
     }
 
     public static <T> State newHumidityType(@Nullable T obj, Function<T, @Nullable Number> function) {
