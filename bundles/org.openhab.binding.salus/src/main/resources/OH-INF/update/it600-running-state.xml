@@ -3,13 +3,10 @@
 	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
 
-	<thing-type uid="electroluxair:electroluxpurea9">
+	<thing-type uid="salus:salus-it600-device">
 		<instruction-set targetVersion="1">
-			<add-channel id="uiLight">
-				<type>electroluxair:uiLight</type>
-			</add-channel>
-			<add-channel id="safetyLock">
-				<type>electroluxair:safetyLock</type>
+			<add-channel id="running-state">
+				<type>salus:it600-running-state</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>

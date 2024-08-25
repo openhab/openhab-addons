@@ -23,7 +23,6 @@ import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Config;
 import org.openhab.binding.freeboxos.internal.api.rest.PhoneManager.Status;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.Thing;
-import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,10 +51,14 @@ public class FxsHandler extends ApiConsumerHandler {
     protected void internalPoll() throws FreeboxException {
         logger.debug("Polling landline status...");
 
-        Config config = getManager(PhoneManager.class).getConfig();
-        updateConfigChannels(config);
+        if (isLinked(TELEPHONY_SERVICE)) {
+            Config config = getManager(PhoneManager.class).getConfig();
+            updateConfigChannels(config);
+        }
 
-        getManager(PhoneManager.class).getStatus(getClientId()).ifPresent(this::updateStatusChannels);
+        if (isLinked(ONHOOK) || isLinked(RINGING) || isLinked(HARDWARE_STATUS)) {
+            getManager(PhoneManager.class).getStatus(getClientId()).ifPresent(this::updateStatusChannels);
+        }
     }
 
     protected void updateConfigChannels(Config config) {
@@ -66,7 +69,6 @@ public class FxsHandler extends ApiConsumerHandler {
         updateChannelOnOff(ONHOOK, status.onHook());
         updateChannelOnOff(RINGING, status.isRinging());
         updateChannelString(HARDWARE_STATUS, status.hardwareDefect() ? "KO" : "OK");
-        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
