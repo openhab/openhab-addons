@@ -120,7 +120,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
             switch (channelId) {
                 case DATE_TIME -> {
                     return requireNonNull(
-                            currentConditions.map(cc -> newStringType(cc, CurrentConditions::datetime)).orElse(UNDEF));
+                            currentConditions.map(cc -> newDateTimeType(cc, CurrentConditions::datetime)).orElse(UNDEF));
                 }
                 case TIME_STAMP -> {
                     return requireNonNull(currentConditions
@@ -248,7 +248,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
                 }
                 var day = new ChannelDay(dayIdx);
                 if (channelId.equals(day.dateTime())) {
-                    return newStringType(weatherDay, Day::datetime);
+                    return newDateTimeType(weatherDay, Day::datetime);
                 }
                 if (channelId.equals(day.timeStamp())) {
                     return newDecimalType(weatherDay, Day::datetimeEpoch);
@@ -362,7 +362,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
                     var dayHour = day.hour(hourIdx);
 
                     if (dayHour.hourDateTime().equals(channelId)) {
-                        return newStringType(findHour(hours, hourIdx), Hour::datetime);
+                        return newDateTimeType(findHour(hours, hourIdx), Hour::datetime);
                     }
                     if (dayHour.hourTimeStamp().equals(channelId)) {
                         return newDecimalType(findHour(hours, hourIdx), Hour::datetimeEpoch);

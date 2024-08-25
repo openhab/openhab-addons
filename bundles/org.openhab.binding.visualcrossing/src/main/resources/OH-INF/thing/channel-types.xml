@@ -1802,9 +1802,10 @@
 	</channel-type>
 
 	<channel-type id="time-channel">
-		<item-type>String</item-type>
+		<item-type>DateTime</item-type>
 		<label>Time</label>
 		<description>In format HH:mm:ss</description>
+		<category>time</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="timestamp-channel">
