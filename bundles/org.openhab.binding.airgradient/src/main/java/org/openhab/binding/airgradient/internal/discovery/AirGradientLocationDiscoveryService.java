@@ -36,7 +36,6 @@ import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.BridgeHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
@@ -51,7 +50,7 @@ import org.slf4j.LoggerFactory;
 @Component(scope = ServiceScope.PROTOTYPE, service = AirGradientLocationDiscoveryService.class)
 @NonNullByDefault
 public class AirGradientLocationDiscoveryService extends AbstractThingHandlerDiscoveryService<AirGradientAPIHandler>
-        implements ThingHandlerService, PollEventListener {
+        implements PollEventListener {
 
     private final Logger logger = LoggerFactory.getLogger(AirGradientLocationDiscoveryService.class);
 
