@@ -93,15 +93,7 @@
 				</description>
 			</channel>
 			<channel id="sunrise" typeId="sunrise-channel"/>
-			<channel id="sunrise-epoch" typeId="timestamp-channel">
-				<label>Sunrise Epoch</label>
-				<description>Sunrise time specified as number of seconds since 1st January 1970 in UTC time</description>
-			</channel>
 			<channel id="sunset" typeId="sunset-channel"/>
-			<channel id="sunset-epoch" typeId="timestamp-channel">
-				<label>Sunset Epoch</label>
-				<description>Sunset time specified as number of seconds since 1st January 1970 in UTC time</description>
-			</channel>
 			<channel id="moon-phase" typeId="moon-phase-channel"/>
 			<channel id="conditions" typeId="conditions-channel"/>
 			<channel id="description" typeId="description-channel"/>
@@ -1767,16 +1759,7 @@
 			<channel id="stations" typeId="stations-channel"/>
 			<channel id="source" typeId="source-channel"/>
 			<channel id="sunrise" typeId="sunrise-channel"/>
-			<channel id="sunrise-epoch" typeId="timestamp-channel">
-				<label>Sunrise Epoch</label>
-				<description>Sunrise time specified as number of seconds since 1st January 1970 in UTC time
-				</description>
-			</channel>
 			<channel id="sunset" typeId="sunset-channel"/>
-			<channel id="sunset-epoch" typeId="timestamp-channel">
-				<label>Sunset Epoch</label>
-				<description>Sunset time specified as number of seconds since 1st January 1970 in UTC time</description>
-			</channel>
 			<channel id="moon-phase" typeId="moon-phase-channel"/>
 		</channels>
 	</channel-group-type>
@@ -1934,19 +1917,21 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="sunrise-channel">
-		<item-type>String</item-type>
+		<item-type>DateTime</item-type>
 		<label>Sunrise</label>
 		<description>The formatted time of the sunrise (For example “2022-05-23T05:50:40”). See How to include sunrise,
 			sunset, moon phase, moonrise and moonset data into your API requests
 			(https://www.visualcrossing.com/resources/documentation/weather-api/how-to-include-sunrise-sunset-and-moon-phase-data-into-your-api-requests/)
 		</description>
+		<category>Sun</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="sunset-channel">
-		<item-type>String</item-type>
+		<item-type>DateTime</item-type>
 		<label>Sunset</label>
 		<description>The formatted time of the sunset (For example “2022-05-23T20:22:29”).
 		</description>
+		<category>Moon</category>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="moon-phase-channel">

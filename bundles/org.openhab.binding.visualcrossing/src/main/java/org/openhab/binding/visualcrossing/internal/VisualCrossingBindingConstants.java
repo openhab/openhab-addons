@@ -70,9 +70,7 @@ public class VisualCrossingBindingConstants {
             public static final String STATIONS = CHANNEL_ID + "stations";
             public static final String SOURCE = CHANNEL_ID + "source";
             public static final String SUNRISE = CHANNEL_ID + "sunrise";
-            public static final String SUNRISE_EPOCH = CHANNEL_ID + "sunrise-epoch";
             public static final String SUNSET = CHANNEL_ID + "sunset";
-            public static final String SUNSET_EPOCH = CHANNEL_ID + "sunset-epoch";
             public static final String MOON_PHASE = CHANNEL_ID + "moon-phase";
         }
 
@@ -190,16 +188,8 @@ public class VisualCrossingBindingConstants {
                 return "%ssunrise".formatted(channelId);
             }
 
-            public String sunriseEpoch() {
-                return "%ssunrise-epoch".formatted(channelId);
-            }
-
             public String sunset() {
                 return "%ssunset".formatted(channelId);
-            }
-
-            public String sunsetEpoch() {
-                return "%ssunset-epoch".formatted(channelId);
             }
 
             public String moonPhase() {
