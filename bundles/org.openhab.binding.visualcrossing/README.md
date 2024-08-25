@@ -1,14 +1,18 @@
 # VisualCrossing Binding
 
-Visual Crossing Weather is the easiest-to-use and lowest-cost source for historical and forecast weather data.
-Our [Weather API](https://www.visualcrossing.com/weather-api) is designed to integrate easily into any app or code, and
-our prices are lower than any other provider in the industry.
+VisualCrossing Binding provides integration with VisualCrossing API
 
-Our data is used daily by a diverse customer-base including business analysts, data scientists, insurance professionals,
-energy producers, construction planners, and academics.
+ > Visual Crossing Weather is the easiest-to-use and lowest-cost source for historical and forecast weather data.
+ > Our [Weather API](https://www.visualcrossing.com/weather-api) is designed to integrate easily into any app or code, and
+ > our prices are lower than any other provider in the industry.
+ > 
+ > Our data is used daily by a diverse customer-base including business analysts, data scientists, insurance professionals,
+ > energy producers, construction planners, and academics.
+ > 
+ > We have the [Weather Data](https://www.visualcrossing.com/weather-data) and expertise needed to serve any individual or
+ > organization from an independent event planner to a global enterprise.
 
-We have the [Weather Data](https://www.visualcrossing.com/weather-data) and expertise needed to serve any individual or
-organization from an independent event planner to a global enterprise.
+from [VisualCrossing site](https://www.visualcrossing.com/)
 
 ## Supported Things
 
