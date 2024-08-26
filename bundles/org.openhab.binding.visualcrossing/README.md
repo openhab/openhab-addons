@@ -152,179 +152,57 @@ In `day-channel-group` there are 0–23 channels of type `hourXX`
 ### Thing Configuration
 
 ```java
-Thing visualcrossing:weather:1405ec5e4f "Weather Thing" {
-Channels:
-Type visualcrossing:cost-channel : basic#cost [
-itemType="Number",
-label="Current Cost",
-description="How much API tokens thing used since start"
-        ]
-Type visualcrossing:description-channel : basic#description [
-itemType="String",
-label="Description",
-description="Longer text descriptions suitable for displaying in weather displays."
-        ]
-Type visualcrossing:time-channel : current-conditions#datetime [
-itemType="String",
-label="Time",
-description="In format HH:mm:ss"
-        ]
-Type visualcrossing:timestamp-channel : current-conditions#timestamp [
-itemType="Number",
-label="Time Stamp"
-        ]
-Type system:outdoor-temperature : current-conditions#temperature [
-itemType="Number:Temperature",
-label="Temperatura na zewnątrz",
-description="Temperature at the location. Daily values are average values (mean) for the day.",
-tags="Measurement, Temperature"
-        ]
-Type system:outdoor-temperature : current-conditions#feels-like [
-itemType="Number:Temperature",
-label="Feels Like",
-description="What the temperature feels like accounting for heat index or wind chill.",
-tags="Measurement, Temperature"
-        ]
-Type system:atmospheric-humidity : current-conditions#humidity [
-itemType="Number:Dimensionless",
-label="Wilgotność atmosferyczna",
-description="Obecna wilgotność względna atmosfery",
-tags="Humidity, Measurement"
-        ]
-Type system:outdoor-temperature : current-conditions#dew [
-itemType="Number:Temperature",
-label="Dew",
-description="Dew point temperature",
-tags="Measurement, Temperature"
-        ]
-Type visualcrossing:precip-channel : current-conditions#precip [
-itemType="Number:Length",
-label="Precip",
-description="The amount of liquid precipitation that fell or is predicted to fall."
-        ]
-Type visualcrossing:precip-prob-channel : current-conditions#precip-prob [
-itemType="Number:Dimensionless",
-label="Precip Prob",
-description="The likelihood of measurable precipitation ranging from 0% to 100%."
-        ]
-Type visualcrossing:precip-type-channel : current-conditions#precip-type [
-itemType="String",
-label="Precip Type",
-description="An array indicating the type(s) of precipitation expected or that occurred."
-        ]
-Type visualcrossing:snow-channel : current-conditions#snow [
-itemType="Number:Length",
-label="Snow",
-description="The amount of snow that fell or is predicted to fall."
-        ]
-Type visualcrossing:snow-channel : current-conditions#snow-depth [
-itemType="Number:Length",
-label="Snow Depth",
-description="The depth of snow on the ground."
-        ]
-Type system:wind-speed : current-conditions#wind-gust [
-itemType="Number:Speed",
-label="Wind Gust",
-description="Instantaneous wind speed at a location.",
-tags="Measurement, Wind"
-        ]
-Type system:wind-speed : current-conditions#wind-speed [
-itemType="Number:Speed",
-label="Prędkość wiatru",
-description="The sustained wind speed measured as the average windspeed.",
-tags="Measurement, Wind"
-        ]
-Type system:wind-direction : current-conditions#wind-dir [
-itemType="Number:Angle",
-label="Kierunek wiatru",
-description="Direction from which the wind is blowing.",
-tags="Measurement, Wind"
-        ]
-Type system:barometric-pressure : current-conditions#pressure [
-itemType="Number:Pressure",
-label="Ciśnienie barometryczne",
-description="The sea level atmospheric or barometric pressure in millibars.",
-tags="Measurement, Pressure"
-        ]
-Type visualcrossing:visibility-channel : current-conditions#visibility [
-itemType="Number:Length",
-label="Visibility",
-description="Distance at which distant objects are visible."
-        ]
-Type visualcrossing:cloud-cover-channel : current-conditions#cloud-cover [
-itemType="Number:Dimensionless",
-label="Cloud Cover",
-description="How much of the sky is covered in cloud ranging from 0–100%."
-        ]
-Type visualcrossing:solar-radiation-channel : current-conditions#solar-radiation [
-itemType="Number:Intensity",
-label="Solar Radiation",
-description="The solar radiation power at the instantaneous moment of the observation."
-        ]
-Type visualcrossing:solar-energy-channel : current-conditions#solar-energy [
-itemType="Number",
-label="Solar Energy",
-description="Indicates the total energy from the sun that builds up over an hour or day."
-        ]
-Type visualcrossing:uv-index-channel : current-conditions#uv-index [
-itemType="Number",
-label="UV Index",
-description="A value between 0 and 10 indicating the level of ultra violet (UV) exposure."
-        ]
-Type visualcrossing:conditions-channel : current-conditions#conditions [
-itemType="String",
-label="Conditions",
-description="Textual representation of the weather conditions."
-        ]
-Type visualcrossing:icon-channel : current-conditions#icon [
-itemType="String",
-label="Icon",
-description="A fixed, machine readable summary that can be used to display an icon."
-        ]
-Type visualcrossing:stations-channel : current-conditions#stations [
-itemType="String",
-label="Stations",
-description="The weather stations used when collecting an historical observation record."
-        ]
-Type visualcrossing:source-channel : current-conditions#source [
-itemType="String",
-label="Source",
-description="The type of weather data used for this weather object."
-        ]
-Type visualcrossing:sunrise-channel : current-conditions#sunrise [
-itemType="String",
-label="Sunrise",
-description="The formatted time of the sunrise."
-        ]
-Type visualcrossing:timestamp-channel : current-conditions#sunrise-epoch [
-itemType="Number",
-label="Sunrise Epoch",
-description="Sunrise time specified as number of seconds since 1st January 1970 in UTC time."
-        ]
-Type visualcrossing:sunset-channel : current-conditions#sunset [
-itemType="String",
-label="Sunset",
-description="The formatted time of the sunset."
-        ]
-Type visualcrossing:timestamp-channel : current-conditions#sunset-epoch [
-itemType="Number",
-label="Sunset Epoch",
-description="Sunset time specified as number of seconds since 1st January 1970 in UTC time."
-        ]
-Type visualcrossing:moon-phase-channel : current-conditions#moon-phase [
-itemType="Number",
-label="Moon Phase",
-description="Represents the fractional portion through the current moon lunation cycle."
-        ]
-        }
+Thing visualcrossing:weather:default_config "Total Weather Data" @ "Weather" [ apiKey="MKSH4W6U2H3BYJBB7CQVWLPTT" ]
+Thing visualcrossing:weather:all_config "Total Weather Data" @ "Weather" [ apiKey="MKSH4W6U2H3BYJBB7CQVWLPTT", location="wrocław,poland", lang="pl", hostname="https://weather.visualcrossing.com", refreshInterval="3600", httpRetries="3" ]
 ```
 
 ### Item Configuration
 
+Check `full_example.items` to get all days with all hours
+
+**Note: I strongly suggest not using UI Items creation because it will kill the web browser. UI is getting unresponsive when loading so many channels and trying to bind them.**
+
+**Note 2: Using `full_example.items` will probably kill your OH (with message `The queue for a subscriber of type 'class org.openhab.core.internal.items.ItemUpdater' exceeds 5000 elements. System may be unstable.`). Use `only_days.items` to have forecast for days but without hours.**
+
 ```java
 Group Total_Weather_Data "Total Weather Data" [ "Equipment" ] 
-String Total_Weather_Data_Basic_Description "Description" (Total_Weather_Data) [ "Point" ] {channel=visualcrossing:weather:1405ec5e4f:basic#description"}
-Number Total_Weather_Data_Current_Cost "Current Cost" (Total_Weather_Data) [ "Point" ] {channel=visualcrossing:weather:1405ec5e4f:basic#cost"}
+
+// basic group
+Group Total_Weather_Data_Basic "Basic" (Total_Weather_Data) [ "Equipment" ] 
+Number Total_Weather_Data_Basic_Cost "Cost" (Total_Weather_Data_Basic) [ "Point" ] {channel="visualcrossing:weather:default_config:basic#cost"}
+String Total_Weather_Data_Basic_Description "Description" (Total_Weather_Data_Basic) [ "Point" ] {channel="visualcrossing:weather:default_config:basic#description"}
+
+// current conditions
+Group Total_Weather_Data_Current_Conditions "Current Conditions" (Total_Weather_Data) [ "Equipment" ] 
+String Total_Weather_Data_Basic_Datetime "Datetime" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#datetime"}
+DateTime Total_Weather_Data_Basic_Timestamp "Timestamp" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#timestamp"}
+Number:Temperature Total_Weather_Data_Basic_Temperature "Temperature" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#temperature"}
+Number:Temperature Total_Weather_Data_Basic_Feels_Like "Feels Like" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#feels-like"}
+Number:Dimensionless Total_Weather_Data_Basic_Humidity "Humidity" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#humidity"}
+Number:Temperature Total_Weather_Data_Basic_Dew "Dew" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#dew"}
+Number:Length Total_Weather_Data_Basic_Precip "Precip" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#precip", unit="mm"}
+Number:Dimensionless Total_Weather_Data_Basic_Precip_Probality "Precip Probality" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#precip-prob"}
+String Total_Weather_Data_Basic_Precip_Type "Precip Type" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#precip-type"}
+Number:Length Total_Weather_Data_Basic_Snow "Snow" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#snow"}
+Number:Length Total_Weather_Data_Basic_Snow_Depth "Snow Depth" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#snow-depth"}
+Number:Speed Total_Weather_Data_Basic_Wind_Gust "Wind Gust" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#wind-gust"}
+Number:Speed Total_Weather_Data_Basic_Wind_Speed "Wind Speed" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#wind-speed"}
+Number:Angle Total_Weather_Data_Basic_Wind_Direction "Wind Direction" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#wind-dir"}
+Number:Pressure Total_Weather_Data_Basic_Pressure "Pressure" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#pressure"}
+Number:Length Total_Weather_Data_Basic_Visibility "Visibility" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#visibility"}
+Number:Dimensionless Total_Weather_Data_Basic_Cloud_Cover "Cloud Cover" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#cloud-cover"}
+Number:Intensity Total_Weather_Data_Basic_Solar_Radiation "Solar Radiation" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#solar-radiation"}
+Number Total_Weather_Data_Basic_Solar_Energy "Solar Energy" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#solar-energy"}
+Number Total_Weather_Data_Basic_UV_Index "UV Index" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#uv-index"}
+String Total_Weather_Data_Basic_Conditions "Conditions" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#conditions"}
+String Total_Weather_Data_Basic_Icon "Icon" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#icon"}
+String Total_Weather_Data_Basic_Stations "Stations" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#stations"}
+String Total_Weather_Data_Basic_Source "Source" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#source"}
+String Total_Weather_Data_Basic_Sunrise "Sunrise" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#sunrise"}
+DateTime Total_Weather_Data_Basic_Sunrise_Epoch "Sunrise Epoch" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#sunrise-epoch"}
+String Total_Weather_Data_Basic_Sunset "Sunset" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#sunset"}
+DateTime Total_Weather_Data_Basic_Sunset_Epoch "Sunset Epoch" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#sunset-epoch"}
+Number Total_Weather_Data_Basic_Moon_Phase "Moon Phase" (Total_Weather_Data_Current_Conditions) [ "Point" ] {channel="visualcrossing:weather:default_config:current-conditions#moon-phase"}
 ```
 
 ### Actions
