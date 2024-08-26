@@ -41,7 +41,7 @@
 			</parameter>
 			<parameter name="pollingExtraInfoPeriodSeconds" type="integer" min="10" required="true"
 				groupName="Settings">
-				<label>Polling period info</label>
+				<label>Polling Info Period</label>
 				<description>Seconds to wait to the next polling for Device's Extra Info (energy consumption,
 					remaining filter, etc)
 				</description>

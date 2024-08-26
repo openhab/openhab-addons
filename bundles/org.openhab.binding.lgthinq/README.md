@@ -46,10 +46,14 @@ The binding is configured through a bridge (LG GatewayBridge) and you must confi
 
 ## Thing Configuration
 
-All the configurations are pre-defined by the discovery process. But you can customize some parameters to fine-tune the device's state polling process:
+All the configurations are pre-defined by the discovery process. But you can customize to fine-tune the device's state polling process. See the table bellow:
 
-Polling period in seconds when the device is off: is the period that the binding wait until hit the LG API to get the latest device's state when the device is actually turned off
-Polling period in seconds when the device is on: is the period that the binding wait until hit the LG API to get the latest device's state when the device is actually turned on
+| Parameter           | Description                                                                                                                                                                                                | Default Value | Supported Devices             |
+|---------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|-------------------------------|
+| Polling when off    | Seconds to wait to the next polling when device is off. Useful to save up i/o and cpu when your device is not working. If you use only this binding to control the device, you can put higher values here. | 10            | All                           |
+| Polling when on     | Seconds to wait to the next polling for device state (dashboard channels)                                                                                                                                  | 10            | All                           |
+| Polling Info Period | Seconds to wait to the next polling for Device's Extra Info (energy consumption, remaining filter, etc)                                                                                                    | 60            | Air Conditioner and Heat Pump |
+| Extra Info          | If enables, extra info will be fetched in the polling process even when the device is powered off. It's not so common, since extra info are normally changed only when the device is running.              | Off           | Air Conditioner and Heat Pump |
 
 ## Channels
 
@@ -58,16 +62,16 @@ LG ThinQ Air Conditioners supports the following channels
 
 #### Dashboard Channels
 
-| channel            | type             | description                                                                                                                                               |
-|--------------------|------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Target Temperature | Temperature      | Defines the desired target temperature for the device                                                                                                     |
-| Temperature        | Temperature      | Read-Only channel that indicates the current temperature informed by the device                                                                           |
-| Fan Speed          | Number (Labeled) | This channel let you choose the current label value for the fan speed (Low, Medium, High, Auto, etc.). These values are pre-configured in discovery time. |
-| Operation Mode     | Number (Labeled) | Defines device's operation mode (Fan, Cool, Dry, etc). These values are pre-configured at discovery time.                                                 |
-| Power              | Switch           | Define the device's current power state.                                                                                                                  |
-| Cool Jet           | Switch           | Switch Cool Jet ON/OFF                                                                                                                                    |
-| Auto Dry           | Switch           | Switch Auto Dry ON/OFF                                                                                                                                    |
-| Energy Saving      | Switch           | Switch Energy Saving ON/OFF                                                                                                                               |
+| channel            | type               | description                                                                                                                                               |
+|--------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Target Temperature | Number:Temperature | Defines the desired target temperature for the device                                                                                                     |
+| Temperature        | Number:Temperature | Read-Only channel that indicates the current temperature informed by the device                                                                           |
+| Fan Speed          | Number             | This channel let you choose the current label value for the fan speed (Low, Medium, High, Auto, etc.). These values are pre-configured in discovery time. |
+| Operation Mode     | Number (Labeled)   | Defines device's operation mode (Fan, Cool, Dry, etc). These values are pre-configured at discovery time.                                                 |
+| Power              | Switch             | Define the device's current power state.                                                                                                                  |
+| Cool Jet           | Switch             | Switch Cool Jet ON/OFF                                                                                                                                    |
+| Auto Dry           | Switch             | Switch Auto Dry ON/OFF                                                                                                                                    |
+| Energy Saving      | Switch             | Switch Energy Saving ON/OFF                                                                                                                               |
 
 #### More Information Channel
 
@@ -82,15 +86,15 @@ LG ThinQ Heat Pump supports the following channels
 
 #### Dashboard Channels
 
-| channel             | type             | description                                                                                               |
-|---------------------|------------------|-----------------------------------------------------------------------------------------------------------|
-| Target Temperature  | Temperature      | Defines the desired target temperature for the device                                                     |
-| Minimum Temperature | Temperature      | Minimum temperature for the current operation mode                                                        |
-| Maximum Temperature | Temperature      | Maximum temperature for the current operation mode                                                        |
-| Temperature         | Temperature      | Read-Only channel that indicates the current temperature informed by the device                           |
-| Operation Mode      | Number (Labeled) | Defines device's operation mode (Fan, Cool, Dry, etc). These values are pre-configured at discovery time. |
-| Power               | Switch           | Define the device's current power state.                                                                  |
-| Air/Water Switch    | Switch           | Switch the heat pump operation between Air or Water                                                       |
+| channel             | type               | description                                                                                               |
+|---------------------|--------------------|-----------------------------------------------------------------------------------------------------------|
+| Target Temperature  | Number:Temperature | Defines the desired target temperature for the device                                                     |
+| Minimum Temperature | Number:Temperature | Minimum temperature for the current operation mode                                                        |
+| Maximum Temperature | Number:Temperature | Maximum temperature for the current operation mode                                                        |
+| Temperature         | Number:Temperature | Read-Only channel that indicates the current temperature informed by the device                           |
+| Operation Mode      | Number (Labeled)   | Defines device's operation mode (Fan, Cool, Dry, etc). These values are pre-configured at discovery time. |
+| Power               | Switch             | Define the device's current power state.                                                                  |
+| Air/Water Switch    | Switch             | Switch the heat pump operation between Air or Water                                                       |
 
 #### More Information Channel
 
@@ -165,15 +169,15 @@ LG ThinQ Refrigerator supports the following channels
 
 #### Dashboard Channels
 
-| channel                       | type        | description                                                                    |
-|-------------------------------|-------------|--------------------------------------------------------------------------------|
-| Door Open                     | Contact     | Advice if the door is opened                                                   |
-| Freezer Set Point Temperature | Temperature | Temperature level chosen. This channel supports commands to change temperature |
-| Fridge Set Point Temperature  | Temperature | Temperature level chosen. This channel supports commands to change temperature |
-| Temp. Unit                    | String      | Temperature Unit (°C/F). Supports command to change the unit                   |
-| Express Freeze                | Switch      | Channel to change the express freeze function (ON/OFF/Rapid)                   |
-| Express Cool                  | Switch      | Channel to switch ON/OFF express cool function                                 |
-| Vacation                      | Switch      | Channel to switch ON/OFF Vacation function (unit will work in eco mode)        | 
+| channel                       | type               | description                                                                    |
+|-------------------------------|--------------------|--------------------------------------------------------------------------------|
+| Door Open                     | Contact            | Advice if the door is opened                                                   |
+| Freezer Set Point Temperature | Number:Temperature | Temperature level chosen. This channel supports commands to change temperature |
+| Fridge Set Point Temperature  | Number:Temperature | Temperature level chosen. This channel supports commands to change temperature |
+| Temp. Unit                    | String             | Temperature Unit (°C/F). Supports command to change the unit                   |
+| Express Freeze                | Switch             | Channel to change the express freeze function (ON/OFF/Rapid)                   |
+| Express Cool                  | Switch             | Channel to switch ON/OFF express cool function                                 |
+| Vacation                      | Switch             | Channel to switch ON/OFF Vacation function (unit will work in eco mode)        | 
 
 #### More Information
 
