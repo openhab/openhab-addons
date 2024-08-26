@@ -33,19 +33,19 @@
 
 	<thing-type id="controller">
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="account" />
+			<bridge-type-ref id="account"/>
 		</supported-bridge-type-refs>
 		<label>Hydrawise Controller Thing</label>
 		<description>Hydrawise connected irrigation controller</description>
 
 		<!-- Until we have https://github.com/eclipse/smarthome/issues/1118 fixed, we need to list
-		all possible channel groups.
+			all possible channel groups.
 			Once this is fixed we can dynamically add them to the thing and not list them here. -->
 		<channel-groups>
 
 			<!-- System -->
 
-			<channel-group id="system" typeId="system" />
+			<channel-group id="system" typeId="system"/>
 
 			<!-- Sensors -->
 
@@ -83,7 +83,7 @@
 
 			<!-- All Zones -->
 
-			<channel-group id="allzones" typeId="allzones" />
+			<channel-group id="allzones" typeId="allzones"/>
 
 			<!-- Zones -->
 
