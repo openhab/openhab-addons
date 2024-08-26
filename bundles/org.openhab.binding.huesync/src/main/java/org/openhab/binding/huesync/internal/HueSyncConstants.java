@@ -41,6 +41,7 @@ public class HueSyncConstants {
         public static class COMMANDS {
             public static final String MODE = "device-commands#mode";
             public static final String SYNC = "device-commands#syncActive";
+            public static final String HDMI = "device-commands#hdmiActive";
             public static final String SOURCE = "device-commands#hdmiSource";
             public static final String BRIGHTNESS = "device-commands#brightness";
         }

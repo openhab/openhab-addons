@@ -249,6 +249,8 @@ public class HueSyncHandler extends BaseThingHandler {
         this.updateState(HueSyncConstants.CHANNELS.COMMANDS.MODE, new StringType(executionStatus.getMode()));
         this.updateState(HueSyncConstants.CHANNELS.COMMANDS.SYNC,
                 executionStatus.syncActive ? OnOffType.ON : OnOffType.OFF);
+        this.updateState(HueSyncConstants.CHANNELS.COMMANDS.HDMI,
+                executionStatus.hdmiActive ? OnOffType.ON : OnOffType.OFF);
         this.updateState(HueSyncConstants.CHANNELS.COMMANDS.SOURCE, new StringType(executionStatus.hdmiSource));
         this.updateState(HueSyncConstants.CHANNELS.COMMANDS.BRIGHTNESS, new DecimalType(executionStatus.brightness));
     }

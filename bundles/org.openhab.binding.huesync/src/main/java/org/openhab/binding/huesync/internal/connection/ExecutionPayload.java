@@ -25,7 +25,7 @@ public class ExecutionPayload {
     public Command Command;
 
     public ExecutionPayload(String key, Command command) {
-        this.API = key.substring(key.indexOf("#"));
+        this.API = key.substring(key.indexOf("#") + 1);
         this.Command = command;
     }
 }

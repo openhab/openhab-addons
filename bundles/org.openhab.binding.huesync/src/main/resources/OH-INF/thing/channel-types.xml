@@ -151,10 +151,28 @@
 		<description>
 			<![CDATA[
 			  <p>
-			    <b>OFF</b> in case of powersave or passthrough mode, and <b>ON</b> in case of video, game or music mode.
+			    <b>OFF</b> in case of <i>powersave</i> or <i>passthrough</i> mode, and <b>ON</b> in case of <i>video</i>, <i>game</i> or <i>music</i> mode.
 			  </p>
 			  <p>
-			    When changed from OFF to ON, it will start syncing in last used mode for current source. When changed from ON to OFF, will set passthrough mode.
+			    When changed from <b>OFF</b> to <b>ON</b>, it will start syncing in last used mode for current source.
+				When changed from <b>ON</b> to <b>OFF</b>, will set <i>passthrough</i> mode.
+			  </p>
+			]]>
+		</description>
+		<category>iconify:mdi:toggle-switch</category>
+	</channel-type>
+
+	<channel-type id="executioin-hdmiActive">
+		<item-type>Switch</item-type>
+		<label>HDMI Active</label>
+		<description>
+			<![CDATA[
+			  <p>
+			    <b>OFF</b> in case of <i>powersave</i> mode and <b>ON</b> in case of <i>passthrough</i>, <i>video</i>, <i>game</i> or <i>music</i> mode.
+			  </p>
+			  <p>
+			    When changed from <b>OFF</b> to <b>ON</b>, it will set <i>passthrough</i> mode.
+				When changed from <b>ON</b> to <b>OFF</b>, will set <i>powersave</i> mode.
 			  </p>
 			]]>
 		</description>

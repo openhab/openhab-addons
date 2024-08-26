@@ -75,6 +75,7 @@
 		<channels>
 			<channel id="mode" typeId="execution-mode"></channel>
 			<channel id="syncActive" typeId="execution-syncActive"></channel>
+			<channel id="hdmiActive" typeId="executioin-hdmiActive"></channel>
 			<channel id="hdmiSource" typeId="execution-hdmiSource"></channel>
 			<channel id="brightness" typeId="execution-brightness"></channel>
 		</channels>

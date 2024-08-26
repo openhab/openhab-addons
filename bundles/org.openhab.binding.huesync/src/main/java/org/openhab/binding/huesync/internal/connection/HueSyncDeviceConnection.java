@@ -72,6 +72,7 @@ public class HueSyncDeviceConnection {
         this.DeviceCommandExecutors.put(COMMANDS.SOURCE, defaultHandler());
         this.DeviceCommandExecutors.put(COMMANDS.BRIGHTNESS, defaultHandler());
         this.DeviceCommandExecutors.put(COMMANDS.SYNC, defaultHandler());
+        this.DeviceCommandExecutors.put(COMMANDS.HDMI, defaultHandler());
     }
 
     private Consumer<ExecutionPayload> defaultHandler() {
@@ -81,7 +82,7 @@ public class HueSyncDeviceConnection {
     }
 
     private void execute(String key, Command command) {
-        this.logger.info("Command executor: {}", command);
+        this.logger.info("Command executor: {} - {}", key, command);
 
         String value = "";
 
