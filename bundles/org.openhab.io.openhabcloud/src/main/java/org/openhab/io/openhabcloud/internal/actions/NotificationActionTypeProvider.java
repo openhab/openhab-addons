@@ -57,7 +57,7 @@ public class NotificationActionTypeProvider implements ModuleTypeProvider {
             null, Visibility.VISIBLE, null, null);
 
     private static final ModuleType SEND_BROADCAST_NOTIFICATION_ACTION = new ActionType(
-            SendBroadcastNotificationActionHandler.TYPE_ID, getNotificationConfig(ConfigType.NOT_EXTENDED, true, null),
+            SendBroadcastNotificationActionHandler.TYPE_ID, getNotificationConfig(ConfigType.NOT_EXTENDED, false, null),
             "broadcast a notification", "Sends a notification to all devices of all users.", null, Visibility.VISIBLE,
             null, null);
 
