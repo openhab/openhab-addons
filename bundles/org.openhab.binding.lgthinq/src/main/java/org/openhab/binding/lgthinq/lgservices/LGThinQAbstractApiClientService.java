@@ -71,18 +71,18 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         Map<String, String> headers = new HashMap<>();
         headers.put("Accept", "application/json");
         headers.put("Content-type", "application/json;charset=UTF-8");
-        headers.put("x-api-key", V2_API_KEY);
-        headers.put("x-client-id", V2_CLIENT_ID);
+        headers.put("x-api-key", LG_API_V2_API_KEY);
+        headers.put("x-client-id", LG_API_V2_CLIENT_ID);
         headers.put("x-country-code", country);
         headers.put("x-language-code", language);
         headers.put("x-message-id", UUID.randomUUID().toString());
-        headers.put("x-service-code", SVC_CODE);
-        headers.put("x-service-phase", V2_SVC_PHASE);
-        headers.put("x-thinq-app-level", V2_APP_LEVEL);
-        headers.put("x-thinq-app-os", V2_APP_OS);
-        headers.put("x-thinq-app-type", V2_APP_TYPE);
-        headers.put("x-thinq-app-ver", V2_APP_VER);
-        headers.put("x-thinq-security-key", SECURITY_KEY);
+        headers.put("x-service-code", LG_API_SVC_CODE);
+        headers.put("x-service-phase", LG_API_V2_SVC_PHASE);
+        headers.put("x-thinq-app-level", LG_API_V2_APP_LEVEL);
+        headers.put("x-thinq-app-os", LG_API_V2_APP_OS);
+        headers.put("x-thinq-app-type", LG_API_V2_APP_TYPE);
+        headers.put("x-thinq-app-ver", LG_API_V2_APP_VER);
+        headers.put("x-thinq-security-key", LG_API_SECURITY_KEY);
         if (!accessToken.isBlank())
             headers.put("x-emp-token", accessToken);
         if (!userNumber.isBlank())
@@ -100,7 +100,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     public List<LGDevice> listAccountDevices(String bridgeName) throws LGThinqApiException {
         try {
             TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-            UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2()).path(V2_LS_PATH);
+            UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2()).path(LG_API_V2_LS_PATH);
             Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                     token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
             RestResult resp = RestUtils.getCall(httpClient, builder.build().toURL().toString(), headers, null);
@@ -139,7 +139,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
         try {
             TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
             UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2())
-                    .path(String.format("%s/%s", V2_DEVICE_CONFIG_PATH, deviceId));
+                    .path(String.format("%s/%s", LG_API_V2_DEVICE_CONFIG_PATH, deviceId));
             Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                     token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
             RestResult resp = RestUtils.getCall(httpClient, builder.build().toURL().toString(), headers, null);
@@ -293,7 +293,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
             DeviceTypes deviceType, @NonNull C deviceCapability) throws LGThinqApiException,
             LGThinqDeviceV1MonitorExpiredException, IOException, LGThinqUnmarshallException {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V1_MON_DATA_PATH);
+        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(LG_API_V1_MON_DATA_PATH);
         Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
         String jsonData = String.format("{\n" + "   \"lgedmRoot\":{\n" + "      \"workList\":[\n" + "         {\n"
@@ -423,7 +423,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     public String startMonitor(String bridgeName, String deviceId)
             throws LGThinqApiException, LGThinqDeviceV1OfflineException, IOException {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V1_START_MON_PATH);
+        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(LG_API_V1_START_MON_PATH);
         Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
         String workerId = UUID.randomUUID().toString();
@@ -443,7 +443,7 @@ public abstract class LGThinQAbstractApiClientService<C extends CapabilityDefini
     public void stopMonitor(String bridgeName, String deviceId, String workId)
             throws LGThinqApiException, RefreshTokenException, IOException, LGThinqDeviceV1OfflineException {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V1_START_MON_PATH);
+        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(LG_API_V1_START_MON_PATH);
         Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
         String jsonData = String.format(" { \"lgedmRoot\" : {" + "\"cmd\": \"Mon\"," + "\"cmdOpt\": \"Stop\","

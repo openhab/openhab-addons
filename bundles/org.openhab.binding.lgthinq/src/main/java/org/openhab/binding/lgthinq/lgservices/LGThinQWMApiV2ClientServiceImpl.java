@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WM_COMMAND_REMOTE_START_V2;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WMD_COMMAND_REMOTE_START_V2;
 
 import java.util.Map;
 
@@ -61,7 +61,7 @@ public class LGThinQWMApiV2ClientServiceImpl
             ObjectNode dataSetList = JsonNodeFactory.instance.objectNode();
             ObjectNode nodeData = dataSetList.putObject("dataSetList").putObject("washerDryer");
             // 1 - mount nodeData template
-            CommandDefinition cdStart = cap.getCommandsDefinition().get(WM_COMMAND_REMOTE_START_V2);
+            CommandDefinition cdStart = cap.getCommandsDefinition().get(WMD_COMMAND_REMOTE_START_V2);
             if (cdStart == null) {
                 throw new LGThinqApiException(
                         "Command WMStart doesn't defined in cap. Do the Device support Remote Start ?");
@@ -80,7 +80,7 @@ public class LGThinQWMApiV2ClientServiceImpl
                 }
             }
 
-            RestResult result = sendCommand(bridgeName, deviceId, "control-sync", WM_COMMAND_REMOTE_START_V2, "Set",
+            RestResult result = sendCommand(bridgeName, deviceId, "control-sync", WMD_COMMAND_REMOTE_START_V2, "Set",
                     null, null, dataSetList);
             handleGenericErrorResult(result);
         } catch (LGThinqApiException e) {

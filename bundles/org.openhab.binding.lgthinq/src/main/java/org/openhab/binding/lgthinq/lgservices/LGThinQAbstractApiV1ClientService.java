@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.V1_CONTROL_OP;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.LG_API_V1_CONTROL_OP;
 
 import java.util.*;
 
@@ -111,7 +111,7 @@ public abstract class LGThinQAbstractApiV1ClientService<C extends CapabilityDefi
 
     protected RestResult sendCommand(String bridgeName, String deviceId, Object cmdPayload) throws Exception {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
-        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(V1_CONTROL_OP);
+        UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV1()).path(LG_API_V1_CONTROL_OP);
         Map<String, String> headers = getCommonHeaders(token.getGatewayInfo().getLanguage(),
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
         ObjectNode payloadNode = null;

@@ -75,7 +75,7 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
 
     @Override
     protected void loadTempUnitNode(JsonNode tempUnitNode, Map<String, String> tempUnitMap) {
-        tempUnitMap.putAll(CAP_FR_TEMP_UNIT_V2_MAP);
+        tempUnitMap.putAll(CAP_RE_TEMP_UNIT_V2_MAP);
     }
 
     @Override
@@ -85,32 +85,32 @@ public class FridgeCapabilityFactoryV2 extends AbstractFridgeCapabilityFactory {
 
     @Override
     protected void loadFreshAirFilter(JsonNode freshAirFilterNode, Map<String, String> freshAirFilterMap) {
-        loadGenericFeatNode(freshAirFilterNode, freshAirFilterMap, CAP_FR_FRESH_AIR_FILTER_MAP);
+        loadGenericFeatNode(freshAirFilterNode, freshAirFilterMap, CAP_RE_FRESH_AIR_FILTER_MAP);
     }
 
     @Override
     protected void loadWaterFilter(JsonNode waterFilterNode, Map<String, String> waterFilterMap) {
-        loadGenericFeatNode(waterFilterNode, waterFilterMap, CAP_FR_WATER_FILTER);
+        loadGenericFeatNode(waterFilterNode, waterFilterMap, CAP_RE_WATER_FILTER);
     }
 
     @Override
     protected void loadExpressFreezeMode(JsonNode expressFreezeModeNode, Map<String, String> expressFreezeModeMap) {
-        loadGenericFeatNode(expressFreezeModeNode, expressFreezeModeMap, CAP_FR_EXPRESS_FREEZE_MODES);
+        loadGenericFeatNode(expressFreezeModeNode, expressFreezeModeMap, CAP_RE_EXPRESS_FREEZE_MODES);
     }
 
     @Override
     protected void loadSmartSavingMode(JsonNode smartSavingModeNode, Map<String, String> smartSavingModeMap) {
-        loadGenericFeatNode(smartSavingModeNode, smartSavingModeMap, CAP_FR_SMART_SAVING_V2_MODE);
+        loadGenericFeatNode(smartSavingModeNode, smartSavingModeMap, CAP_RE_SMART_SAVING_V2_MODE);
     }
 
     @Override
     protected void loadActiveSaving(JsonNode activeSavingNode, Map<String, String> activeSavingMap) {
-        loadGenericFeatNode(activeSavingNode, activeSavingMap, CAP_FR_LABEL_ON_OFF);
+        loadGenericFeatNode(activeSavingNode, activeSavingMap, CAP_RE_LABEL_ON_OFF);
     }
 
     @Override
     protected void loadAtLeastOneDoorOpen(JsonNode atLeastOneDoorOpenNode, Map<String, String> atLeastOneDoorOpenMap) {
-        loadGenericFeatNode(atLeastOneDoorOpenNode, atLeastOneDoorOpenMap, CAP_FR_LABEL_CLOSE_OPEN);
+        loadGenericFeatNode(atLeastOneDoorOpenNode, atLeastOneDoorOpenMap, CAP_RE_LABEL_CLOSE_OPEN);
     }
 
     @Override

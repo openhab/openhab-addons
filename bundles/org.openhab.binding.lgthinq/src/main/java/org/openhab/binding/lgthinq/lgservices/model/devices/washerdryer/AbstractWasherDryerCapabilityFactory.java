@@ -94,11 +94,11 @@ public abstract class AbstractWasherDryerCapabilityFactory extends AbstractCapab
         wdCap.setProcessState(newFeatureDefinition(getProcessStateNodeName(), monitorValueNode));
         // --- Selectable features -----
         wdCap.setRinseFeat(newFeatureDefinition(getRinseFeatureNodeName(), monitorValueNode,
-                WM_CHANNEL_REMOTE_START_RINSE, WM_CHANNEL_RINSE_ID));
+                CHANNEL_WM_REMOTE_START_RINSE, CHANNEL_WMD_RINSE_ID));
         wdCap.setTemperatureFeat(newFeatureDefinition(getTemperatureFeatureNodeName(), monitorValueNode,
-                WM_CHANNEL_REMOTE_START_TEMP, WM_CHANNEL_TEMP_LEVEL_ID));
-        wdCap.setSpinFeat(newFeatureDefinition(getSpinFeatureNodeName(), monitorValueNode, WM_CHANNEL_REMOTE_START_SPIN,
-                WM_CHANNEL_SPIN_ID));
+                CHANNEL_WM_REMOTE_START_TEMP, CHANNEL_WMD_TEMP_LEVEL_ID));
+        wdCap.setSpinFeat(newFeatureDefinition(getSpinFeatureNodeName(), monitorValueNode, CHANNEL_WM_REMOTE_START_SPIN,
+                CHANNEL_WMD_SPIN_ID));
         // ----------------------------
         wdCap.setDryLevel(newFeatureDefinition(getDryLevelNodeName(), monitorValueNode));
         wdCap.setSoilWash(newFeatureDefinition(getSoilWashFeatureNodeName(), monitorValueNode));

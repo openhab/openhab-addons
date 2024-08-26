@@ -71,12 +71,12 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
 
     @Override
     protected void loadIcePlus(JsonNode icePlusNode, Map<String, String> icePlusMap) {
-        loadGenericFeatNode(icePlusNode, icePlusMap, CAP_FR_ON_OFF);
+        loadGenericFeatNode(icePlusNode, icePlusMap, CAP_RE_ON_OFF);
     }
 
     @Override
     protected void loadFreshAirFilter(JsonNode freshAirFilterNode, Map<String, String> freshAirFilterMap) {
-        loadGenericFeatNode(freshAirFilterNode, freshAirFilterMap, CAP_FR_FRESH_AIR_FILTER_MAP);
+        loadGenericFeatNode(freshAirFilterNode, freshAirFilterMap, CAP_RE_FRESH_AIR_FILTER_MAP);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
         int minValue = waterFilterNode.path("min").asInt(0);
         int maxValue = waterFilterNode.path("max").asInt(6);
         for (int i = minValue; i <= maxValue; i++) {
-            waterFilterMap.put(String.valueOf(i), i + CAP_FR_WATER_FILTER_USED_POSTFIX);
+            waterFilterMap.put(String.valueOf(i), i + CAP_RE_WATER_FILTER_USED_POSTFIX);
         }
     }
 
@@ -95,7 +95,7 @@ public class FridgeCapabilityFactoryV1 extends AbstractFridgeCapabilityFactory {
 
     @Override
     protected void loadSmartSavingMode(JsonNode smartSavingModeNode, Map<String, String> smartSavingModeMap) {
-        loadGenericFeatNode(smartSavingModeNode, smartSavingModeMap, CAP_FR_SMART_SAVING_MODE);
+        loadGenericFeatNode(smartSavingModeNode, smartSavingModeMap, CAP_RE_SMART_SAVING_MODE);
     }
 
     @Override

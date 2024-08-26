@@ -12,8 +12,8 @@
  */
 package org.openhab.binding.lgthinq.internal.api;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.V2_EMP_SESS_PATH;
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.V2_EMP_SESS_URL;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.LG_API_V2_EMP_SESS_PATH;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.LG_API_V2_EMP_SESS_URL;
 
 import java.io.Serializable;
 
@@ -57,7 +57,7 @@ public class LGThinqGateway implements Serializable {
 
     @JsonIgnore
     public String getTokenSessionEmpUrl() {
-        return alternativeEmpServer.isBlank() ? V2_EMP_SESS_URL : alternativeEmpServer + V2_EMP_SESS_PATH;
+        return alternativeEmpServer.isBlank() ? LG_API_V2_EMP_SESS_URL : alternativeEmpServer + LG_API_V2_EMP_SESS_PATH;
     }
 
     public String getEmpBaseUri() {

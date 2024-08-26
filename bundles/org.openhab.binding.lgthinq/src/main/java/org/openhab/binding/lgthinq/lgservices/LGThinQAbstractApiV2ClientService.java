@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.V2_CTRL_DEVICE_CONFIG_PATH;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.LG_API_V2_CTRL_DEVICE_CONFIG_PATH;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -63,7 +63,7 @@ public abstract class LGThinQAbstractApiV2ClientService<C extends CapabilityDefi
             throws LGThinqApiException, IOException {
         TokenResult token = tokenManager.getValidRegisteredToken(bridgeName);
         UriBuilder builder = UriBuilder.fromUri(token.getGatewayInfo().getApiRootV2())
-                .path(String.format(V2_CTRL_DEVICE_CONFIG_PATH, deviceId, controlPath));
+                .path(String.format(LG_API_V2_CTRL_DEVICE_CONFIG_PATH, deviceId, controlPath));
         Map<String, String> headers = getCommonV2Headers(token.getGatewayInfo().getLanguage(),
                 token.getGatewayInfo().getCountry(), token.getAccessToken(), token.getUserInfo().getUserNumber());
         RestResult resp = RestUtils.postCall(httpClient, builder.build().toURL().toString(), headers, payload);

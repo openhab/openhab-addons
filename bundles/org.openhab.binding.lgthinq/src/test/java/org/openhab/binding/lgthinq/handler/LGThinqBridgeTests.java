@@ -81,7 +81,7 @@ class LGThinqBridgeTests {
             accessToken, refreshToken);
 
     private String getCurrentTimestamp() {
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+        SimpleDateFormat sdf = new SimpleDateFormat(LG_API_DATE_FORMAT);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf.format(new Date());
     }
@@ -89,9 +89,9 @@ class LGThinqBridgeTests {
     @Test
     public void testDiscoveryACThings() {
         setupAuthenticationMock();
-        LGThinQApiClientService service1 = LGThinQApiClientServiceFactory.newACApiClientService(PLATFORM_TYPE_V1,
+        LGThinQApiClientService service1 = LGThinQApiClientServiceFactory.newACApiClientService(LG_API_PLATFORM_TYPE_V1,
                 mock(HttpClientFactory.class));
-        LGThinQApiClientService service2 = LGThinQApiClientServiceFactory.newACApiClientService(PLATFORM_TYPE_V2,
+        LGThinQApiClientService service2 = LGThinQApiClientServiceFactory.newACApiClientService(LG_API_PLATFORM_TYPE_V2,
                 mock(HttpClientFactory.class));
         try {
             List<LGDevice> devices = service2.listAccountDevices("bridgeTest");
@@ -102,20 +102,20 @@ class LGThinqBridgeTests {
     }
 
     private void setupAuthenticationMock() {
-        stubFor(get(GATEWAY_SERVICE_PATH_V2).willReturn(ok(gtwResponse)));
+        stubFor(get(LG_API_GATEWAY_SERVICE_PATH_V2).willReturn(ok(gtwResponse)));
         String preLoginPwd = RestUtils.getPreLoginEncPwd(fakePassword);
-        stubFor(post("/spx" + PRE_LOGIN_PATH).withRequestBody(containing("user_auth2=" + preLoginPwd))
+        stubFor(post("/spx" + LG_API_PRE_LOGIN_PATH).withRequestBody(containing("user_auth2=" + preLoginPwd))
                 .willReturn(ok(preLoginResponse)));
-        URI uri = UriBuilder.fromUri("http://localhost:8880").path("spx" + OAUTH_SEARCH_KEY_PATH)
+        URI uri = UriBuilder.fromUri("http://localhost:8880").path("spx" + LG_API_OAUTH_SEARCH_KEY_PATH)
                 .queryParam("key_name", "OAUTH_SECRETKEY").queryParam("sever_type", "OP").build();
         stubFor(get(String.format("%s?%s", uri.getPath(), uri.getQuery())).willReturn(ok(oauthTokenSearchKeyReturned)));
         String fakeUserNameEncoded = URLEncoder.encode(fakeUserName, StandardCharsets.UTF_8);
-        stubFor(post(V2_SESSION_LOGIN_PATH + fakeUserNameEncoded)
+        stubFor(post(LG_API_V2_SESSION_LOGIN_PATH + fakeUserNameEncoded)
                 .withRequestBody(containing("user_auth2=SOME_DUMMY_ENC_PWD"))
                 .withHeader("X-Signature", equalTo("SOME_DUMMY_SIGNATURE"))
                 .withHeader("X-Timestamp", equalTo("1643236928")).willReturn(ok(loginSessionResponse)));
-        stubFor(get(V2_USER_INFO).willReturn(ok(userInfoReturned)));
-        stubFor(get("/v1" + V2_LS_PATH).willReturn(ok(dashboardListReturned)));
+        stubFor(get(LG_API_V2_USER_INFO).willReturn(ok(userInfoReturned)));
+        stubFor(get("/v1" + LG_API_V2_LS_PATH).willReturn(ok(dashboardListReturned)));
         String currTimestamp = getCurrentTimestamp();
         Map<String, String> empData = new LinkedHashMap<>();
         empData.put("account_type", userIdType);
@@ -159,19 +159,19 @@ class LGThinqBridgeTests {
 
     @Test
     public void testDiscoveryWMThings() {
-        stubFor(get(GATEWAY_SERVICE_PATH_V2).willReturn(ok(gtwResponse)));
+        stubFor(get(LG_API_GATEWAY_SERVICE_PATH_V2).willReturn(ok(gtwResponse)));
         String preLoginPwd = RestUtils.getPreLoginEncPwd(fakePassword);
-        stubFor(post("/spx" + PRE_LOGIN_PATH).withRequestBody(containing("user_auth2=" + preLoginPwd))
+        stubFor(post("/spx" + LG_API_PRE_LOGIN_PATH).withRequestBody(containing("user_auth2=" + preLoginPwd))
                 .willReturn(ok(preLoginResponse)));
-        URI uri = UriBuilder.fromUri("http://localhost:8880").path("spx" + OAUTH_SEARCH_KEY_PATH)
+        URI uri = UriBuilder.fromUri("http://localhost:8880").path("spx" + LG_API_OAUTH_SEARCH_KEY_PATH)
                 .queryParam("key_name", "OAUTH_SECRETKEY").queryParam("sever_type", "OP").build();
         stubFor(get(String.format("%s?%s", uri.getPath(), uri.getQuery())).willReturn(ok(oauthTokenSearchKeyReturned)));
-        stubFor(post(V2_SESSION_LOGIN_PATH + URLEncoder.encode(fakeUserName, StandardCharsets.UTF_8))
+        stubFor(post(LG_API_V2_SESSION_LOGIN_PATH + URLEncoder.encode(fakeUserName, StandardCharsets.UTF_8))
                 .withRequestBody(containing("user_auth2=SOME_DUMMY_ENC_PWD"))
                 .withHeader("X-Signature", equalTo("SOME_DUMMY_SIGNATURE"))
                 .withHeader("X-Timestamp", equalTo("1643236928")).willReturn(ok(loginSessionResponse)));
-        stubFor(get(V2_USER_INFO).willReturn(ok(userInfoReturned)));
-        stubFor(get("/v1" + V2_LS_PATH).willReturn(ok(dashboardWMListReturned)));
+        stubFor(get(LG_API_V2_USER_INFO).willReturn(ok(userInfoReturned)));
+        stubFor(get("/v1" + LG_API_V2_LS_PATH).willReturn(ok(dashboardWMListReturned)));
         String dataCollectedWM = JsonUtils.loadJson("wm-data-result.json");
         stubFor(get("/v1/service/devices/fakeDeviceId").willReturn(ok(dataCollectedWM)));
         String currTimestamp = getCurrentTimestamp();
@@ -196,7 +196,7 @@ class LGThinqBridgeTests {
         LGThinQBridgeHandler b = new LGThinQBridgeHandler(fakeThing, mock(HttpClientFactory.class));
 
         final LGThinQWMApiClientService service2 = LGThinQApiClientServiceFactory
-                .newWMApiClientService(PLATFORM_TYPE_V1, mock(HttpClientFactory.class));
+                .newWMApiClientService(LG_API_PLATFORM_TYPE_V1, mock(HttpClientFactory.class));
         TokenManager tokenManager = new TokenManager(mock(HttpClient.class));
         try {
             if (!tokenManager.isOauthTokenRegistered(fakeBridgeName)) {

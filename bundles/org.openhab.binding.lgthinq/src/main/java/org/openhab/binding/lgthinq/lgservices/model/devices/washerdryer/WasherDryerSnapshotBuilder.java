@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WM_SNAPSHOT_WASHER_DRYER_NODE_V2;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WMD_SNAPSHOT_WASHER_DRYER_NODE_V2;
 
 import java.util.List;
 import java.util.Map;
@@ -63,7 +63,7 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
                     }
                     case V2_0: {
                         Map<String, Object> washerDryerMap = Objects.requireNonNull(
-                                (Map<String, Object>) snapMap.get(WM_SNAPSHOT_WASHER_DRYER_NODE_V2),
+                                (Map<String, Object>) snapMap.get(WMD_SNAPSHOT_WASHER_DRYER_NODE_V2),
                                 "washerDryer node must be present in the snapshot");
                         snap = objectMapper.convertValue(washerDryerMap, snapClass);
                         setAltCourseNodeName(capDef, snap, washerDryerMap);
@@ -79,7 +79,7 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
                     }
                     case V2_0: {
                         Map<String, Object> washerDryerMap = Objects.requireNonNull(
-                                (Map<String, Object>) snapMap.get(WM_SNAPSHOT_WASHER_DRYER_NODE_V2),
+                                (Map<String, Object>) snapMap.get(WMD_SNAPSHOT_WASHER_DRYER_NODE_V2),
                                 "washerDryer node must be present in the snapshot");
                         snap = objectMapper.convertValue(washerDryerMap, snapClass);
                         setAltCourseNodeName(capDef, snap, washerDryerMap);

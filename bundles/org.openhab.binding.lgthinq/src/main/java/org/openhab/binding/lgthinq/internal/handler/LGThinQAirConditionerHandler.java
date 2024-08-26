@@ -96,24 +96,24 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
         channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
         channelGroupExtendedInfoUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_EXTENDED_INFO_GRP_ID);
 
-        opModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_MOD_OP_ID);
-        hpAirWaterSwitchChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AIR_WATER_SWITCH_ID);
-        targetTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_TARGET_TEMP_ID);
-        minTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_MIN_TEMP_ID);
-        maxTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_MAX_TEMP_ID);
-        currTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_CURRENT_TEMP_ID);
-        fanSpeedChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_FAN_SPEED_ID);
-        jetModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_COOL_JET_ID);
-        airCleanChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AIR_CLEAN_ID);
-        autoDryChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AUTO_DRY_ID);
-        energySavingChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_ENERGY_SAVING_ID);
-        stepUpDownChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_STEP_UP_DOWN_ID);
-        stepLeftRightChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_STEP_LEFT_RIGHT_ID);
-        powerChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_POWER_ID);
+        opModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_MOD_OP_ID);
+        hpAirWaterSwitchChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_AIR_WATER_SWITCH_ID);
+        targetTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_TARGET_TEMP_ID);
+        minTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_MIN_TEMP_ID);
+        maxTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_MAX_TEMP_ID);
+        currTempChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_CURRENT_TEMP_ID);
+        fanSpeedChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_FAN_SPEED_ID);
+        jetModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_COOL_JET_ID);
+        airCleanChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_AIR_CLEAN_ID);
+        autoDryChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_AUTO_DRY_ID);
+        energySavingChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_ENERGY_SAVING_ID);
+        stepUpDownChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_STEP_UP_DOWN_ID);
+        stepLeftRightChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_STEP_LEFT_RIGHT_ID);
+        powerChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_AC_POWER_ID);
         extendedInfoCollectorChannelUID = new ChannelUID(channelGroupExtendedInfoUID,
                 CHANNEL_EXTENDED_INFO_COLLECTOR_ID);
-        currentPowerEnergyChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_CURRENT_POWER_ID);
-        remainingFilterChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_REMAINING_FILTER_ID);
+        currentPowerEnergyChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_AC_CURRENT_POWER_ID);
+        remainingFilterChannelUID = new ChannelUID(channelGroupExtendedInfoUID, CHANNEL_AC_REMAINING_FILTER_ID);
     }
 
     @Override
@@ -214,14 +214,15 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     @Override
     public void updateChannelDynStateDescription() throws LGThinqApiException {
         ACCapability acCap = getCapabilities();
-        manageDynChannel(jetModeChannelUID, CHANNEL_COOL_JET_ID, "Switch", acCap.isJetModeAvailable());
-        manageDynChannel(autoDryChannelUID, CHANNEL_AUTO_DRY_ID, "Switch", acCap.isAutoDryModeAvailable());
-        manageDynChannel(airCleanChannelUID, CHANNEL_AIR_CLEAN_ID, "Switch", acCap.isAirCleanAvailable());
-        manageDynChannel(energySavingChannelUID, CHANNEL_ENERGY_SAVING_ID, "Switch", acCap.isEnergySavingAvailable());
-        manageDynChannel(stepUpDownChannelUID, CHANNEL_STEP_UP_DOWN_ID, "Number", acCap.isStepUpDownAvailable());
-        manageDynChannel(stepLeftRightChannelUID, CHANNEL_STEP_LEFT_RIGHT_ID, "Number",
+        manageDynChannel(jetModeChannelUID, CHANNEL_AC_COOL_JET_ID, "Switch", acCap.isJetModeAvailable());
+        manageDynChannel(autoDryChannelUID, CHANNEL_AC_AUTO_DRY_ID, "Switch", acCap.isAutoDryModeAvailable());
+        manageDynChannel(airCleanChannelUID, CHANNEL_AC_AIR_CLEAN_ID, "Switch", acCap.isAirCleanAvailable());
+        manageDynChannel(energySavingChannelUID, CHANNEL_AC_ENERGY_SAVING_ID, "Switch",
+                acCap.isEnergySavingAvailable());
+        manageDynChannel(stepUpDownChannelUID, CHANNEL_AC_STEP_UP_DOWN_ID, "Number", acCap.isStepUpDownAvailable());
+        manageDynChannel(stepLeftRightChannelUID, CHANNEL_AC_STEP_LEFT_RIGHT_ID, "Number",
                 acCap.isStepLeftRightAvailable());
-        manageDynChannel(stepLeftRightChannelUID, CHANNEL_STEP_LEFT_RIGHT_ID, "Number",
+        manageDynChannel(stepLeftRightChannelUID, CHANNEL_AC_STEP_LEFT_RIGHT_ID, "Number",
                 acCap.isStepLeftRightAvailable());
 
         if (!acCap.getFanSpeed().isEmpty()) {
@@ -277,12 +278,12 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
 
     @Override
     public String getDeviceAlias() {
-        return emptyIfNull(getThing().getProperties().get(DEVICE_ALIAS));
+        return emptyIfNull(getThing().getProperties().get(PROP_INFO_DEVICE_ALIAS));
     }
 
     @Override
     public String getDeviceUriJsonConfig() {
-        return emptyIfNull(getThing().getProperties().get(MODEL_URL_INFO));
+        return emptyIfNull(getThing().getProperties().get(PROP_INFO_MODEL_URL_INFO));
     }
 
     @Override
@@ -305,7 +306,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     protected void processCommand(AsyncCommandParams params) throws LGThinqApiException {
         Command command = params.command;
         switch (getSimpleChannelUID(params.channelUID)) {
-            case CHANNEL_MOD_OP_ID: {
+            case CHANNEL_AC_MOD_OP_ID: {
                 if (params.command instanceof DecimalType) {
                     lgThinqACApiClientService.changeOperationMode(getBridgeId(), getDeviceId(),
                             ((DecimalType) command).intValue());
@@ -314,7 +315,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_FAN_SPEED_ID: {
+            case CHANNEL_AC_FAN_SPEED_ID: {
                 if (command instanceof DecimalType) {
                     lgThinqACApiClientService.changeFanSpeed(getBridgeId(), getDeviceId(),
                             ((DecimalType) command).intValue());
@@ -323,7 +324,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_STEP_UP_DOWN_ID: {
+            case CHANNEL_AC_STEP_UP_DOWN_ID: {
                 if (command instanceof DecimalType) {
                     lgThinqACApiClientService.changeStepUpDown(getBridgeId(), getDeviceId(), getLastShot(),
                             ((DecimalType) command).intValue());
@@ -332,7 +333,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_STEP_LEFT_RIGHT_ID: {
+            case CHANNEL_AC_STEP_LEFT_RIGHT_ID: {
                 if (command instanceof DecimalType) {
                     lgThinqACApiClientService.changeStepLeftRight(getBridgeId(), getDeviceId(), getLastShot(),
                             ((DecimalType) command).intValue());
@@ -341,7 +342,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_POWER_ID: {
+            case CHANNEL_AC_POWER_ID: {
                 if (command instanceof OnOffType) {
                     lgThinqACApiClientService.turnDevicePower(getBridgeId(), getDeviceId(),
                             command == OnOffType.ON ? DevicePowerState.DV_POWER_ON : DevicePowerState.DV_POWER_OFF);
@@ -350,7 +351,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_COOL_JET_ID: {
+            case CHANNEL_AC_COOL_JET_ID: {
                 if (command instanceof OnOffType) {
                     lgThinqACApiClientService.turnCoolJetMode(getBridgeId(), getDeviceId(),
                             command == OnOffType.ON ? getCapabilities().getCoolJetModeCommandOn()
@@ -360,7 +361,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_AIR_CLEAN_ID: {
+            case CHANNEL_AC_AIR_CLEAN_ID: {
                 if (command instanceof OnOffType) {
                     lgThinqACApiClientService.turnAirCleanMode(getBridgeId(), getDeviceId(),
                             command == OnOffType.ON ? getCapabilities().getAirCleanModeCommandOn()
@@ -370,7 +371,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_AUTO_DRY_ID: {
+            case CHANNEL_AC_AUTO_DRY_ID: {
                 if (command instanceof OnOffType) {
                     lgThinqACApiClientService.turnAutoDryMode(getBridgeId(), getDeviceId(),
                             command == OnOffType.ON ? getCapabilities().getAutoDryModeCommandOn()
@@ -380,7 +381,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_ENERGY_SAVING_ID: {
+            case CHANNEL_AC_ENERGY_SAVING_ID: {
                 if (command instanceof OnOffType) {
                     lgThinqACApiClientService.turnEnergySavingMode(getBridgeId(), getDeviceId(),
                             command == OnOffType.ON ? getCapabilities().getEnergySavingModeCommandOn()
@@ -390,7 +391,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
                 }
                 break;
             }
-            case CHANNEL_TARGET_TEMP_ID: {
+            case CHANNEL_AC_TARGET_TEMP_ID: {
                 double targetTemp;
                 if (command instanceof DecimalType) {
                     targetTemp = ((DecimalType) command).doubleValue();
@@ -446,9 +447,9 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
     @Override
     protected void updateExtraInfoStateChannels(Map<String, Object> energyStateAttributes) throws LGThinqException {
         logger.debug("Calling updateExtraInfoStateChannels for device: {}", getDeviceId());
-        String instantPowerConsumption = (String) energyStateAttributes.get(EXTENDED_ATTR_INSTANT_POWER);
-        String filterUsed = (String) energyStateAttributes.get(EXTENDED_ATTR_FILTER_USED_TIME);
-        String filterTimelife = (String) energyStateAttributes.get(EXTENDED_ATTR_FILTER_MAX_TIME_TO_USE);
+        String instantPowerConsumption = (String) energyStateAttributes.get(CAP_EXTRA_ATTR_INSTANT_POWER);
+        String filterUsed = (String) energyStateAttributes.get(CAP_EXTRA_ATTR_FILTER_USED_TIME);
+        String filterTimelife = (String) energyStateAttributes.get(CAP_EXTRA_ATTR_FILTER_MAX_TIME_TO_USE);
         if (instantPowerConsumption == null) {
             updateState(currentPowerEnergyChannelUID, UnDefType.NULL);
         } else if (NumberUtils.isCreatable(instantPowerConsumption)) {

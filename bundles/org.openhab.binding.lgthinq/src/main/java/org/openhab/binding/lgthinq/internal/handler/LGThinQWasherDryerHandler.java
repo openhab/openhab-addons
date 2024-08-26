@@ -93,23 +93,23 @@ public class LGThinQWasherDryerHandler
         this.stateDescriptionProvider = stateDescriptionProvider;
         lgThinqWMApiClientService = LGThinQApiClientServiceFactory.newWMApiClientService(lgPlatformType,
                 httpClientFactory);
-        channelGroupRemoteStartUID = new ChannelGroupUID(getThing().getUID(), WM_CHANNEL_REMOTE_START_GRP_ID);
+        channelGroupRemoteStartUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_WMD_REMOTE_START_GRP_ID);
         channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
-        courseChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_COURSE_ID);
-        dryLevelChannelUID = new ChannelUID(channelGroupDashboardUID, DR_CHANNEL_DRY_LEVEL_ID);
-        stateChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_STATE_ID);
-        processStateChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_PROCESS_STATE_ID);
-        remainTimeChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_REMAIN_TIME_ID);
-        delayTimeChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_DELAY_TIME_ID);
-        temperatureChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_TEMP_LEVEL_ID);
-        doorLockChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_DOOR_LOCK_ID);
-        childLockChannelUID = new ChannelUID(channelGroupDashboardUID, DR_CHANNEL_CHILD_LOCK_ID);
-        rinseChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_RINSE_ID);
-        spinChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_SPIN_ID);
-        standByModeChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_STAND_BY_ID);
-        remoteStartFlagChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_REMOTE_START_ID);
-        remoteStartStopChannelUID = new ChannelUID(channelGroupRemoteStartUID, WM_CHANNEL_REMOTE_START_START_STOP);
-        remoteStartCourseChannelUID = new ChannelUID(channelGroupRemoteStartUID, WM_CHANNEL_REMOTE_COURSE);
+        courseChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_COURSE_ID);
+        dryLevelChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_DR_DRY_LEVEL_ID);
+        stateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_STATE_ID);
+        processStateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_PROCESS_STATE_ID);
+        remainTimeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_REMAIN_TIME_ID);
+        delayTimeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_DELAY_TIME_ID);
+        temperatureChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_TEMP_LEVEL_ID);
+        doorLockChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_DOOR_LOCK_ID);
+        childLockChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_DR_CHILD_LOCK_ID);
+        rinseChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_RINSE_ID);
+        spinChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_SPIN_ID);
+        standByModeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_STAND_BY_ID);
+        remoteStartFlagChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_REMOTE_START_ID);
+        remoteStartStopChannelUID = new ChannelUID(channelGroupRemoteStartUID, CHANNEL_WMD_REMOTE_START_START_STOP);
+        remoteStartCourseChannelUID = new ChannelUID(channelGroupRemoteStartUID, CHANNEL_WMD_REMOTE_COURSE);
     }
 
     @Override
@@ -133,14 +133,14 @@ public class LGThinQWasherDryerHandler
 
         List<StateOption> options = new ArrayList<>();
         wmCap.getStateFeat().getValuesMapping()
-                .forEach((k, v) -> options.add(new StateOption(k, keyIfValueNotFound(CAP_WDM_STATE, v))));
+                .forEach((k, v) -> options.add(new StateOption(k, keyIfValueNotFound(CAP_WMD_STATE, v))));
         stateDescriptionProvider.setStateOptions(stateChannelUID, options);
 
         loadOptionsCourse(wmCap, courseChannelUID);
 
         List<StateOption> optionsTemp = new ArrayList<>();
         wmCap.getTemperatureFeat().getValuesMapping()
-                .forEach((k, v) -> optionsTemp.add(new StateOption(k, keyIfValueNotFound(CAP_WM_TEMPERATURE, v))));
+                .forEach((k, v) -> optionsTemp.add(new StateOption(k, keyIfValueNotFound(CAP_WMD_TEMPERATURE, v))));
         stateDescriptionProvider.setStateOptions(temperatureChannelUID, optionsTemp);
 
         List<StateOption> optionsDoor = new ArrayList<>();
@@ -160,7 +160,7 @@ public class LGThinQWasherDryerHandler
 
         List<StateOption> optionsPre = new ArrayList<>();
         wmCap.getProcessState().getValuesMapping()
-                .forEach((k, v) -> optionsPre.add(new StateOption(k, keyIfValueNotFound(CAP_WDM_PROCESS_STATE, v))));
+                .forEach((k, v) -> optionsPre.add(new StateOption(k, keyIfValueNotFound(CAP_WMD_PROCESS_STATE, v))));
         stateDescriptionProvider.setStateOptions(processStateChannelUID, optionsPre);
 
         List<StateOption> optionsChildLock = new ArrayList<>();
@@ -199,7 +199,7 @@ public class LGThinQWasherDryerHandler
     @Override
     protected void updateDeviceChannels(WasherDryerSnapshot shot) {
         WasherDryerSnapshot lastShot = getLastShot();
-        updateState("dashboard#" + CHANNEL_POWER_ID,
+        updateState("dashboard#" + CHANNEL_AC_POWER_ID,
                 (DevicePowerState.DV_POWER_ON.equals(shot.getPowerStatus()) ? OnOffType.ON : OnOffType.OFF));
         updateState(stateChannelUID, new StringType(shot.getState()));
         updateState(processStateChannelUID, new StringType(shot.getProcessState()));
@@ -221,9 +221,9 @@ public class LGThinQWasherDryerHandler
             ThingHandlerCallback callback = getCallback();
             if (rsStartStopChannel == null && callback != null) {
                 // === creating channel LaunchRemote
-                dynChannels
-                        .add(createDynChannel(WM_CHANNEL_REMOTE_START_START_STOP, remoteStartStopChannelUID, "Switch"));
-                dynChannels.add(createDynChannel(WM_CHANNEL_REMOTE_COURSE, remoteStartCourseChannelUID, "String"));
+                dynChannels.add(
+                        createDynChannel(CHANNEL_WMD_REMOTE_START_START_STOP, remoteStartStopChannelUID, "Switch"));
+                dynChannels.add(createDynChannel(CHANNEL_WMD_REMOTE_COURSE, remoteStartCourseChannelUID, "String"));
                 // Just enabled remote start. Then is Off
                 updateState(remoteStartStopChannelUID, OnOffType.OFF);
                 // === creating selectable channels for the Course (if any)
@@ -234,7 +234,7 @@ public class LGThinQWasherDryerHandler
                     updateState(remoteStartCourseChannelUID, new StringType(cap.getDefaultCourseId()));
 
                     CourseDefinition courseDef = cap.getCourses().get(cap.getDefaultCourseId());
-                    if (WM_COURSE_NOT_SELECTED_VALUE.equals(shot.getSmartCourse()) && courseDef != null) {
+                    if (WMD_COURSE_NOT_SELECTED_VALUE.equals(shot.getSmartCourse()) && courseDef != null) {
                         // only create selectable channels if the course is not a smart course. Smart courses have
                         // already predefined
                         // the functions values
@@ -342,13 +342,13 @@ public class LGThinQWasherDryerHandler
             String value = Objects.requireNonNullElse(getItemLinkedValue(c.getUID()), "");
             String simpleChannelUID = getSimpleChannelUID(c.getUID().getId());
             switch (simpleChannelUID) {
-                case WM_CHANNEL_REMOTE_START_RINSE:
+                case CHANNEL_WM_REMOTE_START_RINSE:
                     data.put(cap.getRinseFeat().getName(), value);
                     break;
-                case WM_CHANNEL_REMOTE_START_TEMP:
+                case CHANNEL_WM_REMOTE_START_TEMP:
                     data.put(cap.getTemperatureFeat().getName(), value);
                     break;
-                case WM_CHANNEL_REMOTE_START_SPIN:
+                case CHANNEL_WM_REMOTE_START_SPIN:
                     data.put(cap.getSpinFeat().getName(), value);
                     break;
                 default:
@@ -366,7 +366,7 @@ public class LGThinQWasherDryerHandler
         String simpleChannelUID;
         simpleChannelUID = getSimpleChannelUID(params.channelUID);
         switch (simpleChannelUID) {
-            case WM_CHANNEL_REMOTE_START_START_STOP: {
+            case CHANNEL_WMD_REMOTE_START_START_STOP: {
                 if (command instanceof OnOffType) {
                     if (OnOffType.ON.equals(command)) {
                         if (!lastShot.isStandBy()) {
@@ -384,7 +384,7 @@ public class LGThinQWasherDryerHandler
                 }
                 break;
             }
-            case WM_CHANNEL_STAND_BY_ID: {
+            case CHANNEL_WMD_STAND_BY_ID: {
                 if (command instanceof OnOffType) {
                     lgThinqWMApiClientService.wakeUp(getBridgeId(), getDeviceId(), OnOffType.ON.equals(command));
                 } else {
@@ -405,12 +405,12 @@ public class LGThinQWasherDryerHandler
 
     @Override
     public String getDeviceAlias() {
-        return emptyIfNull(getThing().getProperties().get(DEVICE_ALIAS));
+        return emptyIfNull(getThing().getProperties().get(PROP_INFO_DEVICE_ALIAS));
     }
 
     @Override
     public String getDeviceUriJsonConfig() {
-        return emptyIfNull(getThing().getProperties().get(MODEL_URL_INFO));
+        return emptyIfNull(getThing().getProperties().get(PROP_INFO_MODEL_URL_INFO));
     }
 
     @Override
@@ -423,12 +423,12 @@ public class LGThinQWasherDryerHandler
      */
     @Override
     public void onDeviceDisconnected() {
-        updateState(CHANNEL_POWER_ID, OnOffType.OFF);
-        updateState(WM_CHANNEL_STATE_ID, new StringType(WM_POWER_OFF_VALUE));
-        updateState(WM_CHANNEL_COURSE_ID, new StringType("NOT_SELECTED"));
-        updateState(WM_CHANNEL_SMART_COURSE_ID, new StringType("NOT_SELECTED"));
-        updateState(WM_CHANNEL_TEMP_LEVEL_ID, new StringType("NOT_SELECTED"));
-        updateState(WM_CHANNEL_DOOR_LOCK_ID, new StringType("DOOR_LOCK_OFF"));
-        updateState(WM_CHANNEL_REMAIN_TIME_ID, new StringType("00:00"));
+        updateState(CHANNEL_AC_POWER_ID, OnOffType.OFF);
+        updateState(CHANNEL_WMD_STATE_ID, new StringType(WMD_POWER_OFF_VALUE));
+        updateState(CHANNEL_WMD_COURSE_ID, new StringType("NOT_SELECTED"));
+        updateState(CHANNEL_WMD_SMART_COURSE_ID, new StringType("NOT_SELECTED"));
+        updateState(CHANNEL_WMD_TEMP_LEVEL_ID, new StringType("NOT_SELECTED"));
+        updateState(CHANNEL_WMD_DOOR_LOCK_ID, new StringType("DOOR_LOCK_OFF"));
+        updateState(CHANNEL_WMD_REMAIN_TIME_ID, new StringType("00:00"));
     }
 }

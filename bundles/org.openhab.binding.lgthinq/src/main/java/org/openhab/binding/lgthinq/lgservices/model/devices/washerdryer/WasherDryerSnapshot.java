@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.washerdryer;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WM_POWER_OFF_VALUE;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.WMD_POWER_OFF_VALUE;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.lgthinq.lgservices.model.AbstractSnapshotDefinition;
@@ -238,7 +238,7 @@ public class WasherDryerSnapshot extends AbstractSnapshotDefinition {
 
     public void setState(String state) {
         this.state = state;
-        if (state.equals(WM_POWER_OFF_VALUE)) {
+        if (state.equals(WMD_POWER_OFF_VALUE)) {
             powerState = DevicePowerState.DV_POWER_OFF;
         } else {
             powerState = DevicePowerState.DV_POWER_ON;

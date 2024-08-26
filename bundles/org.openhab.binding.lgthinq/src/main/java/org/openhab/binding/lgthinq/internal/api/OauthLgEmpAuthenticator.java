@@ -121,17 +121,17 @@ public class OauthLgEmpAuthenticator {
 
     private Map<String, String> getGatewayRestHeader(String language, String country) {
         return Map.ofEntries(new AbstractMap.SimpleEntry<String, String>("Accept", "application/json"),
-                new AbstractMap.SimpleEntry<String, String>("x-api-key", API_KEY_V2),
+                new AbstractMap.SimpleEntry<String, String>("x-api-key", LG_API_API_KEY_V2),
                 new AbstractMap.SimpleEntry<String, String>("x-country-code", country),
-                new AbstractMap.SimpleEntry<String, String>("x-client-id", CLIENT_ID),
+                new AbstractMap.SimpleEntry<String, String>("x-client-id", LG_API_CLIENT_ID),
                 new AbstractMap.SimpleEntry<String, String>("x-language-code", language),
-                new AbstractMap.SimpleEntry<String, String>("x-message-id", MESSAGE_ID),
-                new AbstractMap.SimpleEntry<String, String>("x-service-code", SVC_CODE),
-                new AbstractMap.SimpleEntry<String, String>("x-service-phase", SVC_PHASE),
-                new AbstractMap.SimpleEntry<String, String>("x-thinq-app-level", APP_LEVEL),
-                new AbstractMap.SimpleEntry<String, String>("x-thinq-app-os", APP_OS),
-                new AbstractMap.SimpleEntry<String, String>("x-thinq-app-type", APP_TYPE),
-                new AbstractMap.SimpleEntry<String, String>("x-thinq-app-ver", APP_VER));
+                new AbstractMap.SimpleEntry<String, String>("x-message-id", LG_API_MESSAGE_ID),
+                new AbstractMap.SimpleEntry<String, String>("x-service-code", LG_API_SVC_CODE),
+                new AbstractMap.SimpleEntry<String, String>("x-service-phase", LG_API_SVC_PHASE),
+                new AbstractMap.SimpleEntry<String, String>("x-thinq-app-level", LG_API_APP_LEVEL),
+                new AbstractMap.SimpleEntry<String, String>("x-thinq-app-os", LG_API_APP_OS),
+                new AbstractMap.SimpleEntry<String, String>("x-thinq-app-type", LG_API_APP_TYPE),
+                new AbstractMap.SimpleEntry<String, String>("x-thinq-app-ver", LG_API_APP_VER));
     }
 
     private Map<String, String> getLoginHeader(LGThinqGateway gw) {
@@ -180,7 +180,7 @@ public class OauthLgEmpAuthenticator {
         String encPwd = RestUtils.getPreLoginEncPwd(password);
         Map<String, String> headers = getLoginHeader(gw);
         // 1) Doing preLogin -> getting the password key
-        String preLoginUrl = gw.getLoginBaseUri() + PRE_LOGIN_PATH;
+        String preLoginUrl = gw.getLoginBaseUri() + LG_API_PRE_LOGIN_PATH;
         Map<String, String> formData = Map.of("user_auth2", encPwd, "log_param", String.format(
                 "login request / user_id : %s / " + "third_party : null / svc_list : SVC202,SVC710 / 3rd_service : ",
                 username));
@@ -214,7 +214,7 @@ public class OauthLgEmpAuthenticator {
         Map<String, String> formData = Map.of("user_auth2", "" + preLoginResult.getEncryptedPwd(),
                 "password_hash_prameter_flag", "Y", "svc_list", "SVC202,SVC710"); // SVC202=LG SmartHome, SVC710=EMP
                                                                                   // OAuth
-        String loginUrl = gw.getEmpBaseUri() + V2_SESSION_LOGIN_PATH
+        String loginUrl = gw.getEmpBaseUri() + LG_API_V2_SESSION_LOGIN_PATH
                 + URLEncoder.encode(preLoginResult.getUsername(), StandardCharsets.UTF_8);
         RestResult resp = RestUtils.postCall(httpClient, loginUrl, headers, formData);
         if (resp == null) {
@@ -242,14 +242,14 @@ public class OauthLgEmpAuthenticator {
     }
 
     private String getCurrentTimestamp() {
-        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT, Locale.US);
+        SimpleDateFormat sdf = new SimpleDateFormat(LG_API_DATE_FORMAT, Locale.US);
         sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         return sdf.format(new Date());
     }
 
     public TokenResult getToken(LGThinqGateway gw, LoginAccountResult accountResult) throws IOException {
         // 3 - get secret key from emp signature
-        String empSearchKeyUrl = gw.getLoginBaseUri() + OAUTH_SEARCH_KEY_PATH;
+        String empSearchKeyUrl = gw.getLoginBaseUri() + LG_API_OAUTH_SEARCH_KEY_PATH;
 
         RestResult resp = RestUtils.getCall(httpClient, empSearchKeyUrl, null, oauthSearchKeyQueryParams);
         if (resp.getStatusCode() != 200) {
@@ -266,7 +266,7 @@ public class OauthLgEmpAuthenticator {
         // 4 - get OAuth Token Key from EMP API
         Map<String, String> empData = new LinkedHashMap<>();
         empData.put("account_type", accountResult.getUserIdType());
-        empData.put("client_id", CLIENT_ID);
+        empData.put("client_id", LG_API_CLIENT_ID);
         empData.put("country_code", accountResult.getCountry());
         empData.put("username", "" + accountResult.getUserId());
         String timestamp = getCurrentTimestamp();
@@ -274,7 +274,7 @@ public class OauthLgEmpAuthenticator {
         byte[] oauthSig = RestUtils.getTokenSignature(gw.getTokenSessionEmpUrl(), secretKey, empData, timestamp);
 
         Map<String, String> oauthEmpHeaders = new LinkedHashMap<>();
-        oauthEmpHeaders.put("lgemp-x-app-key", OAUTH_CLIENT_KEY);
+        oauthEmpHeaders.put("lgemp-x-app-key", LG_API_OAUTH_CLIENT_KEY);
         oauthEmpHeaders.put("lgemp-x-date", timestamp);
         oauthEmpHeaders.put("lgemp-x-session-key", accountResult.getLoginSessionId());
         oauthEmpHeaders.put("lgemp-x-signature", new String(oauthSig));
@@ -294,14 +294,16 @@ public class OauthLgEmpAuthenticator {
     }
 
     public UserInfo getUserInfo(TokenResult token) throws IOException {
-        UriBuilder builder = UriBuilder.fromUri(token.getOauthBackendUrl()).path(V2_USER_INFO);
+        UriBuilder builder = UriBuilder.fromUri(token.getOauthBackendUrl()).path(LG_API_V2_USER_INFO);
         String oauthUrl = builder.build().toURL().toString();
         String timestamp = getCurrentTimestamp();
-        byte[] oauthSig = RestUtils.getTokenSignature(oauthUrl, OAUTH_SECRET_KEY, Collections.EMPTY_MAP, timestamp);
+        byte[] oauthSig = RestUtils.getTokenSignature(oauthUrl, LG_API_OAUTH_SECRET_KEY, Collections.EMPTY_MAP,
+                timestamp);
         Map<String, String> headers = Map.of("Accept", "application/json", "Authorization",
-                String.format("Bearer %s", token.getAccessToken()), "X-Lge-Svccode", SVC_CODE, "X-Application-Key",
-                APPLICATION_KEY, "lgemp-x-app-key", CLIENT_ID, "X-Device-Type", "M01", "X-Device-Platform", "ADR",
-                "x-lge-oauth-date", timestamp, "x-lge-oauth-signature", new String(oauthSig));
+                String.format("Bearer %s", token.getAccessToken()), "X-Lge-Svccode", LG_API_SVC_CODE,
+                "X-Application-Key", LG_API_APPLICATION_KEY, "lgemp-x-app-key", LG_API_CLIENT_ID, "X-Device-Type",
+                "M01", "X-Device-Platform", "ADR", "x-lge-oauth-date", timestamp, "x-lge-oauth-signature",
+                new String(oauthSig));
         RestResult resp = RestUtils.getCall(httpClient, oauthUrl, headers, null);
 
         return handleAccountInfoResult(resp);
@@ -333,7 +335,7 @@ public class OauthLgEmpAuthenticator {
     }
 
     public TokenResult doRefreshToken(TokenResult currentToken) throws IOException, RefreshTokenException {
-        UriBuilder builder = UriBuilder.fromUri(currentToken.getOauthBackendUrl()).path(V2_AUTH_PATH);
+        UriBuilder builder = UriBuilder.fromUri(currentToken.getOauthBackendUrl()).path(LG_API_V2_AUTH_PATH);
         String oauthUrl = builder.build().toURL().toString();
         String timestamp = getCurrentTimestamp();
 
@@ -341,10 +343,10 @@ public class OauthLgEmpAuthenticator {
         formData.put("grant_type", "refresh_token");
         formData.put("refresh_token", currentToken.getRefreshToken());
 
-        byte[] oauthSig = RestUtils.getTokenSignature(oauthUrl, OAUTH_SECRET_KEY, formData, timestamp);
+        byte[] oauthSig = RestUtils.getTokenSignature(oauthUrl, LG_API_OAUTH_SECRET_KEY, formData, timestamp);
 
-        Map<String, String> headers = Map.of("x-lge-appkey", CLIENT_ID, "x-lge-oauth-signature", new String(oauthSig),
-                "x-lge-oauth-date", timestamp, "Accept", "application/json");
+        Map<String, String> headers = Map.of("x-lge-appkey", LG_API_CLIENT_ID, "x-lge-oauth-signature",
+                new String(oauthSig), "x-lge-oauth-date", timestamp, "Accept", "application/json");
 
         RestResult resp = RestUtils.postCall(httpClient, oauthUrl, headers, formData);
         return handleRefreshTokenResult(resp, currentToken);

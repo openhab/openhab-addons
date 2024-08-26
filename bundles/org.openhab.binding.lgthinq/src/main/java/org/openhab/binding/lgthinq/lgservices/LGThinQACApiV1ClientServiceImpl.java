@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.V1_CONTROL_OP;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.LG_API_V1_CONTROL_OP;
 import static org.openhab.binding.lgthinq.internal.api.LGThinqCanonicalModelUtil.LG_ROOT_TAG_V1;
 
 import java.io.IOException;
@@ -94,12 +94,12 @@ public class LGThinQACApiV1ClientServiceImpl extends
             throws LGThinqApiException {
         ExtendedDeviceInfo info = new ExtendedDeviceInfo();
         try {
-            RestResult resp = sendCommand(bridgeName, deviceId, V1_CONTROL_OP, "Config", "Get", "",
+            RestResult resp = sendCommand(bridgeName, deviceId, LG_API_V1_CONTROL_OP, "Config", "Get", "",
                     "InOutInstantPower");
             handleGenericErrorResult(resp);
             readDataResultNodeToObject(resp.getJsonResponse(), info);
 
-            resp = sendCommand(bridgeName, deviceId, V1_CONTROL_OP, "Config", "Get", "", "Filter");
+            resp = sendCommand(bridgeName, deviceId, LG_API_V1_CONTROL_OP, "Config", "Get", "", "Filter");
             handleGenericErrorResult(resp);
             readDataResultNodeToObject(resp.getJsonResponse(), info);
 

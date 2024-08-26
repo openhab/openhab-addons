@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.PLATFORM_TYPE_V1;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.LG_API_PLATFORM_TYPE_V1;
 
 import java.util.Map;
 
@@ -42,28 +42,28 @@ public class LGThinQApiClientServiceFactory {
 
     public static LGThinQACApiClientService newACApiClientService(String lgPlatformType,
             HttpClientFactory httpClientFactory) {
-        return lgPlatformType.equals(PLATFORM_TYPE_V1)
+        return lgPlatformType.equals(LG_API_PLATFORM_TYPE_V1)
                 ? new LGThinQACApiV1ClientServiceImpl(httpClientFactory.getCommonHttpClient())
                 : new LGThinQACApiV2ClientServiceImpl(httpClientFactory.getCommonHttpClient());
     }
 
     public static LGThinQFridgeApiClientService newFridgeApiClientService(String lgPlatformType,
             HttpClientFactory httpClientFactory) {
-        return lgPlatformType.equals(PLATFORM_TYPE_V1)
+        return lgPlatformType.equals(LG_API_PLATFORM_TYPE_V1)
                 ? new LGThinQFridgeApiV1ClientServiceImpl(httpClientFactory.getCommonHttpClient())
                 : new LGThinQFridgeApiV2ClientServiceImpl(httpClientFactory.getCommonHttpClient());
     }
 
     public static LGThinQWMApiClientService newWMApiClientService(String lgPlatformType,
             HttpClientFactory httpClientFactory) {
-        return lgPlatformType.equals(PLATFORM_TYPE_V1)
+        return lgPlatformType.equals(LG_API_PLATFORM_TYPE_V1)
                 ? new LGThinQWMApiV1ClientServiceImpl(httpClientFactory.getCommonHttpClient())
                 : new LGThinQWMApiV2ClientServiceImpl(httpClientFactory.getCommonHttpClient());
     }
 
     public static LGThinQDishWasherApiClientService newDishWasherApiClientService(String lgPlatformType,
             HttpClientFactory httpClientFactory) {
-        return lgPlatformType.equals(PLATFORM_TYPE_V1)
+        return lgPlatformType.equals(LG_API_PLATFORM_TYPE_V1)
                 ? new LGThinQDishWasherApiV1ClientServiceImpl(httpClientFactory.getCommonHttpClient())
                 : new LGThinQDishWasherApiV2ClientServiceImpl(httpClientFactory.getCommonHttpClient());
     }

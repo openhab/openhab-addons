@@ -102,7 +102,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
         this.stateDescriptionProvider = stateDescriptionProvider;
         normalizeConfigurationsAndProperties();
-        lgPlatformType = String.valueOf(thing.getProperties().get(PLATFORM_TYPE));
+        lgPlatformType = String.valueOf(thing.getProperties().get(PROP_INFO_PLATFORM_TYPE));
         this.snapshotClass = (Class<S>) ((ParameterizedType) getClass().getGenericSuperclass())
                 .getActualTypeArguments()[1];
         try {
@@ -113,7 +113,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
     }
 
     private void normalizeConfigurationsAndProperties() {
-        List.of(PLATFORM_TYPE, MODEL_URL_INFO, DEVICE_ID).forEach(p -> {
+        List.of(PROP_INFO_PLATFORM_TYPE, PROP_INFO_MODEL_URL_INFO, PROP_INFO_DEVICE_ID).forEach(p -> {
             if (!thing.getProperties().containsKey(p)) {
                 thing.setProperty(p, (String) thing.getConfiguration().get(p));
             }
@@ -243,7 +243,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
     public abstract void onDeviceAdded(@NonNullByDefault LGDevice device);
 
     public String getDeviceId() {
-        return Objects.requireNonNullElse(getThing().getProperties().get(DEVICE_ID), "undef");
+        return Objects.requireNonNullElse(getThing().getProperties().get(PROP_INFO_DEVICE_ID), "undef");
     }
 
     public abstract String getDeviceAlias();
@@ -652,7 +652,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
     protected S getSnapshotDeviceAdapter(String deviceId, CapabilityDefinition capDef)
             throws LGThinqApiException, LGThinqApiExhaustionException {
         // analise de platform version
-        if (PLATFORM_TYPE_V2.equals(lgPlatformType)) {
+        if (LG_API_PLATFORM_TYPE_V2.equals(lgPlatformType)) {
             return getLgThinQAPIClientService().getDeviceData(getBridgeId(), getDeviceId(), getCapabilities());
         } else {
             try {
@@ -723,7 +723,7 @@ public abstract class LGThinQAbstractDeviceHandler<C extends CapabilityDefinitio
             try {
                 processCommand(params);
                 String channelUid = getSimpleChannelUID(params.channelUID);
-                if (CHANNEL_POWER_ID.equals(channelUid)) {
+                if (CHANNEL_AC_POWER_ID.equals(channelUid)) {
                     // if processed command come from POWER channel, then force updateDeviceChannels immediatly
                     // this is importante to analise if the poolings need to be changed in time.
                     updateThingStateFromLG();

@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices.model.devices.fridge;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.REFRIGERATOR_SNAPSHOT_NODE_V2;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.RE_SNAPSHOT_NODE_V2;
 import static org.openhab.binding.lgthinq.lgservices.model.DeviceTypes.REFRIGERATOR;
 
 import java.util.List;
@@ -51,7 +51,7 @@ public class FridgeSnapshotBuilder extends DefaultSnapshotBuilder<FridgeCanonica
                 }
                 case V2_0: {
                     Map<String, Object> refMap = Objects.requireNonNull(
-                            (Map<String, Object>) snapMap.get(REFRIGERATOR_SNAPSHOT_NODE_V2),
+                            (Map<String, Object>) snapMap.get(RE_SNAPSHOT_NODE_V2),
                             "washerDryer node must be present in the snapshot");
                     snap = objectMapper.convertValue(refMap, snapClass);
                     snap.setRawData(snapMap);

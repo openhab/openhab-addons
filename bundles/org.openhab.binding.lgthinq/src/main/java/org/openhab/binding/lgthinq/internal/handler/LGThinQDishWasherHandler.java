@@ -74,11 +74,11 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
         lgThinqDishWasherApiClientService = LGThinQApiClientServiceFactory.newDishWasherApiClientService(lgPlatformType,
                 httpClientFactory);
         channelGroupDashboardUID = new ChannelGroupUID(getThing().getUID(), CHANNEL_DASHBOARD_GRP_ID);
-        courseChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_COURSE_ID);
-        stateChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_STATE_ID);
-        processStateChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_PROCESS_STATE_ID);
-        remainTimeChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_REMAIN_TIME_ID);
-        doorLockChannelUID = new ChannelUID(channelGroupDashboardUID, WM_CHANNEL_DOOR_LOCK_ID);
+        courseChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_COURSE_ID);
+        stateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_STATE_ID);
+        processStateChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_PROCESS_STATE_ID);
+        remainTimeChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_REMAIN_TIME_ID);
+        doorLockChannelUID = new ChannelUID(channelGroupDashboardUID, CHANNEL_WMD_DOOR_LOCK_ID);
     }
 
     private void loadOptionsCourse(DishWasherCapability cap, ChannelUID courseChannel) {
@@ -122,7 +122,7 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
     @Override
     protected void updateDeviceChannels(DishWasherSnapshot shot) {
         DishWasherSnapshot lastShot = getLastShot();
-        updateState("dashboard#" + CHANNEL_POWER_ID,
+        updateState("dashboard#" + CHANNEL_AC_POWER_ID,
                 (DevicePowerState.DV_POWER_ON.equals(shot.getPowerStatus()) ? OnOffType.ON : OnOffType.OFF));
         updateState(stateChannelUID, new StringType(shot.getState()));
         updateState(processStateChannelUID, new StringType(shot.getProcessState()));
@@ -157,12 +157,12 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
 
     @Override
     public String getDeviceAlias() {
-        return emptyIfNull(getThing().getProperties().get(DEVICE_ALIAS));
+        return emptyIfNull(getThing().getProperties().get(PROP_INFO_DEVICE_ALIAS));
     }
 
     @Override
     public String getDeviceUriJsonConfig() {
-        return emptyIfNull(getThing().getProperties().get(MODEL_URL_INFO));
+        return emptyIfNull(getThing().getProperties().get(PROP_INFO_MODEL_URL_INFO));
     }
 
     @Override
@@ -175,11 +175,11 @@ public class LGThinQDishWasherHandler extends LGThinQAbstractDeviceHandler<DishW
      */
     @Override
     public void onDeviceDisconnected() {
-        updateState(CHANNEL_POWER_ID, OnOffType.OFF);
-        updateState(WM_CHANNEL_STATE_ID, new StringType(WM_POWER_OFF_VALUE));
-        updateState(WM_CHANNEL_COURSE_ID, new StringType("NOT_SELECTED"));
-        updateState(WM_CHANNEL_SMART_COURSE_ID, new StringType("NOT_SELECTED"));
-        updateState(WM_CHANNEL_DOOR_LOCK_ID, new StringType("DOOR_LOCK_OFF"));
-        updateState(WM_CHANNEL_REMAIN_TIME_ID, new StringType("00:00"));
+        updateState(CHANNEL_AC_POWER_ID, OnOffType.OFF);
+        updateState(CHANNEL_WMD_STATE_ID, new StringType(WMD_POWER_OFF_VALUE));
+        updateState(CHANNEL_WMD_COURSE_ID, new StringType("NOT_SELECTED"));
+        updateState(CHANNEL_WMD_SMART_COURSE_ID, new StringType("NOT_SELECTED"));
+        updateState(CHANNEL_WMD_DOOR_LOCK_ID, new StringType("DOOR_LOCK_OFF"));
+        updateState(CHANNEL_WMD_REMAIN_TIME_ID, new StringType("00:00"));
     }
 }

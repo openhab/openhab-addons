@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.lgthinq.lgservices;
 
-import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.FR_SET_CONTROL_COMMAND_NAME_V1;
+import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.RE_SET_CONTROL_COMMAND_NAME_V1;
 
 import java.util.Map;
 
@@ -111,7 +111,7 @@ public class LGThinQFridgeApiV1ClientServiceImpl
             @Nullable Map<String, Object> snapCmdData) throws LGThinqApiException {
         try {
             CommandDefinition cmdSetControlDef = fridgeCapability.getCommandsDefinition()
-                    .get(FR_SET_CONTROL_COMMAND_NAME_V1);
+                    .get(RE_SET_CONTROL_COMMAND_NAME_V1);
             if (cmdSetControlDef == null) {
                 logger.warn("No command definition found for set control command. Ignoring command");
                 return;

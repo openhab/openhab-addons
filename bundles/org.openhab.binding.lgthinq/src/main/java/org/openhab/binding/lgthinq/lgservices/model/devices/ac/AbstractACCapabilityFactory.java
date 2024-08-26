@@ -139,13 +139,13 @@ public abstract class AbstractACCapabilityFactory extends AbstractCapabilityFact
         JsonNode supRacSubModeOps = valuesNode.path(getSupSubRacModeNodeName()).path(getOptionsMapNodeName());
         if (!supRacSubModeOps.isMissingNode()) {
             supRacSubModeOps.fields().forEachRemaining(f -> {
-                if (AC_SUB_MODE_COOL_JET.equals(f.getValue().asText())) {
+                if (CAP_AC_SUB_MODE_COOL_JET.equals(f.getValue().asText())) {
                     acCap.setJetModeAvailable(true);
                 }
-                if (AC_SUB_MODE_STEP_UP_DOWN.equals(f.getValue().asText())) {
+                if (CAP_AC_SUB_MODE_STEP_UP_DOWN.equals(f.getValue().asText())) {
                     acCap.setStepUpDownAvailable(true);
                 }
-                if (AC_SUB_MODE_STEP_LEFT_RIGHT.equals(f.getValue().asText())) {
+                if (CAP_AC_SUB_MODE_STEP_LEFT_RIGHT.equals(f.getValue().asText())) {
                     acCap.setStepLeftRightAvailable(true);
                 }
             });

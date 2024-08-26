@@ -32,7 +32,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ExtendedDeviceInfo {
     private String instantPower = "";
 
-    @JsonProperty(EXTENDED_ATTR_FILTER_USED_TIME)
+    @JsonProperty(CAP_EXTRA_ATTR_FILTER_USED_TIME)
     @JsonAlias("airState.filterMngStates.useTime")
     public String getFilterHoursUsed() {
         return filterHoursUsed;
@@ -42,7 +42,7 @@ public class ExtendedDeviceInfo {
         this.filterHoursUsed = filterHoursUsed;
     }
 
-    @JsonProperty(EXTENDED_ATTR_FILTER_MAX_TIME_TO_USE)
+    @JsonProperty(CAP_EXTRA_ATTR_FILTER_MAX_TIME_TO_USE)
     @JsonAlias("airState.filterMngStates.maxTime")
     public String getFilterHoursMax() {
         return filterHoursMax;
@@ -60,7 +60,7 @@ public class ExtendedDeviceInfo {
      * 
      * @return the instant total power consumption
      */
-    @JsonProperty(EXTENDED_ATTR_INSTANT_POWER)
+    @JsonProperty(CAP_EXTRA_ATTR_INSTANT_POWER)
     @JsonAlias("airState.energy.totalCurrent")
     public String getRawInstantPower() {
         return instantPower;

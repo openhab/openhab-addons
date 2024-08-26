@@ -79,7 +79,8 @@ public class TokenManager {
     }
 
     private String getGatewayUrl(String alternativeGtwServer) {
-        return alternativeGtwServer.isBlank() ? GATEWAY_URL_V2 : (alternativeGtwServer + GATEWAY_SERVICE_PATH_V2);
+        return alternativeGtwServer.isBlank() ? LG_API_GATEWAY_URL_V2
+                : (alternativeGtwServer + LG_API_GATEWAY_SERVICE_PATH_V2);
     }
 
     public void oauthFirstRegistration(String bridgeName, String language, String country, String username,

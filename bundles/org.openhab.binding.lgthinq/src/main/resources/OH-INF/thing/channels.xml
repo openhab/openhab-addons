@@ -46,7 +46,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="extra_info_collector">
+	<channel-type id="extra-info-collector">
 		<item-type>Switch</item-type>
 		<label>Info Collector</label>
 		<description>This switch enable collector for energy and filter consumption (if presents)</description>
