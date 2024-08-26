@@ -189,7 +189,7 @@ public class LGThinQBindingConstants {
     // ====================== AIR CONDITIONER DEVICE CONSTANTS =============================
     // CHANNEL IDS
     public static final String CHANNEL_MOD_OP_ID = "op-mode";
-    public static final String CHANNEL_AIR_WATER_SWITCH_ID = "hp_air_water_switch";
+    public static final String CHANNEL_AIR_WATER_SWITCH_ID = "air-water-switch";
     public static final String CHANNEL_FAN_SPEED_ID = "fan-speed";
     public static final String CHANNEL_POWER_ID = "power";
     public static final String CHANNEL_EXTENDED_INFO_COLLECTOR_ID = "extra_info_collector";

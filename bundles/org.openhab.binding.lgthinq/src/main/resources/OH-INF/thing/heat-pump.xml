@@ -15,7 +15,7 @@
 
 		<channel-groups>
 			<channel-group id="dashboard" typeId="hp-dashboard"/>
-			<channel-group id="extended-information" typeId="hp-extended-information"/>
+			<channel-group id="extended-information" typeId="hp-extra-information"/>
 		</channel-groups>
 		<config-description>
 			<parameter-group name="Settings">
@@ -67,17 +67,17 @@
 			<channel id="max_temperature" typeId="max-temperature"/>
 			<channel id="current-temperature" typeId="current-temperature"/>
 			<channel id="op-mode" typeId="operation-mode"/>
-			<channel id="hp_air_water_switch" typeId="hp-air-water-switch"/>
+			<channel id="air-water-switch" typeId="hp-air-water-switch"/>
 			<channel id="power" typeId="system.power"/>
 		</channels>
 	</channel-group-type>
 
-	<channel-group-type id="hp-extended-information">
+	<channel-group-type id="hp-extra-information">
 		<label>More Info</label>
 		<description>Show more information about the device.</description>
 		<channels>
 			<channel id="extra_info_collector" typeId="extra_info_collector"/>
-			<channel id="current-power" typeId="current-watts-power"/>
+			<channel id="current-power" typeId="current-power"/>
 		</channels>
 	</channel-group-type>
 

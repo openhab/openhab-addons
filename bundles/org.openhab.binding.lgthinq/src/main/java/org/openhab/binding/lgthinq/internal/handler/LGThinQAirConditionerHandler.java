@@ -453,7 +453,7 @@ public class LGThinQAirConditionerHandler extends LGThinQAbstractDeviceHandler<A
             updateState(currentPowerEnergyChannelUID, UnDefType.NULL);
         } else if (NumberUtils.isCreatable(instantPowerConsumption)) {
             double ip = Double.parseDouble(instantPowerConsumption);
-            updateState(currentPowerEnergyChannelUID, new QuantityType<>(ip, Units.WATT));
+            updateState(currentPowerEnergyChannelUID, new QuantityType<>(ip, Units.WATT_HOUR));
         } else {
             updateState(currentPowerEnergyChannelUID, UnDefType.UNDEF);
         }

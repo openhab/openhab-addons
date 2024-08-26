@@ -58,108 +58,110 @@ All the configurations are pre-defined by the discovery process. But you can cus
 ## Channels
 
 ### Air Conditioner
-LG ThinQ Air Conditioners supports the following channels
+LG ThinQ Air Conditioners supports the following channels (for some models, some channels couldn't be available):
 
 #### Dashboard Channels
 
-| channel            | type               | description                                                                                                                                               |
-|--------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Target Temperature | Number:Temperature | Defines the desired target temperature for the device                                                                                                     |
-| Temperature        | Number:Temperature | Read-Only channel that indicates the current temperature informed by the device                                                                           |
-| Fan Speed          | Number             | This channel let you choose the current label value for the fan speed (Low, Medium, High, Auto, etc.). These values are pre-configured in discovery time. |
-| Operation Mode     | Number (Labeled)   | Defines device's operation mode (Fan, Cool, Dry, etc). These values are pre-configured at discovery time.                                                 |
-| Power              | Switch             | Define the device's current power state.                                                                                                                  |
-| Cool Jet           | Switch             | Switch Cool Jet ON/OFF                                                                                                                                    |
-| Auto Dry           | Switch             | Switch Auto Dry ON/OFF                                                                                                                                    |
-| Energy Saving      | Switch             | Switch Energy Saving ON/OFF                                                                                                                               |
+| channel #           | channel            | type               | description                                                                                                                                               |
+|---------------------|--------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| target-temperature  | Target Temperature | Number:Temperature | Defines the desired target temperature for the device                                                                                                     |
+| current-temperature | Temperature        | Number:Temperature | Read-Only channel that indicates the current temperature informed by the device                                                                           |
+| fan-speed           | Fan Speed          | Number             | This channel let you choose the current label value for the fan speed (Low, Medium, High, Auto, etc.). These values are pre-configured in discovery time. |
+| op-mode             | Operation Mode     | Number (Labeled)   | Defines device's operation mode (Fan, Cool, Dry, etc). These values are pre-configured at discovery time.                                                 |
+| power               | Power              | Switch             | Define the device's current power state.                                                                                                                  |
+| cool-jet            | Cool Jet           | Switch             | Switch Cool Jet ON/OFF                                                                                                                                    |
+| auto-dry            | Auto Dry           | Switch             | Switch Auto Dry ON/OFF                                                                                                                                    |
+| energy-saving       | Energy Saving      | Switch             | Switch Energy Saving ON/OFF                                                                                                                               |
+| fan-step-up-down    | Fan VDir           | Number             | Define the fan vertical direction's mode (Off, Upper, Circular, Up, Middle Up, etc)                                                                       |
+| fan-step-left-right | Fan HDir           | Number             | Define the fan horizontal direction's mode (Off, Lefter, Left, Circular, Right, etc)                                                                      |
 
 #### More Information Channel
 
-| channel                        | type                 | description                                                                                               |
-|--------------------------------|----------------------|-----------------------------------------------------------------------------------------------------------|
-| Enable Extended Info Collector | Switch               | Enable/Disable the extra information collector to update the bellow channels                              |
-| Current Power                  | Number:Energy        | The current power consumption                                                                             |
-| Remaining Filter               | Number:Dimensionless | Per percentage of the filter remaining                                                                    |
+| channel #            | channel                        | type                 | description                                                                  |
+|----------------------|--------------------------------|----------------------|------------------------------------------------------------------------------|
+| extra-info-collector | Enable Extended Info Collector | Switch               | Enable/Disable the extra information collector to update the bellow channels |
+| current-power        | Current Power                  | Number:Energy        | The current power consumption in Kw/h                                        |
+| remaining-filter     | Remaining Filter               | Number:Dimensionless | Percentage of the remaining filter                                           |
 
 ### Heat Pump
 LG ThinQ Heat Pump supports the following channels
 
 #### Dashboard Channels
 
-| channel             | type               | description                                                                                               |
-|---------------------|--------------------|-----------------------------------------------------------------------------------------------------------|
-| Target Temperature  | Number:Temperature | Defines the desired target temperature for the device                                                     |
-| Minimum Temperature | Number:Temperature | Minimum temperature for the current operation mode                                                        |
-| Maximum Temperature | Number:Temperature | Maximum temperature for the current operation mode                                                        |
-| Temperature         | Number:Temperature | Read-Only channel that indicates the current temperature informed by the device                           |
-| Operation Mode      | Number (Labeled)   | Defines device's operation mode (Fan, Cool, Dry, etc). These values are pre-configured at discovery time. |
-| Power               | Switch             | Define the device's current power state.                                                                  |
-| Air/Water Switch    | Switch             | Switch the heat pump operation between Air or Water                                                       |
+| channel #           | channel             | type               | description                                                                                               |
+|---------------------|---------------------|--------------------|-----------------------------------------------------------------------------------------------------------|
+| target-temperature  | Target Temperature  | Number:Temperature | Defines the desired target temperature for the device                                                     |
+| min-temperature     | Minimum Temperature | Number:Temperature | Minimum temperature for the current operation mode                                                        |
+| max-temperature     | Maximum Temperature | Number:Temperature | Maximum temperature for the current operation mode                                                        |
+| current-temperature | Temperature         | Number:Temperature | Read-Only channel that indicates the current temperature informed by the device                           |
+| op-mode             | Operation Mode      | Number (Labeled)   | Defines device's operation mode (Fan, Cool, Dry, etc). These values are pre-configured at discovery time. |
+| power               | Power               | Switch             | Define the device's current power state.                                                                  |
+| air-water-switch    | Air/Water Switch    | Switch             | Switch the heat pump operation between Air or Water                                                       |
 
 #### More Information Channel
 
-| channel                        | type                 | description                                                                                               |
-|--------------------------------|----------------------|-----------------------------------------------------------------------------------------------------------|
-| Enable Extended Info Collector | Switch               | Enable/Disable the extra information collector to update the bellow channels                              |
-| Current Power                  | Number:Energy        | The current power consumption                                                                             |
+| channel #            | channel                        | type                 | description                                                                  |
+|----------------------|--------------------------------|----------------------|------------------------------------------------------------------------------|
+| extra-info-collector | Enable Extended Info Collector | Switch               | Enable/Disable the extra information collector to update the bellow channels |
+| current-power        | Current Power                  | Number:Energy        | The current power consumption in Kw/h                                        |
 
 ### Washer Machine
 LG ThinQ Washer Machine supports the following channels
 
 #### Dashboard Channels
 
-| channel           | type   | description                                                            |
-|-------------------|--------|------------------------------------------------------------------------|
-| Washer State      | String | General State of the Washer                                            |
-| Process State     | String | States of the running cycle                                            |
-| Course            | String | Course set up to work                                                  |
-| Temperature Level | String | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.) |
-| Door Lock         | Switch | Display if the Door is Locked.                                         | 
-| Rinse             | String | The Rinse set program                                                  |
-| Spin              | String | The Spin set option                                                    |
-| Delay Time        | String | Delay time programmed to start the cycle                               | 
-| Remaining Time    | String | Remaining time to finish the course                                    | 
-| Stand By Mode     | Switch | If the Washer is in stand-by-mode                                      |
-| Remote Start      | Switch | If the Washer is in remote start mode waiting to be remotely started   |
+| channel #         | channel           | type   | description                                                            |
+|-------------------|-------------------|--------|------------------------------------------------------------------------|
+| state             | Washer State      | String | General State of the Washer                                            |
+| process-state     | Process State     | String | States of the running cycle                                            |
+| course            | Course            | String | Course set up to work                                                  |
+| temperature-level | Temperature Level | String | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.) |
+| door-lock         | Door Lock         | Switch | Display if the Door is Locked.                                         | 
+| rinse             | Rinse             | String | The Rinse set program                                                  |
+| spin              | Spin              | String | The Spin set option                                                    |
+| delay-time        | Delay Time        | String | Delay time programmed to start the cycle                               | 
+| remain-time       | Remaining Time    | String | Remaining time to finish the course                                    | 
+| stand-by          | Stand By Mode     | Switch | If the Washer is in stand-by-mode                                      |
+| remote-start-flag | Remote Start      | Switch | If the Washer is in remote start mode waiting to be remotely started   |
 
 #### Remote Start Option
 
 This Channel Group is only available if the Washer is configured to Remote Start
 
-| channel           | type               | description                                                                                             |
-|-------------------|--------------------|---------------------------------------------------------------------------------------------------------|
-| Remote Start/Stop | Switch             | Switch to control if you want to start/stop the cycle remotely                                          |
-| Course to Run     | String (Selection) | The pre-programmed course (or default) is shown. You can change-it if you want before remote start      |
-| Temperature Level | String (Selection) | The pre-programmed temperature (or default) is shown. You can change-it if you want before remote start |
-| Spin              | String             | The pre-programmed spin (or default) is shown. You can change-it if you want before remote start        |
-| Rinse             | String             | The pre-programmed rinse (or default) is shown. You can change-it if you want before remote start       |
+| channel #            | channel           | type               | description                                                                                             |
+|----------------------|-------------------|--------------------|---------------------------------------------------------------------------------------------------------|
+| rs-start-stop        | Remote Start/Stop | Switch             | Switch to control if you want to start/stop the cycle remotely                                          |
+| rs-course            | Course to Run     | String (Selection) | The pre-programmed course (or default) is shown. You can change-it if you want before remote start      |
+| rs-temperature-level | Temperature Level | String (Selection) | The pre-programmed temperature (or default) is shown. You can change-it if you want before remote start |
+| rs-spin              | Spin              | String             | The pre-programmed spin (or default) is shown. You can change-it if you want before remote start        |
+| rs-rinse             | Rinse             | String             | The pre-programmed rinse (or default) is shown. You can change-it if you want before remote start       |
 
 ### Dryer Machine
 LG ThinQ Dryer Machine supports the following channels
 
 #### Dashboard Channels
 
-| channel           | type   | description                                                            |
-|-------------------|--------|------------------------------------------------------------------------|
-| Dryer State       | String | General State of the Washer                                            |
-| Process State     | String | States of the running cycle                                            |
-| Course            | String | Course set up to work                                                  |
-| Temperature Level | String | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.) |
-| Chiel Lock        | Switch | Display if the Door is Locked.                                         |
-| Dry Level Course  | String | Dry level set to work in the course                                    |
-| Delay Time        | String | Delay time programmed to start the cycle                               | 
-| Remaining Time    | String | Remaining time to finish the course                                    | 
-| Stand By Mode     | Switch | If the Washer is in stand-by-mode                                      |
-| Remote Start      | Switch | If the Washer is in remote start mode waiting to be remotely started   |
+| channel #         | channel           | type   | description                                                            |
+|-------------------|-------------------|--------|------------------------------------------------------------------------|
+| state             | Dryer State       | String | General State of the Washer                                            |
+| process-state     | Process State     | String | States of the running cycle                                            |
+| course            | Course            | String | Course set up to work                                                  |
+| temperature-level | Temperature Level | String | Temperature level supported by the Washer (Cold, 20, 30, 40, 50, etc.) |
+| child-lock        | Child Lock        | Switch | Display if the Door is Locked.                                         |
+| dry-level         | Dry Level Course  | String | Dry level set to work in the course                                    |
+| delay-time        | Delay Time        | String | Delay time programmed to start the cycle                               | 
+| remain-time       | Remaining Time    | String | Remaining time to finish the course                                    | 
+| stand-by          | Stand By Mode     | Switch | If the Washer is in stand-by-mode                                      |
+| remote-start-flag | Remote Start      | Switch | If the Washer is in remote start mode waiting to be remotely started   |
 
 #### Remote Start Option
 
 This Channel Group is only available if the Dryer is configured to Remote Start
 
-| channel           | type               | description                                                                                             |
-|-------------------|--------------------|---------------------------------------------------------------------------------------------------------|
-| Remote Start/Stop | Switch             | Switch to control if you want to start/stop the cycle remotely                                          |
-| Course to Run     | String (Selection) | The pre-programmed course (or default) is shown. You can change-it if you want before remote start      |
+| channel #     | channel           | type               | description                                                                                             |
+|---------------|-------------------|--------------------|---------------------------------------------------------------------------------------------------------|
+| rs-start-stop | Remote Start/Stop | Switch             | Switch to control if you want to start/stop the cycle remotely                                          |
+| rs-course     | Course to Run     | String (Selection) | The pre-programmed course (or default) is shown. You can change-it if you want before remote start      |
 
 ### Dryer/Washer Tower
 LG ThinQ Dryer/Washer is recognized as 2 different things: Dryer & Washer machines. Thus, for this device, follow the sessions for Dryer Machine and Washer Machine
@@ -169,24 +171,24 @@ LG ThinQ Refrigerator supports the following channels
 
 #### Dashboard Channels
 
-| channel                       | type               | description                                                                    |
-|-------------------------------|--------------------|--------------------------------------------------------------------------------|
-| Door Open                     | Contact            | Advice if the door is opened                                                   |
-| Freezer Set Point Temperature | Number:Temperature | Temperature level chosen. This channel supports commands to change temperature |
-| Fridge Set Point Temperature  | Number:Temperature | Temperature level chosen. This channel supports commands to change temperature |
-| Temp. Unit                    | String             | Temperature Unit (°C/F). Supports command to change the unit                   |
-| Express Freeze                | Switch             | Channel to change the express freeze function (ON/OFF/Rapid)                   |
-| Express Cool                  | Switch             | Channel to switch ON/OFF express cool function                                 |
-| Vacation                      | Switch             | Channel to switch ON/OFF Vacation function (unit will work in eco mode)        | 
+| channel #            | channel                       | type               | description                                                                    |
+|----------------------|-------------------------------|--------------------|--------------------------------------------------------------------------------|
+| some-door-open       | Door Open                     | Contact            | Advice if the door is opened                                                   |
+| freezer-temperature  | Freezer Set Point Temperature | Number:Temperature | Temperature level chosen. This channel supports commands to change temperature |
+| fridge-temperature   | Fridge Set Point Temperature  | Number:Temperature | Temperature level chosen. This channel supports commands to change temperature |
+| temp-unit            | Temp. Unit                    | String             | Temperature Unit (°C/F). Supports command to change the unit                   |
+| fr-express-mode      | Express Freeze                | Switch             | Channel to change the express freeze function (ON/OFF/Rapid)                   |
+| fr-express-cool-mode | Express Cool                  | Switch             | Channel to switch ON/OFF express cool function                                 |
+| fr-eco-friendly-mode | Vacation                      | Switch             | Channel to switch ON/OFF Vacation function (unit will work in eco mode)        | 
 
 #### More Information
 
 This Channel Group is reports useful information data for the device:
 
-| channel          | type      | description                                                |
-|------------------|-----------|------------------------------------------------------------|
-| Fresh Air Filter | String    | Shows the Fresh Air filter status (OFF/AUTO/POWER/REPLACE) |
-| Water Filter     | String    | Shows the filter's used months                             |
+| channel #           | channel          | type      | description                                                |
+|---------------------|------------------|-----------|------------------------------------------------------------|
+| fr-fresh-air-filter | Fresh Air Filter | String    | Shows the Fresh Air filter status (OFF/AUTO/POWER/REPLACE) |
+| fr-water-filter     | Water Filter     | String    | Shows the filter's used months                             |
 
 OBS: some versions of this device can not support all the channels, depending on the model's capabilities.
 

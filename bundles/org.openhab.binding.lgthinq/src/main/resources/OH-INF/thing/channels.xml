@@ -120,7 +120,7 @@
 		<label>Current Power</label>
 		<description>Current Power Consumption (kWh)</description>
 		<category>Energy</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 
 	<channel-type id="current-watts-power">

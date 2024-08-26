@@ -14,16 +14,12 @@ package org.openhab.binding.lgthinq.lgservices.model.devices.ac;
 
 import static org.openhab.binding.lgthinq.internal.LGThinQBindingConstants.*;
 
-import java.util.Map;
-
 import org.apache.commons.lang3.math.NumberUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * The {@link ExtendedDeviceInfo} containing extended information obout the device. In
@@ -76,16 +72,5 @@ public class ExtendedDeviceInfo {
 
     public void setRawInstantPower(String instantPower) {
         this.instantPower = instantPower;
-    }
-
-    public static void main(String[] args) {
-        ExtendedDeviceInfo info = new ExtendedDeviceInfo();
-        info.setFilterHoursMax("1");
-        info.setFilterHoursUsed("2");
-        info.setRawInstantPower("344");
-        ObjectMapper m = new ObjectMapper();
-        Map<String, Object> values = m.convertValue(info, new TypeReference<>() {
-        });
-        System.out.println(values);
     }
 }
