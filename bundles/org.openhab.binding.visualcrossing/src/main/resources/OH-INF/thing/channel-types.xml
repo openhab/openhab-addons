@@ -1818,7 +1818,7 @@
 		<item-type>Number:Temperature</item-type>
 		<label>Temperature</label>
 		<category>Temperature</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="precip-channel">
 		<item-type>Number:Length</item-type>
@@ -1827,13 +1827,13 @@
 			The amount of liquid precipitation that fell or is predicted to fall in the period. This includes the
 			liquid-equivalent amount of any frozen precipitation such as snow or ice.
 		</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="precip-prob-channel">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Precip Prob</label>
 		<description>The likelihood of measurable precipitation ranging from 0% to 100%</description>
-		<state readOnly="true" min="0" max="100"/>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="precip-type-channel">
 		<item-type>String</item-type>
@@ -1848,7 +1848,7 @@
 		<item-type>Number</item-type>
 		<label>Precip Cover</label>
 		<description>The proportion of hours where there was non-zero precipitation</description>
-		<state readOnly="true"/>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="snow-channel">
 		<item-type>Number:Length</item-type>
@@ -1873,7 +1873,8 @@
 		<item-type>Number:Dimensionless</item-type>
 		<label>Cloud Cover</label>
 		<description>How much of the sky is covered in cloud ranging from 0–100%</description>
-		<state readOnly="true" min="0" max="100"/>
+		<category>Sun_Clouds</category>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="solar-radiation-channel">
 		<item-type>Number:Intensity</item-type>
@@ -1901,7 +1902,7 @@
 			(https://www.visualcrossing.com/resources/documentation/weather-api/energy-elements-in-the-timeline-weather-api/)
 			pages.
 		</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f MJ/m²"/>
 	</channel-type>
 	<channel-type id="conditions-channel">
 		<item-type>String</item-type>

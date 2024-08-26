@@ -147,7 +147,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
                             .orElse(UNDEF));
                 }
                 case PRECIP_PROB -> {
-                    return requireNonNull(currentConditions.map(cc -> newDecimalType(cc, CurrentConditions::precipprob))
+                    return requireNonNull(currentConditions.map(cc -> newPercentType(cc, CurrentConditions::precipprob))
                             .orElse(UNDEF));
                 }
                 case PRECIP_TYPE -> {
@@ -183,7 +183,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
                             .map(cc -> newKiloMeterType(cc, CurrentConditions::visibility)).orElse(UNDEF));
                 }
                 case CLOUD_COVER -> {
-                    return requireNonNull(currentConditions.map(cc -> newDecimalType(cc, CurrentConditions::cloudcover))
+                    return requireNonNull(currentConditions.map(cc -> newPercentType(cc, CurrentConditions::cloudcover))
                             .orElse(UNDEF));
                 }
                 case SOLAR_RADIATION -> {
@@ -281,13 +281,13 @@ public class VisualCrossingHandler extends BaseThingHandler {
                     return newMilliLengthType(weatherDay, Day::precip);
                 }
                 if (channelId.equals(day.precipProb())) {
-                    return newDecimalType(weatherDay, Day::precipprob);
+                    return newPercentType(weatherDay, Day::precipprob);
                 }
                 if (channelId.equals(day.precipType())) {
                     return newStringCollectionType(weatherDay, Day::preciptype);
                 }
                 if (channelId.equals(day.precipCover())) {
-                    return newDecimalType(weatherDay, Day::precipcover);
+                    return newPercentType(weatherDay, Day::precipcover);
                 }
                 if (channelId.equals(day.snow())) {
                     return newCentiLengthType(weatherDay, Day::snow);
@@ -308,7 +308,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
                     return newMilliPressureType(weatherDay, Day::pressure);
                 }
                 if (channelId.equals(day.cloudCover())) {
-                    return newDecimalType(weatherDay, Day::cloudcover);
+                    return newPercentType(weatherDay, Day::cloudcover);
                 }
                 if (channelId.equals(day.visibility())) {
                     return newKiloMeterType(weatherDay, Day::visibility);
@@ -383,7 +383,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
                         return newMilliLengthType(findHour(hours, hourIdx), Hour::precip);
                     }
                     if (dayHour.hourPrecipProb().equals(channelId)) {
-                        return newDecimalType(findHour(hours, hourIdx), Hour::precipprob);
+                        return newPercentType(findHour(hours, hourIdx), Hour::precipprob);
                     }
                     if (dayHour.hourPrecipType().equals(channelId)) {
                         return newStringCollectionType(findHour(hours, hourIdx), Hour::preciptype);
@@ -410,7 +410,7 @@ public class VisualCrossingHandler extends BaseThingHandler {
                         return newKiloMeterType(findHour(hours, hourIdx), Hour::visibility);
                     }
                     if (dayHour.hourCloudCover().equals(channelId)) {
-                        return newDecimalType(findHour(hours, hourIdx), Hour::cloudcover);
+                        return newPercentType(findHour(hours, hourIdx), Hour::cloudcover);
                     }
                     if (dayHour.hourSolarRadiation().equals(channelId)) {
                         return newSolarRadiationType(findHour(hours, hourIdx), Hour::solarradiation);

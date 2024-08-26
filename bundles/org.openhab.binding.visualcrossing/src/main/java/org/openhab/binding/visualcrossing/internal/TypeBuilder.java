@@ -18,6 +18,7 @@ import static org.openhab.core.library.unit.SIUnits.*;
 import static org.openhab.core.library.unit.Units.*;
 import static org.openhab.core.types.UnDefType.UNDEF;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Collection;
@@ -27,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.types.State;
@@ -70,6 +72,21 @@ class TypeBuilder {
         return newDecimalType(function.apply(obj));
     }
 
+    private static State newPercentType(@Nullable Number decimal) {
+        if (decimal == null) {
+            return UNDEF;
+        }
+
+        return new PercentType(new BigDecimal(decimal.toString()));
+    }
+
+    public static <T> State newPercentType(@Nullable T obj, Function<T, @Nullable Number> function) {
+        if (obj == null) {
+            return UNDEF;
+        }
+        return newPercentType(function.apply(obj));
+    }
+
     private static State newTemperatureType(@Nullable Number temp) {
         return temp != null ? new QuantityType<>(temp, CELSIUS) : UNDEF;
     }
@@ -85,8 +102,7 @@ class TypeBuilder {
         if (humidity == null) {
             return UNDEF;
         }
-        var d = humidity.doubleValue();
-        return new DecimalType(d/100.0);
+        return new PercentType(new BigDecimal(humidity.toString()));
     }
 
     public static <T> State newHumidityType(@Nullable T obj, Function<T, @Nullable Number> function) {
