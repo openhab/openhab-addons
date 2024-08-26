@@ -130,7 +130,7 @@ public class LGThinqDiscoveryService extends AbstractThingHandlerDiscoveryServic
             case AIR_CONDITIONER -> THING_TYPE_AIR_CONDITIONER;
             case HEAT_PUMP -> THING_TYPE_HEAT_PUMP;
             case WASHERDRYER_MACHINE -> THING_TYPE_WASHING_MACHINE;
-            case WASHING_TOWER -> THING_TYPE_WASHING_TOWER;
+            case WASHER_TOWER -> THING_TYPE_WASHING_TOWER;
             case DRYER_TOWER -> THING_TYPE_DRYER_TOWER;
             case DRYER -> THING_TYPE_DRYER;
             case REFRIGERATOR -> THING_TYPE_FRIDGE;

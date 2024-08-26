@@ -292,9 +292,9 @@ public class LGThinQWasherDryerHandler
         if (THING_TYPE_WASHING_MACHINE.equals(getThing().getThingTypeUID())) {
             return DeviceTypes.WASHERDRYER_MACHINE;
         } else if (THING_TYPE_WASHING_TOWER.equals(getThing().getThingTypeUID())) {
-            return DeviceTypes.WASHING_TOWER;
+            return DeviceTypes.WASHER_TOWER;
         } else if (THING_TYPE_DRYER.equals(getThing().getThingTypeUID())) {
-            return DeviceTypes.WASHING_TOWER;
+            return DeviceTypes.WASHER_TOWER;
         } else {
             throw new IllegalArgumentException(
                     "DeviceTypeUuid [" + getThing().getThingTypeUID() + "] not expected for WashingTower/Machine");

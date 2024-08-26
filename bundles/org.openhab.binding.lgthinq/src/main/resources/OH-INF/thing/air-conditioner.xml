@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- LG Device Type relative to Air Conditioners -->
-	<thing-type id="401">
+	<thing-type id="air-conditioner-401">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
@@ -63,10 +63,10 @@
 		<description>This is the Displayed Information.</description>
 		<channels>
 			<channel id="power" typeId="system.power"/>
-			<channel id="op_mode" typeId="operation-mode"/>
-			<channel id="target_temperature" typeId="target-temperature"/>
-			<channel id="current_temperature" typeId="current-temperature"/>
-			<channel id="fan_speed" typeId="fan-speed"/>
+			<channel id="op-mode" typeId="operation-mode"/>
+			<channel id="target-temperature" typeId="target-temperature"/>
+			<channel id="current-temperature" typeId="current-temperature"/>
+			<channel id="fan-speed" typeId="fan-speed"/>
 		</channels>
 	</channel-group-type>
 
@@ -74,9 +74,9 @@
 		<label>More Info</label>
 		<description>Show more information about the device.</description>
 		<channels>
-			<channel id="extended_info_collector" typeId="extended_info_collector"/>
-			<channel id="current_power" typeId="current_power"/>
-			<channel id="remaining_filter" typeId="remaining_filter"/>
+			<channel id="extra_info_collector" typeId="extra_info_collector"/>
+			<channel id="current-power" typeId="current-power"/>
+			<channel id="remaining-filter" typeId="remaining-filter"/>
 		</channels>
 	</channel-group-type>
 

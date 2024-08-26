@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- LG Device Type relative to Air Conditioners -->
-	<thing-type id="202">
+	<thing-type id="dryer-202">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
@@ -41,7 +41,7 @@
 		</config-description>
 	</thing-type>
 
-	<thing-type id="222">
+	<thing-type id="dryer-tower-222">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>

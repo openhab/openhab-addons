@@ -12,7 +12,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="remaining_filter">
+	<channel-type id="remaining-filter">
 		<item-type>Number:Dimensionless</item-type>
 		<label>Remaining Filter</label>
 		<description>Remaining filter without need to be replaced.</description>
@@ -32,51 +32,51 @@
 		</state>
 	</channel-type>
 
-	<channel-type id="fr_water_filter">
+	<channel-type id="fr-water-filter">
 		<item-type>String</item-type>
 		<label>Water Filter</label>
 		<description>Months passed since filter has been changed.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="fr_fresh_air_filter">
+	<channel-type id="fr-fresh-air-filter">
 		<item-type>String</item-type>
 		<label>Fresh Air Filter</label>
 		<description>Fresh Air Filter State.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="extended_info_collector">
+	<channel-type id="extra_info_collector">
 		<item-type>Switch</item-type>
 		<label>Info Collector</label>
 		<description>This switch enable collector for energy and filter consumption (if presents)</description>
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="cool_jet">
+	<channel-type id="cool-jet">
 		<item-type>Switch</item-type>
 		<label>Cool Jet</label>
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="air_clean">
+	<channel-type id="air-clean">
 		<item-type>Switch</item-type>
 		<label>Air Clean</label>
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="auto_dry">
+	<channel-type id="auto-dry">
 		<item-type>Switch</item-type>
 		<label>Auto Dry</label>
 		<category>Switch</category>
 	</channel-type>
-	<channel-type id="energy_saving">
+	<channel-type id="energy-saving">
 		<item-type>Switch</item-type>
 		<label>Energy Saving</label>
 		<category>Switch</category>
 	</channel-type>
 
-	<channel-type id="fan_step_up_down">
+	<channel-type id="fan-step-up-down">
 		<item-type>Number</item-type>
 		<label>Fan VDir</label>
 		<description>Fan Vertical Direction</description>
@@ -84,7 +84,7 @@
 	</channel-type>
 
 
-	<channel-type id="fan_step_left_right">
+	<channel-type id="fan-step-left-right">
 		<item-type>Number</item-type>
 		<label>Fan HDir</label>
 		<description>Fan Horizontal Direction</description>
@@ -115,7 +115,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="current_power">
+	<channel-type id="current-power">
 		<item-type>Number:Energy</item-type>
 		<label>Current Power</label>
 		<description>Current Power Consumption (kWh)</description>
@@ -123,7 +123,7 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="current_watts_power">
+	<channel-type id="current-watts-power">
 		<item-type>Number:Power</item-type>
 		<label>Current Power</label>
 		<description>Current Power Consumption (W)</description>

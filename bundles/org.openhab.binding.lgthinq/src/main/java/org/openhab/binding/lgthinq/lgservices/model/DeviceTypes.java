@@ -18,21 +18,20 @@ package org.openhab.binding.lgthinq.lgservices.model;
  * @author Nemer Daud - Initial contribution
  */
 public enum DeviceTypes {
-    AIR_CONDITIONER(401, "AC", ""),
-
-    HEAT_PUMP(401, "AC", "AWHP"),
-    WASHERDRYER_MACHINE(201, "WM", ""),
-
-    WASHING_TOWER(221, "WM", ""),
-    DRYER(202, "DR", "Dryer"),
-    DRYER_TOWER(222, "DR", "Dryer"),
-    REFRIGERATOR(101, "REF", "Fridge"),
-    DISH_WASHER(204, "DW", "DishWasher"),
-    UNKNOWN(-1, "", "");
+    AIR_CONDITIONER(401, "AC", "", "air-conditioner-401"),
+    HEAT_PUMP(401, "AC", "AWHP", "heatpump-401HP"),
+    WASHERDRYER_MACHINE(201, "WM", "", "washer-201"),
+    WASHER_TOWER(221, "WM", "", "washer-tower-221"),
+    DRYER(202, "DR", "Dryer", "dryer-202"),
+    DRYER_TOWER(222, "DR", "Dryer", "dryer-tower-222"),
+    REFRIGERATOR(101, "REF", "Fridge", "fridge-101"),
+    DISH_WASHER(204, "DW", "DishWasher", "dishwasher-204"),
+    UNKNOWN(-1, "", "", "");
 
     private final int deviceTypeId;
     private final String deviceTypeAcron;
     private final String deviceSubModel;
+    private final String thingTypeId;
 
     public String deviceTypeAcron() {
         return deviceTypeAcron;
@@ -46,6 +45,10 @@ public enum DeviceTypes {
         return deviceSubModel;
     }
 
+    public String thingTypeId() {
+        return thingTypeId;
+    }
+
     public static DeviceTypes fromDeviceTypeId(int deviceTypeId, String deviceCode) {
         switch (deviceTypeId) {
             case 401:
@@ -56,7 +59,7 @@ public enum DeviceTypes {
             case 201:
                 return WASHERDRYER_MACHINE;
             case 221:
-                return WASHING_TOWER;
+                return WASHER_TOWER;
             case 202:
                 return DRYER;
             case 204:
@@ -91,9 +94,10 @@ public enum DeviceTypes {
         }
     }
 
-    DeviceTypes(int i, String n, String submodel) {
+    DeviceTypes(int i, String n, String submodel, String thingTypeId) {
         this.deviceTypeId = i;
         this.deviceTypeAcron = n;
         this.deviceSubModel = submodel;
+        this.thingTypeId = thingTypeId;
     }
 }

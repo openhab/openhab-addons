@@ -54,7 +54,7 @@ public class WasherDryerSnapshotBuilder extends DefaultSnapshotBuilder<WasherDry
         DeviceTypes type = capDef.getDeviceType();
         LGAPIVerion version = capDef.getDeviceVersion();
         switch (type) {
-            case WASHING_TOWER:
+            case WASHER_TOWER:
             case WASHERDRYER_MACHINE:
                 switch (version) {
                     case V1_0: {

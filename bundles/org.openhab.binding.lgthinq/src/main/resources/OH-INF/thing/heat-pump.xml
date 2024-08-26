@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- LG Device Type relative to Heat Pump -->
-	<thing-type id="401HP">
+	<thing-type id="heatpump-401HP">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
@@ -62,11 +62,11 @@
 		<label>Dashboard</label>
 		<description>This is the Displayed Information.</description>
 		<channels>
-			<channel id="target_temperature" typeId="target-temperature"/>
+			<channel id="target-temperature" typeId="target-temperature"/>
 			<channel id="min_temperature" typeId="min-temperature"/>
 			<channel id="max_temperature" typeId="max-temperature"/>
-			<channel id="current_temperature" typeId="current-temperature"/>
-			<channel id="op_mode" typeId="operation-mode"/>
+			<channel id="current-temperature" typeId="current-temperature"/>
+			<channel id="op-mode" typeId="operation-mode"/>
 			<channel id="hp_air_water_switch" typeId="hp-air-water-switch"/>
 			<channel id="power" typeId="system.power"/>
 		</channels>
@@ -76,8 +76,8 @@
 		<label>More Info</label>
 		<description>Show more information about the device.</description>
 		<channels>
-			<channel id="extended_info_collector" typeId="extended_info_collector"/>
-			<channel id="current_power" typeId="current_watts_power"/>
+			<channel id="extra_info_collector" typeId="extra_info_collector"/>
+			<channel id="current-power" typeId="current-watts-power"/>
 		</channels>
 	</channel-group-type>
 

@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- LG Device Type relative to Washer -->
-	<thing-type id="201">
+	<thing-type id="washer-201">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
@@ -40,13 +40,13 @@
 			</parameter>
 		</config-description>
 	</thing-type>
-	<thing-type id="221">
+	<thing-type id="washer-tower-221">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
 
 		<label>LGThinQ Washer Tower</label>
-		<description>LGThinQ Washing Tower</description>
+		<description>LGThinQ Washer Tower</description>
 		<channel-groups>
 			<channel-group id="dashboard" typeId="wm-dashboard"/>
 			<channel-group id="remote-start-grp" typeId="wm-remote-start-grp"/>
@@ -105,26 +105,5 @@
 			<channel id="remote-start-flag" typeId="washerdryer-remote-start"/>
 		</channels>
 	</channel-group-type>
-
-	<thing-type id="221">
-		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
-		</supported-bridge-type-refs>
-
-		<label>LGThinQ Washer Tower</label>
-		<description>LG ThinQ Washing Tower</description>
-
-		<channels>
-			<channel id="power" typeId="system.power"/>
-			<channel id="state" typeId="washer-state"/>
-			<channel id="course" typeId="washer-course"/>
-			<channel id="temperature-level" typeId="washer-temp-level"/>
-			<channel id="door-lock" typeId="washer-door-lock"/>
-			<channel id="remain-time" typeId="washerdryer-remain-time"/>
-			<channel id="delay-time" typeId="washerdryer-delay-time"/>
-		</channels>
-
-	</thing-type>
-
 
 </thing:thing-descriptions>

@@ -176,7 +176,7 @@ public class LGThinQBridgeHandler extends ConfigStatusBridgeHandler implements L
             lGDeviceRegister.put(thing.getDeviceId(), thing);
             // remove device from discovery list, if exists.
             LGDevice device = lastDevicesDiscovered.get(thing.getDeviceId());
-            if (device != null) {
+            if (device != null && discoveryService != null) {
                 discoveryService.removeLgDeviceDiscovery(device);
             }
         }

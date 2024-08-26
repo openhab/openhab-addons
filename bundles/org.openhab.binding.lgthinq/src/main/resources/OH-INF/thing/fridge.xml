@@ -5,7 +5,7 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<!-- LG Device Type relative to Air Conditioners -->
-	<thing-type id="101">
+	<thing-type id="fridge-101">
 		<supported-bridge-type-refs>
 			<bridge-type-ref id="bridge"/>
 		</supported-bridge-type-refs>
@@ -33,8 +33,8 @@
 		<label>More Info</label>
 		<description>Show more information about the device.</description>
 		<channels>
-			<channel id="fr_fresh_air_filter" typeId="fr_fresh_air_filter"/>
-			<channel id="fr_water_filter" typeId="fr_water_filter"/>
+			<channel id="fr-fresh-air-filter" typeId="fr-fresh-air-filter"/>
+			<channel id="fr-water-filter" typeId="fr-water-filter"/>
 		</channels>
 	</channel-group-type>
 </thing:thing-descriptions>

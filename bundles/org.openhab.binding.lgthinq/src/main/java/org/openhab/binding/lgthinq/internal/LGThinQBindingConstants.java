@@ -38,28 +38,27 @@ public class LGThinQBindingConstants {
     public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
     public static final String PROPERTY_VENDOR_NAME = "LG Thinq";
     public static final ThingTypeUID THING_TYPE_AIR_CONDITIONER = new ThingTypeUID(BINDING_ID,
-            String.valueOf(DeviceTypes.AIR_CONDITIONER.deviceTypeId()));
+            DeviceTypes.AIR_CONDITIONER.thingTypeId());
     public static final ThingTypeUID THING_TYPE_WASHING_MACHINE = new ThingTypeUID(BINDING_ID,
-            String.valueOf(DeviceTypes.WASHERDRYER_MACHINE.deviceTypeId()));
+            DeviceTypes.WASHERDRYER_MACHINE.thingTypeId());
     public static final String WM_CHANNEL_REMOTE_START_GRP_ID = "remote-start-grp";
     public static final String CHANNEL_DASHBOARD_GRP_ID = "dashboard";
     public static final String CHANNEL_EXTENDED_INFO_GRP_ID = "extended-information";
     public static final ThingTypeUID THING_TYPE_WASHING_TOWER = new ThingTypeUID(BINDING_ID,
-            "" + DeviceTypes.WASHING_TOWER.deviceTypeId());
-    public static final ThingTypeUID THING_TYPE_DRYER = new ThingTypeUID(BINDING_ID,
-            "" + DeviceTypes.DRYER.deviceTypeId());
+            DeviceTypes.WASHER_TOWER.thingTypeId());
+    public static final ThingTypeUID THING_TYPE_DRYER = new ThingTypeUID(BINDING_ID, DeviceTypes.DRYER.thingTypeId());
 
     public static final ThingTypeUID THING_TYPE_HEAT_PUMP = new ThingTypeUID(BINDING_ID,
-            DeviceTypes.HEAT_PUMP.deviceTypeId() + "HP");
+            DeviceTypes.HEAT_PUMP.thingTypeId());
 
     public static final ThingTypeUID THING_TYPE_DRYER_TOWER = new ThingTypeUID(BINDING_ID,
-            "" + DeviceTypes.DRYER_TOWER.deviceTypeId());
+            DeviceTypes.DRYER_TOWER.thingTypeId());
 
     public static final ThingTypeUID THING_TYPE_FRIDGE = new ThingTypeUID(BINDING_ID,
-            "" + DeviceTypes.REFRIGERATOR.deviceTypeId());
+            DeviceTypes.REFRIGERATOR.thingTypeId());
 
     public static final ThingTypeUID THING_TYPE_DISHWASHER = new ThingTypeUID(BINDING_ID,
-            "" + DeviceTypes.DISH_WASHER.deviceTypeId());
+            DeviceTypes.DISH_WASHER.thingTypeId());
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_AIR_CONDITIONER,
             THING_TYPE_WASHING_MACHINE, THING_TYPE_WASHING_TOWER, THING_TYPE_DRYER_TOWER, THING_TYPE_DRYER,
             THING_TYPE_FRIDGE, THING_TYPE_BRIDGE, THING_TYPE_HEAT_PUMP, THING_TYPE_DISHWASHER);
@@ -113,11 +112,11 @@ public class LGThinQBindingConstants {
     public static final String APP_TYPE = "NUTS";
     public static final String APP_VER = "3.5.1200";
 
-    public static final String DEVICE_ID = "device_id";
-    public static final String MODEL_NAME = "model_name";
-    public static final String DEVICE_ALIAS = "device_alias";
-    public static final String MODEL_URL_INFO = "model_url_info";
-    public static final String PLATFORM_TYPE = "platform_type";
+    public static final String DEVICE_ID = "device-id";
+    public static final String MODEL_NAME = "model-name";
+    public static final String DEVICE_ALIAS = "device-alias";
+    public static final String MODEL_URL_INFO = "model-url-info";
+    public static final String PLATFORM_TYPE = "platform-type";
     public static final String PLATFORM_TYPE_V1 = "thinq1";
     public static final String PLATFORM_TYPE_V2 = "thinq2";
     static final Set<String> SUPPORTED_LG_PLATFORMS = Set.of(PLATFORM_TYPE_V1, PLATFORM_TYPE_V2);
@@ -144,8 +143,8 @@ public class LGThinQBindingConstants {
     public static final String FR_CHANNEL_SMART_SAVING_MODE_V2 = "fr-smart-saving-mode";
     public static final String FR_CHANNEL_SMART_SAVING_SWITCH_V1 = "fr-smart-saving-switch";
     public static final String FR_CHANNEL_ACTIVE_SAVING = "fr-active-saving";
-    public static final String FR_CHANNEL_FRESH_AIR_FILTER = "fr_fresh_air_filter";
-    public static final String FR_CHANNEL_WATER_FILTER = "fr_water_filter";
+    public static final String FR_CHANNEL_FRESH_AIR_FILTER = "fr-fresh-air-filter";
+    public static final String FR_CHANNEL_WATER_FILTER = "fr-water-filter";
     public static final Set<String> CELSIUS_UNIT_VALUES = Set.of("01", "1", "C", "CELSIUS", TEMP_UNIT_CELSIUS_SYMBOL);
     public static final Set<String> FAHRENHEIT_UNIT_VALUES = Set.of("02", "2", "F", "FAHRENHEIT",
             TEMP_UNIT_FAHRENHEIT_SYMBOL);
@@ -189,23 +188,23 @@ public class LGThinQBindingConstants {
 
     // ====================== AIR CONDITIONER DEVICE CONSTANTS =============================
     // CHANNEL IDS
-    public static final String CHANNEL_MOD_OP_ID = "op_mode";
+    public static final String CHANNEL_MOD_OP_ID = "op-mode";
     public static final String CHANNEL_AIR_WATER_SWITCH_ID = "hp_air_water_switch";
-    public static final String CHANNEL_FAN_SPEED_ID = "fan_speed";
+    public static final String CHANNEL_FAN_SPEED_ID = "fan-speed";
     public static final String CHANNEL_POWER_ID = "power";
-    public static final String CHANNEL_EXTENDED_INFO_COLLECTOR_ID = "extended_info_collector";
-    public static final String CHANNEL_CURRENT_POWER_ID = "current_power";
-    public static final String CHANNEL_REMAINING_FILTER_ID = "remaining_filter";
-    public static final String CHANNEL_TARGET_TEMP_ID = "target_temperature";
+    public static final String CHANNEL_EXTENDED_INFO_COLLECTOR_ID = "extra_info_collector";
+    public static final String CHANNEL_CURRENT_POWER_ID = "current-power";
+    public static final String CHANNEL_REMAINING_FILTER_ID = "remaining-filter";
+    public static final String CHANNEL_TARGET_TEMP_ID = "target-temperature";
     public static final String CHANNEL_MIN_TEMP_ID = "min_temperature";
     public static final String CHANNEL_MAX_TEMP_ID = "max_temperature";
-    public static final String CHANNEL_CURRENT_TEMP_ID = "current_temperature";
-    public static final String CHANNEL_COOL_JET_ID = "cool_jet";
-    public static final String CHANNEL_AIR_CLEAN_ID = "air_clean";
-    public static final String CHANNEL_AUTO_DRY_ID = "auto_dry";
-    public static final String CHANNEL_ENERGY_SAVING_ID = "energy_saving";
-    public static final String CHANNEL_STEP_UP_DOWN_ID = "fan_step_up_down";
-    public static final String CHANNEL_STEP_LEFT_RIGHT_ID = "fan_step_left_right";
+    public static final String CHANNEL_CURRENT_TEMP_ID = "current-temperature";
+    public static final String CHANNEL_COOL_JET_ID = "cool-jet";
+    public static final String CHANNEL_AIR_CLEAN_ID = "air-clean";
+    public static final String CHANNEL_AUTO_DRY_ID = "auto-dry";
+    public static final String CHANNEL_ENERGY_SAVING_ID = "energy-saving";
+    public static final String CHANNEL_STEP_UP_DOWN_ID = "fan-step-up-down";
+    public static final String CHANNEL_STEP_LEFT_RIGHT_ID = "fan-step-left-right";
 
     public static final String CAP_ACHP_OP_MODE_COOL_KEY = "@AC_MAIN_OPERATION_MODE_COOL_W";
     public static final String CAP_ACHP_OP_MODE_HEAT_KEY = "@AC_MAIN_OPERATION_MODE_HEAT_W";
