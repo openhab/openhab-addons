@@ -5,10 +5,40 @@
 
 	<thing-type uid="mercedesme:hybrid">
 		<instruction-set targetVersion="1">
-			<add-channel id="cons-conv-reset" groupIds="trip-hybrid-values">
-				<type>
-					mercedesme:consumption-conv-reset
-				</typeId>
+			<add-channel id="cons-conv-reset" groupIds="trip">
+				<type>mercedesme:consumption-conv-reset</type>
+			</add-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="mercedesme:combustion">
+		<instruction-set targetVersion="1">
+			<add-channel id="distance" groupIds="trip">
+				<type>mercedesme:distance</type>
+			</add-channel>
+			<add-channel id="time" groupIds="trip">
+				<type>mercedesme:driven-time</type>
+			</add-channel>
+			<add-channel id="avg-speed" groupIds="trip">
+				<type>mercedesme:avg-speed</type>
+			</add-channel>
+			<add-channel id="cons-conv" groupIds="trip">
+				<type>mercedesme:consumption-conv</type>
+			</add-channel>
+			<add-channel id="distance-reset" groupIds="trip">
+				<type>mercedesme:distance-reset</type>
+			</add-channel>
+			<add-channel id="time-reset" groupIds="trip">
+				<type>mercedesme:driven-time-reset</type>
+			</add-channel>
+			<add-channel id="avg-speed-reset" groupIds="trip">
+				<type>mercedesme:avg-speed-reset</type>
+			</add-channel>
+			<add-channel id="cons-conv-reset" groupIds="trip">
+				<type>mercedesme:consumption-conv-reset</type>
+			</add-channel>
+			<add-channel id="cons-conv-unit" groupIds="trip">
+				<type>mercedesme:consumption-conv-unit</type>
 			</add-channel>
 		</instruction-set>
 	</thing-type>
