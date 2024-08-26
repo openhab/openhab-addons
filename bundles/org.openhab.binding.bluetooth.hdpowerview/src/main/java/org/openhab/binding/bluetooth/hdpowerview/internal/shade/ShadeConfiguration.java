@@ -29,9 +29,7 @@ public class ShadeConfiguration {
 
     @Override
     public String toString() {
-        return String.format("[address:%s, bleTimeout:%d, heartbeatDelay:%d, pollingDelay:%d, encryptionKey:%s]",
-                address, bleTimeout, heartbeatDelay, pollingDelay, encryptionKey);
+        return String.format("[address:%s, bleTimeout:%d, heartbeatDelay:%d, pollingDelay:%d]", address, bleTimeout,
+                heartbeatDelay, pollingDelay);
     }
-
-    public static final String ENCRYPTION_KEY = "encryptionKey";
 }

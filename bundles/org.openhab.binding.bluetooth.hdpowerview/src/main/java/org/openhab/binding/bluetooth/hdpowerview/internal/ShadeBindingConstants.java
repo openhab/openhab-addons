@@ -31,13 +31,12 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class ShadeBindingConstants {
 
-    public static final ThingTypeUID THING_TYPE_SHADE = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID,
-            "hdpowerview-shade");
+    public static final ThingTypeUID THING_TYPE_SHADE = new ThingTypeUID(BluetoothBindingConstants.BINDING_ID, "shade");
 
     public static final String CHANNEL_SHADE_PRIMARY = "primary";
     public static final String CHANNEL_SHADE_SECONDARY = "secondary";
     public static final String CHANNEL_SHADE_TILT = "tilt";
-    public static final String CHANNEL_SHADE_BATTERY_LEVEL = "batteryLevel";
+    public static final String CHANNEL_SHADE_BATTERY_LEVEL = "battery-level";
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_SHADE);
 
@@ -54,6 +53,7 @@ public class ShadeBindingConstants {
     public static final String SHADE_LABEL = "PowerView Shade";
 
     public static final String PROPERTY_HOME_ID = "homeId";
+    public static final String PROPERTY_ENCRYPTION_KEY = "encryptionKey";
 
     public static final UUID UUID_SERVICE_SHADE = UUID.fromString("0000FDC1-0000-1000-8000-00805F9B34FB");
     public static final UUID UUID_CHARACTERISTIC_POSITION = UUID.fromString("CAFE1001-C0FF-EE01-8000-A110CA7AB1E0");

@@ -31,7 +31,7 @@ import org.osgi.service.component.annotations.Component;
  * @author Andrew Fiddian-Green - Initial contribution
  */
 @NonNullByDefault
-@Component(configurationPid = "binding.hdpowerview", service = ThingHandlerFactory.class)
+@Component(configurationPid = "binding.bluetooth.hdpowerview", service = ThingHandlerFactory.class)
 public class ShadeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override

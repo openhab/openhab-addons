@@ -38,6 +38,7 @@ import javax.crypto.NoSuchPaddingException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.bluetooth.BeaconBluetoothHandler;
+import org.openhab.binding.bluetooth.BluetoothAddress;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothCharacteristic.GattCharacteristic;
 import org.openhab.binding.bluetooth.BluetoothDevice.ConnectionState;
@@ -174,7 +175,7 @@ public class ShadeHandler extends BeaconBluetoothHandler {
                 if (!configuration.encryptionKey.equals(key)) {
                     configuration.encryptionKey = key;
                     Configuration config = getConfig();
-                    config.put(ShadeConfiguration.ENCRYPTION_KEY, key);
+                    config.put(PROPERTY_ENCRYPTION_KEY, key);
                     updateConfiguration(config);
                 }
             }
@@ -264,6 +265,12 @@ public class ShadeHandler extends BeaconBluetoothHandler {
     public void initialize() {
         super.initialize();
         configuration = getConfigAs(ShadeConfiguration.class);
+        try {
+            new BluetoothAddress(configuration.address);
+        } catch (IllegalArgumentException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, e.getMessage());
+            return;
+        }
         updateProperty(PROPERTY_HOME_ID, Integer.toHexString(homeId).toUpperCase());
         activityTimeout = Instant.now().plusSeconds(configuration.pollingDelay * 2);
 
