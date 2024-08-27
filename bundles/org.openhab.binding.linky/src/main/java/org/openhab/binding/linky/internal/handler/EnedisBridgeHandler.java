@@ -39,7 +39,10 @@ import com.google.gson.Gson;
 public class EnedisBridgeHandler extends ApiBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(EnedisBridgeHandler.class);
 
-    private static final String BASE_URL = "https://ext.prod-sandbox.api.enedis.fr/";
+    // private static final String BASE_URL = "https://ext.prod-sandbox.api.enedis.fr/";
+    // public static final String ENEDIS_ACCOUNT_URL = "https://ext.prod-sandbox.api.enedis.fr/";
+    private static final String BASE_URL = "https://ext.prod.api.enedis.fr/";
+    public static final String ENEDIS_ACCOUNT_URL = "https://mon-compte-particulier.enedis.fr/";
 
     private static final String CONTRACT_URL = BASE_URL + "customers_upc/v5/usage_points/contracts?usage_point_id=%s";
     private static final String IDENTITY_URL = BASE_URL + "customers_i/v5/identity?usage_point_id=%s";
@@ -52,8 +55,15 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
     private static final String LOAD_CURVE_CONSUMPTION_URL = BASE_URL
             + "metering_data_clc/v5/consumption_load_curve?usage_point_id=%s&start=%s&end=%s";
 
+    public static final String ENEDIS_AUTHORIZE_URL = ENEDIS_ACCOUNT_URL
+            + "dataconnect/v1/oauth2/authorize?duration=P36M";
+    public static final String ENEDIS_API_TOKEN_URL = BASE_URL + "oauth2/v3/token";
+
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter API_DATE_FORMAT_YEAR_FIRST = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    private static final String BASE_MYELECT_URL = "https://www.myelectricaldata.fr/";
+    private static final String TEMPO_URL = BASE_MYELECT_URL + "rte/tempo/%s/%s";
 
     public EnedisBridgeHandler(Bridge bridge, final @Reference HttpClientFactory httpClientFactory,
             final @Reference OAuthFactory oAuthFactory, final @Reference HttpService httpService,
@@ -151,7 +161,7 @@ public class EnedisBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public String getTempoUrl() {
-        return "";
+        return TEMPO_URL;
     }
 
     @Override

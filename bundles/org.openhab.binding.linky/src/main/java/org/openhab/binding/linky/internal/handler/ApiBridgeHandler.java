@@ -60,7 +60,9 @@ import com.google.gson.JsonSyntaxException;
 public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
     private final Logger logger = LoggerFactory.getLogger(ApiBridgeHandler.class);
 
-    private final OAuthClientService oAuthService;
+    private final OAuthFactory oAuthFactory;
+
+    private @Nullable OAuthClientService oAuthService;
 
     private static @Nullable HttpServlet servlet;
 
@@ -69,22 +71,29 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
             final @Reference ThingRegistry thingRegistry, ComponentContext componentContext, Gson gson) {
         super(bridge, httpClientFactory, oAuthFactory, httpService, thingRegistry, componentContext, gson);
 
+        this.oAuthFactory = oAuthFactory;
+
+        updateStatus(ThingStatus.UNKNOWN);
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+
         String tokenUrl = "";
         String authorizeUrl = "";
         if (this instanceof MyElectricalDataBridgeHandler) {
-            tokenUrl = LinkyBindingConstants.LINKY_MYELECTRICALDATA_API_TOKEN_URL;
-            authorizeUrl = LinkyBindingConstants.LINKY_MYELECTRICALDATA_AUTHORIZE_URL;
+            tokenUrl = MyElectricalDataBridgeHandler.LINKY_MYELECTRICALDATA_API_TOKEN_URL;
+            authorizeUrl = MyElectricalDataBridgeHandler.LINKY_MYELECTRICALDATA_AUTHORIZE_URL;
         } else if (this instanceof EnedisBridgeHandler) {
-            tokenUrl = LinkyBindingConstants.ENEDIS_API_TOKEN_URL_PREPROD;
-            authorizeUrl = LinkyBindingConstants.ENEDIS_AUTHORIZE_URL_PREPROD;
+            tokenUrl = EnedisBridgeHandler.ENEDIS_API_TOKEN_URL;
+            authorizeUrl = EnedisBridgeHandler.ENEDIS_AUTHORIZE_URL;
         }
 
         this.oAuthService = oAuthFactory.createOAuthClientService(LinkyBindingConstants.BINDING_ID, tokenUrl,
                 authorizeUrl, getClientId(), getClientSecret(), LinkyBindingConstants.LINKY_SCOPES, true);
 
         registerServlet();
-
-        updateStatus(ThingStatus.UNKNOWN);
     }
 
     public abstract String getClientId();
@@ -130,7 +139,12 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
 
         try {
             logger.debug("Make call to Enedis to get access token.");
-            final AccessTokenResponse credentials = oAuthService
+            OAuthClientService lcOAuthService = this.oAuthService;
+            if (lcOAuthService == null) {
+                return "";
+            }
+
+            final AccessTokenResponse credentials = lcOAuthService
                     .getAccessTokenByClientCredentials(LinkyBindingConstants.LINKY_SCOPES);
 
             String accessToken = credentials.getAccessToken();
@@ -153,7 +167,12 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
 
     protected @Nullable AccessTokenResponse getAccessTokenByClientCredentials() {
         try {
-            return oAuthService.getAccessTokenByClientCredentials(LinkyBindingConstants.LINKY_SCOPES);
+            OAuthClientService lcOAuthService = this.oAuthService;
+            if (lcOAuthService == null) {
+                return null;
+            }
+
+            return lcOAuthService.getAccessTokenByClientCredentials(LinkyBindingConstants.LINKY_SCOPES);
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
             logger.debug("Exception checking authorization: ", e);
             return null;
@@ -162,7 +181,12 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
 
     protected @Nullable AccessTokenResponse getAccessTokenResponse() {
         try {
-            return oAuthService.getAccessTokenResponse();
+            OAuthClientService lcOAuthService = this.oAuthService;
+            if (lcOAuthService == null) {
+                return null;
+            }
+
+            return lcOAuthService.getAccessTokenResponse();
         } catch (OAuthException | IOException | OAuthResponseException | RuntimeException e) {
             logger.debug("Exception checking authorization: ", e);
             return null;
@@ -171,7 +195,12 @@ public abstract class ApiBridgeHandler extends LinkyBridgeHandler {
 
     public String formatAuthorizationUrl(String redirectUri) {
         try {
-            String uri = this.oAuthService.getAuthorizationUrl(redirectUri, LinkyBindingConstants.LINKY_SCOPES,
+            OAuthClientService lcOAuthService = this.oAuthService;
+            if (lcOAuthService == null) {
+                return "";
+            }
+
+            String uri = lcOAuthService.getAuthorizationUrl(redirectUri, LinkyBindingConstants.LINKY_SCOPES,
                     LinkyBindingConstants.BINDING_ID);
             return uri;
         } catch (final OAuthException e) {
