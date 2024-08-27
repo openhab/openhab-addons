@@ -122,5 +122,4 @@ public class LinkyBindingConstants {
      * Smartthings scopes needed by this binding to work.
      */
     public static final String LINKY_SCOPES = "am_application_scope default";
-
 }
