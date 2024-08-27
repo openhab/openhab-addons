@@ -50,13 +50,13 @@ A shade always implements a roller shutter channel `position` which controls the
 If the shade has slats or rotatable vanes, there is also a dimmer channel `tilt` which controls the slat / vane position.
 If it is a dual action (top-down plus bottom-up) shade, there is also a roller shutter channel `secondary` which controls the vertical position of the secondary rail.
 
-| Channel       | Item Type      | Description                                           |
-|---------------|----------------|-------------------------------------------------------|
-| position      | Rollershutter  | The vertical position of the shade's rail.            |
-| secondary     | Rollershutter  | The vertical position of the secondary rail (if any). |
-| tilt          | Dimmer         | The degree of opening of the slats or vanes (if any). |
-| battery-level | Number:Percent | Battery level (10% = low, 50% = medium, 100% = high). |
-| rssi          | Number:Power   | Received Signal Strength Indication.                  |
+| Channel       | Item Type            | Description                                           |
+|---------------|----------------------|-------------------------------------------------------|
+| position      | Rollershutter        | The vertical position of the shade's rail.            |
+| secondary     | Rollershutter        | The vertical position of the secondary rail (if any). |
+| tilt          | Dimmer               | The degree of opening of the slats or vanes (if any). |
+| battery-level | Number:Dimensionless | Battery level (10% = low, 50% = medium, 100% = high). |
+| rssi          | Number:Power         | Received Signal Strength Indication.                  |
 
 Note: the channels `secondary` and `tilt` only exist if the shade physically supports such channels.
 
@@ -76,6 +76,6 @@ Bridge bluetooth:bluegiga:abc123 "Bluetooth Stick" @ "Comms Cabinet" [port="COM3
 Rollershutter Shade_Position "Shade Position" {channel="bluetooth:shade:abc123:112233445566:position"}
 Dimmer Shade_Position2 "Shade Position" {channel="bluetooth:shade:abc123:112233445566:position"}
 Dimmer Shade_Tilt "Shade Tilt" {channel="bluetooth:shade:abc123:112233445566:tilt"}
-Number:Percent Shade_Battery_Level "Shade Battery Level" {channel="bluetooth:shade:abc123:112233445566:battery-level"}
+Number:Dimensionless Shade_Battery_Level "Shade Battery Level" {channel="bluetooth:shade:abc123:112233445566:battery-level"}
 Number:Power Shade_RSSI "Shade Signal Strength" {channel="bluetooth:shade:abc123:112233445566:rssi"}
 ```
