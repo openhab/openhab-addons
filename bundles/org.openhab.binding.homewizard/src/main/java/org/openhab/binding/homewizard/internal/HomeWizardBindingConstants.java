@@ -27,7 +27,9 @@ public class HomeWizardBindingConstants {
     private static final String BINDING_ID = "homewizard";
 
     // List of all Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_P1_WIFI_METER = new ThingTypeUID(BINDING_ID, "p1_wifi_meter");
+    public static final ThingTypeUID THING_TYPE_P1_METER = new ThingTypeUID(BINDING_ID, "p1_wifi_meter");
+    public static final ThingTypeUID THING_TYPE_ENERGY_SOCKET = new ThingTypeUID(BINDING_ID, "energy_socket");
+    public static final ThingTypeUID THING_TYPE_WATERMETER = new ThingTypeUID(BINDING_ID, "watermeter");
 
     // List of all Channel ids
     public static final String CHANNEL_ENERGY_IMPORT_T1 = "total_energy_import_t1";
@@ -40,6 +42,12 @@ public class HomeWizardBindingConstants {
     public static final String CHANNEL_ACTIVE_POWER_L3 = "active_power_l3";
     public static final String CHANNEL_TOTAL_GAS = "total_gas";
     public static final String CHANNEL_GAS_TIMESTAMP = "gas_timestamp";
+    public static final String CHANNEL_TOTAL_WATER = "total_water";
+    public static final String CHANNEL_CURRENT_WATER = "current_water";
+
+    public static final String CHANNEL_POWER_SWITCH = "power_switch";
+    public static final String CHANNEL_POWER_LOCK = "power_lock";
+    public static final String CHANNEL_RING_BRIGHTNESS = "ring_brightness";
 
     public static final String PROPERTY_METER_MODEL = "meterModel";
     public static final String PROPERTY_METER_VERSION = "meterVersion";
