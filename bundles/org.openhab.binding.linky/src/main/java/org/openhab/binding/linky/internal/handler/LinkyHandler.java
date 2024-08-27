@@ -461,7 +461,7 @@ public class LinkyHandler extends BaseThingHandler {
         }
 
         sendTimeSeries(groupId, channelId, timeSeries);
-        updateState(groupId, channelId, new DecimalType(iv[iv.length - 1].value));
+        // updateState(groupId, channelId, new DecimalType(iv[iv.length - 1].value));
     }
 
     private void updateKwhChannel(String groupId, String channelId, double consumption) {
@@ -701,7 +701,7 @@ public class LinkyHandler extends BaseThingHandler {
                 int baseYear = meterReading.dayValue[0].date.getYear();
                 int baseMonth = meterReading.dayValue[0].date.getMonthValue();
                 int baseDayOfYear = meterReading.dayValue[0].date.getDayOfYear();
-                int baseWeek = ((baseDayOfYear - 1) / 7) + 1;
+                int baseWeek = meterReading.dayValue[0].date.get(WeekFields.of(Locale.FRANCE).weekOfYear());
 
                 for (int idx = 0; idx < size; idx++) {
                     IntervalReading ir = meterReading.dayValue[idx];
