@@ -1855,19 +1855,19 @@
 		<label>Snow</label>
 		<description>The amount of snow that fell or is predicted to fall</description>
 		<category>Snow</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="snow-depth-channel">
 		<item-type>Number:Length</item-type>
 		<label>Snow</label>
 		<category>Snow</category>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 	<channel-type id="visibility-channel">
 		<item-type>Number:Length</item-type>
 		<label>Visibility</label>
 		<description>Distance at which distant objects are visible</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="cloud-cover-channel">
 		<item-type>Number:Dimensionless</item-type>
@@ -1888,7 +1888,7 @@
 			(https://www.visualcrossing.com/resources/documentation/weather-api/energy-elements-in-the-timeline-weather-api/)
 			pages.
 		</description>
-		<state readOnly="true"/>
+		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="solar-energy-channel">
 		<item-type>Number</item-type>
@@ -1958,10 +1958,10 @@
 			Represents the fractional portion through the current moon lunation cycle ranging from 0 (the new moon)
 			to 0.5 (the full moon) and back to 1 (the next new moon).
 		</description>
-		<state readOnly="true" min="0" max="1"/>
+		<state readOnly="true" min="0" max="1" pattern="%.1f"/>
 	</channel-type>
 	<channel-type id="severe-risk-channel">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Severe Risk</label>
 		<description>
 			A value between 0 and 100 representing the risk of convective storms (e.g. thunderstorms, hail and
@@ -1969,7 +1969,7 @@
 			potential energy (CAPE) and convective inhibition (CIN), predicted rain and wind. Typically, a severe risk value less
 			than 30 indicates a low risk, between 30 and 70 a moderate risk and above 70 a high risk.
 		</description>
-		<state readOnly="true" min="0" max="100"/>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %unit%"/>
 	</channel-type>
 	<!-- ❌ Channels ❌ -->
 </thing:thing-descriptions>

@@ -162,7 +162,7 @@ Check `full_example.items` to get all days with all hours
 
 **Note: I strongly suggest not using UI Items creation because it will kill the web browser. UI is getting unresponsive when loading so many channels and trying to bind them.**
 
-**Note 2: Using `full_example.items` will probably kill your OH (with message `The queue for a subscriber of type 'class org.openhab.core.internal.items.ItemUpdater' exceeds 5000 elements. System may be unstable.`). Use `only_days.items` to have forecast for days but without hours.**
+**Note 2: Using `docs/full_example.items` will probably kill your OH (with message `The queue for a subscriber of type 'class org.openhab.core.internal.items.ItemUpdater' exceeds 5000 elements. System may be unstable.`). Use `docs/only_days.items` to have forecast for days but without hours.**
 
 ```java
 Group Total_Weather_Data "Total Weather Data" [ "Equipment" ] 
