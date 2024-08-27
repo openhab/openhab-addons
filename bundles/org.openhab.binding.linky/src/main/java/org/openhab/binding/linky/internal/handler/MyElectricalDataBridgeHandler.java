@@ -55,6 +55,14 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
     private static final String LOAD_CURVE_CONSUMPTION_URL = BASE_URL
             + "consumption_load_curve/%s/start/%s/end/%s/cache";
 
+    // List of Linky services related urls, information
+    public static final String LINKY_MYELECTRICALDATA_ACCOUNT_URL = "https://www.myelectricaldata.fr/";
+    public static final String LINKY_MYELECTRICALDATA_AUTHORIZE_URL = EnedisBridgeHandler.ENEDIS_AUTHORIZE_URL;
+    public static final String LINKY_MYELECTRICALDATA_API_TOKEN_URL = LINKY_MYELECTRICALDATA_ACCOUNT_URL
+            + "v1/oauth2/authorize?client_id=%s&response_type=code&redirect_uri=na&user_type=na&state=na&person_id=-1&usage_points_id=%s";
+
+    public static final String LINKY_MYELECTRICALDATA_CLIENT_ID = "_h7zLaRr2INxqBI8jhDUQXsa_G4a";
+
     private static final String TEMPO_URL = BASE_URL + "rte/tempo/%s/%s";
 
     private static final DateTimeFormatter API_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -80,7 +88,7 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public String getClientId() {
-        return LinkyBindingConstants.LINKY_MYELECTRICALDATA_CLIENT_ID;
+        return MyElectricalDataBridgeHandler.LINKY_MYELECTRICALDATA_CLIENT_ID;
     }
 
     @Override
@@ -95,7 +103,8 @@ public class MyElectricalDataBridgeHandler extends ApiBridgeHandler {
 
     @Override
     public String authorize(String redirectUri, String reqState, String reqCode) throws LinkyException {
-        String url = String.format(LinkyBindingConstants.LINKY_MYELECTRICALDATA_API_TOKEN_URL, getClientId(), reqCode);
+        String url = String.format(MyElectricalDataBridgeHandler.LINKY_MYELECTRICALDATA_API_TOKEN_URL, getClientId(),
+                reqCode);
         EnedisHttpApi enedisApi = getEnedisApi();
         if (enedisApi == null) {
             return "";
