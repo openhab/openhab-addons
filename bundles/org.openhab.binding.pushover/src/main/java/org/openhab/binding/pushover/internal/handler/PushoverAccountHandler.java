@@ -36,6 +36,8 @@ import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link PushoverAccountHandler} is responsible for handling commands, which are sent to one of the channels.
@@ -48,6 +50,7 @@ public class PushoverAccountHandler extends BaseThingHandler {
     private static final Collection<Class<? extends ThingHandlerService>> SUPPORTED_THING_ACTIONS = Set
             .of(PushoverActions.class, PushoverConfigOptionProvider.class);
 
+    private final Logger logger = LoggerFactory.getLogger(PushoverAccountHandler.class);
     private final HttpClient httpClient;
 
     private PushoverAccountConfiguration config = new PushoverAccountConfiguration();
@@ -66,7 +69,15 @@ public class PushoverAccountHandler extends BaseThingHandler {
     @Override
     public void initialize() {
         config = getConfigAs(PushoverAccountConfiguration.class);
-
+        if (!httpClient.isStarted()) {
+            try {
+                httpClient.start();
+            } catch (Exception e) {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                        "Could not start the http client");
+                return;
+            }
+        }
         boolean configValid = true;
         final String apikey = config.apikey;
         if (apikey == null || apikey.isBlank()) {
@@ -92,6 +103,15 @@ public class PushoverAccountHandler extends BaseThingHandler {
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return SUPPORTED_THING_ACTIONS;
+    }
+
+    @Override
+    public void dispose() {
+        try {
+            this.httpClient.stop();
+        } catch (Exception e) {
+            logger.debug("Error stopping httpclient :{}", e.getMessage(), e);
+        }
     }
 
     /**
