@@ -36,6 +36,7 @@ import org.openhab.binding.hydrawise.internal.api.HydrawiseCommandException;
 import org.openhab.binding.hydrawise.internal.api.HydrawiseConnectionException;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.ControllerStatus;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.Forecast;
+import org.openhab.binding.hydrawise.internal.api.graphql.dto.Hardware;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.Mutation;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.MutationResponse;
 import org.openhab.binding.hydrawise.internal.api.graphql.dto.MutationResponse.MutationResponseStatus;
@@ -77,7 +78,8 @@ public class HydrawiseGraphQLClient {
             .registerTypeAdapter(ZoneRun.class, new ResponseDeserializer<ZoneRun>())
             .registerTypeAdapter(Forecast.class, new ResponseDeserializer<Forecast>())
             .registerTypeAdapter(Sensor.class, new ResponseDeserializer<Forecast>())
-            .registerTypeAdapter(ControllerStatus.class, new ResponseDeserializer<ControllerStatus>()).create();
+            .registerTypeAdapter(ControllerStatus.class, new ResponseDeserializer<ControllerStatus>())
+            .registerTypeAdapter(Hardware.class, new ResponseDeserializer<ControllerStatus>()).create();
 
     private static final String GRAPH_URL = "https://app.hydrawise.com/api/v2/graph";
     private static final String MUTATION_START_ZONE = "startZone(zoneId: %d) { status }";

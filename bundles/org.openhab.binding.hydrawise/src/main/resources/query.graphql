@@ -5,13 +5,21 @@
       controllers {
       id
       name
-        status {
+      status {
         summary
         online
         lastContact {
           timestamp
         }
-      }    
+      }
+      hardware {
+          version
+          model {
+            maxZones
+            name
+            description
+          }
+        }    
       location {
         coordinates {
           latitude

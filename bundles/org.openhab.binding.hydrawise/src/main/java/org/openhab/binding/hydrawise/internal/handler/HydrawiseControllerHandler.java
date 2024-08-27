@@ -252,7 +252,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                 updateForecast(controller.location.forecast);
             }
             if (controller.zones != null) {
-                updateZones(controller.zones);
+                updateZones(controller.zones, controller.hardware.model.maxZones);
             }
 
             // update values with what the cloud tells us even though the controller may be offline
@@ -280,20 +280,21 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                         : UnDefType.NULL);
     }
 
-    private void updateZones(List<Zone> zones) {
+    private void updateZones(List<Zone> zones, int maxZones) {
         AtomicReference<Boolean> anyRunning = new AtomicReference<Boolean>(false);
         AtomicReference<Boolean> anySuspended = new AtomicReference<Boolean>(false);
         for (Zone zone : zones) {
-            // there are 12 relays per expander, expanders will have a zoneNumber like:
+            // for expansion modules who zones numbers are > 99
+            // there are maxZones relays per expander, expanders will have a zoneNumber like:
+            // maxZones = 12
             // 10 for expander 0, relay 10 = zone10
             // 101 for expander 1, relay 1 = zone13
             // 212 for expander 2, relay 12 = zone36
             // division of integers in Java give whole numbers, not remainders FYI
-            int zoneNumber = ((zone.number.value / 100) * 12) + (zone.number.value % 100);
-
+            int zoneNumber = zone.number.value <= 99 ? zone.number.value : ((zone.number.value / 100) * maxZones) + (zone.number.value % 100);
             String group = "zone" + zoneNumber;
             zoneMaps.put(group, zone);
-            logger.trace("Updateing Zone {} {} ", group, zone.name);
+            logger.trace("Updating Zone {} {} ", group, zone.name);
             updateGroupState(group, CHANNEL_ZONE_NAME, new StringType(zone.name));
             updateGroupState(group, CHANNEL_ZONE_ICON, new StringType(BASE_IMAGE_URL + zone.icon.fileName));
             if (zone.scheduledRuns != null) {
