@@ -1830,10 +1830,10 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="precip-prob-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Precip Prob</label>
 		<description>The likelihood of measurable precipitation ranging from 0% to 100%</description>
-		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="precip-type-channel">
 		<item-type>String</item-type>
@@ -1845,10 +1845,10 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="precip-cover-channel">
-		<item-type>Number</item-type>
+		<item-type unitHint="%">Number</item-type>
 		<label>Precip Cover</label>
 		<description>The proportion of hours where there was non-zero precipitation</description>
-		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="snow-channel">
 		<item-type>Number:Length</item-type>
