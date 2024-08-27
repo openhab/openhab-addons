@@ -7,9 +7,10 @@
 	<config-description uri="profile:basic-profiles:state-filter">
 		<parameter name="conditions" type="text" required="true" multiple="true">
 			<label>Conditions</label>
-			<description><![CDATA[List of expressions in the format ITEM_NAME OPERATOR ITEM_STATE, e.g. "MyItem EQ OFF".
-			Use quotes around ITEM_STATE to perform string comparison e.g. "'OFF'".
-				ITEM_STATE can be a DecimalType or a QuantityType with a unit.
+			<description><![CDATA[List of expressions in the format [ITEM_NAME] OPERATOR VALUE_OR_ITEM_NAME, e.g. "MyItem == OFF".
+			Use quotes around VALUE_OR_ITEM_NAME to perform string comparison e.g. "'OFF'".
+				VALUE can be a DecimalType or a QuantityType with a unit.
+				When ITEM_NAME is omitted, the comparisons are done against the input state from the channel.
 				<br /><br />
 				Multiple conditions can be specified by writing each expression on a separate line, or
 				when specified in the same line, separated by the separator character (default: ",").

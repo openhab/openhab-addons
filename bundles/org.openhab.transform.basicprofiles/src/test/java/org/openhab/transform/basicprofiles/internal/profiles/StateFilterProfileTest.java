@@ -252,7 +252,7 @@ public class StateFilterProfileTest {
         assertEquals(new StringType("ON"), profile.parseState("'ON'", acceptedDataTypes));
     }
 
-    public static Stream<Arguments> testComparisonWithOtherItem() {
+    public static Stream<Arguments> testComparingItemWithValue() {
         NumberItem powerItem = new NumberItem("Number:Power", "ItemName", UNIT_PROVIDER);
         NumberItem decimalItem = new NumberItem("ItemName");
         StringItem stringItem = new StringItem("ItemName");
@@ -426,7 +426,7 @@ public class StateFilterProfileTest {
 
     @ParameterizedTest
     @MethodSource
-    public void testComparisonWithOtherItem(GenericItem item, State state, String operator, String value,
+    public void testComparingItemWithValue(GenericItem item, State state, String operator, String value,
             boolean expected) throws ItemNotFoundException {
         String itemName = item.getName();
         item.setState(state);
@@ -442,18 +442,97 @@ public class StateFilterProfileTest {
         verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(eq(inputData));
     }
 
-    public static Stream<Arguments> testComparisonAgainstInputState() {
+    public static Stream<Arguments> testComparingItemWithOtherItem() {
+        NumberItem powerItem = new NumberItem("Number:Power", "powerItem", UNIT_PROVIDER);
+        NumberItem powerItem2 = new NumberItem("Number:Power", "powerItem2", UNIT_PROVIDER);
+        NumberItem decimalItem = new NumberItem("decimalItem");
+        NumberItem decimalItem2 = new NumberItem("decimalItem2");
+        StringItem stringItem = new StringItem("stringItem");
+        StringItem stringItem2 = new StringItem("stringItem2");
+        ContactItem contactItem = new ContactItem("contactItem");
+        ContactItem contactItem2 = new ContactItem("contactItem2");
+
+        QuantityType q_1500W = QuantityType.valueOf("1500 W");
+        QuantityType q_1_5kW = QuantityType.valueOf("1.5 kW");
+        QuantityType q_10kW = QuantityType.valueOf("10 kW");
+
+        DecimalType d_1500 = DecimalType.valueOf("1500");
+        DecimalType d_2000 = DecimalType.valueOf("2000");
+        StringType s_1500 = StringType.valueOf("1500");
+        StringType s_foo = StringType.valueOf("foo");
+        StringType s_NULL = StringType.valueOf("NULL");
+
+        return Stream.of( //
+                Arguments.of(stringItem, s_foo, "==", stringItem2, s_foo, true), //
+                Arguments.of(stringItem, s_foo, "!=", stringItem2, s_foo, false), //
+                Arguments.of(stringItem, s_foo, "==", stringItem2, s_NULL, false), //
+                Arguments.of(stringItem, s_foo, "!=", stringItem2, s_NULL, true), //
+
+                Arguments.of(decimalItem, d_1500, "==", decimalItem2, d_1500, true), //
+                Arguments.of(decimalItem, d_1500, "==", decimalItem2, d_1500, true), //
+
+                // UNDEF/NULL are equals regardless of item type
+                Arguments.of(decimalItem, UnDefType.UNDEF, "==", stringItem, UnDefType.UNDEF, true), //
+                Arguments.of(decimalItem, UnDefType.NULL, "==", stringItem, UnDefType.NULL, true), //
+                Arguments.of(decimalItem, UnDefType.NULL, "==", stringItem, UnDefType.UNDEF, false), //
+
+                Arguments.of(contactItem, OpenClosedType.OPEN, "==", contactItem2, OpenClosedType.OPEN, true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "==", contactItem2, OpenClosedType.CLOSED, false), //
+
+                Arguments.of(decimalItem, d_1500, "==", decimalItem2, d_1500, true), //
+                Arguments.of(decimalItem, d_1500, "<", decimalItem2, d_2000, true), //
+                Arguments.of(decimalItem, d_1500, ">", decimalItem2, d_2000, false), //
+                Arguments.of(decimalItem, d_1500, ">", stringItem, s_1500, false), //
+                Arguments.of(powerItem, q_1500W, "<", powerItem2, q_10kW, true), //
+                Arguments.of(powerItem, q_1500W, ">", powerItem2, q_10kW, false), //
+                Arguments.of(powerItem, q_1500W, "==", powerItem2, q_1_5kW, true), //
+                Arguments.of(powerItem, q_1500W, ">=", powerItem2, q_1_5kW, true), //
+                Arguments.of(powerItem, q_1500W, ">", powerItem2, q_1_5kW, false), //
+
+                // Incompatible types
+                Arguments.of(decimalItem, d_1500, "==", stringItem, s_1500, false), //
+                Arguments.of(powerItem, q_1500W, "==", decimalItem, d_1500, false), // DecimalType != QuantityType
+                Arguments.of(decimalItem, d_1500, "==", powerItem, q_1500W, false) //
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    public void testComparingItemWithOtherItem(GenericItem item, State state, String operator, GenericItem item2,
+            State state2, boolean expected) throws ItemNotFoundException {
+        String itemName = item.getName();
+        item.setState(state);
+
+        String itemName2 = item2.getName();
+        item2.setState(state2);
+
+        if (item.equals(item2)) {
+            // For test writers:
+            // When using the same items, it doesn't make sense for their states to be different
+            assertEquals(state, state2);
+        }
+
+        when(mockContext.getConfiguration())
+                .thenReturn(new Configuration(Map.of("conditions", itemName + operator + itemName2)));
+        when(mockItemRegistry.getItem(itemName)).thenReturn(item);
+        when(mockItemRegistry.getItem(itemName2)).thenReturn(item2);
+
+        StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
+
+        State inputData = new StringType("NewValue");
+        profile.onStateUpdateFromHandler(inputData);
+        verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(eq(inputData));
+    }
+
+    public static Stream<Arguments> testComparingInputStateWithValue() {
         NumberItem powerItem = new NumberItem("Number:Power", "ItemName", UNIT_PROVIDER);
         NumberItem decimalItem = new NumberItem("ItemName");
         StringItem stringItem = new StringItem("ItemName");
         DimmerItem dimmerItem = new DimmerItem("ItemName");
-        RollershutterItem rollershutterItem = new RollershutterItem("ItemName");
 
         QuantityType q_1500W = QuantityType.valueOf("1500 W");
         DecimalType d_1500 = DecimalType.valueOf("1500");
         StringType s_foo = StringType.valueOf("foo");
-        StringType s_NULL = StringType.valueOf("NULL");
-        StringType s_UNDEF = StringType.valueOf("UNDEF");
 
         return Stream.of( //
                 // We should be able to check that input state is/isn't UNDEF/NULL
@@ -502,14 +581,34 @@ public class StateFilterProfileTest {
 
     @ParameterizedTest
     @MethodSource
-    public void testComparisonAgainstInputState(GenericItem linkedItem, State inputState, String operator, String value,
-            boolean expected) throws ItemNotFoundException {
+    public void testComparingInputStateWithValue(GenericItem linkedItem, State inputState, String operator,
+            String value, boolean expected) throws ItemNotFoundException {
 
-        String itemName = linkedItem.getName();
+        String linkedItemName = linkedItem.getName();
 
         when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", operator + value)));
-        when(mockItemRegistry.getItem(itemName)).thenReturn(linkedItem);
-        when(mockItemChannelLink.getItemName()).thenReturn(itemName);
+        when(mockItemRegistry.getItem(linkedItemName)).thenReturn(linkedItem);
+        when(mockItemChannelLink.getItemName()).thenReturn(linkedItemName);
+
+        StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
+
+        profile.onStateUpdateFromHandler(inputState);
+        verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(eq(inputState));
+    }
+
+    @ParameterizedTest
+    @MethodSource("testComparingItemWithOtherItem")
+    public void testComparingInputStateWithItem(GenericItem linkedItem, State inputState, String operator,
+            GenericItem item, State state, boolean expected) throws ItemNotFoundException {
+        String linkedItemName = linkedItem.getName();
+
+        String itemName = item.getName();
+        item.setState(state);
+
+        when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", operator + itemName)));
+        when(mockItemRegistry.getItem(itemName)).thenReturn(item);
+        when(mockItemRegistry.getItem(linkedItemName)).thenReturn(linkedItem);
+        when(mockItemChannelLink.getItemName()).thenReturn(linkedItemName);
 
         StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
 

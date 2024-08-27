@@ -198,19 +198,22 @@ Use cases:
 
 #### State Filter Conditions
 
-The conditions are defined in the format `[ITEM_NAME] OPERATOR VALUE`, e.g. `MyItem EQ OFF`.
+The conditions are defined in the format `[ITEM_NAME] OPERATOR VALUE_OR_ITEM_NAME`, e.g. `MyItem EQ OFF`.
 Multiple conditions can be entered on separate lines in the UI, or in a single line separated with the `separator` character/string.
 
-When `ITEM_NAME` is omitted, e.g. `> 10, < 100`, the comparison is applied against the input data from the binding.
+The state of one item can be compared against the state of another item by having item names on both sides of the comparison, e.g.: `Item1 > Item2`.
+When `ITEM_NAME` is omitted, e.g. `> 10, < 100`, the comparisons are applied against the input data from the binding.
+In this case, the value can also be replaced with an item name, which will result in comparing the input state against the state of that item, e.g. `> LowerLimitItem, < UpperLimitItem`.
 This can be used to filter out unwanted data, e.g. to ensure that incoming data are within a reasonable range.
 
 Some tips:
 
 - When dealing with QuantityType data, the unit must be included in the comparison value, e.g.: `PowerItem > 1 kW`.
-- Use single quotes around the `VALUE` to perform a string comparison, e.g. `'UNDEF'` is not equal to `UnDefType.UNDEF`.
+- Use single quotes around the `VALUE` to perform a string comparison, e.g. `'UNDEF'` is not equal to `UNDEF` (of type `UnDefType`).
+  This will distinguish between a string literal and an item name or a constant such as `UNDEF`, `ON`/`OFF`, `OPEN`, etc.
+- `VALUE` cannot be on the left hand side of the operator.
 
 ##### State Filter Operators
-
 
 | Name  | Symbol |                           |
 | :---: | :----: | ------------------------- |
@@ -227,18 +230,31 @@ Notes:
 - The operator symbols do not need to be surrounded by spaces, e.g.: `Item==10` and `Item == 10` are both fine.
 - Only symbolic operators can be used when comparing against the incoming state, e.g. `> 10`. Using operator names isn't supported, i.e. this is not supported: ~~`GT 10`~~.
 
-### State Filter Example
+### State Filter Examples
+
+Condition based on the state of other items:
 
 ```java
 Number:Temperature airconTemperature {
-        channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="airconPower_item EQ ON", mismatchState="UNDEF" ]
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions="airconPower_item EQ ON", mismatchState="UNDEF" ]
 }
 ```
 
-With multiple conditions, make sure incoming data is between 0 kW and 20 kW, discarding values outside this range:
+Check against the incoming state, to discard incoming data outside a fixed range:
 
 ```java
 Number:Power PowerUsage {
-        channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions=">= 0 kW", "< 20 kW" ]
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions=">= 0 kW", "< 20 kW" ]
+}
+```
+
+The incoming state can be compared against other items:
+
+```java
+Number:Power MinimumPowerLimit { unit="W" }
+Number:Power MaximumPowerLimit { unit="W" }
+
+Number:Power PowerUsage {
+  channel="mybinding:mything:mychannel" [ profile="basic-profiles:state-filter", conditions=">= MinimumPowerLimit", "< MaximumPowerLimit" ]
 }
 ```

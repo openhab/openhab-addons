@@ -29,6 +29,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
+import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
@@ -96,7 +97,7 @@ public class StateFilterProfile implements StateProfile {
                     Matcher matcher = expressionPattern.matcher(expression);
                     if (!matcher.matches()) {
                         logger.warn(
-                                "Malformed condition expression: '{}'. Expected format ITEM_NAME OPERATOR STATE_VALUE, where OPERATOR is one of: {}",
+                                "Malformed condition expression: '{}'. Expected format ITEM_NAME OPERATOR ITEM_OR_STATE, where OPERATOR is one of: {}",
                                 expression, StateCondition.ComparisonType.valuesAndSymbols());
                         return;
                     }
@@ -193,7 +194,7 @@ public class StateFilterProfile implements StateProfile {
             this.value = value;
             // Convert quoted strings to StringType, and UnDefTypes to UnDefType
             // UnDefType gets special treatment because we don't want `UNDEF` to be parsed as a string
-            // If unable to parse here, defer parsing until we're checking the condition
+            // Anything else, defer parsing until we're checking the condition
             // so we can try based on the item's accepted data types
             this.parsedValue = parseState(value, List.of(UnDefType.class));
         }
@@ -212,7 +213,7 @@ public class StateFilterProfile implements StateProfile {
                 State state;
                 Item item = null;
 
-                logger.warn("Evaluating {} with input: {} ({})", this, input, input.getClass().getSimpleName());
+                logger.debug("Evaluating {} with input: {} ({})", this, input, input.getClass().getSimpleName());
                 if (itemName.isEmpty()) {
                     item = itemRegistry.getItem(linkedItemName);
                     state = input;
@@ -244,12 +245,28 @@ public class StateFilterProfile implements StateProfile {
                     List<Class<? extends State>> acceptedValueTypes = item.getAcceptedDataTypes().stream()
                             .filter(not(StringType.class::isAssignableFrom)).toList();
                     parsedValue = TypeParser.parseState(acceptedValueTypes, value);
-                    logger.warn("Accepted value types: {}, parsed: {} ({})", acceptedValueTypes, parsedValue,
-                            parsedValue != null ? parsedValue.getClass().getSimpleName() : "null");
-                    if (parsedValue != null) {
+                    // Don't convert QuantityType to other types
+                    if (parsedValue != null && !(parsedValue instanceof QuantityType)) {
                         // Try to convert it to the same type as the state
                         // This allows comparing compatible types, e.g. PercentType vs OnOffType
                         parsedValue = parsedValue.as(state.getClass());
+                    }
+
+                    // If the values can't be converted to a type, check to see if it's an Item name
+                    if (parsedValue == null) {
+                        try {
+                            Item valueItem = itemRegistry.getItem(value);
+                            if (valueItem != null) { // ItemRegistry.getItem can return null in tests
+                                parsedValue = valueItem.getState();
+                                // Don't convert QuantityType to other types
+                                if (!(parsedValue instanceof QuantityType)) {
+                                    parsedValue = parsedValue.as(state.getClass());
+                                }
+                                logger.debug("Condition value: '{}' is an item state: '{}' ({})", value, parsedValue,
+                                        parsedValue == null ? "null" : parsedValue.getClass().getSimpleName());
+                            }
+                        } catch (ItemNotFoundException ignore) {
+                        }
                     }
 
                     if (parsedValue == null) {
@@ -257,7 +274,7 @@ public class StateFilterProfile implements StateProfile {
                             // They're not even type compatible, so return true for NEQ comparison
                             return true;
                         } else {
-                            logger.warn("Condition value: '{}' is not compatible with state '{}' ({})", value, state,
+                            logger.debug("Condition value: '{}' is not compatible with state '{}' ({})", value, state,
                                     state.getClass().getSimpleName());
                             return false;
                         }
