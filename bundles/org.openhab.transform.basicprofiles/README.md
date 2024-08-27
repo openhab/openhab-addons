@@ -208,7 +208,6 @@ Some tips:
 
 - When dealing with QuantityType data, the unit must be included in the comparison value, e.g.: `PowerItem > 1 kW`.
 - Use single quotes around the `VALUE` to perform a string comparison, e.g. `'UNDEF'` is not equal to `UnDefType.UNDEF`.
-- When comparing against StringType data (e.g. a `StringItem`), the value does not need to be single-quoted.
 
 ##### State Filter Operators
 

@@ -212,7 +212,7 @@ public class StateFilterProfile implements StateProfile {
                 State state;
                 Item item = null;
 
-                logger.debug("Evaluating {} with input: {} ({})", this, input, input.getClass().getSimpleName());
+                logger.warn("Evaluating {} with input: {} ({})", this, input, input.getClass().getSimpleName());
                 if (itemName.isEmpty()) {
                     item = itemRegistry.getItem(linkedItemName);
                     state = input;
@@ -239,7 +239,13 @@ public class StateFilterProfile implements StateProfile {
                 }
 
                 if (parsedValue == null) {
-                    parsedValue = TypeParser.parseState(item.getAcceptedDataTypes(), value);
+                    // don't parse bare strings as StringType, because they are identifiers,
+                    // e.g. referring to other items
+                    List<Class<? extends State>> acceptedValueTypes = item.getAcceptedDataTypes().stream()
+                            .filter(not(StringType.class::isAssignableFrom)).toList();
+                    parsedValue = TypeParser.parseState(acceptedValueTypes, value);
+                    logger.warn("Accepted value types: {}, parsed: {} ({})", acceptedValueTypes, parsedValue,
+                            parsedValue != null ? parsedValue.getClass().getSimpleName() : "null");
                     if (parsedValue != null) {
                         // Try to convert it to the same type as the state
                         // This allows comparing compatible types, e.g. PercentType vs OnOffType
@@ -247,9 +253,14 @@ public class StateFilterProfile implements StateProfile {
                     }
 
                     if (parsedValue == null) {
-                        logger.debug("Condition value: '{}' is not compatible with state '{}' ({})", value, state,
-                                state.getClass().getSimpleName());
-                        return false;
+                        if (comparisonType == ComparisonType.NEQ) {
+                            // They're not even type compatible, so return true for NEQ comparison
+                            return true;
+                        } else {
+                            logger.warn("Condition value: '{}' is not compatible with state '{}' ({})", value, state,
+                                    state.getClass().getSimpleName());
+                            return false;
+                        }
                     }
                 }
 

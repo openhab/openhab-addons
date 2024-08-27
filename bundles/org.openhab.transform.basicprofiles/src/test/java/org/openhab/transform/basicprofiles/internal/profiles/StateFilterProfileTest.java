@@ -150,7 +150,7 @@ public class StateFilterProfileTest {
 
     @Test
     public void testSingleConditionMatch() throws ItemNotFoundException {
-        when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", "ItemName eq Value")));
+        when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", "ItemName eq 'Value'")));
         when(mockItemRegistry.getItem("ItemName")).thenReturn(stringItemWithState("ItemName", "Value"));
 
         StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
@@ -187,7 +187,7 @@ public class StateFilterProfileTest {
     @Test
     public void testMultipleCondition_AllMatch() throws ItemNotFoundException {
         when(mockContext.getConfiguration())
-                .thenReturn(new Configuration(Map.of("conditions", "ItemName eq Value, ItemName2 eq Value2")));
+                .thenReturn(new Configuration(Map.of("conditions", "ItemName eq 'Value', ItemName2 eq 'Value2'")));
         when(mockItemRegistry.getItem("ItemName")).thenReturn(stringItemWithState("ItemName", "Value"));
         when(mockItemRegistry.getItem("ItemName2")).thenReturn(stringItemWithState("ItemName2", "Value2"));
 
@@ -256,6 +256,7 @@ public class StateFilterProfileTest {
         NumberItem powerItem = new NumberItem("Number:Power", "ItemName", UNIT_PROVIDER);
         NumberItem decimalItem = new NumberItem("ItemName");
         StringItem stringItem = new StringItem("ItemName");
+        SwitchItem switchItem = new SwitchItem("ItemName");
         DimmerItem dimmerItem = new DimmerItem("ItemName");
         ContactItem contactItem = new ContactItem("ItemName");
         RollershutterItem rollershutterItem = new RollershutterItem("ItemName");
@@ -307,12 +308,20 @@ public class StateFilterProfileTest {
 
                 // Check for OPEN/CLOSED
                 Arguments.of(contactItem, OpenClosedType.OPEN, "==", "OPEN", true), //
+                Arguments.of(contactItem, OpenClosedType.OPEN, "!=", "'OPEN'", true), // String != Enum
                 Arguments.of(contactItem, OpenClosedType.OPEN, "!=", "CLOSED", true), //
                 Arguments.of(contactItem, OpenClosedType.OPEN, "==", "CLOSED", false), //
                 Arguments.of(contactItem, OpenClosedType.CLOSED, "==", "CLOSED", true), //
                 Arguments.of(contactItem, OpenClosedType.CLOSED, "!=", "OPEN", true), //
-                Arguments.of(stringItem, s_OPEN, "==", "OPEN", true), // Treat as string when dealing with stringitem
-                Arguments.of(stringItem, s_OPEN, "==", "'OPEN'", true), //
+
+                // ON/OFF
+                Arguments.of(switchItem, OnOffType.ON, "==", "ON", true), //
+                Arguments.of(switchItem, OnOffType.ON, "!=", "ON", false), //
+                Arguments.of(switchItem, OnOffType.ON, "!=", "OFF", true), //
+                Arguments.of(switchItem, OnOffType.ON, "!=", "UNDEF", true), //
+                Arguments.of(switchItem, UnDefType.UNDEF, "==", "UNDEF", true), //
+                Arguments.of(switchItem, OnOffType.ON, "==", "'ON'", false), // it's not a string
+                Arguments.of(switchItem, OnOffType.ON, "!=", "'ON'", true), // incompatible types
 
                 // Enum types != String
                 Arguments.of(contactItem, OpenClosedType.OPEN, "==", "'OPEN'", false), //
@@ -323,9 +332,11 @@ public class StateFilterProfileTest {
                 Arguments.of(contactItem, OpenClosedType.CLOSED, "!=", "'CLOSED'", true), //
 
                 // non UnDefType checks
-                // For string state, quoted and unquoted values should be treated the same
-                Arguments.of(stringItem, s_foo, "==", "foo", true), //
+                // String constants must be quoted
                 Arguments.of(stringItem, s_foo, "==", "'foo'", true), //
+                Arguments.of(stringItem, s_foo, "==", "foo", false), //
+                Arguments.of(stringItem, s_foo, "!=", "foo", true), // not quoted -> not a string
+                Arguments.of(stringItem, s_foo, "!=", "'foo'", false), //
 
                 Arguments.of(dimmerItem, PercentType.HUNDRED, "==", "100", true), //
                 Arguments.of(dimmerItem, PercentType.HUNDRED, ">=", "100", true), //
@@ -381,11 +392,11 @@ public class StateFilterProfileTest {
                 Arguments.of(powerItem, q_1500W, "==", "2 kW", false), //
 
                 Arguments.of(powerItem, q_1500W, " neq ", "500 W", true), //
-                Arguments.of(powerItem, q_1500W, " neq ", "1500", false), // no unit => fail
+                Arguments.of(powerItem, q_1500W, " neq ", "1500", true), // Not the same type, so not equal
                 Arguments.of(powerItem, q_1500W, " neq ", "1500 W", false), //
                 Arguments.of(powerItem, q_1500W, " neq ", "1.5 kW", false), //
                 Arguments.of(powerItem, q_1500W, "!=", "500 W", true), //
-                Arguments.of(powerItem, q_1500W, "!=", "1500", false), // no unit => fail
+                Arguments.of(powerItem, q_1500W, "!=", "1500", true), // not the same type
                 Arguments.of(powerItem, q_1500W, "!=", "1500 W", false), //
                 Arguments.of(powerItem, q_1500W, "!=", "1.5 kW", false), //
 
@@ -459,15 +470,14 @@ public class StateFilterProfileTest {
                 Arguments.of(stringItem, UnDefType.NULL, "==", "'NULL'", false), //
                 Arguments.of(stringItem, UnDefType.NULL, "!=", "'NULL'", true), //
 
-                // For string state, quoted and unquoted values should be treated the same
-                Arguments.of(stringItem, s_foo, "==", "foo", true), //
-                Arguments.of(stringItem, s_foo, " ==", "foo", true), //
-                Arguments.of(stringItem, s_foo, "== ", "foo", true), //
-                Arguments.of(stringItem, s_foo, " == ", "foo", true), //
+                // String values must be quoted
                 Arguments.of(stringItem, s_foo, "==", "'foo'", true), //
-                Arguments.of(stringItem, s_foo, "!=", "foo", false), //
-                Arguments.of(stringItem, s_foo, " !=", "foo", false), //
                 Arguments.of(stringItem, s_foo, "!=", "'foo'", false), //
+                Arguments.of(stringItem, s_foo, "==", "'bar'", false), //
+                // Unquoted string values are not compatible
+                // always returns false
+                Arguments.of(stringItem, s_foo, "==", "foo", false), //
+                Arguments.of(stringItem, s_foo, "!=", "foo", true), // not quoted -> not equal to string
 
                 Arguments.of(decimalItem, d_1500, "==", "1500", true), //
                 Arguments.of(decimalItem, d_1500, "!=", "1500", false), //
