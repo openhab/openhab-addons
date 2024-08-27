@@ -1870,11 +1870,11 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="cloud-cover-channel">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Cloud Cover</label>
 		<description>How much of the sky is covered in cloud ranging from 0–100%</description>
 		<category>Sun_Clouds</category>
-		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="solar-radiation-channel">
 		<item-type>Number:Intensity</item-type>
