@@ -329,13 +329,12 @@ public class TibberHandler extends BaseThingHandler {
         getURLInput(BASE_URL);
         if (liveChannelsLinked() && "true".equals(rtEnabled)) {
             if (lastWebSocketMessage != null && lastWebSocketMessage.plusMinutes(5).isBefore(LocalDateTime.now())) {
-                logger.info("Got no data for 5 minutes from tibber. Last data from tibber on {}. Reconnect WebSocket.",
-                        lastWebSocketMessage);
+                logger.debug("Last data from tibber on {}. Reconnecting WebSocket.", lastWebSocketMessage);
                 close();
                 startLiveStream();
             } else if (isConnected()) {
                 logger.debug("Sending Ping Message");
-                session.getRemote().sendPing(ByteBuffer.wrap("OpenHab Ping".getBytes(StandardCharsets.UTF_8)));
+                session.getRemote().sendPing(ByteBuffer.wrap("openHAB Ping".getBytes(StandardCharsets.UTF_8)));
             } else if (!isConnected()) {
                 startLiveStream();
             }
@@ -569,7 +568,7 @@ public class TibberHandler extends BaseThingHandler {
         @OnWebSocketError
         public void onWebSocketError(Throwable e) {
             String message = e.getMessage();
-            logger.error("Error during websocket communication: {}", message);
+            logger.warn("Error during websocket communication: {}", message);
             close();
         }
 
