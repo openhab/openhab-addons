@@ -289,33 +289,6 @@ public class HydrawiseGraphQLClient {
         sendGraphQLMutation(String.format(MUTATION_RESUME_ALL_ZONES, controllerId));
     }
 
-    // /**
-    // * Tests for a flaw in the Hydrawise GraphQL response that throws a 400 error if weather is not supported
-    // *
-    // * @return boolean
-    // * @throws HydrawiseConnectionException
-    // * @throws HydrawiseAuthenticationException
-    // */
-    // private boolean testWeather() throws HydrawiseConnectionException, HydrawiseAuthenticationException {
-    // try {
-    // QueryRequest query = new QueryRequest(getResourceString("weather-only.graphql"));
-    // String queryJson = gson.toJson(query);
-    // String response = sendGraphQLQuery(queryJson);
-    //
-    // gson.fromJson(response, QueryResponse.class);
-    // return true;
-    // } catch (HydrawiseConnectionException e) {
-    // if (e.getCode() == 400 && e.getResponse().indexOf("resolve promise") > 0) {
-    // logger.debug("Weather not supported", e);
-    // return false;
-    // } else {
-    // throw e;
-    // }
-    // } catch (IOException | JsonSyntaxException e) {
-    // throw new HydrawiseConnectionException("Invalid Response: " + e.getMessage());
-    // }
-    // }
-
     private String sendGraphQLQuery(String content)
             throws HydrawiseConnectionException, HydrawiseAuthenticationException {
         return sendGraphQLRequest(content);
@@ -396,14 +369,6 @@ public class HydrawiseGraphQLClient {
             }
         }
     }
-
-    // private String getQueryString(boolean refresh) throws IOException {
-    // if (queryString.isBlank() || refresh) {
-    // queryString = getResourceString(
-    // weatherSupported ? "query-with-weather.graphql" : "query-without-weather.graphql");
-    // }
-    // return queryString;
-    // }
 
     private String getQueryString() throws IOException {
         if (queryString.isBlank()) {
