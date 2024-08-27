@@ -45,7 +45,7 @@ public class PushoverHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public PushoverHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.createHttpClient("binding.pushover");
+        this.httpClient = httpClientFactory.createHttpClient("binding-pushover");
     }
 
     @Override
