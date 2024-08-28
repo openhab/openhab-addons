@@ -300,12 +300,4 @@ public class JdbcOracleDAO extends JdbcBaseDAO {
             return super.objectAsZonedDateTime(v);
         }
     }
-
-    /*****************
-     * H E L P E R S *
-     *****************/
-
-    /******************************
-     * public Getters and Setters *
-     ******************************/
 }
