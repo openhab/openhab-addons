@@ -58,7 +58,6 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
         this.thingRegistry = thingRegistry;
     }
 
-    @SuppressWarnings("null")
     @Override
     public @Nullable StateDescription getStateDescription(Channel channel,
             @Nullable StateDescription originalStateDescription, @Nullable Locale locale) {
@@ -68,6 +67,9 @@ public class ShellyStateDescriptionProvider extends BaseDynamicStateDescriptionP
         }
 
         Thing thing = thingRegistry.get(channel.getUID().getThingUID());
+        if (thing == null) {
+            return null;
+        }
         ShellyThingInterface handler = (ShellyThingInterface) thing.getHandler();
         if (handler == null) {
             return null;

@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -175,25 +176,25 @@ class SecurityCapability extends RestCapability<SecurityApi> {
     }
 
     private Collection<HomeEvent> requestDeviceEvents(String moduleId, String deviceType) {
-        return getApi().map(api -> {
+        return Objects.requireNonNull(getApi().map(api -> {
             try {
                 return api.getDeviceEvents(securityId, moduleId, deviceType);
             } catch (NetatmoException e) {
                 logger.warn("Error retrieving last events of camera '{}' : {}", moduleId, e.getMessage());
                 return null;
             }
-        }).orElse(List.of());
+        }).orElse(List.of()));
     }
 
     private Collection<HomeEvent> requestPersonEvents(String personId) {
-        return getApi().map(api -> {
+        return Objects.requireNonNull(getApi().map(api -> {
             try {
                 return api.getPersonEvents(securityId, personId);
             } catch (NetatmoException e) {
                 logger.warn("Error retrieving last events of person '{}' : {}", personId, e.getMessage());
                 return null;
             }
-        }).orElse(List.of());
+        }).orElse(List.of()));
     }
 
     public void setPersonAway(String personId, boolean away) {

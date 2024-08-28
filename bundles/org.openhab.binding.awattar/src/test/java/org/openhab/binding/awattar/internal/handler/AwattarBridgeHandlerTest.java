@@ -105,10 +105,10 @@ public class AwattarBridgeHandlerTest extends JavaTest {
 
         when(timeZoneProviderMock.getTimeZone()).thenReturn(ZoneId.of("GMT+2"));
 
+        when(bridgeMock.getUID()).thenReturn(BRIDGE_UID);
         bridgeHandler = new AwattarBridgeHandler(bridgeMock, httpClientMock, timeZoneProviderMock);
         bridgeHandler.setCallback(bridgeCallbackMock);
         bridgeHandler.refreshIfNeeded();
-
         when(bridgeMock.getHandler()).thenReturn(bridgeHandler);
 
         // other mocks
@@ -177,7 +177,7 @@ public class AwattarBridgeHandlerTest extends JavaTest {
         Map<String, Object> config = Map.of("length", length, "consecutive", consecutive);
         when(bestpriceMock.getConfiguration()).thenReturn(new Configuration(config));
 
-        AwattarBestpriceHandler handler = new AwattarBestpriceHandler(bestpriceMock, timeZoneProviderMock) {
+        AwattarBestPriceHandler handler = new AwattarBestPriceHandler(bestpriceMock, timeZoneProviderMock) {
             @Override
             protected TimeRange getRange(int start, int duration, ZoneId zoneId) {
                 return new TimeRange(1718402400000L, 1718488800000L);

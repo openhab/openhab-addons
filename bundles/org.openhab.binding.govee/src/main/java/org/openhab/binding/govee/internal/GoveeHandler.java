@@ -15,6 +15,7 @@ package org.openhab.binding.govee.internal;
 import static org.openhab.binding.govee.internal.GoveeBindingConstants.*;
 
 import java.io.IOException;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -80,7 +81,7 @@ public class GoveeHandler extends BaseThingHandler {
     private static final Gson GSON = new Gson();
 
     private final Logger logger = LoggerFactory.getLogger(GoveeHandler.class);
-
+    protected ScheduledExecutorService executorService = scheduler;
     @Nullable
     private ScheduledFuture<?> triggerStatusJob; // send device status update job
     private GoveeConfiguration goveeConfiguration = new GoveeConfiguration();
@@ -100,9 +101,7 @@ public class GoveeHandler extends BaseThingHandler {
     private final Runnable thingRefreshSender = () -> {
         try {
             triggerDeviceStatusRefresh();
-            if (!thing.getStatus().equals(ThingStatus.ONLINE)) {
-                updateStatus(ThingStatus.ONLINE);
-            }
+            updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname
@@ -134,7 +133,7 @@ public class GoveeHandler extends BaseThingHandler {
         if (triggerStatusJob == null) {
             logger.debug("Starting refresh trigger job for thing {} ", thing.getLabel());
 
-            triggerStatusJob = scheduler.scheduleWithFixedDelay(thingRefreshSender, 100,
+            triggerStatusJob = executorService.scheduleWithFixedDelay(thingRefreshSender, 100,
                     goveeConfiguration.refreshInterval * 1000L, TimeUnit.MILLISECONDS);
         }
     }
@@ -195,9 +194,7 @@ public class GoveeHandler extends BaseThingHandler {
                         break;
                 }
             }
-            if (!thing.getStatus().equals(ThingStatus.ONLINE)) {
-                updateStatus(ThingStatus.ONLINE);
-            }
+            updateStatus(ThingStatus.ONLINE);
         } catch (IOException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "@text/offline.communication-error.could-not-query-device [\"" + goveeConfiguration.hostname
@@ -300,6 +297,10 @@ public class GoveeHandler extends BaseThingHandler {
         newColorTempInKelvin = (newColorTempInKelvin < COLOR_TEMPERATURE_MIN_VALUE)
                 ? COLOR_TEMPERATURE_MIN_VALUE.intValue()
                 : newColorTempInKelvin;
+        newColorTempInKelvin = (newColorTempInKelvin > COLOR_TEMPERATURE_MAX_VALUE)
+                ? COLOR_TEMPERATURE_MAX_VALUE.intValue()
+                : newColorTempInKelvin;
+
         int newColorTempInPercent = ((Double) ((newColorTempInKelvin - COLOR_TEMPERATURE_MIN_VALUE)
                 / (COLOR_TEMPERATURE_MAX_VALUE - COLOR_TEMPERATURE_MIN_VALUE) * 100.0)).intValue();
 

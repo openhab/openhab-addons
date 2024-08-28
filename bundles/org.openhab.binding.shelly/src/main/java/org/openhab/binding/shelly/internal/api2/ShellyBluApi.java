@@ -18,6 +18,7 @@ import static org.openhab.binding.shelly.internal.api2.Shelly2ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -92,7 +93,6 @@ public class ShellyBluApi extends Shelly2ApiRpc {
         if (!initialized) {
             initialized = true;
             connected = false;
-        } else {
         }
     }
 
@@ -155,17 +155,14 @@ public class ShellyBluApi extends Shelly2ApiRpc {
             profile.numInputs = 1;
             settings.btnType = SHELLY_BTNT_MOMENTARY;
 
-            if (profile.settings.inputs != null) {
-                profile.settings.inputs.set(0, settings);
+            List<ShellySettingsInput> inputs = profile.settings.inputs;
+            if (inputs != null) {
+                inputs.set(0, settings);
             } else {
-                profile.settings.inputs = new ArrayList<>();
-                profile.settings.inputs.add(settings);
+                inputs = profile.settings.inputs = new ArrayList<>();
+                inputs.add(settings);
             }
             profile.status = deviceStatus;
-        }
-
-        if (!connected) {
-            throw new ShellyApiException("BLU Device not yet connected");
         }
 
         profile.initialized = true;

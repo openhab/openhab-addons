@@ -66,10 +66,10 @@ public class SwitchService {
     }
 
     private SwitchResponseDTO getSwitchResponse(final List<UdpResponseDTO> singleResponse) {
-        return singleResponse.stream().filter(response -> !response.getAnswer().isEmpty())
+        return Objects.requireNonNull(singleResponse.stream().filter(response -> !response.getAnswer().isEmpty())
                 .map(response -> deserializeString(response.getAnswer()))
                 .filter(switchResponse -> switchResponse.getCode() == 200 && switchResponse.getResponse() == 20)
-                .findFirst().orElse(new SwitchResponseDTO(0, 503));
+                .findFirst().orElse(new SwitchResponseDTO(0, 503)));
     }
 
     private SwitchResponseDTO deserializeString(String response) {

@@ -181,7 +181,7 @@ public class LongPolling {
      * @param content Content of the response
      */
     private void onLongPollComplete(BoschHttpClient httpClient, String subscriptionId, @Nullable Result result,
-            String content) {
+            @Nullable String content) {
         // Check if thing is still online
         if (this.aborted) {
             logger.debug("Canceling long polling for subscription id {} because it was aborted", subscriptionId);
@@ -211,7 +211,7 @@ public class LongPolling {
      * @param subscriptionId Id of subscription the response is for
      * @param content Content of the response
      */
-    private void handleLongPollResponse(BoschHttpClient httpClient, String subscriptionId, String content) {
+    void handleLongPollResponse(BoschHttpClient httpClient, String subscriptionId, @Nullable String content) {
         logger.debug("Long poll response: {}", content);
 
         try {
@@ -238,6 +238,10 @@ public class LongPolling {
         } catch (JsonSyntaxException e) {
             this.handleFailure.accept(
                     new LongPollingFailedException("Could not deserialize long poll response: '" + content + "'", e));
+            return;
+        } catch (Exception e) {
+            this.handleFailure.accept(
+                    new LongPollingFailedException("Error while handling long poll response: '" + content + "'", e));
             return;
         }
 

@@ -44,9 +44,10 @@ import org.osgi.service.component.annotations.Reference;
 
 /**
  * Console command to list Bosch SHC devices and openhab support.
- * Use the SHC API to get all SHC devices and SHC services
- * and tries to lookup openhab devices and implemented service classes.
- * Prints each name and looked-up implementation on console.
+ * <p>
+ * Uses the SHC API to get all SHC devices and SHC services and tries to lookup
+ * openHAB devices and implemented service classes. Prints each name and
+ * looked-up implementation on console.
  *
  * @author Gerd Zanker - Initial contribution
  */
@@ -73,17 +74,19 @@ public class BoschShcCommandExtension extends AbstractConsoleCommandExtension im
 
     /**
      * Returns all implemented services of this Bosch SHC binding.
-     * This list shall contain all available services and needs to be extended when a new service is added.
-     * A unit tests checks if this list matches with the existing subfolders in
-     * "src/main/java/org/openhab/binding/boschshc/internal/services".
+     * <p>
+     * This list shall contain all available services and needs to be extended when
+     * a new service is added. A unit tests checks if this list matches with the
+     * existing subfolders in
+     * <code>src/main/java/org/openhab/binding/boschshc/internal/services</code>.
      */
     List<String> getAllBoschShcServices() {
         return List.of("airqualitylevel", "batterylevel", "binaryswitch", "bypass", "cameranotification", "childlock",
                 "childprotection", "communicationquality", "hsbcoloractuator", "humiditylevel", "illuminance",
-                "intrusion", "keypad", "latestmotion", "multilevelswitch", "powermeter", "powerswitch", "privacymode",
-                "roomclimatecontrol", "shuttercontact", "shuttercontrol", "silentmode", "smokedetectorcheck",
-                "temperaturelevel", "userstate", "valvetappet", "waterleakagesensor", "waterleakagesensorcheck",
-                "waterleakagesensortilt");
+                "impulseswitch", "intrusion", "keypad", "latestmotion", "multilevelswitch", "powermeter", "powerswitch",
+                "privacymode", "roomclimatecontrol", "shuttercontact", "shuttercontrol", "silentmode",
+                "smokedetectorcheck", "temperaturelevel", "userstate", "valvetappet", "waterleakagesensor",
+                "waterleakagesensorcheck", "waterleakagesensortilt");
     }
 
     @Override

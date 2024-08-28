@@ -18,7 +18,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.SortedMap;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
@@ -142,8 +141,8 @@ public class ArgoClimaRemoteDevice extends ArgoClimaDeviceApiBase {
 
         // Group names must match regex above
         var properties = new DeviceProperties(Objects.requireNonNull(matcher.group("localIP")),
-                Objects.requireNonNull(matcher.group("lastSeen")), Optional.of(
-                        getWebUiUrl(Objects.requireNonNull(this.oemServerHostname.getHostName()), this.oemServerPort)));
+                Objects.requireNonNull(matcher.group("lastSeen")),
+                getWebUiUrl(Objects.requireNonNull(this.oemServerHostname.getHostName()), this.oemServerPort));
 
         return new DeviceStatus(Objects.requireNonNull(matcher.group("commands")), properties, i18nProvider);
     }

@@ -39,6 +39,7 @@ import org.openhab.io.homekit.internal.HomekitTaggedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
 import io.github.hapjava.characteristics.impl.windowcovering.PositionStateEnum;
 
@@ -52,19 +53,21 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
     private final Logger logger = LoggerFactory.getLogger(AbstractHomekitPositionAccessoryImpl.class);
     protected int closedPosition;
     protected int openPosition;
-    private final Map<PositionStateEnum, String> positionStateMapping;
+    private final Map<PositionStateEnum, Object> positionStateMapping;
     protected boolean emulateState;
     protected boolean emulateStopSameDirection;
+    protected boolean sendUpDownForExtents;
     protected PositionStateEnum emulatedState = PositionStateEnum.STOPPED;
 
     public AbstractHomekitPositionAccessoryImpl(HomekitTaggedItem taggedItem,
-            List<HomekitTaggedItem> mandatoryCharacteristics, HomekitAccessoryUpdater updater,
-            HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
+            List<HomekitTaggedItem> mandatoryCharacteristics, List<Characteristic> mandatoryRawCharacteristics,
+            HomekitAccessoryUpdater updater, HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
         final boolean inverted = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.INVERTED, true);
         emulateState = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.EMULATE_STOP_STATE, false);
         emulateStopSameDirection = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.EMULATE_STOP_SAME_DIRECTION,
                 false);
+        sendUpDownForExtents = getAccessoryConfigurationAsBoolean(HomekitTaggedItem.SEND_UP_DOWN_FOR_EXTENTS, false);
         closedPosition = inverted ? 0 : 100;
         openPosition = inverted ? 100 : 0;
         positionStateMapping = createMapping(POSITION_STATE, PositionStateEnum.class);
@@ -100,7 +103,13 @@ abstract class AbstractHomekitPositionAccessoryImpl extends AbstractHomekitAcces
                     }
                     emulatedState = PositionStateEnum.STOPPED;
                 } else {
-                    itemAsRollerShutterItem.send(new PercentType(targetPosition));
+                    if (sendUpDownForExtents && targetPosition == 0) {
+                        itemAsRollerShutterItem.send(UpDownType.UP);
+                    } else if (sendUpDownForExtents && targetPosition == 100) {
+                        itemAsRollerShutterItem.send(UpDownType.DOWN);
+                    } else {
+                        itemAsRollerShutterItem.send(new PercentType(targetPosition));
+                    }
                     if (emulateState) {
                         @Nullable
                         PercentType currentPosition = item.getStateAs(PercentType.class);

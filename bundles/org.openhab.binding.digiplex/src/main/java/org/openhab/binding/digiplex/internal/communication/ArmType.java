@@ -13,6 +13,7 @@
 package org.openhab.binding.digiplex.internal.communication;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -41,6 +42,7 @@ public enum ArmType {
     }
 
     public static ArmType fromMessage(char indicator) {
-        return Arrays.stream(values()).filter(type -> type.indicator == indicator).findFirst().orElse(UNKNOWN);
+        return Objects.requireNonNull(
+                Arrays.stream(values()).filter(type -> type.indicator == indicator).findFirst().orElse(UNKNOWN));
     }
 }

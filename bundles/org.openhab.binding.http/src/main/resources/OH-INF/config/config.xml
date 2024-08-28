@@ -5,13 +5,15 @@
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
 
 	<config-description uri="channel-type:http:channel-config">
-		<parameter name="stateTransformation" type="text">
+		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
-		<parameter name="commandTransformation" type="text">
+		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending values. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -42,13 +44,15 @@
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-color">
-		<parameter name="stateTransformation" type="text">
+		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving values.</description>
+			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
-		<parameter name="commandTransformation" type="text">
+		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -111,13 +115,15 @@
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-contact">
-		<parameter name="stateTransformation" type="text">
+		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving value. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
-		<parameter name="commandTransformation" type="text">
+		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -156,13 +162,15 @@
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-dimmer">
-		<parameter name="stateTransformation" type="text">
+		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving value. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
-		<parameter name="commandTransformation" type="text">
+		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -228,13 +236,15 @@
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-number">
-		<parameter name="stateTransformation" type="text">
+		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving value. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
-		<parameter name="commandTransformation" type="text">
+		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -270,13 +280,15 @@
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-player">
-		<parameter name="stateTransformation" type="text">
+		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving value. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
-		<parameter name="commandTransformation" type="text">
+		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -331,13 +343,15 @@
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-rollershutter">
-		<parameter name="stateTransformation" type="text">
+		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving value. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
-		<parameter name="commandTransformation" type="text">
+		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>
@@ -384,13 +398,15 @@
 	</config-description>
 
 	<config-description uri="channel-type:http:channel-config-switch">
-		<parameter name="stateTransformation" type="text">
+		<parameter name="stateTransformation" type="text" multiple="true">
 			<label>State Transformation</label>
-			<description>Transformation pattern used when receiving value. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when receiving values. Multiple transformations can be chained by listing
+				each transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
-		<parameter name="commandTransformation" type="text">
+		<parameter name="commandTransformation" type="text" multiple="true">
 			<label>Command Transformation</label>
-			<description>Transformation pattern used when sending value. Multiple transformation can be chained using "∩".</description>
+			<description>Transformation pattern used when sending values. Multiple transformations can be chained by listing each
+				transformation on a separate line, or by concatenating them with "∩".</description>
 		</parameter>
 		<parameter name="stateExtension" type="text">
 			<label>State URL Extension</label>

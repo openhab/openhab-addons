@@ -17,6 +17,7 @@ import java.net.URL;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -68,7 +69,8 @@ public class HeliosVentilationBindingConstants {
                 String channel = (String) keys.nextElement();
                 HeliosVentilationDataPoint dp;
                 try {
-                    dp = new HeliosVentilationDataPoint(channel, properties.getProperty(channel));
+                    dp = new HeliosVentilationDataPoint(channel,
+                            Objects.requireNonNull(properties.getProperty(channel)));
                     if (result.containsKey(dp.address())) {
                         result.get(dp.address()).append(dp);
                     } else {

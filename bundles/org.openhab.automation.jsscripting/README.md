@@ -1429,7 +1429,7 @@ Follow these steps to create your own library (it's called a CommonJS module):
    ```
 
 4. Tar it up by running `npm pack` from your library's folder.
-5. Install it by running `npm install <name>-<version>.tgz` from the `automation/js` folder.
+5. Install it by running `npm install <path-to-library-folder>/<name>-<version>.tgz` from the `automation/js` folder.
 6. After you've installed it with `npm`, you can continue development of the library inside `node_modules`.
 
 It is also possible to upload your library to [npm](https://npmjs.com) to share it with other users.

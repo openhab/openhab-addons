@@ -50,6 +50,7 @@ import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
 import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
 import org.openhab.binding.hue.internal.api.dto.clip2.TimedEffects;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ActionType;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ContentType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.EffectType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
 import org.openhab.binding.hue.internal.api.dto.clip2.enums.SceneRecallAction;
@@ -113,6 +114,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
     private static final String LK_WISER_DIMMER_MODEL_ID = "LK Dimmer";
 
     private final Logger logger = LoggerFactory.getLogger(Clip2ThingHandler.class);
+
+    // flag values for logging resource consumption
+    private static final int FLAG_PROPERTIES_UPDATE = 1;
+    private static final int FLAG_DEPENDENCIES_UPDATE = 2;
+    private static final int FLAG_CACHE_UPDATE = 4;
+    private static final int FLAG_CHANNELS_UPDATE = 8;
+    private static final int FLAG_SCENE_ADD = 16;
+    private static final int FLAG_SCENE_DELETE = 32;
 
     /**
      * A map of service Resources whose state contributes to the overall state of this thing. It is a map between the
@@ -635,12 +644,15 @@ public class Clip2ThingHandler extends BaseThingHandler {
      * @param resources a collection of Resource objects containing the new state.
      */
     public void onResources(Collection<Resource> resources) {
-        boolean sceneActivated = resources.stream().anyMatch(r -> sceneContributorsCache.containsKey(r.getId())
-                && (r.getSceneActive().orElse(false) || r.getSmartSceneActive().orElse(false)));
+        boolean sceneActivated = resources.stream()
+                .anyMatch(r -> sceneContributorsCache.containsKey(r.getId())
+                        && (Objects.requireNonNullElse(r.getSceneActive(), false)
+                                || Objects.requireNonNullElse(r.getSmartSceneActive(), false)));
         for (Resource resource : resources) {
             // Skip scene deactivation when we have also received a scene activation.
             boolean updateChannels = !sceneActivated || !sceneContributorsCache.containsKey(resource.getId())
-                    || resource.getSceneActive().orElse(false) || resource.getSmartSceneActive().orElse(false);
+                    || Objects.requireNonNullElse(resource.getSceneActive(), false)
+                    || Objects.requireNonNullElse(resource.getSmartSceneActive(), false);
             onResource(resource, updateChannels);
         }
     }
@@ -664,34 +676,69 @@ public class Clip2ThingHandler extends BaseThingHandler {
         if (disposing) {
             return;
         }
-        boolean resourceConsumed = false;
+        int resourceConsumedFlags = 0;
         if (resourceId.equals(resource.getId())) {
             if (resource.hasFullState()) {
                 thisResource = resource;
                 if (!updatePropertiesDone) {
                     updateProperties(resource);
-                    resourceConsumed = updatePropertiesDone;
+                    resourceConsumedFlags = updatePropertiesDone ? FLAG_PROPERTIES_UPDATE : 0;
                 }
             }
             if (!updateDependenciesDone) {
-                resourceConsumed = true;
+                resourceConsumedFlags |= FLAG_DEPENDENCIES_UPDATE;
                 cancelTask(updateDependenciesTask, false);
                 updateDependenciesTask = scheduler.submit(() -> updateDependencies());
             }
         } else {
+            if (SUPPORTED_SCENE_TYPES.contains(resource.getType())) {
+                resourceConsumedFlags = checkSceneResourceAddDelete(resource);
+            }
             Resource cachedResource = getResourceFromCache(resource);
             if (cachedResource != null) {
                 Setters.setResource(resource, cachedResource);
-                resourceConsumed = updateChannels && updateChannels(resource);
+                resourceConsumedFlags |= FLAG_CACHE_UPDATE;
+                resourceConsumedFlags |= updateChannels && updateChannels(resource) ? FLAG_CHANNELS_UPDATE : 0;
                 putResourceToCache(resource);
                 if (ResourceType.LIGHT == resource.getType() && !updateLightPropertiesDone) {
                     updateLightProperties(resource);
                 }
             }
         }
-        if (resourceConsumed) {
-            logger.debug("{} -> onResource() consumed resource {}", resourceId, resource);
+        if (resourceConsumedFlags != 0) {
+            logger.debug("{} -> onResource() consumed resource {}, flags:{}", resourceId, resource,
+                    resourceConsumedFlags);
         }
+    }
+
+    /**
+     * Check if a scene resource is of type 'ADD or 'DELETE' and either add it to, or delete it from, the two scene
+     * resource caches; and refresh the scene channel state description selection options.
+     *
+     * @param sceneResource the respective scene resource
+     * @return a flag value indicating if the scene was added or deleted
+     */
+    private int checkSceneResourceAddDelete(Resource sceneResource) {
+        switch (sceneResource.getContentType()) {
+            case ADD:
+                if (getResourceReference().equals(sceneResource.getGroup())) {
+                    sceneResource.setContentType(ContentType.FULL_STATE);
+                    sceneContributorsCache.put(sceneResource.getId(), sceneResource);
+                    sceneResourceEntries.put(sceneResource.getName(), sceneResource);
+                    updateSceneChannelStateDescription();
+                    return FLAG_SCENE_ADD;
+                }
+                break;
+            case DELETE:
+                Resource deletedScene = sceneContributorsCache.remove(sceneResource.getId());
+                if (Objects.nonNull(deletedScene)) {
+                    sceneResourceEntries.remove(deletedScene.getName());
+                    updateSceneChannelStateDescription();
+                    return FLAG_SCENE_DELETE;
+                }
+            default:
+        }
+        return 0;
     }
 
     private void putResourceToCache(Resource resource) {
@@ -1195,6 +1242,14 @@ public class Clip2ThingHandler extends BaseThingHandler {
     }
 
     /**
+     * Update the scene channel state description selection options
+     */
+    private void updateSceneChannelStateDescription() {
+        stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_SCENE),
+                sceneResourceEntries.keySet().stream().map(n -> new StateOption(n, n)).collect(Collectors.toList()));
+    }
+
+    /**
      * Fetch the full list of normal resp. smart scenes from the bridge, and call
      * {@code updateSceneContributors(List<Resource> allScenes)}
      *
@@ -1233,8 +1288,9 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 sceneContributorsCache.putAll(scenes.stream().collect(Collectors.toMap(s -> s.getId(), s -> s)));
                 sceneResourceEntries.putAll(scenes.stream().collect(Collectors.toMap(s -> s.getName(), s -> s)));
 
-                State state = scenes.stream().filter(s -> s.getSceneActive().orElse(false)).map(s -> s.getSceneState())
-                        .findAny().orElse(UnDefType.UNDEF);
+                State state = Objects.requireNonNull(
+                        scenes.stream().filter(s -> Objects.requireNonNullElse(s.getSceneActive(), false))
+                                .map(s -> s.getSceneState()).findAny().orElse(UnDefType.UNDEF));
 
                 // create scene channel if it is missing
                 if (getThing().getChannel(CHANNEL_2_SCENE) == null) {
@@ -1245,9 +1301,7 @@ public class Clip2ThingHandler extends BaseThingHandler {
                 }
 
                 updateState(CHANNEL_2_SCENE, state, true);
-
-                stateDescriptionProvider.setStateOptions(new ChannelUID(thing.getUID(), CHANNEL_2_SCENE), scenes
-                        .stream().map(s -> s.getName()).map(n -> new StateOption(n, n)).collect(Collectors.toList()));
+                updateSceneChannelStateDescription();
 
                 logger.debug("{} -> updateSceneContributors() found {} normal resp. smart scenes", resourceId,
                         scenes.size());

@@ -95,7 +95,6 @@
 /bundles/org.openhab.binding.ecovacs/ @maniac103
 /bundles/org.openhab.binding.ecowatt/ @lolodomo
 /bundles/org.openhab.binding.ekey/ @hmerk
-/bundles/org.openhab.binding.electroluxair/ @jannegpriv
 /bundles/org.openhab.binding.elerotransmitterstick/ @vbier
 /bundles/org.openhab.binding.elroconnects/ @mherwege
 /bundles/org.openhab.binding.emotiva/ @espenaf
@@ -154,7 +153,7 @@
 /bundles/org.openhab.binding.homematic/ @FStolte @gerrieg @mdicke2s
 /bundles/org.openhab.binding.homewizard/ @Daniel-42
 /bundles/org.openhab.binding.hpprinter/ @cossey
-/bundles/org.openhab.binding.http/ @openhab/add-ons-maintainers
+/bundles/org.openhab.binding.http/ @J-N-K
 /bundles/org.openhab.binding.hue/ @cweitkamp @andrewfg
 /bundles/org.openhab.binding.hydrawise/ @digitaldan
 /bundles/org.openhab.binding.hyperion/ @tavalin
@@ -163,7 +162,7 @@
 /bundles/org.openhab.binding.icalendar/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.icloud/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.ihc/ @paulianttila
-/bundles/org.openhab.binding.insteon/ @robnielsen
+/bundles/org.openhab.binding.insteon/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.intesis/ @hmerk
 /bundles/org.openhab.binding.iotawatt/ @PRosenb
 /bundles/org.openhab.binding.ipcamera/ @Skinah
@@ -282,6 +281,7 @@
 /bundles/org.openhab.binding.pegelonline/ @weymann
 /bundles/org.openhab.binding.pentair/ @jsjames
 /bundles/org.openhab.binding.phc/ @gnlpfjh
+/bundles/org.openhab.binding.pihole/ @magx2
 /bundles/org.openhab.binding.pilight/ @stefanroellin @niklasdoerfler
 /bundles/org.openhab.binding.pioneeravr/ @Stratehm
 /bundles/org.openhab.binding.pixometer/ @Confectrician
@@ -343,6 +343,7 @@
 /bundles/org.openhab.binding.solaredge/ @alexf2015
 /bundles/org.openhab.binding.solarforecast/ @weymann
 /bundles/org.openhab.binding.solarlog/ @johannrichard
+/bundles/org.openhab.binding.solarman/ @catalinsanda
 /bundles/org.openhab.binding.solarmax/ @jamietownsend
 /bundles/org.openhab.binding.solarwatt/ @sven-carstens
 /bundles/org.openhab.binding.solax/ @theater
@@ -370,6 +371,7 @@
 /bundles/org.openhab.binding.tellstick/ @openhab/add-ons-maintainers
 /bundles/org.openhab.binding.tesla/ @kgoderis
 /bundles/org.openhab.binding.teslapowerwall/ @psmedley
+/bundles/org.openhab.binding.teslascope/ @psmedley
 /bundles/org.openhab.binding.tibber/ @kjoglum
 /bundles/org.openhab.binding.tivo/ @mlobstein
 /bundles/org.openhab.binding.touchwand/ @roieg
@@ -430,6 +432,7 @@
 /bundles/org.openhab.persistence.mapdb/ @openhab/add-ons-maintainers
 /bundles/org.openhab.persistence.mongodb/ @openhab/add-ons-maintainers
 /bundles/org.openhab.persistence.rrd4j/ @openhab/add-ons-maintainers
+/bundles/org.openhab.transform.basicprofiles/ @J-N-K
 /bundles/org.openhab.transform.bin2json/ @paulianttila
 /bundles/org.openhab.transform.exec/ @openhab/add-ons-maintainers
 /bundles/org.openhab.transform.jinja/ @jochen314

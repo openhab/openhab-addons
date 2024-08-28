@@ -158,11 +158,15 @@ public class RadioThermostatConnector {
 
     /**
      * Dispatch an event (key, value) to the event listeners
+     * Events with a null value are discarded
      *
      * @param key the key
      * @param value the value
      */
-    private void dispatchKeyValue(String key, String value) {
+    private void dispatchKeyValue(String key, @Nullable String value) {
+        if (value == null) {
+            return;
+        }
         RadioThermostatEvent event = new RadioThermostatEvent(this, key, value);
         for (RadioThermostatEventListener listener : listeners) {
             listener.onNewMessageEvent(event);
