@@ -23,11 +23,32 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class HydrawiseConnectionException extends Exception {
     private static final long serialVersionUID = 1L;
 
+    private int code = 0;
+    private String response = "";
+
     public HydrawiseConnectionException(Exception e) {
         super(e);
     }
 
     public HydrawiseConnectionException(String message) {
         super(message);
+    }
+
+    public HydrawiseConnectionException(String message, int code, String response) {
+        super(message);
+        this.code = code;
+        this.response = response;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getResponse() {
+        return response;
     }
 }
