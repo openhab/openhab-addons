@@ -575,10 +575,10 @@ public class TibberHandler extends BaseThingHandler {
         @OnWebSocketMessage
         public void onMessage(String message) {
             if (message.contains("connection_ack")) {
-                logger.info("WebSocket connected to Server");
+                logger.debug("WebSocket connected to Server");
                 startSubscription();
             } else if (message.contains("error") || message.contains("terminate")) {
-                logger.warn("Error/terminate received from server: {}", message);
+                logger.debug("Error/terminate received from server: {}", message);
                 close();
             } else if (message.contains("liveMeasurement")) {
                 logger.debug("Received liveMeasurement message.");
@@ -659,7 +659,7 @@ public class TibberHandler extends BaseThingHandler {
                     updateChannel(LIVE_MAXPOWERPRODUCTION, myObject.get("maxPowerProduction").toString());
                 }
             } else {
-                logger.warn("Unknown live response from Tibber. Message: {}", message);
+                logger.debug("Unknown live response from Tibber. Message: {}", message);
             }
         }
 
