@@ -46,6 +46,10 @@ public class PushoverHandlerFactory extends BaseThingHandlerFactory {
     @Activate
     public PushoverHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
         this.httpClient = httpClientFactory.createHttpClient("binding-pushover");
+        this.httpClient.setIdleTimeout(120000);
+        this.httpClient.setConnectTimeout(30000);
+        this.httpClient.setDestinationIdleTimeout(0);
+        this.httpClient.setStopTimeout(120500);
     }
 
     @Override
