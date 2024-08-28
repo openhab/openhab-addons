@@ -16,9 +16,11 @@ import static java.util.function.Predicate.not;
 import static org.openhab.transform.basicprofiles.internal.factory.BasicProfilesFactory.STATE_FILTER_UID;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -53,9 +55,31 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class StateFilterProfile implements StateProfile {
 
+    private final static String OPERATOR_NAME_PATTERN = Stream.of(StateCondition.ComparisonType.values())
+            .map(StateCondition.ComparisonType::name)
+            // We want to match the longest operator first, e.g. `GTE` before `GT`
+            .sorted(Comparator.comparingInt(String::length).reversed())
+            // Require a leading space only when it is preceded by a non-space character, e.g. `Item1 GTE 0`
+            // so we can have conditions against input data without needing a leading space, e.g. `GTE 0`
+            .collect(Collectors.joining("|", "(?:(?<=\\S)\\s+|^\\s*)(?:", ")\\s"));
+
+    private final static String OPERATOR_SYMBOL_PATTERN = Stream.of(StateCondition.ComparisonType.values())
+            .map(StateCondition.ComparisonType::symbol)
+            // We want to match the longest operator first, e.g. `<=` before `<`
+            .sorted(Comparator.comparingInt(String::length).reversed()) //
+            .collect(Collectors.joining("|", "(?:", ")"));
+
+    private final static Pattern EXPRESSION_PATTERN = Pattern.compile(
+            // - Without the non-greedy operator in the first capture group,
+            // it will match `Item<` when encountering `Item<>X` condition
+            // - Symbols may be more prevalently used, so check them first
+            "(.*?)(" + OPERATOR_SYMBOL_PATTERN + "|" + OPERATOR_NAME_PATTERN + ")(.*)", Pattern.CASE_INSENSITIVE);
+
     private final Logger logger = LoggerFactory.getLogger(StateFilterProfile.class);
 
     private final ProfileCallback callback;
+
+    private final ItemRegistry itemRegistry;
 
     private final List<StateCondition> conditions;
 
@@ -63,10 +87,11 @@ public class StateFilterProfile implements StateProfile {
 
     public StateFilterProfile(ProfileCallback callback, ProfileContext context, ItemRegistry itemRegistry) {
         this.callback = callback;
+        this.itemRegistry = itemRegistry;
 
         StateFilterProfileConfig config = context.getConfiguration().as(StateFilterProfileConfig.class);
         if (config != null) {
-            conditions = parseConditions(config.conditions, config.separator, itemRegistry);
+            conditions = parseConditions(config.conditions, config.separator);
             if (conditions.isEmpty()) {
                 logger.warn("No valid conditions defined for StateFilterProfile. Link: {}. Conditions: {}",
                         callback.getItemChannelLink(), config.conditions);
@@ -78,27 +103,20 @@ public class StateFilterProfile implements StateProfile {
         }
     }
 
-    private List<StateCondition> parseConditions(List<String> conditions, String separator, ItemRegistry itemRegistry) {
+    private List<StateCondition> parseConditions(List<String> conditions, String separator) {
         List<StateCondition> parsedConditions = new ArrayList<>();
-
-        String operatorPattern = Stream.of(StateCondition.ComparisonType.values())
-                .flatMap(type -> Stream.of(" " + type.name() + " ", type.getSymbol()))
-                .sorted((a, b) -> Integer.compare(b.length(), a.length())) // We want to match the longest operator
-                                                                           // first, e.g. `<=` before `<`
-                .collect(Collectors.joining("|"));
-
-        Pattern expressionPattern = Pattern.compile("(.*)(" + operatorPattern + ")(.*)", Pattern.CASE_INSENSITIVE);
 
         conditions.stream() //
                 .flatMap(c -> Stream.of(c.split(separator))) //
                 .map(String::trim) //
                 .filter(not(String::isBlank)) //
                 .forEach(expression -> {
-                    Matcher matcher = expressionPattern.matcher(expression);
+                    Matcher matcher = EXPRESSION_PATTERN.matcher(expression);
                     if (!matcher.matches()) {
                         logger.warn(
-                                "Malformed condition expression: '{}'. Expected format ITEM_NAME OPERATOR ITEM_OR_STATE, where OPERATOR is one of: {}",
-                                expression, StateCondition.ComparisonType.valuesAndSymbols());
+                                "Malformed condition expression: '{}' in link '{}'. Expected format ITEM_NAME OPERATOR ITEM_OR_STATE, where OPERATOR is one of: {}",
+                                expression, callback.getItemChannelLink(),
+                                StateCondition.ComparisonType.namesAndSymbols());
                         return;
                     }
 
@@ -106,13 +124,13 @@ public class StateFilterProfile implements StateProfile {
                     String operator = matcher.group(2).trim();
                     String value = matcher.group(3).trim();
                     try {
-                        StateCondition.ComparisonType comparisonType = Objects.requireNonNullElseGet(
-                                StateCondition.ComparisonType.fromSymbol(operator),
-                                () -> StateCondition.ComparisonType.valueOf(operator.toUpperCase(Locale.ROOT)));
-                        parsedConditions.add(new StateCondition(itemName, comparisonType, value, itemRegistry));
+                        StateCondition.ComparisonType comparisonType = StateCondition.ComparisonType
+                                .fromSymbol(operator).orElseGet(
+                                        () -> StateCondition.ComparisonType.valueOf(operator.toUpperCase(Locale.ROOT)));
+                        parsedConditions.add(new StateCondition(itemName, comparisonType, value));
                     } catch (IllegalArgumentException e) {
-                        logger.warn("Invalid comparison operator: '{}'. Expected one of: {}", operator,
-                                StateCondition.ComparisonType.valuesAndSymbols());
+                        logger.warn("Invalid comparison operator: '{}' in link '{}'. Expected one of: {}", operator,
+                                callback.getItemChannelLink(), StateCondition.ComparisonType.namesAndSymbols());
                     }
                 });
 
@@ -154,7 +172,8 @@ public class StateFilterProfile implements StateProfile {
     private State checkCondition(State state) {
         if (conditions.isEmpty()) {
             logger.warn(
-                    "No valid configuration defined for StateFilterProfile (check for log messages when instantiating profile) - skipping state update");
+                    "No valid configuration defined for StateFilterProfile (check for log messages when instantiating profile) - skipping state update. Link: '{}'",
+                    callback.getItemChannelLink());
             return null;
         }
 
@@ -185,10 +204,7 @@ public class StateFilterProfile implements StateProfile {
         private String value;
         private @Nullable State parsedValue;
 
-        private ItemRegistry itemRegistry;
-
-        public StateCondition(String itemName, ComparisonType comparisonType, String value, ItemRegistry itemRegistry) {
-            this.itemRegistry = itemRegistry;
+        public StateCondition(String itemName, ComparisonType comparisonType, String value) {
             this.itemName = itemName;
             this.comparisonType = comparisonType;
             this.value = value;
@@ -213,7 +229,10 @@ public class StateFilterProfile implements StateProfile {
                 State state;
                 Item item = null;
 
-                logger.debug("Evaluating {} with input: {} ({})", this, input, input.getClass().getSimpleName());
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Evaluating {} with input: {} ({}). Link: '{}'", this, input,
+                            input.getClass().getSimpleName(), callback.getItemChannelLink());
+                }
                 if (itemName.isEmpty()) {
                     item = itemRegistry.getItem(linkedItemName);
                     state = input;
@@ -231,7 +250,8 @@ public class StateFilterProfile implements StateProfile {
                     lhs = state;
                 } else {
                     // Only allow EQ and NEQ for non-comparable states
-                    if (!(comparisonType == ComparisonType.EQ || comparisonType == ComparisonType.NEQ)) {
+                    if (!(comparisonType == ComparisonType.EQ || comparisonType == ComparisonType.NEQ
+                            || comparisonType == ComparisonType.NEQ_ALT)) {
                         logger.debug("Condition state: '{}' ({}) only supports '==' and '!==' comparisons", state,
                                 state.getClass().getSimpleName());
                         return false;
@@ -245,7 +265,7 @@ public class StateFilterProfile implements StateProfile {
                     List<Class<? extends State>> acceptedValueTypes = item.getAcceptedDataTypes().stream()
                             .filter(not(StringType.class::isAssignableFrom)).toList();
                     parsedValue = TypeParser.parseState(acceptedValueTypes, value);
-                    // Don't convert QuantityType to other types
+                    // Don't convert QuantityType to other types, so that 1500 != 1500 W
                     if (parsedValue != null && !(parsedValue instanceof QuantityType)) {
                         // Try to convert it to the same type as the state
                         // This allows comparing compatible types, e.g. PercentType vs OnOffType
@@ -270,7 +290,7 @@ public class StateFilterProfile implements StateProfile {
                     }
 
                     if (parsedValue == null) {
-                        if (comparisonType == ComparisonType.NEQ) {
+                        if (comparisonType == ComparisonType.NEQ || comparisonType == ComparisonType.NEQ_ALT) {
                             // They're not even type compatible, so return true for NEQ comparison
                             return true;
                         } else {
@@ -295,14 +315,15 @@ public class StateFilterProfile implements StateProfile {
 
                 return switch (comparisonType) {
                     case EQ -> lhs.equals(rhs);
-                    case NEQ -> !lhs.equals(rhs);
+                    case NEQ, NEQ_ALT -> !lhs.equals(rhs);
                     case GT -> ((Comparable) lhs).compareTo(rhs) > 0;
                     case GTE -> ((Comparable) lhs).compareTo(rhs) >= 0;
                     case LT -> ((Comparable) lhs).compareTo(rhs) < 0;
                     case LTE -> ((Comparable) lhs).compareTo(rhs) <= 0;
                 };
             } catch (ItemNotFoundException | IllegalArgumentException | ClassCastException e) {
-                logger.warn("Error evaluating condition: {}: {}", this, e.getMessage());
+                logger.warn("Error evaluating condition: {} in link '{}': {}", this, callback.getItemChannelLink(),
+                        e.getMessage());
             }
             return false;
         }
@@ -310,6 +331,7 @@ public class StateFilterProfile implements StateProfile {
         enum ComparisonType {
             EQ("=="),
             NEQ("!="),
+            NEQ_ALT("<>"),
             GT(">"),
             GTE(">="),
             LT("<"),
@@ -321,21 +343,21 @@ public class StateFilterProfile implements StateProfile {
                 this.symbol = symbol;
             }
 
-            String getSymbol() {
+            String symbol() {
                 return symbol;
             }
 
-            static @Nullable ComparisonType fromSymbol(String symbol) {
+            static Optional<ComparisonType> fromSymbol(String symbol) {
                 for (ComparisonType type : values()) {
                     if (type.symbol.equals(symbol)) {
-                        return type;
+                        return Optional.of(type);
                     }
                 }
-                return null;
+                return Optional.empty();
             }
 
-            static List<String> valuesAndSymbols() {
-                return Stream.of(values()).flatMap(entry -> Stream.of(entry.name(), entry.getSymbol())).toList();
+            static List<String> namesAndSymbols() {
+                return Stream.of(values()).flatMap(entry -> Stream.of(entry.name(), entry.symbol())).toList();
             }
         }
 

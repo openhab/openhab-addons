@@ -336,7 +336,13 @@ public class StateFilterProfileTest {
                 Arguments.of(stringItem, s_foo, "==", "'foo'", true), //
                 Arguments.of(stringItem, s_foo, "==", "foo", false), //
                 Arguments.of(stringItem, s_foo, "!=", "foo", true), // not quoted -> not a string
+                Arguments.of(stringItem, s_foo, "<>", "foo", true), //
+                Arguments.of(stringItem, s_foo, " <>", "foo", true), //
+                Arguments.of(stringItem, s_foo, "<> ", "foo", true), //
+                Arguments.of(stringItem, s_foo, " <> ", "foo", true), //
                 Arguments.of(stringItem, s_foo, "!=", "'foo'", false), //
+                Arguments.of(stringItem, s_foo, "<>", "'foo'", false), //
+                Arguments.of(stringItem, s_foo, " <>", "'foo'", false), //
 
                 Arguments.of(dimmerItem, PercentType.HUNDRED, "==", "100", true), //
                 Arguments.of(dimmerItem, PercentType.HUNDRED, ">=", "100", true), //
@@ -571,6 +577,12 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, d_1500, "<=", "1000", false), //
                 Arguments.of(decimalItem, d_1500, "<", "1500", false), //
                 Arguments.of(decimalItem, d_1500, "<=", "1500", true), //
+
+                // named operators - must have a trailing space
+                Arguments.of(decimalItem, d_1500, "LT ", "2000", true), //
+                Arguments.of(decimalItem, d_1500, "LTE ", "1500", true), //
+                Arguments.of(decimalItem, d_1500, " LTE ", "1500", true), //
+                Arguments.of(decimalItem, d_1500, " LTE ", "1500", true), //
 
                 Arguments.of(powerItem, q_1500W, "==", "1500 W", true), //
                 Arguments.of(powerItem, q_1500W, "==", "'1500 W'", false), // QuantityType != String

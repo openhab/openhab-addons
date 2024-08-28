@@ -18,7 +18,7 @@
 				<br /><br />
 				The following operators are supported:
 				<code>EQ</code> or <code>==</code>,
-				<code>NE</code> or <code>!=</code>,
+				<code>NE</code>, <code>!=</code>, or <code>&lt;&gt;</code>,
 				<code>GT</code> or <code>&gt;</code>,
 				<code>GTE</code> or <code>&gt;=</code>,
 				<code>LT</code> or <code>&lt;</code>, and

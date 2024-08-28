@@ -215,20 +215,19 @@ Some tips:
 
 ##### State Filter Operators
 
-| Name  | Symbol |                           |
-| :---: | :----: | ------------------------- |
-| `EQ`  |  `==`  | Equals                    |
-| `NEQ` |  `!=`  | Not equals                |
-| `GT`  |  `>`   | Greater than              |
-| `GTE` |  `>=`  | Greater than or equals to |
-| `LT`  |  `<`   | Less than                 |
-| `LTE` |  `<=`  | Less than or equals to    |
+| Name  |    Symbol    |                           |
+| :---: | :----------: | ------------------------- |
+| `EQ`  |     `==`     | Equals                    |
+| `NEQ` | `!=` or `<>` | Not equals                |
+| `GT`  |     `>`      | Greater than              |
+| `GTE` |     `>=`     | Greater than or equals to |
+| `LT`  |     `<`      | Less than                 |
+| `LTE` |     `<=`     | Less than or equals to    |
 
 Notes:
 
 - The operator names must be surrounded by spaces, i.e.: `Item EQ 10`
 - The operator symbols do not need to be surrounded by spaces, e.g.: `Item==10` and `Item == 10` are both fine.
-- Only symbolic operators can be used when comparing against the incoming state, e.g. `> 10`. Using operator names isn't supported, i.e. this is not supported: ~~`GT 10`~~.
 
 ### State Filter Examples
 
