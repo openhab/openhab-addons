@@ -420,7 +420,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
     private void updateTemperature(UnitValue temperature, String group, String channel) {
         logger.debug("TEMP {} {} {} {}", group, channel, temperature.unit, temperature.value);
         updateGroupState(group, channel, new QuantityType<Temperature>(temperature.value,
-                "\\u00b0F".equals(temperature.unit) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS));
+                temperature.unit.indexOf("F") >= 0 ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS));
     }
 
     private void updateWindspeed(UnitValue wind, String group, String channel) {
@@ -475,10 +475,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
     }
 
     private QuantityType<Volume> waterFlowToQuantityType(Number flow, String units) {
-        double waterFlow = flow.doubleValue();
-        if ("gals".equals(units)) {
-            waterFlow = waterFlow * 3.785;
-        }
-        return new QuantityType<>(waterFlow, Units.LITRE);
+        return new QuantityType<>(flow.doubleValue(),
+                "gal".equals(units) ? ImperialUnits.GALLON_LIQUID_US : Units.LITRE);
     }
 }
