@@ -12,18 +12,13 @@
  */
 package org.openhab.binding.hydrawise.internal.api.graphql.dto;
 
-import java.util.List;
-
 /**
+ *
  * @author Dan Cunningham - Initial contribution
+ *
  */
-
-public class Controller {
-    public Integer id;
+public class Model {
+    public Integer maxZones;
     public String name;
-    public ControllerStatus status;
-    public Hardware hardware;
-    public Location location;
-    public List<Zone> zones = null;
-    public List<Sensor> sensors = null;
+    public String description;
 }
