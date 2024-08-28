@@ -97,7 +97,6 @@ public class HydrawiseGraphQLClient {
     private final OAuthClientService oAuthService;
     private String queryString = "";
     private String weatherString = "";
-    private boolean weatherSupported = true;
 
     public HydrawiseGraphQLClient(HttpClient httpClient, OAuthClientService oAuthService) {
         this.httpClient = httpClient;

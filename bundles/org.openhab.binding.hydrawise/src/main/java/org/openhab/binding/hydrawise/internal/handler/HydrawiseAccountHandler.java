@@ -63,7 +63,7 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
      */
     private static final int MIN_REFRESH_SECONDS = 30;
     private static final int TOKEN_REFRESH_SECONDS = 60;
-    private static final int WEATHER_REFRESH_MILLIS = 12 * 60 * 60 * 1000; // 12 hours
+    private static final int WEATHER_REFRESH_MILLIS = 60 * 60 * 1000; // 1 hour
     private static final String BASE_URL = "https://app.hydrawise.com/api/v2/";
     private static final String AUTH_URL = BASE_URL + "oauth/access-token";
     private static final String CLIENT_SECRET = "zn3CrjglwNV1";
@@ -79,7 +79,6 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
     private @Nullable ScheduledFuture<?> tokenFuture;
     private @Nullable Customer lastData;
     private long lastWeatherUpdate;
-    private boolean weatherSupported = true;
     private int refresh;
 
     public HydrawiseAccountHandler(final Bridge bridge, final HttpClient httpClient, final OAuthFactory oAuthFactory) {
@@ -249,7 +248,7 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
                 updateStatus(ThingStatus.ONLINE);
             }
             long currentTime = System.currentTimeMillis();
-            if (weatherSupported && currentTime > lastWeatherUpdate + WEATHER_REFRESH_MILLIS) {
+            if (currentTime > lastWeatherUpdate + WEATHER_REFRESH_MILLIS) {
                 lastWeatherUpdate = currentTime;
                 try {
                     QueryResponse weatherResponse = apiClient.queryWeather();
@@ -260,9 +259,6 @@ public class HydrawiseAccountHandler extends BaseBridgeHandler implements Access
                         });
                     }
                 } catch (HydrawiseConnectionException e) {
-                    // this is an error some users have in the EU, its a bug in the Hydrawise GraphQL Service,
-                    // workaround for now.
-                    weatherSupported = false;
                     logger.debug("Weather data is not supported", e);
                 }
             }
