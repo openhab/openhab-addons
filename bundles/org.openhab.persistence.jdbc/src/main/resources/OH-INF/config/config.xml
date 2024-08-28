@@ -10,7 +10,8 @@
 		<!--
 			# I N S T A L L J D B C P E R S I S T E N C E S E R V I C E
 			#
-			# Tested databases/url-prefix: jdbc:derby, jdbc:h2, jdbc:hsqldb, jdbc:mariadb, jdbc:mysql, jdbc:postgresql, jdbc:sqlite, jdbc:oracle
+			# Tested databases/url-prefix: jdbc:derby, jdbc:h2, jdbc:hsqldb, jdbc:mariadb, jdbc:mysql, jdbc:postgresql, jdbc:sqlite,
+			jdbc:oracle
 			#
 			# derby, h2, hsqldb, sqlite can be embedded,
 			# If no database is available it will be created, for example the url 'jdbc:h2:./testH2' creates a new DB in OpenHab Folder.
