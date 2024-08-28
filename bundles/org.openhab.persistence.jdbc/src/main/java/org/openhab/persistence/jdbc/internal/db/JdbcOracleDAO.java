@@ -15,12 +15,14 @@ package org.openhab.persistence.jdbc.internal.db;
 import java.sql.SQLException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.knowm.yank.Yank;
 import org.knowm.yank.exceptions.YankSQLException;
 import org.openhab.core.items.Item;
 import org.openhab.core.persistence.FilterCriteria;
+import org.openhab.core.persistence.FilterCriteria.Ordering;
 import org.openhab.core.types.State;
 import org.openhab.persistence.jdbc.internal.dto.ItemVO;
 import org.openhab.persistence.jdbc.internal.dto.ItemsVO;
@@ -204,6 +206,21 @@ public class JdbcOracleDAO extends JdbcBaseDAO {
      *************/
 
     @Override
+    public void doUpdateItemTableNames(List<ItemVO> vol) throws JdbcSQLException {
+        logger.debug("JDBC::doUpdateItemTableNames vol.size = {}", vol.size());
+        for (ItemVO itemTable : vol) {
+            String sql = "RENAME " + itemTable.getTableName() + "  TO " + itemTable.getNewTableName();
+            logger.debug("JDBC::updateTableName sql={} oldValue='{}' newValue='{}'", sql, itemTable.getTableName(),
+                    itemTable.getNewTableName());
+            try {
+                Yank.execute(sql, null);
+            } catch (YankSQLException e) {
+                throw new JdbcSQLException(e);
+            }
+        }
+    }
+
+    @Override
     public void doStoreItemValue(Item item, State itemState, ItemVO vo) throws JdbcSQLException {
         doStoreItemValue(item, itemState, vo, ZonedDateTime.now());
     }
@@ -226,6 +243,31 @@ public class JdbcOracleDAO extends JdbcBaseDAO {
     /****************************
      * SQL generation Providers *
      ****************************/
+
+    @Override
+    protected String histItemFilterQueryProvider(FilterCriteria filter, int numberDecimalcount, String table,
+            String simpleName, ZoneId timeZone) {
+        logger.debug(
+                "JDBC::getHistItemFilterQueryProvider filter = {}, numberDecimalcount = {}, table = {}, simpleName = {}",
+                filter, numberDecimalcount, table, simpleName);
+
+        String filterString = resolveTimeFilter(filter, timeZone);
+        filterString += (filter.getOrdering() == Ordering.ASCENDING) ? " ORDER BY time ASC" : " ORDER BY time DESC";
+        if (filter.getPageSize() != Integer.MAX_VALUE) {
+            filterString += " OFFSET " + filter.getPageNumber() * filter.getPageSize() + " ROWS FETCH NEXT "
+                    + filter.getPageSize() + " ROWS ONLY";
+        }
+        // SELECT time, ROUND(value,3) FROM number_item_0114 ORDER BY time DESC OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY
+        // rounding HALF UP
+        String queryString = "NUMBERITEM".equalsIgnoreCase(simpleName) && numberDecimalcount > -1
+                ? "SELECT time, ROUND(value," + numberDecimalcount + ") FROM " + table
+                : "SELECT time, value FROM " + table;
+        if (!filterString.isEmpty()) {
+            queryString += filterString;
+        }
+        logger.debug("JDBC::query queryString = {}", queryString);
+        return queryString;
+    }
 
     @Override
     protected String resolveTimeFilter(FilterCriteria filter, ZoneId timeZone) {

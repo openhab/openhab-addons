@@ -165,7 +165,7 @@ public class StringUtilsExt {
         if (pathURI != null) {
             String path = "";
             if ((pathURI.indexOf("/") >= 0) && (pathURI.indexOf("/") <= 1)) {
-                if (pathURI.contains("/")) {
+                if (stringAfterSubstr(pathURI, "/").contains("/")) {
                     path = stringBeforeLastSubstr(pathURI, "/") + "/";
                 } else {
                     path = stringBeforeSubstr(pathURI, "/") + "/";
