@@ -64,8 +64,10 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
             throws DaikinCommunicationException {
         if (channelUID.getId().startsWith(DaikinBindingConstants.CHANNEL_AIRBASE_AC_ZONE)) {
             int zoneNumber = Integer.parseInt(channelUID.getId().substring(4));
-            if (command instanceof OnOffType) {
-                changeZone(zoneNumber, command == OnOffType.ON);
+            if (command instanceof OnOffType onOffCommand) {
+                if (changeZone(zoneNumber, onOffCommand == OnOffType.ON)) {
+                    updateState(channelUID, onOffCommand);
+                }
                 return true;
             }
         }
@@ -110,63 +112,63 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
     }
 
     @Override
-    protected void changePower(boolean power) throws DaikinCommunicationException {
+    protected boolean changePower(boolean power) throws DaikinCommunicationException {
         AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
         info.power = power;
-        webTargets.setAirbaseControlInfo(info);
+        return webTargets.setAirbaseControlInfo(info);
     }
 
     @Override
-    protected void changeSetPoint(double newTemperature) throws DaikinCommunicationException {
+    protected boolean changeSetPoint(double newTemperature) throws DaikinCommunicationException {
         AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
         info.temp = Optional.of(newTemperature);
-        webTargets.setAirbaseControlInfo(info);
+        return webTargets.setAirbaseControlInfo(info);
     }
 
     @Override
-    protected void changeMode(String mode) throws DaikinCommunicationException {
+    protected boolean changeMode(String mode) throws DaikinCommunicationException {
         AirbaseMode newMode;
         try {
             newMode = AirbaseMode.valueOf(mode);
         } catch (IllegalArgumentException ex) {
             logger.warn("Invalid mode: {}. Valid values: {}", mode, AirbaseMode.values());
-            return;
+            return false;
         }
         if (airbaseModelInfo != null) {
             if ((newMode == AirbaseMode.AUTO && !airbaseModelInfo.features.contains(AirbaseFeature.AUTO))
                     || (newMode == AirbaseMode.DRY && !airbaseModelInfo.features.contains(AirbaseFeature.DRY))) {
                 logger.warn("{} mode is not supported by your controller", mode);
-                return;
+                return false;
             }
         }
         AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
         info.mode = newMode;
-        webTargets.setAirbaseControlInfo(info);
+        return webTargets.setAirbaseControlInfo(info);
     }
 
     @Override
-    protected void changeFanSpeed(String speed) throws DaikinCommunicationException {
+    protected boolean changeFanSpeed(String speed) throws DaikinCommunicationException {
         AirbaseFanSpeed newFanSpeed;
         try {
             newFanSpeed = AirbaseFanSpeed.valueOf(speed);
         } catch (IllegalArgumentException ex) {
             logger.warn("Invalid fan speed: {}. Valid values: {}", speed, AirbaseFanSpeed.values());
-            return;
+            return false;
         }
         if (airbaseModelInfo != null) {
             if (EnumSet.range(AirbaseFanSpeed.AUTO_LEVEL_1, AirbaseFanSpeed.AUTO_LEVEL_5).contains(newFanSpeed)
                     && !airbaseModelInfo.features.contains(AirbaseFeature.FRATE_AUTO)) {
                 logger.warn("Fan AUTO_LEVEL_X is not supported by your controller");
-                return;
+                return false;
             }
             if (newFanSpeed == AirbaseFanSpeed.AIRSIDE && !airbaseModelInfo.features.contains(AirbaseFeature.AIRSIDE)) {
                 logger.warn("Airside is not supported by your controller");
-                return;
+                return false;
             }
         }
         AirbaseControlInfo info = webTargets.getAirbaseControlInfo();
         info.fanSpeed = newFanSpeed;
-        webTargets.setAirbaseControlInfo(info);
+        return webTargets.setAirbaseControlInfo(info);
     }
 
     /**
@@ -178,7 +180,7 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
      * @param command true to turn on the zone, false to turn it off
      * 
      */
-    protected void changeZone(int zone, boolean command) throws DaikinCommunicationException {
+    protected boolean changeZone(int zone, boolean command) throws DaikinCommunicationException {
         AirbaseZoneInfo zoneInfo = webTargets.getAirbaseZoneInfo();
         long maxZones = zoneInfo.zone.length;
 
@@ -188,11 +190,11 @@ public class DaikinAirbaseUnitHandler extends DaikinBaseHandler {
         if (zone <= 0 || zone > maxZones) {
             logger.warn("The given zone number ({}) is outside the number of zones supported by the controller ({})",
                     zone, maxZones);
-            return;
+            return false;
         }
 
         zoneInfo.zone[zone - 1] = command;
-        webTargets.setAirbaseZoneInfo(zoneInfo);
+        return webTargets.setAirbaseZoneInfo(zoneInfo);
     }
 
     @Override
