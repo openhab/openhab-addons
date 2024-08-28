@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<update:update-descriptions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:update="https://openhab.org/schemas/update-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/update-description/v1.0.0 https://openhab.org/schemas/update-description-1.0.0.xsd">
+
+	<thing-type uid="mercedesme:hybrid">
+		<instruction-set targetVersion="1">
+			<update-channel id="cons-conv-reset" groupIds="trip">
+				<type>mercedesme:consumption-conv-reset</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+	<thing-type uid="mercedesme:combustion">
+		<instruction-set targetVersion="1">
+			<update-channel id="distance" groupIds="trip">
+				<type>mercedesme:distance</type>
+			</update-channel>
+			<update-channel id="time" groupIds="trip">
+				<type>mercedesme:driven-time</type>
+			</update-channel>
+			<update-channel id="avg-speed" groupIds="trip">
+				<type>mercedesme:avg-speed</type>
+			</update-channel>
+			<update-channel id="cons-conv" groupIds="trip">
+				<type>mercedesme:consumption-conv</type>
+			</update-channel>
+			<update-channel id="distance-reset" groupIds="trip">
+				<type>mercedesme:distance-reset</type>
+			</update-channel>
+			<update-channel id="time-reset" groupIds="trip">
+				<type>mercedesme:driven-time-reset</type>
+			</update-channel>
+			<update-channel id="avg-speed-reset" groupIds="trip">
+				<type>mercedesme:avg-speed-reset</type>
+			</update-channel>
+			<update-channel id="cons-conv-reset" groupIds="trip">
+				<type>mercedesme:consumption-conv-reset</type>
+			</update-channel>
+			<update-channel id="cons-conv-unit" groupIds="trip">
+				<type>mercedesme:consumption-conv-unit</type>
+			</update-channel>
+		</instruction-set>
+	</thing-type>
+
+</update:update-descriptions>
