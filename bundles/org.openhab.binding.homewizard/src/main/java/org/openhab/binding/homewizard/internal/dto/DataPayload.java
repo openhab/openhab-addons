@@ -335,30 +335,12 @@ public class DataPayload {
     }
 
     /**
-     * Setter for the total imported water volume
-     *
-     * @param totalWaterM3 total imported water volume
-     */
-    public void setTotalWaterM3(double totalWaterM3) {
-        this.totalWaterM3 = totalWaterM3;
-    }
-
-    /**
      * Getter for the current water flow
      *
      * @return current water flow
      */
     public double getCurrentWaterLPM() {
         return currentWaterLPM;
-    }
-
-    /**
-     * Setter for the current water flow
-     *
-     * @param currentWaterLPM current water flow
-     */
-    public void setCurrentWaterLPM(double currentWaterLPM) {
-        this.currentWaterLPM = currentWaterLPM;
     }
 
     @Override

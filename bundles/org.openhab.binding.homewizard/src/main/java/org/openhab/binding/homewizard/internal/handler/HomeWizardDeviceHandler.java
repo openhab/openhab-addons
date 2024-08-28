@@ -114,7 +114,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      * @return json response from the remote server
      * @throws IOException
      */
-    protected String getData() throws IOException {
+    public String getData() throws IOException {
         return HttpUtil.executeUrl("GET", apiURL + "data", 30000);
     }
 
