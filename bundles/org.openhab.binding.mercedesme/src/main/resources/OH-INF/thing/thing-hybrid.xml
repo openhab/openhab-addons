@@ -27,6 +27,10 @@
 			<channel-group id="command" typeId="command-values"/>
 		</channel-groups>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description-ref uri="thing-type:mercedesme:hybrid"/>
 	</thing-type>
 </thing:thing-descriptions>
