@@ -87,7 +87,7 @@
 
 			<channel id="power_switch" typeId="power_switch"/>
 			<channel id="power_lock" typeId="power_lock"/>
-            <channel id="ring_brightness" typeId="ring_brightness"/>
+			<channel id="ring_brightness" typeId="ring_brightness"/>
 
 		</channels>
 
@@ -142,7 +142,7 @@
 			<channel id="active_power" typeId="active_power"/>
 
 			<channel id="power_switch" typeId="power_switch"/>
-			<channel id="power_lock" typeId="power_lock"/> 
+			<channel id="power_lock" typeId="power_lock"/>
 			<channel id="ring_brightness" typeId="ring_brightness"/>
 
 		</channels>

@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homewizard.internal.dto.DataPayload;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
@@ -31,16 +32,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * The {@link HomeWizardDeviceHandler} is a base class for all
+ * The {@link HomeWizardP1MeterHandler} is a base class for all
  * HomeWizard devices. It provides configuration and polling of
  * data from a device. It also processes common data.
  * 
  * @author Daniël van Os - Initial contribution
  */
 @NonNullByDefault
-public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
+public abstract class HomeWizardP1MeterHandler extends BaseThingHandler {
 
-    protected final Logger logger = LoggerFactory.getLogger(HomeWizardDeviceHandler.class);
+    protected final Logger logger = LoggerFactory.getLogger(HomeWizardP1MeterHandler.class);
     protected final Gson gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
             .create();
 
@@ -54,7 +55,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      *
      * @param thing The thing to handle
      */
-    public HomeWizardDeviceHandler(Thing thing) {
+    public HomeWizardP1MeterHandler(Thing thing) {
         super(thing);
     }
 

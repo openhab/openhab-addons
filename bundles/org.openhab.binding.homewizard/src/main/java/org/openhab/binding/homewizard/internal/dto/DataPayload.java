@@ -52,7 +52,6 @@ public class DataPayload {
     private double totalGasM3;
     private long gasTimestamp = 0;
 
-<<<<<<<< HEAD:bundles/org.openhab.binding.homewizard/src/main/java/org/openhab/binding/homewizard/internal/dto/P1Payload.java
     @SerializedName("any_power_fail_count")
     private int anyPowerFailCount;
 
@@ -76,12 +75,11 @@ public class DataPayload {
     private double activeCurrentL2;
     @SerializedName("active_current_l3_a")
     private double activeCurrentL3;
-========
+
     @SerializedName("total_liter_m3")
     private double totalWaterM3;
     @SerializedName("active_liter_lpm")
     private double currentWaterLPM;
->>>>>>>> upstream/main:bundles/org.openhab.binding.homewizard/src/main/java/org/openhab/binding/homewizard/internal/DataPayload.java
 
     /**
      * Getter for the smart meter version
@@ -322,7 +320,7 @@ public class DataPayload {
         try {
             return ZonedDateTime.of(year, month, day, hours, minutes, seconds, 0, ZoneId.systemDefault());
         } catch (DateTimeException e) {
-            LoggerFactory.getLogger(P1Payload.class).warn("Unable to parse Gas timestamp: {}", gasTimestamp);
+            LoggerFactory.getLogger(DataPayload.class).warn("Unable to parse Gas timestamp: {}", gasTimestamp);
         }
         return null;
     }

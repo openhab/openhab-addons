@@ -31,7 +31,7 @@ import org.openhab.core.thing.ThingStatusDetail;
  * @author Daniël van Os - Initial contribution
  */
 @NonNullByDefault
-public abstract class HomeWizardStatefulDeviceHandler extends HomeWizardDeviceHandler {
+public abstract class HomeWizardStatefulDeviceHandler extends HomeWizardP1MeterHandler {
 
     /**
      * Constructor

@@ -13,6 +13,7 @@
 package org.openhab.binding.homewizard.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.openhab.binding.homewizard.internal.dto.DataPayload;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
