@@ -22,17 +22,18 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
+import org.openhab.binding.homewizard.internal.handler.HomeWizardP1MeterHandler;
 import org.openhab.core.thing.Thing;
 
 /**
- * The {@link HomeWizardHandlerMock} is responsible for mocking {@link HomeWizardHandler}
+ * The {@link HomeWizardP1MeterHandlerMock} is responsible for mocking {@link HomeWizardP1MeterHandler}
  * 
  * @author Leo Siepel - Initial contribution
  */
 @NonNullByDefault
-public class HomeWizardHandlerMock extends HomeWizardHandler {
+public class HomeWizardP1MeterHandlerMock extends HomeWizardP1MeterHandler {
 
-    public HomeWizardHandlerMock(Thing thing) {
+    public HomeWizardP1MeterHandlerMock(Thing thing) {
         super(thing);
 
         executorService = Mockito.mock(ScheduledExecutorService.class);

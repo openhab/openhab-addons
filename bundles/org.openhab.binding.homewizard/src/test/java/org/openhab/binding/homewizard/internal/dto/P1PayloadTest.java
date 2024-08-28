@@ -36,7 +36,7 @@ public class P1PayloadTest {
 
     @Test
     public void deserializeResponse() throws IOException {
-        P1Payload key = DATA_UTIL.fromJson("response.json", P1Payload.class);
+        DataPayload key = DATA_UTIL.fromJson("response.json", DataPayload.class);
         assertThat(key, is(notNullValue()));
 
         assertThat(key.getActiveCurrent(), is(567.0));
@@ -68,7 +68,7 @@ public class P1PayloadTest {
 
     @Test
     public void deserializeResponseEmpty() throws IOException {
-        P1Payload key = DATA_UTIL.fromJson("response-empty.json", P1Payload.class);
+        DataPayload key = DATA_UTIL.fromJson("response-empty.json", DataPayload.class);
         assertThat(key, is(notNullValue()));
 
         assertThat(key.getActiveCurrent(), is(0.0));

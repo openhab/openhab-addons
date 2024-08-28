@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.homewizard.internal;
+package org.openhab.binding.homewizard.internal.handler;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,6 +18,7 @@ import java.io.InputStream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.homewizard.internal.dto.StatePayload;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;

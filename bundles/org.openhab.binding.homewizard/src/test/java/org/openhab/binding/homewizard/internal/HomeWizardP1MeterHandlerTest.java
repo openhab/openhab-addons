@@ -48,7 +48,7 @@ import org.openhab.core.types.State;
  * @author Leo Siepel - Initial contribution
  */
 @NonNullByDefault
-public class HomeWizardHandlerTest {
+public class HomeWizardP1MeterHandlerTest {
 
     private static final Configuration CONFIG = createConfig();
 
@@ -61,7 +61,7 @@ public class HomeWizardHandlerTest {
     private static Thing mockThing() {
         final Thing thing = mock(Thing.class);
         when(thing.getUID())
-                .thenReturn(new ThingUID(HomeWizardBindingConstants.THING_TYPE_P1_WIFI_METER, "homewizard-test-thing"));
+                .thenReturn(new ThingUID(HomeWizardBindingConstants.THING_TYPE_P1_METER, "homewizard-test-thing"));
         when(thing.getConfiguration()).thenReturn(CONFIG);
 
         final List<Channel> channelList = Arrays.asList(
@@ -95,8 +95,9 @@ public class HomeWizardHandlerTest {
         return channel;
     }
 
-    private static HomeWizardHandlerMock createAndInitHandler(final ThingHandlerCallback callback, final Thing thing) {
-        final HomeWizardHandlerMock handler = spy(new HomeWizardHandlerMock(thing));
+    private static HomeWizardP1MeterHandlerMock createAndInitHandler(final ThingHandlerCallback callback,
+            final Thing thing) {
+        final HomeWizardP1MeterHandlerMock handler = spy(new HomeWizardP1MeterHandlerMock(thing));
 
         try {
             doReturn(DataUtil.fromFile("response.json")).when(handler).getData();
@@ -125,7 +126,7 @@ public class HomeWizardHandlerTest {
     public void testUpdateChannels() {
         final Thing thing = mockThing();
         final ThingHandlerCallback callback = mock(ThingHandlerCallback.class);
-        final HomeWizardHandler handler = createAndInitHandler(callback, thing);
+        final HomeWizardP1MeterHandlerMock handler = createAndInitHandler(callback, thing);
 
         try {
             verify(callback).statusUpdated(eq(thing), argThat(arg -> arg.getStatus().equals(ThingStatus.UNKNOWN)));
