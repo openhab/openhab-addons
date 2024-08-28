@@ -107,6 +107,7 @@ url=jdbc:oracle:thin:@dbname?TNS_ADMIN=./dbname_tns_admin_folder
 user=openhab
 password=openhab_password
 ```
+
 The `TNS_ADMIN` parameter points to the directory where the the `tnsnames.ora`file, `ojdbc.properties` file and key files (from the ADB wallet download) are located.
 Other Oracle DB setups may require different connection parameters.
 
