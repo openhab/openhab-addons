@@ -1021,6 +1021,22 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
         }));
     }
 
+    protected ChannelUpdateHandler defaultChildLockStateChannelUpdateHandler() {
+        return (channelUID, cache) -> updateState(channelUID, cache.putIfAbsentAndGet(channelUID, () -> {
+            Optional<HomeConnectApiClient> apiClient = getApiClient();
+            if (apiClient.isPresent()) {
+                Data data = apiClient.get().getChildLock(getThingHaId());
+                if (data.getValue() != null) {
+                    return STATE_DOOR_OPEN.equals(data.getValue()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                } else {
+                    return UnDefType.UNDEF;
+                }
+            } else {
+                return UnDefType.UNDEF;
+            }
+        }));
+    }
+
     protected ChannelUpdateHandler defaultPowerStateChannelUpdateHandler() {
         return (channelUID, cache) -> updateState(channelUID, cache.putIfAbsentAndGet(channelUID, () -> {
             Optional<HomeConnectApiClient> apiClient = getApiClient();

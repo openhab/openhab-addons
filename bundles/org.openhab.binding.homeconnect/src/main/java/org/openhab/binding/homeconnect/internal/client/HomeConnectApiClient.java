@@ -640,6 +640,7 @@ public class HomeConnectApiClient {
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         putSettings(haId, new Data(SETTING_CHILD_LOCK, state, null));
     }
+
     /**
      * Get the available options of a program.
      *

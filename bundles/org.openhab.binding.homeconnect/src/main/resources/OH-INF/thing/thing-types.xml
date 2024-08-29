@@ -124,6 +124,7 @@
 			<channel id="basic_actions_state" typeId="basic_actions_state"/>
 			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
 			<channel id="program_progress_state" typeId="program_progress_state"/>
+			<channel id="child_lock" typeId="child_lock"/>
 		</channels>
 		<representation-property>haId</representation-property>
 		<config-description>
@@ -500,6 +501,13 @@
 			</options>
 		</state>
 		<autoUpdatePolicy>veto</autoUpdatePolicy>
+	</channel-type>
+	<channel-type id="child_lock" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Child lock</label>
+		<description>This activates the child lock of the home appliance. (If
+			appliance supports child lock)</description>
+		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="laundry_care_washer_idos1" advanced="true">
 		<item-type>Switch</item-type>
