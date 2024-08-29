@@ -58,16 +58,15 @@ See [DateTime](#date-time) section for more information.
 | Name            | Type    | Description                                            | Default         | Required | Advanced |
 |-----------------|---------|--------------------------------------------------------|-----------------|----------|----------|
 | resourceId      | text    | Resource Id of Solcast rooftop site                    | N/A             | yes      | no       |
-| refreshInterval | integer | Forecast Refresh Interval in minutes                   | 120             | yes      | no       |
-| refreshManual   | boolean | Manual Forecast Refresh                                | false           | no       | yes      |
+| refreshInterval | integer | Forecast Refresh Interval in minutes (0 = disable automatic refresh)                   | 120             | yes      | no       |
 
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
 `refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
 If you have 25 free calls per day, each plane needs 2 calls per update a refresh interval of 120 minutes will result in 24 calls per day.
 
-`refreshManual` gives full control of forecast update to the user if set to `true`.
-No update will be triggered by the binding so you need to take care updating after startup and throttling of API. 
+With `refreshInterval = 0` the forecast data will not be updated by binding.
+This gives the user the possibility to define an own update strategy in rules.
 See [manual update rule example](#solcast-manual-update) to update Solcast forecast data 
 
 - after startup
@@ -366,14 +365,14 @@ end
 ### Solcast manual update
 
 ```java
-rule "EMS PV Daylight End"
+rule "Daylight End"
     when
         Channel "astro:sun:local:daylight#event" triggered END
     then
         PV_Daytime.postUpdate(OFF) // switch item holding daytime state        
 end
 
-rule "EMS PV Daylight Start"
+rule "Daylight Start"
     when
         Channel "astro:sun:local:daylight#event" triggered START
     then

@@ -681,7 +681,7 @@ class SolcastTest {
     @Test
     void testRefreshManual() {
         Map<String, Object> manualConfiguration = new HashMap<>();
-        manualConfiguration.put("refreshManual", true);
+        manualConfiguration.put("refreshInterval", 0);
 
         BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITE, "bridge");
         SolcastBridgeHandler scbh = new SolcastBridgeHandler(bi, new TimeZP());
@@ -715,7 +715,7 @@ class SolcastTest {
         assertEquals(Instant.MAX, scph2.getSolarForecasts().get(0).getForecastBegin(), "Plane 2 forecast begin");
         assertEquals(Instant.MIN, scph2.getSolarForecasts().get(0).getForecastEnd(), "Plane 2 forecast begin");
 
-        manualConfiguration.put("refreshManual", false);
+        manualConfiguration.put("refreshInterval", 5);
         scph1.handleConfigurationUpdate(manualConfiguration);
         scph1.initialize();
         scph2.handleConfigurationUpdate(manualConfiguration);
