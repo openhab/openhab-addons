@@ -1845,7 +1845,7 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="precip-cover-channel">
-		<item-type>Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Precip Cover</label>
 		<description>The proportion of hours where there was non-zero precipitation</description>
 		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
