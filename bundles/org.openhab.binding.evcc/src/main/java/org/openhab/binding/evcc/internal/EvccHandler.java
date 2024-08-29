@@ -576,7 +576,7 @@ public class EvccHandler extends BaseThingHandler {
         removeChannel("vehicleCapacity", channelGroup);
 
         if (vehicleName != null) {
-            createChannelsVehicle(vehicleName.replace(":","-"), channelGroup);
+            createChannelsVehicle(vehicleName, channelGroup);
         }
     }
 
