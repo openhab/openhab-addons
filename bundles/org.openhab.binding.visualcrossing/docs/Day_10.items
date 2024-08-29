@@ -1,0 +1,39 @@
+// Day10
+Group Total_Weather_Data_Day10 "Day T+10" (Total_Weather_Data) [ "Equipment" ] 
+String Day10_DateTime "Time" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#datetime" }
+DateTime Day10_Timestamp "Timestamp" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#timestamp" }
+Number:Temperature Day10_Temperature "Temperature" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#temperature" }
+Number:Temperature Day10_Temperature_Min "Minimum Temperature" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#temperature-min" }
+Number:Temperature Day10_Temperature_Max "Maximum Temperature" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#temperature-max" }
+Number:Temperature Day10_FeelsLike "Feels Like" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#feels-like" }
+Number:Temperature Day10_FeelsLike_Min "Feels Like (min)" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#feels-like-min" }
+Number:Temperature Day10_FeelsLike_Max "Feels Like (max)" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#feels-like-max" }
+Number:Temperature Day10_Dew "Dew Point" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#dew" }
+Number Day10_Humidity "Humidity" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#humidity" }
+Number:Length Day10_Precip "Precipitation" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#precip" }
+Number Day10_Precip_Prob "Precipitation Probability" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#precip-prob" }
+String Day10_Precip_Type "Precipitation Type" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#precip-type" }
+Number Day10_Precip_Cover "Precipitation Cover" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#precip-cover" }
+Number:Length Day10_Snow "Snow" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#snow" }
+Number:Length Day10_Snow_Depth "Snow Depth" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#snow-depth" }
+Number:Speed Day10_Wind_Gust "Wind Gust" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#wind-gust" }
+Number:Speed Day10_Wind_Speed "Wind Speed" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#wind-speed" }
+Number:Angle Day10_Wind_Dir "Wind Direction" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#wind-dir" }
+Number:Pressure Day10_Pressure "Pressure" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#pressure" }
+Number Day10_Cloud_Cover "Cloud Cover" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#cloud-cover" }
+Number:Length Day10_Visibility "Visibility" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#visibility" }
+Number:Intensity Day10_Solar_Radiation "Solar Radiation" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#solar-radiation" }
+Number Day10_Solar_Energy "Solar Energy" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#solar-energy" }
+Number Day10_UV_Index "UV Index" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#uv-index" }
+String Day10_Sunrise "Sunrise" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#sunrise" }
+DateTime Day10_Sunrise_Epoch "Sunrise Epoch" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#sunrise-epoch" }
+String Day10_Sunset "Sunset" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#sunset" }
+DateTime Day10_Sunset_Epoch "Sunset Epoch" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#sunset-epoch" }
+Number Day10_Moon_Phase "Moon Phase" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#moon-phase" }
+String Day10_Conditions "Conditions" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#conditions" }
+String Day10_Description "Description" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#description" }
+String Day10_Icon "Icon" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#icon" }
+String Day10_Stations "Stations" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#stations" }
+String Day10_Source "Source" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#source" }
+Number Day10_Severe_Risk "Severe Risk" (Total_Weather_Data_Day10)["Point"] { channel="visualcrossing:weather:default_config:day01#severe-risk" }
+
