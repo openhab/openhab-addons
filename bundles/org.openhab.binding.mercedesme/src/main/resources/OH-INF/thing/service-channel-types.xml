@@ -7,10 +7,13 @@
 		<item-type>Number</item-type>
 		<label>Starter Battery Status</label>
 		<state readOnly="true">
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/StarterBatteryState.swift -->
 			<options>
 				<option value="0">Green</option>
 				<option value="1">Yellow</option>
 				<option value="2">Red</option>
+				<option value="3">Service Disabled</option>
+				<option value="4">Vehicle Not Available </option>
 			</options>
 		</state>
 	</channel-type>
@@ -43,6 +46,14 @@
 		<item-type>Number</item-type>
 		<label>Tire Pressure Warnings</label>
 		<state readOnly="true">
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/TireTypes.swift#L51 -->
+			<options>
+				<option value="0">No warning</option>
+				<option value="1">Soft warning</option>
+				<option value="2">Low warning</option>
+				<option value="3">Deflation</option>
+				<option value="4">Unknown warning</option>
+			</options>
 		</state>
 	</channel-type>
 	<channel-type id="service-days">

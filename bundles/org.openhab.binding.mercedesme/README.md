@@ -1,6 +1,6 @@
 # MercedesMe Binding
 
-This binding provides access to your Mercedes Benz vehicle like _Mercedes Me_ Smartphone App .
+This binding provides access to your Mercedes Benz vehicle like _Mercedes Me_ Smartphone App.
 
 ## Installation Instructions
 
@@ -41,8 +41,8 @@ Bridge needs configuration in order to connect properly to your Mercedes Me acco
 | pin             | text    | Mercedes Me Smartphone App PIN          | N/A         | no       | no       |
 | region          | text    | Your region                             | EU          | yes      | no       |
 | refreshInterval | integer | API refresh interval                    | 15          | yes      | no       |
-| callbackIP      | text    | Your region                             | N/A         | yes      | yes      |
-| callbackPort    | integer | API refresh interval                    | N/A         | yes      | yes      |
+| callbackIP      | text    | IP Address of openHAB Device            | N/A         | yes      | yes      |
+| callbackPort    | integer | Port Number of openHAB Device           | N/A         | yes      | yes      |
 
 Set `region` to your location
 
@@ -134,10 +134,6 @@ Channels are separated in groups:
 | [trip](#trip)                    | Trip Data                                         |
 | [position](#position)            | Positioning Data                                  |
 | [tires](#tires)                  | Tire Information                                  |
-
-## Actions
-
-See [Vehicle Actions](#vehicle-actions) which can be used in rules.
 
 ### Vehicle
 
@@ -327,14 +323,16 @@ States and controls are depending on your vehicle capabilities.
 
 | Channel             | Type                 |  Description                     | Read | Write |
 |---------------------|----------------------|----------------------------------|------|-------|
-| front-left          | Switch               |  Front Left Seat Climatization   | X    |       |
-| front-right         | Switch               |  Front Left Seat Climatization   | X    |       |
-| rear-left           | Switch               |  Front Left Seat Climatization   | X    |       |
-| rear-right          | Switch               |  Front Left Seat Climatization   | X    |       |
-| zone                | Number               |  Selected Climatization Zone     | X    | X     |
-| temperature         | Number:Temperature   |  Desired Temperature for Zone    | X    | X     |
-| activate            | Switch               |  Start/Stop Climatization        | X    | X     |
+| front-left          | Switch               |  AC Seat Front Left              | X    |       |
+| front-right         | Switch               |  AC Seat Front Right             | X    |       |
+| rear-left           | Switch               |  AC Seat Rear Left               | X    |       |
+| rear-right          | Switch               |  AC Seat Rear Right              | X    |       |
+| zone                | Number               |  AC Zone                         | X    | X     |
+| temperature         | Number:Temperature   |  AC Desired Temperature          | X    | X     |
+| activate            | Switch               |  AC Precondition Control         | X    | X     |
+| ac-status           | Number               |  AC Precondition Status          | X    |       |
 | aux-heat            | Switch               |  Auxiliary Heating               | X    | X     |
+| aux-status          | Number               |  Auxiliary Status                | X    |       |
 
 #### Zone Mapping
 
@@ -374,13 +372,34 @@ Fahrenheit
 
 Triggers `TEMPERATURECONFIGURE` from [Command Name Mapping](#command-name-mapping)
 
-#### Activate Switch
+#### AC Precondition Control 
 
 Triggers `PRECONDSTART` and `PRECONDSTOP` from [Command Name Mapping](#command-name-mapping)
  
-#### Auxiliary Heat Switch
+#### AC Precondition Status Mapping
+
+- 0 : No Request
+- 1 : Battery or Fuel Low
+- 2 : Available after Restart Engine
+- 3 : Not Possible, Charging not Finished
+- 4 : General Error</option>
+ 
+#### Auxiliary Heating Switch
 
 Triggers `AUXHEATSTART` and `AUXHEATSTOP` from [Command Name Mapping](#command-name-mapping)
+
+#### Auxiliary Status Mapping
+
+- 0 : None
+- 1 : No Budget
+- 2 : Budget Empty
+- 4 : System Error
+- 8 : Running Error
+- 16 : Fuel on Reserve
+- 32 : Reserve Reached
+- 64 : Low Voltage
+- 128 : Low Voltage Operation
+- 256 : Communication Error
 
 ### Service
 
@@ -408,6 +427,16 @@ Traffic light status of the starter battery
 - 0 : Green
 - 1 : Yellow
 - 2 : Red
+- 3 : Service Disabled
+- 4 : Vehicle Not Available
+
+#### Tire Pressure Warnings Mapping
+
+- 0 : No warning
+- 1 : Soft warning
+- 2 : Low warning
+- 3 : Deflation
+- 4 : Unknown warning
 
 ### Range
 
@@ -449,6 +478,8 @@ States and controls are depending on your vehicle capabilities.
 | coupler-dc          | Number               |  Coupler DC Status                     | X    |       |
 | coupler-lock        | Number               |  Coupler Lock Status                   | X    |       |
 | active              | Switch               |  Charging Active                       | X    |       |
+| status              | Number               |  Charge Status                         | X    |       |
+| error               | Number               |  Charge Error                          | X    |       |
 | power               | Number:Power         |  Current Charging Power                | X    |       |
 | end-time            | DateTime             |  Estimated Charging End                | X    |       |
 | program             | Number               |  Selected Charge Program               | X    | X     |
@@ -474,6 +505,25 @@ States and controls are depending on your vehicle capabilities.
 
 - 0 : Locked
 - 1 : Unlocked
+
+#### Charge Status Mapping
+
+- 0 : Charging
+- 1 : End of Charge
+- 2 : Charge Break
+- 3 : Charge Cable Unplugged
+- 4 : Charging Failure
+- 5 : Slow Charging
+- 6 : Fast Charging
+- 7 : Discharging
+
+#### Charge Error Mapping
+
+- 0 : None
+- 1 : Cable
+- 2 : Charging Disorder
+- 3 : Charging Station
+- 4 : Charging Type
 
 #### Program Mapping
 
@@ -540,10 +590,31 @@ In your Mercedes Me App front page
 
 <img src="./doc/ElectricConsumptionUnits.png" width="300" height="300"/>
 
-### Trip Duration
+#### Trip Duration
 
 Shown as String in format `d days, HH:mm`.
 If duration is below 24 hours format is `HH:mm`. 
+
+### ECO Score
+
+Group name: `eco`
+
+All channels `read-only`
+
+| Channel             | Type                   |  Description            |
+|---------------------|------------------------|-------------------------|
+| accel               | Number:Dimensionless   | Acceleration Score      |
+| coasting            | Number:Dimensionless   | Coasting Score          |
+| constant            | Number:Dimensionless   | Constant Score          |
+| bonus               | Number:Length          | Bonus Range             |
+
+The Mercedes ECO Score is aimed to improve your driving behavior.
+
+- Acceleration Score: smooth acceleration e.g. use *eco driving setting*
+- Coasting Score: ideally use only *recuperation* instead of brake
+- Constant Score: drive at constant speed e.g. use *cruise control*
+- Bonus Range: assumed bonus range vs. a *very sportive driver*
+
 
 ### Position
 
@@ -553,7 +624,17 @@ Group name: `position`
 |---------------------|----------------------|-------------------------------------------------|------|-------|
 | heading             | Number:Angle         |  Heading of Vehicle                             | X    |       |
 | gps                 | Point                |  GPS Location Point of Vehicle                  | X    |       |
+| status              | Number               |  Status Positioning                             | X    |       |
 | signal              | Number               |  Request Light or Horn Signal to find Vehicle   |      |  X    |
+
+#### Status Mapping
+
+- 0 : Unknown
+- 1 : Service Inactive
+- 2 : Tracking Inactive
+- 3 : Parked
+- 4 : Ignition On
+- 5 : Ok
 
 #### Signal Settings
 
@@ -585,11 +666,18 @@ All channels `read-only`
 
 #### Sensor Available Mapping
 
-- Not available yet
+- 0 : All Sensors Located
+- 1 : 1-3 Sensors are Missing
+- 2 : All Sensors Missing
+- 3 : System Error
 
 #### Tire Marker Mapping
 
-- Not available yet
+- 0 : No warning
+- 1 : Soft warning
+- 2 : Low warning
+- 3 : Deflation
+- 4 : Unknown warning
 
 ### Commands
 

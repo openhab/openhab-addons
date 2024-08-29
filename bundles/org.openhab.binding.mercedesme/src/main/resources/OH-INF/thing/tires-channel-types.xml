@@ -26,12 +26,21 @@
 	<channel-type id="sensor-available">
 		<item-type>Number</item-type>
 		<label>Tire Sensor Available</label>
-		<state readOnly="true"/>
+		<state readOnly="true">
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/TireTypes.swift#L77 -->
+			<options>
+				<option value="0">All Sensors Located</option>
+				<option value="1">1-3 Sensors are Missing</option>
+				<option value="2">All Sensors Missing</option>
+				<option value="3">System Error</option>
+			</options>
+		</state>
 	</channel-type>
 	<channel-type id="marker-front-right">
 		<item-type>Number</item-type>
 		<label>Tire Warning Front Right</label>
 		<state readOnly="true">
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/TireTypes.swift#L51 -->
 			<options>
 				<option value="0">No warning</option>
 				<option value="1">Soft warning</option>
@@ -45,6 +54,7 @@
 		<item-type>Number</item-type>
 		<label>Tire Warning Rear Right</label>
 		<state readOnly="true">
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/TireTypes.swift#L51 -->
 			<options>
 				<option value="0">No warning</option>
 				<option value="1">Soft warning</option>
@@ -58,6 +68,7 @@
 		<item-type>Number</item-type>
 		<label>Tire Warning Front Left</label>
 		<state readOnly="true">
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/TireTypes.swift#L51 -->
 			<options>
 				<option value="0">No warning</option>
 				<option value="1">Soft warning</option>
@@ -71,6 +82,7 @@
 		<item-type>Number</item-type>
 		<label>Tire Warning Rear Left</label>
 		<state readOnly="true">
+			<!-- see https://github.com/mercedes-benz/MBSDK-CarKit-iOS/blob/master/MBCarKit/MBCarKit/Common/Enums/Status/TireTypes.swift#L51 -->
 			<options>
 				<option value="0">No warning</option>
 				<option value="1">Soft warning</option>

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mercedesme.internal;
 
+import static org.openhab.binding.mercedesme.internal.Constants.*;
+
 import javax.measure.Unit;
 import javax.measure.quantity.Length;
 
@@ -56,16 +58,17 @@ public class MercedesMeMetadataAdjuster implements RegistryChangeListener<ItemCh
         if (Constants.BINDING_ID.equals(cuid.getBindingId())) {
             MetadataKey key = new MetadataKey("unit", itemName);
             switch (cuid.getId()) {
-                case Constants.GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "mileage":
-                case Constants.GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "range-electric":
-                case Constants.GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "radius-electric":
-                case Constants.GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "range-fuel":
-                case Constants.GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "radius-fuel":
-                case Constants.GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "range-hybrid":
-                case Constants.GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "radius-hybrid":
-                case Constants.GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "home-distance":
-                case Constants.GROUP_TRIP + ChannelUID.CHANNEL_GROUP_SEPARATOR + "distance":
-                case Constants.GROUP_TRIP + ChannelUID.CHANNEL_GROUP_SEPARATOR + "distance-reset":
+                case GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_MILEAGE:
+                case GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_RANGE_ELECTRIC:
+                case GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_RADIUS_ELECTRIC:
+                case GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_RANGE_FUEL:
+                case GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_RADIUS_FUEL:
+                case GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_RANGE_HYBRID:
+                case GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_RADIUS_HYBRID:
+                case GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_HOME_DISTANCE:
+                case GROUP_TRIP + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_DISTANCE:
+                case GROUP_TRIP + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_DISTANCE_RESET:
+                case GROUP_ECO + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_BONUS_RANGE:
                     if (metadataRegistry.get(key) == null) {
                         Unit<Length> lengthUnit = unitProvider.getUnit(Length.class);
                         if (ImperialUnits.FOOT.equals(lengthUnit)) {
@@ -75,17 +78,20 @@ public class MercedesMeMetadataAdjuster implements RegistryChangeListener<ItemCh
                         }
                     }
                     break;
-                case Constants.GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "soc":
-                case Constants.GROUP_CHARGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "max-soc":
-                case Constants.GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + "fuel-level":
+                case GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_SOC:
+                case GROUP_CHARGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_MAX_SOC:
+                case GROUP_RANGE + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_FUEL_LEVEL:
+                case GROUP_ECO + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_ACCEL:
+                case GROUP_ECO + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_COASTING:
+                case GROUP_ECO + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_CONSTANT:
                     if (metadataRegistry.get(key) == null) {
                         metadataRegistry.add(new Metadata(key, Units.PERCENT.getSymbol(), null));
                     }
                     break;
-                case Constants.GROUP_TIRES + ChannelUID.CHANNEL_GROUP_SEPARATOR + "pressure-front-left":
-                case Constants.GROUP_TIRES + ChannelUID.CHANNEL_GROUP_SEPARATOR + "pressure-front-right":
-                case Constants.GROUP_TIRES + ChannelUID.CHANNEL_GROUP_SEPARATOR + "pressure-rear-left":
-                case Constants.GROUP_TIRES + ChannelUID.CHANNEL_GROUP_SEPARATOR + "pressure-rear-right":
+                case GROUP_TIRES + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_PRESSURE_FRONT_LEFT:
+                case GROUP_TIRES + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_PRESSURE_FRONT_RIGHT:
+                case GROUP_TIRES + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_PRESSURE_REAR_LEFT:
+                case GROUP_TIRES + ChannelUID.CHANNEL_GROUP_SEPARATOR + OH_CHANNEL_PRESSURE_REAR_RIGHT:
                     if (metadataRegistry.get(key) == null) {
                         Unit<Length> lengthUnit = unitProvider.getUnit(Length.class);
                         if (ImperialUnits.FOOT.equals(lengthUnit)) {

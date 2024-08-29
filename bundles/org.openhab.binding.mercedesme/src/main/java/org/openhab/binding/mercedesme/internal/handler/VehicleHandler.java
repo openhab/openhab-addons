@@ -178,7 +178,9 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        accountHandler.get().unregisterVin(config.get().vin);
+        accountHandler.ifPresent(ah -> {
+            ah.unregisterVin(config.get().vin);
+        });
         super.dispose();
     }
 
