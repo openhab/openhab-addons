@@ -1,23 +1,26 @@
-<img src="images/landroid.svg">
 
 # WorxLandroid Binding
 
-This is the binding for Worx Landroid robotic lawn mowers. It connects openHAB with your WorxLandroid mower using the API and MQTT. This binding allows you to integrate, view and control supported Worx lawn mowers in the openHAB environment.
+This is the binding for Worx Landroid robotic lawn mowers. 
+It connects openHAB with your WorxLandroid mower using the API and MQTT. 
+This binding allows you to integrate, view and control supported Worx lawn mowers in the openHAB environment.
 
 ## Supported Things
 
 Currently following Things are supported:
 
-- **Bridge Worx Landroid API** Thing representing the handler for Worx API
-- One or many Things for supported **Landroid Mower**'s
+- `bridge`: **Bridge Worx Landroid API** Thing representing the handler for Worx API
+- `mower`: One or many Things for supported **Landroid Mower**'s
 
 ## Discovery
 
-A Bridge is required to connect to the Worx API. Here you can provide your credentials for your WorxLandroid account. Once the Bridge has been added Worx Landroid mowers will be discovered automatically.
+A Bridge is required to connect to the Worx API. 
+Here you can provide your credentials for your WorxLandroid account. 
+Once the Bridge has been added Worx Landroid mowers will be discovered automatically.
 
-## Binding Configuration
+## Things Configuration
 
-Following options can be set for the **Bridge Worx Landroid API**:
+The following options can be set for the `bridge`:
 
 | Property | Description                              |
 |----------|------------------------------------------|
@@ -25,22 +28,16 @@ Following options can be set for the **Bridge Worx Landroid API**:
 | password | Password to access the WorxLandroid API. |
 
 
-Following options can be set for the **Landroid Mower**:
+The following options can be set for the `mower`:
 
-| Property              | Description                                                                                             |
-|-----------------------|---------------------------------------------------------------------------------------------------------|
-| serialNumber          | Serial number of the mower                                                                              |
-| refreshStatusInterval | Interval for refreshing mower status (ONLINE/OFFLINE) and channel 'common#online' in seconds (min="30") |
-| pollingInterval       | Interval for polling in seconds (min="30" max="7200").                                                  |
+| Property              | Description                                                                                  | Default | Advanced |
+|-----------------------|----------------------------------------------------------------------------------------------|---------|----------|
+| serialNumber          | Serial number of the mower                                                                   |      -  |   No     |
+| refreshStatusInterval | Interval for refreshing mower status (ONLINE/OFFLINE) and channel 'common#online' in seconds |   3600  |  Yes     |
+| pollingInterval       | Interval for polling in seconds (min="30" max="7200").                                       |   1200  |  Yes     |
 
 
-In order to prevent a 24h ban from Worx, the following recommended settings seem to work:
-
-| Property              | Value |
-|-----------------------|-------|
-| refreshStatusInterval | 1200  |
-| pollingInterval       | 3600  |
-
+Default values for `refreshStatusInterval` and `pollingInterval` are the recommended settings in order to prevent a 24h ban from Worx.
 Lower polling and refresh values will likely result in a 24h ban for your account.
 
 ## Channels
@@ -140,123 +137,7 @@ As second step you are able to set time in percent and split in parts of 10 betw
 | edgecut  | Switch      | sunday2#edgecut  |
 
 
-##### monday (Slot 1)
-
-| Channel  | Type        | ChannelName     |
-|----------|-------------|-----------------|
-| enable   | Switch      | monday#enable   |
-| time     | DateTime    | monday#time     |
-| duration | Number:Time | monday#duration |
-| edgecut  | Switch      | monday#edgecut  |
-
-
-##### monday2 (Slot 2, ONLY IF SUPPORTED)
-
-| Channel  | Type        | ChannelName      |
-|----------|-------------|------------------|
-| enable   | Switch      | monday2#enable   |
-| time     | DateTime    | monday2#time     |
-| duration | Number:Time | monday2#duration |
-| edgecut  | Switch      | monday2#edgecut  |
-
-
-##### tuesday (Slot 1)
-
-| Channel  | Type        | ChannelName      |
-|----------|-------------|------------------|
-| enable   | Switch      | tuesday#enable   |
-| time     | DateTime    | tuesday#time     |
-| duration | Number:Time | tuesday#duration |
-| edgecut  | Switch      | tuesday#edgecut  |
-
-
-##### tuesday2 (Slot 2, ONLY IF SUPPORTED)
-
-| Channel  | Type        | ChannelName       |
-|----------|-------------|-------------------|
-| enable   | Switch      | tuesday2#enable   |
-| time     | DateTime    | tuesday2#time     |
-| duration | Number:Time | tuesday2#duration |
-| edgecut  | Switch      | tuesday2#edgecut  |
-
-
-##### wednesday (Slot 1)
-
-| Channel  | Type        | ChannelName        |
-|----------|-------------|--------------------|
-| enable   | Switch      | wednesday#enable   |
-| time     | DateTime    | wednesday#time     |
-| duration | Number:Time | wednesday#duration |
-| edgecut  | Switch      | wednesday#edgecut  |
-
-
-##### wednesday2 (Slot 2, ONLY IF SUPPORTED)
-
-| Channel  | Type        | ChannelName         |
-|----------|-------------|---------------------|
-| enable   | Switch      | wednesday2#enable   |
-| time     | DateTime    | wednesday2#time     |
-| duration | Number:Time | wednesday2#duration |
-| edgecut  | Switch      | wednesday2#edgecut  |
-
-
-##### thursday (Slot 1)
-
-| Channel  | Type        | ChannelName       |
-|----------|-------------|-------------------|
-| enable   | Switch      | thursday#enable   |
-| time     | DateTime    | thursday#time     |
-| duration | Number:Time | thursday#duration |
-| edgecut  | Switch      | thursday#edgecut  |
-
-
-##### thursday2 (Slot 2, ONLY IF SUPPORTED)
-
-| Channel  | Type        | ChannelName        |
-|----------|-------------|--------------------|
-| enable   | Switch      | thursday2#enable   |
-| time     | DateTime    | thursday2#time     |
-| duration | Number:Time | thursday2#duration |
-| edgecut  | Switch      | thursday2#edgecut  |
-
-
-##### friday (Slot 1)
-
-| Channel  | Type        | ChannelName     |
-|----------|-------------|-----------------|
-| enable   | Switch      | friday#enable   |
-| time     | DateTime    | friday#time     |
-| duration | Number:Time | friday#duration |
-| edgecut  | Switch      | friday#edgecut  |
-
-
-##### friday2 (Slot 2, ONLY IF SUPPORTED)
-
-| Channel  | Type        | ChannelName      |
-|----------|-------------|------------------|
-| enable   | Switch      | friday2#enable   |
-| time     | DateTime    | friday2#time     |
-| duration | Number:Time | friday2#duration |
-| edgecut  | Switch      | friday2#edgecut  |
-
-##### saturday (Slot 1)
-
-| Channel  | Type        | ChannelName       |
-|----------|-------------|-------------------|
-| enable   | Switch      | saturday#enable   |
-| time     | DateTime    | saturday#time     |
-| duration | Number:Time | saturday#duration |
-| edgecut  | Switch      | saturday#edgecut  |
-
-
-##### saturday2 (Slot 2, ONLY IF SUPPORTED)
-
-| Channel  | Type        | ChannelName        |
-|----------|-------------|--------------------|
-| enable   | Switch      | saturday2#enable   |
-| time     | DateTime    | saturday2#time     |
-| duration | Number:Time | saturday2#duration |
-| edgecut  | Switch      | saturday2#edgecut  |
+And so on for each day of the week along with the Slot 2 when supported.
 
 
 ##### one-time
@@ -317,10 +198,19 @@ As second step you are able to set time in percent and split in parts of 10 betw
 
 ## Examples
 
+### $OPENHAB_CONF/items/landroid.things
+
+```xtend
+Bridge worxlandroid:bridge:api "Worx Api" [ username="xxxxYYYxxxx", password="dldkssdjldj" ] {
+    Thing mower lanmower "Worx M600" [ serialNumber="sdmldksmdskmlsd" ]
+}
+
+```
+
 
 ### $OPENHAB_CONF/items/landroid.items
 
-```
+```java
 String                     MyMower                                 "MyMower [%s]"
 String                     LandroidMowerCommonStatus               "Status code"               {channel="worxlandroid:mower:MyWorxBridge:mymower:common#status"}
 String                     LandroidMowerCommonError                "Error code"                {channel="worxlandroid:mower:MyWorxBridge:mymower:common#error"}
@@ -434,7 +324,7 @@ Number                     LandroidMowerWifiWifiQuality            "Wifi quality
 
 ### $OPENHAB_CONF/sitemaps/landroid.sitemap
 
-```
+```perl
 sitemap landroid label="Landroid"
 {
     Frame label="Worx Landroid Mower" {
@@ -594,7 +484,7 @@ end
 
 ```
 
-### $OPENHAB_CONF/transform/landroid_error_de.map
+### $OPENHAB_CONF/transform/landroid_error_en.map
 
 ```
 
@@ -621,7 +511,7 @@ MOWER_OUTSIDE_WIRE=mower outside wire
 
 ```
 
-### $OPENHAB_CONF/transform/landroid_status_de.map
+### $OPENHAB_CONF/transform/landroid_status_en.map
 
 ```
 
