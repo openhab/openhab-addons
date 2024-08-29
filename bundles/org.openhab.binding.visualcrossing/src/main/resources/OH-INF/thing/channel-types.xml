@@ -1830,10 +1830,10 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="precip-prob-channel">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Precip Prob</label>
 		<description>The likelihood of measurable precipitation ranging from 0% to 100%</description>
-		<state readOnly="true" min="0" max="100" pattern="%.0f %unit%"/>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="precip-type-channel">
 		<item-type>String</item-type>
@@ -1845,10 +1845,10 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="precip-cover-channel">
-		<item-type unitHint="%">Number</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Precip Cover</label>
 		<description>The proportion of hours where there was non-zero precipitation</description>
-		<state readOnly="true" min="0" max="100" pattern="%.0f %unit%"/>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="snow-channel">
 		<item-type>Number:Length</item-type>
@@ -1870,11 +1870,11 @@
 		<state readOnly="true" pattern="%.2f %unit%"/>
 	</channel-type>
 	<channel-type id="cloud-cover-channel">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Cloud Cover</label>
 		<description>How much of the sky is covered in cloud ranging from 0–100%</description>
 		<category>Sun_Clouds</category>
-		<state readOnly="true" min="0" max="100" pattern="%.0f %unit%"/>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 	<channel-type id="solar-radiation-channel">
 		<item-type>Number:Intensity</item-type>
@@ -1961,7 +1961,7 @@
 		<state readOnly="true" min="0" max="1" pattern="%.1f"/>
 	</channel-type>
 	<channel-type id="severe-risk-channel">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Severe Risk</label>
 		<description>
 			A value between 0 and 100 representing the risk of convective storms (e.g. thunderstorms, hail and
@@ -1969,7 +1969,7 @@
 			potential energy (CAPE) and convective inhibition (CIN), predicted rain and wind. Typically, a severe risk value less
 			than 30 indicates a low risk, between 30 and 70 a moderate risk and above 70 a high risk.
 		</description>
-		<state readOnly="true" min="0" max="100" pattern="%.0f %unit%"/>
+		<state readOnly="true" min="0" max="100" pattern="%.0f %%"/>
 	</channel-type>
 	<!-- ❌ Channels ❌ -->
 </thing:thing-descriptions>
