@@ -63,7 +63,7 @@
 	<!-- Channel Types -->
 	<channel-type id="state">
 		<item-type>String</item-type>
-		<label>System State</label><!-- Use uppercase words, except prepositions. 2-3 words, max 25 chars -->
+		<label>System State</label>
 		<description>FENECON system state</description>
 		<category>Text</category>
 		<state readOnly="true" pattern="%s">
