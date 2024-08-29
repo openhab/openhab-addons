@@ -576,7 +576,7 @@ public class EvccHandler extends BaseThingHandler {
         removeChannel("vehicleCapacity", channelGroup);
 
         if (vehicleName != null) {
-            createChannelsVehicle(vehicleName, channelGroup);
+            createChannelsVehicle(vehicleName.replace(":","-"), channelGroup);
         }
     }
 
@@ -631,7 +631,6 @@ public class EvccHandler extends BaseThingHandler {
             } else {
                 channelGroup = loadpointName + CHANNEL_GROUP_ID_CURRENT;
             }
-
             createChannel(CHANNEL_VEHICLE_MIN_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_MIN_SOC,
                     "Number:Dimensionless");
             createChannel(CHANNEL_VEHICLE_LIMIT_SOC, channelGroup, CHANNEL_TYPE_UID_VEHICLE_LIMIT_SOC,
