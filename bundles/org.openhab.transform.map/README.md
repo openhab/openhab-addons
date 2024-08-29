@@ -26,7 +26,13 @@ Instead of providing the file name from which to load, the mapping table can be 
 The inline map entries are delimited with semicolons (`;`) by default.
 For example, the following map function translates open/closed to ON/OFF: `|open=ON; closed=OFF`
 
-The delimiter can be changed by adding `?delimiter=` immediately after the pipe character `|`, and ended with a literal semicolon, e.g. `|?delimiter=,;online=ON,offline=OFF`.
+The delimiters can be changed by adding `?delimiter=` immediately after the pipe character `|`.
+Some examples of changing to different delimiters:
+
+- `|?delimiter=,online=ON,offline=OFF`
+- `|?delimiter=|online=ON|offline=OFF`
+- `|?delimiter=##online=ON##offline=OFF`
+
 To use `?delimiter` as an actual map key, do not place it at the beginning of the map.
 
 ## Example

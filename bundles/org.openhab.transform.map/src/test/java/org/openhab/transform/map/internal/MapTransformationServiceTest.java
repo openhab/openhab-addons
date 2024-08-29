@@ -173,7 +173,12 @@ public class MapTransformationServiceTest extends JavaTest {
 
     @Test
     public void customSeparatorTest() throws TransformationException {
-        String transformation = "|?delimiter=,;key1=value1;with;semicolons,key2;too=value2,?delimiter=value3";
+        String transformation = "|?delimiter=,key1=value1;with;semicolons,key2;too=value2,?delimiter=value3";
+        assertEquals("value1;with;semicolons", processor.transform(transformation, "key1"));
+        assertEquals("value2", processor.transform(transformation, "key2;too"));
+        assertEquals("value3", processor.transform(transformation, "?delimiter"));
+
+        transformation = "|?delimiter=||key1=value1;with;semicolons||key2;too=value2||?delimiter=value3";
         assertEquals("value1;with;semicolons", processor.transform(transformation, "key1"));
         assertEquals("value2", processor.transform(transformation, "key2;too"));
         assertEquals("value3", processor.transform(transformation, "?delimiter"));

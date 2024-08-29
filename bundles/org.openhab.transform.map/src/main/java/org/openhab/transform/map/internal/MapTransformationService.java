@@ -64,7 +64,7 @@ public class MapTransformationService
     private static final Set<String> SUPPORTED_CONFIGURATION_TYPES = Set.of("map");
     private static final String INLINE_MAP_DEFAULT_DELIMITER = ";";
     private static final Pattern INLINE_MAP_CONFIG_PATTERN = Pattern
-            .compile("\\s*\\|(?:\\?delimiter=(?<delimiter>.+?);)?(?<map>.+)", Pattern.DOTALL);
+            .compile("\\s*\\|(?:\\?delimiter=(?<delimiter>\\W+?))?(?<map>.+)", Pattern.DOTALL);
 
     private final Logger logger = LoggerFactory.getLogger(MapTransformationService.class);
     private final TransformationRegistry transformationRegistry;
