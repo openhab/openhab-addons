@@ -614,6 +614,33 @@ public class HomeConnectApiClient {
     }
 
     /**
+     * Get child lock state of device.
+     *
+     * @param haId home appliance id
+     * @return {@link Data}
+     * @throws CommunicationException API communication exception
+     * @throws AuthorizationException oAuth authorization exception
+     * @throws ApplianceOfflineException appliance is not connected to the cloud
+     */
+    public Data getChildLock(String haId)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        return getSetting(haId, SETTING_CHILD_LOCK);
+    }
+
+    /**
+     * Set child lock state of device.
+     *
+     * @param haId home appliance id
+     * @param state target state
+     * @throws CommunicationException API communication exception
+     * @throws AuthorizationException oAuth authorization exception
+     * @throws ApplianceOfflineException appliance is not connected to the cloud
+     */
+    public void setChildLockState(String haId, String state)
+            throws CommunicationException, AuthorizationException, ApplianceOfflineException {
+        putSettings(haId, new Data(SETTING_CHILD_LOCK, state, null));
+    }
+    /**
      * Get the available options of a program.
      *
      * @param haId home appliance id

@@ -62,8 +62,7 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
         handlers.put(CHANNEL_ACTIVE_PROGRAM_STATE, defaultActiveProgramStateUpdateHandler());
         handlers.put(CHANNEL_SELECTED_PROGRAM_STATE,
                 updateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
-        handlers.put(CHANNEL_CHILD_LOCK,
-                getAndUpdateProgramOptionsStateDescriptionsAndSelectedProgramStateUpdateHandler());
+        handlers.put(CHANNEL_CHILD_LOCK, defaultBooleanEventHandler());
 
         // register washer specific handlers
         handlers.put(CHANNEL_WASHER_SPIN_SPEED,
