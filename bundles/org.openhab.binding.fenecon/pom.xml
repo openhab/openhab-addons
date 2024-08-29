@@ -14,15 +14,4 @@
 
   <name>openHAB Add-ons :: Bundles :: FENECON Binding</name>
 
-  <inceptionYear>2024</inceptionYear>
-
-  <developers>
-    <developer>
-      <id>nixoso</id>
-      <name>Philipp Schneider</name>
-      <email>philipp.schneider@nixo-soft.de</email>
-      <timezone>Europe/​Berlin</timezone>
-    </developer>
-  </developers>
-
 </project>
