@@ -19,7 +19,10 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Properties;
@@ -87,6 +90,7 @@ public class TibberHandler extends BaseThingHandler {
     private String rtEnabled = "false";
     private @Nullable String subscriptionURL;
     private @Nullable String versionString;
+    private @Nullable LocalDateTime lastWebSocketMessage;
 
     public TibberHandler(Thing thing) {
         super(thing);
@@ -170,7 +174,10 @@ public class TibberHandler extends BaseThingHandler {
                 }
 
                 if (liveChannelsLinked() && "true".equals(rtEnabled)) {
+                    logger.debug("Pulse associated with HomeId: Live stream will be started");
                     startLiveStream();
+                } else {
+                    logger.debug("No Pulse associated with HomeId: No live stream will be started");
                 }
             } else {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
@@ -320,8 +327,17 @@ public class TibberHandler extends BaseThingHandler {
 
     public void updateRequest() throws IOException {
         getURLInput(BASE_URL);
-        if (liveChannelsLinked() && "true".equals(rtEnabled) && !isConnected()) {
-            startLiveStream();
+        if (liveChannelsLinked() && "true".equals(rtEnabled)) {
+            if (lastWebSocketMessage != null && lastWebSocketMessage.plusMinutes(5).isBefore(LocalDateTime.now())) {
+                logger.debug("Last data from tibber on {}. Reconnecting WebSocket.", lastWebSocketMessage);
+                close();
+                startLiveStream();
+            } else if (isConnected()) {
+                logger.debug("Sending Ping Message");
+                session.getRemote().sendPing(ByteBuffer.wrap("openHAB Ping".getBytes(StandardCharsets.UTF_8)));
+            } else if (!isConnected()) {
+                startLiveStream();
+            }
         }
     }
 
@@ -406,7 +422,7 @@ public class TibberHandler extends BaseThingHandler {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Unexpected subscription result from the server");
         } else {
-            logger.debug("Connecting Subscription to: {}", subscriptionURL);
+            logger.debug("Reconnecting Subscription to: {}", subscriptionURL);
             open();
         }
     }
@@ -552,19 +568,21 @@ public class TibberHandler extends BaseThingHandler {
         @OnWebSocketError
         public void onWebSocketError(Throwable e) {
             String message = e.getMessage();
-            logger.debug("Error during websocket communication: {}", message);
+            logger.warn("Error during websocket communication: {}", message);
             close();
         }
 
         @OnWebSocketMessage
         public void onMessage(String message) {
             if (message.contains("connection_ack")) {
-                logger.debug("Connected to Server");
+                logger.debug("WebSocket connected to Server");
                 startSubscription();
             } else if (message.contains("error") || message.contains("terminate")) {
                 logger.debug("Error/terminate received from server: {}", message);
                 close();
             } else if (message.contains("liveMeasurement")) {
+                logger.debug("Received liveMeasurement message.");
+                lastWebSocketMessage = LocalDateTime.now();
                 JsonObject object = (JsonObject) JsonParser.parseString(message);
                 JsonObject myObject = object.getAsJsonObject("payload").getAsJsonObject("data")
                         .getAsJsonObject("liveMeasurement");
@@ -641,7 +659,7 @@ public class TibberHandler extends BaseThingHandler {
                     updateChannel(LIVE_MAXPOWERPRODUCTION, myObject.get("maxPowerProduction").toString());
                 }
             } else {
-                logger.debug("Unknown live response from Tibber");
+                logger.debug("Unknown live response from Tibber. Message: {}", message);
             }
         }
 
