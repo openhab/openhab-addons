@@ -19,6 +19,7 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
+import org.openhab.binding.pushover.internal.PushoverBindingConstants;
 import org.openhab.binding.pushover.internal.handler.PushoverAccountHandler;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Thing;
@@ -45,11 +46,8 @@ public class PushoverHandlerFactory extends BaseThingHandlerFactory {
 
     @Activate
     public PushoverHandlerFactory(final @Reference HttpClientFactory httpClientFactory) {
-        this.httpClient = httpClientFactory.createHttpClient("binding-pushover");
-        this.httpClient.setIdleTimeout(120000);
-        this.httpClient.setConnectTimeout(30000);
-        this.httpClient.setDestinationIdleTimeout(0);
-        this.httpClient.setStopTimeout(120500);
+        this.httpClient = httpClientFactory.createHttpClient(PushoverBindingConstants.BINDING_ID);
+        this.httpClient.setIdleTimeout(180000);
     }
 
     @Override
