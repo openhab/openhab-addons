@@ -77,18 +77,20 @@
 				<required>true</required>
 			</parameter>
 
-			<parameter name="refreshStatusInterval" unit="s" type="integer" min="0">
+			<parameter name="refreshStatusInterval" unit="s" type="integer" min="10">
 				<label>Refresh Status Interval</label>
 				<description>Interval for refreshing mower status in seconds</description>
 				<default>3600</default>
 				<required>true</required>
+				<advanced>true</advanced>
 			</parameter>
 
-			<parameter name="pollingInterval" unit="s" type="integer" min="0" max="7200">
+			<parameter name="pollingInterval" unit="s" type="integer" min="10" max="7200">
 				<label>Polling Interval</label>
 				<description>Interval for polling in seconds</description>
-				<default>0</default>
+				<default>1200</default>
 				<required>true</required>
+				<advanced>true</advanced>
 			</parameter>
 		</config-description>
 
