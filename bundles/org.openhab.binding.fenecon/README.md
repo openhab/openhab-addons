@@ -27,7 +27,6 @@ The FENECON Thing only needs to be configured with the `hostname`, all other par
 | port            | Port of the FENECON device. Default: 8084                                        |
 | refreshInterval | Interval the device is polled in sec. Default 30 seconds                         |
 
-
 ## Channels
 
 The FENECON binding currently only provides access to read out the values from the energy storage system. 
@@ -51,7 +50,6 @@ The FENECON binding currently only provides access to read out the values from t
 | consumption-active-power-l3   | Number:Power         | R          | Current active power consumer load in watt on phase 3.                      |
 | import-from-grid-power        | Number:Power         | R          | Current import power from grid in watt.                                     |
 | imported-from-grid-energy     | Number:Energy        | R          | Total energy imported from the grid in watt per hour.                       |
-
 
 ## Full Example
 
@@ -95,7 +93,6 @@ Number:Energy        TotalBuyEnergy                 <energy>       (GF_UtilityRo
 // Examples of items for calculating the energy purchased and sold. Look at the demo.rules section.
 Number:Currency      SoldEnergy "Total sold energy [%.2f €]"           <price> (GF_UtilityRoomSolar)
 Number:Currency      PurchasedEnergy "Total purchased energy [%.2f €]" <price> (GF_UtilityRoomSolar)
-
 
 ```
 
