@@ -99,6 +99,7 @@
 		<label>Washer</label>
 		<description>Home Connect connected washing machine (e.g. Bosch or Siemens).</description>
 		<channels>
+			<channel id="power_state" typeId="system.power"/>
 			<channel id="door_state" typeId="door_state"/>
 			<channel id="operation_state" typeId="operation_state"/>
 			<channel id="remote_start_allowance_state" typeId="remote_start_allowance_state"/>
@@ -165,6 +166,7 @@
 			<channel id="basic_actions_state" typeId="basic_actions_state"/>
 			<channel id="remaining_program_time_state" typeId="remaining_program_time_state"/>
 			<channel id="program_progress_state" typeId="program_progress_state"/>
+			<channel id="child_lock" typeId="child_lock"/>
 		</channels>
 		<representation-property>haId</representation-property>
 		<config-description>
@@ -217,6 +219,7 @@
 			<channel id="super_mode_refrigerator" typeId="super_mode_refrigerator"/>
 			<channel id="setpoint_temperature_freezer" typeId="setpoint_temperature_freezer"/>
 			<channel id="super_mode_freezer" typeId="super_mode_freezer"/>
+			<channel id="child_lock" typeId="child_lock"/>
 		</channels>
 		<representation-property>haId</representation-property>
 		<config-description>
@@ -246,6 +249,7 @@
 			<channel id="coffeemaker_drip_tray_full_state" typeId="coffeemaker_drip_tray_full_state"/>
 			<channel id="coffeemaker_water_tank_empty_state" typeId="coffeemaker_water_tank_empty_state"/>
 			<channel id="coffeemaker_bean_container_empty_state" typeId="coffeemaker_bean_container_empty_state"/>
+			<channel id="child_lock" typeId="child_lock"/>
 		</channels>
 		<representation-property>haId</representation-property>
 		<config-description>
@@ -505,8 +509,7 @@
 	<channel-type id="child_lock" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Child lock</label>
-		<description>This activates the child lock of the home appliance. (If
-			appliance supports child lock)</description>
+		<description>This activates the child lock of the home appliance.</description>
 		<state readOnly="false"/>
 	</channel-type>
 	<channel-type id="laundry_care_washer_idos1" advanced="true">

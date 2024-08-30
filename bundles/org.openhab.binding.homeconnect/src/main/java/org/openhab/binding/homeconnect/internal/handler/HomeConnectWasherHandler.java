@@ -25,6 +25,7 @@ import org.openhab.binding.homeconnect.internal.client.exception.AuthorizationEx
 import org.openhab.binding.homeconnect.internal.client.exception.CommunicationException;
 import org.openhab.binding.homeconnect.internal.client.model.AvailableProgramOption;
 import org.openhab.binding.homeconnect.internal.type.HomeConnectDynamicStateDescriptionProvider;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
@@ -55,6 +56,7 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
     protected void configureChannelUpdateHandlers(Map<String, ChannelUpdateHandler> handlers) {
         // register default update handlers
         handlers.put(CHANNEL_DOOR_STATE, defaultDoorStateChannelUpdateHandler());
+        handlers.put(CHANNEL_POWER_STATE, defaultPowerStateChannelUpdateHandler());
         handlers.put(CHANNEL_OPERATION_STATE, defaultOperationStateChannelUpdateHandler());
         handlers.put(CHANNEL_REMOTE_CONTROL_ACTIVE_STATE, defaultRemoteControlActiveStateChannelUpdateHandler());
         handlers.put(CHANNEL_REMOTE_START_ALLOWANCE_STATE, defaultRemoteStartAllowanceChannelUpdateHandler());
@@ -109,6 +111,7 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
         handlers.put(EVENT_PROGRAM_PROGRESS, defaultPercentQuantityTypeEventHandler(CHANNEL_PROGRAM_PROGRESS_STATE));
         handlers.put(EVENT_LOCAL_CONTROL_ACTIVE, defaultBooleanEventHandler(CHANNEL_LOCAL_CONTROL_ACTIVE_STATE));
         handlers.put(EVENT_ACTIVE_PROGRAM, updateProgramOptionsAndActiveProgramStateEventHandler());
+        handlers.put(EVENT_POWER_STATE, defaultPowerStateEventHandler());
         handlers.put(EVENT_OPERATION_STATE, defaultOperationStateEventHandler());
         handlers.put(EVENT_SELECTED_PROGRAM, updateProgramOptionsAndSelectedProgramStateEventHandler());
         handlers.put(EVENT_CHILD_LOCK, defaultBooleanEventHandler(CHANNEL_CHILD_LOCK));
@@ -188,6 +191,7 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
             final HomeConnectApiClient apiClient)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
         super.handleCommand(channelUID, command, apiClient);
+
         String operationState = getOperationState();
 
         // only handle these commands if operation state allows it
@@ -210,6 +214,10 @@ public class HomeConnectWasherHandler extends AbstractHomeConnectThingHandler {
                             command.toFullString(), null, false, false);
                     break;
             }
+        } else if ((command instanceof OnOffType) && CHANNEL_CHILD_LOCK.equals(channelUID.getId())) {
+            apiClient.setChildLock(getThingHaId(), OnOffType.ON.equals(command));
+        } else if (operationState != null && INACTIVE_STATE.contains(operationState)) {
+            handlePowerCommand(channelUID, command, apiClient, STATE_POWER_STANDBY);
         } else {
             logger.debug("Device can not handle command {} in current operation state ({}). haId={}", command,
                     operationState, getThingHaId());

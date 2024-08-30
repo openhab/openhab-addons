@@ -39,7 +39,7 @@ After the bridge has been added and authorized, devices are discovered automatic
 
 | Channel Type ID | Item Type | Read only | Description | Available on thing |
 | --------------- | --------- | --------- | ----------- | ------------------ |
-| power_state | Switch | false | This setting describes the current power state of the home appliance. | dishwasher, oven, coffeemaker, hood, hob  |
+| power_state | Switch | false | This setting describes the current power state of the home appliance. | dishwasher, washer, oven, coffeemaker, hood, hob  |
 | door_state | Contact | true | This status describes the door state of a home appliance. A status change is either triggered by the user operating the home appliance locally (i.e. opening/closing door) or automatically by the home appliance (i.e. locking the door). | dishwasher, washer, washerdryer, dryer, oven, fridgefreezer |
 | operation_state | String | true | This status describes the operation state of the home appliance. | dishwasher, washer, washerdryer, dryer, oven, hood, hob, coffeemaker |
 | remote_start_allowance_state | Switch | true  | This status indicates whether the remote program start is enabled. This can happen due to a programmatic change (only disabling), or manually by the user changing the flag locally on the home appliance, or automatically after a certain duration - usually in 24 hours. | dishwasher, washer, washerdryer, dryer, oven, hood, coffeemaker |
@@ -85,6 +85,7 @@ After the bridge has been added and authorized, devices are discovered automatic
 | ambient_light_brightness_state | Dimmer | false | This setting describes the brightness state of the ambient light. _INFO: Please note that the brightness can't be set if the ambient light color is set to `CustomColor`._ | dishwasher, hood |
 | ambient_light_color_state | String | false | This setting describes the current ambient light color state of the home appliance. | dishwasher, hood |
 | ambient_light_custom_color_state | Color | false | This setting describes the custom color state of the ambient light. HSB color commands are supported as well as hex color string e.g. `#11ff00`. _INFO: Please note that the brightness can't be set._ | dishwasher, hood |
+| child_lock | Switch | false | This setting activates or deactivates the child lock | coffeemaker, cooktop, oven, dishwasher, dryer, washer, washerdryer, fridgefreezer, refrigerator |
 
 ## Thing Configuration
 

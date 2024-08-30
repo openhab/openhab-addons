@@ -1027,7 +1027,7 @@ public abstract class AbstractHomeConnectThingHandler extends BaseThingHandler i
             if (apiClient.isPresent()) {
                 Data data = apiClient.get().getChildLock(getThingHaId());
                 if (data.getValue() != null) {
-                    return STATE_DOOR_OPEN.equals(data.getValue()) ? OpenClosedType.OPEN : OpenClosedType.CLOSED;
+                    return OnOffType.from(data.getValueAsBoolean());
                 } else {
                     return UnDefType.UNDEF;
                 }

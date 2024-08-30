@@ -628,17 +628,17 @@ public class HomeConnectApiClient {
     }
 
     /**
-     * Set child lock state of device.
+     * Set child lock
      *
      * @param haId home appliance id
-     * @param state target state
+     * @param enable enable or disable child lock
      * @throws CommunicationException API communication exception
      * @throws AuthorizationException oAuth authorization exception
      * @throws ApplianceOfflineException appliance is not connected to the cloud
      */
-    public void setChildLockState(String haId, String state)
+    public void setChildLock(String haId, boolean enable)
             throws CommunicationException, AuthorizationException, ApplianceOfflineException {
-        putSettings(haId, new Data(SETTING_CHILD_LOCK, state, null));
+        putSettings(haId, new Data(SETTING_CHILD_LOCK, String.valueOf(enable), null), VALUE_TYPE_BOOLEAN);
     }
 
     /**
@@ -811,7 +811,7 @@ public class HomeConnectApiClient {
         try {
             ContentResponse response = sendRequest(request, apiBridgeConfiguration.getClientId());
             checkResponseCode(HttpStatus.OK_200, request, response, haId, null);
-
+            logger.debug("request string" + request);
             String responseBody = response.getContentAsString();
             trackAndLogApiRequest(haId, request, null, response, responseBody);
 
