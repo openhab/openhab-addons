@@ -20,6 +20,12 @@ import org.openhab.binding.awattar.internal.handler.TimeRange;
  *
  * @author Wolfgang Klimt - initial contribution
  * @author Jan N. Klug - Refactored to record
+ *
+ * @param netPrice the net price in €/kWh
+ * @param grossPrice the gross price in €/kWh
+ * @param netTotal the net total price in €
+ * @param grossTotal the gross total price in €
+ * @param timerange the time range of the price
  */
 @NonNullByDefault
 public record AwattarPrice(double netPrice, double grossPrice, double netTotal, double grossTotal,
