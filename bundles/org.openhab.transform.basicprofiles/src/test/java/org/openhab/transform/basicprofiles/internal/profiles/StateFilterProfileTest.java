@@ -615,7 +615,6 @@ public class StateFilterProfileTest {
         String linkedItemName = linkedItem.getName();
 
         String itemName = item.getName();
-        item.setState(state);
 
         when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", operator + itemName)));
         when(mockItemRegistry.getItem(itemName)).thenReturn(item);
@@ -623,7 +622,13 @@ public class StateFilterProfileTest {
         when(mockItemChannelLink.getItemName()).thenReturn(linkedItemName);
 
         StateFilterProfile profile = new StateFilterProfile(mockCallback, mockContext, mockItemRegistry);
+        item.setState(UnDefType.UNDEF);
 
+        profile.onStateUpdateFromHandler(inputState);
+        reset(mockCallback);
+        when(mockCallback.getItemChannelLink()).thenReturn(mockItemChannelLink);
+
+        item.setState(state);
         profile.onStateUpdateFromHandler(inputState);
         verify(mockCallback, times(expected ? 1 : 0)).sendUpdate(eq(inputState));
     }
