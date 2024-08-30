@@ -268,4 +268,9 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(NikoHomeControlDiscoveryService.class);
     }
+
+    public String getControllerId() {
+        String id = thing.getProperties().get(CONFIG_CONTROLLER_ID);
+        return id != null ? id : "";
+    }
 }
