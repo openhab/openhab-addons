@@ -121,7 +121,7 @@ public class MiIoVacuumHandlerTest {
         miIoHandler.initialize();
         // prepare a CLEAN_RECORD_GET response object
         String cmdString = "{\"id\":7028,\"method\":\"get_clean_record\",\"params\":[1699081963]}";
-        String jsonResponseTxt = "{\"result\":[[1724174413,1724174459,46,770000,0,0,2,3,60]],\"id\":7028}";
+        String jsonResponseTxt = "{\"result\":[[1724174413,1724174459,246,770000,0,0,2,3,60]],\"id\":7028}";
 
         MiIoSendCommand response = new MiIoSendCommand(13, MiIoCommand.CLEAN_RECORD_GET,
                 JsonParser.parseString(cmdString).getAsJsonObject(), "", "");
@@ -134,6 +134,10 @@ public class MiIoVacuumHandlerTest {
         verify(callback, description("Test the end time parsing")).stateUpdated(
                 eq(new ChannelUID(thingUID, MiIoBindingConstants.CHANNEL_HISTORY_END_TIME)),
                 eq(new DateTimeType("2024-08-20T19:20:59")));
+
+        verify(callback, description("Test the duration parsing")).stateUpdated(
+                eq(new ChannelUID(thingUID, MiIoBindingConstants.CHANNEL_HISTORY_DURATION)),
+                eq(new QuantityType<>(4, Units.MINUTE)));
     }
 
     @Test
