@@ -17,6 +17,8 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -130,10 +132,11 @@ public class MiIoVacuumHandlerTest {
 
         verify(callback, description("Test the start time parsing")).stateUpdated(
                 eq(new ChannelUID(thingUID, MiIoBindingConstants.CHANNEL_HISTORY_START_TIME)),
-                eq(new DateTimeType("2024-08-20T19:20:13")));
+                eq(new DateTimeType(ZonedDateTime.parse("2024-08-20T19:20:13+02:00")).toZone(ZoneId.systemDefault())));
+
         verify(callback, description("Test the end time parsing")).stateUpdated(
                 eq(new ChannelUID(thingUID, MiIoBindingConstants.CHANNEL_HISTORY_END_TIME)),
-                eq(new DateTimeType("2024-08-20T19:20:59")));
+                eq(new DateTimeType(ZonedDateTime.parse("2024-08-20T19:20:59+02:00")).toZone(ZoneId.systemDefault())));
 
         verify(callback, description("Test the duration parsing")).stateUpdated(
                 eq(new ChannelUID(thingUID, MiIoBindingConstants.CHANNEL_HISTORY_DURATION)),
