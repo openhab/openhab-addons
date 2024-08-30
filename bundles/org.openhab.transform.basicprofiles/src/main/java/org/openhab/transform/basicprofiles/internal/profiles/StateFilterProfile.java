@@ -271,33 +271,37 @@ public class StateFilterProfile implements StateProfile {
                         // This allows comparing compatible types, e.g. PercentType vs OnOffType
                         parsedValue = parsedValue.as(state.getClass());
                     }
+                }
 
-                    // If the values can't be converted to a type, check to see if it's an Item name
-                    if (parsedValue == null) {
-                        try {
-                            Item valueItem = itemRegistry.getItem(value);
-                            if (valueItem != null) { // ItemRegistry.getItem can return null in tests
-                                parsedValue = valueItem.getState();
-                                // Don't convert QuantityType to other types
-                                if (!(parsedValue instanceof QuantityType)) {
-                                    parsedValue = parsedValue.as(state.getClass());
-                                }
-                                logger.debug("Condition value: '{}' is an item state: '{}' ({})", value, parsedValue,
-                                        parsedValue == null ? "null" : parsedValue.getClass().getSimpleName());
+                // From hereon, don't override this.parsedValue,
+                // so it gets checked against Item's state on each call
+                State parsedValue = this.parsedValue;
+
+                // If the values couldn't be converted to a type, check to see if it's an Item name
+                if (parsedValue == null) {
+                    try {
+                        Item valueItem = itemRegistry.getItem(value);
+                        if (valueItem != null) { // ItemRegistry.getItem can return null in tests
+                            parsedValue = valueItem.getState();
+                            // Don't convert QuantityType to other types
+                            if (!(parsedValue instanceof QuantityType)) {
+                                parsedValue = parsedValue.as(state.getClass());
                             }
-                        } catch (ItemNotFoundException ignore) {
+                            logger.debug("Condition value: '{}' is an item state: '{}' ({})", value, parsedValue,
+                                    parsedValue == null ? "null" : parsedValue.getClass().getSimpleName());
                         }
+                    } catch (ItemNotFoundException ignore) {
                     }
+                }
 
-                    if (parsedValue == null) {
-                        if (comparisonType == ComparisonType.NEQ || comparisonType == ComparisonType.NEQ_ALT) {
-                            // They're not even type compatible, so return true for NEQ comparison
-                            return true;
-                        } else {
-                            logger.debug("Condition value: '{}' is not compatible with state '{}' ({})", value, state,
-                                    state.getClass().getSimpleName());
-                            return false;
-                        }
+                if (parsedValue == null) {
+                    if (comparisonType == ComparisonType.NEQ || comparisonType == ComparisonType.NEQ_ALT) {
+                        // They're not even type compatible, so return true for NEQ comparison
+                        return true;
+                    } else {
+                        logger.debug("Condition value: '{}' is not compatible with state '{}' ({})", value, state,
+                                state.getClass().getSimpleName());
+                        return false;
                     }
                 }
 
