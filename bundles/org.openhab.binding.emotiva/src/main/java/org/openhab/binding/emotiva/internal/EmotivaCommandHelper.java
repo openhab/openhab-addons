@@ -14,6 +14,7 @@ package org.openhab.binding.emotiva.internal;
 
 import static org.openhab.binding.emotiva.internal.EmotivaBindingConstants.*;
 
+import java.util.EnumMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -70,7 +71,7 @@ public class EmotivaCommandHelper {
     }
 
     public static EmotivaControlRequest channelToControlRequest(String id,
-            Map<String, Map<EmotivaControlCommands, String>> commandMaps, EmotivaProtocolVersion protocolVersion) {
+            Map<String, EnumMap<EmotivaControlCommands, String>> commandMaps, EmotivaProtocolVersion protocolVersion) {
         EmotivaSubscriptionTags channelSubscription = EmotivaSubscriptionTags.fromChannelUID(id);
         EmotivaControlCommands channelFromCommand = OHChannelToEmotivaCommand.fromChannelUID(id);
         return new EmotivaControlRequest(id, channelSubscription, channelFromCommand, commandMaps, protocolVersion);

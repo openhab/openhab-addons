@@ -20,6 +20,7 @@ import static org.openhab.binding.emotiva.internal.protocol.EmotivaDataType.FREQ
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags.tuner_band;
 import static org.openhab.binding.emotiva.internal.protocol.EmotivaSubscriptionTags.tuner_channel;
 
+import java.util.EnumMap;
 import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -53,11 +54,11 @@ public class EmotivaControlRequest {
     private final EmotivaControlCommands downCommand;
     private double maxValue;
     private double minValue;
-    private final Map<String, Map<EmotivaControlCommands, String>> commandMaps;
+    private final Map<String, EnumMap<EmotivaControlCommands, String>> commandMaps;
     private final EmotivaProtocolVersion protocolVersion;
 
     public EmotivaControlRequest(String channel, EmotivaSubscriptionTags channelSubscription,
-            EmotivaControlCommands controlCommand, Map<String, Map<EmotivaControlCommands, String>> commandMaps,
+            EmotivaControlCommands controlCommand, Map<String, EnumMap<EmotivaControlCommands, String>> commandMaps,
             EmotivaProtocolVersion protocolVersion) {
         if (channelSubscription.equals(EmotivaSubscriptionTags.unknown)) {
             if (controlCommand.equals(EmotivaControlCommands.none)) {

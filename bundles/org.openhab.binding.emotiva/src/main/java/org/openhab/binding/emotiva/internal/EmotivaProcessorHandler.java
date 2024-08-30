@@ -45,6 +45,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
@@ -108,15 +109,16 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
 
     /**
      * Emotiva devices have trouble with too many subscriptions in same request, so subscriptions are dividing into
-     * those general group channels, and the rest.
+     * groups.
      */
-    private final EmotivaSubscriptionTags[] generalSubscription = EmotivaSubscriptionTags.generalChannels();
-    private final EmotivaSubscriptionTags[] nonGeneralSubscriptions = EmotivaSubscriptionTags.nonGeneralChannels();
+    private final List<EmotivaSubscriptionTags> generalSubscription = EmotivaSubscriptionTags.channels("general");
+    private final List<EmotivaSubscriptionTags> mainZoneSubscriptions = EmotivaSubscriptionTags.channels("main-zone");
+    private final List<EmotivaSubscriptionTags> zone2Subscriptions = EmotivaSubscriptionTags.channels("zone2");
 
     private final EnumMap<EmotivaControlCommands, String> sourcesMainZone;
     private final EnumMap<EmotivaControlCommands, String> sourcesZone2;
     private final EnumMap<EmotivaSubscriptionTags, String> modes;
-    private final Map<String, Map<EmotivaControlCommands, String>> commandMaps = new ConcurrentHashMap<>();
+    private final Map<String, EnumMap<EmotivaControlCommands, String>> commandMaps = new ConcurrentHashMap<>();
     private final EmotivaTranslationProvider i18nProvider;
 
     private @Nullable ScheduledFuture<?> pollingJob;
@@ -222,7 +224,8 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 try {
                     logger.debug("Connection attempt '{}'", attempt);
                     sendConnector.sendSubscription(generalSubscription, config);
-                    sendConnector.sendSubscription(nonGeneralSubscriptions, config);
+                    sendConnector.sendSubscription(mainZoneSubscriptions, config);
+                    sendConnector.sendSubscription(zone2Subscriptions, config);
                 } catch (IOException e) {
                     // network or socket failure, also wait 2 sec and try again
                 }
@@ -325,9 +328,10 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             return;
         }
 
-        if (object instanceof EmotivaAckDTO answerDto) {
+        if (object instanceof EmotivaAckDTO) {
             // Currently not supported to revert a failed command update, just used for logging for now.
-            logger.trace("Processing received '{}' with '{}'", EmotivaAckDTO.class.getSimpleName(), answerDto);
+            logger.trace("Processing received '{}' with '{}'", EmotivaAckDTO.class.getSimpleName(),
+                    emotivaUdpResponse.answer());
 
         } else if (object instanceof EmotivaBarNotifyWrapper answerDto) {
             logger.trace("Processing received '{}' with '{}'", EmotivaBarNotifyWrapper.class.getSimpleName(),
@@ -529,11 +533,10 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
             // Add/Update user assigned name for inputs
             if (subscriptionTag.getChannel().startsWith(CHANNEL_INPUT1.substring(0, CHANNEL_INPUT1.indexOf("-") + 1))
                     && "true".equals(visible)) {
-                logger.debug("Adding '{}' to dynamic source input list", trimmedValue);
                 sourcesMainZone.put(EmotivaControlCommands.matchToInput(subscriptionTag.name()), trimmedValue);
                 commandMaps.put(MAP_SOURCES_MAIN_ZONE, sourcesMainZone);
-
-                logger.debug("sources list is now {}", sourcesMainZone.size());
+                logger.debug("Adding '{}' to dynamic source input list, map is now {}", trimmedValue,
+                        commandMaps.get(MAP_SOURCES_MAIN_ZONE));
             }
 
             // Add/Update audio modes
@@ -715,7 +718,8 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
                 try {
                     // Unsubscribe before disconnect
                     localSendingService.sendUnsubscribe(generalSubscription);
-                    localSendingService.sendUnsubscribe(nonGeneralSubscriptions);
+                    localSendingService.sendUnsubscribe(mainZoneSubscriptions);
+                    localSendingService.sendUnsubscribe(zone2Subscriptions);
                 } catch (IOException e) {
                     logger.debug("Failed to unsubscribe for '{}'", config.ipAddress, e);
                 }
@@ -773,11 +777,14 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
     }
 
     public EnumMap<EmotivaControlCommands, String> getSourcesMainZone() {
-        return sourcesMainZone;
+        EnumMap<EmotivaControlCommands, String> localMainZoneSourcesMap = commandMaps.get(MAP_SOURCES_MAIN_ZONE);
+        return localMainZoneSourcesMap == null || localMainZoneSourcesMap.isEmpty() ? sourcesMainZone
+                : localMainZoneSourcesMap;
     }
 
     public EnumMap<EmotivaControlCommands, String> getSourcesZone2() {
-        return sourcesZone2;
+        EnumMap<EmotivaControlCommands, String> localZone2SourcesMap = commandMaps.get(MAP_SOURCES_ZONE_2);
+        return Objects.requireNonNullElse(localZone2SourcesMap, sourcesZone2);
     }
 
     public EnumMap<EmotivaSubscriptionTags, String> getModes() {
