@@ -57,22 +57,22 @@ public class ModbusTransformation {
      * Creates a transformation object.
      * 
      * The transformations are chained and applied in the order they are given in the list.
-     * Each transformation can also contain the intersection symbol "∩" to separate 
+     * Each transformation can also contain the intersection symbol "∩" to separate
      * multiple transformations in one line.
      * 
-     * - If the transformationList is null or consists of only blank strings, 
-     *   the output of the transformation will be an empty string regardless of the input.
+     * - If the transformationList is null or consists of only blank strings,
+     * the output of the transformation will be an empty string regardless of the input.
      * 
-     * - If first element is "default", the transformation will be considered as 
-     *   an identity transformation, which returns the input as the output.
-     *   Additional elements in the list are ignored.
+     * - If first element is "default", the transformation will be considered as
+     * an identity transformation, which returns the input as the output.
+     * Additional elements in the list are ignored.
      * 
      * - If the transformationList contains valid transformation syntax, the output
-     *   will be transformed according to the given transformations.
+     * will be transformed according to the given transformations.
      * 
      * - If the first element is some other value, it is treated as a constant and it
-     *   will become the output of the transformation, regardless of the input.
-     *   Additional elements in the list are ignored.
+     * will become the output of the transformation, regardless of the input.
+     * Additional elements in the list are ignored.
      * 
      * @param transformations a list of transformations to apply.
      */
@@ -94,7 +94,7 @@ public class ModbusTransformation {
             return;
         }
 
-        if (transformationList.stream().allMatch(ChannelTransformation::isTransform)) {
+        if (transformationList.stream().allMatch(ChannelTransformation::isValidTransformation)) {
             transformation = new ChannelTransformation(transformationList);
             constantOutput = null;
         } else {
