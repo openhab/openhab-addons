@@ -270,8 +270,8 @@ public class NikoHomeControlCommandExtension extends AbstractConsoleCommandExten
             return CMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
         } else if (cursorArgumentIndex == 1) {
             return new StringsCompleter(bridgeHandlers.stream().filter(b -> b instanceof NikoHomeControlBridgeHandler2)
-                    .map(b -> b.getControllerId()).toList(), false).complete(args, cursorArgumentIndex, cursorPosition,
-                            candidates);
+                    .map(b -> b.getControllerId()).toList(), false)
+                    .complete(args, cursorArgumentIndex, cursorPosition, candidates);
         } else if (cursorArgumentIndex == 2) {
             return DUMP_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
         }
