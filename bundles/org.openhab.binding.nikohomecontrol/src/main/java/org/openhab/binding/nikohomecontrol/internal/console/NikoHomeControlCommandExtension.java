@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler2;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlDiscover;
@@ -65,13 +67,15 @@ public class NikoHomeControlCommandExtension extends AbstractConsoleCommandExten
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private static final String CONTROLLERS = "controllers";
+    private static final String SYSTEMINFO = "systeminfo";
     private static final String DEVICELIST = "devicelist";
     private static final String DUMP = "dump";
 
     private static final String ROOT_PATH = System.getProperty("user.home") + File.separator + BINDING_ID
             + File.separator + DEVICELIST;
 
-    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(List.of(CONTROLLERS, DEVICELIST), false);
+    private static final StringsCompleter CMD_COMPLETER = new StringsCompleter(
+            List.of(CONTROLLERS, SYSTEMINFO, DEVICELIST), false);
     private static final StringsCompleter DUMP_COMPLETER = new StringsCompleter(List.of(DUMP), false);
 
     private final ThingRegistry thingRegistry;
@@ -98,9 +102,20 @@ public class NikoHomeControlCommandExtension extends AbstractConsoleCommandExten
         bridgeHandlers = thingRegistry.getAll().stream()
                 .filter(t -> t.getHandler() instanceof NikoHomeControlBridgeHandler)
                 .map(b -> ((NikoHomeControlBridgeHandler) b.getHandler())).toList();
-        Map<String, String> bridgeNhcVersion = bridgeHandlers.stream()
-                .collect(Collectors.toMap(handler -> handler.getThing().getUID().toString(),
-                        handler -> handler instanceof NikoHomeControlBridgeHandler2 ? "II" : "I"));
+        Map<String, String> bridgeNhcVersion = bridgeHandlers.stream().collect(Collectors
+                .toMap(b -> b.getControllerId(), b -> b instanceof NikoHomeControlBridgeHandler2 ? "II" : "I"));
+
+        NikoHomeControlBridgeHandler bridgeHandler = null;
+        if (args.length > 1) {
+            Optional<NikoHomeControlBridgeHandler> bridgeOptional = bridgeHandlers.stream()
+                    .filter(b -> b.getControllerId().toLowerCase().equals(args[1].toLowerCase())).findAny();
+            if (bridgeOptional.isEmpty()) {
+                console.println("'" + args[1] + "' is not a valid controller ID");
+                printUsage(console);
+                return;
+            }
+            bridgeHandler = bridgeOptional.get();
+        }
 
         switch (args[0].toLowerCase()) {
             case CONTROLLERS:
@@ -109,9 +124,8 @@ public class NikoHomeControlCommandExtension extends AbstractConsoleCommandExten
                     printUsage(console);
                     return;
                 } else {
-                    Map<String, String> bridgeIds = bridgeHandlers.stream()
-                            .collect(Collectors.toMap(handler -> handler.getThing().getUID().toString(),
-                                    handler -> handler.getControllerId().toLowerCase()));
+                    Map<String, String> bridgeIds = bridgeHandlers.stream().collect(Collectors
+                            .toMap(b -> b.getThing().getUID().toString(), b -> b.getControllerId().toLowerCase()));
                     List<String> controllerIds = List.of();
                     Map<String, String> controllerNhcVersion = Map.of();
                     try {
@@ -132,23 +146,34 @@ public class NikoHomeControlCommandExtension extends AbstractConsoleCommandExten
                                 "Controller discovery not possible, network error, result only contains bridges");
                     }
                     Map<String, String> nhcVersion = Map.copyOf(controllerNhcVersion);
-                    console.println("Controller ID    NHC Version    Bridge ID");
-                    bridgeIds.forEach((bridge, id) -> console.printf("%-12s         %2s        %s%n", id,
-                            bridgeNhcVersion.get(id), bridge));
-                    controllerIds.forEach(id -> console.printf("%-12s         %2s%n", id, nhcVersion.get(id)));
+                    console.printf("%-14s %-12s %s%n", "Controller-ID", "NHC-Version", "Bridge-ID");
+                    console.printf("%-14s %-12s %s%n", "-------------", "-----------", "---------");
+                    bridgeIds.forEach(
+                            (bridge, id) -> console.printf("%-14s %-12s %s%n", id, bridgeNhcVersion.get(id), bridge));
+                    controllerIds.forEach(id -> console.printf("%-14s %-12s %s%n", id, nhcVersion.get(id), " "));
+                }
+                break;
+            case SYSTEMINFO:
+                if (args.length < 2) {
+                    console.println("No controller ID provided");
+                    printUsage(console);
+                    return;
+                }
+                if (bridgeHandler != null) {
+                    if (!ThingStatus.ONLINE.equals(bridgeHandler.getThing().getStatus())) {
+                        console.println("Niko Home Control bridge not online, system info may be out of date");
+                    }
+                    console.println("Property                     Value");
+                    console.println("--------                     -----");
+                    Map<String, String> properties = bridgeHandler.getThing().getProperties();
+                    for (String key : properties.keySet()) {
+                        console.printf("%-28.28s %s%n", key, properties.get(key));
+                    }
                 }
                 break;
             case DEVICELIST:
                 if (args.length < 2) {
-                    console.println("No bridge ID provided");
-                    printUsage(console);
-                    return;
-                }
-                Optional<NikoHomeControlBridgeHandler> bridgeOptional = bridgeHandlers.stream()
-                        .filter(b -> b.getThing().getUID().toString().toLowerCase().equals(args[1].toLowerCase()))
-                        .findAny();
-                if (bridgeOptional.isEmpty()) {
-                    console.println("'" + args[1] + "' is not a valid bridge ID");
+                    console.println("No controller ID provided");
                     printUsage(console);
                     return;
                 }
@@ -157,24 +182,29 @@ public class NikoHomeControlCommandExtension extends AbstractConsoleCommandExten
                     printUsage(console);
                     return;
                 }
-                NikoHomeControlBridgeHandler bridgeHandler = bridgeOptional.get();
-                if (!ThingStatus.ONLINE.equals(bridgeHandler.getThing().getStatus())) {
-                    console.println("Niko Home Control bridge not online, no commands allowed");
-                    return;
-                }
-                NikoHomeControlCommunication2 nhcComm = (NikoHomeControlCommunication2) bridgeHandler
-                        .getCommunication();
-                if (nhcComm != null) {
-                    String devices = prettyJson(nhcComm.getRawDevicesListResponse());
-                    console.println(devices);
-
-                    if (args.length > 2 && DUMP.equals(args[2])) {
-                        String filename = ROOT_PATH + LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE)
-                                + ".json";
-                        writeJsonToFile(filename, devices, console);
+                if (bridgeHandler != null) {
+                    if (!ThingStatus.ONLINE.equals(bridgeHandler.getThing().getStatus())) {
+                        console.println("Niko Home Control bridge not online, device list may be out of date");
                     }
-                } else {
-                    // cannot happen if thing is online
+                    NikoHomeControlCommunication2 nhcComm = (NikoHomeControlCommunication2) bridgeHandler
+                            .getCommunication();
+                    if (nhcComm != null) {
+                        String devices = prettyJson(nhcComm.getRawDevicesListResponse());
+                        if (args.length == 2) {
+                            console.println(devices);
+                        } else if (DUMP.equals(args[2])) {
+                            String filename = ROOT_PATH + LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE)
+                                    + ".json";
+                            String systeminfo = GSON.toJson(bridgeHandler.getThing().getProperties());
+                            writeJsonToFile(filename, systeminfo, console);
+                            writeJsonToFile(filename, devices, console);
+                            console.printf("System info and device list dumped to file '%s'%n", filename);
+                        } else {
+                            console.println("Command argument '" + args[2] + "' not recognized");
+                            printUsage(console);
+                            return;
+                        }
+                    }
                 }
                 break;
             default:
@@ -210,9 +240,9 @@ public class NikoHomeControlCommandExtension extends AbstractConsoleCommandExten
             parentFile.mkdirs();
         }
 
-        final byte[] contents = json.getBytes(StandardCharsets.UTF_8);
+        final byte[] contents = (json + "\n").getBytes(StandardCharsets.UTF_8);
         try {
-            Files.write(file.toPath(), contents);
+            Files.write(file.toPath(), contents, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException e) {
             console.println("I/O error writing device list to file");
         }
@@ -221,10 +251,17 @@ public class NikoHomeControlCommandExtension extends AbstractConsoleCommandExten
     @Override
     public List<String> getUsages() {
         return Arrays.asList(new String[] { buildCommandUsage(CONTROLLERS, "list all Niko Home Control Controllers"),
-                buildCommandUsage(DEVICELIST + " <bridge ID>",
-                        "create device list of Niko Home Control II installation on Controller with provided bridge ID"),
-                buildCommandUsage(DEVICELIST + " <bridge ID> " + DUMP,
-                        "create device list of Niko Home Control II installation on Controller with provided bridge ID and dump result in a file in your home/nikohomecontrol directory") });
+                buildCommandUsage(SYSTEMINFO + " <controller ID>",
+                        "show system info for Controller with controller ID"),
+                buildCommandUsage(DEVICELIST + " <controller ID>",
+                        "create device list of installation on Controller with controller ID"),
+                buildCommandUsage(DEVICELIST + " <controller ID> " + DUMP,
+                        "dump device list of installation with controller ID to file") });
+    }
+
+    @Override
+    public @Nullable ConsoleCommandCompleter getCompleter() {
+        return this;
     }
 
     @Override
@@ -232,10 +269,9 @@ public class NikoHomeControlCommandExtension extends AbstractConsoleCommandExten
         if (cursorArgumentIndex <= 0) {
             return CMD_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
         } else if (cursorArgumentIndex == 1) {
-            return new StringsCompleter(
-                    bridgeHandlers.stream().filter(handler -> handler instanceof NikoHomeControlBridgeHandler2)
-                            .map(handler -> handler.getThing().getUID().toString()).toList(),
-                    false).complete(args, cursorArgumentIndex, cursorPosition, candidates);
+            return new StringsCompleter(bridgeHandlers.stream().filter(b -> b instanceof NikoHomeControlBridgeHandler2)
+                    .map(b -> b.getControllerId()).toList(), false).complete(args, cursorArgumentIndex, cursorPosition,
+                            candidates);
         } else if (cursorArgumentIndex == 2) {
             return DUMP_COMPLETER.complete(args, cursorArgumentIndex, cursorPosition, candidates);
         }

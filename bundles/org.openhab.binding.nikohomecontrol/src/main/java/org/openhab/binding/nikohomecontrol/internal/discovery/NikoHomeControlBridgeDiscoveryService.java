@@ -93,7 +93,7 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(bridgeName)
                 .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).withProperty(CONFIG_CONTROLLER_ID, bridgeId)
-                .withRepresentationProperty(CONFIG_HOST_NAME).build();
+                .withRepresentationProperty(CONFIG_CONTROLLER_ID).build();
         thingDiscovered(discoveryResult);
     }
 
@@ -105,7 +105,7 @@ public class NikoHomeControlBridgeDiscoveryService extends AbstractDiscoveryServ
 
         DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(uid).withLabel(bridgeName)
                 .withProperty(CONFIG_HOST_NAME, addr.getHostAddress()).withProperty(CONFIG_CONTROLLER_ID, bridgeId)
-                .withRepresentationProperty(CONFIG_HOST_NAME).build();
+                .withRepresentationProperty(CONFIG_CONTROLLER_ID).build();
         thingDiscovered(discoveryResult);
     }
 
