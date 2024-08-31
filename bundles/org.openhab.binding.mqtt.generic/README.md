@@ -308,13 +308,17 @@ This is required if your received value is wrapped in a JSON or XML response.
 
 Here are a few examples to unwrap a value from a complex response:
 
-| Received value                                                      | Tr. Service | Transformation                             |
-|---------------------------------------------------------------------|-------------|--------------------------------------------|
-| `{device: {status: { temperature: 23.2 }}}`                         | JSONPATH    | `JSONPATH($.device.status.temperature)`    |
-| `<device><status><temperature>23.2</temperature></status></device>` | XPath       | `XPath(/device/status/temperature/text())` |
-| `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX(:(.*?)°)`                           |
-| `abc`                                                               | JS          | `JS(to_uppercase.js)`                      |
-| `abc`                                                               | JS (inline) | `JS(\| input.toUpperCase() )`              |
+| Received value                                                      | Tr. Service      | Transformation                             |
+| ------------------------------------------------------------------- | ---------------- | ------------------------------------------ |
+| `{device: {status: { temperature: 23.2 }}}`                         | JSONPATH         | `JSONPATH($.device.status.temperature)`    |
+| `<device><status><temperature>23.2</temperature></status></device>` | XPath            | `XPath(/device/status/temperature/text())` |
+| `THEVALUE:23.2°C`                                                   | REGEX            | `REGEX(:(.*?)°)`                           |
+| `abc`                                                               | JS (UI defined)  | `JS(config:js:35edb3735a)`                 |
+| `abc`                                                               | JS (file based)  | `JS(to_uppercase.js)`                      |
+| `abc`                                                               | JS (inline)      | `JS(\| input.toUpperCase() )`              |
+| `true`                                                              | MAP (UI defined) | `MAP(config:map:54facda0f7)`               |
+| `true`                                                              | MAP (file based) | `MAP(status.map)`                          |
+| `true`                                                              | MAP (inline)     | `MAP(\|true=ON;false=OFF)`                 |
 
 ## Outgoing Value Transformation
 
@@ -342,19 +346,19 @@ Here are a few examples:
   - For an output of _23:15_ use "%1$**tH**:%1$**tM**".
 
 Default pattern applied for each type:
-| Type             | Parameter                         | Pattern             | Comment |
-| ---------------- | --------------------------------- | ------------------- | ------- |
-| **string**       | String                            | "%s"                |
-| **number**       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point.
-| **dimmer**       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point.
-| **contact**      | String                            | --                  | No pattern supported. Always **on** and **off** strings.
-| **switch**       | String                            | --                  | No pattern supported. Always **on** and **off** strings.
-| **colorRGB**     | BigDecimal, BigDecimal, BigDecimal| "%1$d,%2$d,%3$d"    | Parameters are **red**, **green** and **blue** components.
-| **colorHSB**     | BigDecimal, BigDecimal, BigDecimal| "%1$d,%2$d,%3$d"    | Parameters are **hue**, **saturation** and **brightness** components.
-| **location**     | BigDecimal, BigDecimal            | "%2$f,%3$f,%1$f"    | Parameters are **altitude**, **latitude** and **longitude**, altitude is only in default pattern, if value is not '0'.
-| **image**        | --                                | --                  | No publishing supported.
-| **datetime**     | ZonedDateTime                     | "%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tN" | Trailing zeros of the nanoseconds are removed.
-| **rollershutter**| String                            | "%s"                | No pattern supported. Always **up**, **down**, **stop** string or integer percent value.
+| Type              | Parameter                          | Pattern                                     | Comment                                                                                                                |
+| ----------------- | ---------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **string**        | String                             | "%s"                                        |                                                                                                                        |
+| **number**        | BigDecimal                         | "%f"                                        | The default will remove trailing zeros after the decimal point.                                                        |
+| **dimmer**        | BigDecimal                         | "%f"                                        | The default will remove trailing zeros after the decimal point.                                                        |
+| **contact**       | String                             | --                                          | No pattern supported. Always **on** and **off** strings.                                                               |
+| **switch**        | String                             | --                                          | No pattern supported. Always **on** and **off** strings.                                                               |
+| **colorRGB**      | BigDecimal, BigDecimal, BigDecimal | "%1$d,%2$d,%3$d"                            | Parameters are **red**, **green** and **blue** components.                                                             |
+| **colorHSB**      | BigDecimal, BigDecimal, BigDecimal | "%1$d,%2$d,%3$d"                            | Parameters are **hue**, **saturation** and **brightness** components.                                                  |
+| **location**      | BigDecimal, BigDecimal             | "%2$f,%3$f,%1$f"                            | Parameters are **altitude**, **latitude** and **longitude**, altitude is only in default pattern, if value is not '0'. |
+| **image**         | --                                 | --                                          | No publishing supported.                                                                                               |
+| **datetime**      | ZonedDateTime                      | "%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tN" | Trailing zeros of the nanoseconds are removed.                                                                         |
+| **rollershutter** | String                             | "%s"                                        | No pattern supported. Always **up**, **down**, **stop** string or integer percent value.                               |
 
 Any outgoing value transformation will **always** result in a **string** value.
 
