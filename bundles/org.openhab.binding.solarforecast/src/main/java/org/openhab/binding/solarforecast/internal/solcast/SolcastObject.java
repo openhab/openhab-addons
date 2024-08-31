@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.solarforecast.internal.solcast;
 
+import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstants.*;
+
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -37,6 +39,7 @@ import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.storage.Storage;
 import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.TimeSeries.Policy;
 import org.slf4j.Logger;
@@ -57,12 +60,15 @@ public class SolcastObject implements SolarForecast {
     private final TreeMap<ZonedDateTime, Double> optimisticDataMap = new TreeMap<>();
     private final TreeMap<ZonedDateTime, Double> pessimisticDataMap = new TreeMap<>();
     private final TimeZoneProvider timeZoneProvider;
+    private final String FORECAST_APPENDIX = "-forecast";
+    private final String EXPIRATION_APPENDIX = "-expiration";
 
     private DateTimeFormatter dateOutputFormatter;
     private String identifier;
     private Optional<JSONObject> rawData = Optional.of(new JSONObject());
     private Instant expirationDateTime;
     private long period = 30;
+    private Storage<String> storage;
 
     public enum QueryMode {
         Average(SolarForecast.AVERAGE),
@@ -82,43 +88,51 @@ public class SolcastObject implements SolarForecast {
         }
     }
 
-    public SolcastObject(String id, Instant expiration, TimeZoneProvider tzp) {
-        // invalid forecast object
+    public SolcastObject(String id, TimeZoneProvider tzp, Storage<String> storage) {
+        // Constructor called from SolcastBridgeHandler at initialization
         identifier = id;
         timeZoneProvider = tzp;
+        this.storage = storage;
         dateOutputFormatter = DateTimeFormatter.ofPattern(SolarForecastBindingConstants.PATTERN_FORMAT)
                 .withZone(tzp.getTimeZone());
-        expirationDateTime = expiration;
+        // try to recover data from storage during initialization in order to reduce Solcast API calls
+        if (storage.containsKey(id + FORECAST_APPENDIX)) {
+            JSONObject forecast = new JSONObject(storage.get(id + FORECAST_APPENDIX));
+            expirationDateTime = Instant.parse(storage.get(id + EXPIRATION_APPENDIX));
+            add(forecast);
+        } else {
+            expirationDateTime = Instant.now().minusSeconds(1);
+        }
     }
 
-    public SolcastObject(String id, String content, Instant expiration, TimeZoneProvider tzp) {
+    public SolcastObject(String id, JSONObject forecast, Instant expiration, TimeZoneProvider tzp,
+            Storage<String> storage) {
         identifier = id;
         expirationDateTime = expiration;
         timeZoneProvider = tzp;
+        this.storage = storage;
         dateOutputFormatter = DateTimeFormatter.ofPattern(SolarForecastBindingConstants.PATTERN_FORMAT)
                 .withZone(tzp.getTimeZone());
-        add(content);
+        add(forecast);
+        // store data in storage for later use e.g. after restart
+        storage.put(id + FORECAST_APPENDIX, forecast.toString());
+        storage.put(id + EXPIRATION_APPENDIX, expiration.toString());
     }
 
-    public void join(String content) {
-        add(content);
-    }
-
-    private void add(String content) {
-        if (!content.isEmpty()) {
-            JSONObject contentJson = new JSONObject(content);
+    private void add(JSONObject forecast) {
+        if (!forecast.isEmpty()) {
             JSONArray resultJsonArray;
 
             // prepare data for raw channel
-            if (contentJson.has("forecasts")) {
-                resultJsonArray = contentJson.getJSONArray("forecasts");
+            if (forecast.has(KEY_ACTUALS)) {
+                resultJsonArray = forecast.getJSONArray(KEY_ACTUALS);
                 addJSONArray(resultJsonArray);
-                rawData.get().put("forecasts", resultJsonArray);
+                rawData.get().put(KEY_ACTUALS, resultJsonArray);
             }
-            if (contentJson.has("estimated_actuals")) {
-                resultJsonArray = contentJson.getJSONArray("estimated_actuals");
+            if (forecast.has(KEY_FORECAST)) {
+                resultJsonArray = forecast.getJSONArray(KEY_FORECAST);
                 addJSONArray(resultJsonArray);
-                rawData.get().put("estimated_actuals", resultJsonArray);
+                rawData.get().put(KEY_FORECAST, resultJsonArray);
             }
         }
     }
@@ -127,25 +141,25 @@ public class SolcastObject implements SolarForecast {
         // sort data into TreeMaps
         for (int i = 0; i < resultJsonArray.length(); i++) {
             JSONObject jo = resultJsonArray.getJSONObject(i);
-            String periodEnd = jo.getString("period_end");
+            String periodEnd = jo.getString(KEY_PERIOD_END);
             ZonedDateTime periodEndZdt = getZdtFromUTC(periodEnd);
             if (periodEndZdt == null) {
                 return;
             }
-            estimationDataMap.put(periodEndZdt, jo.getDouble("pv_estimate"));
+            estimationDataMap.put(periodEndZdt, jo.getDouble(KEY_ESTIMATE));
 
             // fill pessimistic values
-            if (jo.has("pv_estimate10")) {
-                pessimisticDataMap.put(periodEndZdt, jo.getDouble("pv_estimate10"));
+            if (jo.has(KEY_ESTIMATE10)) {
+                pessimisticDataMap.put(periodEndZdt, jo.getDouble(KEY_ESTIMATE10));
             } else {
-                pessimisticDataMap.put(periodEndZdt, jo.getDouble("pv_estimate"));
+                pessimisticDataMap.put(periodEndZdt, jo.getDouble(KEY_ESTIMATE));
             }
 
             // fill optimistic values
-            if (jo.has("pv_estimate90")) {
-                optimisticDataMap.put(periodEndZdt, jo.getDouble("pv_estimate90"));
+            if (jo.has(KEY_ESTIMATE90)) {
+                optimisticDataMap.put(periodEndZdt, jo.getDouble(KEY_ESTIMATE90));
             } else {
-                optimisticDataMap.put(periodEndZdt, jo.getDouble("pv_estimate"));
+                optimisticDataMap.put(periodEndZdt, jo.getDouble(KEY_ESTIMATE));
             }
             if (jo.has("period")) {
                 period = Duration.parse(jo.getString("period")).toMinutes();

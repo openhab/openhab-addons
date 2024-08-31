@@ -31,4 +31,11 @@ public class SolcastConstants {
     public static final String CURRENT_ESTIMATE_URL = BASE_URL + "%s/estimated_actuals?format=json";
     public static final String BEARER = "Bearer ";
     public static final Unit<Power> KILOWATT_UNIT = MetricPrefix.KILO(Units.WATT);
+
+    public static final String KEY_ACTUALS = "estimated_actuals";
+    public static final String KEY_FORECAST = "forecasts";
+    public static final String KEY_PERIOD_END = "period_end";
+    public static final String KEY_ESTIMATE = "pv_estimate";
+    public static final String KEY_ESTIMATE10 = "pv_estimate10";
+    public static final String KEY_ESTIMATE90 = "pv_estimate90";
 }

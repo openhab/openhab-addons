@@ -26,7 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class SolarForecastBindingConstants {
 
-    private static final String BINDING_ID = "solarforecast";
+    public static final String BINDING_ID = "solarforecast";
 
     // Things
     public static final ThingTypeUID FORECAST_SOLAR_SITE = new ThingTypeUID(BINDING_ID, "fs-site");
