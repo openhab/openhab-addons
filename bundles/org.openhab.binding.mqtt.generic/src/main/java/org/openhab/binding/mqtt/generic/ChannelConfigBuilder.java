@@ -83,12 +83,12 @@ public class ChannelConfigBuilder {
         return this;
     }
 
-    public ChannelConfigBuilder withTransformationPattern(@Nullable List<String> pattern) {
+    public ChannelConfigBuilder withTransformationPattern(List<String> pattern) {
         config.transformationPattern = pattern;
         return this;
     }
 
-    public ChannelConfigBuilder withTransformationPatternOut(@Nullable List<String> pattern) {
+    public ChannelConfigBuilder withTransformationPatternOut(List<String> pattern) {
         config.transformationPatternOut = pattern;
         return this;
     }

@@ -302,12 +302,12 @@ public abstract class AbstractMQTTThingHandler extends BaseThingHandler
     @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available,
             String payload_not_available) {
-        addAvailabilityTopic(availability_topic, payload_available, payload_not_available, null);
+        addAvailabilityTopic(availability_topic, payload_available, payload_not_available, List.of());
     }
 
     @Override
     public void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
-            @Nullable List<String> transformation_pattern) {
+            List<String> transformation_pattern) {
         availabilityStates.computeIfAbsent(availability_topic, topic -> {
             Value value = new OnOffValue(payload_available, payload_not_available);
             ChannelGroupUID groupUID = new ChannelGroupUID(getThing().getUID(), "availability");

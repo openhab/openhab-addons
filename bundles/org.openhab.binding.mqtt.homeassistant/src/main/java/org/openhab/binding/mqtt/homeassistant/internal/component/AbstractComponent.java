@@ -131,7 +131,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
             componentConfiguration.getTracker().setAvailabilityMode(availabilityTrackerMode);
             for (Availability availability : availabilities) {
                 String availabilityTemplate = availability.getValueTemplate();
-                List<String> availabilityTemplates = null;
+                List<String> availabilityTemplates = List.of();
                 if (availabilityTemplate != null) {
                     availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
                     availabilityTemplates = List.of(availabilityTemplate);
@@ -144,7 +144,7 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
             String availabilityTopic = this.channelConfiguration.getAvailabilityTopic();
             if (availabilityTopic != null) {
                 String availabilityTemplate = this.channelConfiguration.getAvailabilityTemplate();
-                List<String> availabilityTemplates = null;
+                List<String> availabilityTemplates = List.of();
                 if (availabilityTemplate != null) {
                     availabilityTemplate = JINJA_PREFIX + availabilityTemplate;
                     availabilityTemplates = List.of(availabilityTemplate);

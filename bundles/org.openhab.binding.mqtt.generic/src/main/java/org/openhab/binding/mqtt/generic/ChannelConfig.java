@@ -48,8 +48,8 @@ public class ChannelConfig {
     public boolean trigger = false;
     public String unit = "";
 
-    public @Nullable List<String> transformationPattern;
-    public @Nullable List<String> transformationPatternOut;
+    public List<String> transformationPattern = List.of();
+    public List<String> transformationPatternOut = List.of();
     public String formatBeforePublish = "%s";
     public String allowedStates = "";
 

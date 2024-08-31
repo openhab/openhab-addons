@@ -44,5 +44,5 @@ public class GenericThingConfiguration {
     /**
      * transformation pattern for the availability payload
      */
-    public @Nullable List<String> transformationPattern;
+    public List<String> transformationPattern = List.of();
 }

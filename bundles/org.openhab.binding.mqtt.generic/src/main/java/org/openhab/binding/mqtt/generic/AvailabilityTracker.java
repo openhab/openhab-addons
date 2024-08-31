@@ -15,7 +15,6 @@ package org.openhab.binding.mqtt.generic;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Interface to keep track of the availability of device using an availability topic or messages received
@@ -76,7 +75,7 @@ public interface AvailabilityTracker {
      *            payload_available/payload_not_available.
      */
     void addAvailabilityTopic(String availability_topic, String payload_available, String payload_not_available,
-            @Nullable List<String> transformation_pattern);
+            List<String> transformation_pattern);
 
     void removeAvailabilityTopic(String availability_topic);
 
