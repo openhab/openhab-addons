@@ -14,5 +14,10 @@
 			<description>Data refresh rate of forecast data in minutes, zero for manual updates.</description>
 			<default>120</default>
 		</parameter>
+		<parameter name="forecastOnly" type="boolean" required="true">
+			<label>Forecast Only</label>
+			<description>Use only forecast data and don't query actual vaules</description>
+			<default>false</default>
+		</parameter>
 	</config-description>
 </config-description:config-descriptions>

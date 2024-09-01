@@ -100,6 +100,7 @@ public class SolcastObject implements SolarForecast {
             JSONObject forecast = new JSONObject(storage.get(id + FORECAST_APPENDIX));
             expirationDateTime = Instant.parse(storage.get(id + EXPIRATION_APPENDIX));
             add(forecast);
+            logger.trace("recovered forecast data {}", forecast.toString());
         } else {
             expirationDateTime = Instant.now().minusSeconds(1);
         }
@@ -115,6 +116,7 @@ public class SolcastObject implements SolarForecast {
                 .withZone(tzp.getTimeZone());
         add(forecast);
         // store data in storage for later use e.g. after restart
+        logger.trace("store forecast data {}", forecast.toString());
         storage.put(id + FORECAST_APPENDIX, forecast.toString());
         storage.put(id + EXPIRATION_APPENDIX, expiration.toString());
     }

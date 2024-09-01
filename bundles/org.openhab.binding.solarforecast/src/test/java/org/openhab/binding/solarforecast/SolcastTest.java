@@ -31,6 +31,7 @@ import java.util.Map;
 
 import javax.measure.quantity.Energy;
 
+import org.apache.karaf.kar.command.InstallKarCommand;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
@@ -743,4 +744,12 @@ class SolcastTest {
             assertEquals("kWh", ((QuantityType<?>) e1.state()).getUnit().toString(), "Power Unit");
         }
     }
+
+    @Test
+    void testOnlyForecast() {
+        String instantMinString = Instant.MIN.toString();
+        Instant min = Instant.parse(instantMinString);
+        System.out.println(min);
+    }
+
 }

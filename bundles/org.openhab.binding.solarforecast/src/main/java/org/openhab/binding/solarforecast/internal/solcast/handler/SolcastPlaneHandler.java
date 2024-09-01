@@ -158,16 +158,36 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                     String forecastUrl = String.format(FORECAST_URL, configuration.resourceId);
                     String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.resourceId);
                     try {
-                        // get actual estimate
-                        Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
-                        estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
-                        ContentResponse crEstimate = estimateRequest.send();
-                        if (crEstimate.getStatus() == 200) {
-                            Instant expiration = (configuration.refreshInterval == 0) ? Instant.MAX
-                                    : Instant.now().plus(configuration.refreshInterval, ChronoUnit.MINUTES);
-                            SolcastObject localForecast = new SolcastObject(thing.getUID().getAsString(),
-                                    crEstimate.getContentAsString(), expiration, bridge);
-
+                        JSONObject forecast = null;
+                        if (forecastObject.getForecastBegin() != Instant.MAX
+                                && forecastObject.getForecastEnd() != Instant.MIN) {
+                            // we found a forecast with valid data
+                            JSONObject raw = new JSONObject(forecastObject.getRaw());
+                            // discard actuals and use forecast as new actuals
+                            raw.remove(KEY_ACTUALS);
+                            raw.put(KEY_ACTUALS, raw.getJSONArray(KEY_FORECAST));
+                            raw.remove(KEY_FORECAST);
+                            forecast = new JSONObject(raw.toString());
+                            logger.trace("Guessing with forecast as new actuals {}", forecast.toString());
+                        } else {
+                            if (configuration.forecastOnly) {
+                                logger.trace("Dismiss actuals call");
+                                // start with empty values
+                                forecast = new JSONObject();
+                            } else {
+                                // get actual estimate
+                                logger.trace("Fetch actuals");
+                                Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
+                                estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
+                                ContentResponse crEstimate = estimateRequest.send();
+                                if (crEstimate.getStatus() == 200) {
+                                    forecast = new JSONObject(crEstimate.getContentAsString());
+                                } else {
+                                    apiCallFailure(currentEstimateUrl, crEstimate.getStatus());
+                                }
+                            }
+                        }
+                        if (forecast != null) {
                             // get forecast
                             Request forecastRequest = httpClient.newRequest(forecastUrl);
                             forecastRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
@@ -184,11 +204,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                                         StringType.valueOf(forecastOptional.get().getRaw()));
                                 updateStatus(ThingStatus.ONLINE);
                             } else {
-                                logger.debug("{} Call {} failed {}", thing.getLabel(), forecastUrl,
-                                        crForecast.getStatus());
-                                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                                        "@text/solarforecast.plane.status.http-status [\"" + crForecast.getStatus()
-                                                + "\"]");
+                                apiCallFailure(forecastUrl, crForecast.getStatus());
                             }
                         }
                     } catch (ExecutionException | TimeoutException e) {
@@ -203,6 +219,12 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             });
         });
         return forecastOptional.get();
+    }
+
+    private void apiCallFailure(String url, int status) {
+        logger.debug("{} Call {} failed {}", thing.getLabel(), url, status);
+        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                "@text/solarforecast.plane.status.http-status [\"" + status + "\"]");
     }
 
     protected void updateChannels(SolcastObject f) {
