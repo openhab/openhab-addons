@@ -55,10 +55,10 @@ See [DateTime](#date-time) section for more information.
 
 ### Solcast Plane Configuration
 
-| Name            | Type    | Description                                            | Default         | Required | Advanced |
-|-----------------|---------|--------------------------------------------------------|-----------------|----------|----------|
-| resourceId      | text    | Resource Id of Solcast rooftop site                    | N/A             | yes      | no       |
-| refreshInterval | integer | Forecast Refresh Interval in minutes (0 = disable automatic refresh)                   | 120             | yes      | no       |
+| Name            | Type    | Description                                                              | Default         | Required | Advanced |
+|-----------------|---------|--------------------------------------------------------------------------|-----------------|----------|----------|
+| resourceId      | text    | Resource Id of Solcast rooftop site                                      | N/A             | yes      | no       |
+| refreshInterval | integer | Forecast Refresh Interval in minutes (0 = disable automatic refresh)     | 120             | yes      | no       |
 
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
