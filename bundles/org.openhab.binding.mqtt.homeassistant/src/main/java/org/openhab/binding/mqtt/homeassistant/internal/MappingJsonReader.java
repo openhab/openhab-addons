@@ -121,7 +121,6 @@ public class MappingJsonReader extends JsonReaderDelegate {
         ABBREVIATIONS.put("json_attr", "json_attributes");
         ABBREVIATIONS.put("json_attr_t", "json_attributes_topic");
         ABBREVIATIONS.put("json_attr_tpl", "json_attributes_template");
-        ABBREVIATIONS.put("lrst_t", "last_reset_topic");
         ABBREVIATIONS.put("lrst_val_tpl", "last_reset_value_template");
         ABBREVIATIONS.put("max", "max");
         ABBREVIATIONS.put("min", "min");
@@ -295,14 +294,17 @@ public class MappingJsonReader extends JsonReaderDelegate {
         ABBREVIATIONS.put("l_ver_tpl", "latest_version_template");
         ABBREVIATIONS.put("pl_inst", "payload_install");
 
-        DEVICE_ABBREVIATIONS.put("cu", "configuration_url");
         DEVICE_ABBREVIATIONS.put("cns", "connections");
-        DEVICE_ABBREVIATIONS.put("hw", "hw_version");
+        DEVICE_ABBREVIATIONS.put("cu", "configuration_url");
         DEVICE_ABBREVIATIONS.put("ids", "identifiers");
+        DEVICE_ABBREVIATIONS.put("name", "name");
         DEVICE_ABBREVIATIONS.put("mf", "manufacturer");
         DEVICE_ABBREVIATIONS.put("mdl", "model");
-        DEVICE_ABBREVIATIONS.put("sa", "suggested_area");
+        DEVICE_ABBREVIATIONS.put("mdl_id", "model_id");
+        DEVICE_ABBREVIATIONS.put("hw", "hw_version");
         DEVICE_ABBREVIATIONS.put("sw", "sw_version");
+        DEVICE_ABBREVIATIONS.put("sa", "suggested_area");
+        DEVICE_ABBREVIATIONS.put("sn", "serial_number");
     }
 
     private final Map<String, String> mapping;
