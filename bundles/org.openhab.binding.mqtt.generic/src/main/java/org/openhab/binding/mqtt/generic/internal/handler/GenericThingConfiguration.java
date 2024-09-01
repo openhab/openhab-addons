@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.mqtt.generic.internal.handler;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.OnOffType;
@@ -42,5 +44,5 @@ public class GenericThingConfiguration {
     /**
      * transformation pattern for the availability payload
      */
-    public @Nullable String transformationPattern;
+    public List<String> transformationPattern = List.of();
 }

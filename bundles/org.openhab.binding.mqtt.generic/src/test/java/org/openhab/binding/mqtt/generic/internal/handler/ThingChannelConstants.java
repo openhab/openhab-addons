@@ -49,11 +49,7 @@ public class ThingChannelConstants {
 
     public static final ChannelUID TEXT_CHANNEL_UID = new ChannelUID(TEST_GENERIC_THING, "mytext");
 
-    public static final String JSON_PATH_JSON = "{ \"device\": { \"status\": { \"temperature\": 23.2 }}}";
-    public static final String JSON_PATH_PATTERN = "$.device.status.temperature";
-
     public static final List<Channel> THING_CHANNEL_LIST = new ArrayList<>();
-    public static final List<Channel> THING_CHANNEL_LIST_WITH_JSON = new ArrayList<>();
 
     /**
      * Create a channel with exact the parameters we need for the tests
@@ -74,26 +70,12 @@ public class ThingChannelConstants {
         THING_CHANNEL_LIST.add(cb("onoff", "Switch", onoffConfiguration(), ON_OFF_CHANNEL));
         THING_CHANNEL_LIST.add(cb("num", "Number", numberConfiguration(), NUMBER_CHANNEL));
         THING_CHANNEL_LIST.add(cb("percent", "Number:Dimensionless", percentageConfiguration(), PERCENTAGE_CHANNEL));
-
-        THING_CHANNEL_LIST_WITH_JSON.add(cb("mytext", "String", textConfigurationWithJson(), TEXT_WITH_JSON_CHANNEL));
-        THING_CHANNEL_LIST_WITH_JSON.add(cb("onoff", "Switch", onoffConfiguration(), ON_OFF_CHANNEL));
-        THING_CHANNEL_LIST_WITH_JSON.add(cb("num", "Number", numberConfiguration(), NUMBER_CHANNEL));
-        THING_CHANNEL_LIST_WITH_JSON
-                .add(cb("percent", "Number:Dimensionless", percentageConfiguration(), PERCENTAGE_CHANNEL));
     }
 
     static Configuration textConfiguration() {
         Map<String, Object> data = new HashMap<>();
         data.put("stateTopic", "test/state");
         data.put("commandTopic", "test/command");
-        return new Configuration(data);
-    }
-
-    static Configuration textConfigurationWithJson() {
-        Map<String, Object> data = new HashMap<>();
-        data.put("stateTopic", "test/state");
-        data.put("commandTopic", "test/command");
-        data.put("transformationPattern", "JSONPATH:" + JSON_PATH_PATTERN);
         return new Configuration(data);
     }
 

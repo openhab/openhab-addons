@@ -34,7 +34,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.AbstractHomeAssistantTests;
 import org.openhab.binding.mqtt.homeassistant.internal.ComponentChannel;
@@ -79,7 +78,7 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         when(callbackMock.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
 
         thingHandler = new LatchThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
-                channelTypeRegistry, transformationServiceProvider, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+                channelTypeRegistry, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         thingHandler = spy(thingHandler);
@@ -288,10 +287,9 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
 
         public LatchThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider,
                 MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
-                TransformationServiceProvider transformationServiceProvider, int subscribeTimeout,
-                int attributeReceiveTimeout) {
-            super(thing, channelTypeProvider, stateDescriptionProvider, channelTypeRegistry,
-                    transformationServiceProvider, subscribeTimeout, attributeReceiveTimeout);
+                int subscribeTimeout, int attributeReceiveTimeout) {
+            super(thing, channelTypeProvider, stateDescriptionProvider, channelTypeRegistry, subscribeTimeout,
+                    attributeReceiveTimeout);
         }
 
         @Override

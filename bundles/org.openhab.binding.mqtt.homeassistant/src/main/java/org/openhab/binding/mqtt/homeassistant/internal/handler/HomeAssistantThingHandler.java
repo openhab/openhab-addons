@@ -30,7 +30,6 @@ import org.openhab.binding.mqtt.generic.AbstractMQTTThingHandler;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.tools.DelayedBatchProcessing;
 import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
@@ -101,8 +100,6 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
     protected HandlerConfiguration config = new HandlerConfiguration();
     private Set<HaID> discoveryHomeAssistantIDs = new HashSet<>();
 
-    protected final TransformationServiceProvider transformationServiceProvider;
-
     private boolean started;
     private boolean newStyleChannels;
     private @Nullable Update updateComponent;
@@ -118,21 +115,18 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
      */
     public HomeAssistantThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider,
             MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
-            TransformationServiceProvider transformationServiceProvider, int subscribeTimeout,
-            int attributeReceiveTimeout) {
+            int subscribeTimeout, int attributeReceiveTimeout) {
         super(thing, subscribeTimeout);
         this.gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
         this.channelTypeProvider = channelTypeProvider;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.channelTypeRegistry = channelTypeRegistry;
-        this.transformationServiceProvider = transformationServiceProvider;
         this.attributeReceiveTimeout = attributeReceiveTimeout;
         this.delayedProcessing = new DelayedBatchProcessing<>(attributeReceiveTimeout, this, scheduler);
 
         newStyleChannels = "true".equals(thing.getProperties().get("newStyleChannels"));
 
-        this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this, this, gson,
-                this.transformationServiceProvider, newStyleChannels);
+        this.discoverComponents = new DiscoverComponents(thing.getUID(), scheduler, this, this, gson, newStyleChannels);
     }
 
     @Override
@@ -162,7 +156,7 @@ public class HomeAssistantThingHandler extends AbstractMQTTThingHandler
             } else {
                 try {
                     component = ComponentFactory.createComponent(thingUID, haID, channelConfigurationJSON, this, this,
-                            scheduler, gson, transformationServiceProvider, newStyleChannels);
+                            scheduler, gson, newStyleChannels);
                     if (typeID.equals(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)) {
                         typeID = calculateThingTypeUID(component);
                     }

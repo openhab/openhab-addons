@@ -20,7 +20,6 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.handler.HomeAssistantThingHandler;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
@@ -28,8 +27,6 @@ import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.openhab.core.thing.type.ChannelTypeRegistry;
-import org.openhab.core.transform.TransformationHelper;
-import org.openhab.core.transform.TransformationService;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
@@ -42,7 +39,7 @@ import org.osgi.service.component.annotations.Reference;
  */
 @Component(service = ThingHandlerFactory.class)
 @NonNullByDefault
-public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements TransformationServiceProvider {
+public class MqttThingHandlerFactory extends BaseThingHandlerFactory {
     private final MqttChannelTypeProvider typeProvider;
     private final MqttChannelStateDescriptionProvider stateDescriptionProvider;
     private final ChannelTypeRegistry channelTypeRegistry;
@@ -75,13 +72,8 @@ public class MqttThingHandlerFactory extends BaseThingHandlerFactory implements 
 
         if (supportsThingType(thingTypeUID)) {
             return new HomeAssistantThingHandler(thing, typeProvider, stateDescriptionProvider, channelTypeRegistry,
-                    this, 10000, 2000);
+                    10000, 2000);
         }
         return null;
-    }
-
-    @Override
-    public @Nullable TransformationService getTransformationService(String type) {
-        return TransformationHelper.getTransformationService(bundleContext, type);
     }
 }
