@@ -15,10 +15,8 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
@@ -48,11 +46,9 @@ public class ComponentFactory {
      */
     public static AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String channelConfigurationJSON,
             ChannelStateUpdateListener updateListener, AvailabilityTracker tracker, ScheduledExecutorService scheduler,
-            Gson gson, TransformationServiceProvider transformationServiceProvider, boolean newStyleChannels)
-            throws ConfigurationException {
+            Gson gson, boolean newStyleChannels) throws ConfigurationException {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID,
-                channelConfigurationJSON, gson, updateListener, tracker, scheduler)
-                .transformationProvider(transformationServiceProvider);
+                channelConfigurationJSON, gson, updateListener, tracker, scheduler);
         switch (haID.component) {
             case "alarm_control_panel":
                 return new AlarmControlPanel(componentConfiguration, newStyleChannels);
@@ -101,7 +97,6 @@ public class ComponentFactory {
         private final AvailabilityTracker tracker;
         private final Gson gson;
         private final ScheduledExecutorService scheduler;
-        private @Nullable TransformationServiceProvider transformationServiceProvider;
 
         /**
          * Provide a thingUID and HomeAssistant topic ID to determine the channel group UID and type.
@@ -123,12 +118,6 @@ public class ComponentFactory {
             this.scheduler = scheduler;
         }
 
-        public ComponentConfiguration transformationProvider(
-                TransformationServiceProvider transformationServiceProvider) {
-            this.transformationServiceProvider = transformationServiceProvider;
-            return this;
-        }
-
         public ThingUID getThingUID() {
             return thingUID;
         }
@@ -143,11 +132,6 @@ public class ComponentFactory {
 
         public ChannelStateUpdateListener getUpdateListener() {
             return updateListener;
-        }
-
-        @Nullable
-        public TransformationServiceProvider getTransformationServiceProvider() {
-            return transformationServiceProvider;
         }
 
         public Gson getGson() {
