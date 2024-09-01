@@ -16,37 +16,30 @@
 
   <properties>
     <bnd.importpackage>
-      javax.annotation.*;resolution:=optional
+      javax.annotation.*;resolution:=optional,com.googlecode.ipv6.*;resolution:=optional,ch.obermuhlner.math.big.*;resolution:=optional,com.google.common.*;resolution:=optional,com.fasterxml.jackson.*;resolution:=optional,org.jsoup.*;resolution:=optional,org.apache.commons.*;resolution:=optional,org.apache.commons.net.*;resolution:=optional
     </bnd.importpackage>
-    <dep.noembedding>jackson-annotations,jackson-databind,jackson-core,jackson-dataformat-yaml,commons-lang3,commons-net,jsoup</dep.noembedding>
+    <dep.noembedding>jackson-annotations,jackson-databind,jackson-core,jackson-dataformat-yaml,commons-lang3,commons-net</dep.noembedding>
   </properties>
 
   <dependencies>
     <dependency>
-      <groupId>com.hubspot.jinjava</groupId>
-      <artifactId>jinjava</artifactId>
-      <version>2.7.1</version>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.hubspot.jinjava.jinjava</artifactId>
+      <version>2.7.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.google.re2j</groupId>
-      <artifactId>re2j</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.google.re2j.re2j</artifactId>
       <version>1.2</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>ch.obermuhlner</groupId>
-      <artifactId>big-math</artifactId>
-      <version>2.0.0</version>
-      <scope>compile</scope>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>33.3.0-jre</version>
+      <scope>test</scope>
     </dependency>
-    <dependency>
-      <groupId>com.googlecode.java-ipv6</groupId>
-      <artifactId>java-ipv6</artifactId>
-      <version>0.17</version>
-      <scope>compile</scope>
-    </dependency>
-
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
