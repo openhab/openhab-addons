@@ -15,7 +15,6 @@ package org.openhab.binding.serial.internal.channel;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.serial.internal.transform.ValueTransformationProvider;
 import org.openhab.core.library.types.StopMoveType;
 import org.openhab.core.library.types.UpDownType;
 import org.openhab.core.types.Command;
@@ -28,9 +27,8 @@ import org.openhab.core.types.Command;
 @NonNullByDefault
 public class RollershutterChannel extends DeviceChannel {
 
-    public RollershutterChannel(final ValueTransformationProvider valueTransformationProvider,
-            final ChannelConfig config) {
-        super(valueTransformationProvider, config);
+    public RollershutterChannel(final ChannelConfig config) {
+        super(config);
     }
 
     @Override
