@@ -31,11 +31,11 @@ import java.util.Map;
 
 import javax.measure.quantity.Energy;
 
-import org.apache.karaf.kar.command.InstallKarCommand;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.openhab.StorageMock;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
 import org.openhab.binding.solarforecast.internal.SolarForecastException;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
@@ -68,8 +68,8 @@ class SolcastTest {
     public static final String TOO_LATE_INDICATOR = "too late";
     public static final String DAY_MISSING_INDICATOR = "not available in forecast";
 
-    public static SolcastObject scfo;
-    public static ZonedDateTime now;
+    public static SolcastObject scfo = new SolcastObject("sc-test", TIMEZONEPROVIDER, mock(Storage.class));;
+    public static ZonedDateTime now = ZonedDateTime.now(TEST_ZONE);
 
     @BeforeAll
     static void setFixedTimeJul17() {
@@ -434,13 +434,6 @@ class SolcastTest {
     }
 
     @Test
-    void testUpdates() {
-        JSONObject joined = new JSONObject(scfo.getRaw());
-        assertTrue(joined.has("forecasts"), "Forecasts available");
-        assertTrue(joined.has("estimated_actuals"), "Actual data available");
-    }
-
-    @Test
     void testUnitDetection() {
         assertEquals("kW", SolcastConstants.KILOWATT_UNIT.toString(), "Kilowatt");
         assertEquals("W", Units.WATT.toString(), "Watt");
@@ -746,10 +739,46 @@ class SolcastTest {
     }
 
     @Test
-    void testOnlyForecast() {
-        String instantMinString = Instant.MIN.toString();
-        Instant min = Instant.parse(instantMinString);
-        System.out.println(min);
+    void testStorageRead() {
+        String forecasString = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
+        JSONObject forecastJson = new JSONObject(forecasString);
+        String actuals = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
+        JSONObject actualsJson = new JSONObject(actuals);
+        forecastJson.put(KEY_ACTUALS, actualsJson.getJSONArray(KEY_ACTUALS));
+
+        Storage store = new StorageMock();
+        scfo = new SolcastObject("sc-test", TIMEZONEPROVIDER, store);
+        // assert values without stored object
+        assertEquals(Instant.MAX, scfo.getForecastBegin(), "Forecast invalid begin");
+        assertEquals(Instant.MIN, scfo.getForecastEnd(), "Forecast invalid end");
+        assertTrue(scfo.isExpired());
+
+        store.put("sc-test-forecast", forecastJson.toString());
+        store.put("sc-test-expiration", Instant.now().plus(1, ChronoUnit.HOURS).toString());
+        scfo = new SolcastObject("sc-test", TIMEZONEPROVIDER, store);
+        // assert values after storeage is filled
+        assertEquals("2022-07-10T21:30:00Z", scfo.getForecastBegin().toString(), "Forecast invalid begin");
+        assertEquals("2022-07-24T21:00:00Z", scfo.getForecastEnd().toString(), "Forecast invalid end");
+        assertFalse(scfo.isExpired());
     }
 
+    @Test
+    void testStorageWrite() {
+        String forecasString = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
+        JSONObject forecastJson = new JSONObject(forecasString);
+        String actuals = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
+        JSONObject actualsJson = new JSONObject(actuals);
+        forecastJson.put(KEY_ACTUALS, actualsJson.getJSONArray(KEY_ACTUALS));
+
+        Storage store = new StorageMock();
+        scfo = new SolcastObject("sc-test", forecastJson, Instant.now().plus(1, ChronoUnit.HOURS), TIMEZONEPROVIDER,
+                store);
+
+        // store shall be filled now after instatiation
+        // create new new SolcastObject to read from store
+        scfo = new SolcastObject("sc-test", TIMEZONEPROVIDER, store);
+        assertEquals("2022-07-10T21:30:00Z", scfo.getForecastBegin().toString(), "Forecast invalid begin");
+        assertEquals("2022-07-24T21:00:00Z", scfo.getForecastEnd().toString(), "Forecast invalid end");
+        assertFalse(scfo.isExpired());
+    }
 }

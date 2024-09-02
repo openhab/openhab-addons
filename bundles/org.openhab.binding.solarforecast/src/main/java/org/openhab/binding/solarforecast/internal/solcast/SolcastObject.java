@@ -68,7 +68,6 @@ public class SolcastObject implements SolarForecast {
     private Optional<JSONObject> rawData = Optional.of(new JSONObject());
     private Instant expirationDateTime;
     private long period = 30;
-    private Storage<String> storage;
 
     public enum QueryMode {
         Average(SolarForecast.AVERAGE),
@@ -92,13 +91,16 @@ public class SolcastObject implements SolarForecast {
         // Constructor called from SolcastBridgeHandler at initialization
         identifier = id;
         timeZoneProvider = tzp;
-        this.storage = storage;
         dateOutputFormatter = DateTimeFormatter.ofPattern(SolarForecastBindingConstants.PATTERN_FORMAT)
                 .withZone(tzp.getTimeZone());
         // try to recover data from storage during initialization in order to reduce Solcast API calls
         if (storage.containsKey(id + FORECAST_APPENDIX)) {
             JSONObject forecast = new JSONObject(storage.get(id + FORECAST_APPENDIX));
-            expirationDateTime = Instant.parse(storage.get(id + EXPIRATION_APPENDIX));
+            expirationDateTime = Instant.MIN;
+            String expirationString = storage.get(id + EXPIRATION_APPENDIX);
+            if (expirationString != null) {
+                expirationDateTime = Instant.parse(expirationString);
+            }
             add(forecast);
             logger.trace("recovered forecast data {}", forecast.toString());
         } else {
@@ -111,7 +113,6 @@ public class SolcastObject implements SolarForecast {
         identifier = id;
         expirationDateTime = expiration;
         timeZoneProvider = tzp;
-        this.storage = storage;
         dateOutputFormatter = DateTimeFormatter.ofPattern(SolarForecastBindingConstants.PATTERN_FORMAT)
                 .withZone(tzp.getTimeZone());
         add(forecast);
