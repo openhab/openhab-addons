@@ -23,12 +23,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
 import org.eclipse.jetty.http.HttpHeader;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecastActions;
@@ -162,12 +164,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         if (forecastObject.getForecastBegin() != Instant.MAX
                                 && forecastObject.getForecastEnd() != Instant.MIN) {
                             // we found a forecast with valid data
-                            JSONObject raw = new JSONObject(forecastObject.getRaw());
-                            // discard actuals and use forecast as new actuals
-                            raw.remove(KEY_ACTUALS);
-                            raw.put(KEY_ACTUALS, raw.getJSONArray(KEY_FORECAST));
-                            raw.remove(KEY_FORECAST);
-                            forecast = new JSONObject(raw.toString());
+                            forecast = getTodaysValues(forecastObject.getRaw());
                             logger.trace("Guessing with forecast as new actuals {}", forecast.toString());
                         } else {
                             if (configuration.forecastOnly) {
@@ -219,6 +216,28 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             });
         });
         return forecastOptional.get();
+    }
+
+    /**
+     * Store all values from today in JSONObject 
+     */
+    private JSONObject getTodaysValues(String raw) {
+        JSONObject forecast = new JSONObject(raw);
+        JSONArray actualJsonArray = forecast.getJSONArray(KEY_ACTUALS);
+        JSONArray forecastJsonArray = forecast.getJSONArray(KEY_FORECAST);
+        actualJsonArray.put(forecastJsonArray);
+        JSONArray todaysValuesArray = new JSONArray();
+        actualJsonArray.forEach(entry -> {
+            JSONObject forecastJson = (JSONObject) entry;
+            String periodEnd = forecastJson.getString(KEY_PERIOD_END);
+            ZonedDateTime periodEndZdt = Utils.getZdtFromUTC(periodEnd);
+            if(periodEndZdt != null) {
+                if (periodEndZdt.toLocalDate().isEqual(ZonedDateTime.now().toLocalDate())) {
+                    todaysValuesArray.put(entry);
+                }
+            }
+        });
+        return forecast.put(raw, todaysValuesArray);
     }
 
     private void apiCallFailure(String url, int status) {

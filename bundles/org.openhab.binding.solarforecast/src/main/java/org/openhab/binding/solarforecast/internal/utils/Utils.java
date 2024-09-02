@@ -15,6 +15,8 @@ package org.openhab.binding.solarforecast.internal.utils;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeMap;
@@ -24,11 +26,14 @@ import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.solarforecast.internal.actions.SolarForecast;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.TimeSeries.Entry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link Utils} Helpers for Solcast and ForecastSolar
@@ -37,7 +42,8 @@ import org.openhab.core.types.TimeSeries.Entry;
  */
 @NonNullByDefault
 public class Utils {
-    private static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+        private static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
         @Override
         public ZoneId getTimeZone() {
             return ZoneId.systemDefault();
@@ -132,4 +138,16 @@ public class Utils {
         }
         return end;
     }
+
+        public static @Nullable ZonedDateTime getZdtFromUTC(String utc) {
+        try {
+            Instant timestamp = Instant.parse(utc);
+            return timestamp.atZone(timeZoneProvider.getTimeZone());
+        } catch (DateTimeParseException dtpe) {
+            LOGGER.warn("Exception parsing time {} Reason: {}", utc, dtpe.getMessage());
+        }
+        return null;
+    }
+
+
 }
