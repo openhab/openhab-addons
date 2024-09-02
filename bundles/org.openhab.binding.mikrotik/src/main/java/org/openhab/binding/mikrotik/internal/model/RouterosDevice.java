@@ -52,10 +52,13 @@ public class RouterosDevice {
     public static final String PROP_TYPE_KEY = "type";
     public static final String PROP_NAME_KEY = "name";
     public static final String PROP_SSID_KEY = "ssid";
+    public static final String PROP_POE_OUT_KEY = "poe-out";
 
     private static final String CMD_PRINT_IFACES = "/interface/print";
     private static final String CMD_PRINT_IFACE_TYPE_TPL = "/interface/%s/print";
     private static final String CMD_MONTOR_IFACE_MONITOR_TPL = "/interface/%s/monitor numbers=%s once";
+    private static final String CMD_MONITOR_POE_TPL = "/interface/%s/poe/monitor numbers=%s once";
+    private static final String CMD_SET_POE_OUT_TPL = "/interface/%s/poe/set numbers=%s poe-out=%s";
     private static final String CMD_PRINT_CAPS_IFACES = "/caps-man/interface/print";
     private static final String CMD_PRINT_CAPSMAN_REGS = "/caps-man/registration-table/print";
     private static final String CMD_PRINT_WIRELESS_REGS = "/interface/wireless/registration-table/print";
@@ -272,6 +275,12 @@ public class RouterosDevice {
                 List<Map<String, String>> monitorProps = connection.execute(cmd);
                 ifaceModel.mergeProps(monitorProps.get(0));
             }
+            // Get PoE Data if present
+            if (ifaceModel.hasProp(PROP_POE_OUT_KEY)) {
+                String cmd = String.format(CMD_MONITOR_POE_TPL, ifaceModel.getApiType(), ifaceModel.getName());
+                List<Map<String, String>> monitorProps = connection.execute(cmd);
+                ifaceModel.mergeProps(monitorProps.get(0));
+            }
             // Note SSIDs for non-CAPsMAN wireless clients
             String ifaceName = ifaceModel.getName();
             String ifaceSsid = ifaceModel.getProperty(PROP_SSID_KEY);
@@ -349,5 +358,21 @@ public class RouterosDevice {
         List<Map<String, String>> response = conn.execute(CMD_PRINT_RB_INFO);
         this.rbInfo = new RouterosRouterboardInfo(response.get(0));
         this.rbWirelessType = RouterosWirelessType.resolveFromPkgSet(getInstalledPackages(), this.rbInfo);
+    }
+
+    public void setPOE(RouterosEthernetInterface ifaceModel, String state) throws MikrotikApiException {
+        ApiConnection conn = this.connection;
+        if (conn == null) {
+            return;
+        }
+
+        if (!state.equals("auto-on") && !state.equals("forced-on") && !state.equals("off")) {
+            logger.error("Unsupported PoE state '{}'", state);
+
+            return;
+        }
+
+        String cmd = String.format(CMD_SET_POE_OUT_TPL, ifaceModel.getApiType(), ifaceModel.getName(), state);
+        conn.execute(cmd);
     }
 }
