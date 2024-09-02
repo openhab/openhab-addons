@@ -61,6 +61,7 @@ public class RouterosDevice {
     private static final String CMD_PRINT_WIRELESS_REGS = "/interface/wireless/registration-table/print";
     private static final String CMD_PRINT_RESOURCE = "/system/resource/print";
     private static final String CMD_PRINT_RB_INFO = "/system/routerboard/print";
+    private static final String CMD_PRINT_PACKAGES = "/system/package/print";
 
     private final List<RouterosInterfaceBase> interfaceCache = new ArrayList<>();
     private final List<RouterosCapsmanRegistration> capsmanRegistrationCache = new ArrayList<>();
@@ -70,6 +71,7 @@ public class RouterosDevice {
 
     private @Nullable RouterosSystemResources resourcesCache;
     private @Nullable RouterosRouterboardInfo rbInfo;
+    private RouterosWirelessType rbWirelessType = RouterosWirelessType.NONE;
 
     private static Optional<RouterosInterfaceBase> createTypedInterface(Map<String, String> interfaceProps) {
         RouterosInterfaceType ifaceType = RouterosInterfaceType.resolve(interfaceProps.get(PROP_TYPE_KEY));
@@ -156,6 +158,26 @@ public class RouterosDevice {
         return monitoredInterfaces.remove(interfaceName);
     }
 
+    private Set<String> getInstalledPackages() throws MikrotikApiException {
+        Set<String> result = new HashSet<>();
+        ApiConnection conn = this.connection;
+        if (conn == null) {
+            return result;
+        }
+
+        List<Map<String, String>> response = conn.execute(CMD_PRINT_PACKAGES);
+        response.forEach(pkgInfo -> {
+            String pkgName = pkgInfo.get("name");
+            if (pkgName != null) {
+                result.add(pkgName);
+            }
+        });
+
+        logger.debug("RouterOS installed packages -> {}", result);
+
+        return result;
+    }
+
     public void refresh() throws MikrotikApiException {
         synchronized (this) {
             updateResources();
@@ -171,6 +193,10 @@ public class RouterosDevice {
 
     public @Nullable RouterosSystemResources getSysResources() {
         return resourcesCache;
+    }
+
+    public RouterosWirelessType getWirelessType() {
+        return rbWirelessType;
     }
 
     public @Nullable RouterosCapsmanRegistration findCapsmanRegistration(String macAddress) {
@@ -260,9 +286,22 @@ public class RouterosDevice {
         if (conn == null) {
             return;
         }
-        List<Map<String, String>> response = conn.execute(CMD_PRINT_CAPSMAN_REGS);
-        if (response != null) {
-            capsmanRegistrationCache.clear();
+
+        List<String> prefixes = switch (getWirelessType()) {
+            case DUAL -> List.of("/caps-man/registration-table", "/interface/wifi/registration-table");
+            case WIRELESS -> List.of("/caps-man/registration-table");
+            case WIFIWAVE2 -> List.of("/interface/wifiwave2/capsman");
+            case WIFI -> List.of("/interface/wifi/capsman");
+            default -> List.of("");
+        };
+
+        capsmanRegistrationCache.clear();
+        for (String prefix : prefixes) {
+            List<Map<String, String>> response = conn.execute(prefix + "/print");
+            if (response == null) {
+                continue;
+            }
+
             response.forEach(reg -> capsmanRegistrationCache.add(new RouterosCapsmanRegistration(reg)));
         }
     }
@@ -272,7 +311,15 @@ public class RouterosDevice {
         if (conn == null) {
             return;
         }
-        List<Map<String, String>> response = conn.execute(CMD_PRINT_WIRELESS_REGS);
+
+        String wirelessPkg = switch (getWirelessType()) {
+            case DUAL, WIRELESS -> "wireless";
+            case WIFIWAVE2 -> "wifiwave2";
+            default -> "wifi";
+        };
+        String cmd = String.format("/interface/%s/registration-table/print", wirelessPkg);
+
+        List<Map<String, String>> response = conn.execute(cmd);
         wirelessRegistrationCache.clear();
         response.forEach(props -> {
             String wlanIfaceName = props.get("interface");
@@ -301,5 +348,6 @@ public class RouterosDevice {
         }
         List<Map<String, String>> response = conn.execute(CMD_PRINT_RB_INFO);
         this.rbInfo = new RouterosRouterboardInfo(response.get(0));
+        this.rbWirelessType = RouterosWirelessType.resolveFromPkgSet(getInstalledPackages(), this.rbInfo);
     }
 }
