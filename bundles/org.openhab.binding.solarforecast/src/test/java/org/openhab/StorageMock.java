@@ -15,6 +15,7 @@ package org.openhab;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.storage.Storage;
 
@@ -23,6 +24,7 @@ import org.openhab.core.storage.Storage;
  *
  * @author Bernd Weymann - Initial contribution
  */
+@NonNullByDefault
 public class StorageMock implements Storage {
     private HashMap<String, Object> ramStorage = new HashMap();
 
@@ -50,7 +52,7 @@ public class StorageMock implements Storage {
 
     @Override
     public @Nullable Object put(String key, @Nullable Object value) {
-        System.out.println("STORAGE: put " + key + " : " + value);
+        System.out.println("STORAGE: put " + key + " : ");// + value.toString().substring(0, 100));
         Object ret = ramStorage.remove(key);
         ramStorage.put(key, value);
         return ret;

@@ -14,7 +14,8 @@ package org.openhab.binding.solarforecast;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
-import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstants.KEY_ACTUALS;
+import static org.mockito.Mockito.when;
+import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstants.*;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -28,10 +29,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import javax.measure.quantity.Energy;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -43,13 +50,16 @@ import org.openhab.binding.solarforecast.internal.solcast.SolcastConstants;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject;
 import org.openhab.binding.solarforecast.internal.solcast.SolcastObject.QueryMode;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastBridgeHandler;
-import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastPlaneHandler;
+import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastBridgeMock;
 import org.openhab.binding.solarforecast.internal.solcast.handler.SolcastPlaneMock;
 import org.openhab.binding.solarforecast.internal.utils.Utils;
+import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.storage.Storage;
+import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.internal.BridgeImpl;
+import org.openhab.core.thing.internal.ThingImpl;
 import org.openhab.core.types.State;
 import org.openhab.core.types.TimeSeries;
 
@@ -100,6 +110,36 @@ class SolcastTest {
         forecastJson.put(KEY_ACTUALS, actualsJson.getJSONArray(KEY_ACTUALS));
         now = LocalDateTime.of(2022, 7, 18, 0, 0).atZone(TEST_ZONE);
         scfo = new SolcastObject("sc-test", forecastJson, now.toInstant(), TIMEZONEPROVIDER, mock(Storage.class));
+    }
+
+    static void httpActualResponse(HttpClient httpMock, int status, String content, String resourceId) {
+        String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, resourceId);
+        Request actualsRequest = mock(Request.class);
+        when(httpMock.newRequest(currentEstimateUrl)).thenReturn(actualsRequest);
+        ContentResponse actualsResponse = mock(ContentResponse.class);
+        try {
+            when(actualsRequest.send()).thenReturn(actualsResponse);
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        when(actualsResponse.getContentAsString()).thenReturn(FileReader.readFileInString(content));
+        when(actualsResponse.getStatus()).thenReturn(status);
+    }
+
+    static void httpForecastResponse(HttpClient httpMock, int status, String content, String resourceId) {
+        String forecastUrl = String.format(FORECAST_URL, resourceId);
+        Request forecastRequest = mock(Request.class);
+        when(httpMock.newRequest(forecastUrl)).thenReturn(forecastRequest);
+        ContentResponse forecastResponse = mock(ContentResponse.class);
+        try {
+            when(forecastRequest.send()).thenReturn(forecastResponse);
+        } catch (InterruptedException | TimeoutException | ExecutionException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        when(forecastResponse.getContentAsString()).thenReturn(FileReader.readFileInString(content));
+        when(forecastResponse.getStatus()).thenReturn(status);
     }
 
     /**
@@ -443,7 +483,7 @@ class SolcastTest {
     void testTimes() {
         String utcTimeString = "2022-07-17T19:30:00.0000000Z";
         SolcastObject so = new SolcastObject("sc-test", TIMEZONEPROVIDER, mock(Storage.class));
-        ZonedDateTime zdt = so.getZdtFromUTC(utcTimeString);
+        ZonedDateTime zdt = Utils.getZdtFromUTC(utcTimeString);
         assertNotNull(zdt);
         assertEquals("2022-07-17T21:30+02:00[Europe/Berlin]", zdt.toString(), "ZonedDateTime");
         LocalDateTime ldt = zdt.toLocalDateTime();
@@ -567,28 +607,53 @@ class SolcastTest {
 
     @Test
     void testCombinedPowerTimeSeries() {
-        setFixedTimeJul18();
         BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITE, "bridge");
         SolcastBridgeHandler scbh = new SolcastBridgeHandler(bi, new TimeZP());
         bi.setHandler(scbh);
         CallbackMock cm = new CallbackMock();
         scbh.setCallback(cm);
-        SolcastPlaneHandler scph1 = new SolcastPlaneMock(bi);
-        CallbackMock cm1 = new CallbackMock();
-        scph1.initialize();
-        scph1.setCallback(cm1);
-        scbh.getData();
 
-        SolcastPlaneHandler scph2 = new SolcastPlaneMock(bi);
+        Thing thing = new ThingImpl(SolarForecastBindingConstants.SOLCAST_PLANE, "sc-plane-1-test");
+        thing.setBridgeUID(bi.getUID());
+        HttpClient httpMock = mock(HttpClient.class);
+        Storage store = new StorageMock();
+
+        String resourceId1 = "plane-1";
+        httpActualResponse(httpMock, 200, "src/test/resources/solcast/estimated-actuals.json", resourceId1);
+        httpForecastResponse(httpMock, 200, "src/test/resources/solcast/forecasts.json", resourceId1);
+        SolcastPlaneMock scph1 = new SolcastPlaneMock(thing, httpMock, store);
+        CallbackMock cm1 = new CallbackMock();
+        cm1.setBridge(bi);
+        scph1.setCallback(cm1);
+        Map<String, Object> planeConfigMap1 = new HashedMap<>();
+        planeConfigMap1.put("resourceId", resourceId1);
+        Configuration planeConfig1 = new Configuration(planeConfigMap1);
+        scph1.updateConfig(planeConfig1);
+        scph1.initialize();
+
+        Thing thing2 = new ThingImpl(SolarForecastBindingConstants.SOLCAST_PLANE, "sc-plane-2-test");
+        thing2.setBridgeUID(bi.getUID());
+
+        String resourceId2 = "plane-2";
+        httpActualResponse(httpMock, 200, "src/test/resources/solcast/estimated-actuals.json", resourceId2);
+        httpForecastResponse(httpMock, 200, "src/test/resources/solcast/forecasts.json", resourceId2);
+        SolcastPlaneMock scph2 = new SolcastPlaneMock(thing2, httpMock, store);
         CallbackMock cm2 = new CallbackMock();
-        scph2.initialize();
+        cm2.setBridge(bi);
         scph2.setCallback(cm2);
+        Map<String, Object> planeConfigMap2 = new HashedMap<>();
+        planeConfigMap2.put("resourceId", resourceId2);
+        Configuration planeConfig2 = new Configuration(planeConfigMap2);
+        scph2.updateConfig(planeConfig2);
+        scph2.initialize();
+
+        // simulate trigger of refresh job
         scbh.getData();
 
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#power-estimate");
-        TimeSeries ts2 = cm2.getTimeSeries("solarforecast:sc-plane:thing:average#power-estimate");
-        assertEquals(302, ts1.size(), "TimeSeries size");
-        assertEquals(302, ts2.size(), "TimeSeries size");
+        TimeSeries ts2 = cm2.getTimeSeries("solarforecast:sc-plane:sc-plane-2-test:average#power-estimate");
+        assertEquals(337, ts1.size(), "TimeSeries size");
+        assertEquals(337, ts2.size(), "TimeSeries size");
         Iterator<TimeSeries.Entry> iter1 = ts1.getStates().iterator();
         Iterator<TimeSeries.Entry> iter2 = ts2.getStates().iterator();
         while (iter1.hasNext()) {
@@ -679,21 +744,45 @@ class SolcastTest {
         CallbackMock cm = new CallbackMock();
         scbh.setCallback(cm);
 
-        SolcastPlaneHandler scph1 = new SolcastPlaneMock(bi);
-        CallbackMock cm1 = new CallbackMock();
-        scph1.initialize();
-        scph1.setCallback(cm1);
+        Thing thing = new ThingImpl(SolarForecastBindingConstants.SOLCAST_PLANE, "sc-plane-1-test");
+        thing.setBridgeUID(bi.getUID());
+        HttpClient httpMock = mock(HttpClient.class);
+        Storage store = new StorageMock();
 
-        SolcastPlaneHandler scph2 = new SolcastPlaneMock(bi);
+        String resourceId1 = "plane-1";
+        httpActualResponse(httpMock, 200, "src/test/resources/solcast/estimated-actuals.json", resourceId1);
+        httpForecastResponse(httpMock, 200, "src/test/resources/solcast/forecasts.json", resourceId1);
+        SolcastPlaneMock scph1 = new SolcastPlaneMock(thing, httpMock, store);
+        CallbackMock cm1 = new CallbackMock();
+        cm1.setBridge(bi);
+        scph1.setCallback(cm1);
+        Map<String, Object> planeConfigMap1 = new HashedMap<>();
+        planeConfigMap1.put("resourceId", resourceId1);
+        Configuration planeConfig1 = new Configuration(planeConfigMap1);
+        scph1.updateConfig(planeConfig1);
+        scph1.initialize();
+
+        Thing thing2 = new ThingImpl(SolarForecastBindingConstants.SOLCAST_PLANE, "sc-plane-2-test");
+        thing2.setBridgeUID(bi.getUID());
+
+        String resourceId2 = "plane-2";
+        httpActualResponse(httpMock, 200, "src/test/resources/solcast/estimated-actuals.json", resourceId2);
+        httpForecastResponse(httpMock, 200, "src/test/resources/solcast/forecasts.json", resourceId2);
+        SolcastPlaneMock scph2 = new SolcastPlaneMock(thing2, httpMock, store);
         CallbackMock cm2 = new CallbackMock();
-        scph2.initialize();
+        cm2.setBridge(bi);
         scph2.setCallback(cm2);
+        Map<String, Object> planeConfigMap2 = new HashedMap<>();
+        planeConfigMap2.put("resourceId", resourceId2);
+        Configuration planeConfig2 = new Configuration(planeConfigMap2);
+        scph2.updateConfig(planeConfig2);
+        scph2.initialize();
 
         // simulate trigger of refresh job
         scbh.getData();
 
         TimeSeries ts1 = cm.getTimeSeries("solarforecast:sc-site:bridge:average#energy-estimate");
-        TimeSeries ts2 = cm2.getTimeSeries("solarforecast:sc-plane:thing:average#energy-estimate");
+        TimeSeries ts2 = cm2.getTimeSeries("solarforecast:sc-plane:sc-plane-2-test:average#energy-estimate");
         assertEquals(302, ts1.size(), "TimeSeries size");
         assertEquals(302, ts2.size(), "TimeSeries size");
 
@@ -721,10 +810,26 @@ class SolcastTest {
         CallbackMock cm = new CallbackMock();
         scbh.setCallback(cm);
 
-        SolcastPlaneHandler scph1 = new SolcastPlaneMock(bi);
+        Thing thing = new ThingImpl(SolarForecastBindingConstants.SOLCAST_PLANE, "sc-plane-1-test");
+        thing.setBridgeUID(bi.getUID());
+        Storage store = new StorageMock();
+
+        thing.setBridgeUID(bi.getUID());
+
+        String resourceId = "plane-1";
+        HttpClient httpMock = mock(HttpClient.class);
+        httpActualResponse(httpMock, 200, "src/test/resources/solcast/estimated-actuals.json", resourceId);
+        httpForecastResponse(httpMock, 200, "src/test/resources/solcast/forecasts.json", resourceId);
+
+        SolcastPlaneMock scph1 = new SolcastPlaneMock(thing, httpMock, store);
         CallbackMock cm1 = new CallbackMock();
-        scph1.initialize();
         scph1.setCallback(cm1);
+        cm1.setBridge(bi);
+        Map<String, Object> planeConfigMap = new HashedMap<>();
+        planeConfigMap.put("resourceId", resourceId);
+        Configuration planeConfig = new Configuration(planeConfigMap);
+        scph1.updateConfig(planeConfig);
+        scph1.initialize();
 
         // simulate trigger of refresh job
         scbh.getData();
@@ -780,5 +885,46 @@ class SolcastTest {
         assertEquals("2022-07-10T21:30:00Z", scfo.getForecastBegin().toString(), "Forecast invalid begin");
         assertEquals("2022-07-24T21:00:00Z", scfo.getForecastEnd().toString(), "Forecast invalid end");
         assertFalse(scfo.isExpired());
+    }
+
+    @Test
+    void testOnlyForeecast() {
+        BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITE, "sc-bridge-test");
+        SolcastBridgeMock scbh = new SolcastBridgeMock(bi, new TimeZP());
+        bi.setHandler(scbh);
+        CallbackMock cm = new CallbackMock();
+        scbh.setCallback(cm);
+        Map<String, Object> bridgeConfigMap = new HashedMap<>();
+        bridgeConfigMap.put("apiKey", "abc");
+        Configuration bridgeConfig = new Configuration(bridgeConfigMap);
+        scbh.updateConfig(bridgeConfig);
+        scbh.initialize();
+
+        Thing thing = new ThingImpl(SolarForecastBindingConstants.SOLCAST_PLANE, "sc-plane-1-test");
+        thing.setBridgeUID(bi.getUID());
+        Storage store = new StorageMock();
+
+        String resourceId = "plane-1";
+        HttpClient httpMock = mock(HttpClient.class);
+        httpActualResponse(httpMock, 200, "src/test/resources/solcast/estimated-actuals.json", resourceId);
+        httpForecastResponse(httpMock, 200, "src/test/resources/solcast/forecasts.json", resourceId);
+        SolcastPlaneMock scph1 = new SolcastPlaneMock(thing, httpMock, store);
+        CallbackMock cm1 = new CallbackMock();
+        cm1.setBridge(bi);
+        scph1.setCallback(cm1);
+
+        Map<String, Object> planeConfigMap = new HashedMap<>();
+        planeConfigMap.put("resourceId", resourceId);
+        Configuration planeConfig = new Configuration(planeConfigMap);
+        scph1.updateConfig(planeConfig);
+
+        scph1.initialize();
+        scbh.getData();
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Consumer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
@@ -82,7 +81,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     @Override
     public void initialize() {
         configuration = getConfigAs(SolcastPlaneConfiguration.class);
-
+        System.out.println(configuration.toString());
         // connect Bridge & Status
         Bridge bridge = getBridge();
         if (bridge != null) {
@@ -163,17 +162,18 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         JSONObject forecast = null;
                         if (forecastObject.getForecastBegin() != Instant.MAX
                                 && forecastObject.getForecastEnd() != Instant.MIN) {
-                            // we found a forecast with valid data
+                            // we found a forecast with valid data - use it as actuals
                             forecast = getTodaysValues(forecastObject.getRaw());
                             logger.trace("Guessing with forecast as new actuals {}", forecast.toString());
                         } else {
                             if (configuration.forecastOnly) {
+                                // only forecast, don't get actuals -> start with empty values
                                 logger.trace("Dismiss actuals call");
-                                // start with empty values
                                 forecast = new JSONObject();
                             } else {
                                 // get actual estimate
                                 logger.trace("Fetch actuals");
+                                System.out.println("Call " + currentEstimateUrl);
                                 Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
                                 estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
                                 ContentResponse crEstimate = estimateRequest.send();
@@ -194,8 +194,9 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                                 JSONObject forecastJson = new JSONObject(crForecast.getContentAsString());
                                 forecast.put(KEY_FORECAST, forecastJson.getJSONArray(KEY_FORECAST));
                                 SolcastObject localForecast = new SolcastObject(thing.getUID().getAsString(), forecast,
-                                        Instant.now().plus(configuration.refreshInterval, ChronoUnit.MINUTES), bridge,
-                                        storage);
+                                        Instant.now(Utils.getClock()).plus(configuration.refreshInterval,
+                                                ChronoUnit.MINUTES),
+                                        bridge, storage);
                                 setForecast(localForecast);
                                 updateState(GROUP_RAW + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_JSON,
                                         StringType.valueOf(forecastOptional.get().getRaw()));
@@ -219,25 +220,27 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     }
 
     /**
-     * Store all values from today in JSONObject 
+     * Store all values from today in JSONObject
      */
     private JSONObject getTodaysValues(String raw) {
         JSONObject forecast = new JSONObject(raw);
         JSONArray actualJsonArray = forecast.getJSONArray(KEY_ACTUALS);
         JSONArray forecastJsonArray = forecast.getJSONArray(KEY_FORECAST);
-        actualJsonArray.put(forecastJsonArray);
+        for (int i = 0; i < forecastJsonArray.length(); i++) {
+            actualJsonArray.put(forecastJsonArray.getJSONObject(i));
+        }
         JSONArray todaysValuesArray = new JSONArray();
         actualJsonArray.forEach(entry -> {
             JSONObject forecastJson = (JSONObject) entry;
             String periodEnd = forecastJson.getString(KEY_PERIOD_END);
             ZonedDateTime periodEndZdt = Utils.getZdtFromUTC(periodEnd);
-            if(periodEndZdt != null) {
-                if (periodEndZdt.toLocalDate().isEqual(ZonedDateTime.now().toLocalDate())) {
+            if (periodEndZdt != null) {
+                if (periodEndZdt.toLocalDate().isEqual(ZonedDateTime.now(Utils.getClock()).toLocalDate())) {
                     todaysValuesArray.put(entry);
                 }
             }
         });
-        return forecast.put(raw, todaysValuesArray);
+        return forecast.put(KEY_ACTUALS, todaysValuesArray);
     }
 
     private void apiCallFailure(String url, int status) {
@@ -250,7 +253,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         if (bridgeHandler.isEmpty()) {
             return;
         }
-        ZonedDateTime now = ZonedDateTime.now(bridgeHandler.get().getTimeZone());
+        ZonedDateTime now = ZonedDateTime.now(Utils.getClock());
         List<QueryMode> modes = List.of(QueryMode.Average, QueryMode.Pessimistic, QueryMode.Optimistic);
         modes.forEach(mode -> {
             double energyDay = f.getDayTotal(now.toLocalDate(), mode);

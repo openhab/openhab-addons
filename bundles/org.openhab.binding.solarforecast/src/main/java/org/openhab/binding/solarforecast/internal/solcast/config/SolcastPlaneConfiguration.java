@@ -25,4 +25,10 @@ public class SolcastPlaneConfiguration {
     public String resourceId = SolarForecastBindingConstants.EMPTY;
     public long refreshInterval = 120;
     public boolean forecastOnly = false;
+
+    @Override
+    public String toString() {
+        return "SolcastPlaneConfiguration [resourceId=" + resourceId + ", refreshInterval=" + refreshInterval
+                + ", forecastOnly=" + forecastOnly + "]";
+    }
 }

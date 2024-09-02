@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Map.Entry;
@@ -30,7 +29,6 @@ import javax.measure.quantity.Energy;
 import javax.measure.quantity.Power;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.openhab.binding.solarforecast.internal.SolarForecastBindingConstants;
@@ -145,11 +143,13 @@ public class SolcastObject implements SolarForecast {
         for (int i = 0; i < resultJsonArray.length(); i++) {
             JSONObject jo = resultJsonArray.getJSONObject(i);
             String periodEnd = jo.getString(KEY_PERIOD_END);
-            ZonedDateTime periodEndZdt = getZdtFromUTC(periodEnd);
+            ZonedDateTime periodEndZdt = Utils.getZdtFromUTC(periodEnd);
             if (periodEndZdt == null) {
                 return;
             }
-            estimationDataMap.put(periodEndZdt, jo.getDouble(KEY_ESTIMATE));
+            if (estimationDataMap.put(periodEndZdt, jo.getDouble(KEY_ESTIMATE)) != null) {
+                System.out.println("Previous value replaced");
+            }
 
             // fill pessimistic values
             if (jo.has(KEY_ESTIMATE10)) {
@@ -362,16 +362,6 @@ public class SolcastObject implements SolarForecast {
                 break;
         }
         return returnMap;
-    }
-
-    public @Nullable ZonedDateTime getZdtFromUTC(String utc) {
-        try {
-            Instant timestamp = Instant.parse(utc);
-            return timestamp.atZone(timeZoneProvider.getTimeZone());
-        } catch (DateTimeParseException dtpe) {
-            logger.warn("Exception parsing time {} Reason: {}", utc, dtpe.getMessage());
-        }
-        return null;
     }
 
     /**

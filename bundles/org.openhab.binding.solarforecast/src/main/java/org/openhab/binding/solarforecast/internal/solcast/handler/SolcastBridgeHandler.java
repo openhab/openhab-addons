@@ -81,7 +81,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
         if (!configuration.apiKey.isBlank()) {
             if (!configuration.timeZone.isBlank()) {
                 try {
-                    timeZone = ZoneId.of(configuration.timeZone);
+                    Utils.setTimeZoneProvider(this);
                 } catch (DateTimeException e) {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.site.status.timezone" + " [\"" + configuration.timeZone + "\"]");
@@ -129,7 +129,7 @@ public class SolcastBridgeHandler extends BaseBridgeHandler implements SolarFore
             logger.debug("No PV plane defined yet");
             return;
         }
-        ZonedDateTime now = ZonedDateTime.now(getTimeZone());
+        ZonedDateTime now = ZonedDateTime.now(Utils.getClock());
         List<QueryMode> modes = List.of(QueryMode.Average, QueryMode.Pessimistic, QueryMode.Optimistic);
         modes.forEach(mode -> {
             String group = switch (mode) {

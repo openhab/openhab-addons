@@ -48,6 +48,8 @@ import org.openhab.core.types.TimeSeries.Policy;
 @NonNullByDefault
 public class CallbackMock implements ThingHandlerCallback {
 
+    @Nullable
+    Bridge bridge;
     Map<String, TimeSeries> seriesMap = new HashMap<>();
     Map<String, List<State>> stateMap = new HashMap<>();
     ThingStatusInfo currentInfo = new ThingStatusInfo(ThingStatus.UNKNOWN, ThingStatusDetail.NONE, null);
@@ -77,6 +79,7 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public void sendTimeSeries(ChannelUID channelUID, TimeSeries timeSeries) {
+        System.out.println("Set time series for channel:" + channelUID.getAsString());
         seriesMap.put(channelUID.getAsString(), timeSeries);
     }
 
@@ -91,6 +94,8 @@ public class CallbackMock implements ThingHandlerCallback {
     @Override
     public void statusUpdated(Thing thing, ThingStatusInfo thingStatus) {
         currentInfo = thingStatus;
+        System.out.println(thing.getUID() + ": " + thingStatus.getStatus() + " " + thingStatus.getStatusDetail() + " "
+                + thingStatus.getDescription());
     }
 
     public ThingStatusInfo getStatus() {
@@ -154,6 +159,10 @@ public class CallbackMock implements ThingHandlerCallback {
 
     @Override
     public @Nullable Bridge getBridge(ThingUID bridgeUID) {
-        return null;
+        return bridge;
+    }
+
+    public void setBridge(Bridge b) {
+        bridge = b;
     }
 }

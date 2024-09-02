@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
-        private static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
+    private static TimeZoneProvider timeZoneProvider = new TimeZoneProvider() {
         @Override
         public ZoneId getTimeZone() {
             return ZoneId.systemDefault();
@@ -139,7 +139,7 @@ public class Utils {
         return end;
     }
 
-        public static @Nullable ZonedDateTime getZdtFromUTC(String utc) {
+    public static @Nullable ZonedDateTime getZdtFromUTC(String utc) {
         try {
             Instant timestamp = Instant.parse(utc);
             return timestamp.atZone(timeZoneProvider.getTimeZone());
@@ -148,6 +148,4 @@ public class Utils {
         }
         return null;
     }
-
-
 }
