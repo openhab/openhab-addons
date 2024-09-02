@@ -23,8 +23,10 @@ configuration section in
 Take note of the API port number as you'll need it below.
 [SSL API connection](https://wiki.mikrotik.com/wiki/Manual:API-SSL) is not yet supported by this binding.
 To connect to the RouterOS API, you will need to provide user credentials for the bridge thing.
-You may use your current credentials that you use to manage your devices, but it is highly recommended to **create a read-only RouterOS user** since this binding only need to read data from the device.
-To do this, proceed to <kbd>System -> Users</kbd> configuration section and add a user to the `read` group.
+You may use your current credentials that you use to manage your devices, but it is highly recommended to **create a dedicated RouterOS user and group with limited permissions**.
+To create dedicated group proceed to <kbd>System -> Users -> Groups</kbd> configuration section and create `openhab` group with `api` and `read` policies. 
+If you need to control PoE,- `write` policy also must be added.
+To create user, proceed to <kbd>System -> Users</kbd> configuration section and add a `openhab` with `openhab` group.
 
 > Thing type: `routeros`
 
@@ -122,35 +124,38 @@ be improved in future binding versions.
 
 Common for all kinds of interfaces:
 
-| Channel | Type | Description | Comment |
-|---|---|---|---|
-| type | String | Network interface type |  |
-| name | String | Network interface name |  |
-| comment | String | User-defined comment |  |
-| macAddress | String | MAC address of the client or interface |  |
-| enabled | Switch | Reflects enabled or disabled state |  |
-| connected | Contact | Reflects connected or disconnected state |  |
-| lastLinkDownTime | DateTime | Last time when link went down |  |
-| lastLinkUpTime | DateTime | Last time when link went up |  |
-| linkDowns | Number | Amount of link downs |  |
-| txRate | Number:DataTransferRate | Rate of data transmission in megabits per second |  |
-| rxRate | Number:DataTransferRate | Rate of data receiving in megabits per second |  |
-| txPacketRate | Number | Rate of data transmission in packets per second |  |
-| rxPacketRate | Number | Rate of data receiving in packets per second |  |
-| txBytes | Number:DataAmount | Amount of bytes transmitted |  |
-| rxBytes | Number:DataAmount | Amount of bytes received |  |
-| txPackets | Number | Amount of packets transmitted |  |
-| rxPackets | Number | Amount of packets received |  |
-| txDrops | Number | Amount of packets dropped during transmission |  |
-| rxDrops | Number | Amount of packets dropped during receiving |  |
-| txErrors | Number | Amount of errors during transmission |  |
-| rxErrors | Number | Amount of errors during receiving |  |
-| defaultName | String | Interface factory name | Populated only for `ether` interfaces |
-| rate | String | Ethernet link rate | Populated only for `ether` interfaces |
-| state | String | WiFi interface state |  |
-| registeredClients | Number | Amount of clients registered to WiFi interface | Populated only for `cap` interfaces |
-| authorizedClients | Number | Amount of clients authorized by WiFi interface | Populated only for `cap` interfaces |
-| upSince | DateTime | Time when thing got up | Populated only for `cap` interfaces |
+| Channel           | Type                   | Description                                      | Comment |
+|-------------------|------------------------|--------------------------------------------------|---|
+| type              | String                 | Network interface type                           |  |
+| name              | String                 | Network interface name                           |  |
+| comment           | String                 | User-defined comment                             |  |
+| macAddress        | String                 | MAC address of the client or interface           |  |
+| enabled           | Switch                 | Reflects enabled or disabled state               |  |
+| connected         | Contact                | Reflects connected or disconnected state         |  |
+| lastLinkDownTime  | DateTime               | Last time when link went down                    |  |
+| lastLinkUpTime    | DateTime               | Last time when link went up                      |  |
+| linkDowns         | Number                 | Amount of link downs                             |  |
+| txRate            | Number:DataTransferRate | Rate of data transmission in megabits per second |  |
+| rxRate            | Number:DataTransferRate | Rate of data receiving in megabits per second    |  |
+| txPacketRate      | Number                 | Rate of data transmission in packets per second  |  |
+| rxPacketRate      | Number                 | Rate of data receiving in packets per second     |  |
+| txBytes           | Number:DataAmount      | Amount of bytes transmitted                      |  |
+| rxBytes           | Number:DataAmount      | Amount of bytes received                         |  |
+| txPackets         | Number                 | Amount of packets transmitted                    |  |
+| rxPackets         | Number                 | Amount of packets received                       |  |
+| txDrops           | Number                 | Amount of packets dropped during transmission    |  |
+| rxDrops           | Number                 | Amount of packets dropped during receiving       |  |
+| txErrors          | Number                 | Amount of errors during transmission             |  |
+| rxErrors          | Number                 | Amount of errors during receiving                |  |
+| state             | String                 | Interface state                                  |  |
+| defaultName       | String                 | Interface factory name                           | Populated only for `ether` interfaces |
+| rate              | String                 | Ethernet link rate                               | Populated only for `ether` interfaces |
+| poeOutState       | String                 | Interface PoE state                              | Populated only for `ether` interfaces with PoE |
+| poeOutStatus      | String                 | Interface PoE status                             | Populated only for `ether` interfaces with PoE |
+| poeOutPower       | Number:Power           | PoE out power consumption                        | Populated only for `ether` interfaces with PoE |
+| registeredClients | Number                 | Amount of clients registered to WiFi interface   | Populated only for `cap` interfaces |
+| authorizedClients | Number                 | Amount of clients authorized by WiFi interface   | Populated only for `cap` interfaces |
+| upSince           | DateTime               | Time when thing got up                           | Populated only for `cap` interfaces |
 
 ## Text Configuration Example
 
@@ -189,7 +194,7 @@ String     Eth_1_Name                  "Name"                       (gRB1Eth1) {
 String     Eth_1_Comment               "Comment"                    (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:comment"}
 String     Eth_1_Mac_Address           "Mac address"                (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:macAddress"}
 Switch     Eth_1_Enabled               "Enabled"                    (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:enabled"}
-Contact     Eth_1_Connected             "Connected"                  (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:connected"}
+Contact    Eth_1_Connected             "Connected"                  (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:connected"}
 DateTime   Eth_1_Last_Link_Down_Time   "Last link down"             (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:lastLinkDownTime"}
 DateTime   Eth_1_Last_Link_Up_Time     "Last link up"               (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:lastLinkUpTime"}
 Number     Eth_1_Link_Downs            "Link downs"                 (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:linkDowns"}
@@ -209,6 +214,9 @@ String     Eth_1_Default_Name          "Default name"               (gRB1Eth1) {
 String     Eth_1_Rate                  "Link rate"                  (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:rate"}
 String     Eth_1_Auto_Negotiation      "Auto negotiation"           (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:autoNegotiation"}
 String     Eth_1_State                 "State"                      (gRB1Eth1) {channel="mikrotik:interface:rb1:eth1:state"}
+String     Eth_1_POE_State             "PoE State"                  (gRB1Eth1)    ["Status", "Control"]       {channel="mikrotik:interface:rb1:eth1:poeOutState"}
+String     Eth_1_POE_Status            "PoE Status"                 (gRB1Eth1)    ["Status"]                  {channel="mikrotik:interface:rb1:eth1:poeOutStatus"}
+Number:Power     Eth_1_POE_Power       "PoE Power"                  (gRB1Eth1)    ["Measurement", "Power"]    {channel="mikrotik:interface:rb1:eth1:poeOutPower"}
 
 Group gRB1Eth2 "Ethernet Interface 2"
 String     Eth_2_Type                  "Type"                       (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:type"}
@@ -236,6 +244,10 @@ String     Eth_2_Default_Name          "Default name"               (gRB1Eth2) {
 String     Eth_2_Rate                  "Link rate"                  (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:rate"}
 String     Eth_2_Auto_Negotiation      "Auto negotiation"           (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:autoNegotiation"}
 String     Eth_2_State                 "State"                      (gRB1Eth2) {channel="mikrotik:interface:rb1:eth2:state"}
+String     Eth_2_POE_State             "PoE State"                  (gRB1Eth2)    ["Status", "Control"]       {channel="mikrotik:interface:rb1:eth2:poeOutState"}
+String     Eth_2_POE_Status            "PoE Status"                 (gRB1Eth2)    ["Status"]                  {channel="mikrotik:interface:rb1:eth2:poeOutStatus"}
+Number:Power     Eth_2_POE_Power       "PoE Power"                  (gRB1Eth2)    ["Measurement", "Power"]    {channel="mikrotik:interface:rb1:eth2:poeOutPower"}
+
 
 Group gRB1Cap1 "CAPsMAN Inerface 1"
 String     Cap_1_Type                  "Type"                       (gRB1Cap1) {channel="mikrotik:interface:rb1:cap1:type"}
