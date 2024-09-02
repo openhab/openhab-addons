@@ -12,9 +12,9 @@ The binding does support querying historical data through the use of the Rule Ac
 
 This binding supports the following things:
 
-| Thing                     | id            | Type          | Description                  |
-|----------                 |---------      |--------       |------------------------------|
-| Flume Cloud Connector     | cloud         | Bridge        | This represents the cloud account to interface with the Flume API.  |
+| Thing                     | id            | Type          | Description                                                                    |
+|----------                 |---------      |--------       |------------------------------                                                  |
+| Flume Cloud Connector     | cloud         | Bridge        | This represents the cloud account to interface with the Flume API.             |
 | Flume Meter Device        | meter-device  | Thing         | This interfaces to a specific Flume water monitor associated with the account. |
 
 This binding should work with multiple Flume monitors associated with the account, however it is currently only tested with a single device.
@@ -46,14 +46,14 @@ Note, there is a rate limit of 120 queries per hour imposed by Flume so use caut
 
 ## Flume Meter Device Channels
 
-| Channel               | id                | Type                      | Read/Write | Description |
-|----------             |--------           |--------                   |--------    |
-| Instant Water Usage   | instant-usage     | Number:VolumetricFlowRate | R          | Flow rate of water over the last minute  |
-| Cumulative Used       | cumulative-usage  | Number:Volume             | R          | Total volume of water used since the beginning of Flume install |
-| Battery Level         | battery-level     | Number:Dimensionless      | R          | Estimate of percent of remaining battery level |
-| Low Battery           | low-battery       | Switch                    | R          | Indicator of low battery level |
-| Last Seen             | last-seen         | DateTime                  | R          | Date/Time when meter was last seen on the network |
-| Usage Alert           | usage-alert       | Trigger                   | n/a        | Trigger channel for usage alert notification | 
+| Channel               | id                | Type                      | Read/Write | Description                                                      |
+|----------             |--------           |--------                   |--------    |--------                                                          |
+| Instant Water Usage   | instant-usage     | Number:VolumetricFlowRate | R          | Flow rate of water over the last minute                          |
+| Cumulative Used       | cumulative-usage  | Number:Volume             | R          | Total volume of water used since the beginning of Flume install  |
+| Battery Level         | battery-level     | Number:Dimensionless      | R          | Estimate of percent of remaining battery level                   |
+| Low Battery           | low-battery       | Switch                    | R          | Indicator of low battery level                                   |
+| Last Seen             | last-seen         | DateTime                  | R          | Date/Time when meter was last seen on the network                |
+| Usage Alert           | usage-alert       | Trigger                   | n/a        | Trigger channel for usage alert notification                     | 
 
 ## Full Example
 
