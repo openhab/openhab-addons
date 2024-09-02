@@ -360,7 +360,7 @@ public class RouterosDevice {
         this.rbWirelessType = RouterosWirelessType.resolveFromPkgSet(getInstalledPackages(), this.rbInfo);
     }
 
-    public void setPOE(RouterosEthernetInterface ifaceModel, String state) throws MikrotikApiException {
+    public void setPOEOutState(RouterosEthernetInterface ifaceModel, String state) throws MikrotikApiException {
         ApiConnection conn = this.connection;
         if (conn == null) {
             return;

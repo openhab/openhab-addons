@@ -221,8 +221,8 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
                 return StateUtil.stringOrNull(etherIface.getState());
             case MikrotikBindingConstants.CHANNEL_RATE:
                 return StateUtil.stringOrNull(etherIface.getRate());
-            case MikrotikBindingConstants.CHANNEL_POE_OUT:
-                return StateUtil.stringOrNull(etherIface.getPOEOut());
+            case MikrotikBindingConstants.CHANNEL_POE_OUT_STATE:
+                return StateUtil.stringOrNull(etherIface.getPOEOutState());
             case MikrotikBindingConstants.CHANNEL_POE_OUT_STATUS:
                 return StateUtil.stringOrNull(etherIface.getPOEOutStatus());
             case MikrotikBindingConstants.CHANNEL_POE_OUT_POWER:
@@ -367,8 +367,8 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
         try {
             String channelID = channelUID.getIdWithoutGroup();
             switch (channelID) {
-                case MikrotikBindingConstants.CHANNEL_POE_OUT:
-                    routeros.setPOE((RouterosEthernetInterface) iface, command.toString());
+                case MikrotikBindingConstants.CHANNEL_POE_OUT_STATE:
+                    routeros.setPOEOutState((RouterosEthernetInterface) iface, command.toString());
                     break;
                 default:
                     logger.warn("Ignoring unsupported command = {} for channel = {}", command, channelUID);

@@ -84,7 +84,7 @@
 			<channel id="txErrors" typeId="txErrors"/>
 			<channel id="rxErrors" typeId="rxErrors"/>
 			<!-- ethernet POE channels -->
-			<channel id="poeOut" typeId="poeOut"/>
+			<channel id="poeOutState" typeId="poeOut"/>
 			<channel id="poeOutStatus" typeId="poeOutStatus"/>
 			<channel id="poeOutPower" typeId="poeOutPower"/>
 			<!-- ethernet interface channels -->
@@ -359,9 +359,9 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="poeOut" advanced="true">
+	<channel-type id="poeOutState" advanced="true">
 		<item-type>String</item-type>
-		<label>PoE out mode</label>
+		<label>PoE out state</label>
 		<description>https://wiki.mikrotik.com/wiki/Manual:PoE-Out</description>
 		<command>
 			<options>

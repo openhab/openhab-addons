@@ -63,7 +63,7 @@ public class RouterosEthernetInterface extends RouterosInterfaceBase {
         return getProp("status");
     }
 
-    public @Nullable String getPOEOut() {
+    public @Nullable String getPOEOutState() {
         return getProp("poe-out");
     }
 
