@@ -20,7 +20,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * The {@link RouterosWirelessType} enum define RouterOS wireless types.
  *
- * @author Yurii
+ * @author Yurii - Initial contribution
  */
 
 @NonNullByDefault
