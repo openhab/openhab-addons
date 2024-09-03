@@ -688,6 +688,9 @@ public class StateFilterProfileTest {
                 Arguments.of(decimalItem, "$STDDEV(3) > 0.8", decimals, DecimalType.valueOf("2"), true), //
                 Arguments.of(decimalItem, "$STDDEV > 1.4", decimals, DecimalType.valueOf("2"), true), //
                 Arguments.of(decimalItem, "$STDDEV < 1.5", decimals, DecimalType.valueOf("2"), true), //
+                // Make sure STDDEV's unit is correct
+                Arguments.of(powerItem, "$STDDEV < 1.5 W", quantities, QuantityType.valueOf("2 W"), true), //
+                Arguments.of(powerItem, "$STDDEV < 1.5 W²", quantities, QuantityType.valueOf("2 W"), false), //
 
                 Arguments.of(decimalItem, "< $AVERAGE", decimals, DecimalType.valueOf("2"), true), //
                 Arguments.of(powerItem, "== $AVERAGE", quantities, QuantityType.valueOf("3 W"), true), //
