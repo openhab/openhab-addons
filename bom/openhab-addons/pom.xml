@@ -1061,6 +1061,11 @@
       <artifactId>org.openhab.binding.mffan</artifactId>
       <version>${project.version}</version>
     </dependency>
+    </dependency>    
+      <groupId>org.openhab.addons.bundles</groupId>
+      <artifactId>org.openhab.binding.mideaac</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.openhab.addons.bundles</groupId>
       <artifactId>org.openhab.binding.miele</artifactId>
