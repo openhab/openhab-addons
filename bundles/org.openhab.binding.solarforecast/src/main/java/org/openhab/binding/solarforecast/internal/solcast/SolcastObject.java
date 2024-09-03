@@ -52,14 +52,14 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class SolcastObject implements SolarForecast {
     private static final TreeMap<ZonedDateTime, Double> EMPTY_MAP = new TreeMap<>();
+    private static final String FORECAST_APPENDIX = "-forecast";
+    private static final String EXPIRATION_APPENDIX = "-expiration";
 
     private final Logger logger = LoggerFactory.getLogger(SolcastObject.class);
     private final TreeMap<ZonedDateTime, Double> estimationDataMap = new TreeMap<>();
     private final TreeMap<ZonedDateTime, Double> optimisticDataMap = new TreeMap<>();
     private final TreeMap<ZonedDateTime, Double> pessimisticDataMap = new TreeMap<>();
     private final TimeZoneProvider timeZoneProvider;
-    private final String FORECAST_APPENDIX = "-forecast";
-    private final String EXPIRATION_APPENDIX = "-expiration";
 
     private DateTimeFormatter dateOutputFormatter;
     private String identifier;

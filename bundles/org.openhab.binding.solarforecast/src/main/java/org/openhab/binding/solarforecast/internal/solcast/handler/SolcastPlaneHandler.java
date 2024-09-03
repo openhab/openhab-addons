@@ -224,8 +224,14 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
      */
     private JSONObject getTodaysValues(String raw) {
         JSONObject forecast = new JSONObject(raw);
-        JSONArray actualJsonArray = forecast.getJSONArray(KEY_ACTUALS);
-        JSONArray forecastJsonArray = forecast.getJSONArray(KEY_FORECAST);
+        JSONArray actualJsonArray = new JSONArray();
+        if(forecast.has(KEY_ACTUALS)) {
+            actualJsonArray = forecast.getJSONArray(KEY_ACTUALS);
+        }
+        JSONArray forecastJsonArray = new JSONArray();
+        if(forecast.has(KEY_FORECAST)) {
+            forecastJsonArray = forecast.getJSONArray(KEY_FORECAST);
+        }  
         for (int i = 0; i < forecastJsonArray.length(); i++) {
             actualJsonArray.put(forecastJsonArray.getJSONObject(i));
         }
