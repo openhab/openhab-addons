@@ -220,7 +220,7 @@ class EmotivaControlRequestTest {
     private static final EnumMap<EmotivaControlCommands, String> RADIO_BAND_MAP = new EnumMap<>(
             EmotivaControlCommands.class);
     private static final Map<String, State> STATE_MAP = Collections.synchronizedMap(new HashMap<>());
-    private static final Map<String, Map<EmotivaControlCommands, String>> COMMAND_MAPS = new ConcurrentHashMap<>();
+    private static final Map<String, EnumMap<EmotivaControlCommands, String>> COMMAND_MAPS = new ConcurrentHashMap<>();
 
     @BeforeAll
     static void beforeAll() {

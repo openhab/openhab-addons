@@ -132,24 +132,14 @@ public enum EmotivaSubscriptionTags {
         return EmotivaSubscriptionTags.unknown;
     }
 
-    public static EmotivaSubscriptionTags[] generalChannels() {
+    public static List<EmotivaSubscriptionTags> channels(String zonePrefix) {
         List<EmotivaSubscriptionTags> tags = new ArrayList<>();
         for (EmotivaSubscriptionTags value : values()) {
-            if (value.channel.startsWith("general")) {
+            if (value.channel.startsWith(zonePrefix)) {
                 tags.add(value);
             }
         }
-        return tags.toArray(new EmotivaSubscriptionTags[0]);
-    }
-
-    public static EmotivaSubscriptionTags[] nonGeneralChannels() {
-        List<EmotivaSubscriptionTags> tags = new ArrayList<>();
-        for (EmotivaSubscriptionTags value : values()) {
-            if (!value.channel.startsWith("general")) {
-                tags.add(value);
-            }
-        }
-        return tags.toArray(new EmotivaSubscriptionTags[0]);
+        return tags;
     }
 
     public static EmotivaSubscriptionTags[] speakerChannels() {
