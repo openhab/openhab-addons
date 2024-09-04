@@ -476,7 +476,7 @@ public class SmartThingsApiService implements SamsungTvService {
 
     public static Number parseTVChannel(@Nullable String channel) {
         try {
-            return channel.isBlank() ? -1f
+            return (channel == null || channel.isBlank()) ? -1f
                     : Float.parseFloat(
                             channel.replaceAll("\\D+", ".").replaceFirst("^\\D*((\\d+\\.\\d+)|(\\d+)).*", "$1"));
         } catch (NumberFormatException ignore) {
@@ -872,8 +872,6 @@ public class SmartThingsApiService implements SamsungTvService {
         errorCount = 0;
         if (subscriptionEnabled) {
             startSSE();
-        } else {
-            stopSSE();
         }
     }
 
