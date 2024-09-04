@@ -29,6 +29,9 @@
 			<add-channel id="artColorTemperature">
 				<type>samsungtv:artworkcolortemperature</type>
 			</add-channel>
+			<add-channel id="artOrientation">
+				<type>samsungtv:artworkorientation</type>
+			</add-channel>
 		</instruction-set>
 	</thing-type>
 

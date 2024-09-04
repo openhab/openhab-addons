@@ -32,6 +32,7 @@
 			<channel id="artJson" typeId="artworkjson"/>
 			<channel id="artBrightness" typeId="artworkbrightness"/>
 			<channel id="artColorTemperature" typeId="artworkcolortemperature"/>
+			<channel id="artOrientation" typeId="artworkorientation"/>
 		</channels>
 
 		<properties>
