@@ -80,9 +80,12 @@ public class EventChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetHomeEvent(String channelId, @Nullable String groupId, HomeEvent event) {
+        String videoId = event.getVideoId();
+        if (videoId == null) {
+            return null;
+        }
         return switch (channelId) {
-            case CHANNEL_EVENT_VIDEO_STATUS ->
-                event.getVideoId() != null ? toStringType(event.getVideoStatus()) : UnDefType.NULL;
+            case CHANNEL_EVENT_VIDEO_STATUS -> toStringType(event.getVideoStatus());
             case CHANNEL_EVENT_VIDEO_LOCAL_URL -> getStreamURL(true, event.getVideoId(), event.getVideoStatus());
             case CHANNEL_EVENT_VIDEO_VPN_URL -> getStreamURL(false, event.getVideoId(), event.getVideoStatus());
             default -> null;

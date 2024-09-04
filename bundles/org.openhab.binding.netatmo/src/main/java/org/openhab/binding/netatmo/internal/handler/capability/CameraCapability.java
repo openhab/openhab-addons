@@ -125,10 +125,8 @@ public class CameraCapability extends HomeSecurityThingCapability {
     private void updateSubGroup(WebhookEvent event, String group) {
         handler.updateState(group, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
         handler.updateState(group, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime()));
-        handler.updateState(group, CHANNEL_EVENT_SNAPSHOT, toRawType(event.getSnapshotUrl()));
-        handler.updateState(group, CHANNEL_EVENT_SNAPSHOT_URL, toStringType(event.getSnapshotUrl()));
-        handler.updateState(group, CHANNEL_EVENT_VIGNETTE, toRawType(event.getVignetteUrl()));
-        handler.updateState(group, CHANNEL_EVENT_VIGNETTE_URL, toStringType(event.getVignetteUrl()));
+        updatePictureIfUrlPresent(event.getSnapshotUrl(), group, CHANNEL_EVENT_SNAPSHOT, CHANNEL_EVENT_SNAPSHOT_URL);
+        updatePictureIfUrlPresent(event.getVignetteUrl(), group, CHANNEL_EVENT_VIGNETTE, CHANNEL_EVENT_VIGNETTE_URL);
         handler.updateState(group, CHANNEL_EVENT_SUBTYPE,
                 Objects.requireNonNull(event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL)));
         final String message = event.getName();
@@ -137,6 +135,14 @@ public class CameraCapability extends HomeSecurityThingCapability {
         State personId = event.getPersons().isEmpty() ? UnDefType.NULL
                 : toStringType(event.getPersons().values().iterator().next().getId());
         handler.updateState(personChannelUID, personId);
+    }
+
+    private void updatePictureIfUrlPresent(@Nullable String snapShotUrl, String group, String pictureChannel,
+            String urlChannel) {
+        if (snapShotUrl != null) {
+            handler.updateState(group, pictureChannel, toRawType(snapShotUrl));
+            handler.updateState(group, urlChannel, toStringType(snapShotUrl));
+        }
     }
 
     @Override
