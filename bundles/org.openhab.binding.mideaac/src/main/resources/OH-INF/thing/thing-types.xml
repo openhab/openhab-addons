@@ -23,26 +23,11 @@
 			<channel id="outdoor-temperature" typeId="outdoor-temperature"/>
 			<channel id="sleep-function" typeId="sleep-function"/>
 
-			<channel id="imode-resume" typeId="imode-resume"/>
-			<channel id="timer-mode" typeId="timer-mode"/>
 			<channel id="on-timer" typeId="on-timer"/>
 			<channel id="off-timer" typeId="off-timer"/>
 			<channel id="appliance-error" typeId="appliance-error"/>
-			<channel id="cozy-sleep" typeId="cozy-sleep"/>
-			<channel id="save" typeId="save"/>
-			<channel id="low-frequency-fan" typeId="low-frequency-fan"/>
-			<channel id="super-fan" typeId="super-fan"/>
-			<channel id="feel-own" typeId="feel-own"/>
-			<channel id="child-sleep-mode" typeId="child-sleep-mode"/>
-			<channel id="exchange-air" typeId="exchange-air"/>
-			<channel id="dry-clean" typeId="dry-clean"/>
 			<channel id="auxiliary-heat" typeId="auxiliary-heat"/>
-			<channel id="clean-up" typeId="clean-up"/>
 			<channel id="temperature-unit" typeId="temperature-unit"/>
-			<channel id="catch-cold" typeId="catch-cold"/>
-			<channel id="night-light" typeId="night-light"/>
-			<channel id="peak-electricity" typeId="peak-electricity"/>
-			<channel id="natural-fan" typeId="natural-fan"/>
 			<channel id="humidity" typeId="humidity"/>
 			<channel id="screen-display" typeId="screen-display"/>
 			<channel id="alternate-target-temperature" typeId="alternate-target-temperature"/>
@@ -231,20 +216,6 @@
 			possible either.</description>
 		<category>Switch</category>
 	</channel-type>
-	<channel-type id="imode-resume" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Imode resume</label>
-		<description>Imode resume (Read Only)</description>
-		<category>Switch</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="timer-mode" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Timer mode</label>
-		<description>Timer mode (Read Only) </description>
-		<category>Switch</category>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="appliance-error" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Appliance error</label>
@@ -262,100 +233,10 @@
 		<label>OFF Timer</label>
 		<description>OFF Timer (HH:MM) to set.</description>
 	</channel-type>
-	<channel-type id="cozy-sleep" advanced="true">
-		<item-type>Number</item-type>
-		<label>Cozy sleep</label>
-		<description>Cozy sleep (Read Only).</description>
-		<category>Number</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="save" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Save</label>
-		<description>Save (Read Only).</description>
-		<category>Switch</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="low-frequency-fan" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Low frequency fan</label>
-		<description>Low frequency fan (Read Only).</description>
-		<category>Switch</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="super-fan" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Super fan</label>
-		<description>Super fan (Read Only) .</description>
-		<category>Switch</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="feel-own" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Feel own</label>
-		<description>Feel own (Read Only).</description>
-		<category>Switch</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="child-sleep-mode" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Child sleep mode</label>
-		<description>Child sleep mode (Read Only) .</description>
-		<category>Switch</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="exchange-air" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Exchange air</label>
-		<description>Exchange air (Read Only).</description>
-		<category>Switch</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="dry-clean" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Dry clean</label>
-		<description>Dry clean (Read Only).</description>
-		<category>Switch</category>
-		<state readOnly="true"/>
-	</channel-type>
 	<channel-type id="auxiliary-heat" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Auxiliary heat</label>
 		<description>Auxiliary heat (Read Only).</description>
-		<category>Switch</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="clean-up" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Clean up</label>
-		<description>Clean up (Read Only).</description>
-		<category>Switch</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="catch-cold" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Catch cold</label>
-		<description>Catch cold (Read Only).</description>
-		<category>Switch</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="night-light" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Night Light</label>
-		<description>Night light (Read Only).</description>
-		<category>Switch</category>
-	</channel-type>
-	<channel-type id="peak-electricity" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Peak Electricity</label>
-		<description>Peak elec (Read Only).</description>
-		<category>Switch</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="natural-fan" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Natural Fan</label>
-		<description>Natural fan (Read Only).</description>
 		<category>Switch</category>
 		<state readOnly="true"/>
 	</channel-type>

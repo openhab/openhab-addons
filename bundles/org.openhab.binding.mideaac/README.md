@@ -58,7 +58,7 @@ Following channels are available:
 | Sleep function        | Switch               | Sleep function ("Moon with a star" icon on IR Remote Controller).                                              |           |
 | ON Timer				| String               | Sets the future time to turn On the AC.																		|		    |
 | OFF Timer				| String               | Sets the future time to turn off the AC.																		|			|
-| Temperature Unit		| Switch               | Sets the display to Fahrenheit (true) or Celsius (false).														|           |
+| Temperature Unit		| Switch               | Sets the evaporator display to Fahrenheit (true) or Celsius (false).											|           |
 | Screen display		| Switch			   | If device supports across LAN, turns off the LED display.														|			|
 | Indoor temperature    | Number:Temperature   | Indoor temperature measured in the room, where internal unit is installed.                                     | Yes       |
 | Outdoor temperature   | Number:Temperature   | Outdoor temperature by external unit. Some units do not report reading when off.                               | Yes       |
@@ -67,23 +67,8 @@ Following channels are available:
 
 Following items are in API but are not tested (marked as advanced and read only channels):
 
-- Imode resume
-- Timer mode
 - Appliance error
-- Cozy sleep
-- Save
-- Low frequency fan
-- Super fan
-- Feel own 
-- Child sleep mode
-- Exchange air
-- Dry clean
 - Auxiliary heat
-- Clean up
-- Catch cold
-- Night light
-- Peak electricity
-- Natural fan
 - Alternate Target Temperature
 
 ### Debugging and Tracing

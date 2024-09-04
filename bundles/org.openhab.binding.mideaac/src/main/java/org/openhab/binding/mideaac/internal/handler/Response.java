@@ -51,8 +51,6 @@ public class Response {
         this.responseType = responseType;
 
         logger.debug("Power State: {}", getPowerState());
-        logger.trace("Imode Resume: {}", getImmodeResume());
-        logger.trace("Timer Mode: {}", getTimerMode());
         logger.trace("Prompt Tone: {}", getPromptTone());
         logger.trace("Appliance Error: {}", getApplianceError());
         logger.debug("Target Temperature: {}", getTargetTemperature());
@@ -61,25 +59,11 @@ public class Response {
         logger.debug("On Timer: {}", getOnTimer());
         logger.debug("Off Timer: {}", getOffTimer());
         logger.debug("Swing Mode: {}", getSwingMode());
-        logger.trace("Cozy Sleep: {}", getCozySleep());
-        logger.trace("Power Saving: {}", getSave());
-        logger.trace("Low Frequency Fan: {}", getLowFrequencyFan());
-        logger.trace("Super Fan: {}", getSuperFan());
-        logger.trace("Feel Own: {}", getFeelOwn());
-        logger.trace("Child Sleep Mode: {}", getChildSleepMode());
-        logger.trace("Exchange Air: {}", getExchangeAir());
-        logger.trace("Dry Clean: {}", getDryClean());
         logger.trace("Auxiliary Heat: {}", getAuxHeat());
         logger.trace("Eco Mode: {}", getEcoMode());
-        logger.trace("Clean Up: {}", getCleanUp());
-        logger.trace("Temperature Unit: {}", getTempUnit());
         logger.debug("Sleep Function: {}", getSleepFunction());
         logger.debug("Turbo Mode: {}", getTurboMode());
         logger.trace("Fahrenheit: {}", getFahrenheit());
-        logger.trace("Catch Cold: {}", getCatchCold());
-        logger.trace("Night Light: {}", getNightLight());
-        logger.trace("Peak Electricity: {}", getPeakElec());
-        logger.trace("Natural Fan: {}", getNaturalFan());
         logger.debug("Indoor Temperature: {}", getIndoorTemperature());
         logger.debug("Outdoor Temperature: {}", getOutdoorTemperature());
         logger.debug("LED Display: {}", getDisplayOn());
@@ -114,20 +98,6 @@ public class Response {
      */
     public boolean getPowerState() {
         return (data[0x01] & 0x1) > 0;
-    }
-
-    /**
-     * Read only
-     */
-    public boolean getImmodeResume() {
-        return (data[0x01] & 0x4) > 0;
-    }
-
-    /**
-     * Read only
-     */
-    public boolean getTimerMode() {
-        return (data[0x01] & 0x10) > 0;
     }
 
     /**
@@ -217,62 +187,6 @@ public class Response {
     }
 
     /**
-     * Read only, not Sleep mode
-     */
-    public int getCozySleep() {
-        return data[0x08] & (byte) 0x03;
-    }
-
-    /**
-     * Read only
-     */
-    public boolean getSave() {
-        return (data[0x08] & (byte) 0x08) != 0;
-    }
-
-    /**
-     * Read only
-     */
-    public boolean getLowFrequencyFan() {
-        return (data[0x08] & (byte) 0x10) != 0;
-    }
-
-    /**
-     * Read only
-     */
-    public boolean getSuperFan() {
-        return (data[0x08] & (byte) 0x20) != 0;
-    }
-
-    /**
-     * Read only
-     */
-    public boolean getFeelOwn() {
-        return (data[0x08] & (byte) 0x80) != 0;
-    }
-
-    /**
-     * Read only
-     */
-    public boolean getChildSleepMode() {
-        return (data[0x09] & (byte) 0x01) != 0;
-    }
-
-    /**
-     * Read only
-     */
-    public boolean getExchangeAir() {
-        return (data[0x09] & (byte) 0x02) != 0;
-    }
-
-    /**
-     * Read only
-     */
-    public boolean getDryClean() {
-        return (data[0x09] & (byte) 0x04) != 0;
-    }
-
-    /**
      * Read only
      */
     public boolean getAuxHeat() {
@@ -284,20 +198,6 @@ public class Response {
      */
     public boolean getEcoMode() {
         return (data[0x09] & (byte) 0x10) != 0;
-    }
-
-    /**
-     * Read only
-     */
-    public boolean getCleanUp() {
-        return (data[0x09] & (byte) 0x20) != 0;
-    }
-
-    /**
-     * Read only. Setpoint calcs are always in Degrees C
-     */
-    public boolean getTempUnit() {
-        return (data[0x09] & (byte) 0x80) != 0;
     }
 
     /**
@@ -320,34 +220,6 @@ public class Response {
      */
     public boolean getFahrenheit() {
         return (data[0x0a] & (byte) 0x04) != 0;
-    }
-
-    /**
-     * Read only
-     */
-    public boolean getCatchCold() {
-        return (data[0x0a] & (byte) 0x08) != 0;
-    }
-
-    /**
-     * Read only, not same as Display LED on-off
-     */
-    public boolean getNightLight() {
-        return (data[0x0a] & (byte) 0x10) != 0;
-    }
-
-    /**
-     * Read only
-     */
-    public boolean getPeakElec() {
-        return (data[0x0a] & (byte) 0x20) != 0;
-    }
-
-    /**
-     * Read only
-     */
-    public boolean getNaturalFan() {
-        return (data[0x0a] & (byte) 0x40) != 0;
     }
 
     /**
