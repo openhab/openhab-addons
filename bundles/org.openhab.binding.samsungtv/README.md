@@ -314,7 +314,7 @@ Setpoint item=TV_ArtColorTemperature minValue=-5 maxValue=5 step=1 visibility=[T
 For 2023- TV's `orientationKey` should be KEY_MULTI_VIEW (default), for 2024+ TV's this should be KEY_HOME.
 
 ```java
-Switch item=TV_ArtOrientation mappings[ON="Landscape", OFF="Portrait"]
+Switch item=TV_ArtOrientation mappings[OFF="Landscape", ON="Portrait"]
 ```
 
 **NOTE:** You should only send commands to the `artOrientation` channel if you have the auto-rotation mount paired to the TV.
