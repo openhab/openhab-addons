@@ -40,8 +40,6 @@ public class MideaACBindingConstants {
 
     // List of all Channel ids
     public static final String CHANNEL_POWER = "power";
-    public static final String CHANNEL_IMODE_RESUME = "imode-resume";
-    public static final String CHANNEL_TIMER_MODE = "timer-mode";
     public static final String CHANNEL_APPLIANCE_ERROR = "appliance-error";
     public static final String CHANNEL_TARGET_TEMPERATURE = "target-temperature";
     public static final String CHANNEL_OPERATIONAL_MODE = "operational-mode";
@@ -49,24 +47,12 @@ public class MideaACBindingConstants {
     public static final String CHANNEL_ON_TIMER = "on-timer";
     public static final String CHANNEL_OFF_TIMER = "off-timer";
     public static final String CHANNEL_SWING_MODE = "swing-mode";
-    public static final String CHANNEL_COZY_SLEEP = "cozy-sleep";
-    public static final String CHANNEL_SAVE = "save";
-    public static final String CHANNEL_LOW_FREQUENCY_FAN = "low-frequency-fan";
-    public static final String CHANNEL_SUPER_FAN = "super-fan";
-    public static final String CHANNEL_FEEL_OWN = "feel-own";
-    public static final String CHANNEL_CHILD_SLEEP_MODE = "child-sleep-mode";
-    public static final String CHANNEL_EXCHANGE_AIR = "exchange-air";
-    public static final String CHANNEL_DRY_CLEAN = "dry-clean";
     public static final String CHANNEL_AUXILIARY_HEAT = "auxiliary-heat";
     public static final String CHANNEL_ECO_MODE = "eco-mode";
     public static final String CHANNEL_CLEAN_UP = "clean-up";
     public static final String CHANNEL_TEMPERATURE_UNIT = "temperature-unit";
     public static final String CHANNEL_SLEEP_FUNCTION = "sleep-function";
     public static final String CHANNEL_TURBO_MODE = "turbo-mode";
-    public static final String CHANNEL_CATCH_COLD = "catch-cold";
-    public static final String CHANNEL_NIGHT_LIGHT = "night-light";
-    public static final String CHANNEL_PEAK_ELECTRICITY = "peak-electricity";
-    public static final String CHANNEL_NATURAL_FAN = "natural-fan";
     public static final String CHANNEL_INDOOR_TEMPERATURE = "indoor-temperature";
     public static final String CHANNEL_OUTDOOR_TEMPERATURE = "outdoor-temperature";
     public static final String CHANNEL_HUMIDITY = "humidity";

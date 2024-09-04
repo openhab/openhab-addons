@@ -42,17 +42,6 @@ public class ResponseTest {
     }
 
     @Test
-    public void testGetImmodeResume() {
-        boolean actualImmodeResume = response.getImmodeResume();
-        assertEquals(false, actualImmodeResume);
-    }
-
-    @Test
-    public void testGetTimerMode() {
-        assertEquals(false, response.getTimerMode());
-    }
-
-    @Test
     public void testGetPromptTone() {
         assertEquals(false, response.getPromptTone());
     }
@@ -100,46 +89,6 @@ public class ResponseTest {
     }
 
     @Test
-    public void testGetCozySleep() {
-        assertEquals(0, response.getCozySleep());
-    }
-
-    @Test
-    public void testGetSave() {
-        assertEquals(false, response.getSave());
-    }
-
-    @Test
-    public void testGetLowFrequencyFan() {
-        assertEquals(false, response.getLowFrequencyFan());
-    }
-
-    @Test
-    public void testGetSuperFan() {
-        assertEquals(false, response.getSuperFan());
-    }
-
-    @Test
-    public void testGetFeelOwn() {
-        assertEquals(false, response.getFeelOwn());
-    }
-
-    @Test
-    public void testGetChildSleepMode() {
-        assertEquals(false, response.getChildSleepMode());
-    }
-
-    @Test
-    public void testExchangeAir() {
-        assertEquals(false, response.getExchangeAir());
-    }
-
-    @Test
-    public void testGetDryClean() {
-        assertEquals(false, response.getDryClean());
-    }
-
-    @Test
     public void testGetAuxHeat() {
         assertEquals(false, response.getAuxHeat());
     }
@@ -147,16 +96,6 @@ public class ResponseTest {
     @Test
     public void testGetEcoMode() {
         assertEquals(false, response.getEcoMode());
-    }
-
-    @Test
-    public void testGetCleanUp() {
-        assertEquals(false, response.getCleanUp());
-    }
-
-    @Test
-    public void testGetTempUnit() {
-        assertEquals(false, response.getTempUnit());
     }
 
     @Test
@@ -172,26 +111,6 @@ public class ResponseTest {
     @Test
     public void testGetFahrenheit() {
         assertEquals(true, response.getFahrenheit());
-    }
-
-    @Test
-    public void testGetCatchCold() {
-        assertEquals(false, response.getCatchCold());
-    }
-
-    @Test
-    public void testGetNightLight() {
-        assertEquals(false, response.getNightLight());
-    }
-
-    @Test
-    public void testGetPeakElec() {
-        assertEquals(false, response.getPeakElec());
-    }
-
-    @Test
-    public void testGetNaturalFan() {
-        assertEquals(false, response.getNaturalFan());
     }
 
     @Test

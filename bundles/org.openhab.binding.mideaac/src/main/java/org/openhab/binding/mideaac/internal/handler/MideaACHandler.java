@@ -1308,43 +1308,26 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         @SuppressWarnings("null")
         private void processMessage(@Nullable Response response) {
             updateChannel(CHANNEL_POWER, response.getPowerState() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_IMODE_RESUME, response.getImmodeResume() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_TIMER_MODE, response.getTimerMode() ? OnOffType.ON : OnOffType.OFF);
             updateChannel(CHANNEL_APPLIANCE_ERROR, response.getApplianceError() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_TARGET_TEMPERATURE, new QuantityType<Temperature>(response.getTargetTemperature(),
-                    response.getTempUnit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS)); // new
-                                                                                           // DecimalType(response.getTargetTemperature()));
+            updateChannel(CHANNEL_TARGET_TEMPERATURE,
+                    new QuantityType<Temperature>(response.getTargetTemperature(), SIUnits.CELSIUS));
             updateChannel(CHANNEL_OPERATIONAL_MODE, new StringType(response.getOperationalMode().toString()));
             updateChannel(CHANNEL_FAN_SPEED, new StringType(response.getFanSpeed().toString()));
             updateChannel(CHANNEL_ON_TIMER, new StringType(response.getOnTimer().toChannel()));
             updateChannel(CHANNEL_OFF_TIMER, new StringType(response.getOffTimer().toChannel()));
             updateChannel(CHANNEL_SWING_MODE, new StringType(response.getSwingMode().toString()));
-            updateChannel(CHANNEL_COZY_SLEEP, new DecimalType(response.getCozySleep()));
-            updateChannel(CHANNEL_SAVE, response.getSave() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_LOW_FREQUENCY_FAN, response.getLowFrequencyFan() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_SUPER_FAN, response.getSuperFan() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_FEEL_OWN, response.getFeelOwn() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_CHILD_SLEEP_MODE, response.getChildSleepMode() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_EXCHANGE_AIR, response.getExchangeAir() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_DRY_CLEAN, response.getDryClean() ? OnOffType.ON : OnOffType.OFF);
             updateChannel(CHANNEL_AUXILIARY_HEAT, response.getAuxHeat() ? OnOffType.ON : OnOffType.OFF);
             updateChannel(CHANNEL_ECO_MODE, response.getEcoMode() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_CLEAN_UP, response.getCleanUp() ? OnOffType.ON : OnOffType.OFF);
             updateChannel(CHANNEL_TEMPERATURE_UNIT, response.getFahrenheit() ? OnOffType.ON : OnOffType.OFF);
             updateChannel(CHANNEL_SLEEP_FUNCTION, response.getSleepFunction() ? OnOffType.ON : OnOffType.OFF);
             updateChannel(CHANNEL_TURBO_MODE, response.getTurboMode() ? OnOffType.ON : OnOffType.OFF);
             updateChannel(CHANNEL_SCREEN_DISPLAY, response.getDisplayOn() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_CATCH_COLD, response.getCatchCold() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_NIGHT_LIGHT, response.getNightLight() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_PEAK_ELECTRICITY, response.getPeakElec() ? OnOffType.ON : OnOffType.OFF);
             updateChannel(CHANNEL_ALTERNATE_TARGET_TEMPERATURE,
-                    new QuantityType<Temperature>(response.getAlternateTargetTemperature(),
-                            response.getTempUnit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS));
-            updateChannel(CHANNEL_NATURAL_FAN, response.getNaturalFan() ? OnOffType.ON : OnOffType.OFF);
-            updateChannel(CHANNEL_INDOOR_TEMPERATURE, new QuantityType<Temperature>(response.getIndoorTemperature(),
-                    response.getTempUnit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS));
-            updateChannel(CHANNEL_OUTDOOR_TEMPERATURE, new QuantityType<Temperature>(response.getOutdoorTemperature(),
-                    response.getTempUnit() ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS));
+                    new QuantityType<Temperature>(response.getAlternateTargetTemperature(), SIUnits.CELSIUS));
+            updateChannel(CHANNEL_INDOOR_TEMPERATURE,
+                    new QuantityType<Temperature>(response.getIndoorTemperature(), SIUnits.CELSIUS));
+            updateChannel(CHANNEL_OUTDOOR_TEMPERATURE,
+                    new QuantityType<Temperature>(response.getOutdoorTemperature(), SIUnits.CELSIUS));
             updateChannel(CHANNEL_HUMIDITY, new DecimalType(response.getHumidity()));
         }
 
