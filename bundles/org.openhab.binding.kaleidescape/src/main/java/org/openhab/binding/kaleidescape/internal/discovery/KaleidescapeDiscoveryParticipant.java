@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link KaleidescapeDiscoveryParticipant} class discovers Strato/Encore line components automatically via UPNP.
+ * The {@link KaleidescapeDiscoveryParticipant} class discovers Strato/Encore line components automatically via UPnP.
  *
  * @author Michael Lobstein - Initial contribution
  *
