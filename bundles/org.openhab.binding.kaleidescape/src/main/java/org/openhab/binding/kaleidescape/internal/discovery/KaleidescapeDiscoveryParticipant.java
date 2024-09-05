@@ -56,7 +56,7 @@ public class KaleidescapeDiscoveryParticipant implements UpnpDiscoveryParticipan
     public @Nullable DiscoveryResult createResult(RemoteDevice device) {
         final ThingUID uid = getThingUID(device);
         if (uid != null) {
-            final Map<String, Object> properties = new HashMap<>(2);
+            final Map<String, Object> properties = new HashMap<>(3);
             final String label;
 
             if (device.getDetails().getFriendlyName() != null && !device.getDetails().getFriendlyName().isBlank()) {
