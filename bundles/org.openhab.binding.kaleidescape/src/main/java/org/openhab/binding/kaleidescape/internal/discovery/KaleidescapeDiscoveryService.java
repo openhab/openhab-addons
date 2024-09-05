@@ -25,7 +25,6 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -63,11 +62,8 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
     private static final int K_HEARTBEAT_PORT = 1443;
 
     // Component Types
-    private static final String PLAYER = "Player";
     private static final String CINEMA_ONE = "Cinema One";
-    private static final String DISC_VAULT = "Disc Vault";
-
-    private static final Set<String> ALLOWED_DEVICES = new HashSet<>(Arrays.asList(PLAYER, CINEMA_ONE, DISC_VAULT));
+    private static final Set<String> ALLOWED_DEVICES = Set.of("Player", CINEMA_ONE, "Disc Vault");
 
     @Nullable
     private ExecutorService executorService = null;
@@ -193,7 +189,6 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
-            ThingTypeUID thingTypeUid = THING_TYPE_PLAYER;
             String friendlyName = EMPTY;
             String serialNumber = EMPTY;
             String componentType = EMPTY;
@@ -231,23 +226,13 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
                 }
             }
 
-            // see if we have a video zone
-            if ("01".equals(videoZone)) {
-                // now check if we are one of the allowed types
-                if (ALLOWED_DEVICES.contains(componentType)) {
-                    // Cinema One
-                    if (CINEMA_ONE.equals(componentType)) {
-                        thingTypeUid = THING_TYPE_CINEMA_ONE;
-                    }
+            // see if we have a video zone and are one of the allowed types
+            if ("01".equals(videoZone) && ALLOWED_DEVICES.contains(componentType)) {
+                // default THING_TYPE_PLAYER for Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen
+                // Cinema One 2nd Gen uses THING_TYPE_CINEMA_ONE
 
-                    // A Disc Vault with a video zone (the M700 vault), just call it a THING_TYPE_PLAYER
-                    if (DISC_VAULT.equals(componentType)) {
-                        thingTypeUid = THING_TYPE_PLAYER;
-                    }
-
-                    // default THING_TYPE_PLAYER
-                    submitDiscoveryResults(thingTypeUid, ipAddress, friendlyName, serialNumber);
-                }
+                submitDiscoveryResults(CINEMA_ONE.equals(componentType) ? THING_TYPE_CINEMA_ONE : THING_TYPE_PLAYER,
+                        ipAddress, friendlyName, serialNumber);
             } else {
                 logger.debug("No Suitable Kaleidescape component found at IP address ({})", ipAddress);
             }
