@@ -199,7 +199,6 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
             String componentType = EMPTY;
             String line;
             String videoZone = null;
-            String audioZone = null;
             int lineCount = 0;
 
             while ((line = reader.readLine()) != null) {
@@ -209,7 +208,6 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
                     switch (strArr[1]) {
                         case "NUM_ZONES":
                             videoZone = strArr[2];
-                            audioZone = strArr[3];
                             break;
                         case "DEVICE_TYPE_NAME":
                             componentType = strArr[2];
