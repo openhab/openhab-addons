@@ -25,16 +25,12 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -50,7 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link KaleidescapeDiscoveryService} class allow manual discovery of Kaleidescape components.
+ * The {@link KaleidescapeDiscoveryService} class allows manual discovery of legacy Premiere line components.
  *
  * @author Chris Graham - Initial contribution
  * @author Michael Lobstein - Adapted for the Kaleidescape binding
@@ -60,22 +56,17 @@ import org.slf4j.LoggerFactory;
 @Component(service = DiscoveryService.class, configurationPid = "discovery.kaleidescape")
 public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeDiscoveryService.class);
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_PLAYER, THING_TYPE_CINEMA_ONE, THING_TYPE_ALTO, THING_TYPE_STRATO)
-                    .collect(Collectors.toSet()));
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_PLAYER,
+            THING_TYPE_CINEMA_ONE);
 
     private static final int K_HEARTBEAT_PORT = 1443;
 
     // Component Types
     private static final String PLAYER = "Player";
     private static final String CINEMA_ONE = "Cinema One";
-    private static final String ALTO = "Alto";
-    private static final String STRATO = "Strato";
-    private static final String STRATO_S = "Strato S";
     private static final String DISC_VAULT = "Disc Vault";
 
-    private static final Set<String> ALLOWED_DEVICES = new HashSet<>(
-            Arrays.asList(PLAYER, CINEMA_ONE, ALTO, STRATO, STRATO_S, DISC_VAULT));
+    private static final Set<String> ALLOWED_DEVICES = Set.of(PLAYER, CINEMA_ONE, DISC_VAULT);
 
     @Nullable
     private ExecutorService executorService = null;
@@ -201,13 +192,11 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
-            ThingTypeUID thingTypeUid = THING_TYPE_PLAYER;
             String friendlyName = EMPTY;
             String serialNumber = EMPTY;
             String componentType = EMPTY;
             String line;
             String videoZone = null;
-            String audioZone = null;
             int lineCount = 0;
 
             while ((line = reader.readLine()) != null) {
@@ -217,7 +206,6 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
                     switch (strArr[1]) {
                         case "NUM_ZONES":
                             videoZone = strArr[2];
-                            audioZone = strArr[3];
                             break;
                         case "DEVICE_TYPE_NAME":
                             componentType = strArr[2];
@@ -241,39 +229,13 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
                 }
             }
 
-            // see if we have a video zone
-            if ("01".equals(videoZone)) {
-                // now check if we are one of the allowed types
-                if (ALLOWED_DEVICES.contains(componentType)) {
-                    if (STRATO_S.equals(componentType) || STRATO.equals(componentType)) {
-                        thingTypeUid = THING_TYPE_STRATO;
-                    }
+            // see if we have a video zone and are one of the allowed types
+            if ("01".equals(videoZone) && ALLOWED_DEVICES.contains(componentType)) {
+                // default THING_TYPE_PLAYER for Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen
+                // Cinema One 2nd Gen uses THING_TYPE_CINEMA_ONE
 
-                    // A 'Player' without an audio zone is really a Strato C
-                    // does not work yet, Strato C erroneously reports "01" for audio zones
-                    // so we are unable to differentiate a Strato C from a Premiere player
-                    if ("00".equals(audioZone) && PLAYER.equals(componentType)) {
-                        thingTypeUid = THING_TYPE_STRATO;
-                    }
-
-                    // Alto
-                    if (ALTO.equals(componentType)) {
-                        thingTypeUid = THING_TYPE_ALTO;
-                    }
-
-                    // Cinema One
-                    if (CINEMA_ONE.equals(componentType)) {
-                        thingTypeUid = THING_TYPE_CINEMA_ONE;
-                    }
-
-                    // A Disc Vault with a video zone (the M700 vault), just call it a THING_TYPE_PLAYER
-                    if (DISC_VAULT.equals(componentType)) {
-                        thingTypeUid = THING_TYPE_PLAYER;
-                    }
-
-                    // default THING_TYPE_PLAYER
-                    submitDiscoveryResults(thingTypeUid, ipAddress, friendlyName, serialNumber);
-                }
+                submitDiscoveryResults(CINEMA_ONE.equals(componentType) ? THING_TYPE_CINEMA_ONE : THING_TYPE_PLAYER,
+                        ipAddress, friendlyName, serialNumber);
             } else {
                 logger.debug("No Suitable Kaleidescape component found at IP address ({})", ipAddress);
             }
@@ -300,10 +262,10 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
 
         HashMap<String, Object> properties = new HashMap<>();
 
-        properties.put("host", ip);
-        properties.put("port", DEFAULT_API_PORT);
+        properties.put(PROPERTY_HOST_NAME, ip);
+        properties.put(PROPERTY_PORT_NUM, DEFAULT_API_PORT);
 
-        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties).withRepresentationProperty("host")
-                .withLabel(friendlyName).build());
+        thingDiscovered(DiscoveryResultBuilder.create(uid).withProperties(properties)
+                .withRepresentationProperty(PROPERTY_HOST_NAME).withLabel(friendlyName).build());
     }
 }

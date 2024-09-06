@@ -35,6 +35,10 @@ public class KaleidescapeBindingConstants {
     public static final ThingTypeUID THING_TYPE_ALTO = new ThingTypeUID(BINDING_ID, "alto");
     public static final ThingTypeUID THING_TYPE_STRATO = new ThingTypeUID(BINDING_ID, "strato");
 
+    // Constants related to discovery
+    public static final String PROPERTY_UUID = "uuid";
+    public static final String PROPERTY_HOST_NAME = "host";
+    public static final String PROPERTY_PORT_NUM = "port";
     public static final int DEFAULT_API_PORT = 10000;
     public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
     public static final boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;
