@@ -67,8 +67,8 @@ public class WarmupDiscoveryService extends AbstractThingHandlerDiscoveryService
     public void refresh(@Nullable QueryResponseDTO domain) {
         if (domain != null) {
             HashSet<ThingUID> discoveredThings = new HashSet<>();
-            for (LocationDTO location : domain.getData().getUser().getLocations()) {
-                for (RoomDTO room : location.getRooms()) {
+            for (LocationDTO location : domain.data().user().locations()) {
+                for (RoomDTO room : location.rooms()) {
                     discoverRoom(location, room, discoveredThings);
                 }
             }
@@ -76,20 +76,20 @@ public class WarmupDiscoveryService extends AbstractThingHandlerDiscoveryService
     }
 
     private void discoverRoom(LocationDTO location, RoomDTO room, HashSet<ThingUID> discoveredThings) {
-        if (room.getThermostat4ies() != null && !room.getThermostat4ies().isEmpty()) {
-            final String deviceSN = room.getThermostat4ies().get(0).getDeviceSN();
+        if (room.thermostat4ies() != null && !room.thermostat4ies().isEmpty()) {
+            final String deviceSN = room.thermostat4ies().get(0).deviceSN();
             ThingUID localBridgeUID = this.bridgeUID;
             if (localBridgeUID != null && deviceSN != null) {
                 final Map<String, Object> roomProperties = new HashMap<>();
                 roomProperties.put(Thing.PROPERTY_SERIAL_NUMBER, deviceSN);
                 roomProperties.put(PROPERTY_ROOM_ID, room.getId());
-                roomProperties.put(PROPERTY_ROOM_NAME, room.getName());
+                roomProperties.put(PROPERTY_ROOM_NAME, room.roomName());
                 roomProperties.put(PROPERTY_LOCATION_ID, location.getId());
-                roomProperties.put(PROPERTY_LOCATION_NAME, location.getName());
+                roomProperties.put(PROPERTY_LOCATION_NAME, location.name());
 
                 ThingUID roomThingUID = new ThingUID(THING_TYPE_ROOM, localBridgeUID, deviceSN);
                 thingDiscovered(DiscoveryResultBuilder.create(roomThingUID).withBridge(localBridgeUID)
-                        .withProperties(roomProperties).withLabel(location.getName() + " - " + room.getName())
+                        .withProperties(roomProperties).withLabel(location.name() + " - " + room.roomName())
                         .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).build());
 
                 discoveredThings.add(roomThingUID);

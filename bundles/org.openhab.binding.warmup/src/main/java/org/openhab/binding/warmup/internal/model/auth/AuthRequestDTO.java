@@ -15,16 +15,9 @@ package org.openhab.binding.warmup.internal.model.auth;
 /**
  * @author James Melville - Initial contribution
  */
-@SuppressWarnings("unused")
-public class AuthRequestDTO {
-
-    private AuthRequestDataDTO request;
+public record AuthRequestDTO(AuthRequestDataDTO request) {
 
     public AuthRequestDTO(String email, String password, String method, String appId) {
-        setRequest(new AuthRequestDataDTO(email, password, method, appId));
-    }
-
-    public void setRequest(AuthRequestDataDTO request) {
-        this.request = request;
+        this(new AuthRequestDataDTO(email, password, method, appId));
     }
 }

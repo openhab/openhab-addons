@@ -15,16 +15,7 @@ package org.openhab.binding.warmup.internal.model.query;
 /**
  * @author James Melville - Initial contribution
  */
-public class QueryResponseDTO {
+public record QueryResponseDTO
 
-    private QueryDataDTO data;
-    private String status;
-
-    public QueryDataDTO getData() {
-        return data;
-    }
-
-    public String getStatus() {
-        return status;
-    }
+(QueryDataDTO data, String status) {
 }

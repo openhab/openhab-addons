@@ -17,11 +17,5 @@ import java.util.List;
 /**
  * @author James Melville - Initial contribution
  */
-public class UserDTO {
-
-    private List<LocationDTO> locations;
-
-    public List<LocationDTO> getLocations() {
-        return locations;
-    }
+public record UserDTO(List<LocationDTO> locations) {
 }

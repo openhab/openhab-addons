@@ -17,41 +17,12 @@ import java.util.List;
 /**
  * @author James Melville - Initial contribution
  */
-public class RoomDTO {
+public record RoomDTO(
 
-    private int id;
-    private String roomName;
-    private Integer currentTemp;
-    private Integer targetTemp;
-    private String runMode;
-    private Integer overrideDur;
-    private List<DeviceDTO> thermostat4ies;
+        int id, String roomName, Integer currentTemp, Integer targetTemp, Integer fixedTemp, String energy,
+        String runMode, Integer overrideDur, List<DeviceDTO> thermostat4ies) {
 
     public String getId() {
         return String.valueOf(id);
-    }
-
-    public String getName() {
-        return roomName;
-    }
-
-    public Integer getCurrentTemperature() {
-        return currentTemp;
-    }
-
-    public Integer getTargetTemperature() {
-        return targetTemp;
-    }
-
-    public String getRunMode() {
-        return runMode;
-    }
-
-    public Integer getOverrideDuration() {
-        return overrideDur;
-    }
-
-    public List<DeviceDTO> getThermostat4ies() {
-        return thermostat4ies;
     }
 }

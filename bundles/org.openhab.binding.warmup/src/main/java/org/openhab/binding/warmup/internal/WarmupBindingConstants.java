@@ -38,12 +38,15 @@ public class WarmupBindingConstants {
     // Room Channel Ids
     public static final String CHANNEL_CURRENT_TEMPERATURE = "currentTemperature";
     public static final String CHANNEL_TARGET_TEMPERATURE = "targetTemperature";
+    public static final String CHANNEL_FIXED_TEMPERATURE = "fixedTemperature";
+    public static final String CHANNEL_ENERGY = "energyToday";
     public static final String CHANNEL_OVERRIDE_DURATION = "overrideRemaining";
     public static final String CHANNEL_RUN_MODE = "runMode";
     public static final String CHANNEL_FROST_PROTECTION_MODE = "frostProtectionMode";
     public static final String CHANNEL_HEATING_TARGET = "heatingTarget";
     public static final String CHANNEL_AIR_TEMPERATURE = "airTemperature";
-    public static final String CHANNEL_FLOOR_TEMPERATURE = "floorTemperature";
+    public static final String CHANNEL_FLOOR1_TEMPERATURE = "floor1Temperature";
+    public static final String CHANNEL_FLOOR2_TEMPERATURE = "floor2Temperature";
 
     public static final String FROST_PROTECTION_MODE = "anti_frost";
 
@@ -63,4 +66,8 @@ public class WarmupBindingConstants {
 
     public static final String AUTH_METHOD = "userLogin";
     public static final String AUTH_APP_ID = "WARMUP-APP-V001";
+
+    public enum RoomMode {
+        SCHEDULE
+    }
 }
