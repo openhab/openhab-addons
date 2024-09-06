@@ -49,6 +49,10 @@
 			<channel id="floor2Temperature" typeId="system.indoor-temperature"/>
 		</channels>
 
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<representation-property>serialNumber</representation-property>
 
 		<config-description>
