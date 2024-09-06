@@ -83,7 +83,11 @@ public class WarmupThingHandler extends BaseThingHandler {
      * @return the temperature as a {@link QuantityType}
      */
     protected State parseTemperature(@Nullable String temperature) {
-        return temperature != null ? parseTemperature(Integer.parseInt(temperature)) : UnDefType.UNDEF;
+        try {
+            return temperature != null ? parseTemperature(Integer.parseInt(temperature)) : UnDefType.UNDEF;
+        } catch (NumberFormatException e) {
+            return UnDefType.UNDEF;
+        }
     }
 
     /**
@@ -110,7 +114,11 @@ public class WarmupThingHandler extends BaseThingHandler {
      * @return the energy as a {@link QuantityType}
      */
     protected State parseEnergy(@Nullable String energy) {
-        return energy != null ? new QuantityType<>(Float.parseFloat(energy), Units.KILOWATT_HOUR) : UnDefType.UNDEF;
+        try {
+            return energy != null ? new QuantityType<>(Float.parseFloat(energy), Units.KILOWATT_HOUR) : UnDefType.UNDEF;
+        } catch (NumberFormatException e) {
+            return UnDefType.UNDEF;
+        }
     }
 
     /**
