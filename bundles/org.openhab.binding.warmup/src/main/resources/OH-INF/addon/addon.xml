@@ -5,7 +5,8 @@
 
 	<type>binding</type>
 	<name>Warmup Binding</name>
-	<description>This is the binding for a Warmup 4iE Thermostat primarily used for controlling underfloor heating.</description>
+	<description>This is the binding for Warmup WiFi connected Thermostats primarily used for controlling underfloor
+		heating.</description>
 	<connection>cloud</connection>
 
 </addon:addon>
