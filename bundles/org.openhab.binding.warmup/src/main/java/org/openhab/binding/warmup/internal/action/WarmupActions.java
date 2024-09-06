@@ -69,7 +69,7 @@ public class WarmupActions implements ThingActions {
         if (actions instanceof WarmupActions warmupActions) {
             warmupActions.setOverride(temperature, duration);
         } else {
-            throw new IllegalArgumentException("Instance is not an WarmupActions class.");
+            throw new IllegalArgumentException("Instance is not a WarmupActions class.");
         }
     }
 }

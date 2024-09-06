@@ -84,7 +84,10 @@ Rooms are configured automatically with a Serial Number on discovery, or can be 
 
 ### Run Mode Statuses
 
-These run mode statuses are defined for the API. The descriptions are based on inspection of the device behaviour and are not sourced from documentation. Only the value `schedule` is writeable, this reverts the device to the program/schedule configured on the device. The value `fixed` can be set by commanding the `fixedTemperature` channel. The value `override` can be set by commanding the `targetTemperature` channel. 
+These run mode statuses are defined for the API. 
+The descriptions are based on inspection of the device behaviour and are not sourced from documentation. 
+Only the value `schedule` is writeable, this reverts the device to the program/schedule configured on the device. 
+The value `fixed` can be set by commanding the `fixedTemperature` channel. The value `override` can be set by commanding the `targetTemperature` channel. 
 
 | api value  | ui name          | description                                                                     |
 |------------|------------------|---------------------------------------------------------------------------------|
