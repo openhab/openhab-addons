@@ -16,6 +16,8 @@ import static org.openhab.binding.solarforecast.internal.SolarForecastBindingCon
 import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstants.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -155,42 +157,46 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
         bridgeHandler.ifPresent(bridge -> {
             forecastOptional.ifPresent(forecastObject -> {
                 if (forecastObject.isExpired()) {
-                    logger.trace("Get new forecast {}", forecastObject.toString());
+                    logger.trace("[REDUCE] Forecast expired -> get new forecast");
                     String forecastUrl = String.format(FORECAST_URL, configuration.resourceId);
                     String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.resourceId);
                     try {
                         JSONObject forecast = null;
                         if (forecastObject.getForecastBegin() != Instant.MAX
                                 && forecastObject.getForecastEnd() != Instant.MIN) {
-                            // we found a forecast with valid data - use it as actuals
+                            // we found a forecast with valid data
                             forecast = getTodaysValues(forecastObject.getRaw());
-                            logger.trace("Guessing with forecast as new actuals {}", forecast.toString());
-                        } else {
-                            if (configuration.forecastOnly) {
-                                // only forecast, don't get actuals -> start with empty values
-                                logger.trace("Dismiss actuals call");
-                                forecast = new JSONObject();
+                            int valuesToday = forecast.getJSONArray(KEY_ACTUALS).length();
+                            if(valuesToday != 48) {
+                                //sorry, we didn't get all actuals, so we can't use this forecast
+                                forecast = null;
+                                logger.trace("[REDUCE] Forecast valid but not for whole day. Only found {} values for today", valuesToday);
                             } else {
-                                // get actual estimate
-                                logger.trace("Fetch actuals");
-                                System.out.println("Call " + currentEstimateUrl);
-                                Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
-                                estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
-                                ContentResponse crEstimate = estimateRequest.send();
-                                if (crEstimate.getStatus() == 200) {
-                                    forecast = new JSONObject(crEstimate.getContentAsString());
-                                } else {
-                                    apiCallFailure(currentEstimateUrl, crEstimate.getStatus());
-                                }
+                                logger.trace("[REDUCE] Guessing with forecast as new actuals {}", forecast.toString());
+                            }
+                        } 
+                        if(forecast == null) {
+                            logger.trace("[REDUCE] We have no actual values - need to fetch");
+                            Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
+                            estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
+                            ContentResponse crEstimate = estimateRequest.send();
+                            int callStatus = crEstimate.getStatus();
+                            if (callStatus == 200) {
+                                forecast = new JSONObject(crEstimate.getContentAsString());
+                            } else {
+                                apiCallFailure(currentEstimateUrl, crEstimate.getStatus());
+                                logger.trace("[REDUCE] Actuals call failed with {} - return",callStatus);
+                                return;
                             }
                         }
                         if (forecast != null) {
-                            // get forecast
+                            logger.trace("[REDUCE] Actuals call successful - continue with fetching forecast");
                             Request forecastRequest = httpClient.newRequest(forecastUrl);
                             forecastRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
                             ContentResponse crForecast = forecastRequest.send();
 
                             if (crForecast.getStatus() == 200) {
+                                logger.trace("[REDUCE] Forecast call successful");
                                 JSONObject forecastJson = new JSONObject(crForecast.getContentAsString());
                                 forecast.put(KEY_FORECAST, forecastJson.getJSONArray(KEY_FORECAST));
                                 SolcastObject localForecast = new SolcastObject(thing.getUID().getAsString(), forecast,
@@ -222,7 +228,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     /**
      * Store all values from today in JSONObject
      */
-    private JSONObject getTodaysValues(String raw) {
+    protected static JSONObject getTodaysValues(String raw) {
         JSONObject forecast = new JSONObject(raw);
         JSONArray actualJsonArray = new JSONArray();
         if(forecast.has(KEY_ACTUALS)) {
@@ -236,17 +242,21 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             actualJsonArray.put(forecastJsonArray.getJSONObject(i));
         }
         JSONArray todaysValuesArray = new JSONArray();
+        LocalDate today = ZonedDateTime.now(Utils.getClock()).toLocalDate();
+        System.out.println(today);
         actualJsonArray.forEach(entry -> {
             JSONObject forecastJson = (JSONObject) entry;
             String periodEnd = forecastJson.getString(KEY_PERIOD_END);
             ZonedDateTime periodEndZdt = Utils.getZdtFromUTC(periodEnd);
             if (periodEndZdt != null) {
-                if (periodEndZdt.toLocalDate().isEqual(ZonedDateTime.now(Utils.getClock()).toLocalDate())) {
+                if (periodEndZdt.toLocalDate().equals(today)) {
                     todaysValuesArray.put(entry);
                 }
             }
         });
-        return forecast.put(KEY_ACTUALS, todaysValuesArray);
+        JSONObject ret = new JSONObject();
+        ret.put(KEY_ACTUALS, todaysValuesArray);
+        return ret;
     }
 
     private void apiCallFailure(String url, int status) {

@@ -19,6 +19,7 @@ import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstant
 
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -37,6 +38,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -873,6 +875,7 @@ class SolcastTest {
         assertFalse(scfo.isExpired());
     }
 
+    /**
     @Test
     void testOnlyForeecast() {
         BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITE, "sc-bridge-test");
@@ -913,5 +916,28 @@ class SolcastTest {
             e.printStackTrace();
         }
         System.out.println(cm1.getTimeSeries("solarforecast:sc-site:sc-bridge-test:average#energy-estimate").size());
+    }
+*/
+    @Test
+    void testTodayValues() {
+        String forecasString = FileReader.readFileInString("src/test/resources/solcast/forecasts.json");
+        JSONObject forecastJson = new JSONObject(forecasString);
+        String actuals = FileReader.readFileInString("src/test/resources/solcast/estimated-actuals.json");
+        JSONObject actualsJson = new JSONObject(actuals);   
+        JSONObject forecast = new JSONObject();
+        forecast.put(KEY_FORECAST, forecastJson.getJSONArray(KEY_FORECAST));
+        forecast.put(KEY_ACTUALS, actualsJson.getJSONArray(KEY_ACTUALS));
+        JSONObject todayJson = SolcastPlaneMock.getTodaysJson(forecast);
+        JSONArray todayArray = todayJson.getJSONArray(KEY_ACTUALS);
+        assertEquals(48, todayArray.length());
+        // 30 minutes interval gives 48 values for each day
+
+        LocalDate today = ZonedDateTime.now(Utils.getClock()).toLocalDate();
+        todayArray.forEach(entry -> {
+            JSONObject todayEntry = (JSONObject) entry;
+            String periodEnd = todayEntry.getString(KEY_PERIOD_END);
+            ZonedDateTime periodEndZdt = Utils.getZdtFromUTC(periodEnd);
+            assertEquals(today.toString(), periodEndZdt.toLocalDate().toString(),"Same day");
+        });
     }
 }
