@@ -44,12 +44,13 @@
       <groupId>com.hubspot.jinjava</groupId>
       <artifactId>jinjava</artifactId>
       <version>2.7.2</version>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.google.re2j</groupId>
       <artifactId>re2j</artifactId>
       <version>1.2</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>
