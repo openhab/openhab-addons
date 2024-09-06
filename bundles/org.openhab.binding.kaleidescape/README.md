@@ -16,13 +16,14 @@ The supported thing types are:
 `player` Any KPlayer, M Class [M300, M500, M700] or Cinema One 1st Gen player  
 `cinemaone` Cinema One (2nd Gen)  
 `alto`  
-`strato` Includes Strato, Strato S, or Strato C  
+`strato` Includes Strato, Strato S, Strato C or Strato V  
 
 The binding supports either a TCP/IP connection or direct serial port connection (19200-8-N-1) to the Kaleidescape component.  
 
 ## Discovery
 
-Manually initiated Auto-discovery will locate all supported Kaleidescape components if they are on the same IP subnet of the openHAB server.
+Auto-discovery is supported for Alto and Strato components if the device can be located on the local network using UPnP.
+Manually initiated discovery will locate all legacy Premiere line components if they are on the same IP subnet of the openHAB server.
 In the Inbox, select Search For Things and then choose the Kaleidescape Binding to initiate a discovery scan.
 
 ## Thing Configuration
@@ -42,7 +43,6 @@ The thing has the following configuration parameters:
 
 Some notes:
 
-- Due to a bug in the control protocol, a Strato C player will be identified as a Premiere 'Player' by the auto discovery process.
 - The only caveat of note about this binding is the updatePeriod configuration parameter.
 - When set to the default of 0, the component only sends running time update messages sporadically (as an example: when the movie chapter changes) while content is playing.
 - In this case, the running time channels will also only sporadically update.
