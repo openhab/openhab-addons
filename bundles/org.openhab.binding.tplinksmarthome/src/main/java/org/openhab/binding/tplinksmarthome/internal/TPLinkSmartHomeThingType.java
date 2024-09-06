@@ -55,6 +55,7 @@ public enum TPLinkSmartHomeThingType {
 
     // Plug Thing Type UIDs
     EP10("ep10", DeviceType.PLUG),
+    EP25("ep25", DeviceType.PLUG_WITH_ENERGY),
     HS100("hs100", DeviceType.PLUG),
     HS103("hs103", DeviceType.PLUG),
     HS105("hs105", DeviceType.PLUG),
