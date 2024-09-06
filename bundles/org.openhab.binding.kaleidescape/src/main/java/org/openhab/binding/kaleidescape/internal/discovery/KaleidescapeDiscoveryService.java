@@ -62,8 +62,11 @@ public class KaleidescapeDiscoveryService extends AbstractDiscoveryService {
     private static final int K_HEARTBEAT_PORT = 1443;
 
     // Component Types
+    private static final String PLAYER = "Player";
     private static final String CINEMA_ONE = "Cinema One";
-    private static final Set<String> ALLOWED_DEVICES = Set.of("Player", CINEMA_ONE, "Disc Vault");
+    private static final String DISC_VAULT = "Disc Vault";
+
+    private static final Set<String> ALLOWED_DEVICES = Set.of(PLAYER, CINEMA_ONE, DISC_VAULT);
 
     @Nullable
     private ExecutorService executorService = null;
