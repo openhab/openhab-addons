@@ -148,10 +148,10 @@ public class RoomHandler extends WarmupThingHandler implements WarmupRefreshList
 
     private void setOverride(final int temperature, final int duration) {
         if (duration > 1440 || duration <= 0) {
-            logger.info("Set Override failed: duration must be between 0 and 1440 minutes");
+            logger.warn("Set Override failed: duration must be between 0 and 1440 minutes");
         }
         if (temperature > 600 || temperature < 50) {
-            logger.info("Set Override failed: temperature must be between 0.5 and 60 degrees C");
+            logger.warn("Set Override failed: temperature must be between 0.5 and 60 degrees C");
         } else {
             try {
                 RoomCallout rc = getCallout();
