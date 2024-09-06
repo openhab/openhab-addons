@@ -39,7 +39,10 @@
 					<option value="sofar_lsw3">SOFAR Inverters (sofar_lsw3)</option>
 					<option value="sofar_wifikit">SOFAR WifiKit (sofar_wifikit)</option>
 					<option value="solis_1p8k-5g">SOLIS 1P8K-5G (solis_1p8k-5g)</option>
+					<option value="solis_3p-4g">SOLIS Three-Phase Inverter 4G Series (solis_3p-4g)</option>
+					<option value="solis_s6-gr1p">SOLIS Single-Phase Inverter S6-GR1P (solis_s6-gr1p)</option>
 					<option value="solis_hybrid">SOLIS Hybrid Inverter (solis_hybrid)</option>
+					<option value="hyd-zss-hp-3k-6k">ZCS Azzurro Hybrid HP 3K-6K Inverters (hyd-zss-hp-3k-6k)</option>
 					<option value="zcs_azzurro-ktl-v3">ZCS Azzurro KTL-V3 Inverters (zcs_azzurro-ktl-v3)</option>
 				</options>
 			</parameter>

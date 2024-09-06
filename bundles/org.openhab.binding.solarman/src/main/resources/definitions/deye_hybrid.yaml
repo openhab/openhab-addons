@@ -2,8 +2,11 @@ requests:
   - start: 0x0003
     end: 0x0070
     mb_functioncode: 0x03
-  - start: 0x0096  
-    end: 0x00f8
+  - start: 0x0096
+    end: 0x00f9
+    mb_functioncode: 0x03
+  - start: 0x00FA
+    end: 0x0117
     mb_functioncode: 0x03
 
 parameters:
@@ -109,6 +112,24 @@ parameters:
       registers: [0x004A,0x004B]
       icon: 'mdi:battery-minus'
 
+    - name: "Daily Battery Charge"
+      class: "energy"
+      state_class: "total_increasing"      
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [0x0046]
+      icon: 'mdi:battery-plus'
+      
+    - name: "Daily Battery Discharge"
+      class: "energy"
+      state_class: "total_increasing"      
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [0x0047]
+      icon: 'mdi:battery-minus'
+
     - name: "Battery Status"
       class: ""
       state_class: "measurement"
@@ -192,6 +213,14 @@ parameters:
       registers: [0x0096]
       icon: 'mdi:transmission-tower'
 
+    - name: "Grid Current L1"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.01
+      rule: 1
+      registers: [0x00A0]
+      icon: 'mdi:current-ac'
     - name: "Grid Voltage L2"
       class: "voltage"
       state_class: "measurement"
@@ -201,6 +230,15 @@ parameters:
       registers: [0x0097]
       icon: 'mdi:transmission-tower'
 
+    - name: "Grid Current L2"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.01
+      rule: 1
+      registers: [0x00A1]
+      icon: 'mdi:current-ac'
+      
     - name: "Internal CT L1 Power"
       class: "power"
       state_class: "measurement"
@@ -227,7 +265,7 @@ parameters:
       rule: 2
       registers: [0x00AA]
       icon: 'mdi:transmission-tower'
-
+      
     - name: "External CT L2 Power"
       class: "power"
       state_class: "measurement"
@@ -384,6 +422,15 @@ parameters:
       registers: [0x00AF]
       icon: 'mdi:home-lightning-bolt'
 
+    - name: "Grid Frequency"
+      class: "frequency"
+      state_class: "measurement"
+      uom: "Hz"
+      scale: 0.01
+      rule: 1
+      registers: [0x004F]
+      icon: 'mdi:sine-wave'
+
     - name: "Current L1"
       class: "current"
       state_class: "measurement"      
@@ -418,6 +465,15 @@ parameters:
       rule: 2
       registers: [0x00AE]
       icon: 'mdi:home-lightning-bolt'
+      
+    - name: "Load Frequency"
+      class: ""
+      state_class: "measurement"      
+      uom: "Hz"
+      scale: 0.01
+      rule: 1
+      registers: [0x00C0]
+      icon: 'mdi:sine-wave'
 
     - name: "DC Temperature"
       class: "temperature"
@@ -502,20 +558,6 @@ parameters:
       rule: 1
       registers: [0x00A6]
 
-    - name: "Time of use"
-      class: ""
-      state_class: ""      
-      uom: ""
-      scale: 1
-      rule: 1
-      registers: [0x00F8]
-      isstr: true
-      lookup: 
-      -  key: 0
-         value: "Disable"
-      -  key: 1
-         value: "Enable"
-
     - name: "Work Mode"
       class: ""
       state_class: ""      
@@ -546,3 +588,243 @@ parameters:
       scale: 1
       rule: 6
       registers: [0x0065,0x0066,0x0067,0x0068,0x0069,0x006A]
+
+ - group: Time of Use
+   items:
+    - name: "Time of use Time 1"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 9
+      registers: [0x00FA]
+      icon: 'mdi:timelapse'
+
+    - name: "Time of use Time 2"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 9
+      registers: [0x00FB]
+      icon: "mdi:timelapse"
+      
+    - name: "Time of Use Time 3"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 9
+      registers: [0x00FC]
+      icon: 'mdi:timelapse'
+
+    - name: "Time of Use Time 4"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 9
+      registers: [0x00FD]
+      icon: 'mdi:timelapse'
+
+    - name: "Time of Use Time 5"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 9
+      registers: [0x00FE]
+      icon: "mdi:timelapse"
+
+    - name: "Time of Use Time 6"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 9
+      registers: [0x00FF]
+      icon: 'mdi:timelapse'
+
+    - name: "Time of Use Power 1"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x0100]
+      icon: "mdi:lightning-bolt-outline"
+
+    - name: "Time of Use Power 2"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x0101]
+      icon: 'mdi:lightning-bolt-outline'
+
+    - name: "Time of Use Power 3"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x0102]
+      icon: 'mdi:lightning-bolt-outline'
+
+    - name: "Time of Use Power 4"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x0103]
+      icon: 'mdi:lightning-bolt-outline'
+
+    - name: "Time of Use Power 5"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x0104]
+      icon: 'mdi:lightning-bolt-outline'
+
+    - name: "Time of Use Power 6"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x0105]
+      icon: 'mdi:lightning-bolt-outline'
+
+    - name: "Time of Use SOC 1"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x010C]
+      icon: 'mdi:battery'
+
+    - name: "Time of Use SOC 2"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x010D]
+      icon: 'mdi:battery'
+
+    - name: "Time of Use SOC 3"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x010E]
+      icon: 'mdi:battery'
+
+    - name: "Time of Use SOC 4"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x010F]
+      icon: 'mdi:battery'
+
+    - name: "Time of Use SOC 5"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x0110]
+      icon: 'mdi:battery'
+
+    - name: "Time of Use SOC 6"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [0x0111]
+      icon: 'mdi:battery'
+
+    - name: "Time of Use Enable 1"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      mask: 1
+      registers: [0x0112]
+      icon: 'mdi:checkbox-marked-outline'
+
+    - name: "Time of Use Enable 2"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      mask: 1
+      registers: [0x0113]
+      icon: 'mdi:checkbox-marked-outline'
+
+    - name: "Time of Use Enable 3"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      mask: 1
+      registers: [0x0114]
+      icon: 'mdi:checkbox-marked-outline'
+
+    - name: "Time of Use Enable 4"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      mask: 1
+      registers: [0x0115]
+      icon: 'mdi:checkbox-marked-outline'
+
+    - name: "Time of Use Enable 5"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      mask: 1
+      registers: [0x0116]
+      icon: 'mdi:checkbox-marked-outline'
+
+    - name: "Time of Use Enable 6"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      mask: 1
+      registers: [0x0117]
+      icon: 'mdi:checkbox-marked-outline'
+
+    - name: "Time of use"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      mask: 1
+      registers: [0x00F8]
+      icon: 'mdi:checkbox-marked-outline'
+      isstr: true
+      lookup:
+        - key: 0
+          value: "Disable"
+        - key: 1
+          value: "Enable"
