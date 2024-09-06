@@ -47,6 +47,7 @@ public class HomeAssistantChannelTransformation extends ChannelTransformation {
     private final Jinjava jinjava;
     private final AbstractComponent component;
     private final String template;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public HomeAssistantChannelTransformation(Jinjava jinjava, AbstractComponent component, String template) {
         super((String) null);
@@ -70,7 +71,7 @@ public class HomeAssistantChannelTransformation extends ChannelTransformation {
         bindings.put("value", value);
 
         try {
-            JsonNode tree = new ObjectMapper().readTree(value);
+            JsonNode tree = objectMapper.readTree(value);
             bindings.put("value_json", toObject(tree));
         } catch (IOException e) {
             // ok, then value_json is null...
