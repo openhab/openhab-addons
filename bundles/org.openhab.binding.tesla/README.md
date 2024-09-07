@@ -216,7 +216,7 @@ DateTime            TeslaEventstamp             {channel="account:model3:myaccou
 String              TeslaState                  {channel="account:model3:myaccount:mycar:state"}
 Number              TeslaSpeed                  {channel="account:model3:myaccount:mycar:speed"}
 String              TeslaShiftState             {channel="account:model3:myaccount:mycar:shiftstate"}
-Number              TeslaOdometer               {channel="account:model3:myaccount:mycar:odometer", unit="km"}
+Number:Length       TeslaOdometer               {channel="account:model3:myaccount:mycar:odometer", unit="km"}
 Number              TeslaRange                  {channel="account:model3:myaccount:mycar:range"}
 
 Number              TeslaBatteryLevel           {channel="account:model3:myaccount:mycar:batterylevel"}
