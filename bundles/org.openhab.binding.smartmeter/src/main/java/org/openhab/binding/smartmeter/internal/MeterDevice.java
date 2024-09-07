@@ -93,7 +93,7 @@ public abstract class MeterDevice<T> {
                 error = error.getCause();
             }
             if (error instanceof IOException) {
-                logger.warn("Connection related issue occured: {}", error.getMessage());
+                logger.warn("Connection related issue occurred: {}", error.getMessage());
                 return;
             }
             logger.warn("Fatal error occurred", error);
