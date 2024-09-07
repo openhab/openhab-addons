@@ -12,19 +12,20 @@
  */
 package org.openhab.binding.fenecon.internal.api;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.Builder;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
-import java.time.Duration;
-import java.util.Base64;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.AuthenticationStore;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.BasicAuthentication;
+import org.eclipse.jetty.http.HttpMethod;
 import org.openhab.binding.fenecon.internal.FeneconConfiguration;
 import org.openhab.binding.fenecon.internal.exception.FeneconAuthenticationException;
 import org.openhab.binding.fenecon.internal.exception.FeneconCommunicationException;
@@ -48,31 +49,22 @@ public class FeneconController {
 
     private final FeneconConfiguration config;
     private final HttpClient httpClient;
-    private final Builder baseHttpRequest;
 
-    public FeneconController(FeneconConfiguration config) {
+    public FeneconController(FeneconConfiguration config, HttpClient httpClient) {
         this.config = config;
+        this.httpClient = httpClient;
 
         logger.debug("FENECON: initialize REST-API connection to {} with polling interval: {} sec", getBaseUrl(config),
                 config.refreshInterval);
 
-        httpClient = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
-        baseHttpRequest = createBaseHttpRequest(config);
-    }
-
-    private String getBasicAuthHeader(String username, String password) {
-        String valueToEncode = username + ":" + password;
-        return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
+        // Set BasicAuthentication for all requests on the http connection
+        AuthenticationStore auth = httpClient.getAuthenticationStore();
+        URI uri = URI.create(getBaseUrl(config));
+        auth.addAuthenticationResult(new BasicAuthentication.BasicResult(uri, "x", config.password));
     }
 
     private String getBaseUrl(FeneconConfiguration config) {
         return "http://" + config.hostname + ":" + config.port + "/";
-    }
-
-    private Builder createBaseHttpRequest(FeneconConfiguration config) {
-        String basicAuth = getBasicAuthHeader("x", config.password);
-        return HttpRequest.newBuilder().timeout(Duration.ofSeconds(5)).header("Authorization", basicAuth)
-                .header("Content-Type", "application/json").GET();
     }
 
     /**
@@ -85,13 +77,16 @@ public class FeneconController {
      */
     public Optional<FeneconResponse> requestChannel(String channel) throws FeneconException {
         try {
-            HttpRequest request = baseHttpRequest.uri(new URI(getBaseUrl(config) + "rest/channel/" + channel)).build();
+            URI uri = new URI(getBaseUrl(config) + "rest/channel/" + channel);
+
+            Request request = httpClient.newRequest(uri).timeout(10, TimeUnit.SECONDS).method(HttpMethod.GET);
             logger.trace("FENECON - request: {}", request);
 
-            HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
-            logger.trace("FENECON - response status code: {} body: {}", response.statusCode(), response.body());
+            ContentResponse response = request.send();
+            logger.trace("FENECON - response status code: {} body: {}", response.getStatus(),
+                    response.getContentAsString());
 
-            int statusCode = response.statusCode();
+            int statusCode = response.getStatus();
             if (statusCode > 300) {
                 // Authentication error
                 if (statusCode == 401) {
@@ -101,9 +96,9 @@ public class FeneconController {
                     throw new FeneconCommunicationException("Unexpected http status code: " + statusCode);
                 }
             } else {
-                return createResponseFromJson(JsonParser.parseString(response.body()).getAsJsonObject());
+                return createResponseFromJson(JsonParser.parseString(response.getContentAsString()).getAsJsonObject());
             }
-        } catch (IOException | UnsupportedOperationException | InterruptedException err) {
+        } catch (TimeoutException | ExecutionException | UnsupportedOperationException | InterruptedException err) {
             throw new FeneconCommunicationException("Communication error with FENECON system on channel: " + channel,
                     err);
         } catch (URISyntaxException | JsonSyntaxException err) {

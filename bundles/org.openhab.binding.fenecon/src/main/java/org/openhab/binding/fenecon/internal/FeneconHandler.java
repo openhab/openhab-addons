@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.fenecon.internal.api.BatteryPower;
 import org.openhab.binding.fenecon.internal.api.FeneconController;
 import org.openhab.binding.fenecon.internal.api.FeneconResponse;
@@ -52,9 +53,11 @@ public class FeneconHandler extends BaseThingHandler {
     private FeneconConfiguration config = new FeneconConfiguration();
     private @Nullable ScheduledFuture<?> pollingJob;
     private @Nullable FeneconController feneconController;
+    private final HttpClient httpClient;
 
-    public FeneconHandler(Thing thing) {
+    public FeneconHandler(Thing thing, HttpClient httpClient) {
         super(thing);
+        this.httpClient = httpClient;
     }
 
     @Override
@@ -63,7 +66,7 @@ public class FeneconHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        feneconController = new FeneconController(config);
+        feneconController = new FeneconController(config, this.httpClient);
         pollingJob = scheduler.scheduleWithFixedDelay(this::pollingCode, 0, config.refreshInterval, TimeUnit.SECONDS);
     }
 
