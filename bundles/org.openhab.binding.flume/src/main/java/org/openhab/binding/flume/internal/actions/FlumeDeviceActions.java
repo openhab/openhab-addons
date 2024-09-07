@@ -69,7 +69,7 @@ public class FlumeDeviceActions implements ThingActions {
      * Query water usage
      */
     @RuleAction(label = "query water usage", description = "Queries water usage over a period of time.")
-    public @Nullable @ActionOutput(name = "value", type = "org.openhab.core.library.types.QuantityType<javax.measure.quantity.Volume>") QuantityType<Volume> queryWaterUsage(
+    public @Nullable @ActionOutput(name = "value", type = "QuantityType<Volume>") QuantityType<Volume> queryWaterUsage(
             @ActionInput(name = "sinceDateTime", label = "Since Date/Time", required = true, description = "Restrict the query range to data samples since this datetime.") @Nullable LocalDateTime sinceDateTime,
             @ActionInput(name = "untilDateTime", label = "Until Date/Time", required = true, description = "Restrict the query range to data samples until this datetime.") @Nullable LocalDateTime untilDateTime,
             @ActionInput(name = "bucket", label = "Bucket size", required = true, description = "The bucket grouping of the data we are querying (MIN, HR, DAY, MON, YR).") @Nullable String bucket,
@@ -87,26 +87,26 @@ public class FlumeDeviceActions implements ThingActions {
         boolean imperialUnits = localDeviceHandler.isImperial();
 
         if (operation == null || bucket == null || sinceDateTime == null || untilDateTime == null) {
-            logger.info("queryWaterUsage called with null inputs");
+            logger.warn("queryWaterUsage called with null inputs");
             return null;
         }
 
         if (!FlumeApi.OperationType.contains(operation)) {
-            logger.info("Invalid aggregation operation in call to queryWaterUsage");
+            logger.warn("Invalid aggregation operation in call to queryWaterUsage");
             return null;
         } else {
             query.operation = FlumeApi.OperationType.valueOf(operation);
         }
 
         if (!FlumeApi.BucketType.contains(bucket)) {
-            logger.info("Invalid bucket type in call to queryWaterUsage");
+            logger.warn("Invalid bucket type in call to queryWaterUsage");
             return null;
         } else {
             query.bucket = FlumeApi.BucketType.valueOf(bucket);
         }
 
         if (untilDateTime.isBefore(sinceDateTime)) {
-            logger.info("sinceDateTime must be earlier than untilDateTime");
+            logger.warn("sinceDateTime must be earlier than untilDateTime");
             return null;
         }
 
@@ -120,7 +120,7 @@ public class FlumeDeviceActions implements ThingActions {
         try {
             usage = localDeviceHandler.getApi().queryUsage(localDeviceHandler.getId(), query);
         } catch (FlumeApiException | IOException | InterruptedException | TimeoutException | ExecutionException e) {
-            logger.info("queryWaterUsage function failed - {}", e.getMessage());
+            logger.warn("queryWaterUsage function failed - {}", e.getMessage());
             return null;
         }
 
@@ -135,6 +135,9 @@ public class FlumeDeviceActions implements ThingActions {
     public static @Nullable QuantityType<Volume> queryWaterUsage(ThingActions actions,
             @Nullable LocalDateTime sinceDateTime, @Nullable LocalDateTime untilDateTime, @Nullable String bucket,
             @Nullable String operation) {
-        return ((FlumeDeviceActions) actions).queryWaterUsage(sinceDateTime, untilDateTime, bucket, operation);
+	if(actions instanceof FlumeDeviceActions localActions) {
+        	return localActions.queryWaterUsage(sinceDateTime, untilDateTime, bucket, operation);
+    } else {
+        throw new IllegalArgumentException("Instance is not a FlumeDeviceActions class.");
     }
 }

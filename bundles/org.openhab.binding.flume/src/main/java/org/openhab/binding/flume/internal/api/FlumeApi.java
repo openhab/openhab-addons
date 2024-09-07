@@ -23,7 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import javax.ws.rs.core.MediaType;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -78,6 +81,8 @@ public class FlumeApi {
     // Constants used in queries
     public static final String API_UNITS_IMPERIAL = "GALLONS";
     public static final String API_UNITS_METRIC = "LITERS";
+
+    private static final int API_TIMEOUT = 15;
 
     // @formatter:off
     public enum OperationType {
@@ -148,25 +153,9 @@ public class FlumeApi {
 
         String url = APIURL_BASE + APIURL_TOKEN;
         Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .header(HttpHeader.CONTENT_TYPE, "application/json")
-                .content(new StringContentProvider(gson.toJson(getToken)), "application/json");
+                .content(new StringContentProvider(gson.toJson(getToken)), MediaType.APPLICATION_JSON);
 
-        logger.trace("POST: {}", url);
-        ContentResponse response = request.send();
-
-        if (response.getStatus() == 400) {
-            throw new FlumeApiException("@text/api.invalid-user-credentials [\"" + response.getReason() + "\"]",
-                    response.getStatus(), true);
-        }
-
-        JsonObject jsonResponse = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
-        boolean success = jsonResponse.get("success").getAsBoolean();
-
-        if (!success) {
-            String message = jsonResponse.get("message").getAsString();
-            throw new FlumeApiException("@text/api.query-fail [\"" + message + "\"]",
-                    jsonResponse.get("code").getAsInt(), false);
-        }
+        JsonObject jsonResponse = sendAndValidate(request, false);
 
         final FlumeApiToken[] data = gson.fromJson(jsonResponse.get("data").getAsJsonArray(), FlumeApiToken[].class);
 
@@ -187,12 +176,9 @@ public class FlumeApi {
 
         String url = APIURL_BASE + APIURL_TOKEN;
         Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .header(HttpHeader.CONTENT_TYPE, "application/json").header("Authorization", "Bearer " + accessToken)
-                .content(new StringContentProvider(gson.toJson(token)), "application/json");
+                .content(new StringContentProvider(gson.toJson(token)), MediaType.APPLICATION_JSON);
 
-        logger.trace("POST: {}", url);
-        ContentResponse response = request.send();
-        JsonObject jsonResponse = validateResponse(response);
+        JsonObject jsonResponse = sendAndValidate(request, false);
 
         final FlumeApiToken[] data = gson.fromJson(jsonResponse.get("data").getAsJsonArray(), FlumeApiToken[].class);
 
@@ -212,7 +198,7 @@ public class FlumeApi {
 
         String jsonPayload = new String(decoded);
 
-        FlumeApiTokenPayload payload = gson.fromJson(jsonPayload, FlumeApiTokenPayload.class);
+        final FlumeApiTokenPayload payload = gson.fromJson(jsonPayload, FlumeApiTokenPayload.class);
 
         if (payload == null) {
             throw new FlumeApiException("@text/api.response-invalid", 0, true);
@@ -236,15 +222,10 @@ public class FlumeApi {
 
     public List<FlumeApiDevice> getDeviceList()
             throws FlumeApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
-        verifyToken();
-
         String url = APIURL_BASE + String.format(APIURL_GETUSERSDEVICES, this.userId, false, false);
-        Request request = httpClient.newRequest(url).method(HttpMethod.GET)
-                .header("Authorization", "Bearer " + accessToken).header(HttpHeader.CONTENT_TYPE, "application/json");
+        Request request = httpClient.newRequest(url).method(HttpMethod.GET);
 
-        logger.trace("GET: {}", url);
-        ContentResponse response = request.send();
-        JsonObject jsonResponse = validateResponse(response);
+        JsonObject jsonResponse = sendAndValidate(request);
 
         final FlumeApiDevice[] listDevices = gson.fromJson(jsonResponse.get("data").getAsJsonArray(),
                 FlumeApiDevice[].class);
@@ -252,33 +233,81 @@ public class FlumeApi {
         return Arrays.asList(listDevices);
     }
 
+    /**
+     * gets Flume device info
+     *
+     * @param deviceId for the device
+     * @return FlumeApiDevice dto structure
+     *
+     * @throws FlumeApiException
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
     public @Nullable FlumeApiDevice getDeviceInfo(String deviceId)
             throws FlumeApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
-        verifyToken();
-
         String url = APIURL_BASE + String.format(APIURL_GETDEVICEINFO, this.userId, deviceId);
-        Request request = httpClient.newRequest(url).method(HttpMethod.GET).header("Authorization",
-                "Bearer " + accessToken);
+        Request request = httpClient.newRequest(url).method(HttpMethod.GET);
 
-        logger.trace("GET: {}", url);
-        ContentResponse response = request.send();
-        JsonObject jsonResponse = validateResponse(response);
+        JsonObject jsonResponse = sendAndValidate(request);
 
         final FlumeApiDevice[] apiDevices = gson.fromJson(jsonResponse.get("data").getAsJsonArray(),
                 FlumeApiDevice[].class);
 
-        if (apiDevices == null) {
-            return null;
-        }
-
         return apiDevices[0];
     }
 
+    /**
+     * makes a single query to the API.
+     *
+     * @param deviceID for the device
+     * @param query FlumeApiQueryWaterUsage class with query parameters
+     * @return the result of the single query
+     *
+     * @throws FlumeApiException
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
+    public @Nullable Float queryUsage(String deviceID, FlumeApiQueryWaterUsage query)
+            throws FlumeApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
+        List<FlumeApiQueryWaterUsage> listQuery = new ArrayList<FlumeApiQueryWaterUsage>();
+        List<HashMap<String, List<FlumeApiQueryBucket>>> queryData;
+
+        listQuery.add(query);
+
+        queryData = queryUsage(deviceID, listQuery);
+        if (queryData == null) {
+            return null;
+        }
+
+        Map<String, List<FlumeApiQueryBucket>> queryBuckets = queryData.get(0);
+
+        List<FlumeApiQueryBucket> queryBucket = queryBuckets.get(query.requestId);
+
+        float queryUsageResult = queryBucket.get(0).value;
+
+        return queryUsageResult;
+    }
+
+    /**
+     * makes multiple queries to the API combined into a single Rest API request.
+     *
+     * @param deviceID for the device
+     * @param listQuery a List of FlumeApiQueryWaterUsage query parameters
+     * @return a list of HashMap
+     *
+     * @throws FlumeApiException
+     * @throws IOException
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     */
     public @Nullable List<HashMap<String, List<FlumeApiQueryBucket>>> queryUsage(String deviceID,
             List<FlumeApiQueryWaterUsage> listQuery)
             throws FlumeApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
-        verifyToken();
-
         if (listQuery.isEmpty()) {
             return null;
         }
@@ -287,13 +316,9 @@ public class FlumeApi {
 
         String url = APIURL_BASE + String.format(APIURL_QUERYUSAGE, this.userId, deviceID);
         Request request = httpClient.newRequest(url).method(HttpMethod.POST)
-                .header("Authorization", "Bearer " + accessToken).header(HttpHeader.CONTENT_TYPE, "application/json")
-                .content(new StringContentProvider(jsonQuery), "application/json");
+                .content(new StringContentProvider(jsonQuery), MediaType.APPLICATION_JSON);
 
-        logger.trace("POST: {}", url);
-        logger.trace("json: {}", jsonQuery);
-        ContentResponse response = request.send();
-        JsonObject jsonResponse = validateResponse(response);
+        JsonObject jsonResponse = sendAndValidate(request);
 
         final Type queryResultType = new TypeToken<List<HashMap<String, List<FlumeApiQueryBucket>>>>() {
         }.getType();
@@ -304,48 +329,16 @@ public class FlumeApi {
         return listQueryResult;
     }
 
-    public @Nullable Float queryUsage(String device, FlumeApiQueryWaterUsage query)
-            throws FlumeApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
-        List<FlumeApiQueryWaterUsage> listQuery = new ArrayList<FlumeApiQueryWaterUsage>();
-        List<HashMap<String, List<FlumeApiQueryBucket>>> queryData;
-
-        listQuery.add(query);
-
-        queryData = queryUsage(device, listQuery);
-        if (queryData == null) {
-            return null;
-        }
-
-        Map<String, List<FlumeApiQueryBucket>> queryBuckets = queryData.get(0);
-
-        List<FlumeApiQueryBucket> queryBucket = queryBuckets.get(query.requestId);
-        if (queryBucket == null) {
-            return null;
-        }
-
-        float queryUsageResult = queryBucket.get(0).value;
-
-        return queryUsageResult;
-    }
-
     public @Nullable FlumeApiCurrentFlowRate getCurrentFlowRate(String deviceId)
             throws FlumeApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
-        verifyToken();
-
         String url = APIURL_BASE + String.format(APIURL_GETCURRENTFLOWRATE, this.userId, deviceId);
-        Request request = httpClient.newRequest(url).method(HttpMethod.GET)
-                .header("Authorization", "Bearer " + accessToken).header("accept", "application/json");
+        Request request = httpClient.newRequest(url).method(HttpMethod.GET);
 
-        logger.trace("GET: {}", url);
-        ContentResponse response = request.send();
-        JsonObject jsonResponse = validateResponse(response);
+        JsonObject jsonResponse = sendAndValidate(request);
 
         final FlumeApiCurrentFlowRate[] currentFlowRates = gson.fromJson(jsonResponse.get("data").getAsJsonArray(),
                 FlumeApiCurrentFlowRate[].class);
 
-        if (currentFlowRates == null) {
-            return null;
-        }
         if (currentFlowRates.length < 1) {
             return null;
         }
@@ -355,16 +348,11 @@ public class FlumeApi {
 
     public List<FlumeApiUsageAlert> fetchUsageAlerts(String deviceId, int limit)
             throws FlumeApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
-        verifyToken();
-
         String url = APIURL_BASE
                 + String.format(APIURL_FETCHUSAGEALERTS, userId, deviceId, limit, "triggered_datetime", "DESC");
-        Request request = httpClient.newRequest(url).method(HttpMethod.GET)
-                .header("Authorization", "Bearer " + accessToken).header("accept", "application/json");
+        Request request = httpClient.newRequest(url).method(HttpMethod.GET);
 
-        logger.trace("GET: {}", url);
-        ContentResponse response = request.send();
-        JsonObject jsonResponse = validateResponse(response);
+        JsonObject jsonResponse = sendAndValidate(request);
 
         final FlumeApiUsageAlert[] listUsageAlerts = gson.fromJson(jsonResponse.get("data").getAsJsonArray(),
                 FlumeApiUsageAlert[].class);
@@ -374,16 +362,11 @@ public class FlumeApi {
 
     public List<FlumeApiUsageAlert> fetchNotificatinos(String deviceId, int limit)
             throws FlumeApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
-        verifyToken();
-
         String url = APIURL_BASE
                 + String.format(APIURL_FETCHNOTIFICATIONS, userId, deviceId, limit, "triggered_datetime", "DEC");
-        Request request = httpClient.newRequest(url).method(HttpMethod.GET)
-                .header("Authorization", "Bearer " + accessToken).header("accept", "application/json");
+        Request request = httpClient.newRequest(url).method(HttpMethod.GET);
 
-        logger.trace("GET: {}", url);
-        ContentResponse response = request.send();
-        JsonObject jsonResponse = validateResponse(response);
+        JsonObject jsonResponse = sendAndValidate(request);
 
         final FlumeApiUsageAlert[] listUsageAlerts = gson.fromJson(jsonResponse.get("data").getAsJsonArray(),
                 FlumeApiUsageAlert[].class);
@@ -391,11 +374,36 @@ public class FlumeApi {
         return Arrays.asList(listUsageAlerts);
     }
 
-    private JsonObject validateResponse(ContentResponse response) throws FlumeApiException {
-        logger.trace("Response: {}", response.getContentAsString());
+    private JsonObject sendAndValidate(Request request)
+            throws FlumeApiException, InterruptedException, TimeoutException, ExecutionException, IOException {
+        return sendAndValidate(request, true);
+    }
 
-        if (response.getStatus() == 429) {
-            throw new FlumeApiException("@text/api.rate-limit-exceeded", 429, false);
+    private JsonObject sendAndValidate(Request request, boolean verifyToken)
+            throws FlumeApiException, InterruptedException, TimeoutException, ExecutionException, IOException {
+        ContentResponse response;
+
+        if (verifyToken) {
+            verifyToken();
+        }
+
+        setHeaders(request);
+
+        logger.trace("REQUEST: {}", request.toString());
+        response = request.send();
+        logger.trace("RESPONSE: {}", response.getContentAsString());
+
+        switch (response.getStatus()) {
+            case 200:
+                break;
+            case 400:
+            case 401:
+                throw new FlumeApiException("@text/api.invalid-user-credentials [\"" + response.getReason() + "\"]",
+                        response.getStatus(), true);
+            case 429:
+                throw new FlumeApiException("@text/api.rate-limit-exceeded", 429, false);
+            default:
+                throw new FlumeApiException("", response.getStatus(), false);
         }
 
         JsonObject jsonResponse = JsonParser.parseString(response.getContentAsString()).getAsJsonObject();
@@ -403,9 +411,18 @@ public class FlumeApi {
 
         if (!success) {
             String message = jsonResponse.get("message").getAsString();
-            throw new FlumeApiException("@text/api.query-fail [\"" + message + "\"]", response.getStatus(), false);
+            throw new FlumeApiException("@text/api.query-fail [\"" + message + "\"]",
+                    jsonResponse.get("code").getAsInt(), false);
         }
 
         return jsonResponse;
+    }
+
+    private Request setHeaders(Request request) {
+        if (!accessToken.isEmpty()) {
+            request.header(HttpHeader.AUTHORIZATION, "Bearer " + accessToken);
+        }
+        request.timeout(API_TIMEOUT, TimeUnit.SECONDS);
+        return request;
     }
 }
