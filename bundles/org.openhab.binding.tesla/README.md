@@ -212,6 +212,7 @@ Bridge tesla:account:myaccount "My Tesla Account" [ refreshToken="xxxx" ] {
 demo.items:
 
 ```java
+
 DateTime            TeslaEventstamp             {channel="account:model3:myaccount:mycar:eventstamp"}
 String              TeslaState                  {channel="account:model3:myaccount:mycar:state"}
 Number              TeslaSpeed                  {channel="account:model3:myaccount:mycar:speed"}
@@ -275,6 +276,7 @@ String              TeslaDestinationName        {channel="account:model3:myaccou
 Location            TeslaDestinationLocation    {channel="account:model3:myaccount:mycar:destinationlocation"}
 Number:Time         TeslaMinutesToArrival       {channel="account:model3:myaccount:mycar:minutestoarrival", unit="min"}
 Number:Length       TeslaDistanceToArrival      {channel="account:model3:myaccount:mycar:distancetoarrival"}
+
 ```
 
 demo.sitemap:

@@ -42,7 +42,7 @@ public class Type {
     }
 
     public DeviceType getValueRaw() {
-        return Optional.ofNullable(valueRaw).orElse(DeviceType.UNKNOWN);
+        return Objects.requireNonNullElse(valueRaw, DeviceType.UNKNOWN);
     }
 
     public Optional<String> getValueLocalized() {

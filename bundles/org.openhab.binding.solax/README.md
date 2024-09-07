@@ -12,10 +12,11 @@ In case the parsed information that comes with the binding out of the box differ
 
 ## Supported Things
 
-| Thing                  | Thing Type | Description                                                                         |
-|------------------------|------------|-------------------------------------------------------------------------------------|
-| local-connect-inverter | Thing      | An inverter representation with all the data available as a channels (directly retrieved from the wi-fi module  |
-| cloud-connect-inverter | Thing      | An inverter representation with all the data available as a channels (retrieved from the Solax cloud API)  |
+| Thing                  | Thing Type | Description                                                                                                                     |
+|------------------------|------------|---------------------------------------------------------------------------------------------------------------------------------|
+| local-connect-inverter | Thing      | An inverter representation with all the data available as a channels (directly retrieved from the wi-fi module)                 |
+| local-connect-charger  | Thing      | An electric vehicle charger representation with all the data available as a channels (directly retrieved from the wi-fi module) |
+| cloud-connect-inverter | Thing      | An inverter representation with all the data available as a channels (retrieved from the Solax cloud API)                       |
 
 Note: Channels may vary depending on the inverter type and the availability of information for parsing the raw data. 
 If you're missing a channel this means that it's not supported for your inverter type.
@@ -111,6 +112,46 @@ If you're missing a channel this means that it's not supported for your inverter
 |-------------------|-------------------------------------------|
 | serialNumber      | The serial number of the Wi-Fi module     |
 | inverterType      | Inverter Type (for example X1_HYBRID_G4)  |
+
+
+### Local Connect EV Charger Configuration
+
+### Parameters
+
+| Parameter         | Description                                                                                                                                        |
+|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| refreshInterval   | Defines the refresh interval when the binding polls from the inverter's Wi-Fi module (in seconds). Optional parameter. Default 10 seconds.         |
+| password          | Password for accessing the Wi-Fi module (the serial number of the wifi). Mandatory parameter.                                                      |
+| hostname          | IP address or hostname of your Wi-Fi module. If hostname is used must be resolvable by OpenHAB. Mandatory parameter.                               |
+
+### Channels
+
+| Channel ID                               | Type                        | Description                                                   |
+|------------------------------------------|-----------------------------|---------------------------------------------------------------|
+| eq-single-session                        | Number:Energy               | Energy charged for the current session. [kWh]                 |
+| eq-total                                 | Number:Energy               | Total energy charged for all sessions. [kWh]                  |
+| charger-output-power-phase1              | Number:Power                | Power to/from the charger phase 1. [W]                        |
+| charger-output-power-phase2              | Number:Power                | Power to/from the charger phase 2. [W]                        |
+| charger-output-power-phase3              | Number:Power                | Power to/from the charger phase 3. [W]                        |
+| charger-total-output-power               | Number:Power                | Power from the charger on all phases. [W]                     |
+| charger-current-phase1                   | Number:ElectricCurrent      | Current from the charger phase 1. [A]                         |
+| charger-current-phase2                   | Number:ElectricCurrent      | Current from the charger phase 2. [A]                         |
+| charger-current-phase3                   | Number:ElectricCurrent      | Current from the charger phase 3. [A]                         |
+| charger-voltage-phase1                   | Number:ElectricPotential    | Voltage of the charger's phase 1. [V]                         |
+| charger-voltage-phase2                   | Number:ElectricPotential    | Voltage of the charger's phase 2. [V]                         |
+| charger-voltage-phase3                   | Number:ElectricPotential    | Voltage of the charger's phase 3. [V]                         |
+| charger-external-current-phase1          | Number:ElectricCurrent      | Current from the provider phase 1. [A]                        |
+| charger-external-current-phase2          | Number:ElectricCurrent      | Current from the provider phase 2. [A]                        |
+| charger-external-current-phase3          | Number:ElectricCurrent      | Current from the provider phase 3. [A]                        |
+| charger-external-power-phase1            | Number:Power                | Power from the provider phase 1. [W]                          |
+| charger-external-power-phase2            | Number:Power                | Power from the provider phase 2. [W]                          |
+| charger-external-power-phase3            | Number:Power                | Power from the provider phase 3. [W]                          |
+| charger-external-total-power             | Number:Power                | Total power from the provider. [W]                            |
+| charger-plug-temperature                 | Number:Temperature          | Temperature of the charger's plug. [°C]                       |
+| charger-internal-temperature             | Number:Temperature          | Internal temperature on the board of the charger. [°C]        |
+| charger-mode                             | String                      | Charger Workmode.                                             |
+| charger-state                            | String                      | Charger State.                                                |
+| last-update-time                         | DateTime                    | Last time with a successful retrieval of data.                |
 
 
 ### Cloud Connect Inverter Configuration

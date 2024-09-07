@@ -25,7 +25,6 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.api.FreeboxException;
-import org.openhab.binding.freeboxos.internal.api.PermissionException;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager;
 import org.openhab.binding.freeboxos.internal.api.rest.APManager.Station;
 import org.openhab.binding.freeboxos.internal.api.rest.FreeplugManager;
@@ -49,11 +48,14 @@ import org.openhab.binding.freeboxos.internal.handler.FreeboxOsHandler;
 import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
+import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,12 +75,25 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
 
     private final Logger logger = LoggerFactory.getLogger(FreeboxOsDiscoveryService.class);
 
+    private boolean hasVm = true;
+    private boolean hasHomeAutomation = true;
+
     private Optional<ScheduledFuture<?>> backgroundFuture = Optional.empty();
 
     public FreeboxOsDiscoveryService() {
         super(FreeboxOsHandler.class,
                 Stream.of(THINGS_TYPES_UIDS, HOME_TYPES_UIDS).flatMap(Set::stream).collect(Collectors.toSet()),
                 DISCOVERY_TIME_SECONDS);
+    }
+
+    @Reference(unbind = "-")
+    public void bindTranslationProvider(TranslationProvider translationProvider) {
+        this.i18nProvider = translationProvider;
+    }
+
+    @Reference(unbind = "-")
+    public void bindLocaleProvider(LocaleProvider localeProvider) {
+        this.localeProvider = localeProvider;
     }
 
     @Override
@@ -107,66 +122,70 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 List<LanHost> lanHosts = new ArrayList<>(thingHandler.getManager(LanBrowserManager.class).getHosts()
                         .stream().filter(LanHost::reachable).toList());
 
-                discoverServer(thingHandler.getManager(SystemManager.class), bridgeUID);
-                discoverPhone(thingHandler.getManager(PhoneManager.class), bridgeUID);
-                discoverPlugs(thingHandler.getManager(FreeplugManager.class), bridgeUID);
-                discoverRepeater(thingHandler.getManager(RepeaterManager.class), bridgeUID, lanHosts);
-                discoverPlayer(thingHandler.getManager(PlayerManager.class), bridgeUID, lanHosts);
-                discoverVM(thingHandler.getManager(VmManager.class), bridgeUID, lanHosts);
-                discoverHome(thingHandler.getManager(HomeManager.class), bridgeUID);
+                discoverServer(bridgeUID);
+                discoverPhone(bridgeUID);
+                discoverPlugs(bridgeUID);
+                discoverRepeater(bridgeUID, lanHosts);
+                discoverPlayer(bridgeUID, lanHosts);
+                if (hasVm) {
+                    discoverVM(bridgeUID, lanHosts);
+                }
+                if (hasHomeAutomation) {
+                    discoverHome(bridgeUID);
+                }
                 if (thingHandler.getConfiguration().discoverNetDevice) {
-                    discoverHosts(thingHandler, bridgeUID, lanHosts);
+                    discoverHosts(bridgeUID, lanHosts);
                 }
             } catch (FreeboxException e) {
-                logger.warn("Error while requesting data for things discovery: {}", e.getMessage());
+                logger.debug("Error while requesting data for things discovery: {}", e.getMessage());
             }
         }
     }
 
-    private void discoverHome(HomeManager homeManager, ThingUID bridgeUID) throws FreeboxException {
+    private void discoverHome(ThingUID bridgeUID) {
         NodeConfigurationBuilder builder = NodeConfigurationBuilder.getInstance();
         try {
-            homeManager.getHomeNodes().forEach(
+            thingHandler.getManager(HomeManager.class).getHomeNodes().forEach(
                     node -> builder.configure(bridgeUID, node).ifPresent(result -> thingDiscovered(result.build())));
-        } catch (PermissionException e) {
-            logger.warn("Missing permission to discover Home {}", e.getPermission());
+        } catch (FreeboxException e) {
+            logger.debug("Error discovering Home: {}", e.getMessage());
         }
     }
 
-    private void discoverPlugs(FreeplugManager freeplugManager, ThingUID bridgeUID) {
+    private void discoverPlugs(ThingUID bridgeUID) {
         FreeplugConfigurationBuilder builder = FreeplugConfigurationBuilder.getInstance();
         try {
-            freeplugManager.getPlugs().forEach(plug -> thingDiscovered(builder.configure(bridgeUID, plug).build()));
+            thingHandler.getManager(FreeplugManager.class).getPlugs()
+                    .forEach(plug -> thingDiscovered(builder.configure(bridgeUID, plug).build()));
         } catch (FreeboxException e) {
-            logger.warn("Error discovering freeplugs {}", e.getMessage());
+            logger.debug("Error discovering freeplugs: {}", e.getMessage());
         }
     }
 
-    private void discoverPhone(PhoneManager phoneManager, ThingUID bridgeUID) throws FreeboxException {
+    private void discoverPhone(ThingUID bridgeUID) {
         PhoneConfigurationBuilder builder = PhoneConfigurationBuilder.getInstance();
         List<Status> statuses = List.of();
         try {
-            statuses = phoneManager.getPhoneStatuses();
+            statuses = thingHandler.getManager(PhoneManager.class).getPhoneStatuses();
             statuses.forEach(phone -> thingDiscovered(builder.configure(bridgeUID, phone).build()));
         } catch (FreeboxException e) {
-            logger.warn("Error discovering phones {}", e.getMessage());
+            logger.debug("Error discovering phones: {}", e.getMessage());
         }
         if (!statuses.isEmpty()) {
-            ThingUID thingUID = new ThingUID(THING_TYPE_CALL, bridgeUID, "landline");
+            ThingUID thingUID = new ThingUID(THING_TYPE_CALL, bridgeUID, "calls");
             logger.debug("Adding new Call thing {} to inbox", thingUID);
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                    .withLabel("Freebox Calls").build();
+                    .withLabel("@text/discovery.call.label").build();
             thingDiscovered(discoveryResult);
         }
     }
 
-    private void discoverHosts(FreeboxOsHandler localHandler, ThingUID bridgeUID, List<LanHost> lanHosts)
-            throws FreeboxException {
+    private void discoverHosts(ThingUID bridgeUID, List<LanHost> lanHosts) {
         try {
             List<MACAddress> wifiMacs = new ArrayList<>();
-            wifiMacs.addAll(localHandler.getManager(APManager.class).getStations().stream().map(Station::mac).toList());
+            wifiMacs.addAll(thingHandler.getManager(APManager.class).getStations().stream().map(Station::mac).toList());
             wifiMacs.addAll(
-                    localHandler.getManager(RepeaterManager.class).getHosts().stream().map(LanHost::getMac).toList());
+                    thingHandler.getManager(RepeaterManager.class).getHosts().stream().map(LanHost::getMac).toList());
 
             lanHosts.forEach(lanHost -> {
                 MACAddress mac = lanHost.getMac();
@@ -175,19 +194,20 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                         bridgeUID, mac.toHexString(false));
                 logger.debug("Adding new Freebox Network Host {} to inbox", thingUID);
                 DiscoveryResultBuilder builder = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                        .withLabel(lanHost.getPrimaryName().orElse("Network Device %s".formatted(macString)))
+                        .withLabel(lanHost.getPrimaryName()
+                                .orElse("@text/discovery.network-device.label [ \"%s\" ]".formatted(macString)))
                         .withTTL(300).withProperty(Thing.PROPERTY_MAC_ADDRESS, macString)
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS);
                 thingDiscovered(builder.build());
             });
-        } catch (PermissionException e) {
-            logger.warn("Missing permission to discover Hosts {}", e.getPermission());
+        } catch (FreeboxException e) {
+            logger.debug("Error discovering Hosts: {}", e.getMessage());
         }
     }
 
-    private void discoverVM(VmManager vmManager, ThingUID bridgeUID, List<LanHost> lanHosts) throws FreeboxException {
+    private void discoverVM(ThingUID bridgeUID, List<LanHost> lanHosts) {
         try {
-            vmManager.getDevices().forEach(vm -> {
+            thingHandler.getManager(VmManager.class).getDevices().forEach(vm -> {
                 MACAddress mac = vm.mac();
                 lanHosts.removeIf(host -> host.getMac().equals(mac));
 
@@ -195,39 +215,42 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                 logger.debug("Adding new VM Device {} to inbox", thingUID);
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS)
-                        .withLabel("%s (VM)".formatted(vm.name())).withProperty(ClientConfiguration.ID, vm.id())
+                        .withLabel("@text/discovery.vm.label [ \"%s\" ]".formatted(vm.name()))
+                        .withProperty(ClientConfiguration.ID, vm.id())
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac.toColonDelimitedString()).build();
                 thingDiscovered(discoveryResult);
             });
-        } catch (PermissionException e) {
-            logger.warn("Missing permission to discover VM {}", e.getPermission());
+        } catch (FreeboxException e) {
+            logger.debug("Error discovering VM: {}", e.getMessage());
         }
     }
 
-    private void discoverRepeater(RepeaterManager repeaterManager, ThingUID bridgeUID, List<LanHost> lanHosts)
-            throws FreeboxException {
+    private void discoverRepeater(ThingUID bridgeUID, List<LanHost> lanHosts) {
         try {
-            List<Repeater> repeaters = repeaterManager.getDevices();
+            List<Repeater> repeaters = thingHandler.getManager(RepeaterManager.class).getDevices();
             repeaters.forEach(repeater -> {
                 MACAddress mac = repeater.mainMac();
                 lanHosts.removeIf(host -> host.getMac().equals(mac));
 
                 ThingUID thingUID = new ThingUID(THING_TYPE_REPEATER, bridgeUID, Integer.toString(repeater.id()));
                 DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
-                        .withLabel("Repeater %s".formatted(repeater.name()))
+                        .withLabel("@text/discovery.repeater.label [ \"%s\" ]".formatted(repeater.name()))
                         .withProperty(Thing.PROPERTY_MAC_ADDRESS, mac.toColonDelimitedString())
                         .withProperty(ClientConfiguration.ID, repeater.id())
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
                 thingDiscovered(discoveryResult);
             });
-        } catch (PermissionException e) {
-            logger.warn("Missing permission to discover Repeater {}", e.getPermission());
+        } catch (FreeboxException e) {
+            logger.debug("Error discovering Repeater: {}", e.getMessage());
         }
     }
 
-    private void discoverServer(SystemManager systemManager, ThingUID bridgeUID) throws FreeboxException {
+    private void discoverServer(ThingUID bridgeUID) {
         try {
-            Config config = systemManager.getConfig();
+            Config config = thingHandler.getManager(SystemManager.class).getConfig();
+
+            hasVm = config.modelInfo().hasVm();
+            hasHomeAutomation = config.modelInfo().hasHomeAutomation();
 
             ThingTypeUID targetType = config.boardName().startsWith("fbxgw7") ? THING_TYPE_DELTA
                     : THING_TYPE_REVOLUTION;
@@ -236,17 +259,16 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
 
             DiscoveryResult discoveryResult = DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID)
                     .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).withLabel(config.modelInfo().prettyName())
-                    .withProperty(Thing.PROPERTY_MAC_ADDRESS, config.mac()).build();
+                    .withProperty(Thing.PROPERTY_MAC_ADDRESS, config.mac().toColonDelimitedString()).build();
             thingDiscovered(discoveryResult);
-        } catch (PermissionException e) {
-            logger.warn("Missing permission to discover Server {}", e.getPermission());
+        } catch (FreeboxException e) {
+            logger.debug("Error discovering Server: {}", e.getMessage());
         }
     }
 
-    private void discoverPlayer(PlayerManager playerManager, ThingUID bridgeUID, List<LanHost> lanHosts)
-            throws FreeboxException {
+    private void discoverPlayer(ThingUID bridgeUID, List<LanHost> lanHosts) {
         try {
-            for (Player player : playerManager.getDevices()) {
+            for (Player player : thingHandler.getManager(PlayerManager.class).getDevices()) {
                 lanHosts.removeIf(host -> host.getMac().equals(player.mac()));
                 ThingUID thingUID = new ThingUID(player.apiAvailable() ? THING_TYPE_ACTIVE_PLAYER : THING_TYPE_PLAYER,
                         bridgeUID, Integer.toString(player.id()));
@@ -256,8 +278,8 @@ public class FreeboxOsDiscoveryService extends AbstractThingHandlerDiscoveryServ
                         .withRepresentationProperty(Thing.PROPERTY_MAC_ADDRESS).build();
                 thingDiscovered(discoveryResult);
             }
-        } catch (PermissionException e) {
-            logger.warn("Missing permission to discover Player {}", e.getPermission());
+        } catch (FreeboxException e) {
+            logger.debug("Error discovering Player: {}", e.getMessage());
         }
     }
 }

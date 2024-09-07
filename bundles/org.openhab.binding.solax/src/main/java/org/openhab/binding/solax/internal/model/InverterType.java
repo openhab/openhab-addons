@@ -13,16 +13,17 @@
 package org.openhab.binding.solax.internal.model;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.solax.internal.model.local.parsers.RawDataParser;
-import org.openhab.binding.solax.internal.model.local.parsers.X1BoostAirMiniDataParser;
-import org.openhab.binding.solax.internal.model.local.parsers.X1HybridG4DataParser;
-import org.openhab.binding.solax.internal.model.local.parsers.X3HybridG4DataParser;
-import org.openhab.binding.solax.internal.model.local.parsers.X3MicOrProG2DataParser;
+import org.openhab.binding.solax.internal.model.local.RawDataParser;
+import org.openhab.binding.solax.internal.model.local.inverters.X1BoostAirMiniDataParser;
+import org.openhab.binding.solax.internal.model.local.inverters.X1HybridG4DataParser;
+import org.openhab.binding.solax.internal.model.local.inverters.X3HybridG4DataParser;
+import org.openhab.binding.solax.internal.model.local.inverters.X3MicOrProG2DataParser;
 
 /**
  * The {@link InverterType} class is enum representing the different inverter types with a simple logic to convert from
@@ -78,7 +79,8 @@ public enum InverterType {
 
     public static InverterType fromIndex(int index) {
         InverterType[] values = InverterType.values();
-        return Stream.of(values).filter(value -> value.typeIndex == index).findFirst().orElse(UNKNOWN);
+        return Objects.requireNonNull(
+                Stream.of(values).filter(value -> value.typeIndex == index).findFirst().orElse(UNKNOWN));
     }
 
     public @Nullable RawDataParser getParser() {

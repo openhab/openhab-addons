@@ -443,6 +443,9 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         Unit<?> unit = null;
         try {
             item = itemRegistry.getItem(itemName);
+            if (item instanceof GroupItem groupItem) {
+                item = groupItem.getBaseItem();
+            }
             if (item instanceof NumberItem numberItem) {
                 // we already retrieve the unit here once as it is a very costly operation,
                 // see https://github.com/openhab/openhab-addons/issues/8928
@@ -631,11 +634,14 @@ public class RRD4jPersistenceService implements QueryablePersistenceService {
         }
     }
 
+    /**
+     * Get the state Mapper for a given item
+     *
+     * @param item the item (in case of a group item, the base item has to be supplied)
+     * @param unit the unit to use
+     * @return the state mapper
+     */
     private <Q extends Quantity<Q>> DoubleFunction<State> toStateMapper(@Nullable Item item, @Nullable Unit<Q> unit) {
-        if (item instanceof GroupItem groupItem) {
-            item = groupItem.getBaseItem();
-        }
-
         if (item instanceof SwitchItem && !(item instanceof DimmerItem)) {
             return (value) -> OnOffType.from(value != 0.0d);
         } else if (item instanceof ContactItem) {

@@ -15,10 +15,8 @@ package org.openhab.binding.mqtt.homeassistant.internal.component;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.AvailabilityTracker;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.homeassistant.internal.HaID;
 import org.openhab.binding.mqtt.homeassistant.internal.config.dto.AbstractChannelConfiguration;
 import org.openhab.binding.mqtt.homeassistant.internal.exception.ConfigurationException;
@@ -48,45 +46,44 @@ public class ComponentFactory {
      */
     public static AbstractComponent<?> createComponent(ThingUID thingUID, HaID haID, String channelConfigurationJSON,
             ChannelStateUpdateListener updateListener, AvailabilityTracker tracker, ScheduledExecutorService scheduler,
-            Gson gson, TransformationServiceProvider transformationServiceProvider) throws ConfigurationException {
+            Gson gson, boolean newStyleChannels) throws ConfigurationException {
         ComponentConfiguration componentConfiguration = new ComponentConfiguration(thingUID, haID,
-                channelConfigurationJSON, gson, updateListener, tracker, scheduler)
-                .transformationProvider(transformationServiceProvider);
+                channelConfigurationJSON, gson, updateListener, tracker, scheduler);
         switch (haID.component) {
             case "alarm_control_panel":
-                return new AlarmControlPanel(componentConfiguration);
+                return new AlarmControlPanel(componentConfiguration, newStyleChannels);
             case "binary_sensor":
-                return new BinarySensor(componentConfiguration);
+                return new BinarySensor(componentConfiguration, newStyleChannels);
             case "button":
-                return new Button(componentConfiguration);
+                return new Button(componentConfiguration, newStyleChannels);
             case "camera":
-                return new Camera(componentConfiguration);
+                return new Camera(componentConfiguration, newStyleChannels);
             case "cover":
-                return new Cover(componentConfiguration);
+                return new Cover(componentConfiguration, newStyleChannels);
             case "fan":
-                return new Fan(componentConfiguration);
+                return new Fan(componentConfiguration, newStyleChannels);
             case "climate":
-                return new Climate(componentConfiguration);
+                return new Climate(componentConfiguration, newStyleChannels);
             case "device_automation":
-                return new DeviceTrigger(componentConfiguration);
+                return new DeviceTrigger(componentConfiguration, newStyleChannels);
             case "light":
-                return Light.create(componentConfiguration);
+                return Light.create(componentConfiguration, newStyleChannels);
             case "lock":
-                return new Lock(componentConfiguration);
+                return new Lock(componentConfiguration, newStyleChannels);
             case "number":
-                return new Number(componentConfiguration);
+                return new Number(componentConfiguration, newStyleChannels);
             case "scene":
-                return new Scene(componentConfiguration);
+                return new Scene(componentConfiguration, newStyleChannels);
             case "select":
-                return new Select(componentConfiguration);
+                return new Select(componentConfiguration, newStyleChannels);
             case "sensor":
-                return new Sensor(componentConfiguration);
+                return new Sensor(componentConfiguration, newStyleChannels);
             case "switch":
-                return new Switch(componentConfiguration);
+                return new Switch(componentConfiguration, newStyleChannels);
             case "update":
-                return new Update(componentConfiguration);
+                return new Update(componentConfiguration, newStyleChannels);
             case "vacuum":
-                return new Vacuum(componentConfiguration);
+                return new Vacuum(componentConfiguration, newStyleChannels);
             default:
                 throw new UnsupportedComponentException("Component '" + haID + "' is unsupported!");
         }
@@ -100,7 +97,6 @@ public class ComponentFactory {
         private final AvailabilityTracker tracker;
         private final Gson gson;
         private final ScheduledExecutorService scheduler;
-        private @Nullable TransformationServiceProvider transformationServiceProvider;
 
         /**
          * Provide a thingUID and HomeAssistant topic ID to determine the channel group UID and type.
@@ -122,12 +118,6 @@ public class ComponentFactory {
             this.scheduler = scheduler;
         }
 
-        public ComponentConfiguration transformationProvider(
-                TransformationServiceProvider transformationServiceProvider) {
-            this.transformationServiceProvider = transformationServiceProvider;
-            return this;
-        }
-
         public ThingUID getThingUID() {
             return thingUID;
         }
@@ -142,11 +132,6 @@ public class ComponentFactory {
 
         public ChannelStateUpdateListener getUpdateListener() {
             return updateListener;
-        }
-
-        @Nullable
-        public TransformationServiceProvider getTransformationServiceProvider() {
-            return transformationServiceProvider;
         }
 
         public Gson getGson() {

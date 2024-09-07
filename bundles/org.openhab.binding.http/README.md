@@ -22,8 +22,8 @@ It can be extended with different channels.
 | `stateMethod`         | no       | GET     | Method used for requesting the state: `GET`, `PUT`, `POST`.                                                                                                                |
 | `commandMethod`       | no       | GET     | Method used for sending commands: `GET`, `PUT`, `POST`.                                                                                                                    |
 | `contentType`         | yes      | -       | MIME content-type of the command requests. Only used for  `PUT` and `POST`.                                                                                                |
-| `encoding`            | yes      | -       | Encoding to be used if no encoding is found in responses (advanced parameter).                                                                                             |  
-| `headers`             | yes      | -       | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3",` | 
+| `encoding`            | yes      | -       | Encoding to be used if no encoding is found in responses (advanced parameter).                                                                                             |
+| `headers`             | yes      | -       | Additional headers that are sent along with the request. Format is "header=value". Multiple values can be stored as `headers="key1=value1", "key2=value2", "key3=value3",` |
 | `ignoreSSLErrors`     | no       | false   | If set to true, ignores invalid SSL certificate errors. This is potentially dangerous.                                                                                     |
 | `strictErrorHandling` | no       | false   | If set to true, thing status is changed depending on last request result (failed = `OFFLINE`). Failed requests result in `UNDEF` for channel values.                       |
 | `userAgent`           | yes      | (yes )  | Sets a custom user agent (default is "Jetty/version", e.g. "Jetty/9.4.20.v20190813").                                                                                      |
@@ -37,9 +37,9 @@ Authentication might fail if redirections are involved as headers are stripper p
 
 _Note:_ If you rate-limit requests by using the `delay` parameter you have to make sure that the time between two refreshes is larger than the time needed for one refresh cycle.
 
-**Attention:** `baseUrl` (and `stateExtension`/`commandExtension`) should not use escaping (e.g. `%22` instead of `"` or `%2c` instead of `,`).
+**Attention:** `baseUrl` (and `stateExtension`/`commandExtension`) don't normally require percent encoding (e.g. `%22` instead of `"` or `%2C` instead of `,`).
 URLs are properly escaped by the binding itself before the request is sent.
-Using escaped strings in URL parameters may lead to problems with the formatting (see below).
+When automatic encoding is not possible (e.g. because you need to include an encoded `=` or `&` in the query string) you can use manual encoding with a doubled `%` (`%%3D` instead of `=`).
 
 ## Channels
 
@@ -55,7 +55,7 @@ The `image` channel-type supports `stateExtension` only.
 |-------------------------|----------|-------------|-----------------------------------------------------------------------------------------------------------|
 | `stateExtension`        | yes      | -           | Appended to the `baseURL` for requesting states.                                                          |
 | `commandExtension`      | yes      | -           | Appended to the `baseURL` for sending commands. If empty, same as `stateExtension`.                       |
-| `stateTransformation  ` | yes      | -           | One or more transformation applied to received values before updating channel.                            |
+| `stateTransformation`   | yes      | -           | One or more transformation applied to received values before updating channel.                            |
 | `commandTransformation` | yes      | -           | One or more transformation applied to channel value before sending to a remote.                           |
 | `stateContent`          | yes      | -           | Content for state requests (if method is `PUT` or `POST`)                                                 |
 | `mode`                  | no       | `READWRITE` | Mode this channel is allowed to operate. `READONLY` means receive state, `WRITEONLY` means send commands. |
@@ -71,13 +71,15 @@ The relevant transformation service needs to be installed via the Main UI or add
 
 Here are a few examples to unwrap an incoming value via `stateTransformation` from a complex response:
 
-| Received value                                                      | Tr. Service | Transformation                            |
-|---------------------------------------------------------------------|-------------|-------------------------------------------|
-| `{device: {status: { temperature: 23.2 }}}`                         | JSONPATH    | `JSONPATH:$.device.status.temperature`    |
-| `<device><status><temperature>23.2</temperature></status></device>` | XPath       | `XPath:/device/status/temperature/text()` |
-| `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX::(.*?)°`                           |
+| Received value                                                      | Tr. Service | Transformation                             |
+|---------------------------------------------------------------------|-------------|--------------------------------------------|
+| `{device: {status: { temperature: 23.2 }}}`                         | JSONPATH    | `JSONPATH($.device.status.temperature)`    |
+| `<device><status><temperature>23.2</temperature></status></device>` | XPath       | `XPath(/device/status/temperature/text())` |
+| `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX(:(.*?)°)`                           |
 
-Transformations can be chained by separating them with the mathematical intersection character "∩".
+Transformations can be chained in the UI by listing each transformation on a separate line, or by separating them with the mathematical intersection character "∩".
+Transformations are defined using this syntax: `TYPE(FUNCTION)`, e.g.: `JSONPATH($.path)`.
+The syntax: `TYPE:FUNCTION` is still supported, e.g.: `JSONPATH:$.path`.
 Please note that the values will be discarded if one transformation fails (e.g. REGEX did not match).
 
 The same mechanism works for commands (`commandTransformation`) for outgoing values.
@@ -145,7 +147,7 @@ Please note that incompatible units (e.g. `°C` for a `Number:Density` item) wil
 | `moveValue` | yes      | -       | A special value that represents `MOVE` |
 
 All values that are not `upValue`, `downValue`, `stopValue`, `moveValue` are interpreted as position 0-100% and need to be numeric only.
-                    
+
 ### `switch`
 
 | parameter  | optional | default | description                           |
@@ -167,13 +169,13 @@ After the parameter reference the format needs to be appended.
 See the link above for more information about the available format parameters (e.g. to use the string representation, you need to append `s` to the reference, for a timestamp `t`).
 When sending an OFF command on 2020-07-06, the URL
 
-```
+```text
 http://www.domain.org/home/lights/23871/?status=%2$s&date=%1$tY-%1$tm-%1$td
-``` 
+```
 
 is transformed to
 
-```
+```text
 http://www.domain.org/home/lights/23871/?status=OFF&date=2020-07-06
 ```
 
@@ -183,10 +185,34 @@ http://www.domain.org/home/lights/23871/?status=OFF&date=2020-07-06
 
 ```java
 Thing http:url:foo "Foo" [
-    baseURL="https://example.com/api/v1/metadata-api/web/metadata", 
+    baseURL="https://example.com/api/v1/metadata-api/web/metadata",
     headers="key1=value1", "key2=value2", "key3=value3",
     refresh=15] {
         Channels:
-            Type string : text "Text" [ stateTransformation="JSONPATH:$.metadata.data" ]
+            Type string : text "Text" [ stateTransformation="JSONPATH($.metadata.data)" ]
+}
+```
+
+Multiple transformations can be chained in the .things file by listing them as comma-separated values:
+
+```java
+Thing http:url:foo "Foo" [
+    baseURL="https://example.com/api/v1/metadata-api/web/metadata",
+    headers="key1=value1", "key2=value2", "key3=value3",
+    refresh=15] {
+        Channels:
+            Type string : text "Text" [ stateTransformation="REGEX(.*meta.*)", "JSONPATH($.metadata.data)" ]
+}
+```
+
+or by combining them into one value, separated by "∩":
+
+```java
+Thing http:url:foo "Foo" [
+    baseURL="https://example.com/api/v1/metadata-api/web/metadata",
+    headers="key1=value1", "key2=value2", "key3=value3",
+    refresh=15] {
+        Channels:
+            Type string : text "Text" [ stateTransformation="REGEX(.*meta.*) ∩ JSONPATH($.metadata.data)" ]
 }
 ```

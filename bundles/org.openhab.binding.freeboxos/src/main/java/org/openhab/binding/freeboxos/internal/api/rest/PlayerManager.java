@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -226,7 +227,7 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
     // The player API does not allow to directly request a given player like others api parts
     @Override
     public Player getDevice(int id) throws FreeboxException {
-        return getDevices().stream().filter(player -> player.id == id).findFirst().orElse(null);
+        return Objects.requireNonNull(getDevices().stream().filter(player -> player.id == id).findFirst().orElse(null));
     }
 
     public @Nullable Configuration getConfig(int id) throws FreeboxException {
@@ -245,7 +246,7 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         }
         try {
             session.execute(uriBuilder.build(), HttpMethod.GET, GenericResponse.class, null);
-        } catch (FreeboxException ignore) {
+        } catch (IllegalArgumentException | FreeboxException ignore) {
             // This call does not return anything, we can safely ignore
         }
     }

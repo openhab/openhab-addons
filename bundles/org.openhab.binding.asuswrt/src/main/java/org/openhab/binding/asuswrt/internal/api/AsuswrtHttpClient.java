@@ -140,7 +140,9 @@ public class AsuswrtHttpClient {
                         String rBody = getContentAsString();
                         logger.trace("({}) requestCompleted '{}'", uid, rBody);
                         // Handle result
-                        handleHttpSuccessResponse(rBody, command);
+                        if (rBody != null) {
+                            handleHttpSuccessResponse(rBody, command);
+                        }
                     }
                 }
             });

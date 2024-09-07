@@ -13,6 +13,7 @@
 package org.openhab.binding.argoclima.internal.device.api.protocol.elements;
 
 import java.security.InvalidParameterException;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -44,7 +45,7 @@ public class OnOffParam extends ArgoApiElementBase {
     }
 
     private static State valueToState(Optional<Boolean> value) {
-        return value.<State> map(v -> OnOffType.from(v)).orElse(UnDefType.UNDEF);
+        return Objects.requireNonNull(value.<State> map(v -> OnOffType.from(v)).orElse(UnDefType.UNDEF));
     }
 
     @Override

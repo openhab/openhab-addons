@@ -14,6 +14,7 @@ package org.openhab.binding.mercedesme.internal.handler;
 
 import static org.openhab.binding.mercedesme.internal.Constants.*;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -177,7 +178,9 @@ public class VehicleHandler extends BaseThingHandler {
 
     @Override
     public void dispose() {
-        accountHandler.get().unregisterVin(config.get().vin);
+        accountHandler.ifPresent(ah -> {
+            ah.unregisterVin(config.get().vin);
+        });
         super.dispose();
     }
 
@@ -890,6 +893,36 @@ public class VehicleHandler extends BaseThingHandler {
             } else {
                 if (fullUpdate) {
                     logger.trace("No Charge Programs found");
+                }
+            }
+        }
+
+        /**
+         * handle day of charge end
+         */
+        ChannelStateMap chargeTimeEndCSM = eventStorage.get(GROUP_CHARGE + "#" + OH_CHANNEL_END_TIME);
+        if (chargeTimeEndCSM != null) {
+            State entTimeState = chargeTimeEndCSM.getState();
+            if (entTimeState instanceof DateTimeType endDateTimeType) {
+                // we've a valid charged end time
+                VehicleAttributeStatus vas = atts.get(MB_KEY_ENDOFCHARGEDAY);
+                if (vas != null && !Utils.isNil(vas)) {
+                    // proto weekday starts with MONDAY=0, java ZonedDateTime starts with MONDAY=1
+                    long estimatedWeekday = Utils.getInt(vas) + 1;
+                    ZonedDateTime storedZdt = endDateTimeType.getZonedDateTime();
+                    long storedWeekday = storedZdt.getDayOfWeek().getValue();
+                    // check if estimated weekday is smaller than stored
+                    // estimation Monday=1 vs. stored Saturday=6 => (7+1)-6=2 days ahead
+                    if (estimatedWeekday < storedWeekday) {
+                        estimatedWeekday += 7;
+                    }
+                    if (estimatedWeekday != storedWeekday) {
+                        DateTimeType adjustedDtt = new DateTimeType(
+                                storedZdt.plusDays(estimatedWeekday - storedWeekday));
+                        ChannelStateMap adjustedCsm = new ChannelStateMap(OH_CHANNEL_END_TIME, GROUP_CHARGE,
+                                adjustedDtt);
+                        updateChannel(adjustedCsm);
+                    }
                 }
             }
         }

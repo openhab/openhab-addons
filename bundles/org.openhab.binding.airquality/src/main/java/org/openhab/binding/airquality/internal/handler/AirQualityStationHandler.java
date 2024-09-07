@@ -35,6 +35,7 @@ import org.openhab.binding.airquality.internal.api.Index;
 import org.openhab.binding.airquality.internal.api.Pollutant;
 import org.openhab.binding.airquality.internal.api.Pollutant.SensitiveGroup;
 import org.openhab.binding.airquality.internal.api.dto.AirQualityData;
+import org.openhab.binding.airquality.internal.api.dto.AirQualityTime;
 import org.openhab.binding.airquality.internal.config.AirQualityConfiguration;
 import org.openhab.binding.airquality.internal.config.SensitiveGroupConfiguration;
 import org.openhab.core.config.core.Configuration;
@@ -261,10 +262,10 @@ public class AirQualityStationHandler extends BaseThingHandler {
                 double hum = data.getIaqiValue("h");
                 return hum != -1 ? new QuantityType<>(hum, Units.PERCENT) : UnDefType.NULL;
             case TIMESTAMP:
-                return data.getTime()
-                        .map(time -> (State) new DateTimeType(
-                                time.getObservationTime().withZoneSameLocal(timeZoneProvider.getTimeZone())))
-                        .orElse(UnDefType.NULL);
+                AirQualityTime time = data.getTime();
+                return time != null
+                        ? new DateTimeType(time.getObservationTime().withZoneSameLocal(timeZoneProvider.getTimeZone()))
+                        : UnDefType.NULL;
             case DOMINENT:
                 return new StringType(data.getDominentPol());
             case DEW_POINT:

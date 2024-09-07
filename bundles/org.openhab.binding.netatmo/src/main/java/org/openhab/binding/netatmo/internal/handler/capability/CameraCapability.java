@@ -18,6 +18,7 @@ import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriBuilderException;
@@ -129,7 +130,7 @@ public class CameraCapability extends HomeSecurityThingCapability {
         handler.updateState(group, CHANNEL_EVENT_VIGNETTE, toRawType(event.getVignetteUrl()));
         handler.updateState(group, CHANNEL_EVENT_VIGNETTE_URL, toStringType(event.getVignetteUrl()));
         handler.updateState(group, CHANNEL_EVENT_SUBTYPE,
-                event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));
+                Objects.requireNonNull(event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL)));
         final String message = event.getName();
         handler.updateState(group, CHANNEL_EVENT_MESSAGE,
                 message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));

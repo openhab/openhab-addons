@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -134,7 +135,7 @@ public class ScaleTransformationService
         }
 
         @Override
-        public @Nullable Object put(@Nullable Object key, @Nullable Object value) {
+        public @Nullable Object put(Object key, Object value) {
             keys.add(key);
             return super.put(key, value);
         }
@@ -207,8 +208,8 @@ public class ScaleTransformationService
                 properties.load(new StringReader(function));
 
                 for (Object orderedKey : properties.orderedKeys()) {
-                    final String entry = (String) orderedKey;
-                    final String value = properties.getProperty(entry);
+                    final String entry = Objects.requireNonNull((String) orderedKey);
+                    final String value = Objects.requireNonNull(properties.getProperty(entry));
                     final Matcher matcher = LIMITS_PATTERN.matcher(entry);
                     if (matcher.matches() && (matcher.groupCount() == 4)) {
                         final boolean lowerInclusive = "[".equals(matcher.group(1));

@@ -141,7 +141,7 @@ Network address of the Homematic gateway
 Hint for the binding to identify the gateway type (auto|ccu|noccu) (default = "auto").
 
 - **callbackHost**
-Callback network address of the system runtime, default is auto-discovery
+Callback network address of the system runtime, default is auto-discovery. This value must not contain any white spaces.
 
 - **xmlCallbackPort**
 Callback port of the binding's XML-RPC server, default is 9125 and counts up for each additional bridge
@@ -196,7 +196,7 @@ Due to the factory reset, the device will also be unpaired from the gateway, eve
 - **useAuthentication**
 Username and password are send to the gateway to authenticate the access to the gateway.
 
-- **username**
+- **userName**
 Username for Authentication to the gateway.
 
 - **password**

@@ -36,12 +36,19 @@ It is not advised to run the virtual machine as superuser/root.
 The "command" Thing requires the command to execute on the shell.
 Optionally one can specify:
 
-- `transform` - A [transformation](https://www.openhab.org/docs/configuration/transformations.html) to apply on the execution result string.
+- `transform` - [Transformations](/docs/configuration/transformations.html) to apply on the execution result string.
 - `interval` - An interval, in seconds, the command will be repeatedly executed. Default is 60 seconds, set to 0 to avoid automatic repetition.
 - `timeout` - A time-out, in seconds, the execution of the command will time out, and lastly,
 - `autorun` - A boolean parameter to make the command execute immediately every time the input channel is sent a different openHAB command. If choosing autorun, you may wish to also set `interval=0`. Note that sending the same command a second time will not trigger execution.
 
 For each shell command, a separate Thing has to be defined.
+
+### Transformations
+
+Transformations can be chained in the UI by listing each transformation on a separate line, or by separating them with the mathematical intersection character "∩".
+Transformations are defined using this syntax: `TYPE(FUNCTION)`, e.g.: `JSONPATH($.path)`.
+The syntax: `TYPE:FUNCTION` is also supported, e.g.: `JSONPATH:$.path`.
+Please note that if the transformation failed or returned `null`, the original data will be passed through.
 
 ```java
 Thing exec:command:uniquename [command="/command/to/execute here", interval=15, timeout=5, autorun=false]

@@ -100,13 +100,13 @@ public class TapoThingConstants {
             T315_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_SMART_CONTACTS = Set.of(T110_THING_TYPE);
     public static final Set<ThingTypeUID> SUPPORTED_MOTION_SENSORS = Set.of();
-    public static final Set<ThingTypeUID> SUPPORTED_WHEATHER_SENSORS = Set.of(T310_THING_TYPE, T315_THING_TYPE);
+    public static final Set<ThingTypeUID> SUPPORTED_WEATHER_SENSORS = Set.of(T310_THING_TYPE, T315_THING_TYPE);
 
     /*** SET OF ALL SUPPORTED THINGS ***/
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.unmodifiableSet(Stream
             .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_HUB_UIDS, SUPPORTED_SOCKET_UIDS, SUPPORTED_SOCKET_STRIP_UIDS,
                     SUPPORTED_WHITE_BULB_UIDS, SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS,
-                    SUPPORTED_SMART_CONTACTS, SUPPORTED_MOTION_SENSORS, SUPPORTED_WHEATHER_SENSORS)
+                    SUPPORTED_SMART_CONTACTS, SUPPORTED_MOTION_SENSORS, SUPPORTED_WEATHER_SENSORS)
             .flatMap(Set::stream).collect(Collectors.toSet()));
 
     /*** THINGS WITH ENERGY DATA ***/
@@ -116,7 +116,7 @@ public class TapoThingConstants {
     public static final Set<ThingTypeUID> CHANNEL_GROUP_THING_SET = Collections.unmodifiableSet(Stream
             .of(SUPPORTED_BRIDGE_UIDS, SUPPORTED_HUB_UIDS, SUPPORTED_SOCKET_UIDS, SUPPORTED_SOCKET_STRIP_UIDS,
                     SUPPORTED_WHITE_BULB_UIDS, SUPPORTED_COLOR_BULB_UIDS, SUPPORTED_LIGHT_STRIP_UIDS,
-                    SUPPORTED_SMART_CONTACTS, SUPPORTED_MOTION_SENSORS, SUPPORTED_WHEATHER_SENSORS)
+                    SUPPORTED_SMART_CONTACTS, SUPPORTED_MOTION_SENSORS, SUPPORTED_WEATHER_SENSORS)
             .flatMap(Set::stream).collect(Collectors.toSet()));
 
     public static final String CHILD_REPRESENTATION_PROPERTY = "serialNumber";
