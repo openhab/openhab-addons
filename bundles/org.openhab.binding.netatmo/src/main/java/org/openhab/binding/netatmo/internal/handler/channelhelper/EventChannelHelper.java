@@ -72,10 +72,14 @@ public class EventChannelHelper extends ChannelHelper {
             case CHANNEL_EVENT_CAMERA_ID -> toStringType(event.getCameraId());
             case CHANNEL_EVENT_SUBTYPE ->
                 event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL);
-            case CHANNEL_EVENT_SNAPSHOT -> toRawType(event.getSnapshotUrl());
-            case CHANNEL_EVENT_SNAPSHOT_URL -> toStringType(event.getSnapshotUrl());
+            case CHANNEL_EVENT_SNAPSHOT -> checkUrlPresence(event.getSnapshotUrl(), true);
+            case CHANNEL_EVENT_SNAPSHOT_URL -> checkUrlPresence(event.getSnapshotUrl(), false);
             default -> null;
         };
+    }
+
+    protected @Nullable State checkUrlPresence(@Nullable String url, boolean asRaw) {
+        return url != null ? asRaw ? toRawType(url) : toStringType(url) : null;
     }
 
     @Override
