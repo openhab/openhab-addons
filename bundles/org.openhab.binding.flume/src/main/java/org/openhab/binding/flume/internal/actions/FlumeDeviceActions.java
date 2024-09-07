@@ -135,9 +135,10 @@ public class FlumeDeviceActions implements ThingActions {
     public static @Nullable QuantityType<Volume> queryWaterUsage(ThingActions actions,
             @Nullable LocalDateTime sinceDateTime, @Nullable LocalDateTime untilDateTime, @Nullable String bucket,
             @Nullable String operation) {
-	if(actions instanceof FlumeDeviceActions localActions) {
-        	return localActions.queryWaterUsage(sinceDateTime, untilDateTime, bucket, operation);
-    } else {
-        throw new IllegalArgumentException("Instance is not a FlumeDeviceActions class.");
+        if (actions instanceof FlumeDeviceActions localActions) {
+            return localActions.queryWaterUsage(sinceDateTime, untilDateTime, bucket, operation);
+        } else {
+            throw new IllegalArgumentException("Instance is not a FlumeDeviceActions class.");
+        }
     }
 }

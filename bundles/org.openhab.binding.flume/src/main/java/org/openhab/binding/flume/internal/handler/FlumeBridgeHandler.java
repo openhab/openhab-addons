@@ -133,7 +133,7 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        goOnline();
+        scheduler.execute(this::goOnline);
     }
 
     public void goOnline() {
@@ -145,18 +145,16 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
             return;
         }
 
-        scheduler.execute(() -> {
-            if (!refreshDevices(true)) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.cloud-configuration-error");
-                return;
-            }
+        if (!refreshDevices(true)) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.cloud-configuration-error");
+            return;
+        }
 
-            int pollingPeriod = Math.min(config.refreshIntervalCumulative, config.refreshIntervalInstantaneous);
-            pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 0,
-                    Duration.ofMinutes(pollingPeriod).toSeconds(), TimeUnit.SECONDS);
-            updateStatus(ThingStatus.ONLINE);
-        });
+        int pollingPeriod = Math.min(config.refreshIntervalCumulative, config.refreshIntervalInstantaneous);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 0,
+                Duration.ofMinutes(pollingPeriod).toSeconds(), TimeUnit.SECONDS);
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Nullable
@@ -169,10 +167,13 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
         }
     }
 
-    /*
-     * Will update the listDevicesCache if expired or forcedUpdate. Will iterate through the list and
+    /**
+     * update the listDevicesCache if expired or forcedUpdate. Will iterate through the list and
      * either notify of discovery to discoveryService or, if the device is already configured, will update
      * the device info.
+     *
+     * @param forcedUpdate force update
+     * @return true if successful in querying the API
      */
     public boolean refreshDevices(boolean forcedUpdate) {
         final FlumeDiscoveryService discovery = discoveryService;
@@ -208,11 +209,18 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
         return true;
     }
 
+    /**
+     * iterates through the child things to find the handler with the matching id
+     *
+     * @param id of the Flume device thing to find
+     * @return FlumeDeviceHandler or null
+     */
     @Nullable
     public FlumeDeviceHandler getFlumeDeviceHandler(String id) {
         //@formatter:off
         return getThing().getThings().stream()
-            .map(t -> (t.getHandler() instanceof FlumeDeviceHandler handler) ? handler : null )
+            .filter(t -> t.getThingTypeUID().equals(FLUME_DEVICE_THING_TYPE))
+            .map(t -> (FlumeDeviceHandler)t.getHandler())
             .filter(Objects::nonNull)
             .filter(h -> h.getId().equals(id))
             .findFirst()
@@ -251,6 +259,9 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
         // cloud handler has no channels
     }
 
+    /**
+     * iterates through all child things to update usage
+     */
     private void pollDevices() {
         if (getThing().getStatus() != ThingStatus.ONLINE) {
             // try to go online if it is offline due to communication error

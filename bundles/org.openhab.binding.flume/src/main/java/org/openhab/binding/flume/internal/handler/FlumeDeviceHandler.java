@@ -116,7 +116,8 @@ public class FlumeDeviceHandler extends BaseThingHandler {
     public void initialize() {
         config = getConfigAs(FlumeDeviceConfig.class);
 
-        goOnline();
+        updateStatus(ThingStatus.UNKNOWN);
+        scheduler.execute(this::goOnline);
     }
 
     public void goOnline() {
@@ -137,8 +138,6 @@ public class FlumeDeviceHandler extends BaseThingHandler {
             return;
         }
 
-        updateStatus(ThingStatus.UNKNOWN);
-
         FlumeBridgeConfig bridgeConfig = bh.getFlumeBridgeConfig();
 
         refreshIntervalCumulative = Duration.ofMinutes(bridgeConfig.refreshIntervalCumulative);
@@ -147,25 +146,23 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         // always update the startOfYear number;
         startOfYear = LocalDateTime.MIN;
 
-        scheduler.execute(() -> {
-            try {
-                tryQueryUsage(true);
-                tryGetCurrentFlowRate(true);
-                FlumeApiDevice apiDevice = apiDeviceCache.getValue();
-                if (apiDevice != null) {
-                    updateDeviceInfo(apiDevice);
-                }
-            } catch (FlumeApiException e) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.device-configuration-error");
-                return;
-            } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
-                this.handleApiException(e);
-                return;
+        try {
+            tryQueryUsage(true);
+            tryGetCurrentFlowRate(true);
+            FlumeApiDevice apiDevice = apiDeviceCache.getValue();
+            if (apiDevice != null) {
+                updateDeviceInfo(apiDevice);
             }
-            lastUsageAlert = ZonedDateTime.now(); // don't retrieve any usage alerts prior to going online
-            updateStatus(ThingStatus.ONLINE);
-        });
+        } catch (FlumeApiException e) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.device-configuration-error");
+            return;
+        } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
+            this.handleApiException(e);
+            return;
+        }
+        lastUsageAlert = ZonedDateTime.now(); // don't retrieve any usage alerts prior to going online
+        updateStatus(ThingStatus.ONLINE);
     }
 
     @Override
@@ -337,8 +334,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
             }
 
             instantUsage = currentFlowRate.gpm;
-            updateState(CHANNEL_DEVICE_INSTANTUSAGE, new QuantityType<>(instantUsage,
-                    isImperial() ? ImperialUnits.GALLON_PER_MINUTE : Units.LITRE_PER_MINUTE));
+            updateState(CHANNEL_DEVICE_INSTANTUSAGE, new QuantityType<>(instantUsage, ImperialUnits.GALLON_PER_MINUTE));
             this.expiryInstantUsage = System.nanoTime() + this.refreshIntervalInstant.toNanos();
         }
     }
@@ -355,7 +351,8 @@ public class FlumeDeviceHandler extends BaseThingHandler {
 
     protected void queryUsage() {
         // Try to go online if the device was previously taken offline due to connection issues w/ cloud
-        if (getThing().getStatus() == ThingStatus.OFFLINE) {
+        if (getThing().getStatus() == ThingStatus.OFFLINE
+                && getThing().getStatusInfo().getStatusDetail() == ThingStatusDetail.COMMUNICATION_ERROR) {
             goOnline();
             return;
         }
@@ -427,7 +424,6 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         String stringAlert = String.format(stringAlertFormat, alert.eventRuleName, whenTriggered.toString(), minutes,
                 avgUsage, imperialUnits ? "gallons" : "liters");
 
-        logger.info("{}", stringAlert);
         triggerChannel(CHANNEL_DEVICE_USAGEALERT, stringAlert);
     }
 
@@ -484,12 +480,12 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         if (bridge == null) {
             return null;
         }
-        FlumeBridgeHandler bridgeHandler = (FlumeBridgeHandler) bridge.getHandler();
-        if (bridgeHandler == null) {
-            return null;
+
+        if (bridge.getHandler() instanceof FlumeBridgeHandler bridgeHandler) {
+            return bridgeHandler;
         }
 
-        return bridgeHandler;
+        return null;
     }
 
     public FlumeApi getApi() {

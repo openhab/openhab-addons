@@ -207,15 +207,14 @@ public class FlumeApi {
         userId = payload.userId;
 
         refreshToken = token.refreshToken;
-        tokenExpiresAt = LocalDateTime.now().plusSeconds(token.expiresIn);
+        tokenExpiresAt = LocalDateTime.now().plusSeconds(token.expiresIn * 2 / 3);
 
         logger.debug("Token expires in: {}", tokenExpiresAt);
     }
 
     public void verifyToken()
             throws FlumeApiException, IOException, InterruptedException, TimeoutException, ExecutionException {
-        // refresh token 4 hours before it expires
-        if (tokenExpiresAt.isBefore(LocalDateTime.now().minusHours(4))) {
+        if (LocalDateTime.now().isAfter(tokenExpiresAt)) {
             refreshToken();
         }
     }
@@ -255,7 +254,7 @@ public class FlumeApi {
         final FlumeApiDevice[] apiDevices = gson.fromJson(jsonResponse.get("data").getAsJsonArray(),
                 FlumeApiDevice[].class);
 
-        return apiDevices[0];
+        return (apiDevices == null || apiDevices.length == 0) ? null : apiDevices[0];
     }
 
     /**
@@ -287,9 +286,7 @@ public class FlumeApi {
 
         List<FlumeApiQueryBucket> queryBucket = queryBuckets.get(query.requestId);
 
-        float queryUsageResult = queryBucket.get(0).value;
-
-        return queryUsageResult;
+        return (queryBucket == null || queryBucket.isEmpty()) ? null : queryBucket.get(0).value;
     }
 
     /**
@@ -318,6 +315,7 @@ public class FlumeApi {
         Request request = httpClient.newRequest(url).method(HttpMethod.POST)
                 .content(new StringContentProvider(jsonQuery), MediaType.APPLICATION_JSON);
 
+        logger.debug("METADATA: {}", jsonQuery);
         JsonObject jsonResponse = sendAndValidate(request);
 
         final Type queryResultType = new TypeToken<List<HashMap<String, List<FlumeApiQueryBucket>>>>() {
@@ -339,11 +337,7 @@ public class FlumeApi {
         final FlumeApiCurrentFlowRate[] currentFlowRates = gson.fromJson(jsonResponse.get("data").getAsJsonArray(),
                 FlumeApiCurrentFlowRate[].class);
 
-        if (currentFlowRates.length < 1) {
-            return null;
-        }
-
-        return currentFlowRates[0];
+        return (currentFlowRates == null || currentFlowRates.length < 1) ? null : currentFlowRates[0];
     }
 
     public List<FlumeApiUsageAlert> fetchUsageAlerts(String deviceId, int limit)
@@ -379,6 +373,19 @@ public class FlumeApi {
         return sendAndValidate(request, true);
     }
 
+    /**
+     * does routine setup, validation and conversion to JsonObject for http requests
+     *
+     * @param request to be sent
+     * @param verifyToken whether the exisitng access token should be validate and refreshed if needed
+     * @return JsonObject from the Rest API call
+     *
+     * @throws FlumeApiException
+     * @throws InterruptedException
+     * @throws TimeoutException
+     * @throws ExecutionException
+     * @throws IOException
+     */
     private JsonObject sendAndValidate(Request request, boolean verifyToken)
             throws FlumeApiException, InterruptedException, TimeoutException, ExecutionException, IOException {
         ContentResponse response;
@@ -389,7 +396,7 @@ public class FlumeApi {
 
         setHeaders(request);
 
-        logger.trace("REQUEST: {}", request.toString());
+        logger.debug("REQUEST: {}", request.toString());
         response = request.send();
         logger.trace("RESPONSE: {}", response.getContentAsString());
 
@@ -397,10 +404,14 @@ public class FlumeApi {
             case 200:
                 break;
             case 400:
+                // Flume API sense response code 400 (vs. normal 401) on invalid user credentials
+                throw new FlumeApiException("@text/api.invalid-user-credentials [\"" + response.getReason() + "\"]",
+                        response.getStatus(), true);
             case 401:
                 throw new FlumeApiException("@text/api.invalid-user-credentials [\"" + response.getReason() + "\"]",
                         response.getStatus(), true);
             case 429:
+                logger.trace("rate limit response: {}", response.getContentAsString());
                 throw new FlumeApiException("@text/api.rate-limit-exceeded", 429, false);
             default:
                 throw new FlumeApiException("", response.getStatus(), false);
