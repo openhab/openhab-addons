@@ -1,8 +1,8 @@
 
 # WorxLandroid Binding
 
-This is the binding for Worx Landroid robotic lawn mowers. 
-It connects openHAB with your WorxLandroid mower using the API and MQTT. 
+This is the binding for Worx Landroid robotic lawn mowers.
+It connects openHAB with your WorxLandroid mower using the API and MQTT.
 This binding allows you to integrate, view and control supported Worx lawn mowers in the openHAB environment.
 
 ## Supported Things
@@ -14,8 +14,8 @@ Currently following Things are supported:
 
 ## Discovery
 
-A Bridge is required to connect to the Worx API. 
-Here you can provide your credentials for your WorxLandroid account. 
+A Bridge is required to connect to the Worx API.
+Here you can provide your credentials for your WorxLandroid account.
 Once the Bridge has been added Worx Landroid mowers will be discovered automatically.
 
 ## Things Configuration
@@ -26,7 +26,6 @@ The following options can be set for the `bridge`:
 |----------|------------------------------------------|
 | username | Username to access the WorxLandroid API. |
 | password | Password to access the WorxLandroid API. |
-
 
 The following options can be set for the `mower`:
 
@@ -44,7 +43,7 @@ Lower polling and refresh values will likely result in a 24h ban for your accoun
 
 Currently following **Channels** are supported on the **Landroid Mower**:
 
-##### common
+### Common
 
 | Channel          | Type     | ChannelName             | Values            |
 |------------------|----------|-------------------------|-------------------|
@@ -64,14 +63,14 @@ UNKNOWN, NO_ERR, TRAPPED, LIFTED, WIRE_MISSING, OUTSIDE_WIRE, RAINING, CLOSE_DOO
 
 UNKNOWN, IDLE, HOME, START_SEQUENCE, LEAVING_HOME, FOLLOW_WIRE, SEARCHING_HOME, SEARCHING_WIRE, MOWING, LIFTED, TRAPPED, BLADE_BLOCKED, DEBUG, REMOTE_CONTROL,  GOING_HOME, ZONE_TRAINING, BORDER_CUT, SEARCHING_ZONE, PAUSE, MANUEL_STOP
 
-##### config
+### Config
 
 | Channel   | Type     | ChannelName      |
 |-----------|----------|------------------|
 | timestamp | DateTime | config#timestamp |
 | command   | Number   | config#command   |
 
-##### multi-zones
+### Multi-Zones
 
 If Multi Zones are supported, you are able to define 4 separate zones and split working times by 10 to those.
 
@@ -98,8 +97,7 @@ As second step you are able to set time in percent and split in parts of 10 betw
 | allocation-8 | Number        | multi-zones#allocation-8 |
 | allocation-9 | Number        | multi-zones#allocation-9 |
 
-
-##### schedule
+### Schedule
 
 | Channel        | Type     | ChannelName             |                   |
 |----------------|----------|-------------------------|-------------------|
@@ -108,16 +106,14 @@ As second step you are able to set time in percent and split in parts of 10 betw
 | next-start     | DateTime | schedule#next-start     |                   |
 | next-stop      | DateTime | schedule#next-stop      |                   |
 
-
-##### aws
+### Aws
 
 | Channel   | Type   | ChannelName   |
 |-----------|--------|---------------|
 | poll      | Switch | aws#poll      |
 | connected | Switch | aws#connected |
 
-
-##### sunday (Slot 1)
+### Sunday (Slot 1)
 
 | Channel  | Type        | ChannelName     |
 |----------|-------------|-----------------|
@@ -126,8 +122,7 @@ As second step you are able to set time in percent and split in parts of 10 betw
 | duration | Number:Time | sunday#duration |
 | edgecut  | Switch      | sunday#edgecut  |
 
-
-##### sunday2 (Slot 2, ONLY IF SUPPORTED)
+### Sunday2 (Slot 2, ONLY IF SUPPORTED)
 
 | Channel  | Type        | ChannelName      |
 |----------|-------------|------------------|
@@ -136,19 +131,16 @@ As second step you are able to set time in percent and split in parts of 10 betw
 | duration | Number:Time | sunday2#duration |
 | edgecut  | Switch      | sunday2#edgecut  |
 
-
 And so on for each day of the week along with the Slot 2 when supported.
 
-
-##### one-time
+### One-Time
 
 | Channel  | Type   | ChannelName       |
 |----------|--------|-------------------|
 | edgecut  | Switch | one-time#edgecut  |
 | duration | Switch | one-time#duration |
 
-
-##### battery
+### Battery
 
 | Channel             | Type                     | ChannelName                 |
 |---------------------|--------------------------|-----------------------------|
@@ -159,8 +151,7 @@ And so on for each day of the week along with the Slot 2 when supported.
 | charge-cycles-total | Number                   | battery#charge-cycles-total |
 | charging            | Switch                   | battery#charging            |
 
-
-##### orientation
+### Orientation
 
 | Channel | Type         | ChannelName       |
 |---------|--------------|-------------------|
@@ -168,8 +159,7 @@ And so on for each day of the week along with the Slot 2 when supported.
 | roll    | Number:Angle | orientation#roll  |
 | yaw     | Number:Angle | orientation#yaw   |
 
-
-##### metrics
+### Metrics
 
 | Channel          | Type          | ChannelName              |
 |------------------|---------------|--------------------------|
@@ -178,8 +168,7 @@ And so on for each day of the week along with the Slot 2 when supported.
 | distance         | Number:Length | metrics#distance         |
 | total-time       | Number:Time   | metrics#total-time       |
 
-
-##### rain (ONLY IF SUPPORTED)
+### Rain (if supported)
 
 | Channel | Type        | ChannelName  |
 |---------|-------------|--------------|
@@ -187,20 +176,18 @@ And so on for each day of the week along with the Slot 2 when supported.
 | counter | Number:Time | rain#counter |
 | delay   | Number:Time | rain#delay   |
 
-
-##### wifi
+### Wifi
 
 | Channel      | Type         | ChannelName       |
 |--------------|--------------|-------------------|
 | rssi         | Number:Power | wifi#rssi         |
 | wifi-quality | Number       | wifi#wifi-quality |
 
-
 ## Examples
 
 ### $OPENHAB_CONF/items/landroid.things
 
-```xtend
+```java
 Bridge worxlandroid:bridge:api "Worx Api" [ username="xxxxYYYxxxx", password="dldkssdjldj" ] {
     Thing mower lanmower "Worx M600" [ serialNumber="sdmldksmdskmlsd" ]
 }
@@ -468,7 +455,7 @@ sitemap landroid label="Landroid"
 
 ### $OPENHAB_CONF/rules/landroid.rules
 
-```
+```java
 
 rule "Landroid mower status"
 when
@@ -486,7 +473,7 @@ end
 
 ### $OPENHAB_CONF/transform/landroid_error_en.map
 
-```
+```text
 
 UNKNOWN=unknown
 NO_ERR=no error
@@ -513,7 +500,7 @@ MOWER_OUTSIDE_WIRE=mower outside wire
 
 ### $OPENHAB_CONF/transform/landroid_status_en.map
 
-```
+```text
 
 UNKNOWN=unknown
 IDLE=idle

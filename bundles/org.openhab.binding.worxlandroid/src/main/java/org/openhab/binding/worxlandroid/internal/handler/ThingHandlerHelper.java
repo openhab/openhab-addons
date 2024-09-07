@@ -69,10 +69,6 @@ public interface ThingHandlerHelper {
         return getThing().getStatus() == ThingStatus.ONLINE;
     }
 
-    public default boolean firstLaunch() {
-        return getThing().getProperties().isEmpty();
-    }
-
     public default ChannelGroupUID getGroupUID(String group) {
         return new ChannelGroupUID(getThing().getUID(), group);
     }

@@ -15,6 +15,7 @@ package org.openhab.binding.worxlandroid.internal.api;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -68,6 +69,7 @@ public class WorxApiHandler {
         Request request = httpClient.newRequest(url).method(method);
         request.header(HttpHeader.AUTHORIZATION, "Bearer %s".formatted(accessToken));
         request.header(HttpHeader.CONTENT_TYPE, "application/json; utf-8");
+        request.timeout(15, TimeUnit.SECONDS);
         return request;
     }
 
@@ -79,7 +81,7 @@ public class WorxApiHandler {
             ContentResponse response = request.send();
             if (response.getStatus() == 200) {
                 String result = response.getContentAsString();
-                logger.debug("Worx Landroid Api Response: {}", result);
+                logger.trace("Worx Landroid Api Response: {}", result);
                 return deserializer.deserialize(type, result);
             }
             throw new WebApiException(

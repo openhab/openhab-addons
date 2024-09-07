@@ -90,6 +90,7 @@ public class WorxLandroidBridgeHandler extends BaseBridgeHandler
             return;
         }
 
+        updateStatus(ThingStatus.UNKNOWN);
         scheduler.execute(() -> initiateConnection(config.username, config.password));
     }
 
@@ -99,10 +100,8 @@ public class WorxLandroidBridgeHandler extends BaseBridgeHandler
             accessToken = oAuthClientService.getAccessTokenByResourceOwnerPasswordCredentials(username, password, "*")
                     .getAccessToken();
 
-            if (firstLaunch()) {
-                UsersMeResponse user = apiHandler.retrieveMe(accessToken);
-                updateProperties(apiHandler.getDeserializer().toMap(user));
-            }
+            UsersMeResponse user = apiHandler.retrieveMe(accessToken);
+            updateProperties(apiHandler.getDeserializer().toMap(user));
 
             updateStatus(ThingStatus.ONLINE);
         } catch (IOException | WebApiException e) {

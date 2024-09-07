@@ -40,17 +40,15 @@ public class DoorTagChannelHelper extends ChannelHelper {
 
     @Override
     protected @Nullable State internalGetProperty(String channelId, NAThing naThing, Configuration config) {
-        if (naThing instanceof HomeStatusModule doorTag) {
-            if (CHANNEL_STATUS.equalsIgnoreCase(channelId)) {
-                return doorTag.getStatus().map(status -> {
-                    try {
-                        return (State) OpenClosedType.valueOf(status.toUpperCase());
-                    } catch (IllegalArgumentException e) {
-                        // Issue #16629 tag can also return 'no_news'
-                        return UnDefType.UNDEF;
-                    }
-                }).orElse(UnDefType.UNDEF);
-            }
+        if (naThing instanceof HomeStatusModule doorTag && CHANNEL_STATUS.equalsIgnoreCase(channelId)) {
+            return doorTag.getStatus().map(status -> {
+                try {
+                    return (State) OpenClosedType.valueOf(status.toUpperCase());
+                } catch (IllegalArgumentException e) {
+                    // Issue #16629 tag can also return 'no_news'
+                    return UnDefType.UNDEF;
+                }
+            }).orElse(UnDefType.UNDEF);
         }
         return null;
     }

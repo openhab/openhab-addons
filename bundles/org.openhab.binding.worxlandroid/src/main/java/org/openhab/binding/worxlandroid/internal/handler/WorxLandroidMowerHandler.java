@@ -122,16 +122,14 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
             if (product != null) {
                 connectAws(product.mqttEndpoint, product.uuid, product.userId, product.mqttTopics.commandOut);
                 mower = Optional.of(new Mower(this, product));
-                if (firstLaunch()) {
-                    setChannelsAndProperties(mower.get());
-                }
+                setChannelsAndProperties(mower.get());
                 processStatusMessage(mower.get());
 
                 updateStatus(product.online ? ThingStatus.ONLINE : ThingStatus.OFFLINE);
                 startScheduledJobs(bridgeHandler, mower.get(), config);
             }
         } catch (WebApiException e) {
-            logger.error("initialize mower: id {} - {}::{}", config.serialNumber, getThing().getLabel(),
+            logger.warn("initialize mower: id {} - {}::{}", config.serialNumber, getThing().getLabel(),
                     getThing().getUID());
         }
     }
@@ -476,7 +474,6 @@ public class WorxLandroidMowerHandler extends AWSClientThingHandler {
             }
         });
 
-        // What is this ???
         int command = theMower.getPayloadCfg().cmd;
         updateChannelDecimal(GROUP_CONFIG, CHANNEL_COMMAND, command != -1 ? command : null);
 
