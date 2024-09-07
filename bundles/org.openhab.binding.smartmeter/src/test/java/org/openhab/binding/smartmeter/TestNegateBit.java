@@ -14,6 +14,7 @@ package org.openhab.binding.smartmeter;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.smartmeter.internal.MeterValue;
 import org.openhab.binding.smartmeter.internal.conformity.negate.NegateBitModel;
@@ -25,6 +26,7 @@ import org.openhab.binding.smartmeter.internal.conformity.negate.NegateHandler;
  * @author Matthias Steigenberger - Initial contribution
  *
  */
+@NonNullByDefault
 public class TestNegateBit {
 
     @Test
