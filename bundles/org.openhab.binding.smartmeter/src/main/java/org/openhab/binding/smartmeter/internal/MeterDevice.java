@@ -96,7 +96,7 @@ public abstract class MeterDevice<T> {
                 logger.warn("Connection related issue occured: {}", error.getMessage());
                 return;
             }
-            logger.warn("Fatal error occured", error);
+            logger.warn("Fatal error occurred", error);
         });
     }
 
