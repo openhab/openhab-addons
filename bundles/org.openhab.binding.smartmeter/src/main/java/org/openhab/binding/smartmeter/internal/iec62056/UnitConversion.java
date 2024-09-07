@@ -18,7 +18,6 @@ import javax.measure.Unit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.types.util.UnitUtils;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -28,9 +27,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class Iec62056_21UnitConversion {
-
-    private static final Logger logger = LoggerFactory.getLogger(Iec62056_21UnitConversion.class);
+public class UnitConversion {
 
     @SuppressWarnings("unchecked")
     public static @Nullable <Q extends Quantity<Q>> Unit<Q> getUnit(String unit) {
@@ -38,7 +35,7 @@ public class Iec62056_21UnitConversion {
             try {
                 return (Unit<Q>) UnitUtils.parseUnit(" " + unit);
             } catch (Exception e) {
-                logger.warn("Failed to parse unit {}: {}", unit, e.getMessage());
+                LoggerFactory.getLogger(UnitConversion.class).warn("Failed to parse unit {}: {}", unit, e.getMessage());
                 return null;
             }
         }

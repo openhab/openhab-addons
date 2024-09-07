@@ -105,48 +105,48 @@ public class SmlFileDebugOutput {
 
     private static void parseGetListResponse(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got GetListResponse");
-        SmlGetListRes sml_listRes = (SmlGetListRes) smlMessage.getMessageBody().getChoice();
+        SmlGetListRes smlListRes = (SmlGetListRes) smlMessage.getMessageBody().getChoice();
 
         // consumer.accept(sml_listRes.toString());
 
-        consumer.accept(sml_listRes.toStringIndent(" "));
+        consumer.accept(smlListRes.toStringIndent(" "));
     }
 
     private static void parseAttentionResponse(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got AttentionResponse");
-        SmlAttentionRes sml_attentionRes = (SmlAttentionRes) smlMessage.getMessageBody().getChoice();
-        consumer.accept(sml_attentionRes.toString());
+        SmlAttentionRes smlAttentionRes = (SmlAttentionRes) smlMessage.getMessageBody().getChoice();
+        consumer.accept(smlAttentionRes.toString());
     }
 
     private static void parseGetProcParameterResponse(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got GetProcParameterResponse");
-        SmlGetProcParameterRes sml_getProcParameterRes = (SmlGetProcParameterRes) smlMessage.getMessageBody()
+        SmlGetProcParameterRes smlGetProcParameterRes = (SmlGetProcParameterRes) smlMessage.getMessageBody()
                 .getChoice();
-        consumer.accept(sml_getProcParameterRes.toString());
+        consumer.accept(smlGetProcParameterRes.toString());
     }
 
     private static void parseGetProfileListResponse(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got GetProfileListResponse");
-        SmlGetProfileListRes sml_getProfileListRes = (SmlGetProfileListRes) smlMessage.getMessageBody().getChoice();
-        consumer.accept(sml_getProfileListRes.toString());
+        SmlGetProfileListRes smlGetProfileListRes = (SmlGetProfileListRes) smlMessage.getMessageBody().getChoice();
+        consumer.accept(smlGetProfileListRes.toString());
     }
 
     private static void parseOpenResponse(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got OpenResponse");
-        SmlPublicOpenRes sml_PublicOpenRes = (SmlPublicOpenRes) smlMessage.getMessageBody().getChoice();
-        consumer.accept(sml_PublicOpenRes.toString());
+        SmlPublicOpenRes smlPublicOpenRes = (SmlPublicOpenRes) smlMessage.getMessageBody().getChoice();
+        consumer.accept(smlPublicOpenRes.toString());
     }
 
     private static void parseCloseResponse(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got CloseResponse");
-        SmlPublicCloseRes sml_PublicCloseRes = (SmlPublicCloseRes) smlMessage.getMessageBody().getChoice();
-        consumer.accept(sml_PublicCloseRes.toString());
+        SmlPublicCloseRes smlPublicCloseRes = (SmlPublicCloseRes) smlMessage.getMessageBody().getChoice();
+        consumer.accept(smlPublicCloseRes.toString());
     }
 
     private static void parseGetProfilePackResponse(SmlMessage smlMessage, Consumer<String> consumer) {
         consumer.accept("Got GetProfilePackResponse");
-        SmlGetProfilePackRes sml_getProfilePackRes = (SmlGetProfilePackRes) smlMessage.getMessageBody().getChoice();
-        consumer.accept(sml_getProfilePackRes.toString());
+        SmlGetProfilePackRes smlGetProfilePackRes = (SmlGetProfilePackRes) smlMessage.getMessageBody().getChoice();
+        consumer.accept(smlGetProfilePackRes.toString());
     }
 
     // ========================= Requests =================================

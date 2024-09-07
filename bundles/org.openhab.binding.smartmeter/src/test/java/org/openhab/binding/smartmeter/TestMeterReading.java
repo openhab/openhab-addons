@@ -23,7 +23,7 @@ import java.util.function.Supplier;
 
 import javax.measure.Quantity;
 
-import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -44,6 +44,7 @@ import io.reactivex.plugins.RxJavaPlugins;
  * @author Matthias Steigenberger - Initial contribution
  *
  */
+@NonNullByDefault
 public class TestMeterReading {
 
     @Test
@@ -118,6 +119,7 @@ public class TestMeterReading {
             throw new RuntimeException(new IOException("fucked up"));
         }));
         MeterDevice<Object> meter = getMeterDevice(connector);
+        @SuppressWarnings("unchecked")
         Consumer<Throwable> errorHandler = mock(Consumer.class);
         RxJavaPlugins.setErrorHandler(errorHandler);
         MeterValueListener changeListener = Mockito.mock(MeterValueListener.class);
@@ -139,14 +141,15 @@ public class TestMeterReading {
         return new MeterDevice<>(() -> mock(SerialPortManager.class), "id", "port", null, 9600, 0, ProtocolMode.SML) {
 
             @Override
-            protected @NonNull IMeterReaderConnector<Object> createConnector(
-                    @NonNull Supplier<@NonNull SerialPortManager> serialPortManagerSupplier, @NonNull String serialPort,
-                    int baudrate, int baudrateChangeDelay, @NonNull ProtocolMode protocolMode) {
+            protected IMeterReaderConnector<Object> createConnector(
+                    Supplier<SerialPortManager> serialPortManagerSupplier, String serialPort, int baudrate,
+                    int baudrateChangeDelay, ProtocolMode protocolMode) {
                 return connector;
             }
 
+            @SuppressWarnings({ "rawtypes", "unchecked" })
             @Override
-            protected <Q extends @NonNull Quantity<Q>> void populateValueCache(Object smlFile) {
+            protected <Q extends Quantity<Q>> void populateValueCache(Object smlFile) {
                 addObisCache(new MeterValue("123", "333", null));
             }
         };

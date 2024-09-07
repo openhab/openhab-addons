@@ -81,6 +81,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
     protected SmlFile readNext(byte @Nullable [] initMessage) throws IOException {
         if (initMessage != null) {
             logger.debug("Writing init message: {}", HexUtils.bytesToHex(initMessage, " "));
+            DataOutputStream os = this.os;
             if (os != null) {
                 os.write(initMessage);
                 os.flush();
@@ -89,6 +90,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
 
         // read out the whole buffer. We are only interested in the most recent SML file.
         Stack<SmlFile> smlFiles = new Stack<>();
+        DataInputStream is = this.is;
         do {
             logger.trace("Reading {}. SML message", smlFiles.size() + 1);
             smlFiles.push(TRANSPORT.getSMLFile(is));
@@ -137,12 +139,10 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void closeConnection() {
         try {
+            DataInputStream is = this.is;
             if (is != null) {
                 is.close();
                 is = null;
@@ -151,6 +151,7 @@ public final class SmlSerialConnector extends ConnectorBase<SmlFile> {
             logger.error("Failed to close serial input stream", e);
         }
         try {
+            DataOutputStream os = this.os;
             if (os != null) {
                 os.close();
                 os = null;
