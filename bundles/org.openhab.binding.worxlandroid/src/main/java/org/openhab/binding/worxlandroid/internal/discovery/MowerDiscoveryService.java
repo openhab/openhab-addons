@@ -72,8 +72,8 @@ public class MowerDiscoveryService extends AbstractDiscoveryService {
                 thingDiscovered(discoveryResult);
                 logger.debug("Discovered a mower thing with ID '{}'", mower.serialNumber);
             });
-        } catch (WebApiException npe) {
-            logger.error("Error in WebApiException : {}", npe.getMessage());
+        } catch (WebApiException exception) {
+            logger.warn("Error in WebApiException : {}", exception.getMessage());
         }
     }
 
