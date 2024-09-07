@@ -86,7 +86,7 @@ public abstract class MeterDevice<T> {
                 protocolMode);
         RxJavaPlugins.setErrorHandler(error -> {
             if (error == null) {
-                logger.warn("Fatal but unknown error occured");
+                logger.warn("Fatal but unknown error occurred");
                 return;
             }
             if (error instanceof UndeliverableException) {
