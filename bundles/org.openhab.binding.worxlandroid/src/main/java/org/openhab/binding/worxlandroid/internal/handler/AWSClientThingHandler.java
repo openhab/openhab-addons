@@ -214,7 +214,7 @@ public abstract class AWSClientThingHandler extends BaseThingHandler
             return;
         }
         if (!isOnline()) {
-            logger.error("handleCommand mower: {} is offline!", getThing().getUID());
+            logger.warn("handleCommand mower: {} is offline!", getThing().getUID());
             return;
         }
         WorxLandroidBridgeHandler bridgeHandler = getBridgeHandler(getBridge(), WorxLandroidBridgeHandler.class);
