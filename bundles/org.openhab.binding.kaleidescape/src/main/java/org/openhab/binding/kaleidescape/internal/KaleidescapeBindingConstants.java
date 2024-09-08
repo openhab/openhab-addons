@@ -188,6 +188,7 @@ public class KaleidescapeBindingConstants {
     public static final String MUSIC_RANDOM_OFF = "MUSIC_RANDOM_OFF";
 
     public static final String SEND_TO_SYSLOG = "SEND_TO_SYSLOG:INFORMATION:";
+    public static final String SEND_EVENT_VOLUME_CAPABILITIES_3 = "SEND_EVENT:VOLUME_CAPABILITIES=3";
     public static final String SEND_EVENT_VOLUME_CAPABILITIES_15 = "SEND_EVENT:VOLUME_CAPABILITIES=15";
     public static final String SEND_EVENT_VOLUME_LEVEL_EQ = "SEND_EVENT:VOLUME_LEVEL=";
     public static final String SEND_EVENT_MUTE = "SEND_EVENT:MUTE_";

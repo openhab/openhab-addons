@@ -478,6 +478,10 @@ public enum KaleidescapeMessageHandler {
                                 handler.connector.sendCommand(SEND_EVENT_VOLUME_LEVEL_EQ + handler.volume);
                                 handler.connector.sendCommand(SEND_EVENT_MUTE + (handler.isMuted ? MUTE_ON : MUTE_OFF));
                             }
+                        } else if (handler.volumeBasicEnabled) {
+                            synchronized (handler.sequenceLock) {
+                                handler.connector.sendCommand(SEND_EVENT_VOLUME_CAPABILITIES_3);
+                            }
                         }
                         break;
                     case "VOLUME_UP":
@@ -514,10 +518,8 @@ public enum KaleidescapeMessageHandler {
                             }
                         }
                         break;
-                    // the default is to just publish all other USER_DEFINED_EVENTs
-                    default:
-                        handler.updateChannel(KaleidescapeBindingConstants.USER_DEFINED_EVENT, new StringType(message));
                 }
+                handler.updateChannel(KaleidescapeBindingConstants.USER_DEFINED_EVENT, new StringType(message));
             } catch (KaleidescapeException e) {
                 logger.debug("USER_DEFINED_EVENT - exception on message: {}", message);
             }
