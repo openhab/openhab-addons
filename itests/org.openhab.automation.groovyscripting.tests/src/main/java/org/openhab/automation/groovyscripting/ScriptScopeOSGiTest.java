@@ -16,29 +16,17 @@ import java.io.IOException;
 
 import javax.script.ScriptException;
 
-import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
 
 /**
- * This tests the JSON, XML and YAML slurpers using the Groovy scripting engine.
+ * This tests the script modules using the Groovy scripting engine.
  *
  * @author Wouter Born - Initial contribution
  */
-@NonNullByDefault
-public class SlurperOSGiTest extends AbstractGroovyScriptingOSGiTest {
+public class ScriptScopeOSGiTest extends AbstractGroovyScriptingOSGiTest {
 
     @Test
-    public void jsonSlurper() throws ScriptException, IOException {
-        evalScript("json-slurper.groovy");
-    }
-
-    @Test
-    public void xmlSlurper() throws ScriptException, IOException {
-        evalScript("xml-slurper.groovy");
-    }
-
-    @Test
-    public void yamlSlurper() throws ScriptException, IOException {
-        evalScript("yaml-slurper.groovy");
+    public void scopeWorking() throws ScriptException, IOException {
+        evalScript("scope-working.groovy");
     }
 }
