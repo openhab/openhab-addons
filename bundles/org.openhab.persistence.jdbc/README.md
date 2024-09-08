@@ -4,19 +4,22 @@ This service writes and reads item states to and from a number of relational dat
 This service allows you to persist state updates using one of several different underlying database services.
 It is designed for a maximum of scalability, to store very large amounts of data and still over the years not lose its speed.
 
+You can install JDBC persistence for many supported databases, but **only one JDBC persistence service for a single database type** should be installed and can be configured at any point in time.
+
 The generic design makes it relatively easy for developers to integrate other databases that have JDBC drivers.
 The following databases are currently supported and tested:
 
-| Database                                     | Tested Driver / Version                                                                                  |
-| -------------------------------------------- |----------------------------------------------------------------------------------------------------------|
-| [Apache Derby](https://db.apache.org/derby/) | [derby-10.14.2.0.jar](https://mvnrepository.com/artifact/org.apache.derby/derby)                         |
-| [H2](https://www.h2database.com/)            | [h2-2.2.224.jar](https://mvnrepository.com/artifact/com.h2database/h2)                                   |
-| [HSQLDB](http://hsqldb.org/)                 | [hsqldb-2.3.3.jar](https://mvnrepository.com/artifact/org.hsqldb/hsqldb)                                 |
-| [MariaDB](https://mariadb.org/)              | [mariadb-java-client-3.0.8.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client) |
-| [MySQL](https://www.mysql.com/)              | [mysql-connector-j-8.2.0.jar](https://mvnrepository.com/artifact/com.mysql/mysql-connector-j)            |
-| [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.4.4.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                    |
-| [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.42.0.0.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc)                    |
-| [TimescaleDB](https://www.timescale.com/)    | [postgresql-42.4.4.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                    |
+| Database                                     | Tested Driver / Version                                                                                                                     |
+| -------------------------------------------- |---------------------------------------------------------------------------------------------------------------------------------------------|
+| [Apache Derby](https://db.apache.org/derby/) | [derby-10.14.2.0.jar](https://mvnrepository.com/artifact/org.apache.derby/derby)                                                            |
+| [H2](https://www.h2database.com/)            | [h2-2.2.224.jar](https://mvnrepository.com/artifact/com.h2database/h2)                                                                      |
+| [HSQLDB](http://hsqldb.org/)                 | [hsqldb-2.3.3.jar](https://mvnrepository.com/artifact/org.hsqldb/hsqldb)                                                                    |
+| [MariaDB](https://mariadb.org/)              | [mariadb-java-client-3.0.8.jar](https://mvnrepository.com/artifact/org.mariadb.jdbc/mariadb-java-client)                                    |
+| [MySQL](https://www.mysql.com/)              | [mysql-connector-j-8.2.0.jar](https://mvnrepository.com/artifact/com.mysql/mysql-connector-j)                                               |
+| [PostgreSQL](https://www.postgresql.org/)    | [postgresql-42.4.4.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                                                       |
+| [SQLite](https://www.sqlite.org/)            | [sqlite-jdbc-3.42.0.0.jar](https://mvnrepository.com/artifact/org.xerial/sqlite-jdbc)                                                       |
+| [TimescaleDB](https://www.timescale.com/)    | [postgresql-42.4.4.jar](https://mvnrepository.com/artifact/org.postgresql/postgresql)                                                       |
+| [OracleDB](https://www.oracle.com/database/) | [com.oracle.database.jdbc.ojdbc11-23.5.0.2407.jar](https://mvnrepository.com/artifact/org.openhab.osgiify/com.oracle.database.jdbc.ojdbc11) |
 
 ## Table of Contents
 
@@ -37,11 +40,13 @@ The following databases are currently supported and tested:
 
 ## Configuration
 
-This service can be configured in the file `services/jdbc.cfg`.
+This service can be configured in the file `services/jdbc.cfg` or through mainUI under the settings of the specific JDBC DB Add-on.
+Note that the relevance of the parameters and default values may be different for specific database types.
+The listed defaults are used when not overriden by the specific database Add-on.
 
 | Property                    | Default                                                      | Required  | Description                                                  |
 | --------------------------- | ------------------------------------------------------------ | :-------: | ------------------------------------------------------------ |
-| url                         |                                                              |    Yes    | JDBC URL to establish a connection to your database.  Examples:<br/><br/>`jdbc:derby:./testDerby;create=true`<br/>`jdbc:h2:./testH2`<br/>`jdbc:hsqldb:./testHsqlDb`<br/>`jdbc:mariadb://192.168.0.1:3306/testMariadb`<br/>`jdbc:mysql://192.168.0.1:3306/testMysql?serverTimezone=UTC`<br/>`jdbc:postgresql://192.168.0.1:5432/testPostgresql`<br/>`jdbc:timescaledb://192.168.0.1:5432/testPostgresql`<br/>`jdbc:sqlite:./testSqlite.db`.<br/><br/>If no database is available it will be created; for example the url `jdbc:h2:./testH2` creates a new H2 database in openHAB folder. Example to create your own MySQL database directly:<br/><br/>`CREATE DATABASE 'yourDB' CHARACTER SET utf8 COLLATE utf8_general_ci;` |
+| url                         |                                                              |    Yes    | JDBC URL to establish a connection to your database.  Examples:<br/><br/>`jdbc:derby:./testDerby;create=true`<br/>`jdbc:h2:./testH2`<br/>`jdbc:hsqldb:./testHsqlDb`<br/>`jdbc:mariadb://192.168.0.1:3306/testMariadb`<br/>`jdbc:mysql://192.168.0.1:3306/testMysql?serverTimezone=UTC`<br/>`jdbc:postgresql://192.168.0.1:5432/testPostgresql`<br/>`jdbc:timescaledb://192.168.0.1:5432/testPostgresql`<br/>`jdbc:sqlite:./testSqlite.db`<br/>`jdbc:oracle:thin:@dbname?TNS_ADMIN=./dbname_tns_admin_folder`.<br/><br/>If no database is available it will be created; for example the url `jdbc:h2:./testH2` creates a new H2 database in openHAB folder. Example to create your own MySQL database directly:<br/><br/>`CREATE DATABASE 'yourDB' CHARACTER SET utf8 COLLATE utf8_general_ci;` |
 | user                        |                                                              | if needed | database user name                                           |
 | password                    |                                                              | if needed | database user password                                       |
 | errReconnectThreshold       | 0                                                            |    No     | when the service is deactivated (0 means ignore)             |
@@ -87,6 +92,44 @@ services/jdbc.cfg
 ```
 url=jdbc:postgresql://192.168.0.1:5432/testPostgresql
 ```
+
+### Oracle DB Specific Configuration
+
+Oracle connectivity has been tested on an Oracle Always Free Tier Autonomous DB 19c.
+
+You need to configure your database connection to not use an Oracle Wallet, but use the Java Key Store (JKS).
+To connect to an Oracle Autonomous Database, use the instructions at https://www.oracle.com/database/technologies/java-connectivity-to-atp.html#pre-requisites-tab, under Java Key Stores (JKS).
+
+Your services/jdbc.cfg should contain the following minimal configuration for connecting to an Oracle Autonomous Database:
+
+```
+url=jdbc:oracle:thin:@dbname?TNS_ADMIN=./dbname_tns_admin_folder
+user=openhab
+password=openhab_password
+```
+
+The `TNS_ADMIN` parameter points to the directory where the the `tnsnames.ora`file, `ojdbc.properties` file and key files (from the ADB wallet download) are located.
+Other Oracle DB setups may require different connection parameters.
+
+It is advised to create a specific user with sufficient permissions and space for OpenHAB persistence.
+This is the user that should be in `jdbc.cfg`.
+The user default schema will be used.
+
+Default data types for an Oracle DB are different from the general defaults:
+
+| sqltype.COLOR               | `VARCHAR2(70)`         |
+| sqltype.CONTACT             | `VARCHAR2(6)`          |
+| sqltype.DATETIME            | `TIMESTAMP`            |
+| sqltype.DIMMER              | `NUMBER(3)`            |
+| sqltype.IMAGE               | `CLOB`                 |
+| sqltype.LOCATION            | `VARCHAR2(50)`         |
+| sqltype.NUMBER              | `FLOAT`                |
+| sqltype.PLAYER              | `VARCHAR2(20)`         |
+| sqltype.ROLLERSHUTTER       | `NUMBER(3)`            |
+| sqltype.STRING              | `VARCHAR2(16000 CHAR)` |
+| sqltype.SWITCH              | `VARCHAR2(6)`          |
+| sqltype.tablePrimaryKey     | `TIMESTAMP`            |
+| sqltype.tablePrimaryValue   | `CURRENT_TIME`         |
 
 ### Case Sensitive Item Names
 
