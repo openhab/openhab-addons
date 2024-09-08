@@ -44,7 +44,7 @@ public class StringUtilsExt {
     public static String replaceArrayMerge(String str, String separate, Object[] separators) {
         String s = str;
         for (int i = 0; i < separators.length; i++) {
-            s = s.replaceFirst(separate, (String) separators[i]);
+            s = s.replaceAll(separate, (String) separators[i]);
         }
         return s;
     }
@@ -55,7 +55,7 @@ public class StringUtilsExt {
     public static String replaceArrayMerge(String str, String[] separate, String[] separators) {
         String s = str;
         for (int i = 0; i < separators.length; i++) {
-            s = s.replaceFirst(separate[i], separators[i]);
+            s = s.replaceAll(separate[i], separators[i]);
         }
         return s;
     }
@@ -69,7 +69,7 @@ public class StringUtilsExt {
 
     /**
      * <b>JDBC-URI Examples:</b><br/>
-     * 
+     *
      * <pre>
      * {@code
      * jdbc:dbShortcut:c:/dev/databaseName<br/>
@@ -161,24 +161,22 @@ public class StringUtilsExt {
             props.put("pathQuery", dbURI.getQuery());
         }
 
-        String path = "";
-        if (dbURI.getPath() != null) {
-            String gp = dbURI.getPath();
-            String st = "/";
-            if (gp.indexOf("/") <= 1) {
-                if (substrPos(gp, st).size() > 1) {
-                    path = stringBeforeLastSubstr(gp, st) + st;
+        String pathURI = dbURI.getPath();
+        if (pathURI != null) {
+            String path = "";
+            if ((pathURI.indexOf("/") >= 0) && (pathURI.indexOf("/") <= 1)) {
+                if (stringAfterSubstr(pathURI, "/").contains("/")) {
+                    path = stringBeforeLastSubstr(pathURI, "/") + "/";
                 } else {
-                    path = stringBeforeSubstr(gp, st) + st;
+                    path = stringBeforeSubstr(pathURI, "/") + "/";
                 }
             }
-            if (dbURI.getScheme() != null && dbURI.getScheme().length() == 1) {
-                path = dbURI.getScheme() + ":" + path;
+            String schemeURI = dbURI.getScheme();
+            if (schemeURI != null && schemeURI.length() == 1) {
+                path = schemeURI + ":" + path;
             }
             props.put("serverPath", path);
-        }
-        if (dbURI.getPath() != null) {
-            props.put("databaseName", stringAfterLastSubstr(dbURI.getPath(), "/"));
+            props.put("databaseName", pathURI.contains("/") ? stringAfterLastSubstr(pathURI, "/") : pathURI);
         }
         if (dbURI.getPort() != -1) {
             props.put("portNumber", dbURI.getPort() + "");

@@ -603,7 +603,7 @@ public class JdbcBaseDAO {
                 String it = getSqlTypes().get(itemType);
                 if (it == null) {
                     logger.warn("JDBC::storeItemValueProvider: No SQL type defined for item type {}", itemType);
-                } else if (it.toUpperCase().contains("DOUBLE")) {
+                } else if (it.toUpperCase().contains("DOUBLE") || (it.toUpperCase().contains("FLOAT"))) {
                     vo.setValueTypes(it, java.lang.Double.class);
                     double value = ((Number) convertedState).doubleValue();
                     logger.debug("JDBC::storeItemValueProvider: newVal.doubleValue: '{}'", value);
@@ -666,7 +666,7 @@ public class JdbcBaseDAO {
             if (it == null) {
                 throw new UnsupportedOperationException("No SQL type defined for item type NUMBERITEM");
             }
-            if (it.toUpperCase().contains("DOUBLE")) {
+            if (it.toUpperCase().contains("DOUBLE") || (it.toUpperCase().contains("FLOAT"))) {
                 return unit == null ? new DecimalType(objectAsNumber(v).doubleValue())
                         : QuantityType.valueOf(objectAsNumber(v).doubleValue(), unit);
             } else if (it.toUpperCase().contains("DECIMAL") || it.toUpperCase().contains("NUMERIC")) {
@@ -723,10 +723,12 @@ public class JdbcBaseDAO {
     }
 
     protected Integer objectAsInteger(Object v) {
-        if (v instanceof Byte) {
-            return ((Byte) v).intValue();
-        } else if (v instanceof Integer) {
-            return (Integer) v;
+        if (v instanceof Byte byteValue) {
+            return byteValue.intValue();
+        } else if (v instanceof Integer intValue) {
+            return intValue;
+        } else if (v instanceof BigDecimal bdValue) {
+            return bdValue.intValue();
         }
         throw new UnsupportedOperationException("Integer of type '" + v.getClass().getName() + "' is not supported");
     }
