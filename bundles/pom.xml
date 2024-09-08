@@ -149,6 +149,7 @@
     <module>org.openhab.binding.fenecon</module>
     <module>org.openhab.binding.fineoffsetweatherstation</module>
     <module>org.openhab.binding.flicbutton</module>
+    <module>org.openhab.binding.flume</module>
     <module>org.openhab.binding.fmiweather</module>
     <module>org.openhab.binding.folderwatcher</module>
     <module>org.openhab.binding.folding</module>
