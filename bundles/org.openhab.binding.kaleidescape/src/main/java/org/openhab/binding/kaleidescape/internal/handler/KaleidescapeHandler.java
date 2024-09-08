@@ -89,6 +89,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     protected int metaRuntimeMultiple = 1;
     protected int volume = 0;
     protected boolean volumeEnabled = false;
+    protected boolean volumeBasicEnabled = false;
     protected boolean isMuted = false;
     protected boolean isLoadHighlightedDetails = false;
     protected boolean isLoadAlbumDetails = false;
@@ -162,6 +163,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             this.volume = config.initialVolume;
             this.updateState(VOLUME, new PercentType(this.volume));
             this.updateState(MUTE, OnOffType.OFF);
+        } else if (config.volumeBasicEnabled) {
+            this.volumeBasicEnabled = true;
         }
 
         if (serialPort != null) {
