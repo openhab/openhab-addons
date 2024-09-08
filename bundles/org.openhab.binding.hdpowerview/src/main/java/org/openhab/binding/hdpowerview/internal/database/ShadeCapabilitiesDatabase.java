@@ -24,10 +24,17 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Class containing the database of all known shade 'types' and their respective 'capabilities'.
- *
+ * <p>
  * If user systems detect shade types that are not in the database, then this class can issue logger warning messages
  * indicating such absence, and prompting the user to report it to developers so that the database and the respective
  * binding functionality can (hopefully) be extended over time.
+ * <p>
+ * <b>NOTA BENE</b>: this database is required by the two bindings listed below. It is maintained here in the former
+ * binding, but it is consumed also by the latter binding. Therefore <b>do NOT delete or modify this file</b> unless you
+ * have carefully checked against regressions in the latter binding.
+ * <li>HD Powerview binding: 'org.openhab.binding.hdpowerview</li>
+ * <li>HD Powerview Bluetooth Low Energy binding: 'org.openhab.binding.bluetooth.hdpowerview</li>
+ * <p>
  *
  * @author Andrew Fiddian-Green - Initial Contribution
  */
