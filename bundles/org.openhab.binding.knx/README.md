@@ -50,40 +50,40 @@ as multicast traffic is typically not forwarded.
 The IP Gateway is the most commonly used way to connect to the KNX bus.
 At its base, the _ip_ bridge accepts the following configuration parameters:
 
-| Name                | Required     | Description                                                                                                  | Default value                                        |
-|---------------------|--------------|--------------------------------------------------------------------------------------------------------------|------------------------------------------------------|
-| type                | Yes          | The IP connection type for connecting to the KNX bus (`TUNNEL`, `ROUTER`, `SECURETUNNEL` or `SECUREROUTER`)  | -                                                    |
-| ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway. If type `ROUTER` is set, the IPv4 Multicast Address can be set.       | for `TUNNEL`: \<nothing\>, for `ROUTER`: 224.0.23.12 |
-| portNumber          | for `TUNNEL` | Port number of the KNX/IP gateway                                                                            | 3671                                                 |
-| localIp             | No           | Network address of the local host to be used to set up the connection to the KNX/IP gateway                  | the system-wide configured primary interface address |
-| localSourceAddr     | No           | The (virtual) individual address for identification of this openHAB Thing within the KNX bus <br/><br/>Note: Use a free address, not the one of the interface. Or leave it at `0.0.0` and let openHAB decide which address to use. When using knxd, make sure _not to use_ one of the addresses reserved for tunneling clients.  | 0.0.0                                                |
-| useNAT              | No           | Whether there is network address translation between the server and the gateway                              | false                                                |
-| readingPause        | No           | Time in milliseconds of how long should be paused between two read requests to the bus during initialization | 50                                                   |
-| responseTimeout     | No           | Timeout in seconds to wait for a response from the KNX bus                                                   | 10                                                   |
-| readRetriesLimit    | No           | Limits the read retries while initialization from the KNX bus                                                | 3                                                    |
-| autoReconnectPeriod | No           | Seconds between connect retries when KNX link has been lost (0 means never).                                 | 0                                                    |
-| routerBackboneKey   | No           | KNX secure: Backbone key for secure router mode                                                              | -                                                    |
-| tunnelUserId        | No           | KNX secure: Tunnel user id for secure tunnel mode (if specified, it must be a number >0)                     | -                                                    |
-| tunnelUserPassword  | No           | KNX secure: Tunnel user key for secure tunnel mode                                                           | -                                                    |
-| tunnelDeviceAuthentication  | No   | KNX secure: Tunnel device authentication for secure tunnel mode                                              | -                                                    |
-| keyringFile         | No           | KNX secure: Keyring file exported from ETS and placed in openHAB config/misc folder. Mandatory to decode secure GAs. | -                                                    |
-| keyringPassword     | No           | KNX secure: Keyring file password (set during export from ETS)                                               | -                                                    |
-| tunnelSourceAddress | No           | KNX secure: Physical KNX address of tunnel in secure mode to identify tunnel. If given, openHAB will read tunnelUserId, tunnelUserPassword, tunnelDeviceAuthentication from keyring  | -         |
+| Name                | Required     | Description                                                                                                                      | Default value                                             |
+|---------------------|--------------|----------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------|
+| type                | Yes          | The IP connection type for connecting to the KNX bus (`TUNNEL`, `ROUTER`, `SECURETUNNEL` or `SECUREROUTER`)                      | -                                                         |
+| ipAddress           | for `TUNNEL` | Network address of the KNX/IP gateway. If type `ROUTER` is set, the IPv4 Multicast Address can be set.                           | for `TUNNEL`: \<nothing\>, for `ROUTER`: 224.0.23.12      |
+| portNumber          | for `TUNNEL` | Port number of the KNX/IP gateway                                                                                                | 3671                                                      |
+| localIp             | No           | Network address of the local host to be used to set up the connection to the KNX/IP gateway                                      | the system-wide configured primary interface address      |
+| localSourceAddr     | No           | The (virtual) individual address for identification of this openHAB Thing within the KNX bus <br/><br/>Note: Use a free address, not the one of the interface. Or leave it at `0.0.0` and let openHAB decide which address to use.<br/>When using knxd, make sure _not to use_ one of the addresses reserved for tunneling clients. | 0.0.0                                                     |
+| useNAT              | No           | Whether there is network address translation between the server and the gateway                                                  | false                                                     |
+| readingPause        | No           | Time in milliseconds of how long should be paused between two read requests to the bus during initialization                     | 50                                                        |
+| responseTimeout     | No           | Timeout in seconds to wait for a response from the KNX bus                                                                       | 10                                                        |
+| readRetriesLimit    | No           | Limits the read retries while initialization from the KNX bus                                                                    | 3                                                         |
+| autoReconnectPeriod | No           | Seconds between connect retries when KNX link has been lost (0 means never).                                                     | 0                                                         |
+| routerBackboneKey   | No           | KNX secure: Backbone key for secure router mode                                                                                  | -                                                         |
+| tunnelUserId        | No           | KNX secure: Tunnel user id for secure tunnel mode (if specified, it must be a number >0)                                         | -                                                         |
+| tunnelUserPassword  | No           | KNX secure: Tunnel user key for secure tunnel mode                                                                               | -                                                         |
+| tunnelDeviceAuthentication  | No   | KNX secure: Tunnel device authentication for secure tunnel mode                                                                  | -                                                         |
+| keyringFile         | No           | KNX secure: Keyring file exported from ETS and placed in openHAB config/misc folder. Mandatory to decode secure group addresses. | -                                                         |
+| keyringPassword     | No           | KNX secure: Keyring file password (set during export from ETS)                                                                   | -                                                         |
+| tunnelSourceAddress | No           | KNX secure: Physical KNX address of tunnel in secure mode to identify tunnel. If given, openHAB will read tunnelUserId, tunnelUserPassword, tunnelDeviceAuthentication from keyring.  | -    |
 
 ### Serial Gateway
 
 The _serial_ bridge accepts the following configuration parameters:
 
-| Name                | Required | Description                                                                                                  | Default value |
-|---------------------|----------|--------------------------------------------------------------------------------------------------------------|---------------|
-| serialPort          | Y        | The serial port to use for connecting to the KNX bus                                                         | -             |
-| readingPause        | N        | Time in milliseconds of how long should be paused between two read requests to the bus during initialization | 50            |
-| responseTimeout     | N        | Timeout in seconds to wait for a response from the KNX bus                                                   | 10            |
-| readRetriesLimit    | N        | Limits the read retries while initialization from the KNX bus                                                | 3             |
-| autoReconnectPeriod | N        | Seconds between connect retries when KNX link has been lost, 0 means never retry                             | 0             |
-| useCemi             | N        | Use newer CEMI message format, useful for newer devices like KNX RF sticks, kBerry, etc.                     | false         |
-| keyringFile         | N        | KNX secure: Keyring file exported from ETS and placed in openHAB config/misc folder. Mandatory to decode secure GAs. | -     |
-| keyringPassword     | N        | KNX secure: Keyring file password (set during export from ETS)                                               | -             |
+| Name                | Required | Description                                                                                                                      | Default value |
+|---------------------|----------|----------------------------------------------------------------------------------------------------------------------------------|---------------|
+| serialPort          | Y        | The serial port to use for connecting to the KNX bus                                                                             | -             |
+| readingPause        | N        | Time in milliseconds of how long should be paused between two read requests to the bus during initialization                     | 50            |
+| responseTimeout     | N        | Timeout in seconds to wait for a response from the KNX bus                                                                       | 10            |
+| readRetriesLimit    | N        | Limits the read retries while initialization from the KNX bus                                                                    | 3             |
+| autoReconnectPeriod | N        | Seconds between connect retries when KNX link has been lost, 0 means never retry                                                 | 0             |
+| useCemi             | N        | Use newer CEMI message format, useful for newer devices like KNX RF sticks, kBerry, etc.                                         | false         |
+| keyringFile         | N        | KNX secure: Keyring file exported from ETS and placed in openHAB config/misc folder. Mandatory to decode secure group addresses. | -             |
+| keyringPassword     | N        | KNX secure: Keyring file password (set during export from ETS)                                                                   | -             |
 
 ## Things
 

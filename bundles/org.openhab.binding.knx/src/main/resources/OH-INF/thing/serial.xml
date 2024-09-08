@@ -50,7 +50,7 @@
 				<label>Keyring file</label>
 				<description>Keyring file exported from ETS and placed in openHAB config/misc folder, e.g.
 					knx.knxkeys. This file is
-					mandatory to decode secure GAs.</description>
+					mandatory to decode secure group addresses.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="keyringPassword" type="text" groupName="knxsecure">
