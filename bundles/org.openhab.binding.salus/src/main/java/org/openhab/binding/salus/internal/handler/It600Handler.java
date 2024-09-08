@@ -34,6 +34,7 @@ import org.openhab.binding.salus.internal.rest.DeviceProperty;
 import org.openhab.binding.salus.internal.rest.exceptions.AuthSalusApiException;
 import org.openhab.binding.salus.internal.rest.exceptions.SalusApiException;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
@@ -142,6 +143,9 @@ public class It600Handler extends BaseThingHandler {
                     break;
                 case WORK_TYPE:
                     handleCommandForWorkType(channelUID, command);
+                    break;
+                case RUNNING_STATE:
+                    handleCommandForRunningState(channelUID, command);
                     break;
                 default:
                     logger.warn("Unknown channel `{}` for command `{}`", id, command);
@@ -257,16 +261,35 @@ public class It600Handler extends BaseThingHandler {
                 command.getClass().getSimpleName(), channelUID);
     }
 
+    private void handleCommandForRunningState(ChannelUID channelUID, Command command)
+            throws SalusApiException, AuthSalusApiException {
+        if (!(command instanceof RefreshType)) {
+            return;
+        }
+        findLongProperty(channelPrefix + ":sIT600TH:RunningState", "RunningState")//
+                .map(DeviceProperty::getValue)//
+                .map(value -> value > 0)//
+                .map(OnOffType::from)//
+                .ifPresent(state -> {
+                    updateState(channelUID, state);
+                    updateStatus(ONLINE);
+                });
+    }
+
     private Optional<DeviceProperty.LongDeviceProperty> findLongProperty(String name, String shortName)
             throws SalusApiException, AuthSalusApiException {
         var deviceProperties = findDeviceProperties();
-        var property = deviceProperties.stream().filter(p -> p.getName().equals(name))
-                .filter(DeviceProperty.LongDeviceProperty.class::isInstance)
-                .map(DeviceProperty.LongDeviceProperty.class::cast).findAny();
+        var property = deviceProperties.stream()//
+                .filter(p -> p.getName().equals(name))//
+                .filter(DeviceProperty.LongDeviceProperty.class::isInstance)//
+                .map(DeviceProperty.LongDeviceProperty.class::cast)//
+                .findAny();
         if (property.isEmpty()) {
-            property = deviceProperties.stream().filter(p -> p.getName().contains(shortName))
-                    .filter(DeviceProperty.LongDeviceProperty.class::isInstance)
-                    .map(DeviceProperty.LongDeviceProperty.class::cast).findAny();
+            property = deviceProperties.stream()//
+                    .filter(p -> p.getName().contains(shortName))//
+                    .filter(DeviceProperty.LongDeviceProperty.class::isInstance)//
+                    .map(DeviceProperty.LongDeviceProperty.class::cast)//
+                    .findAny();
         }
         if (property.isEmpty()) {
             logger.debug("{}/{} property not found!", name, shortName);

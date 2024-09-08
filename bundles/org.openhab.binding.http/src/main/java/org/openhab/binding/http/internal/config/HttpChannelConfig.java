@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.http.internal.config;
 
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.thing.binding.generic.ChannelValueConverterConfig;
@@ -26,7 +28,7 @@ public class HttpChannelConfig extends ChannelValueConverterConfig {
 
     public @Nullable String stateExtension;
     public @Nullable String commandExtension;
-    public @Nullable String stateTransformation;
-    public @Nullable String commandTransformation;
+    public @Nullable List<String> stateTransformation;
+    public @Nullable List<String> commandTransformation;
     public String stateContent = "";
 }

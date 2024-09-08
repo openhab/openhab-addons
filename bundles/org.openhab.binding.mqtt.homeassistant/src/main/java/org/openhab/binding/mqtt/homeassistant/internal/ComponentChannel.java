@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -21,9 +22,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
-import org.openhab.binding.mqtt.generic.ChannelStateTransformation;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.core.config.core.Configuration;
@@ -226,10 +225,19 @@ public class ComponentChannel {
             Channel channel;
 
             channelUID = component.buildChannelUID(channelID);
-            channelState = new HomeAssistantChannelState(
-                    ChannelConfigBuilder.create().withRetain(retain).withQos(qos).withStateTopic(stateTopic)
-                            .withCommandTopic(commandTopic).makeTrigger(trigger).withFormatter(format).build(),
-                    channelUID, valueState, channelStateUpdateListener, commandFilter);
+            ChannelConfigBuilder channelConfigBuilder = ChannelConfigBuilder.create().withRetain(retain).withQos(qos)
+                    .withStateTopic(stateTopic).withCommandTopic(commandTopic).makeTrigger(trigger)
+                    .withFormatter(format);
+
+            if (templateIn != null) {
+                channelConfigBuilder.withTransformationPattern(List.of(JINJA + ":" + templateIn));
+            }
+            if (templateOut != null) {
+                channelConfigBuilder.withTransformationPatternOut(List.of(JINJA + ":" + templateOut));
+            }
+
+            channelState = new HomeAssistantChannelState(channelConfigBuilder.build(), channelUID, valueState,
+                    channelStateUpdateListener, commandFilter);
 
             // disabled by default components should always show up as advanced
             if (!component.isEnabledByDefault()) {
@@ -262,18 +270,6 @@ public class ComponentChannel {
             ComponentChannel result = new ComponentChannel(channelState, channel, stateDescription, commandDescription,
                     channelStateUpdateListener);
 
-            TransformationServiceProvider transformationProvider = component.getTransformationServiceProvider();
-
-            final String templateIn = this.templateIn;
-            if (templateIn != null && transformationProvider != null) {
-                channelState
-                        .addTransformation(new ChannelStateTransformation(JINJA, templateIn, transformationProvider));
-            }
-            final String templateOut = this.templateOut;
-            if (templateOut != null && transformationProvider != null) {
-                channelState.addTransformationOut(
-                        new ChannelStateTransformation(JINJA, templateOut, transformationProvider));
-            }
             if (addToComponent) {
                 component.getChannelMap().put(channelID, result);
             }

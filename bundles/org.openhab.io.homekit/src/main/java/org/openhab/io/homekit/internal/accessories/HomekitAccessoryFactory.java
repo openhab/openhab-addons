@@ -104,8 +104,7 @@ public class HomekitAccessoryFactory {
             put(TELEVISION, new HomekitCharacteristicType[] { ACTIVE });
             put(TELEVISION_SPEAKER, new HomekitCharacteristicType[] { MUTE });
             put(TEMPERATURE_SENSOR, new HomekitCharacteristicType[] { CURRENT_TEMPERATURE });
-            put(THERMOSTAT, new HomekitCharacteristicType[] { CURRENT_HEATING_COOLING_STATE,
-                    TARGET_HEATING_COOLING_STATE, CURRENT_TEMPERATURE });
+            put(THERMOSTAT, new HomekitCharacteristicType[] { TARGET_HEATING_COOLING_STATE, CURRENT_TEMPERATURE });
             put(VALVE, new HomekitCharacteristicType[] { ACTIVE_STATUS, INUSE_STATUS });
             put(WINDOW, new HomekitCharacteristicType[] { CURRENT_POSITION, TARGET_POSITION, POSITION_STATE });
             put(WINDOW_COVERING, new HomekitCharacteristicType[] { TARGET_POSITION, CURRENT_POSITION, POSITION_STATE });

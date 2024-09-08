@@ -69,7 +69,10 @@ Filters use regular expressions (e.g. `.*DHL.*` as `sender` would match all From
 If a parameter is left empty, no filter is applied.
 
 The `transformation` is applied before setting the channel status.
-Transformations can be chained by separating them with the mathematical intersection character "∩", e.g. `REGEX:.*Shipment-Status: ([a-z]+).*∩MAP:status.map` would first extract a character string with a regular expression and then apply the given MAP transformation on the result.
+Transformations are defined using this syntax: `TYPE(FUNCTION)`, e.g.: `JSONPATH($.path)`.
+The syntax: `TYPE:FUNCTION` is still supported, e.g.: `JSONPATH:$.path`.
+Transformations can be chained in the UI by listing each transformation on a separate line, or by separating them with the mathematical intersection character "∩".
+For example, `REGEX(.*Shipment-Status: ([a-z]+).*) ∩ MAP(status.map)` would first extract a character string with a regular expression and then apply the given MAP transformation on the result.
 Please note that the values will be discarded if one transformation fails (e.g. REGEX did not match).
 This means that you can also use it to filter certain emails e.g. `REGEX:(.*Sendungsbenachrichtigung.*)` would only match for mails containing the string "Sendungsbenachrichtigung" but output the whole message.
 
