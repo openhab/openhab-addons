@@ -239,6 +239,10 @@ public class OpenWeatherMapOneCallHandler extends AbstractOpenWeatherMapHandler 
     @Override
     protected void updateChannel(ChannelUID channelUID) {
         String channelGroupId = channelUID.getGroupId();
+        if (channelGroupId == null) {
+            logger.debug("Cannot update {} as it has no GroupId", channelUID);
+            return;
+        }
         logger.debug("OneCallHandler: updateChannel {}, groupID {}", channelUID, channelGroupId);
         switch (channelGroupId) {
             case CHANNEL_GROUP_ONECALL_CURRENT:

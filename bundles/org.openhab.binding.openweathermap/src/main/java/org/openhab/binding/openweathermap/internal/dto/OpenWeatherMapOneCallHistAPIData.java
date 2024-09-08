@@ -32,6 +32,7 @@ public class OpenWeatherMapOneCallHistAPIData {
     private String timezone;
     @SerializedName("timezone_offset")
     private int timezoneOffset;
+    private Current[] data;
     private Current current;
     private List<Hourly> hourly = null;
 
@@ -68,7 +69,11 @@ public class OpenWeatherMapOneCallHistAPIData {
     }
 
     public Current getCurrent() {
-        return current;
+        if (current != null) {
+            return current;
+        } else {
+            return data[0];
+        }
     }
 
     public void setCurrent(Current current) {

@@ -127,7 +127,12 @@ public class OpenWeatherMapAirPollutionHandler extends AbstractOpenWeatherMapHan
 
     @Override
     protected void updateChannel(ChannelUID channelUID) {
-        switch (channelUID.getGroupId()) {
+        String channelGroupId = channelUID.getGroupId();
+        if (channelGroupId == null) {
+            logger.debug("Cannot update {} as it has no GroupId", channelUID);
+            return;
+        }
+        switch (channelGroupId) {
             case CHANNEL_GROUP_CURRENT_AIR_POLLUTION:
                 updateCurrentAirPollutionChannel(channelUID);
                 break;

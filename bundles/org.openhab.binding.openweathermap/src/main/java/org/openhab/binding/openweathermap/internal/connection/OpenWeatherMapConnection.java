@@ -314,11 +314,10 @@ public class OpenWeatherMapConnection {
 
         Map<String, String> params = new HashMap<>();
         // API key (see https://openweathermap.org/appid)
-        String apikey = config.apikey;
-        if (apikey == null || (apikey = apikey.trim()).isEmpty()) {
+        if (config.apikey.isBlank()) {
             throw new ConfigurationException("@text/offline.conf-error-missing-apikey");
         }
-        params.put(PARAM_APPID, apikey);
+        params.put(PARAM_APPID, config.apikey);
 
         // Units format (see https://openweathermap.org/current#data)
         params.put(PARAM_UNITS, "metric");
@@ -380,6 +379,9 @@ public class OpenWeatherMapConnection {
                     throw new ConfigurationException(errorMessage);
                 case TOO_MANY_REQUESTS_429:
                     // TODO disable refresh job temporarily (see https://openweathermap.org/appid#Accesslimitation)
+                    errorMessage = getErrorMessage(content);
+                    logger.debug("OpenWeatherMap server responded with status code {}: {}", httpStatus, errorMessage);
+                    throw new CommunicationException(errorMessage);
                 default:
                     errorMessage = getErrorMessage(content);
                     logger.debug("OpenWeatherMap server responded with status code {}: {}", httpStatus, errorMessage);
