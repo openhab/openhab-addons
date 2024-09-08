@@ -74,11 +74,11 @@ public class HomematicDeviceDiscoveryService
      */
     private void enableInstallMode() {
         try {
-            HomematicGateway gateway = thingHandler.getGateway();
             Thing bridge = thingHandler.getThing();
             ThingStatus bridgeStatus = bridge.getStatus();
 
-            if (ThingStatus.ONLINE == bridgeStatus) {
+            if (ThingStatus.ONLINE == bridgeStatus && thingHandler.getGateway() != null) {
+                HomematicGateway gateway = thingHandler.getGateway();
                 gateway.setInstallMode(true, getInstallModeDuration());
 
                 int remaining = gateway.getInstallMode();
@@ -109,7 +109,9 @@ public class HomematicDeviceDiscoveryService
     public synchronized void stopScan() {
         logger.debug("Stopping Homematic discovery scan");
         disableInstallMode();
-        thingHandler.getGateway().cancelLoadAllDeviceMetadata();
+        if (thingHandler.getGateway() != null) {
+            thingHandler.getGateway().cancelLoadAllDeviceMetadata();
+        }
         waitForScanFinishing();
         super.stopScan();
     }
@@ -117,7 +119,7 @@ public class HomematicDeviceDiscoveryService
     private void disableInstallMode() {
         try {
             synchronized (installModeSync) {
-                if (isInInstallMode) {
+                if (isInInstallMode && thingHandler.getGateway() != null) {
                     isInInstallMode = false;
                     installModeSync.notify();
                     thingHandler.getGateway().setInstallMode(false, 0);
