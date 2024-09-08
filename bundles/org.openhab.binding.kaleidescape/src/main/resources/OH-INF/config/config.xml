@@ -32,8 +32,8 @@
 			<default>0</default>
 		</parameter>
 		<parameter name="volumeEnabled" type="boolean" required="false">
-			<label>Volume Control Enabled</label>
-			<description>Enable the Volume and Mute controls in the Kaleidescape iPad &amp; Phone apps and track their status in
+			<label>Advanced Volume Control Enabled</label>
+			<description>Enable the Volume and Mute controls in the Kaleidescape iPad &amp; phone apps and track their status in
 				the binding. Disabled by default to prevent conflicts with other control systems that may already be controlling
 				volume on this zone.</description>
 			<default>false</default>
@@ -42,6 +42,12 @@
 			<label>Initial Volume Setting</label>
 			<description>When the binding starts up, set the Inital Volume level to this value (Default 25).</description>
 			<default>25</default>
+		</parameter>
+		<parameter name="volumeBasicEnabled" type="boolean" required="false">
+			<label>Basic Volume Control Enabled</label>
+			<description>Enable Basic Volume up-down and Mute toggle controls in the Kaleidescape iPad &amp; phone apps. Cannot
+				be used at the same time as volumeEnabled set to true.</description>
+			<default>false</default>
 		</parameter>
 		<parameter name="loadHighlightedDetails" type="boolean" required="false">
 			<label>Load Highlighted Details</label>
