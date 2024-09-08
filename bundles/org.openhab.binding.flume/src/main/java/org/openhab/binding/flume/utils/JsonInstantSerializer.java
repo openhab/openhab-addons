@@ -10,10 +10,11 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
+
 package org.openhab.binding.flume.utils;
 
 import java.lang.reflect.Type;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -28,30 +29,30 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 /**
- * The {@link JsonZonedDateTimeSerializer} implements gson serializer for Java ZonedDateTime.
+ * {@link JsonInstantSerializer} implements gson serializer for Java Instant
  *
  * @author Jeff James - Initial contribution
  */
 @NonNullByDefault
-public class JsonZonedDateTimeSerializer implements JsonSerializer<ZonedDateTime>, JsonDeserializer<ZonedDateTime> {
+public class JsonInstantSerializer implements JsonSerializer<Instant>, JsonDeserializer<Instant> {
     private DateTimeFormatter dtf;
 
-    public JsonZonedDateTimeSerializer() {
-        dtf = DateTimeFormatter.ISO_ZONED_DATE_TIME;
+    public JsonInstantSerializer() {
+        dtf = DateTimeFormatter.ISO_INSTANT;
     }
 
-    public JsonZonedDateTimeSerializer(String format) {
+    public JsonInstantSerializer(String format) {
         dtf = DateTimeFormatter.ofPattern(format);
     }
 
     @Override
-    public JsonElement serialize(ZonedDateTime src, Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(Instant src, Type typeOfSrc, JsonSerializationContext context) {
         return new JsonPrimitive(dtf.format(src));
     }
 
     @Override
-    public @Nullable ZonedDateTime deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+    public @Nullable Instant deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-        return dtf.parse(json.getAsString(), ZonedDateTime::from);
+        return dtf.parse(json.getAsString(), Instant::from);
     }
 }

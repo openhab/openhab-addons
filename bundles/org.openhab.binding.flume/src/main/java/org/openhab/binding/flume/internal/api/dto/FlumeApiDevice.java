@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.flume.internal.api.dto;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -31,7 +31,7 @@ public class FlumeApiDevice {
     @SerializedName("added_datetime")
     public String addedDateTime; // "added_datetime": "2017-03-16T14:30:13.284Z",
     @SerializedName("last_seen")
-    public ZonedDateTime lastSeen; // "last_seen": "2017-04-13T01:31:36.000Z",
+    public Instant lastSeen; // "last_seen": "2017-04-13T01:31:36.000Z",
     @SerializedName("battery_level")
     public String batteryLevel;
 }

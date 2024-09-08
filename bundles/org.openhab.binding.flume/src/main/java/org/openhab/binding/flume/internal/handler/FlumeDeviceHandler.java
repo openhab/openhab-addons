@@ -20,7 +20,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -79,15 +78,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
     private static final String QUERY_ID_YEAR_TO_DATE = "usageYTD";
 
     private ExpiringCache<FlumeApiDevice> apiDeviceCache = new ExpiringCache<FlumeApiDevice>(
-            Duration.ofMinutes(5).toMillis(), () -> {
-                try {
-                    return this.tryGetDeviceInfo();
-                } catch (FlumeApiException | IOException | InterruptedException | TimeoutException
-                        | ExecutionException e) {
-                    handleApiException(e);
-                    return null;
-                }
-            });
+            Duration.ofMinutes(5).toMillis(), this::getDeviceInfo);
 
     private FlumeDeviceConfig config = new FlumeDeviceConfig();
 
@@ -103,7 +94,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
 
     private LocalDateTime startOfYear = LocalDateTime.MIN;
 
-    private ZonedDateTime lastUsageAlert = Instant.ofEpochMilli(0).atZone(ZoneOffset.UTC);
+    private Instant lastUsageAlert = Instant.MIN;
 
     private static final Duration USAGE_QUERY_FETCH_INTERVAL = Duration.ofMinutes(5);
     private long expiryUsageAlertFetch = 0;
@@ -146,22 +137,19 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         // always update the startOfYear number;
         startOfYear = LocalDateTime.MIN;
 
+        FlumeApiDevice apiDevice = apiDeviceCache.getValue();
+        if (apiDevice != null) {
+            updateDeviceInfo(apiDevice);
+        }
+
         try {
             tryQueryUsage(true);
             tryGetCurrentFlowRate(true);
-            FlumeApiDevice apiDevice = apiDeviceCache.getValue();
-            if (apiDevice != null) {
-                updateDeviceInfo(apiDevice);
-            }
-        } catch (FlumeApiException e) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.device-configuration-error");
-            return;
-        } catch (IOException | InterruptedException | TimeoutException | ExecutionException e) {
-            this.handleApiException(e);
-            return;
+        } catch (FlumeApiException | IOException | InterruptedException | TimeoutException | ExecutionException e) {
+            handleApiException(e);
         }
-        lastUsageAlert = ZonedDateTime.now(); // don't retrieve any usage alerts prior to going online
+
+        lastUsageAlert = Instant.now(); // don't retrieve any usage alerts prior to going online
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -205,7 +193,8 @@ public class FlumeDeviceHandler extends BaseThingHandler {
                 updateState(CHANNEL_DEVICE_LOWBATTERY, (percent <= 25) ? OnOffType.ON : OnOffType.OFF);
                 break;
             case CHANNEL_DEVICE_LASTSEEN:
-                updateState(CHANNEL_DEVICE_LASTSEEN, new DateTimeType(apiDevice.lastSeen));
+                updateState(CHANNEL_DEVICE_LASTSEEN,
+                        new DateTimeType(ZonedDateTime.ofInstant(apiDevice.lastSeen, ZoneId.systemDefault())));
                 break;
         }
     }
@@ -258,7 +247,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
 
         List<FlumeApiQueryWaterUsage> listQuery = new ArrayList<FlumeApiQueryWaterUsage>();
 
-        // Get sum of all historical readings only when binding starts || its the start of a new year
+        // Get sum of all historical readings only when binding starts or its the start of a new year
         // This is to reduce the time it takes on the periodic queries
         if (startOfYear.equals(LocalDateTime.MIN) || (now.getYear() != startOfYear.getYear())) {
             FlumeApiQueryWaterUsage query = new FlumeApiQueryWaterUsage();
@@ -269,7 +258,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
             query.groupMultiplier = 100;
             query.operation = FlumeApi.OperationType.SUM;
             query.requestId = QUERY_ID_CUMULATIVE_START_OF_YEAR;
-            query.units = imperialUnits ? FlumeApi.API_UNITS_IMPERIAL : FlumeApi.API_UNITS_METRIC;
+            query.units = imperialUnits ? FlumeApi.UnitType.GALLONS : FlumeApi.UnitType.LITERS;
 
             listQuery.add(query);
         }
@@ -289,7 +278,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
             query.groupMultiplier = 400;
             query.operation = FlumeApi.OperationType.SUM;
             query.requestId = QUERY_ID_YEAR_TO_DATE;
-            query.units = imperialUnits ? FlumeApi.API_UNITS_IMPERIAL : FlumeApi.API_UNITS_METRIC;
+            query.units = imperialUnits ? FlumeApi.UnitType.GALLONS : FlumeApi.UnitType.LITERS;
 
             listQuery.add(query);
         }
@@ -347,6 +336,15 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         }
 
         return deviceInfo;
+    }
+
+    protected @Nullable FlumeApiDevice getDeviceInfo() {
+        try {
+            return this.tryGetDeviceInfo();
+        } catch (FlumeApiException | IOException | InterruptedException | TimeoutException | ExecutionException e) {
+            handleApiException(e);
+            return null;
+        }
     }
 
     protected void queryUsage() {
@@ -407,7 +405,7 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         query = alert.query;
         query.bucket = FlumeApi.BucketType.MIN;
         query.operation = FlumeApi.OperationType.AVG;
-        query.units = imperialUnits ? FlumeApi.API_UNITS_IMPERIAL : FlumeApi.API_UNITS_METRIC;
+        query.units = imperialUnits ? FlumeApi.UnitType.GALLONS : FlumeApi.UnitType.LITERS;
 
         Float avgUsage;
         try {
@@ -418,11 +416,10 @@ public class FlumeDeviceHandler extends BaseThingHandler {
         }
         long minutes = Duration.between(query.sinceDateTime, query.untilDateTime).toMinutes();
 
-        LocalDateTime whenTriggered = alert.triggeredDateTime.withZoneSameInstant(ZoneId.systemDefault())
-                .toLocalDateTime();
+        LocalDateTime localWhenTriggered = LocalDateTime.ofInstant(alert.triggeredDateTime, ZoneId.systemDefault());
 
-        String stringAlert = String.format(stringAlertFormat, alert.eventRuleName, whenTriggered.toString(), minutes,
-                avgUsage, imperialUnits ? "gallons" : "liters");
+        String stringAlert = String.format(stringAlertFormat, alert.eventRuleName, localWhenTriggered.toString(),
+                minutes, avgUsage, imperialUnits ? "gallons" : "liters");
 
         triggerChannel(CHANNEL_DEVICE_USAGEALERT, stringAlert);
     }

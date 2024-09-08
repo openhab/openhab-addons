@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.flume.internal.handler;
 
+import static org.openhab.binding.flume.internal.FlumeBindingConstants.THING_TYPE_METER;
+
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.time.Duration;
@@ -152,8 +154,7 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
         }
 
         int pollingPeriod = Math.min(config.refreshIntervalCumulative, config.refreshIntervalInstantaneous);
-        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 0,
-                Duration.ofMinutes(pollingPeriod).toSeconds(), TimeUnit.SECONDS);
+        pollingJob = scheduler.scheduleWithFixedDelay(this::pollDevices, 0, pollingPeriod, TimeUnit.MINUTES);
         updateStatus(ThingStatus.ONLINE);
     }
 
@@ -219,7 +220,7 @@ public class FlumeBridgeHandler extends BaseBridgeHandler {
     public FlumeDeviceHandler getFlumeDeviceHandler(String id) {
         //@formatter:off
         return getThing().getThings().stream()
-            .filter(t -> t.getThingTypeUID().equals(FLUME_DEVICE_THING_TYPE))
+            .filter(t -> t.getThingTypeUID().equals(THING_TYPE_METER))
             .map(t -> (FlumeDeviceHandler)t.getHandler())
             .filter(Objects::nonNull)
             .filter(h -> h.getId().equals(id))

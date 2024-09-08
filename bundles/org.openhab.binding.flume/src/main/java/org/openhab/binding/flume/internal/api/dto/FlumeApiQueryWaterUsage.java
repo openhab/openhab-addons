@@ -38,7 +38,7 @@ public class FlumeApiQueryWaterUsage {
     @SerializedName("group_multiplier")
     public Integer groupMultiplier;
     public FlumeApi.OperationType operation;
-    public String units;
+    public FlumeApi.UnitType units;
     @SerializedName("sort_direction")
     public FlumeApi.SortDirectionType sortDirection;
 }

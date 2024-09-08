@@ -114,7 +114,7 @@ public class FlumeDeviceActions implements ThingActions {
         query.sinceDateTime = sinceDateTime;
         query.untilDateTime = untilDateTime;
         query.bucket = FlumeApi.BucketType.valueOf(bucket);
-        query.units = imperialUnits ? FlumeApi.API_UNITS_IMPERIAL : FlumeApi.API_UNITS_METRIC;
+        query.units = imperialUnits ? FlumeApi.UnitType.GALLONS : FlumeApi.UnitType.LITERS;
 
         Float usage;
         try {

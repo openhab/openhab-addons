@@ -14,8 +14,8 @@ package org.openhab.binding.flume.internal.api;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -45,8 +45,8 @@ import org.openhab.binding.flume.internal.api.dto.FlumeApiRefreshToken;
 import org.openhab.binding.flume.internal.api.dto.FlumeApiToken;
 import org.openhab.binding.flume.internal.api.dto.FlumeApiTokenPayload;
 import org.openhab.binding.flume.internal.api.dto.FlumeApiUsageAlert;
+import org.openhab.binding.flume.utils.JsonInstantSerializer;
 import org.openhab.binding.flume.utils.JsonLocalDateTimeSerializer;
-import org.openhab.binding.flume.utils.JsonZonedDateTimeSerializer;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,13 +78,13 @@ public class FlumeApi {
     public static final String APIURL_FETCHNOTIFICATIONS = "users/%s/notifications?device_id=%s&limit=%d&sort_field=%s&sort_direction=%s";
     public static final String APIURL_GETCURRENTFLOWRATE = "users/%s/devices/%s/query/active";
 
-    // Constants used in queries
-    public static final String API_UNITS_IMPERIAL = "GALLONS";
-    public static final String API_UNITS_METRIC = "LITERS";
-
     private static final int API_TIMEOUT = 15;
 
     // @formatter:off
+    public enum UnitType {
+        GALLONS, LITERS, CUBIC_FEET, CUBIC_METERS
+    }
+
     public enum OperationType {
         SUM, AVG, MIN, MAX, CNT;
 
@@ -124,7 +124,7 @@ public class FlumeApi {
         this.gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new JsonLocalDateTimeSerializer("yyyy-MM-dd HH:mm:ss")) // 2022-07-13
                                                                                                                   // 20:14:00
-                .registerTypeAdapter(ZonedDateTime.class, new JsonZonedDateTimeSerializer()) // 2022-07-14T03:13:00.000Z
+                .registerTypeAdapter(Instant.class, new JsonInstantSerializer()) // 2022-07-14T03:13:00.000Z
                 .create();
     }
 
@@ -182,7 +182,7 @@ public class FlumeApi {
 
         final FlumeApiToken[] data = gson.fromJson(jsonResponse.get("data").getAsJsonArray(), FlumeApiToken[].class);
 
-        if (data == null) {
+        if (data == null || data.length < 1) {
             throw new FlumeApiException("@text/api.response-invalid", jsonResponse.get("code").getAsInt(), true);
         }
 
@@ -209,7 +209,7 @@ public class FlumeApi {
         refreshToken = token.refreshToken;
         tokenExpiresAt = LocalDateTime.now().plusSeconds(token.expiresIn * 2 / 3);
 
-        logger.debug("Token expires in: {}", tokenExpiresAt);
+        logger.debug("Token expires at: {}", tokenExpiresAt);
     }
 
     public void verifyToken()

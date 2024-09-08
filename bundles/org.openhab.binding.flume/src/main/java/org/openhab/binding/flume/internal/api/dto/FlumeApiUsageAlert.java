@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.flume.internal.api.dto;
 
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -26,7 +26,7 @@ public class FlumeApiUsageAlert {
     @SerializedName("device_id")
     public String deviceId;
     @SerializedName("triggered_datetime")
-    public ZonedDateTime triggeredDateTime;
+    public Instant triggeredDateTime;
     @SerializedName("flume_leak")
     public boolean leak;
     public FlumeApiQueryWaterUsage query;
