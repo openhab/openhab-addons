@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.melcloud.internal.api.json;
+package org.openhab.binding.melcloud.internal.api.dto;
 
 import com.google.gson.annotations.Expose;
 

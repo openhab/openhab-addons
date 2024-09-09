@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.melcloud.internal.exceptions;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Exception to encapsulate any login issues with MELCloud.
  *
  * @author Pauli Anttila - Initial Contribution
  */
+@NonNullByDefault
 public class MelCloudLoginException extends Exception {
     private static final long serialVersionUID = 1L;
 
