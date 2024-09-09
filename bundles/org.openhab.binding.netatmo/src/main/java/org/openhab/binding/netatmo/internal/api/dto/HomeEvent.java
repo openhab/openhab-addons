@@ -38,6 +38,10 @@ public class HomeEvent extends Event {
     }
 
     private record Snapshot(String url, ZonedDateTime expiresAt) {
+        // If the snapshot is expired we consider it as not available, so do not provide the url
+        public @Nullable String url() {
+            return expiresAt.isAfter(ZonedDateTime.now().withZoneSameInstant(expiresAt.getZone())) ? url : null;
+        }
     }
 
     private ZonedDateTime time = ZonedDateTime.now();
