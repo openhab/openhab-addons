@@ -6,15 +6,6 @@ Devices that use [Home Assistant MQTT Discovery](https://www.home-assistant.io/i
 Components that share a common `device.identifiers` will automatically be grouped together as a single Thing.
 Each component will be represented as a Channel Group, with the attributes of that component being individual channels.
 
-## Requirements
-
-The Home Assistant MQTT binding requires two transformations to be installed:
-
-- JINJA-Transformations
-- JSONPath-Transformations
-
-These can be installed under `Settings` &rarr; `Addon` &rarr; `Transformations`
-
 ## Discovery
 
 Any device that publishes the component configuration under the `homeassistant` prefix in MQTT will have their components automatically discovered and added to the Inbox.

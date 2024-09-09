@@ -49,6 +49,8 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 
+import com.hubspot.jinjava.Jinjava;
+
 /**
  * Abstract class for components tests.
  *
@@ -288,8 +290,8 @@ public abstract class AbstractComponentTests extends AbstractHomeAssistantTests 
         public LatchThingHandler(Thing thing, MqttChannelTypeProvider channelTypeProvider,
                 MqttChannelStateDescriptionProvider stateDescriptionProvider, ChannelTypeRegistry channelTypeRegistry,
                 int subscribeTimeout, int attributeReceiveTimeout) {
-            super(thing, channelTypeProvider, stateDescriptionProvider, channelTypeRegistry, subscribeTimeout,
-                    attributeReceiveTimeout);
+            super(thing, channelTypeProvider, stateDescriptionProvider, channelTypeRegistry, new Jinjava(),
+                    subscribeTimeout, attributeReceiveTimeout);
         }
 
         @Override

@@ -46,6 +46,7 @@ import org.openhab.core.test.java.JavaOSGiTest;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.hubspot.jinjava.Jinjava;
 
 /**
  * Tests the {@link DiscoverComponents} class.
@@ -79,9 +80,10 @@ public class DiscoverComponentsTest extends JavaOSGiTest {
         ScheduledExecutorService scheduler = new ScheduledThreadPoolExecutor(1);
 
         Gson gson = new GsonBuilder().registerTypeAdapterFactory(new ChannelConfigurationTypeAdapterFactory()).create();
+        Jinjava jinjava = new Jinjava();
 
         DiscoverComponents discover = spy(new DiscoverComponents(ThingChannelConstants.TEST_HOME_ASSISTANT_THING,
-                scheduler, channelStateUpdateListener, availabilityTracker, gson, true));
+                scheduler, channelStateUpdateListener, availabilityTracker, gson, jinjava, true));
 
         HandlerConfiguration config = new HandlerConfiguration("homeassistant", List.of("switch/object"));
 

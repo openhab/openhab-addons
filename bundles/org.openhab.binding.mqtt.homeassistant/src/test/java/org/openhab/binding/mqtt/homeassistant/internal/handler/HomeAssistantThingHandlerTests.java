@@ -39,6 +39,8 @@ import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.binding.ThingHandlerCallback;
 import org.openhab.core.types.StateDescription;
 
+import com.hubspot.jinjava.Jinjava;
+
 /**
  * Tests for {@link HomeAssistantThingHandler}
  *
@@ -75,7 +77,7 @@ public class HomeAssistantThingHandlerTests extends AbstractHomeAssistantTests {
         when(callbackMock.getBridge(eq(BRIDGE_UID))).thenReturn(bridgeThing);
 
         thingHandler = new HomeAssistantThingHandler(haThing, channelTypeProvider, stateDescriptionProvider,
-                channelTypeRegistry, SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
+                channelTypeRegistry, new Jinjava(), SUBSCRIBE_TIMEOUT, ATTRIBUTE_RECEIVE_TIMEOUT);
         thingHandler.setConnection(bridgeConnection);
         thingHandler.setCallback(callbackMock);
         nonSpyThingHandler = thingHandler;

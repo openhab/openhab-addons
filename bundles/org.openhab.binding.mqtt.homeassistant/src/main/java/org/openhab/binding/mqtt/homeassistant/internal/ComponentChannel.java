@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,6 +29,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelDefinitionBuilder;
@@ -223,21 +223,26 @@ public class ComponentChannel {
             ChannelUID channelUID;
             ChannelState channelState;
             Channel channel;
+            ChannelTransformation incomingTransformation = null, outgoingTransformation = null;
 
             channelUID = component.buildChannelUID(channelID);
             ChannelConfigBuilder channelConfigBuilder = ChannelConfigBuilder.create().withRetain(retain).withQos(qos)
                     .withStateTopic(stateTopic).withCommandTopic(commandTopic).makeTrigger(trigger)
                     .withFormatter(format);
 
-            if (templateIn != null) {
-                channelConfigBuilder.withTransformationPattern(List.of(JINJA + ":" + templateIn));
+            String localTemplateIn = templateIn;
+            if (localTemplateIn != null) {
+                incomingTransformation = new HomeAssistantChannelTransformation(component.getJinjava(), component,
+                        localTemplateIn);
             }
-            if (templateOut != null) {
-                channelConfigBuilder.withTransformationPatternOut(List.of(JINJA + ":" + templateOut));
+            String localTemplateOut = templateOut;
+            if (localTemplateOut != null) {
+                outgoingTransformation = new HomeAssistantChannelTransformation(component.getJinjava(), component,
+                        localTemplateOut);
             }
 
             channelState = new HomeAssistantChannelState(channelConfigBuilder.build(), channelUID, valueState,
-                    channelStateUpdateListener, commandFilter);
+                    channelStateUpdateListener, commandFilter, incomingTransformation, outgoingTransformation);
 
             // disabled by default components should always show up as advanced
             if (!component.isEnabledByDefault()) {

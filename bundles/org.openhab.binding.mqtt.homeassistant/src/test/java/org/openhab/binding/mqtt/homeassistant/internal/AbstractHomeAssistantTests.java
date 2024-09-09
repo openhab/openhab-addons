@@ -32,7 +32,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
@@ -59,8 +58,6 @@ import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.thing.type.ThingTypeRegistry;
 import org.openhab.core.transform.TransformationHelper;
 import org.openhab.core.transform.TransformationService;
-import org.openhab.transform.jinja.internal.JinjaTransformationService;
-import org.openhab.transform.jinja.internal.profiles.JinjaTransformationProfile;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
@@ -107,14 +104,8 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
 
     private @NonNullByDefault({}) TransformationHelper transformationHelper;
 
-    private final JinjaTransformationService jinjaTransformationService = new JinjaTransformationService();
-
     @BeforeEach
     public void beforeEachAbstractHomeAssistantTests() {
-        Mockito.when(serviceRefMock.getProperty(any())).thenReturn(JinjaTransformationProfile.PROFILE_TYPE_UID.getId());
-
-        Mockito.when(bundleContextMock.getService(serviceRefMock)).thenReturn(jinjaTransformationService);
-
         transformationHelper = new TransformationHelper(bundleContextMock);
         transformationHelper.setTransformationService(serviceRefMock);
 
