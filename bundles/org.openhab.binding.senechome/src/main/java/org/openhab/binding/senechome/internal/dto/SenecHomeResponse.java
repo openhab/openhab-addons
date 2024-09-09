@@ -10,7 +10,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-package org.openhab.binding.senechome.internal.json;
+package org.openhab.binding.senechome.internal.dto;
 
 import java.io.Serializable;
 

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.senechome.internal;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link SenecSystemStatus} class defines available Senec specific
  * system states.
@@ -19,6 +21,7 @@ package org.openhab.binding.senechome.internal;
  * @author Steven Schwarznau - Initial contribution
  *
  */
+@NonNullByDefault
 public enum SenecSystemStatus {
 
     INITIALSTATE(0, "INITIAL STATE"),
