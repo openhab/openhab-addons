@@ -37,7 +37,7 @@ public class AvailableTvChannelsDTO {
     private String medium = "";
 
     @JsonProperty("version")
-    private int version;
+    private String version;
 
     @JsonProperty("listType")
     private String listType = "";
@@ -75,11 +75,11 @@ public class AvailableTvChannelsDTO {
         return medium;
     }
 
-    public void setVersion(int version) {
+    public void setVersion(String version) {
         this.version = version;
     }
 
-    public int getVersion() {
+    public String getVersion() {
         return version;
     }
 
