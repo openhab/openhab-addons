@@ -60,13 +60,13 @@ public class HomekitLightSensorImpl extends AbstractHomekitAccessoryImpl impleme
     @Override
     public double getMinCurrentAmbientLightLevel() {
         return getAccessoryConfiguration(HomekitCharacteristicType.LIGHT_LEVEL, HomekitTaggedItem.MIN_VALUE,
-                BigDecimal.valueOf(0)).doubleValue();
+                BigDecimal.valueOf(HomekitCharacteristicFactory.CURRENT_AMBIENT_LIGHT_LEVEL_MIN_LUX)).doubleValue();
     }
 
     @Override
     public double getMaxCurrentAmbientLightLevel() {
         return getAccessoryConfiguration(HomekitCharacteristicType.LIGHT_LEVEL, HomekitTaggedItem.MAX_VALUE,
-                BigDecimal.valueOf(120000)).doubleValue(); // https://en.wikipedia.org/wiki/Daylight#Intensity_in_different_conditions
+                BigDecimal.valueOf(HomekitCharacteristicFactory.CURRENT_AMBIENT_LIGHT_LEVEL_MAX_LUX)).doubleValue();
     }
 
     @Override
