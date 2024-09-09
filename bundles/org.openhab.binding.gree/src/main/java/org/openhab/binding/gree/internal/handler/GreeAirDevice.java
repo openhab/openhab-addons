@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -161,7 +162,20 @@ public class GreeAirDevice {
             String[] encryptedBindReqData = GreeCryptoUtil.encrypt(GreeCryptoUtil.getGeneralKeyByteArray(encType),
                     bindReqPackStr, encType);
             DatagramPacket sendPacket = createPackRequest(1, encryptedBindReqData);
-            clientSocket.send(sendPacket);
+            try {
+                clientSocket.send(sendPacket);
+            } catch (SocketTimeoutException e) {
+                if (encType != GreeCryptoUtil.EncryptionTypes.GCM) {
+                    logger.debug("Unable to bind to device - change the encryption mode to GCM and trying agin", e);
+                    encType = GreeCryptoUtil.EncryptionTypes.GCM;
+                    encryptedBindReqData = GreeCryptoUtil.encrypt(GreeCryptoUtil.getGeneralKeyByteArray(encType),
+                            bindReqPackStr, encType);
+                    sendPacket = createPackRequest(1, encryptedBindReqData);
+                    clientSocket.send(sendPacket);
+                } else {
+                    throw new GreeException("Unable to bind to device", e);
+                }
+            }
 
             // Recieve a response, create the JSON to hold the response values
             GreeBindResponseDTO resp = receiveResponse(clientSocket, GreeBindResponseDTO.class);
