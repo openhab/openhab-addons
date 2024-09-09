@@ -86,6 +86,11 @@ public interface SolarForecast {
     Instant getForecastEnd();
 
     /**
+     * Forces update in the next scheduling cycle
+     */
+    void triggerUpdate();
+
+    /**
      * Get TimeSeries for Power forecast
      *
      * @param mode QueryMode for optimistic, pessimistic or average estimation
