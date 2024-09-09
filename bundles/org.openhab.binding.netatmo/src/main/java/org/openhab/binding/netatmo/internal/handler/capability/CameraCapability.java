@@ -37,6 +37,7 @@ import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.CameraChannelHelper;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
+import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
@@ -129,8 +130,8 @@ public class CameraCapability extends HomeSecurityThingCapability {
         handler.updateState(group, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime()));
         updatePictureIfUrlPresent(event.getSnapshotUrl(), group, CHANNEL_EVENT_SNAPSHOT, CHANNEL_EVENT_SNAPSHOT_URL);
         updatePictureIfUrlPresent(event.getVignetteUrl(), group, CHANNEL_EVENT_VIGNETTE, CHANNEL_EVENT_VIGNETTE_URL);
-        handler.updateState(group, CHANNEL_EVENT_SUBTYPE,
-                Objects.requireNonNull(event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL)));
+        handler.updateState(group, CHANNEL_EVENT_SUBTYPE, Objects.requireNonNull(
+                event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL)));
         final String message = event.getName();
         handler.updateState(group, CHANNEL_EVENT_MESSAGE,
                 message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
