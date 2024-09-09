@@ -271,7 +271,7 @@ public class Loadpoint {
      * @return vehicle's title/name
      */
     public String getVehicleName() {
-        return vehicleName;
+        return vehicleName != null ? vehicleName.replace(":", "-") : vehicleName;
     }
 
     /**

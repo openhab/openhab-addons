@@ -75,6 +75,7 @@ public class EvccAPI {
      */
     public Result getResult() throws EvccApiException {
         final String response = httpRequest(this.host + EVCC_REST_API + "state", "GET");
+        logger.trace("API Response >> {}", response);
         try {
             Status status = gson.fromJson(response, Status.class);
             if (status == null) {
