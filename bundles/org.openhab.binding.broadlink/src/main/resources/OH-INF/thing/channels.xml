@@ -47,11 +47,6 @@
 		<label>Night Light</label>
 		<category>Lightbulb</category>
 	</channel-type>
-	<channel-type id="power-consumption" advanced="true">
-		<item-type>Number:Power</item-type>
-		<label>Power Consumption</label>
-		<state pattern="%.2f" readOnly="true"></state>
-	</channel-type>
 	<channel-type id="light">
 		<item-type>String</item-type>
 		<label>Illumination</label>
