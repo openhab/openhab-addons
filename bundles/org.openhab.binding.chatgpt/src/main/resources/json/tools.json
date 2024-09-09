@@ -9,7 +9,7 @@
                 "properties": {
                     "name": {
                         "type": "string",
-                        "description": "Item name in openhab"
+                        "description": "Item name in openHAB"
                     },
                     "type": {
                         "type": "string",
