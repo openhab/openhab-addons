@@ -25,7 +25,14 @@ public final class Utils {
     private Utils() {
     }
 
-    // Make function to remove all non-printable ascii characters
+    /**
+     * This cleans a string down to characters relevant to a mdns reply
+     * '()*+,-./0-9:;<=>?@[\]^_`a-z{|}~ ensuring characters not included
+     * in this range are removed.
+     *
+     * @param chars - The string to be cleansed
+     * @return The string with only the relevant characters included
+     */
     public static String cleanPrintableChars(final String chars) {
         final StringBuilder stBldr = new StringBuilder(chars.length());
         for (char ch : chars.toCharArray()) {

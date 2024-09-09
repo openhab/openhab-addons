@@ -22,5 +22,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface IPayloadValidator {
+
+    /**
+     * This will return an empty string, or otherwise an error from the frame validation
+     * if validation has failed.
+     *
+     * @author David Goodyear - Initial contribution
+     */
     String isValid();
 }

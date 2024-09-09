@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.linktap.configuration.LinkTapDeviceConfiguration;
 import org.openhab.binding.linktap.protocol.frames.DeviceCmdReq;
 import org.openhab.binding.linktap.protocol.frames.TLGatewayFrame;
 import org.openhab.binding.linktap.protocol.http.DeviceIdException;
@@ -225,7 +226,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
             final String devId = config.id;
 
             // Try to use the device address id directly
-            if (devId != null) {
+            if (!devId.isEmpty()) {
                 logger.trace("Searching for device address id : {}", devId);
                 @Nullable
                 final LinkTapDeviceMetadata metadata = vesyncBridgeHandler.getDeviceLookup().get(devId);
@@ -238,7 +239,7 @@ public abstract class PollingDeviceHandler extends BaseThingHandler implements I
             final String deviceName = config.name;
 
             // Check if the device name can be matched to a single device
-            if (deviceName != null) {
+            if (!deviceName.isEmpty()) {
                 final String[] matchedAddressIds = vesyncBridgeHandler.getDiscoveredDevices()
                         .filter(x -> deviceName.equals(x.deviceName)).map(x -> x.deviceId).toArray(String[]::new);
 

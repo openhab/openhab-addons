@@ -16,7 +16,7 @@ import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDG
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_GW_VER;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_UTC_OFFSET;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_VOL_UNIT;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.THING_TYPE_BRIDGE;
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.THING_TYPE_GATEWAY;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_DATETIME_SYNC;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_GET_CONFIGURATION;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_HANDSHAKE;
@@ -50,6 +50,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.linktap.configuration.LinkTapBridgeConfiguration;
 import org.openhab.binding.linktap.protocol.frames.GatewayConfigResp;
+import org.openhab.binding.linktap.protocol.frames.GatewayDeviceResponse;
 import org.openhab.binding.linktap.protocol.frames.TLGatewayFrame;
 import org.openhab.binding.linktap.protocol.http.CommandNotSupportedException;
 import org.openhab.binding.linktap.protocol.http.DeviceIdException;
@@ -196,7 +197,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         final long sysMillis = System.currentTimeMillis();
         if (lastMdnsScanMillis + MIN_TIME_BETWEEN_MDNS_SCANS_MS < sysMillis) {
             logger.debug("Requesting MDNS Scan");
-            discoverySrvReg.startScan(THING_TYPE_BRIDGE, null);
+            discoverySrvReg.startScan(THING_TYPE_GATEWAY, null);
             lastMdnsScanMillis = sysMillis;
         } else {
             logger.trace("Not requesting MDNS Scan last ran under 10 min's ago");
@@ -265,9 +266,26 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         synchronized (getConfigLock) {
             resp = lastGetConfigCache.getValue();
             if (lastGetConfigCache.isExpired() || resp == null || resp.isBlank()) {
-                resp = sendApiRequest(new TLGatewayFrame(CMD_GET_CONFIGURATION));
+                TLGatewayFrame req = new TLGatewayFrame(CMD_GET_CONFIGURATION);
+                resp = sendApiRequest(req);
+                GatewayDeviceResponse respFrame = LinkTapBindingConstants.GSON.fromJson(resp,
+                        GatewayDeviceResponse.class);
+                // The system may not have picked up the ID before in which case - extract it from the error response
+                // and re-run the request to ensure a full configuration data-set is retrieved.
+                // This is normally populated as part of the sendApiRequest sequencing where the gateway id is
+                // auto-added,
+                // if available.
+                if (req.gatewayId.isEmpty() && respFrame != null
+                        && respFrame.getRes() == GatewayDeviceResponse.ResultStatus.RET_GATEWAY_ID_NOT_MATCHED) {
+                    // Use the response GW_ID from the error response - to re-request with the correct ID
+                    // This only happens in occasional startup race conditions, but this removes a low change
+                    // bug being hit.
+                    req.gatewayId = respFrame.gatewayId;
+                    resp = sendApiRequest(req);
+                }
                 lastGetConfigCache.putValue(resp);
             }
+
         }
 
         final GatewayConfigResp gwConfig = LinkTapBindingConstants.GSON.fromJson(resp, GatewayConfigResp.class);
@@ -339,7 +357,9 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
                         currentGwId, req.command);
                 return "";
             }
-            req.gatewayId = currentGwId;
+            if (req.gatewayId.isEmpty()) {
+                req.gatewayId = currentGwId;
+            }
             final String reqData = LinkTapBindingConstants.GSON.toJson(req);
             logger.debug("{} = APP BRIDGE -> GW -> Request {}", uid, reqData);
             final String respData = api.sendRequest(host, reqData);

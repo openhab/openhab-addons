@@ -4,9 +4,9 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<bridge-type id="bridge">
-		<label>LinkTap Bridge</label>
-		<description>The LinkTap bridge represents a LinkTap gateway device</description>
+	<bridge-type id="gateway">
+		<label>LinkTap Gateway</label>
+		<description>This represents a LinkTap gateway</description>
 
 		<properties>
 			<property name="Gateway Id"/>
@@ -20,20 +20,17 @@
 		</properties>
 
 		<config-description>
-			<parameter name="host" type="text">
-				<context>email</context>
-				<required>true</required>
+			<parameter name="host" type="text" required="true">
+				<context>network-address</context>
 				<label>Hostname / IP</label>
 				<description>The hostname / IP address of the gateway device</description>
 			</parameter>
-			<parameter name="username" type="text">
-				<required>false</required>
+			<parameter name="username" type="text" required="false">
 				<label>Device Username</label>
 				<description>The username if set for the gateway device</description>
 			</parameter>
-			<parameter name="password" type="text">
+			<parameter name="password" type="text" required="false">
 				<context>password</context>
-				<required>false</required>
 				<label>Device Password</label>
 				<description>The password if set for the gateway device</description>
 			</parameter>
@@ -45,7 +42,7 @@
 			</parameter>
 			<parameter name="enableJSONComms" type="boolean">
 				<label>Enable non HTML responses</label>
-				<description>Enable if only OpenHab is directly using the Gateway, to allow more efficient communications</description>
+				<description>Enable only if openHAB is directly using the Gateway, to allow more efficient communications</description>
 				<default>false</default>
 				<advanced>true</advanced>
 			</parameter>
@@ -61,7 +58,7 @@
 	<thing-type id="device">
 
 		<supported-bridge-type-refs>
-			<bridge-type-ref id="bridge"/>
+			<bridge-type-ref id="gateway"/>
 		</supported-bridge-type-refs>
 
 		<label>LinkTap Binding Thing</label>
@@ -98,18 +95,15 @@
 		<representation-property>deviceId</representation-property>
 
 		<config-description>
-			<parameter name="id" type="text">
-				<required>false</required>
+			<parameter name="id" type="text" required="false">
 				<label>Device Id</label>
 				<description>The Device Id for the device under the gateway</description>
 			</parameter>
-			<parameter name="name" type="text">
-				<required>false</required>
+			<parameter name="name" type="text" required="false">
 				<label>Device Name</label>
 				<description>The name allocated to the device by the app. (Must be unique if used)</description>
 			</parameter>
-			<parameter name="enableAlerts" type="boolean">
-				<required>false</required>
+			<parameter name="enableAlerts" type="boolean" required="false">
 				<label>Auto Enable Alerts</label>
 				<description>If enabled, during device initialisation all alerts are enabled</description>
 				<default>true</default>

@@ -46,16 +46,18 @@ import org.osgi.service.http.HttpService;
 @Component(configurationPid = "binding.linktap", service = ThingHandlerFactory.class)
 public class LinkTapHandlerFactory extends BaseThingHandlerFactory implements IHttpClientProvider {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE, THING_TYPE_BRIDGE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_DEVICE, THING_TYPE_GATEWAY);
 
     private final StorageService storageService;
     private final DiscoveryServiceRegistry discSrvReg;
+    private final HttpClientFactory httpClientFactory;
 
     @Activate
     public LinkTapHandlerFactory(@Reference HttpService httpService, @Reference StorageService storageService,
-            @Reference DiscoveryServiceRegistry discoveryService) {
+            @Reference DiscoveryServiceRegistry discoveryService, @Reference HttpClientFactory httpClientFactory) {
         this.storageService = storageService;
         this.discSrvReg = discoveryService;
+        this.httpClientFactory = httpClientFactory;
         BindingServlet.getInstance().setHttpService(httpService);
     }
 
@@ -72,22 +74,15 @@ public class LinkTapHandlerFactory extends BaseThingHandlerFactory implements IH
             final Storage<String> storage = storageService.getStorage(thing.getUID().toString(),
                     String.class.getClassLoader());
             return new LinkTapHandler(thing, storage);
-        } else if (THING_TYPE_BRIDGE.equals(thingTypeUID)) {
+        } else if (THING_TYPE_GATEWAY.equals(thingTypeUID)) {
             return new LinkTapBridgeHandler((Bridge) thing, this, discSrvReg);
         }
 
         return null;
     }
 
-    private @Nullable HttpClient httpClientRef = null;
-
     @Override
-    public @Nullable HttpClient getHttpClient() {
-        return httpClientRef;
-    }
-
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        httpClientRef = httpClientFactory.getCommonHttpClient();
+    public HttpClient getHttpClient() {
+        return httpClientFactory.getCommonHttpClient();
     }
 }

@@ -2,7 +2,8 @@
 
 This binding is for [Link-Tap](https://www.link-tap.com/) devices.
 
-**This is for communication over a local area network, that prevents direct access to your gateway / openHAB instance from the internet. E.g. behind a router**
+**This is for communication over a local area network, that prevents direct access to your gateway / openHAB instance from the internet.
+E.g. behind a router**
 
 The method of interaction this binding supports is:
 
@@ -10,7 +11,7 @@ The method of interaction this binding supports is:
 
 The currently supported capabilities include where supported by the gateway / device:
 
-- Time syncrhonisation to openHAB
+- Time synchronisation to openHAB
 - Child lock controls
 - Monitoring and dismissal for device alarms (Water Cut, etc.)
 - Monitoring of sensor states (Battery, Zigbee Signal, Flow Meters Statistics, etc.)
@@ -19,7 +20,7 @@ The currently supported capabilities include where supported by the gateway / de
 
 ## Requirements
 
-A LinkTap gateway device such as the GW_02, in order for openHAB to connect to the system, as a bridge.
+A LinkTap gateway device such as the GW_02, in order for openHAB to connect to the system, as a gateway.
 Older GW_01 gateway devices have not been tested but should work with a static IP setup.
 
 The recommended minimum version of the firmware is:
@@ -30,30 +31,26 @@ The recommended minimum version of the firmware is:
 ## Connection Options
 
 LinkTap supports MQTT and a direct interaction via HTTP. 
-This binding directly interacts with LinkTap's bridge's using the Local HTTP API (HTTP).
-The binding connects to the bridge's directly, and the Gateway is configured automatically to push updates to openHAB if
-it has a HTTP configured server. 
+This binding directly interacts with LinkTap's gateway devices using the Local HTTP API (HTTP).
+The binding connects to the gateway's directly, and the Gateway is configured automatically to push updates to openHAB if it has a HTTP configured server. 
 (Note HTTPS is not supported).
 
-Should the Gateway device's not be able to connect to the binding it automatically falls-back to a polling
-implementation (15 second cycle). 
-The gateway supports 1 Local HTTP API, for an ideal behaviour the Gateway should be able to
-connect to OpenHab on an HTTP port from its IP, and only a single OpenHab instance should be connected to a Gateway.
+Should the Gateway device's not be able to connect to the binding it automatically falls-back to a polling implementation (15 second cycle).
+The gateway supports 1 Local HTTP API, for an ideal behavior the Gateway should be able to connect to openHAB on a HTTP port by its IP, and only a single openHAB instance should be connected to a Gateway.
+It is recommended that you use **static IP's** for this binding, **for both openHAB and the Gateway device(s)** regardless of the gateway's model.
 
-It is recommended that you use **static IP's** for this binding, **for both openHAB and the Gateway device(s)** 
-regardless of the gateway's model.
-
-If dynamic IPs are used for the gateway, the mDNS address is recommended to be used. This can be found when running a manual scan, for LinkTap Bridges.
+If dynamic IPs are used for the gateway, the mDNS address is recommended to be used. 
+This can be found when running a manual scan, for LinkTap Gateways.
 This will remove any DNS caching related issues, depending on your setup.
 
 ## Supported Things
 
 This binding supports the follow thing types:
 
-| Thing          | Thing Type | Thing Type UID | Discovery          | Description                                                      |
-|----------------|------------|----------------|--------------------|------------------------------------------------------------------|
-| Bridge         | Bridge     | linkTapBridge  | Manual / Automatic | A connection to a LinkTap Gateway device                         |
-| LinkTap Device | Thing      | linkTapDevice  | Automatic          | A end device such as one of the four controlled values on the Q1 |
+| Thing Type | Thing Type UID | Discovery          | Description                                                      |
+|------------|----------------|--------------------|------------------------------------------------------------------|
+| Bridge     | gateway        | Manual / Automatic | A connection to a LinkTap Gateway device                         |
+| Thing      | device         | Automatic          | A end device such as one of the four controlled values on the Q1 |
 
 **NOTE** This binding was developed and tested using a GW-02 gateway with a Q1 device. 
 
@@ -61,9 +58,8 @@ This binding supports the follow thing types:
 
 ### Gateways
 
-If mDNS has been enabled on the Gateway device via it's webpage, then the gateway(s) will be discovered, and appear in the inbox
-when a manual scan is run when adding a LinkTap Gateway. It is however recommended to use **static IP addresses** and add the
-gateways directly using the IP address.
+If mDNS has been enabled on the Gateway device via it's webpage, then the gateway(s) will be discovered, and appear in the inbox when a manual scan is run when adding a LinkTap Gateway. 
+It is however recommended to use **static IP addresses** and add the gateways directly using the IP address.
 
 ### Devices
 
@@ -72,39 +68,37 @@ If the gateway cannot publish to openHAB, then the gateway is checked every 2 mi
 
 ## Binding Configuration
 
-### Bridge Configuration Parameters
+### Gateway Configuration
 
-| Name                  | Type   | Description                                                                                                                                                    | Recommended Values | Required | Advanced |
-|-----------------------|--------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|----------|----------|
-| host                  | String | The hostname / IP address of the gateway device                                                                                                                |                    | Yes      | No       |
-| username              | String | The username if set for the gateway device                                                                                                                     |                    | No       | No       |
-| password              | String | The password if set for the gateway device                                                                                                                     |                    | No       | No       |
-| enableMDNS            | Switch | On connection whether the mDNS responder should be enabled on the gateway device                                                                               | ON                 | No       | Yes      |
-| enforceProtocolLimits | Switch | If ON data outside of the allowed ranges against the protocol will be logged and not sent                                                                      | ON                 | No       | Yes      |
-| enableJSONComms       | Switch | OFF by default for backwards compatibility, if using up to date firmware with no other local network applications set to ON, for more efficient communications | ON                 | No       | Yes      |
-
+| Name                  | Type   | Description                                                                                                                                                               | Recommended Values | Required | Advanced |
+|-----------------------|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|----------|----------|
+| host                  | String | The hostname / IP address of the gateway device                                                                                                                           |                    | Yes      | No       |
+| username              | String | The username if set for the gateway device                                                                                                                                |                    | No       | No       |
+| password              | String | The password if set for the gateway device                                                                                                                                |                    | No       | No       |
+| enableMDNS            | Switch | On connection whether the mDNS responder should be enabled on the gateway device                                                                                          | true               | No       | Yes      |
+| enforceProtocolLimits | Switch | If true data outside of the allowed ranges against the protocol will be logged and not sent                                                                               | true               | No       | Yes      |
+| enableJSONComms       | Switch | false by default for backwards compatibility, if using up to date firmware with no other local network applications set this to true, for more efficient communications   | true               | No       | Yes      |
 
 **NOTE** When enableMDNS is enabled, upon connection to the gateway option "Enable mDNS responder" is switched on 
 
-### LinkTap Device Configuration Parameters
+### Device Configuration
 
-It is recommended to use the Device Id, for locating devices. This can be found in the LinkTap mobile application under 
-Settings->TapLinker / ValveLinker, e.g.
+| Name         | Type    | Description                                                           | Recommended Values | Required | Advanced |
+|--------------|---------|-----------------------------------------------------------------------|--------------------|----------|----------|
+| deviceId     | String  | The Device Id for the device under the gateway                        |                    | No (A,B) | No       |
+| deviceName   | String  | The name allocated to the device by the app. (Must be unique if used) |                    | No (B)   | No       |
+| enableAlerts | boolean | On connection whether the device should be configured to send alerts  | true               | No       | Yes      |
+
+** NOTE **
+
+(A) It is recommended to use the Device Id, for locating devices.
+This can be found in the LinkTap mobile application under Settings->TapLinker / ValveLinker, e.g.
 
 - ValueLinker_1 (D71BC52F004B1200_1-xxxx)
   - has Device Id "ValveLinker_1"
   - has Device Name D71BC52F004B1200_1
 
-| Name         | Type   | Description                                                           | Recommended Values | Required | Advanced |
-|--------------|--------|-----------------------------------------------------------------------|--------------------|----------|----------|
-| deviceId     | String | The Device Id for the device under the gateway                        |                    | Yes      | No       |
-| deviceName   | String | The name allocated to the device by the app. (Must be unique if used) |                    | Yes      | No       |
-| enableAlerts | Switch | On connection whether the device should be configured to send alerts  | ON                 | No       | Yes      |
-
-**NOTE**
-
-- a **deviceId** or a **deviceName must be provided** to communicate with the device
-- **enableAlerts** allows the binding to **receive updates of Water Cut, and other alerts** conditions are detected for a LinkTap device.
+(B) Either a **deviceId or deviceName is required** for the device to be located and used.
 
 ## Channels
 
@@ -123,7 +117,6 @@ There are 3 different Area of channels:
     - E.g. Start Immediate Watering
       - Can be limited by a time duration - ohDurLimit
       - If a flow meter is attached can be limited by a volume limit - ohVolLimit
-
 
 | Name              | Type                      | Description                                                                         | Representation | Read/Write | Write Action                                                                                                                 | Note                                                                                            |
 |-------------------|---------------------------|-------------------------------------------------------------------------------------|----------------|------------|------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
@@ -158,8 +151,8 @@ There are 3 different Area of channels:
 - **Gateway Model**: GW_02
 - **Device Model**: Q1
 
-```perl
-Bridge linktap:bridge:home "LinkTap GW02" [ host="192.168.0.21", enableMDNS=true, enableJSONComms=false, enforceProtocolLimits=true ] {
+```java
+Bridge linktap:gateway:home "LinkTap GW02" [ host="192.168.0.21", enableMDNS=true, enableJSONComms=false, enforceProtocolLimits=true ] {
   Thing device TapValve1 "Outdoor Tap 1"  [ id="D71BC52E985B1200_1", name="ValveLinker_1", enableAlerts=true ]
   Thing device TapValve2 "Outdoor Tap 2"  [ id="D71BC52E985B1200_2", name="ValveLinker_2", enableAlerts=true ]
   Thing device TapValve3 "Outdoor Tap 3"  [ id="D71BC52E985B1200_3", name="ValveLinker_3", enableAlerts=true ]
@@ -169,7 +162,7 @@ Bridge linktap:bridge:home "LinkTap GW02" [ host="192.168.0.21", enableMDNS=true
 
 ### Item Configuration
 
-```perl
+```java
 Number:Dimensionless   	   Tap1BatteryLevel       "Tap 1 - Battery Level"                 <batterylevel>     ["Point"] { channel="linktap:device:home:tapValve1:battery",unit="%%" }
 Number:Dimensionless   	   Tap1SignalLevel        "Tap 1 - Signal Level"                  <qualityofservice> ["Point"] { channel="linktap:device:home:tapValve1:signal",unit="%%" }
 Switch                     Tap1RfLinked           "Tap 1 - RF Linked"                     <switch>           ["Point"] { channel="linktap:device:home:tapValve1:rf-linked"}
@@ -199,7 +192,7 @@ String                     Tap1WateringPlanId     "Tap 1 - Watering Plan Id"    
 
 ### Sitemap Configuration
 
-```perl
+```java
 Text item=Tap1BatteryLevel
 Switch item=Tap1WaterCutAlert
 Switch item=Tap1WaterFallAlert
@@ -226,15 +219,15 @@ Text item=Tap1WateringPlanId
 
 #### Other Models
 
-Please check the [Link-Tap](https://www.link-tap.com/) website. Presently as this location [here](https://www.link-tap.com/#!/wireless-water-timer) is a chart that
-shows the features available for the products. If a product such as the G1S is used, it will not support flow based commands or readings.
+Please check the [Link-Tap](https://www.link-tap.com/) website. 
+Presently as this location [here](https://www.link-tap.com/#!/wireless-water-timer) is a chart that shows the features available for the products.
+If a product such as the G1S is used, it will not support flow based commands or readings.
 In this case exclude the volume based Items and Sitemap entries.
 
-Note in cases such as the G1S where flow meters are not included, or are disconnected, the instant watering will be based solely
-on the time arguments. Flow data would as expected not be updated.
+Note in cases such as the G1S where flow meters are not included, or are disconnected, the instant watering will be based solely on the time arguments.
+Flow data would as expected not be updated.
 
 ## Thanks To
 
-A note goes out to Bill at Link-Tap who has been extremely responsive in providing specifications, and quick fixes for
-a single issue noticed, as well as answering many questions about the behaviours of untested devices.
+A note goes out to Bill at Link-Tap who has been extremely responsive in providing specifications, and quick fixes for a single issue noticed, as well as answering many questions about the behaviours of untested devices.
 

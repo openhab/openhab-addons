@@ -6,6 +6,7 @@
 	<type>binding</type>
 	<name>LinkTap Binding</name>
 	<description>This is the binding for LinkTap.</description>
+	<connection>local</connection>
 
 	<discovery-methods>
 		<discovery-method>

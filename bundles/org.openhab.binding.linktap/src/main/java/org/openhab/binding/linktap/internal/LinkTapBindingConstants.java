@@ -45,7 +45,7 @@ public class LinkTapBindingConstants {
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
-    public static final ThingTypeUID THING_TYPE_BRIDGE = new ThingTypeUID(BINDING_ID, "bridge");
+    public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
 
     public static final String BRIDGE_PROP_GW_ID = "Gateway Id";
     public static final String BRIDGE_PROP_HW_MODEL = "Hardware Model";

@@ -63,7 +63,7 @@ public class LinkTapBridgeDiscoveryService implements MDNSDiscoveryParticipant {
 
     private static final String SERVICE_TYPE = "_http._tcp.local.";
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_BRIDGE);
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_GATEWAY);
 
     private static final String RAW_MODEL = "model";
     private static final String RAW_ID = "ID";
@@ -161,7 +161,7 @@ public class LinkTapBridgeDiscoveryService implements MDNSDiscoveryParticipant {
         MDNS_LOOKUP.registerItem(qualifiedName, ipV4Addr, () -> {
             logger.debug("[{}] Registered mdns qualified name to IPv4 {} -> {}", itemId, qualifiedName, ipV4Addr);
             List<Thing> things = thingRegistry.getAll().stream()
-                    .filter(thing -> THING_TYPE_BRIDGE.equals(thing.getThingTypeUID())).toList();
+                    .filter(thing -> THING_TYPE_GATEWAY.equals(thing.getThingTypeUID())).toList();
             for (final Thing thing : things) {
                 final ThingHandler handler = thing.getHandler();
                 if (handler instanceof LinkTapBridgeHandler) {
@@ -171,7 +171,7 @@ public class LinkTapBridgeDiscoveryService implements MDNSDiscoveryParticipant {
             }
         });
 
-        return DiscoveryResultBuilder.create((new ThingUID(THING_TYPE_BRIDGE, gatewayId))).withProperties(x)
+        return DiscoveryResultBuilder.create((new ThingUID(THING_TYPE_GATEWAY, gatewayId))).withProperties(x)
                 .withLabel("LinkTap Gateway (" + gatewayId + ")").withRepresentationProperty(BRIDGE_PROP_GW_ID).build();
     }
 
@@ -183,7 +183,7 @@ public class LinkTapBridgeDiscoveryService implements MDNSDiscoveryParticipant {
         if (x.get(BRIDGE_PROP_GW_ID) == null) {
             return null;
         }
-        return (new ThingUID(THING_TYPE_BRIDGE,
+        return (new ThingUID(THING_TYPE_GATEWAY,
                 gatewayId + "_" + String.format("0x%08X", new Random().nextInt(Integer.MAX_VALUE))));
     }
 

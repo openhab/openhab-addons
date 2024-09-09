@@ -13,14 +13,21 @@
 package org.openhab.binding.linktap.protocol.servers;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 
 /**
+ * Implementations of this interface, allow access to a HttpClient which can be used
+ * for communication requests to LinkTap Gateways.
+ *
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
 public interface IHttpClientProvider {
-    @Nullable
+
+    /**
+     * This returns a HttpClient reference which can be used for communication requests.
+     *
+     * @return instance of HttpClient to use for requests
+     */
     HttpClient getHttpClient();
 }
