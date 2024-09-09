@@ -27,7 +27,7 @@ import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpMethod;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MimeTypes;
-import org.openhab.binding.senechome.internal.json.SenecHomeResponse;
+import org.openhab.binding.senechome.internal.dto.SenecHomeResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
