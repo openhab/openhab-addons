@@ -230,7 +230,7 @@ public class MelCloudDeviceHandler extends BaseThingHandler {
     private void startAutomaticRefresh() {
         ScheduledFuture<?> refreshTask = this.refreshTask;
         if (refreshTask == null || refreshTask.isCancelled()) {
-            refreshTask = scheduler.scheduleWithFixedDelay(this::getDeviceDataAndUpdateChannels, 1,
+            this.refreshTask = scheduler.scheduleWithFixedDelay(this::getDeviceDataAndUpdateChannels, 1,
                     config.pollingInterval, TimeUnit.SECONDS);
         }
     }
