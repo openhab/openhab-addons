@@ -22,8 +22,10 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.measure.quantity.Energy;
 
@@ -503,7 +505,7 @@ class SolcastTest {
     @Test
     void testTimes() {
         String utcTimeString = "2022-07-17T19:30:00.0000000Z";
-        SolcastObject so = new SolcastObject("sc-test", TIMEZONEPROVIDER);
+        SolcastObject so = new SolcastObject("sc-test", Instant.now(), TIMEZONEPROVIDER);
         ZonedDateTime zdt = so.getZdtFromUTC(utcTimeString);
         assertNotNull(zdt);
         assertEquals("2022-07-17T21:30+02:00[Europe/Berlin]", zdt.toString(), "ZonedDateTime");
@@ -671,6 +673,72 @@ class SolcastTest {
             assertEquals(((QuantityType<?>) e1.state()).doubleValue(), ((QuantityType<?>) e2.state()).doubleValue() * 2,
                     0.01, "Power Value");
         }
+        scbh.dispose();
+        scph1.dispose();
+        scph2.dispose();
+    }
+
+    @Test
+    void testRefreshManual() {
+        Map<String, Object> manualConfiguration = new HashMap<>();
+        manualConfiguration.put("refreshInterval", 0);
+
+        BridgeImpl bi = new BridgeImpl(SolarForecastBindingConstants.SOLCAST_SITE, "bridge");
+        SolcastBridgeHandler scbh = new SolcastBridgeHandler(bi, new TimeZP());
+        bi.setHandler(scbh);
+        CallbackMock cm = new CallbackMock();
+        scbh.setCallback(cm);
+        SolcastPlaneHandler scph1 = new SolcastPlaneMock(bi);
+        CallbackMock cm1 = new CallbackMock();
+        scph1.setCallback(cm1);
+        scph1.handleConfigurationUpdate(manualConfiguration);
+        scph1.initialize();
+        scbh.getData();
+        // no update shall happen
+        assertEquals(Instant.MAX, scbh.getSolarForecasts().get(0).getForecastBegin(), "Bridge forecast begin");
+        assertEquals(Instant.MIN, scbh.getSolarForecasts().get(0).getForecastEnd(), "Bridge forecast begin");
+        assertEquals(Instant.MAX, scph1.getSolarForecasts().get(0).getForecastBegin(), "Plane 1 forecast begin");
+        assertEquals(Instant.MIN, scph1.getSolarForecasts().get(0).getForecastEnd(), "Plane 1 forecast begin");
+
+        SolcastPlaneHandler scph2 = new SolcastPlaneMock(bi);
+        CallbackMock cm2 = new CallbackMock();
+        scph2.setCallback(cm2);
+        scph2.handleConfigurationUpdate(manualConfiguration);
+        scph2.initialize();
+        scbh.getData();
+        assertEquals(Instant.MAX, scbh.getSolarForecasts().get(0).getForecastBegin(), "Bridge forecast begin");
+        assertEquals(Instant.MIN, scbh.getSolarForecasts().get(0).getForecastEnd(), "Bridge forecast begin");
+        assertEquals(Instant.MAX, scbh.getSolarForecasts().get(1).getForecastBegin(), "Bridge forecast begin");
+        assertEquals(Instant.MIN, scbh.getSolarForecasts().get(1).getForecastEnd(), "Bridge forecast begin");
+        assertEquals(Instant.MAX, scph1.getSolarForecasts().get(0).getForecastBegin(), "Plane 1 forecast begin");
+        assertEquals(Instant.MIN, scph1.getSolarForecasts().get(0).getForecastEnd(), "Plane 1 forecast begin");
+        assertEquals(Instant.MAX, scph2.getSolarForecasts().get(0).getForecastBegin(), "Plane 2 forecast begin");
+        assertEquals(Instant.MIN, scph2.getSolarForecasts().get(0).getForecastEnd(), "Plane 2 forecast begin");
+
+        manualConfiguration.put("refreshInterval", 5);
+        scph1.handleConfigurationUpdate(manualConfiguration);
+        scph1.initialize();
+        scph2.handleConfigurationUpdate(manualConfiguration);
+        scph2.initialize();
+        scbh.getData();
+
+        assertEquals(Instant.parse("2022-07-17T21:30:00Z"), scbh.getSolarForecasts().get(0).getForecastBegin(),
+                "Bridge forecast begin");
+        assertEquals(Instant.parse("2022-07-24T21:00:00Z"), scbh.getSolarForecasts().get(0).getForecastEnd(),
+                "Bridge forecast begin");
+        assertEquals(Instant.parse("2022-07-17T21:30:00Z"), scbh.getSolarForecasts().get(1).getForecastBegin(),
+                "Bridge forecast begin");
+        assertEquals(Instant.parse("2022-07-24T21:00:00Z"), scbh.getSolarForecasts().get(1).getForecastEnd(),
+                "Bridge forecast begin");
+        assertEquals(Instant.parse("2022-07-17T21:30:00Z"), scph1.getSolarForecasts().get(0).getForecastBegin(),
+                "Plane 1 forecast begin");
+        assertEquals(Instant.parse("2022-07-24T21:00:00Z"), scph1.getSolarForecasts().get(0).getForecastEnd(),
+                "Plane 1 forecast begin");
+        assertEquals(Instant.parse("2022-07-17T21:30:00Z"), scph2.getSolarForecasts().get(0).getForecastBegin(),
+                "Plane 2 forecast begin");
+        assertEquals(Instant.parse("2022-07-24T21:00:00Z"), scph2.getSolarForecasts().get(0).getForecastEnd(),
+                "Plane 2 forecast begin");
+
         scbh.dispose();
         scph1.dispose();
         scph2.dispose();

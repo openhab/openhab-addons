@@ -55,15 +55,22 @@ See [DateTime](#date-time) section for more information.
 
 ### Solcast Plane Configuration
 
-| Name            | Type    | Description                                            | Default         | Required | Advanced |
-|-----------------|---------|--------------------------------------------------------|-----------------|----------|----------|
-| resourceId      | text    | Resource Id of Solcast rooftop site                    | N/A             | yes      | no       |
-| refreshInterval | integer | Forecast Refresh Interval in minutes                   | 120             | yes      | no       |
+| Name            | Type    | Description                                                              | Default         | Required | Advanced |
+|-----------------|---------|--------------------------------------------------------------------------|-----------------|----------|----------|
+| resourceId      | text    | Resource Id of Solcast rooftop site                                      | N/A             | yes      | no       |
+| refreshInterval | integer | Forecast Refresh Interval in minutes (0 = disable automatic refresh)     | 120             | yes      | no       |
 
 `resourceId` for each plane can be obtained in your [Rooftop Sites](https://toolkit.solcast.com.au/rooftop-sites)
 
 `refreshInterval` of forecast data needs to respect the throttling of the Solcast service. 
 If you have 25 free calls per day, each plane needs 2 calls per update a refresh interval of 120 minutes will result in 24 calls per day.
+
+With `refreshInterval = 0` the forecast data will not be updated by binding.
+This gives the user the possibility to define an own update strategy in rules.
+See [manual update rule example](#solcast-manual-update) to update Solcast forecast data 
+
+- after startup
+- every 2 hours only during daytime using [Astro Binding](https://www.openhab.org/addons/bindings/astro/)  
 
 ## Solcast Channels
 
@@ -354,3 +361,33 @@ rule "Solcast Actions"
         logInfo("SF Tests","Optimist energy {}",energyOptimistic)
 end
 ```
+
+### Solcast manual update
+
+```java
+rule "Daylight End"
+    when
+        Channel "astro:sun:local:daylight#event" triggered END
+    then
+        PV_Daytime.postUpdate(OFF) // switch item holding daytime state        
+end
+
+rule "Daylight Start"
+    when
+        Channel "astro:sun:local:daylight#event" triggered START
+    then
+        PV_Daytime.postUpdate(ON)           
+end
+
+rule "Solacast Updates"
+    when 
+        Thing "solarforecast:sc-plane:homeSouthWest" changed to INITIALIZING or // Thing status changed to INITIALIZING
+        Time cron "0 30 0/2 ? * * *" // every 2 hours at minute 30 
+    then
+        if(PV_Daytime.state == ON) {
+            val solarforecastActions = getActions("solarforecast","solarforecast:sc-plane:homeSouthWest")
+            solarforecastActions.triggerUpdate
+        } // reject updates during night
+end
+```
+
