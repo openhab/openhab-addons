@@ -3,7 +3,7 @@
         "type": "function",
         "function": {
             "name": "items_control",
-            "description": "Use this function to control item in openhab",
+            "description": "Use this function to control item in openHAB",
             "parameters": {
                 "type": "object",
                 "properties": {
