@@ -93,7 +93,6 @@ public class VeluxBinding extends VeluxBridgeConfiguration {
             this.isBulkRetrievalEnabled = uncheckedConfiguration.isBulkRetrievalEnabled;
             this.isSequentialEnforced = uncheckedConfiguration.isSequentialEnforced;
             this.isProtocolTraceEnabled = uncheckedConfiguration.isProtocolTraceEnabled;
-
         }
         logger.trace("VeluxBinding(constructor) done.");
     }

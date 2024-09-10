@@ -364,7 +364,6 @@ public class ChannelState implements MqttMessageSubscriber {
             // Only pass numeric value for QuantityType.
             if (mqttCommandValue instanceof QuantityType<?> qtCommandValue) {
                 cValue = new DecimalType(qtCommandValue.toBigDecimal());
-
             }
             String commandString = mqttFormatter.getMQTTpublishValue(cValue, "%s");
             Optional<String> transformedValue = outgoingTransformation.apply(commandString);

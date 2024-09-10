@@ -328,7 +328,6 @@ public class EmotivaProcessorHandler extends BaseThingHandler {
         if (object instanceof EmotivaAckDTO answerDto) {
             // Currently not supported to revert a failed command update, just used for logging for now.
             logger.trace("Processing received '{}' with '{}'", EmotivaAckDTO.class.getSimpleName(), answerDto);
-
         } else if (object instanceof EmotivaBarNotifyWrapper answerDto) {
             logger.trace("Processing received '{}' with '{}'", EmotivaBarNotifyWrapper.class.getSimpleName(),
                     emotivaUdpResponse.answer());

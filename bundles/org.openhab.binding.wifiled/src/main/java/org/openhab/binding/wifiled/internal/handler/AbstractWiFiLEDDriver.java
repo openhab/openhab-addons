@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
  * Abstract WiFi LED driver.
  *
  * @author Osman Basha - Initial contribution
- * @author Stefan Endrullis
- * @author Ries van Twisk
+ * @author Stefan Endrullis - Improvements
+ * @author Ries van Twisk - Improvements
  */
 public abstract class AbstractWiFiLEDDriver {
 

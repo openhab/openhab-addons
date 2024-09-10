@@ -48,7 +48,6 @@ public class NapierCityCouncil implements WaterWebService {
         switch (region.toLowerCase()) {
             case "napier":
                 return HOSTNAME + REGION_NAPIER;
-
         }
         return "";
     }

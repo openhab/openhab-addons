@@ -157,7 +157,6 @@ public class ZoneControlXML implements ZoneControl {
                         "Surr/Pgm_Sel/Straight");
                 logger.debug("Zone {} - adjusting command to: {}", getZone(), surroundSelStraight);
             }
-
         } catch (ReceivedMessageParseException | IOException e) {
             logger.debug("Could not perform feature detection for RX-V3900");
         }

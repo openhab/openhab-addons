@@ -28,7 +28,7 @@ import org.openhab.core.library.types.StringType;
  * It's used for sending color or program settings and also extracting the data out of the received telegrams.
  *
  * @author Osman Basha - Initial contribution
- * @author Stefan Endrullis
+ * @author Stefan Endrullis - Improvements
  * @author Ries van Twisk - Prevent flashes during classic driver color + white updates
  */
 public class ClassicWiFiLEDDriver extends AbstractWiFiLEDDriver {

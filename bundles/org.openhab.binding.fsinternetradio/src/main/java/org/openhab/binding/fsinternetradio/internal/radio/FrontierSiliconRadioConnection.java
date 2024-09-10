@@ -110,7 +110,6 @@ public class FrontierSiliconRadioConnection {
                 isLoggedIn = true;
                 return true; // login successful :-)
             }
-
         } catch (Exception e) {
             logger.debug("Fatal transport error: {}", e.toString());
             throw new IOException(e);

@@ -73,7 +73,6 @@ class AwattarBridgeHandlerRefreshTest extends JavaTest {
 
     @BeforeEach
     public void setUp() throws IllegalArgumentException, IllegalAccessException {
-
         when(timeZoneProviderMock.getTimeZone()).thenReturn(ZoneId.of("GMT+2"));
 
         when(bridgeMock.getUID()).thenReturn(BRIDGE_UID);

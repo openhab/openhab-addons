@@ -73,7 +73,6 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
         if ("----".equals(value.getAsString())) {
             return new DateTimeType(ZonedDateTime.now(this.timeZoneProvider.getTimeZone()));
         } else {
-
             if (unit.equals("h:m")) {
                 String st = value.getAsString();
                 String[] parts = st.split(":");
