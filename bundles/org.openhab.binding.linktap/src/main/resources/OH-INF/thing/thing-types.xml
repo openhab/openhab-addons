@@ -10,13 +10,13 @@
 
 		<properties>
 			<property name="gatewayId"/>
-			<property name="hardwareModel">Hardware Model</property>
-			<property name="version">Version</property>
-			<property name="macAddress">MAC Address</property>
-			<property name="httpApiEnabled">HTTP API Enabled</property>
-			<property name="httpApiCallback">HTTP API Callback URI</property>
-			<property name="volumeUnit">Volume Unit</property>
-			<property name="utcOffset">UTC Offset</property>
+			<property name="hardwareModel"/>
+			<property name="version"/>
+			<property name="macAddress"/>
+			<property name="httpApiEnabled"/>
+			<property name="httpApiCallback"/>
+			<property name="volumeUnit"/>
+			<property name="utcOffset"/>
 		</properties>
 
 		<config-description>
