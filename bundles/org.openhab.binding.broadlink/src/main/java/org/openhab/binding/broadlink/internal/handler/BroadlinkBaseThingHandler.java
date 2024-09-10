@@ -84,7 +84,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     }
 
     /**
-     * Method to define a networktraffic observer, who can react to the traffice being received.
+     * Method to define a network traffic observer, who can react to the traffic being received.
      *
      * @param networkTrafficObserver
      */
@@ -138,7 +138,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         super.dispose();
     }
 
-    private boolean authenticate() {
+    private void authenticate() throws BroadlinkAuthenticationException {
         authenticated = false;
         // When authenticating, we must ALWAYS use the initial values
         this.deviceId = HexUtils.hexToBytes(INITIAL_DEVICE_ID);
@@ -148,9 +148,8 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             byte authRequest[] = buildMessage((byte) 0x65, BroadlinkProtocol.buildAuthenticationPayload(), -1);
             byte response[] = sendAndReceiveDatagram(authRequest, "authentication");
             if (response == null) {
-                logger.warn(
+                throw new BroadlinkAuthenticationException(
                         "response from device during authentication was null, check if correct mac address is used for device.");
-                return false;
             }
             byte decryptResponse[] = decodeDevicePacket(response);
             this.deviceId = BroadlinkProtocol.getDeviceId(decryptResponse);
@@ -164,10 +163,9 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
             logger.debug("Authenticated with id '{}' and key '{}'", HexUtils.bytesToHex(deviceId),
                     HexUtils.bytesToHex(deviceKey));
             authenticated = true;
-            return true;
+            return;
         } catch (Exception e) {
-            logger.warn("Authentication failed: {}", e.getMessage());
-            return false;
+            throw new BroadlinkAuthenticationException("Authentication failed:" + e.getMessage(), e);
         }
     }
 
@@ -235,7 +233,17 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                 if (NetworkUtils.hostAvailabilityCheck(thingConfig.getIpAddress(), 3000, logger)) {
                     if (!Utils.isOnline(getThing())) {
                         logger.trace("updateItemStatus; device not currently online, resolving");
-                        transitionToOnline();
+                        if (!hasAuthenticated()) {
+                            logger.debug(
+                                    "We've never actually successfully authenticated with this device in this session. Doing so now");
+                            authenticate();
+                            logger.debug("Authenticated with newly-detected device, will now get its status");
+                        }
+                        if (onBroadlinkDeviceBecomingReachable()) {
+                            updateStatus(ThingStatus.ONLINE);
+                        } else {
+                            forceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Trouble getting status");
+                        }
                     } else {
                         // Normal operation ...
                         boolean gotStatusOk = getStatusFromDevice();
@@ -264,6 +272,9 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Cannot establish a communication channel with the device: " + e.getMessage());
 
+            } catch (BroadlinkAuthenticationException e) {
+                logger.debug(e.getMessage());
+                forceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Couldn't authenticate: " + e.getMessage());
             }
         }
     }
@@ -272,7 +283,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
     public void onDeviceRediscovered(String newIpAddress) {
         logger.debug("Rediscovered this device at IP {}", newIpAddress);
         thingConfig.setIpAddress(newIpAddress);
-        transitionToOnline();
+        updateItemStatus();
     }
 
     @Override
@@ -280,24 +291,6 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
         if (!Utils.isOffline(getThing())) {
             forceOffline(ThingStatusDetail.NONE,
                     "Couldn't rediscover dynamically-IP-addressedv device after network scan");
-        }
-    }
-
-    private void transitionToOnline() {
-        if (!hasAuthenticated()) {
-            logger.debug(
-                    "We've never actually successfully authenticated with this device in this session. Doing so now");
-            if (authenticate()) {
-                logger.debug("Authenticated with newly-detected device, will now get its status");
-            } else {
-                forceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Couldn't authenticate");
-                return;
-            }
-        }
-        if (onBroadlinkDeviceBecomingReachable()) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            forceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Trouble getting status");
         }
     }
 
