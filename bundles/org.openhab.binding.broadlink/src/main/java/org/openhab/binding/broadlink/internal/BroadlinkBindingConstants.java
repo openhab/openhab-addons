@@ -33,23 +33,23 @@ import org.openhab.core.thing.ThingTypeUID;
  */
 @NonNullByDefault
 public class BroadlinkBindingConstants {
-    public static final String BINDING_ID= "broadlink";
+    public static final String BINDING_ID = "broadlink";
     public static final ThingTypeUID THING_TYPE_RM_PRO = new ThingTypeUID(BINDING_ID, "rm-pro");
-    public static final ThingTypeUID THING_TYPE_RM3 = new ThingTypeUID("broadlink", "rm3");
-    public static final ThingTypeUID THING_TYPE_RM3Q = new ThingTypeUID("broadlink", "rm3q");
-    public static final ThingTypeUID THING_TYPE_RM4_MINI = new ThingTypeUID("broadlink", "rm4mini");
-    public static final ThingTypeUID THING_TYPE_RM4_PRO = new ThingTypeUID("broadlink", "rm4pro");
-    public static final ThingTypeUID THING_TYPE_A1 = new ThingTypeUID("broadlink", "a1");
-    public static final ThingTypeUID THING_TYPE_MP1 = new ThingTypeUID("broadlink", "mp1");
-    public static final ThingTypeUID THING_TYPE_MP1_1K3S2U = new ThingTypeUID("broadlink", "mp1-1k3s2u");
-    public static final ThingTypeUID THING_TYPE_MP2 = new ThingTypeUID("broadlink", "mp2");
-    public static final ThingTypeUID THING_TYPE_SP1 = new ThingTypeUID("broadlink", "sp1");
-    public static final ThingTypeUID THING_TYPE_SP2 = new ThingTypeUID("broadlink", "sp2");
-    public static final ThingTypeUID THING_TYPE_SP2S = new ThingTypeUID("broadlink", "sp2s");
-    public static final ThingTypeUID THING_TYPE_SP3 = new ThingTypeUID("broadlink", "sp3");
-    public static final ThingTypeUID THING_TYPE_SP3S = new ThingTypeUID("broadlink", "sp3s");
-    public static final ThingTypeUID THING_TYPE_PIR = new ThingTypeUID("broadlink", "s1p");
-    public static final ThingTypeUID THING_TYPE_MAGNET = new ThingTypeUID("broadlink", "s1m");
+    public static final ThingTypeUID THING_TYPE_RM3 = new ThingTypeUID(BINDING_ID, "rm3");
+    public static final ThingTypeUID THING_TYPE_RM3Q = new ThingTypeUID(BINDING_ID, "rm3q");
+    public static final ThingTypeUID THING_TYPE_RM4_MINI = new ThingTypeUID(BINDING_ID, "rm4mini");
+    public static final ThingTypeUID THING_TYPE_RM4_PRO = new ThingTypeUID(BINDING_ID, "rm4pro");
+    public static final ThingTypeUID THING_TYPE_A1 = new ThingTypeUID(BINDING_ID, "a1");
+    public static final ThingTypeUID THING_TYPE_MP1 = new ThingTypeUID(BINDING_ID, "mp1");
+    public static final ThingTypeUID THING_TYPE_MP1_1K3S2U = new ThingTypeUID(BINDING_ID, "mp1-1k3s2u");
+    public static final ThingTypeUID THING_TYPE_MP2 = new ThingTypeUID(BINDING_ID, "mp2");
+    public static final ThingTypeUID THING_TYPE_SP1 = new ThingTypeUID(BINDING_ID, "sp1");
+    public static final ThingTypeUID THING_TYPE_SP2 = new ThingTypeUID(BINDING_ID, "sp2");
+    public static final ThingTypeUID THING_TYPE_SP2S = new ThingTypeUID(BINDING_ID, "sp2s");
+    public static final ThingTypeUID THING_TYPE_SP3 = new ThingTypeUID(BINDING_ID, "sp3");
+    public static final ThingTypeUID THING_TYPE_SP3S = new ThingTypeUID(BINDING_ID, "sp3s");
+    public static final ThingTypeUID THING_TYPE_PIR = new ThingTypeUID(BINDING_ID, "s1p");
+    public static final ThingTypeUID THING_TYPE_MAGNET = new ThingTypeUID(BINDING_ID, "s1m");
 
     public static final String RM_PRO = "Broadlink RM pro / pro+ / plus";
     public static final String RM3 = "Broadlink RM3";

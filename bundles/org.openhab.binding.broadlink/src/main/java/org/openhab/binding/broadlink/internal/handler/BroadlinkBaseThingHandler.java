@@ -273,7 +273,7 @@ public abstract class BroadlinkBaseThingHandler extends BaseThingHandler impleme
                         "Cannot establish a communication channel with the device: " + e.getMessage());
 
             } catch (BroadlinkAuthenticationException e) {
-                logger.debug(e.getMessage());
+                logger.debug("Authentication exception: {}", e.getMessage());
                 forceOffline(ThingStatusDetail.COMMUNICATION_ERROR, "Couldn't authenticate: " + e.getMessage());
             }
         }
