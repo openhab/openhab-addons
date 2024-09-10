@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -38,6 +37,7 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
 import org.openhab.core.types.UnDefType;
+import org.openhab.core.util.ColorUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,10 +128,10 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
                         state.getBrightness().toBigDecimal().multiply(factor).intValue());
             }
             if (hasColorChannel) {
-                PercentType[] rgb = state.toRGB();
-                binding.put(TemplateVariables.RED, rgb[0].toBigDecimal().multiply(factor).intValue());
-                binding.put(TemplateVariables.GREEN, rgb[1].toBigDecimal().multiply(factor).intValue());
-                binding.put(TemplateVariables.BLUE, rgb[2].toBigDecimal().multiply(factor).intValue());
+                int[] rgb = ColorUtil.hsbToRgb(state);
+                binding.put(TemplateVariables.RED, rgb[0]);
+                binding.put(TemplateVariables.GREEN, rgb[1]);
+                binding.put(TemplateVariables.BLUE, rgb[2]);
                 binding.put(TemplateVariables.HUE, state.getHue().toBigDecimal());
                 binding.put(TemplateVariables.SAT, state.getSaturation().toBigDecimal());
             }
@@ -144,8 +144,8 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
         if (command instanceof DecimalType) {
             command = new QuantityType<>(((DecimalType) command).toBigDecimal(), Units.MIRED);
         }
-        if (command instanceof QuantityType) {
-            QuantityType<?> mireds = ((QuantityType<?>) command).toInvertibleUnit(Units.MIRED);
+        if (command instanceof QuantityType quantity) {
+            QuantityType<?> mireds = quantity.toInvertibleUnit(Units.MIRED);
             if (mireds == null) {
                 logger.warn("Unable to convert {} to mireds", command);
                 return false;
@@ -198,9 +198,9 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
             value = transform(template, state.toString());
             if (value == null || value.isEmpty()) {
                 onOffValue.update(UnDefType.NULL);
-            } else if (value.equals("on")) {
+            } else if ("on".equals(value)) {
                 onOffValue.update(OnOffType.ON);
-            } else if (value.equals("off")) {
+            } else if ("off".equals(value)) {
                 onOffValue.update(OnOffType.OFF);
             } else {
                 logger.warn("Invalid state value '{}' for component {}; expected 'on' or 'off'.", value,
@@ -225,8 +225,7 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
                 colorValue.update(UnDefType.NULL);
             } else {
                 brightnessValue.update((PercentType) brightnessValue.parseMessage(new DecimalType(brightness)));
-                if (colorValue.getChannelState() instanceof HSBType) {
-                    HSBType color = (HSBType) colorValue.getChannelState();
+                if (colorValue.getChannelState() instanceof HSBType color) {
                     colorValue.update(new HSBType(color.getHue(), color.getSaturation(),
                             (PercentType) brightnessValue.getChannelState()));
                 } else {
@@ -302,12 +301,10 @@ public class TemplateSchemaLight extends AbstractRawSchemaLight {
     }
 
     private @Nullable String transform(String template, Map<String, @Nullable Object> binding) {
-        Optional<String> result = transformation.apply(template, binding);
-        return result.orElse(null);
+        return transformation.apply(template, binding).orElse(null);
     }
 
     private @Nullable String transform(String template, String value) {
-        Optional<String> result = transformation.apply(template, value);
-        return result.orElse(null);
+        return transformation.apply(template, value).orElse(null);
     }
 }
