@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -63,14 +65,15 @@ public class TLGatewayFrame implements IPayloadValidator {
     @Expose
     public String gatewayId = EMPTY_STRING;
 
-    public String isValid() {
+    public Collection<ValidationError> getValidationErrors() {
+        final ArrayList<ValidationError> errors = new ArrayList<>(0);
         if (command < CMD_HANDSHAKE || command > CMD_PAUSE_WATER_PLAN) {
-            return "Command not in range " + CMD_HANDSHAKE + " -> " + CMD_PAUSE_WATER_PLAN;
+            errors.add(new ValidationError("cmd", "not in range " + CMD_HANDSHAKE + " -> " + CMD_PAUSE_WATER_PLAN));
         }
         if (!DEVICE_ID_PATTERN.matcher(gatewayId).matches()) {
-            return "GatewayId invalid";
+            errors.add(new ValidationError("gw_id", "not in range " + CMD_HANDSHAKE + " -> " + CMD_PAUSE_WATER_PLAN));
         }
-        return EMPTY_STRING;
+        return errors;
     }
 
     // COMMAND Values

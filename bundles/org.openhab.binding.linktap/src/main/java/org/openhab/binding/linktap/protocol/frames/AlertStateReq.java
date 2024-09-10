@@ -40,13 +40,4 @@ public class AlertStateReq extends DismissAlertReq {
     @SerializedName("enable")
     @Expose
     public boolean enable;
-
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
-
-        return EMPTY_STRING;
-    }
 }

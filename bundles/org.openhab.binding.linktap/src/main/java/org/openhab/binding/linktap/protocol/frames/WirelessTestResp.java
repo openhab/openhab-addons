@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.Expose;
@@ -50,23 +52,21 @@ public class WirelessTestResp extends EndpointDeviceResponse {
     @Expose
     public int pongCount = DEFAULT_INT;
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
+
         if (pingCount == DEFAULT_INT) {
-            return "pingCount invalid";
+            errors.add(new ValidationError("ping", "count is missing"));
         }
 
         if (pongCount == DEFAULT_INT) {
-            return "pongCount invalid";
+            errors.add(new ValidationError("pong", "count is missing"));
         }
 
         if (!DEVICE_ID_PATTERN.matcher(deviceId).matches()) {
-            return "DeviceId invalid";
+            errors.add(new ValidationError("dev_id", "is not in the expected format"));
         }
 
-        return EMPTY_STRING;
+        return errors;
     }
 }

@@ -47,21 +47,21 @@ public class LinkTapBindingConstants {
     public static final ThingTypeUID THING_TYPE_DEVICE = new ThingTypeUID(BINDING_ID, "device");
     public static final ThingTypeUID THING_TYPE_GATEWAY = new ThingTypeUID(BINDING_ID, "gateway");
 
-    public static final String BRIDGE_PROP_GW_ID = "Gateway Id";
-    public static final String BRIDGE_PROP_HW_MODEL = "Hardware Model";
-    public static final String BRIDGE_PROP_GW_VER = "Version";
-    public static final String BRIDGE_PROP_MAC_ADDR = "MAC Address";
-    public static final String BRIDGE_HTTP_API_ENABLED = "HTTP API Enabled";
-    public static final String BRIDGE_HTTP_API_EP = "HTTP API Callback URI";
-    public static final String BRIDGE_PROP_VOL_UNIT = "Volume Unit";
-    public static final String BRIDGE_PROP_UTC_OFFSET = "UTC Offset";
+    public static final String BRIDGE_PROP_GW_ID = "gatewayId";
+    public static final String BRIDGE_PROP_HW_MODEL = "hardwareModel";
+    public static final String BRIDGE_PROP_GW_VER = "version";
+    public static final String BRIDGE_PROP_MAC_ADDR = "macAddress";
+    public static final String BRIDGE_PROP_HTTP_API_ENABLED = "httpApiEnabled";
+    public static final String BRIDGE_PROP_HTTP_API_EP = "httpApiCallback";
+    public static final String BRIDGE_PROP_VOL_UNIT = "volumeUnit";
+    public static final String BRIDGE_PROP_UTC_OFFSET = "utcOffset";
     public static final String BRIDGE_CONFIG_HOSTNAME = "host";
     public static final String BRIDGE_CONFIG_MDNS_ENABLE = "enableMDNS";
     public static final String BRIDGE_CONFIG_NON_HTML_COMM_ENABLE = "enableJSONComms";
     public static final String BRIDGE_CONFIG_ENFORCE_COMM_LIMITS = "enforceProtocolLimits";
 
-    public static final String DEVICE_PROP_DEV_ID = "Device Id";
-    public static final String DEVICE_PROP_DEV_NAME = "Device Name";
+    public static final String DEVICE_PROP_DEV_ID = "deviceId";
+    public static final String DEVICE_PROP_DEV_NAME = "deviceName";
     public static final String DEVICE_CONFIG_DEV_ID = "id";
     public static final String DEVICE_CONFIG_DEV_NAME = "name";
     public static final String DEVICE_CONFIG_AUTO_ALERTS_ENABLE = "autoEnableAlerts";

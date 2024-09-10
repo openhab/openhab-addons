@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import static org.openhab.binding.linktap.protocol.frames.ValidationError.Cause.USER;
+
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.Expose;
@@ -52,16 +56,13 @@ public class StartWateringReq extends DeviceCmdReq {
     @Expose
     public int volume = DEFAULT_INT;
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
 
         if (duration < 3 || duration > 86340) {
-            return "duration not in range 3 -> 86340";
+            errors.add(new ValidationError("duration", "not in range 3 -> 86340", USER));
         }
 
-        return EMPTY_STRING;
+        return errors;
     }
 }

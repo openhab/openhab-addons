@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -63,17 +65,14 @@ public class GatewayDeviceResponse extends TLGatewayFrame {
         }
     }
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
 
         if (ResultStatus.INVALID == getRes()) {
-            return "Res invalid";
+            errors.add(new ValidationError("res", "is invalid"));
         }
 
-        return EMPTY_STRING;
+        return errors;
     }
 
     public enum ResultStatus {

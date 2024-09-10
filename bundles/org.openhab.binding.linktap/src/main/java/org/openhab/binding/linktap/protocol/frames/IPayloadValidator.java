@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
@@ -24,10 +28,13 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public interface IPayloadValidator {
 
     /**
-     * This will return an empty string, or otherwise an error from the frame validation
-     * if validation has failed.
+     * This will return any validation errors with the payload, or otherwise
+     * a empty Collection.
      *
      * @author David Goodyear - Initial contribution
      */
-    String isValid();
+    Collection<ValidationError> getValidationErrors();
+
+    public static Collection<ValidationError> EMPTY_COLLECTION = Collections
+            .unmodifiableCollection(new ArrayList<ValidationError>(0));
 }

@@ -24,6 +24,8 @@ import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_NOT
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.CMD_RAINFALL_DATA;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.DEFAULT_INT;
 import static org.openhab.binding.linktap.protocol.frames.TLGatewayFrame.EMPTY_STRING_ARRAY;
+import static org.openhab.binding.linktap.protocol.frames.ValidationError.Cause.BUG;
+import static org.openhab.binding.linktap.protocol.frames.ValidationError.Cause.USER;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -42,6 +44,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.validation.constraints.NotNull;
@@ -52,6 +55,7 @@ import org.openhab.binding.linktap.configuration.LinkTapBridgeConfiguration;
 import org.openhab.binding.linktap.protocol.frames.GatewayConfigResp;
 import org.openhab.binding.linktap.protocol.frames.GatewayDeviceResponse;
 import org.openhab.binding.linktap.protocol.frames.TLGatewayFrame;
+import org.openhab.binding.linktap.protocol.frames.ValidationError;
 import org.openhab.binding.linktap.protocol.http.CommandNotSupportedException;
 import org.openhab.binding.linktap.protocol.http.DeviceIdException;
 import org.openhab.binding.linktap.protocol.http.GatewayIdException;
@@ -534,9 +538,20 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
     public String sendRequest(final TLGatewayFrame frame) throws DeviceIdException, InvalidParameterException {
         // Validate the payload is within the expected limits for the device its being sent to
         if (config.enforceProtocolLimits) {
-            final String error = frame.isValid();
-            if (!error.isEmpty()) {
-                logger.warn("Device {} payload validation failed - will not send -> {}", getThing().getLabel(), error);
+            final Collection<ValidationError> errors = frame.getValidationErrors();
+            if (!errors.isEmpty()) {
+                final String bugs = errors.stream().filter(x -> x.getCause() == BUG).map(ValidationError::toString)
+                        .collect(Collectors.joining(","));
+                final String userDataIssues = errors.stream().filter(x -> x.getCause() == USER)
+                        .map(ValidationError::toString).collect(Collectors.joining(","));
+                if (!bugs.isEmpty()) {
+                    logger.warn("Potential Bug: Device {} payload validation failed - will not send -> {}",
+                            getThing().getLabel(), bugs);
+                }
+                if (!userDataIssues.isEmpty()) {
+                    logger.warn("Device {} payload validation failed - will not send due to bad data -> {}",
+                            getThing().getLabel(), userDataIssues);
+                }
                 return "";
             }
         }

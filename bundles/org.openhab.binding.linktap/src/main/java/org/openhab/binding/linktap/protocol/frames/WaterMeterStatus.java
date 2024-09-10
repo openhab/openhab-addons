@@ -14,6 +14,7 @@ package org.openhab.binding.linktap.protocol.frames;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -225,37 +226,40 @@ public class WaterMeterStatus extends GatewayDeviceResponse {
         @Expose
         public @Nullable Double volumeLimit = 0.0d;
 
-        public String isValid() {
+        public Collection<ValidationError> getValidationErrors() {
+            final Collection<ValidationError> errors = new ArrayList<>(0);
+
             final Integer planModeRaw = planMode;
             if (planModeRaw == null || planModeRaw < 1 || planModeRaw > OP_MODE_DESC.length) {
-                return "planMode not in range 1 -> " + OP_MODE_DESC.length;
+                errors.add(new ValidationError("planMode", "is not in range 1 -> " + OP_MODE_DESC.length));
             }
 
             final Integer signalRaw = signal;
             if (signalRaw == null || signalRaw < 0 || signalRaw > 100) {
-                return "signal not in range 0 -> 100";
+                errors.add(new ValidationError("signal", "is not in range 0 -> 100"));
             }
             final Integer batteryRaw = battery;
             if (batteryRaw == null || batteryRaw < 0 || batteryRaw > 100) {
-                return "battery not in range 0 -> 100";
+                errors.add(new ValidationError("battery", "is not in range 0 -> 100"));
             }
             if (planSerialNo == DEFAULT_INT) {
-                return "planSerialNo invalid";
+                errors.add(new ValidationError("plan_sn", "is invalid"));
             }
             final Integer childLockRaw = childLock;
             if (childLockRaw == null || childLockRaw < LockReq.LOCK_UNLOCKED || childLockRaw > LockReq.LOCK_FULL) {
-                return "childLock not in range " + LockReq.LOCK_UNLOCKED + " -> " + LockReq.LOCK_FULL;
+                errors.add(new ValidationError("child_lock",
+                        "is not in range " + LockReq.LOCK_UNLOCKED + " -> " + LockReq.LOCK_FULL));
             }
             if (!DEVICE_ID_PATTERN.matcher(deviceId).matches()) {
-                return "deviceId invalid";
+                errors.add(new ValidationError("dev_id", "is not in the expected format"));
             }
 
-            return EMPTY_STRING;
+            return errors;
         }
     }
 
-    public String isValid() {
-        return super.isValid();
+    public Collection<ValidationError> getValidationErrors() {
+        return EMPTY_COLLECTION;
     }
 
     public static final int OP_MODE_INSTANT = 1;

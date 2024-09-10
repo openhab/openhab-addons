@@ -12,6 +12,10 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import static org.openhab.binding.linktap.protocol.frames.ValidationError.Cause.BUG;
+
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.Expose;
@@ -51,15 +55,13 @@ public class WateringSkippedNotification extends DeviceCmdReq {
         return rainfallData[1];
     }
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
+
         if (rainfallData.length != 2) {
-            return "rainfallData invalid length";
+            errors.add(new ValidationError("rain", "invalid number of entries", BUG));
         }
 
-        return EMPTY_STRING;
+        return errors;
     }
 }

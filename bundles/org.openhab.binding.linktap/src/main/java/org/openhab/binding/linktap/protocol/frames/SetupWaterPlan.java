@@ -13,12 +13,16 @@
 package org.openhab.binding.linktap.protocol.frames;
 
 import static org.openhab.binding.linktap.protocol.frames.HandshakeResp.DATE_FORMATTER;
+import static org.openhab.binding.linktap.protocol.frames.ValidationError.Cause.BUG;
+import static org.openhab.binding.linktap.protocol.frames.ValidationError.Cause.USER;
 import static org.openhab.binding.linktap.protocol.frames.WaterMeterStatus.OP_MODE_INSTANT;
 import static org.openhab.binding.linktap.protocol.frames.WaterMeterStatus.OP_MODE_MONTH;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -71,26 +75,24 @@ public abstract class SetupWaterPlan extends DeviceCmdReq {
 
     protected class WaterSchedule implements IPayloadValidator {
         @Override
-        public String isValid() {
-            return EMPTY_STRING;
+        public Collection<ValidationError> getValidationErrors() {
+            return EMPTY_COLLECTION;
         }
     }
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
+
         if (planSerialNo == DEFAULT_INT) {
-            return "planSerialNo invalid";
+            errors.add(new ValidationError("plan_sn", "is invalid"));
         }
         if (mode < OP_MODE_INSTANT || mode > OP_MODE_MONTH) {
-            return "mode not in range " + OP_MODE_INSTANT + " -> " + OP_MODE_MONTH;
+            errors.add(new ValidationError("mode", "mode not in range " + OP_MODE_INSTANT + " -> " + OP_MODE_MONTH));
         }
         if (eco.length != 2) {
-            return "eco length invalid";
+            errors.add(new ValidationError("eco", "number of parameters is incorrect"));
         }
-        return schedule.isValid();
+        return errors;
     }
 
     public class WaterPlanInstant extends WaterSchedule {
@@ -125,24 +127,25 @@ public abstract class SetupWaterPlan extends DeviceCmdReq {
         public int duration = DEFAULT_INT;
 
         @Override
-        public String isValid() {
+        public Collection<ValidationError> getValidationErrors() {
+            final Collection<ValidationError> errors = new ArrayList<>(0);
             if (duration < 3 || duration > 86399) {
-                return "duration not in range 3 -> 86399";
+                errors.add(new ValidationError("duration", "not in range 3 -> 86340", USER));
             }
             if (volume < 1) {
-                return "volume less than 1";
+                errors.add(new ValidationError("volume", "is less than 1", USER));
             }
             if (timestamp.length() != 14) {
-                return "timestamp invalid";
+                errors.add(new ValidationError("timestamp", "is not 14 characters long", BUG));
             }
             try {
                 LocalDate.parse(timestamp.substring(0, 8), DATE_FORMATTER);
                 LocalTime.parse(timestamp.substring(9), DATE_FORMATTER);
             } catch (DateTimeParseException e) {
-                return "timestamp invalid";
+                errors.add(new ValidationError("timestamp", "is invalid", BUG));
             }
 
-            return EMPTY_STRING;
+            return errors;
         }
     }
 }

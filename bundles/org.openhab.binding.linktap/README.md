@@ -192,7 +192,7 @@ String                     Tap1WateringPlanId     "Tap 1 - Watering Plan Id"    
 
 ### Sitemap Configuration
 
-```java
+```perl
 Text item=Tap1BatteryLevel
 Switch item=Tap1WaterCutAlert
 Switch item=Tap1WaterFallAlert

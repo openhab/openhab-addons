@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.Expose;
@@ -42,15 +44,12 @@ public class PauseWateringPlanReq extends DeviceCmdReq {
     @Expose
     public Double duration = 0.0;
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
 
         if (duration < 0.1 || duration > 240) {
-            return "duration not in range 0.1 -> 240";
+            errors.add(new ValidationError("rain", "not in range 0.1 -> 240"));
         }
-        return EMPTY_STRING;
+        return errors;
     }
 }

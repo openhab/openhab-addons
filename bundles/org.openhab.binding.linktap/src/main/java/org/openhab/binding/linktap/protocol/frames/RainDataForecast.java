@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.Expose;
@@ -36,16 +38,13 @@ public class RainDataForecast extends RainData {
     @Expose
     public int validDuration = DEFAULT_INT;
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
 
         if (validDuration < 1) {
-            return "validDuration less than 1";
+            errors.add(new ValidationError("valid_duration", "is less than 1"));
         }
 
-        return EMPTY_STRING;
+        return errors;
     }
 }

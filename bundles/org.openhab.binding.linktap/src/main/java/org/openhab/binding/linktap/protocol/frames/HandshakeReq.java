@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.Expose;
@@ -38,15 +40,12 @@ public class HandshakeReq extends GatewayEndDevListReq {
     @Expose
     public String version = EMPTY_STRING;
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
 
         if (version.isEmpty()) {
-            return "Version is empty";
+            errors.add(new ValidationError("ver", "nis empty"));
         }
-        return EMPTY_STRING;
+        return errors;
     }
 }

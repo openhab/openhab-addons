@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.Expose;
@@ -40,16 +42,13 @@ public class LockReq extends DeviceCmdReq {
     @Expose
     public int lock = DEFAULT_INT;
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
 
         if (lock < LOCK_UNLOCKED || lock > LOCK_FULL) {
-            return "Lock not in range " + LOCK_UNLOCKED + " -> " + LOCK_FULL;
+            errors.add(new ValidationError("lock", "not in range " + LOCK_UNLOCKED + " -> " + LOCK_FULL));
         }
-        return EMPTY_STRING;
+        return errors;
     }
 
     /**

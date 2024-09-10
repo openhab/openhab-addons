@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collection;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -65,27 +66,24 @@ public class HandshakeResp extends GatewayDeviceResponse {
     static final String TIME_PATTERN = "HHmmss";
     static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern(TIME_PATTERN);
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
 
         if (wday < 1 || wday > 7) {
-            return "wday not in range 1 -> 7";
+            errors.add(new ValidationError("wday", "not in range 1 -> 7"));
         }
         try {
             LocalDate.parse(date, DATE_FORMATTER);
         } catch (DateTimeParseException e) {
-            return "date invalid";
+            errors.add(new ValidationError("date", "is invalid"));
         }
 
         try {
             LocalTime.parse(time, TIME_FORMATTER);
         } catch (DateTimeParseException e) {
-            return "time invalid";
+            errors.add(new ValidationError("time", "is invalid"));
         }
 
-        return EMPTY_STRING;
+        return errors;
     }
 }

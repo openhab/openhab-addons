@@ -9,14 +9,14 @@
 		<description>This represents a LinkTap gateway</description>
 
 		<properties>
-			<property name="Gateway Id"/>
-			<property name="Hardware Model"/>
-			<property name="Version"/>
-			<property name="MAC Address"/>
-			<property name="HTTP API Enabled"/>
-			<property name="HTTP API Callback URI"/>
-			<property name="Volume Unit"/>
-			<property name="UTC Offset"/>
+			<property name="gatewayId"/>
+			<property name="hardwareModel">Hardware Model</property>
+			<property name="version">Version</property>
+			<property name="macAddress">MAC Address</property>
+			<property name="httpApiEnabled">HTTP API Enabled</property>
+			<property name="httpApiCallback">HTTP API Callback URI</property>
+			<property name="volumeUnit">Volume Unit</property>
+			<property name="utcOffset">UTC Offset</property>
 		</properties>
 
 		<config-description>
@@ -92,6 +92,10 @@
 			<channel id="watering-plan-id" typeId="plan-id-type"/>
 		</channels>
 
+		<properties>
+			<property name="deviceId">Device Id</property>
+			<property name="deviceName">Device Name</property>
+		</properties>
 		<representation-property>deviceId</representation-property>
 
 		<config-description>

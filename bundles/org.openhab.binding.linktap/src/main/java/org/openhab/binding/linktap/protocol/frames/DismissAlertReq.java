@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.Expose;
@@ -40,17 +42,16 @@ public class DismissAlertReq extends DeviceCmdReq {
     @Expose
     public int alert = DEFAULT_INT;
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    @Override
+    public Collection<ValidationError> getValidationErrors() {
+        Collection<ValidationError> errors = super.getValidationErrors();
 
         if (alert < ALERT_TYPES_ALL || alert > ALERT_UNEXPECTED_LOW_FLOW) {
-            return "Alert not in range " + ALERT_TYPES_ALL + " -> " + ALERT_UNEXPECTED_LOW_FLOW;
+            errors.add(new ValidationError("alert",
+                    "not in range " + ALERT_TYPES_ALL + " -> " + ALERT_UNEXPECTED_LOW_FLOW));
         }
 
-        return EMPTY_STRING;
+        return errors;
     }
 
     /**

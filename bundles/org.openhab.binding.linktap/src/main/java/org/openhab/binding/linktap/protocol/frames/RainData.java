@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.Expose;
@@ -51,16 +53,13 @@ public class RainData extends TLGatewayFrame {
         return rainfallData[1];
     }
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
 
         if (rainfallData.length != 2) {
-            return "RainfallData invalid length";
+            errors.add(new ValidationError("rain", "has a invalid number of parameters"));
         }
 
-        return EMPTY_STRING;
+        return errors;
     }
 }

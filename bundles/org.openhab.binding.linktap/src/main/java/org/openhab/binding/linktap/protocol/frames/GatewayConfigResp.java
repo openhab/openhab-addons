@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.Expose;
@@ -55,17 +57,14 @@ public class GatewayConfigResp extends HandshakeReq {
     @Expose
     public String[] deviceNames = EMPTY_STRING_ARRAY;
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
 
         if (deviceNames.length != endDevices.length) {
-            return "DeviceNames != EndDevices length";
+            errors.add(new ValidationError("dev_name,end_dev", "DeviceNames != EndDevices length"));
         }
 
-        return EMPTY_STRING;
+        return errors;
     }
 
     /**

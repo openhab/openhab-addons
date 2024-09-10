@@ -12,10 +12,10 @@
  */
 package org.openhab.binding.linktap.protocol.http;
 
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_HTTP_API_ENABLED;
-import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_HTTP_API_EP;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_GW_ID;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_GW_VER;
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_HTTP_API_ENABLED;
+import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_HTTP_API_EP;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_HW_MODEL;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_MAC_ADDR;
 import static org.openhab.binding.linktap.internal.LinkTapBindingConstants.BRIDGE_PROP_VOL_UNIT;
@@ -149,7 +149,7 @@ public final class WebServerApi {
      * @return Map of common props
      */
     private Map<String, String> getMetadataProperties(final Document doc) {
-        final Map<String, String> newProps = new HashMap<>(4);
+        final Map<String, String> newProps = new HashMap<>(7);
 
         /*
          * Extract elements based on td location using the text markers
@@ -195,8 +195,8 @@ public final class WebServerApi {
         final boolean httpApiEnabled = doc.getElementsByAttributeValue("name", "htapi").hasAttr("checked");
         final String httpApiEndpoint = doc.getElementsByAttributeValue("name", "URL").attr("value");
 
-        newProps.put(BRIDGE_HTTP_API_ENABLED, String.valueOf(httpApiEnabled));
-        newProps.put(BRIDGE_HTTP_API_EP, httpApiEndpoint);
+        newProps.put(BRIDGE_PROP_HTTP_API_ENABLED, String.valueOf(httpApiEnabled));
+        newProps.put(BRIDGE_PROP_HTTP_API_EP, httpApiEndpoint);
 
         Optional<Element> vunitSelections = doc.getElementsByAttributeValue("name", "vunit").stream()
                 .filter(x -> x.hasAttr("checked")).findFirst();

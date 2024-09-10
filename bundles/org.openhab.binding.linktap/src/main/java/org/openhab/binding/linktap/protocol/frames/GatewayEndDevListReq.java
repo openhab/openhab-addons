@@ -12,6 +12,7 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import java.util.Collection;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -43,24 +44,20 @@ public class GatewayEndDevListReq extends TLGatewayFrame {
     @Expose
     public String[] endDevices = EMPTY_STRING_ARRAY;
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
 
         for (String ed : endDevices) {
             if (command == CMD_ADD_END_DEVICE) {
                 if (!FULL_DEVICE_ID_PATTERN.matcher(ed).matches()) {
-                    return "endDevice " + ed + " invalid";
+                    errors.add(new ValidationError("end_dev", "endDevice " + ed + " invalid"));
                 }
             } else {
                 if (!DEVICE_ID_PATTERN.matcher(ed).matches()) {
-                    return "endDevice " + ed + " invalid";
+                    errors.add(new ValidationError("end_dev", "endDevice " + ed + " invalid"));
                 }
-
             }
         }
-        return EMPTY_STRING;
+        return errors;
     }
 }

@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.linktap.protocol.frames;
 
+import java.util.Collection;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 import com.google.gson.annotations.Expose;
@@ -48,21 +50,17 @@ public class SetDeviceConfigReq extends DeviceCmdReq {
     @Expose
     public String tag = EMPTY_STRING;
 
-    public String isValid() {
-        final String superRst = super.isValid();
-        if (!superRst.isEmpty()) {
-            return superRst;
-        }
-
+    public Collection<ValidationError> getValidationErrors() {
+        final Collection<ValidationError> errors = super.getValidationErrors();
         switch (tag) {
             case CONFIG_VOLUME_LIMIT:
             case CONFIG_DURATION_LIMIT:
                 break;
             default:
-                return "Invalid tag \"" + tag + "\"";
+                errors.add(new ValidationError("tag", "invalid tag \"" + tag + "\""));
         }
 
-        return EMPTY_STRING;
+        return errors;
     }
 
     /**

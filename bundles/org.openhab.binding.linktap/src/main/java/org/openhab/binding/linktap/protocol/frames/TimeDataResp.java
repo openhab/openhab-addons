@@ -25,8 +25,4 @@ public class TimeDataResp extends HandshakeResp {
 
     public TimeDataResp() {
     }
-
-    public String isValid() {
-        return super.isValid();
-    }
 }
