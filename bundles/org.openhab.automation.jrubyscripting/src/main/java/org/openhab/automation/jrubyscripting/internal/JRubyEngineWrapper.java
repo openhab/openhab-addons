@@ -16,8 +16,6 @@ import java.io.Reader;
 import java.util.Objects;
 
 import javax.script.Bindings;
-import javax.script.Compilable;
-import javax.script.CompiledScript;
 import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -37,7 +35,11 @@ import org.jruby.embed.jsr223.JRubyEngine;
  * @author Jimmy Tanagra - Initial contribution
  */
 @NonNullByDefault
-public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
+public class JRubyEngineWrapper implements Invocable, ScriptEngine {
+    // A temporary fix by not implementing Compilable
+    // See the discussion in https://github.com/openhab/openhab-core/pull/4372
+    // We can reimplement Compilable when this is solved: https://github.com/jruby/jruby/issues/8346
+    // public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
 
     private final JRubyEngine engine;
 
@@ -48,15 +50,16 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
         this.engine = Objects.requireNonNull(engine);
     }
 
-    @Override
-    public CompiledScript compile(@Nullable String script) throws ScriptException {
-        return new JRubyCompiledScriptWrapper(engine.compile(script));
-    }
+    // Temporarily disabled, see comment above
+    // @Override
+    // public CompiledScript compile(@Nullable String script) throws ScriptException {
+    // return new JRubyCompiledScriptWrapper(engine.compile(script));
+    // }
 
-    @Override
-    public CompiledScript compile(@Nullable Reader reader) throws ScriptException {
-        return new JRubyCompiledScriptWrapper(engine.compile(reader));
-    }
+    // @Override
+    // public CompiledScript compile(@Nullable Reader reader) throws ScriptException {
+    // return new JRubyCompiledScriptWrapper(engine.compile(reader));
+    // }
 
     @Override
     public Object eval(@Nullable String script, @Nullable ScriptContext context) throws ScriptException {
