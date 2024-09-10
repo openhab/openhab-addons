@@ -160,7 +160,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         }
 
         public boolean supportsLocalConfig() {
-            return buildVer >= 60900;
+            return buildVer >= 60883;
         }
 
         public boolean supportsMDNS() {
@@ -172,7 +172,7 @@ public class LinkTapBridgeHandler extends BaseBridgeHandler {
         }
 
         public String getRecommendedMinVer() {
-            return generateTestedRevisionForHw(60900);
+            return generateTestedRevisionForHw(60883);
         }
     }
 
