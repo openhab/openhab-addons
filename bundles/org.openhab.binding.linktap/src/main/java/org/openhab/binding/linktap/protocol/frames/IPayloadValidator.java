@@ -31,7 +31,7 @@ public interface IPayloadValidator {
      * This will return any validation errors with the payload, or otherwise
      * a empty Collection.
      *
-     * @author David Goodyear - Initial contribution
+     * @return Collection of ValidationError instances highlighting payload issues
      */
     Collection<ValidationError> getValidationErrors();
 

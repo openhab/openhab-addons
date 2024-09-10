@@ -26,8 +26,6 @@ public interface IBridgeData {
     /**
      * Any things under a Bridge that implement this interface, will have this
      * invoked after new configuration data has been retrieved from the GW.
-     *
-     * @author David Goodyear - Initial contribution
      */
     void handleBridgeDataUpdated();
 }
