@@ -95,7 +95,7 @@
 	</channel-type>
 
 	<channel-type id="signal-level-type">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Signal Level</label>
 		<description>Reception Signal Strength</description>
 		<category>QualityOfService</category>
@@ -103,7 +103,7 @@
 	</channel-type>
 
 	<channel-type id="battery-level-type">
-		<item-type unitHint="%">Number:Dimensionless</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Battery Level</label>
 		<description>Battery Remaining Level</description>
 		<category>BatteryLevel</category>
