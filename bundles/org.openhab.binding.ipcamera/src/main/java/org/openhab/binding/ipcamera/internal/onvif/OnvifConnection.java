@@ -667,6 +667,13 @@ public class OnvifConnection {
                     ipCameraHandler.noMotionDetected(CHANNEL_CELL_MOTION_ALARM);
                 }
                 break;
+            case "VideoAnalytics/Motion":
+                if ("Trigger".equals(dataValue)) {
+                    ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);
+                } else if ("Normal".equals(dataValue)) {
+                    ipCameraHandler.noMotionDetected(CHANNEL_MOTION_ALARM);
+                }
+                break;
             case "VideoSource/MotionAlarm":
                 if ("true".equals(dataValue)) {
                     ipCameraHandler.motionDetected(CHANNEL_MOTION_ALARM);

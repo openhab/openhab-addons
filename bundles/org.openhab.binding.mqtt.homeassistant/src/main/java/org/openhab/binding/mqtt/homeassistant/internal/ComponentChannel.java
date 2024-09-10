@@ -21,9 +21,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
-import org.openhab.binding.mqtt.generic.ChannelStateTransformation;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.core.config.core.Configuration;
@@ -31,6 +29,7 @@ import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
 import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelDefinitionBuilder;
@@ -224,12 +223,26 @@ public class ComponentChannel {
             ChannelUID channelUID;
             ChannelState channelState;
             Channel channel;
+            ChannelTransformation incomingTransformation = null, outgoingTransformation = null;
 
             channelUID = component.buildChannelUID(channelID);
-            channelState = new HomeAssistantChannelState(
-                    ChannelConfigBuilder.create().withRetain(retain).withQos(qos).withStateTopic(stateTopic)
-                            .withCommandTopic(commandTopic).makeTrigger(trigger).withFormatter(format).build(),
-                    channelUID, valueState, channelStateUpdateListener, commandFilter);
+            ChannelConfigBuilder channelConfigBuilder = ChannelConfigBuilder.create().withRetain(retain).withQos(qos)
+                    .withStateTopic(stateTopic).withCommandTopic(commandTopic).makeTrigger(trigger)
+                    .withFormatter(format);
+
+            String localTemplateIn = templateIn;
+            if (localTemplateIn != null) {
+                incomingTransformation = new HomeAssistantChannelTransformation(component.getJinjava(), component,
+                        localTemplateIn);
+            }
+            String localTemplateOut = templateOut;
+            if (localTemplateOut != null) {
+                outgoingTransformation = new HomeAssistantChannelTransformation(component.getJinjava(), component,
+                        localTemplateOut);
+            }
+
+            channelState = new HomeAssistantChannelState(channelConfigBuilder.build(), channelUID, valueState,
+                    channelStateUpdateListener, commandFilter, incomingTransformation, outgoingTransformation);
 
             // disabled by default components should always show up as advanced
             if (!component.isEnabledByDefault()) {
@@ -262,18 +275,6 @@ public class ComponentChannel {
             ComponentChannel result = new ComponentChannel(channelState, channel, stateDescription, commandDescription,
                     channelStateUpdateListener);
 
-            TransformationServiceProvider transformationProvider = component.getTransformationServiceProvider();
-
-            final String templateIn = this.templateIn;
-            if (templateIn != null && transformationProvider != null) {
-                channelState
-                        .addTransformation(new ChannelStateTransformation(JINJA, templateIn, transformationProvider));
-            }
-            final String templateOut = this.templateOut;
-            if (templateOut != null && transformationProvider != null) {
-                channelState.addTransformationOut(
-                        new ChannelStateTransformation(JINJA, templateOut, transformationProvider));
-            }
             if (addToComponent) {
                 component.getChannelMap().put(channelID, result);
             }

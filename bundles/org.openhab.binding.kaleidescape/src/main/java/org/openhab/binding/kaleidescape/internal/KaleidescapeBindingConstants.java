@@ -35,6 +35,10 @@ public class KaleidescapeBindingConstants {
     public static final ThingTypeUID THING_TYPE_ALTO = new ThingTypeUID(BINDING_ID, "alto");
     public static final ThingTypeUID THING_TYPE_STRATO = new ThingTypeUID(BINDING_ID, "strato");
 
+    // Constants related to discovery
+    public static final String PROPERTY_UUID = "uuid";
+    public static final String PROPERTY_HOST_NAME = "host";
+    public static final String PROPERTY_PORT_NUM = "port";
     public static final int DEFAULT_API_PORT = 10000;
     public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
     public static final boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;
@@ -184,6 +188,7 @@ public class KaleidescapeBindingConstants {
     public static final String MUSIC_RANDOM_OFF = "MUSIC_RANDOM_OFF";
 
     public static final String SEND_TO_SYSLOG = "SEND_TO_SYSLOG:INFORMATION:";
+    public static final String SEND_EVENT_VOLUME_CAPABILITIES_3 = "SEND_EVENT:VOLUME_CAPABILITIES=3";
     public static final String SEND_EVENT_VOLUME_CAPABILITIES_15 = "SEND_EVENT:VOLUME_CAPABILITIES=15";
     public static final String SEND_EVENT_VOLUME_LEVEL_EQ = "SEND_EVENT:VOLUME_LEVEL=";
     public static final String SEND_EVENT_MUTE = "SEND_EVENT:MUTE_";

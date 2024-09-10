@@ -34,6 +34,7 @@ import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
+import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.types.Command;
@@ -79,8 +80,8 @@ public class PersonCapability extends HomeSecurityThingCapability {
     protected void updateWebhookEvent(WebhookEvent event) {
         super.updateWebhookEvent(event);
 
-        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE,
-                Objects.requireNonNull(event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL)));
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE, Objects.requireNonNull(
+                event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL)));
 
         final String message = event.getName();
         handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE,
