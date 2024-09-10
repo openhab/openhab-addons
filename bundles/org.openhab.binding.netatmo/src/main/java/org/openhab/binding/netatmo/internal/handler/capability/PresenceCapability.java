@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.FloodLightMode;
-import org.openhab.binding.netatmo.internal.api.data.NetatmoConstants.SirenStatus;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
@@ -57,9 +56,8 @@ public class PresenceCapability extends CameraCapability {
                 }
                 return;
             }
-        } else if (CHANNEL_SIREN.equals(channelName) && command instanceof OnOffType) {
-            getSecurityCapability().ifPresent(cap -> cap.changeSirenStatus(handler.getId(),
-                    command == OnOffType.ON ? SirenStatus.SOUND : SirenStatus.NO_SOUND));
+        } else if (CHANNEL_SIREN.equals(channelName)) {
+            logger.info("Channel '{}' is read-only", command, channelName);
             return;
         }
         super.handleCommand(channelName, command);
