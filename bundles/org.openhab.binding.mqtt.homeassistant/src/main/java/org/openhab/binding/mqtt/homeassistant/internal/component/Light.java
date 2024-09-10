@@ -251,6 +251,8 @@ public abstract class Light extends AbstractComponent<Light.ChannelConfiguration
                 return new DefaultSchemaLight(builder, newStyleChannels);
             case JSON_SCHEMA:
                 return new JSONSchemaLight(builder, newStyleChannels);
+            case TEMPLATE_SCHEMA:
+                return new TemplateSchemaLight(builder, newStyleChannels);
             default:
                 throw new UnsupportedComponentException(
                         "Component '" + builder.getHaID() + "' of schema '" + schema + "' is not supported!");

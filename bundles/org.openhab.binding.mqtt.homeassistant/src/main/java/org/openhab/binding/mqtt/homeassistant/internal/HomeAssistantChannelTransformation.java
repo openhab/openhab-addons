@@ -63,7 +63,10 @@ public class HomeAssistantChannelTransformation extends ChannelTransformation {
 
     @Override
     public Optional<String> apply(String value) {
-        String transformationResult;
+        return apply(template, value);
+    }
+
+    public Optional<String> apply(String template, String value) {
         Map<String, @Nullable Object> bindings = new HashMap<>();
 
         logger.debug("about to transform '{}' by the function '{}'", value, template);
@@ -76,6 +79,12 @@ public class HomeAssistantChannelTransformation extends ChannelTransformation {
         } catch (IOException e) {
             // ok, then value_json is null...
         }
+
+        return apply(template, bindings);
+    }
+
+    public Optional<String> apply(String template, Map<String, @Nullable Object> bindings) {
+        String transformationResult;
 
         try {
             transformationResult = jinjava.render(template, bindings);

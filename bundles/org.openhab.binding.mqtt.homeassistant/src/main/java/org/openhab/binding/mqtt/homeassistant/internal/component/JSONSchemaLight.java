@@ -71,11 +71,8 @@ public class JSONSchemaLight extends AbstractRawSchemaLight {
         protected @Nullable Integer transition;
     }
 
-    TextValue colorModeValue;
-
     public JSONSchemaLight(ComponentFactory.ComponentConfiguration builder, boolean newStyleChannels) {
         super(builder, newStyleChannels);
-        colorModeValue = new TextValue();
     }
 
     @Override
