@@ -52,12 +52,12 @@ public class PresenceCapability extends CameraCapability {
                 try {
                     changeFloodlightMode(FloodLightMode.valueOf(command.toString()));
                 } catch (IllegalArgumentException e) {
-                    logger.info("Incorrect command '{}' received for channel '{}'", command, channelName);
+                    logger.warn("Incorrect command '{}' received for channel '{}'", command, channelName);
                 }
                 return;
             }
         } else if (CHANNEL_SIREN.equals(channelName)) {
-            logger.info("Channel '{}' is read-only", command, channelName);
+            logger.info("Channel '{}' is read-only", channelName);
             return;
         }
         super.handleCommand(channelName, command);
