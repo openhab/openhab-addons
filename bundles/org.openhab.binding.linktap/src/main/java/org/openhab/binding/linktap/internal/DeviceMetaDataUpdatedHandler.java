@@ -21,5 +21,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public interface DeviceMetaDataUpdatedHandler {
+    /**
+     * Any registered metadata handlers, will have this
+     * invoked after new configuration data has been retrieved from the GW.
+     *
+     * An example use is for the discovery service to refresh its data based on received
+     * new configuration data of devices attached to a GW.
+     */
     void handleMetadataRetrieved(LinkTapBridgeHandler handler);
 }
