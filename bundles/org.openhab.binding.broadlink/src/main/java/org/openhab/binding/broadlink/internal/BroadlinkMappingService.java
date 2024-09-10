@@ -131,7 +131,7 @@ public class BroadlinkMappingService {
         if (value != null) {
             logger.debug("{} Command label found. Key value pair is {},{}", codeType, command, value);
         } else {
-            logger.debug("{} Command not label found.", codeType);
+            logger.debug("{} Command label not found.", codeType);
         }
         return value;
     }
