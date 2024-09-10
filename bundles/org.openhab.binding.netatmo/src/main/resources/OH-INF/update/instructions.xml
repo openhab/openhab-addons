@@ -14,6 +14,12 @@
 			</update-channel>
 		</instruction-set>
 
+		<instruction-set targetVersion="2">
+			<update-channel id="siren" groupIds="presence">
+				<type>netatmo:siren-status</type>
+			</update-channel>
+		</instruction-set>
+
 	</thing-type>
 
 </update:update-descriptions>

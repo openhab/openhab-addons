@@ -568,7 +568,7 @@ Warnings:
 | signal         | strength             | Number       | Read-only  | Signal strength (0 for no signal, 1 for weak...)                                                                                            |
 | signal         | value                | Number:Power | Read-only  | Signal strength in dBm                                                                                                                      |
 | presence       | floodlight           | String       | Read-write | Sets the floodlight to ON/OFF/AUTO                                                                                                          |
-| presence       | siren                | Switch       | Read-write | Status of the siren, if silent or emitting an alarm                                                                                         |
+| presence       | siren                | Switch       | Read-only  | Status of the siren, if silent or emitting an alarm                                                                                         |
 | last-event     | type                 | String       | Read-only  | Type of event                                                                                                                               |
 | last-event     | subtype              | String       | Read-only  | Sub-type of event                                                                                                                           |
 | last-event     | time                 | DateTime     | Read-only  | Time of occurrence of event                                                                                                                 |
