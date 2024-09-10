@@ -551,12 +551,14 @@ public class MiIoVacuumHandler extends MiIoAbstractHandler {
     private void updateHistoryRecord(HistoryRecordDTO historyRecordDTO) {
         JsonObject historyRecord = GSON.toJsonTree(historyRecordDTO).getAsJsonObject();
         if (historyRecordDTO.getStart() != null) {
-            historyRecord.addProperty("start", historyRecordDTO.getStart().substring(0, 19));
-            updateState(CHANNEL_HISTORY_START_TIME, new DateTimeType(historyRecordDTO.getStart()));
+            DateTimeType start = new DateTimeType(historyRecordDTO.getStart());
+            historyRecord.addProperty("start", start.toLocaleZone().format(null));
+            updateState(CHANNEL_HISTORY_START_TIME, start);
         }
         if (historyRecordDTO.getEnd() != null) {
-            historyRecord.addProperty("end", historyRecordDTO.getEnd().substring(0, 19));
-            updateState(CHANNEL_HISTORY_END_TIME, new DateTimeType(historyRecordDTO.getEnd()));
+            DateTimeType end = new DateTimeType(historyRecordDTO.getEnd());
+            historyRecord.addProperty("end", end.toLocaleZone().format(null));
+            updateState(CHANNEL_HISTORY_END_TIME, end);
         }
         if (historyRecordDTO.getDuration() != null) {
             long duration = TimeUnit.SECONDS.toMinutes(historyRecordDTO.getDuration().longValue());
