@@ -15,9 +15,19 @@ package org.openhab.binding.linktap.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
+ * Defines a interface that Things under the Bridge can implement to receive
+ * callbacks, when the bridges configuration data has been updated.
+ *
  * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
 public interface IBridgeData {
+
+    /**
+     * Any things under a Bridge that implement this interface, will have this
+     * invoked after new configuration data has been retrieved from the GW.
+     *
+     * @author David Goodyear - Initial contribution
+     */
     void handleBridgeDataUpdated();
 }

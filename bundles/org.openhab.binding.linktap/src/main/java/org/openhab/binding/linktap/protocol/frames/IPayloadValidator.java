@@ -35,6 +35,6 @@ public interface IPayloadValidator {
      */
     Collection<ValidationError> getValidationErrors();
 
-    public static Collection<ValidationError> EMPTY_COLLECTION = Collections
+    Collection<ValidationError> EMPTY_COLLECTION = Collections
             .unmodifiableCollection(new ArrayList<ValidationError>(0));
 }
