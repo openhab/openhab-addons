@@ -143,7 +143,7 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ## Actions
 
-:::tip Warning
+:::warning
 Battery control uses the battery management's time-dependent battery control settings of the inverter settings and therefore overrides user-specified time of use settings.
 Please note that user-specified time of use plans cannot be used together with battery control, as battery control will override the user-specified time of use settings. 
 :::
