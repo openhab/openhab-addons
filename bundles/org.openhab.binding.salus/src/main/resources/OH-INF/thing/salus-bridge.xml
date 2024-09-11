@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:thing="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="http://eclipse.org/smarthome/schemas/thing-description/v1.0.0
-						  org.eclipse.smarthome.thing-description.xsd">
+	org.eclipse.smarthome.thing-description.xsd">
 
 	<bridge-type id="salus-cloud-bridge">
 		<label>Salus Cloud</label>
