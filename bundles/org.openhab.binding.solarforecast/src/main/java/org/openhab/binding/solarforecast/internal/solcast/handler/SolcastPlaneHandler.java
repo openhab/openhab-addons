@@ -17,7 +17,6 @@ import static org.openhab.binding.solarforecast.internal.solcast.SolcastConstant
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collection;
@@ -56,7 +55,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link SolcastPlaneHandler} is a non active handler instance. It will be triggerer by the bridge.
+ * The {@link SolcastPlaneHandler} is a non active handler instance. It will be
+ * triggerer by the bridge.
  *
  * @author Bernd Weymann - Initial contribution
  */
@@ -91,8 +91,12 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
             if (handler != null) {
                 if (handler instanceof SolcastBridgeHandler sbh) {
                     bridgeHandler = Optional.of(sbh);
-                    forecastOptional = Optional.of(new SolcastObject(thing.getUID().getAsString(), sbh, storage));
+                    Instant expiration = (configuration.refreshInterval == 0) ? Instant.MAX
+                            : Instant.now(Utils.getClock()).minusSeconds(1);
+                    forecastOptional = Optional
+                            .of(new SolcastObject(thing.getUID().getAsString(), expiration, sbh, storage));
                     sbh.addPlane(this);
+                    System.out.println("Plane initialized");
                 } else {
                     updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                             "@text/solarforecast.plane.status.wrong-handler [\"" + handler + "\"]");
@@ -154,9 +158,13 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     }
 
     protected synchronized SolcastObject fetchData() {
+        System.out.println("Fetch data");
         bridgeHandler.ifPresent(bridge -> {
+            System.out.println("Bridge found");
             forecastOptional.ifPresent(forecastObject -> {
+                System.out.println("Forecast found");
                 if (forecastObject.isExpired()) {
+                    System.out.println("Forecast expired");
                     logger.trace("[REDUCE] Forecast expired -> get new forecast");
                     String forecastUrl = String.format(FORECAST_URL, configuration.resourceId);
                     String currentEstimateUrl = String.format(CURRENT_ESTIMATE_URL, configuration.resourceId);
@@ -164,18 +172,22 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         JSONObject forecast = null;
                         if (forecastObject.getForecastBegin() != Instant.MAX
                                 && forecastObject.getForecastEnd() != Instant.MIN) {
+                            System.out.println("Guess values");
                             // we found a forecast with valid data
                             forecast = getTodaysValues(forecastObject.getRaw());
                             int valuesToday = forecast.getJSONArray(KEY_ACTUALS).length();
-                            if(valuesToday != 48) {
-                                //sorry, we didn't get all actuals, so we can't use this forecast
+                            if (valuesToday != 48) {
+                                // sorry, we didn't get all actuals, so we can't use this forecast
                                 forecast = null;
-                                logger.trace("[REDUCE] Forecast valid but not for whole day. Only found {} values for today", valuesToday);
+                                logger.trace(
+                                        "[REDUCE] Forecast valid but not for whole day. Only found {} values for today",
+                                        valuesToday);
                             } else {
                                 logger.trace("[REDUCE] Guessing with forecast as new actuals {}", forecast.toString());
                             }
-                        } 
-                        if(forecast == null) {
+                        }
+                        if (forecast == null) {
+                            System.out.println("Call to fetch actuals");
                             logger.trace("[REDUCE] We have no actual values - need to fetch");
                             Request estimateRequest = httpClient.newRequest(currentEstimateUrl);
                             estimateRequest.header(HttpHeader.AUTHORIZATION, BEARER + bridge.getApiKey());
@@ -185,7 +197,7 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                                 forecast = new JSONObject(crEstimate.getContentAsString());
                             } else {
                                 apiCallFailure(currentEstimateUrl, crEstimate.getStatus());
-                                logger.trace("[REDUCE] Actuals call failed with {} - return",callStatus);
+                                logger.trace("[REDUCE] Actuals call failed with {} - return", callStatus);
                                 return;
                             }
                         }
@@ -199,10 +211,11 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                                 logger.trace("[REDUCE] Forecast call successful");
                                 JSONObject forecastJson = new JSONObject(crForecast.getContentAsString());
                                 forecast.put(KEY_FORECAST, forecastJson.getJSONArray(KEY_FORECAST));
+                                Instant expiration = (configuration.refreshInterval == 0) ? Instant.MAX
+                                        : Instant.now(Utils.getClock()).plus(configuration.refreshInterval,
+                                                ChronoUnit.MINUTES);
                                 SolcastObject localForecast = new SolcastObject(thing.getUID().getAsString(), forecast,
-                                        Instant.now(Utils.getClock()).plus(configuration.refreshInterval,
-                                                ChronoUnit.MINUTES),
-                                        bridge, storage);
+                                        expiration, bridge, storage);
                                 setForecast(localForecast);
                                 updateState(GROUP_RAW + ChannelUID.CHANNEL_GROUP_SEPARATOR + CHANNEL_JSON,
                                         StringType.valueOf(forecastOptional.get().getRaw()));
@@ -218,10 +231,13 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
                         Thread.currentThread().interrupt();
                     }
                 } else {
+                    System.out.println("Forecast valid: " + forecastObject.isExpired() + " Start: "
+                            + forecastObject.getForecastBegin());
                     updateChannels(forecastObject);
                 }
             });
         });
+        System.out.println("Fetch data result " + forecastOptional.get().toString());
         return forecastOptional.get();
     }
 
@@ -231,13 +247,13 @@ public class SolcastPlaneHandler extends BaseThingHandler implements SolarForeca
     protected static JSONObject getTodaysValues(String raw) {
         JSONObject forecast = new JSONObject(raw);
         JSONArray actualJsonArray = new JSONArray();
-        if(forecast.has(KEY_ACTUALS)) {
+        if (forecast.has(KEY_ACTUALS)) {
             actualJsonArray = forecast.getJSONArray(KEY_ACTUALS);
         }
         JSONArray forecastJsonArray = new JSONArray();
-        if(forecast.has(KEY_FORECAST)) {
+        if (forecast.has(KEY_FORECAST)) {
             forecastJsonArray = forecast.getJSONArray(KEY_FORECAST);
-        }  
+        }
         for (int i = 0; i < forecastJsonArray.length(); i++) {
             actualJsonArray.put(forecastJsonArray.getJSONObject(i));
         }

@@ -46,7 +46,8 @@ import org.slf4j.LoggerFactory;
  * The {@link ForecastSolarObject} holds complete data for forecast
  *
  * @author Bernd Weymann - Initial contribution
- * @author Bernd Weymann - TimeSeries delivers only future values, otherwise past values are overwritten
+ * @author Bernd Weymann - TimeSeries delivers only future values, otherwise
+ *         past values are overwritten
  */
 @NonNullByDefault
 public class ForecastSolarObject implements SolarForecast {
@@ -104,7 +105,7 @@ public class ForecastSolarObject implements SolarForecast {
     }
 
     public boolean isExpired() {
-        return expirationDateTime.isBefore(Instant.now());
+        return expirationDateTime.isBefore(Instant.now(Utils.getClock()));
     }
 
     public double getActualEnergyValue(ZonedDateTime queryDateTime) throws SolarForecastException {

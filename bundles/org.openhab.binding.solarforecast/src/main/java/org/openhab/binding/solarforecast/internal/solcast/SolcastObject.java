@@ -47,7 +47,8 @@ import org.slf4j.LoggerFactory;
  * The {@link SolcastObject} holds complete data for forecast
  *
  * @author Bernd Weymann - Initial contribution
- * @author Bernd Weymann - TimeSeries delivers only future values, otherwise past values are overwritten
+ * @author Bernd Weymann - TimeSeries delivers only future values, otherwise
+ *         past values are overwritten
  */
 @NonNullByDefault
 public class SolcastObject implements SolarForecast {
@@ -85,24 +86,24 @@ public class SolcastObject implements SolarForecast {
         }
     }
 
-    public SolcastObject(String id, TimeZoneProvider tzp, Storage<String> storage) {
+    public SolcastObject(String id, Instant expires, TimeZoneProvider tzp, Storage<String> storage) {
         // Constructor called from SolcastBridgeHandler at initialization
         identifier = id;
+        expirationDateTime = expires;
         timeZoneProvider = tzp;
         dateOutputFormatter = DateTimeFormatter.ofPattern(SolarForecastBindingConstants.PATTERN_FORMAT)
                 .withZone(tzp.getTimeZone());
-        // try to recover data from storage during initialization in order to reduce Solcast API calls
+        // try to recover data from storage during initialization in order to reduce
+        // Solcast API calls
         if (storage.containsKey(id + FORECAST_APPENDIX)) {
+            System.out.println(id + " found storage values ");
             JSONObject forecast = new JSONObject(storage.get(id + FORECAST_APPENDIX));
-            expirationDateTime = Instant.MIN;
             String expirationString = storage.get(id + EXPIRATION_APPENDIX);
             if (expirationString != null) {
                 expirationDateTime = Instant.parse(expirationString);
             }
             add(forecast);
             logger.trace("recovered forecast data {}", forecast.toString());
-        } else {
-            expirationDateTime = Instant.now().minusSeconds(1);
         }
     }
 
@@ -171,7 +172,7 @@ public class SolcastObject implements SolarForecast {
     }
 
     public boolean isExpired() {
-        return expirationDateTime.isBefore(Instant.now());
+        return expirationDateTime.isBefore(Instant.now(Utils.getClock()));
     }
 
     public double getActualEnergyValue(ZonedDateTime query, QueryMode mode) {
@@ -440,7 +441,7 @@ public class SolcastObject implements SolarForecast {
                 throw new IllegalArgumentException("Solcast doesn't support argument " + args[0]);
             }
         } else if (mode.equals(QueryMode.Optimistic) || mode.equals(QueryMode.Pessimistic)) {
-            if (timestamp.isBefore(Instant.now().minus(1, ChronoUnit.MINUTES))) {
+            if (timestamp.isBefore(Instant.now(Utils.getClock()).minus(1, ChronoUnit.MINUTES))) {
                 throw new IllegalArgumentException(
                         "Solcast argument " + mode.toString() + " only available for future values");
             }
