@@ -54,7 +54,6 @@ public class BroadlinkBindingConstants {
     public static final String RM_PRO = "Broadlink RM pro / pro+ / plus";
     public static final String RM3 = "Broadlink RM3";
     public static final String RM3Q = "Broadlink RM3 v11057";
-    public static final String RM3_MINI = "Broadlink RM3 Mini";
     public static final String RM4_MINI = "Broadlink RM4 Mini";
     public static final String RM4_PRO = "Broadlink RM4 Pro";
     public static final String A1 = "Broadlink A1";
