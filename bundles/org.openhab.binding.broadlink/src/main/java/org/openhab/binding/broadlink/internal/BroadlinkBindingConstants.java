@@ -48,8 +48,6 @@ public class BroadlinkBindingConstants {
     public static final ThingTypeUID THING_TYPE_SP2S = new ThingTypeUID(BINDING_ID, "sp2s");
     public static final ThingTypeUID THING_TYPE_SP3 = new ThingTypeUID(BINDING_ID, "sp3");
     public static final ThingTypeUID THING_TYPE_SP3S = new ThingTypeUID(BINDING_ID, "sp3s");
-    public static final ThingTypeUID THING_TYPE_PIR = new ThingTypeUID(BINDING_ID, "s1p");
-    public static final ThingTypeUID THING_TYPE_MAGNET = new ThingTypeUID(BINDING_ID, "s1m");
 
     public static final String RM_PRO = "Broadlink RM pro / pro+ / plus";
     public static final String RM3 = "Broadlink RM3";
@@ -66,8 +64,6 @@ public class BroadlinkBindingConstants {
     public static final String SP2S = "Broadlink SP2s";
     public static final String SP3 = "Broadlink SP3";
     public static final String SP3S = "Broadlink SP3s";
-    public static final String S1P = "Smart One PIR Sensor";
-    public static final String S1M = "Smart One Magnet Sensor";
 
     public static final String BROADLINK_AUTH_KEY = "097628343fe99e23765c1513accf8b02";
     public static final String BROADLINK_IV = "562e17996d093d28ddb3ba695a2e6f58";
@@ -127,7 +123,5 @@ public class BroadlinkBindingConstants {
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP2S, SP2S);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP3, SP3);
         SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_SP3S, SP3S);
-        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_PIR, S1P);
-        SUPPORTED_THING_TYPES_UIDS_TO_NAME_MAP.put(THING_TYPE_MAGNET, S1M);
     }
 }
