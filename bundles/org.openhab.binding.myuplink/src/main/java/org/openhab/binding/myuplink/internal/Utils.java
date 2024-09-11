@@ -248,6 +248,8 @@ public final class Utils {
         return switch (originalUnit) {
             case "l/m" -> "l/min";
             case "hrs" -> "h";
+            case "m3/h" -> "m³/h";
+            case "days" -> "d";
             default -> originalUnit;
         };
     }
