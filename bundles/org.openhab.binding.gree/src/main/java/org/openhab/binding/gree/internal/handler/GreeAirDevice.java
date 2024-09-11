@@ -166,7 +166,7 @@ public class GreeAirDevice {
                 clientSocket.send(sendPacket);
             } catch (SocketTimeoutException e) {
                 if (encType != GreeCryptoUtil.EncryptionTypes.GCM) {
-                    logger.debug("Unable to bind to device - change the encryption mode to GCM and trying agin", e);
+                    logger.debug("Unable to bind to device - changing the encryption mode to GCM and trying again", e);
                     encType = GreeCryptoUtil.EncryptionTypes.GCM;
                     encryptedBindReqData = GreeCryptoUtil.encrypt(GreeCryptoUtil.getGeneralKeyByteArray(encType),
                             bindReqPackStr, encType);

@@ -88,14 +88,14 @@ public class GreeCryptoUtil {
             return EncryptionTypes.GCM;
         }
 
-        // Devices with ver 2.0.0 or bigger use GCM encription
-        logger.debug("Getting the encryption type from a scan responce which doesn't has tag property");
+        // Devices with ver 2.0.0 or later use GCM encryption
+        logger.debug("Getting the encryption type from a scan response that doesn't have a tag property");
         if (response.packJson != null) {
             logger.debug("Scan responce already decrypted: {}", response.packJson);
             Pattern patternVersion = Pattern.compile("V\\d+\\.");
             Matcher matcherVersion = patternVersion.matcher(response.packJson.ver);
             if (matcherVersion.find() && Integer.parseInt(matcherVersion.group()) >= 2) {
-                logger.debug("Device verion detected bigger than or equal to 2, set encryption to GCM");
+                logger.debug("Device version detected greather than or equal to 2, set encryption to GCM");
                 return EncryptionTypes.GCM;
             }
         }
