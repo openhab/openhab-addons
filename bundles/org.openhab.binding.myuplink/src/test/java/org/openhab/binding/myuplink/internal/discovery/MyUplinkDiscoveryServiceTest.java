@@ -109,7 +109,7 @@ public class MyUplinkDiscoveryServiceTest {
 
         // testdata contains no systems -> no further processing
         verify(discoveryService, never()).handleSystemDiscovery(any());
-        verify(discoveryService, never()).handleDeviceDiscovery(any());
+        verify(discoveryService, never()).handleDeviceDiscovery(any(), any());
         verify(discoveryService, never()).initDiscoveryResultBuilder(any(), any(), any());
     }
 
@@ -125,7 +125,7 @@ public class MyUplinkDiscoveryServiceTest {
         // testdata contains one system
         verify(discoveryService, times(1)).handleSystemDiscovery(any());
         // testdata contains two devices
-        verify(discoveryService, times(2)).handleDeviceDiscovery(any());
+        verify(discoveryService, times(2)).handleDeviceDiscovery(any(), any());
         // builder should be called once for each device
         verify(discoveryService, times(2)).initDiscoveryResultBuilder(any(), any(), any());
 

@@ -44,6 +44,10 @@
 			<label>Device Id</label>
 			<description>The Id to identify the device.</description>
 		</parameter>
+		<parameter name="systemId" type="text" required="false">
+			<label>System Id</label>
+			<description>The Id of the system the device belongs to.</description>
+		</parameter>
 	</config-description>
 
 </config-description:config-descriptions>

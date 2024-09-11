@@ -14,4 +14,26 @@
 		<label>Generic Command</label>
 		<state readOnly="false"></state>
 	</channel-type>
+	<channel-type id="rwtype-mode">
+		<item-type>String</item-type>
+		<label>Generic Command</label>
+		<state readOnly="false">
+			<options>
+				<option value="Default">Default</option>
+				<option value="Normal">Normal</option>
+				<option value="Away">Away</option>
+				<option value="Vacation">Vacation</option>
+				<option value="Home">Home</option>
+			</options>
+		</state>
+		<command>
+			<options>
+				<option value="Default">Default</option>
+				<option value="Normal">Normal</option>
+				<option value="Away">Away</option>
+				<option value="Vacation">Vacation</option>
+				<option value="Home">Home</option>
+			</options>
+		</command>
+	</channel-type>
 </thing:thing-descriptions>

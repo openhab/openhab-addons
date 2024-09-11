@@ -68,8 +68,10 @@ public class MyUplinkBindingConstants {
     public static final String CHANNEL_TYPE_ON_OFF = "type-on-off";
     public static final String CHANNEL_TYPE_RW_SWITCH = "rwtype-switch";
     public static final String CHANNEL_TYPE_RW_COMMAND = "rwtype-command";
+    public static final String CHANNEL_TYPE_RW_MODE = "rwtype-mode";
 
     public static final String CHANNEL_ID_COMMAND = "command";
+    public static final String CHANNEL_ID_SMART_HOME_MODE = "smart-home-mode";
 
     // JSON Keys
     public static final String JSON_KEY_ROOT_DATA = "data";
@@ -85,6 +87,7 @@ public class MyUplinkBindingConstants {
     public static final String JSON_KEY_CHANNEL_MAX = "maxValue";
     public static final String JSON_KEY_CHANNEL_STEP = "stepValue";
     public static final String JSON_KEY_SYSTEMS = "systems";
+    public static final String JSON_KEY_SYSTEM_ID = "systemId";
     public static final String JSON_KEY_DEVICES = "devices";
     public static final String JSON_KEY_GENERIC_ID = "id";
     public static final String JSON_KEY_PRODUCT = "product";
@@ -93,6 +96,7 @@ public class MyUplinkBindingConstants {
     public static final String JSON_KEY_CURRENT_FW_VERSION = "currentFwVersion";
     public static final String JSON_KEY_CONNECTION_STATE = "connectionState";
     public static final String JSON_KEY_ERROR = "error";
+    public static final String JSON_KEY_SMART_HOME_MODE = "smartHomeMode";
 
     public static final String JSON_KEY_AUTH_ACCESS_TOKEN = "access_token";
     public static final String JSON_KEY_AUTH_EXPIRES_IN = "expires_in";
@@ -143,6 +147,8 @@ public class MyUplinkBindingConstants {
     private static final String API_BASE_URL = "https://api.myuplink.com";
     public static final String LOGIN_URL = API_BASE_URL + "/oauth/token";
     public static final String GET_SYSTEMS_URL = API_BASE_URL + "/v2/systems/me";
+    public static final String GET_SMART_HOME_MODE_URL = API_BASE_URL + "/v2/systems/{systemId}/smart-home-mode";
+    public static final String SET_SMART_HOME_MODE_URL = GET_SMART_HOME_MODE_URL;
     public static final String GET_DEVICE_POINTS = API_BASE_URL + "/v2/devices/{deviceId}/points";
     public static final String SET_DEVICE_POINTS = GET_DEVICE_POINTS;
 
@@ -161,6 +167,7 @@ public class MyUplinkBindingConstants {
     public static final String EMPTY = "";
 
     public static final String THING_CONFIG_ID = "deviceId";
+    public static final String THING_CONFIG_SYSTEM_ID = "systemId";
     public static final String THING_CONFIG_SERIAL = "serial";
     public static final String THING_CONFIG_CURRENT_FW_VERSION = "currentFwVersion";
 

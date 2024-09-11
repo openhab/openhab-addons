@@ -106,7 +106,12 @@ public interface MyUplinkThingHandler extends ThingHandler, ChannelProvider {
             getLogger().debug("Thing is not online, thus no commands will be handled");
             return;
         }
-        enqueueCommand(buildMyUplinkCommand(command, channel));
+
+        try {
+            enqueueCommand(buildMyUplinkCommand(command, channel));
+        } catch (UnsupportedOperationException e) {
+            getLogger().warn("Unsupported command: {}", e.getMessage());
+        }
     }
 
     /**

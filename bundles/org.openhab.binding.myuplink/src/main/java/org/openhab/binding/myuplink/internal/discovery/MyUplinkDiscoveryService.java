@@ -96,15 +96,16 @@ public class MyUplinkDiscoveryService extends AbstractDiscoveryService implement
         logger.debug("handleSystemDiscovery {}", json);
 
         JsonObject system = json.getAsJsonObject();
+        String systemId = Utils.getAsString(system, JSON_KEY_SYSTEM_ID);
         JsonArray devices = system.getAsJsonArray(JSON_KEY_DEVICES);
         if (devices == null || devices.isEmpty()) {
             logger.info("System discovery failed, no devices found.");
         } else {
-            devices.forEach(this::handleDeviceDiscovery);
+            devices.forEach(device -> handleDeviceDiscovery(device, systemId));
         }
     }
 
-    void handleDeviceDiscovery(JsonElement json) {
+    void handleDeviceDiscovery(JsonElement json, @Nullable String systemId) {
         logger.debug("handleDeviceDiscovery {}", json);
 
         JsonObject device = json.getAsJsonObject();
@@ -116,6 +117,9 @@ public class MyUplinkDiscoveryService extends AbstractDiscoveryService implement
             DiscoveryResultBuilder builder;
             builder = initDiscoveryResultBuilder(DEVICE_GENERIC_DEVICE, id, name);
             builder.withProperty(THING_CONFIG_SERIAL, serial);
+            if (systemId != null) {
+                builder.withProperty(THING_CONFIG_SYSTEM_ID, systemId);
+            }
             thingDiscovered(builder.build());
         }
     }
