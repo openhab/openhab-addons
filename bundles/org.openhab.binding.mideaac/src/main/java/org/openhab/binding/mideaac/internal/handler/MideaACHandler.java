@@ -685,32 +685,20 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      */
     private void markOnline() {
         if (!isOnline()) {
-            logger.debug("Changing status of {} from {}({}) to ONLINE", thing.getUID(), getStatus(), getDetail());
             updateStatus(ThingStatus.ONLINE);
         }
     }
 
     private void markOffline() {
         if (isOnline()) {
-            logger.debug("Changing (disconnect) status of {} from {}({}) to OFFLINE", thing.getUID(), getStatus(),
-                    getDetail());
             updateStatus(ThingStatus.OFFLINE);
         }
     }
 
     private void markOfflineWithMessage(ThingStatusDetail statusDetail, String statusMessage) {
         if (!isOffline()) {
-            logger.info("Changing status of {} from {}({}) to OFFLINE({})", thing.getUID(), getStatus(), getDetail(),
-                    statusDetail);
+            updateStatus(ThingStatus.OFFLINE, statusDetail, statusMessage);
         }
-        // Only new Debug message if reason (message) has changed
-        if ((isOffline() && getDetail() == ThingStatusDetail.NONE)
-                || (isOffline() && !statusMessage.equals(getDescription()))) {
-            logger.debug("Changing status of {} from {}({}) to OFFLINE({})", thing.getUID(), getStatus(), getDetail(),
-                    statusDetail);
-        }
-
-        updateStatus(ThingStatus.OFFLINE, statusDetail, statusMessage);
 
         /**
          * This is to space out the looping with a short (5 second) then long (30 second) pause(s).
@@ -789,16 +777,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         connectionMessage = true;
     }
 
-    private ThingStatus getStatus() {
-        return thing.getStatus();
-    }
-
     private ThingStatusDetail getDetail() {
         return thing.getStatusInfo().getStatusDetail();
-    }
-
-    private @Nullable String getDescription() {
-        return thing.getStatusInfo().getDescription();
     }
 
     public void setCloudProvider(CloudProvider cloudProvider) {
@@ -1187,7 +1167,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                                         responseType = "querySubtype";
                                         break;
                                     default:
-                                        logger.error("Invalid response type: {}", data[0x9]);
+                                        logger.debug("Invalid response type: {}", data[0x9]);
                                 }
                                 logger.trace("Response Type: {} and bodyType:{}", responseType, data[0x1]);
 
@@ -1203,7 +1183,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
                                 if (data.length > 0) {
                                     if (data.length < 21) {
-                                        logger.error("Response data is {} long minimum is 21!", data.length);
+                                        logger.warn("Response data is {} long minimum is 21!", data.length);
                                         return;
                                     }
                                     lastResponse = new Response(data, getVersion(), responseType, bodyType);
@@ -1213,12 +1193,12 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                                             logger.trace("data length is {} version is {} thing is {}", data.length,
                                                     version, thing.getUID());
                                         } else {
-                                            logger.warn("Error response received data {} ignoring update from:{}",
+                                            logger.warn("Error response received, data {} from:{}",
                                                     Utils.bytesToHex(data), thing.getUID());
                                             return;
                                         }
                                     } catch (Exception ex) {
-                                        logger.warn("Error processing response: {}", ex.getMessage());
+                                        logger.warn("Processing response exception: {}", ex.getMessage());
                                     }
                                 }
                             }
