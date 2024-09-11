@@ -12,7 +12,7 @@
 			smart light that responds to and reflects the content you watch or listen to.
 		</description>
 
-		<category>iconify:mdi:audio-video</category>
+		<category>receiver</category>
 
 		<channel-groups>
 			<channel-group id="device-firmware" typeId="device-firmware"></channel-group>
@@ -39,7 +39,7 @@
 	<channel-group-type id="device-firmware">
 		<label>Firmware</label>
 		<description>Information about the installed device firmaware and available updates.</description>
-		<category>iconify:mdi:information</category>
+		<category>text</category>
 		<channels>
 			<channel id="firmware" typeId="device-info-firmware"></channel>
 			<channel id="available-firmware" typeId="device-info-firmware-available"></channel>
@@ -48,7 +48,7 @@
 	<channel-group-type id="device-hdmi-connection-in">
 		<label>HDMI Input</label>
 		<description>HDMI connection</description>
-		<category>iconify:mdi:hdmi-port</category>
+		<category>settings</category>
 		<channels>
 			<channel id="name" typeId="connection-name"></channel>
 			<channel id="type" typeId="connection-type"></channel>
@@ -59,7 +59,7 @@
 	<channel-group-type id="device-hdmi-connection-out">
 		<label>HDMI output</label>
 		<description>HDMI connection</description>
-		<category>iconify:mdi:hdmi-port</category>
+		<category>settings</category>
 		<channels>
 			<channel id="name" typeId="connection-name"></channel>
 			<channel id="type" typeId="connection-type"></channel>
@@ -71,7 +71,7 @@
 		<label>Hue Sync execution API commands</label>
 		<description>Execution API commands are used to control the real-time behavior of the Philips Hue Sync box. These
 			commands allow you to influence how the lights react to your entertainment.</description>
-		<category>iconify:mdi:remote</category>
+		<category>settings</category>
 		<channels>
 			<channel id="mode" typeId="execution-mode"></channel>
 			<channel id="syncActive" typeId="execution-syncActive"></channel>

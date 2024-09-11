@@ -25,7 +25,7 @@ mvn i18n:generate-default-translations $MVN_OPT
 echo "📦 package"
 mvn package $MVN_OPT
 
-DOCKER_OPENHAB_VERSION=4.2.1-debian
+DOCKER_OPENHAB_VERSION=4.3.0-snapshot-debian
 DOCKER_MOUNT=$HOME/Temp/openhab/$DOCKER_OPENHAB_VERSION
 
 LOGS=$DOCKER_MOUNT/userdata/logs/*

@@ -15,7 +15,7 @@
 		<item-type>String</item-type>
 		<label>Firmware Version</label>
 		<description>Installed firmware version</description>
-		<category>iconify:mdi:text</category>
+		<category>text</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -23,7 +23,7 @@
 		<item-type>String</item-type>
 		<label>Latest Firmware Version</label>
 		<description>Latest available firmware version</description>
-		<category>iconify:mdi:text</category>
+		<category>text</category>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -31,7 +31,7 @@
 		<item-type>String</item-type>
 		<label>Friendly name</label>
 		<description>Friendly name of the HDMI connection</description>
-		<category>iconify:mdi:label</category>
+		<category>text</category>
 		<state readOnly="true"></state>
 	</channel-type>
 
@@ -39,7 +39,7 @@
 		<item-type>String</item-type>
 		<label>HDMI connection Status</label>
 		<description>Status of the HDMI input</description>
-		<category>iconify:mdi:connection</category>
+		<category>status</category>
 		<state readOnly="true"></state>
 		<command>
 			<options>
@@ -55,7 +55,7 @@
 		<item-type>String</item-type>
 		<label>Friendly type</label>
 		<description>Type of the connected HDMI device</description>
-		<category>iconify:mdi:multimedia</category>
+		<category>text</category>
 		<state readOnly="true"></state>
 		<command>
 			<options>
@@ -88,7 +88,7 @@
 		<item-type>String</item-type>
 		<label>Last sync mode</label>
 		<description>Last sync mode used for this channel</description>
-		<category>iconify:mdi:sync</category>
+		<category>text</category>
 		<state readOnly="true"></state>
 		<command>
 			<options>
@@ -133,7 +133,7 @@
 			</p>
 			]]>
 		</description>
-		<category>iconify:mdi:multimedia</category>
+		<category>text</category>
 		<command>
 			<options>
 				<option value="powersave"></option>
@@ -159,7 +159,7 @@
 			  </p>
 			]]>
 		</description>
-		<category>iconify:mdi:toggle-switch</category>
+		<category>switch</category>
 	</channel-type>
 
 	<channel-type id="executioin-hdmiActive">
@@ -176,7 +176,7 @@
 			  </p>
 			]]>
 		</description>
-		<category>iconify:mdi:toggle-switch</category>
+		<category>switch</category>
 	</channel-type>
 
 	<channel-type id="execution-hdmiSource">
@@ -194,7 +194,7 @@
 		      </p>
 			]]>
 		</description>
-		<category>iconify:mdi:video-input-hdmi</category>
+		<category>receiver</category>
 		<command>
 			<options>
 				<option value="input1"></option>
@@ -226,7 +226,7 @@
 			</p>
 			]]>
 		</description>
-		<category>iconify:mdi:brightness-percent</category>
+		<category>slider</category>
 		<state min="0" max="200" step="1" pattern="%d"/>
 	</channel-type>
 
