@@ -35,6 +35,7 @@ import org.eclipse.jetty.http.HttpStatus.Code;
 import org.openhab.binding.myuplink.internal.connector.CommunicationStatus;
 import org.openhab.binding.myuplink.internal.handler.MyUplinkThingHandler;
 import org.openhab.binding.myuplink.internal.model.GenericResponseTransformer;
+import org.openhab.binding.myuplink.internal.model.ResponseTransformer;
 import org.openhab.binding.myuplink.internal.model.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,7 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
     /**
      * generic transformer which just transfers all values in a plain map.
      */
-    protected final GenericResponseTransformer transformer;
+    protected final ResponseTransformer transformer;
 
     /**
      * retry counter.
@@ -113,9 +114,15 @@ public abstract class AbstractCommand extends BufferingResponseListener implemen
      */
     public AbstractCommand(MyUplinkThingHandler handler, RetryOnFailure retryOnFailure,
             ProcessFailureResponse processFailureResponse, JsonResultProcessor resultProcessor) {
+        this(handler, new GenericResponseTransformer(handler), retryOnFailure, processFailureResponse, resultProcessor);
+    }
+
+    public AbstractCommand(MyUplinkThingHandler handler, ResponseTransformer responseTransformer,
+            RetryOnFailure retryOnFailure, ProcessFailureResponse processFailureResponse,
+            JsonResultProcessor resultProcessor) {
         this.gson = new GsonBuilder().setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE).create();
         this.communicationStatus = new CommunicationStatus();
-        this.transformer = new GenericResponseTransformer(handler);
+        this.transformer = responseTransformer;
         this.handler = handler;
         this.processFailureResponse = processFailureResponse;
         this.retryOnFailure = retryOnFailure;

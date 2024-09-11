@@ -44,7 +44,7 @@ import com.google.gson.JsonObject;
  * @author Alexander Friese - initial contribution
  */
 @NonNullByDefault
-public class GenericResponseTransformer {
+public class GenericResponseTransformer implements ResponseTransformer {
     private final Logger logger = LoggerFactory.getLogger(GenericResponseTransformer.class);
     private final ChannelProvider channelProvider;
     private final @Nullable DynamicChannelProvider dynamicChannelProvider;
