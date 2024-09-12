@@ -85,6 +85,8 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
 
     private volatile String profile = "";
 
+    private String rawDevicesListResponse = "";
+
     private volatile @Nullable NhcSystemInfo2 nhcSystemInfo;
     private volatile @Nullable NhcTimeInfo2 nhcTimeInfo;
 
@@ -270,6 +272,7 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
     }
 
     private void devicesListRsp(String response) {
+        rawDevicesListResponse = response;
         Type messageType = new TypeToken<NhcMessage2>() {
         }.getType();
         List<NhcDevice2> deviceList = null;
@@ -1276,6 +1279,10 @@ public class NikoHomeControlCommunication2 extends NikoHomeControlCommunication
      */
     public String getServices() {
         return services.stream().map(NhcService2::name).collect(Collectors.joining(", "));
+    }
+
+    public String getRawDevicesListResponse() {
+        return rawDevicesListResponse;
     }
 
     @Override

@@ -68,7 +68,7 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
             if (BRIDGEII_THING_TYPE.equals(thing.getThingTypeUID())) {
                 return new NikoHomeControlBridgeHandler2((Bridge) thing, networkAddressService, timeZoneProvider);
             } else {
-                return new NikoHomeControlBridgeHandler1((Bridge) thing, timeZoneProvider);
+                return new NikoHomeControlBridgeHandler1((Bridge) thing, networkAddressService, timeZoneProvider);
             }
         } else if (ACTION_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             return new NikoHomeControlActionHandler(thing);
