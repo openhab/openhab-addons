@@ -49,17 +49,16 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     private final Gson gson = new GsonBuilder().create();
 
-    NetworkAddressService networkAddressService;
-
     public NikoHomeControlBridgeHandler2(Bridge nikoHomeControlBridge, NetworkAddressService networkAddressService,
             TimeZoneProvider timeZoneProvider) {
-        super(nikoHomeControlBridge, timeZoneProvider);
-        this.networkAddressService = networkAddressService;
+        super(nikoHomeControlBridge, networkAddressService, timeZoneProvider);
     }
 
     @Override
     public void initialize() {
         logger.debug("initializing NHC II bridge handler");
+
+        scheduler.submit(() -> getControllerId());
 
         Date expiryDate = getTokenExpiryDate();
         if (expiryDate == null) {
@@ -98,7 +97,7 @@ public class NikoHomeControlBridgeHandler2 extends NikoHomeControlBridgeHandler 
 
     @Override
     protected void updateProperties() {
-        Map<String, String> properties = new HashMap<>();
+        Map<String, String> properties = new HashMap<>(thing.getProperties());
 
         NikoHomeControlCommunication2 comm = (NikoHomeControlCommunication2) nhcComm;
         if (comm != null) {
