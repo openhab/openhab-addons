@@ -74,11 +74,11 @@ public class HomematicDeviceDiscoveryService
      */
     private void enableInstallMode() {
         try {
+            HomematicGateway gateway = thingHandler.getGateway();
             Thing bridge = thingHandler.getThing();
             ThingStatus bridgeStatus = bridge.getStatus();
 
-            if (ThingStatus.ONLINE == bridgeStatus && thingHandler.getGateway() != null) {
-                HomematicGateway gateway = thingHandler.getGateway();
+            if (ThingStatus.ONLINE == bridgeStatus && gateway != null) {
                 gateway.setInstallMode(true, getInstallModeDuration());
 
                 int remaining = gateway.getInstallMode();
@@ -109,8 +109,9 @@ public class HomematicDeviceDiscoveryService
     public synchronized void stopScan() {
         logger.debug("Stopping Homematic discovery scan");
         disableInstallMode();
-        if (thingHandler.getGateway() != null) {
-            thingHandler.getGateway().cancelLoadAllDeviceMetadata();
+        final HomematicGateway gateway = thingHandler.getGateway();
+        if (gateway != null) {
+            gateway.cancelLoadAllDeviceMetadata();
         }
         waitForScanFinishing();
         super.stopScan();
@@ -119,10 +120,11 @@ public class HomematicDeviceDiscoveryService
     private void disableInstallMode() {
         try {
             synchronized (installModeSync) {
-                if (isInInstallMode && thingHandler.getGateway() != null) {
+                HomematicGateway gateway = thingHandler.getGateway();
+                if (isInInstallMode && gateway != null) {
                     isInInstallMode = false;
                     installModeSync.notify();
-                    thingHandler.getGateway().setInstallMode(false, 0);
+                    gateway.setInstallMode(false, 0);
                 }
             }
 
@@ -175,10 +177,10 @@ public class HomematicDeviceDiscoveryService
      * Starts a thread which loads all Homematic devices connected to the gateway.
      */
     public void loadDevices() {
-        if (loadDevicesFuture == null && thingHandler.getGateway() != null) {
+        HomematicGateway gateway = thingHandler.getGateway();
+        if (loadDevicesFuture == null && gateway != null) {
             loadDevicesFuture = scheduler.submit(() -> {
                 try {
-                    final HomematicGateway gateway = thingHandler.getGateway();
                     gateway.loadAllDeviceMetadata();
                     thingHandler.getTypeGenerator().validateFirmwares();
                 } catch (Throwable ex) {
