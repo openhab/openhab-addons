@@ -188,11 +188,13 @@ public class StateFilterProfileTest {
         return item;
     }
 
-    /* private Item numberItemWithState(String itemType, String itemName, State value) {
-        NumberItem item = new NumberItem(itemType, itemName, null);
-        item.setState(value);
-        return item;
-    } */
+    /*
+     * private Item numberItemWithState(String itemType, String itemName, State value) {
+     * NumberItem item = new NumberItem(itemType, itemName, null);
+     * item.setState(value);
+     * return item;
+     * }
+     */
 
     @Test
     public void testMultipleConditionAllMatch() throws ItemNotFoundException {
