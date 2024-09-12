@@ -15,8 +15,13 @@ package org.openhab.binding.pjlinkdevice.internal.util;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
+
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.openhab.core.net.CidrAddress;
 
 /**
  * The {@link IPUtilsTest} class defines some static utility methods
@@ -27,49 +32,33 @@ import org.junit.jupiter.api.Test;
 public class IPUtilsTest {
 
     @Test
-    public void checkSingleAddress() {
-        String[] addresses = IPUtils.getAllIPv4Addresses("192.168.1.1/32");
+    public void checkValidRangeCount() throws UnknownHostException {
+        InetAddress testableAddress = InetAddress.getByName("192.168.1.0");
+        List<InetAddress> addresses = IPUtils
+                .getAddressesRangeByCidrAddress(new CidrAddress(testableAddress, (short) 24), 24);
 
-        assertEquals(1, addresses.length);
-        assertEquals("192.168.1.1", addresses[0]);
+        assertEquals(254, addresses.size());
+        assertEquals("192.168.1.1", addresses.get(0).getHostAddress());
+        assertEquals("192.168.1.254", addresses.get(253).getHostAddress());
     }
 
     @Test
-    public void checkValidRangeCount() {
-        String[] addresses = IPUtils.getAllIPv4Addresses("192.168.1.0/24");
+    public void checkValidLargeRangeCount() throws UnknownHostException {
+        InetAddress testableAddress = InetAddress.getByName("127.0.0.0");
+        List<InetAddress> addresses = IPUtils
+                .getAddressesRangeByCidrAddress(new CidrAddress(testableAddress, (short) 16), 16);
 
-        assertEquals(254, addresses.length);
-        assertEquals("192.168.1.1", addresses[0]);
-        assertEquals("192.168.1.254", addresses[253]);
+        assertEquals(65534, addresses.size());
+        assertEquals("127.0.0.1", addresses.get(0).getHostAddress());
+        assertEquals("127.0.255.254", addresses.get(65533).getHostAddress());
     }
 
     @Test
-    public void checkValidLargeRangeCount() {
-        String[] addresses = IPUtils.getAllIPv4Addresses("127.0.0.0/16");
+    public void checkInvalidPrefixLength() throws UnknownHostException {
+        InetAddress testableAddress = InetAddress.getByName("192.168.1.0");
+        List<InetAddress> addresses = IPUtils
+                .getAddressesRangeByCidrAddress(new CidrAddress(testableAddress, (short) 16), 24);
 
-        assertEquals(65534, addresses.length);
-        assertEquals("127.0.0.1", addresses[0]);
-        assertEquals("127.0.255.254", addresses[65533]);
-    }
-
-    @Test
-    public void checkInValidRange() {
-        String[] addresses = IPUtils.getAllIPv4Addresses("192.168.12/24");
-
-        assertEquals(0, addresses.length);
-    }
-
-    @Test
-    public void checkNoMask() {
-        String[] addresses = IPUtils.getAllIPv4Addresses("192.168.12/");
-
-        assertEquals(0, addresses.length);
-    }
-
-    @Test
-    public void checkWrongSlash() {
-        String[] addresses = IPUtils.getAllIPv4Addresses("192.168.12\\");
-
-        assertEquals(0, addresses.length);
+        assertEquals(0, addresses.size());
     }
 }

@@ -12,16 +12,17 @@
  */
 package org.openhab.binding.pjlinkdevice.internal.util;
 
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.net.CidrAddress;
+import org.openhab.core.net.NetUtil;
 
 /**
  * The {@link IPUtils} class defines some static IP utility methods
@@ -31,70 +32,61 @@ import org.eclipse.jdt.annotation.Nullable;
 @NonNullByDefault
 public class IPUtils {
 
-    public static String[] getAllIPv4Addresses(@Nullable String IPWithMask) {
-        if (IPWithMask == null) {
-            return new String[0];
+    /**
+     * For all network interfaces (except loopback) all Ipv4 addresses are returned.
+     * This list can for example, be used to scan the network for available devices.
+     * 
+     * @return A full list of IP {@link InetAddress} (except network and broadcast)
+     */
+    public static List<InetAddress> getFullRangeOfAddressesToScan() {
+        List<InetAddress> addressesToScan = List.of();
+        List<CidrAddress> ipV4InterfaceAddresses = NetUtil.getAllInterfaceAddresses().stream()
+                .filter(a -> a.getAddress() instanceof Inet4Address).collect(Collectors.toList());
+
+        for (CidrAddress i : ipV4InterfaceAddresses) {
+            addressesToScan.addAll(getAddressesRangeByCidrAddress(i, 24));
         }
-        if (IPWithMask.indexOf("/") < 1) {
-            return new String[0];
+        return addressesToScan;
+    }
+
+    /**
+     * For the given {@link CidrAddress} all Ipv4 addresses are returned.
+     * This list can for example, be used to scan the network for available devices.
+     * 
+     * @param iFaceAddress The {@link CidrAddress} of the network interface
+     * @param maxPrefixLength Control the prefix length of the network (e.g. 24 for class C)
+     * @return A full list of IP {@link InetAddress} (except network and broadcast)
+     */
+    public static List<InetAddress> getAddressesRangeByCidrAddress(CidrAddress iFaceAddress, int maxPrefixLength) {
+        if (!(iFaceAddress.getAddress() instanceof Inet4Address) || iFaceAddress.getPrefix() < maxPrefixLength) {
+            return List.of();
         }
 
-        String[] splitted = IPWithMask.split("/");
-
-        if (!validateIP(splitted[0]) || !validateSubnet(splitted[1])) {
-            return new String[0];
-        }
-        InetAddress ip;
-        try {
-            ip = InetAddress.getByName(splitted[0]);
-        } catch (UnknownHostException e) {
-            return new String[0];
+        List<byte[]> addresses = getAddressesInSubnet(iFaceAddress.getAddress().getAddress(), iFaceAddress.getPrefix(),
+                true);
+        if (addresses.size() > 2) {
+            addresses.remove(0); // remove network address
+            addresses.remove(addresses.size() - 1); // remove broadcast address
         }
 
-        List<byte[]> xList = getAllAddresses(ip.getAddress(), Integer.parseInt(splitted[1]));
-        if (xList.size() > 2) {
-            xList.remove(0); // remove network address
-            xList.remove(xList.size() - 1); // remove broadcast address
-        }
-        return xList.stream().map(m -> {
+        return addresses.stream().map(m -> {
             try {
-                return InetAddress.getByAddress(m).getHostAddress();
+                return InetAddress.getByAddress(m);
             } catch (UnknownHostException e) {
-                throw new RuntimeException(e);
+                return null;
             }
-        }).sorted((a, b) -> {
-            int[] aOct = Arrays.stream(a.split("\\.")).mapToInt(Integer::parseInt).toArray();
-            int[] bOct = Arrays.stream(b.split("\\.")).mapToInt(Integer::parseInt).toArray();
+        }).filter(f -> f != null).sorted((a, b) -> {
+            byte[] aOct = a.getAddress();
+            byte[] bOct = b.getAddress();
             int r = 0;
             for (int i = 0; i < aOct.length && i < bOct.length; i++) {
-                r = Integer.compare(aOct[i], bOct[i]);
+                r = Integer.compare(aOct[i] & 0xff, bOct[i] & 0xff);
                 if (r != 0) {
                     return r;
                 }
             }
             return r;
-        }).collect(Collectors.toList()).toArray(new String[0]);
-    }
-
-    public static boolean validateSubnet(final String subnet) {
-        final String PATTERN = "((?:[1-9])|(?:[1-2][0-9])|(?:3[0-2]))";
-        return subnet.matches(PATTERN);
-    }
-
-    private static boolean validateIP(final String ip) {
-        final String PATTERN = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
-        return ip.matches(PATTERN);
-    }
-
-    /**
-     * Creates a list of all possible IP addresses in a subnet given an IP address and the network mask
-     * 
-     * @param address IP address in byte array form (i.e. 127.0.0.1 = 01111111 00000000 00000000 00000001)
-     * @param maskLength Network mask length (i.e. the number after the forward-slash, '/', in CIDR notation)
-     * @return All possible IP addresses
-     */
-    private static List<byte[]> getAllAddresses(byte[] address, int maskLength) {
-        return getAllAddresses(address, maskLength, true);
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -107,12 +99,10 @@ public class IPUtils {
      * 
      * @author: https://gist.github.com/ssttevee/b0e2b431f4b23d289537
      */
-    private static List<byte[]> getAllAddresses(byte[] address, int maskLength, boolean scrub) {
+    private static List<byte[]> getAddressesInSubnet(byte[] address, int maskLength, boolean scrub) {
         if (scrub) {
             scrubAddress(address, maskLength);
         }
-
-        // logAddress(address);
 
         if (maskLength >= address.length * 8) {
             return Collections.singletonList(address);
@@ -125,11 +115,11 @@ public class IPUtils {
 
         byte[] addressLeft = address.clone();
         addressLeft[set] |= 1 << pos;
-        addresses.addAll(getAllAddresses(addressLeft, maskLength + 1, false));
+        addresses.addAll(getAddressesInSubnet(addressLeft, maskLength + 1, false));
 
         byte[] addressRight = address.clone();
         addressRight[set] &= ~(1 << pos);
-        addresses.addAll(getAllAddresses(addressRight, maskLength + 1, false));
+        addresses.addAll(getAddressesInSubnet(addressRight, maskLength + 1, false));
 
         return addresses;
     }
