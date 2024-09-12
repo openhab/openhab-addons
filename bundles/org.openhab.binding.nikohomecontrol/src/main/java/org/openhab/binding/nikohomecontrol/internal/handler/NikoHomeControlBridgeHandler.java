@@ -14,6 +14,7 @@ package org.openhab.binding.nikohomecontrol.internal.handler;
 
 import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindingConstants.*;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.ZoneId;
@@ -29,8 +30,10 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.nikohomecontrol.internal.discovery.NikoHomeControlDiscoveryService;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NhcControllerEvent;
 import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlCommunication;
+import org.openhab.binding.nikohomecontrol.internal.protocol.NikoHomeControlDiscover;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.net.NetworkAddressService;
 import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.ThingStatus;
@@ -57,10 +60,14 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
 
     private volatile @Nullable ScheduledFuture<?> refreshTimer;
 
+    protected final NetworkAddressService networkAddressService;
+
     protected final TimeZoneProvider timeZoneProvider;
 
-    public NikoHomeControlBridgeHandler(Bridge nikoHomeControlBridge, TimeZoneProvider timeZoneProvider) {
+    public NikoHomeControlBridgeHandler(Bridge nikoHomeControlBridge, NetworkAddressService networkAddressService,
+            TimeZoneProvider timeZoneProvider) {
         super(nikoHomeControlBridge);
+        this.networkAddressService = networkAddressService;
         this.timeZoneProvider = timeZoneProvider;
     }
 
@@ -267,5 +274,32 @@ public abstract class NikoHomeControlBridgeHandler extends BaseBridgeHandler imp
     @Override
     public Collection<Class<? extends ThingHandlerService>> getServices() {
         return Set.of(NikoHomeControlDiscoveryService.class);
+    }
+
+    public String getControllerId() {
+        String id = thing.getProperties().get(CONFIG_CONTROLLER_ID);
+        if (id != null) {
+            return id;
+        }
+        try {
+            id = "";
+            String broadcastAddr = networkAddressService.getConfiguredBroadcastAddress();
+            if (broadcastAddr != null) {
+                NikoHomeControlDiscover nhcDiscover = new NikoHomeControlDiscover(broadcastAddr);
+                InetAddress address = getAddr();
+                if (address != null) {
+                    id = nhcDiscover.getBridgeId(address);
+                    id = id != null ? id : "";
+                }
+            }
+        } catch (IOException e) {
+            id = "";
+        }
+        if (!id.isEmpty()) {
+            thing.setProperty(CONFIG_CONTROLLER_ID, id);
+        } else {
+            logger.warn("failure setting controller ID property");
+        }
+        return id;
     }
 }

@@ -107,6 +107,7 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_NOTICE = "notice";
 
     // Bridge config properties
+    public static final String CONFIG_CONTROLLER_ID = "controllerId";
     public static final String CONFIG_HOST_NAME = "addr";
     public static final String CONFIG_PORT = "port";
     public static final String CONFIG_REFRESH = "refresh";
