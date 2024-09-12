@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -80,8 +80,8 @@ public class S3Actions {
     }
 
     public List<String> listBucket(String prefix) throws APIException, AuthException {
-        Map<String, String> headers = new HashMap<String, String>();
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
+        Map<String, String> params = new HashMap<>();
         return listObjectsV2(prefix, headers, params);
     }
 

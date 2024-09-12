@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,9 +15,6 @@ package org.openhab.binding.boschshc.internal.devices.twinguard;
 import static org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants.*;
 
 import java.util.List;
-
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.boschshc.internal.devices.AbstractSmokeDetectorHandler;
@@ -55,11 +52,11 @@ public class TwinguardHandler extends AbstractSmokeDetectorHandler {
     }
 
     private void updateChannels(AirQualityLevelServiceState state) {
-        updateState(CHANNEL_TEMPERATURE, new QuantityType<Temperature>(state.temperature, SIUnits.CELSIUS));
+        updateState(CHANNEL_TEMPERATURE, new QuantityType<>(state.temperature, SIUnits.CELSIUS));
         updateState(CHANNEL_TEMPERATURE_RATING, new StringType(state.temperatureRating));
-        updateState(CHANNEL_HUMIDITY, new QuantityType<Dimensionless>(state.humidity, Units.PERCENT));
+        updateState(CHANNEL_HUMIDITY, new QuantityType<>(state.humidity, Units.PERCENT));
         updateState(CHANNEL_HUMIDITY_RATING, new StringType(state.humidityRating));
-        updateState(CHANNEL_PURITY, new QuantityType<Dimensionless>(state.purity, Units.PARTS_PER_MILLION));
+        updateState(CHANNEL_PURITY, new QuantityType<>(state.purity, Units.PARTS_PER_MILLION));
         updateState(CHANNEL_PURITY_RATING, new StringType(state.purityRating));
         updateState(CHANNEL_AIR_DESCRIPTION, new StringType(state.description));
         updateState(CHANNEL_COMBINED_RATING, new StringType(state.combinedRating));

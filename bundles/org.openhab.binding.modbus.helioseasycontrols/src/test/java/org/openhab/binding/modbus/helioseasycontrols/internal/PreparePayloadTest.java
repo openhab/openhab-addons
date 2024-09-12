@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ public class PreparePayloadTest {
 
     private ModbusRegisterArray preparePayload(String payload) {
         try {
-            return (ModbusRegisterArray) preparePayloadMethod.invoke(null, payload);
+            return (ModbusRegisterArray) preparePayloadMethod.invoke("", payload);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             fail("Reflection failure:" + e.getMessage());
             throw new RuntimeException(); // to make compiler happy

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -26,13 +26,13 @@ import org.openhab.binding.remoteopenhab.internal.exceptions.RemoteopenhabExcept
 import org.openhab.binding.remoteopenhab.internal.handler.RemoteopenhabBridgeHandler;
 import org.openhab.binding.remoteopenhab.internal.listener.RemoteopenhabThingsDataListener;
 import org.openhab.binding.remoteopenhab.internal.rest.RemoteopenhabRestClient;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,53 +42,42 @@ import org.slf4j.LoggerFactory;
  *
  * @author Laurent Garnier - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = RemoteopenhabDiscoveryService.class)
 @NonNullByDefault
-public class RemoteopenhabDiscoveryService extends AbstractDiscoveryService
-        implements ThingHandlerService, RemoteopenhabThingsDataListener {
+public class RemoteopenhabDiscoveryService extends AbstractThingHandlerDiscoveryService<RemoteopenhabBridgeHandler>
+        implements RemoteopenhabThingsDataListener {
 
     private final Logger logger = LoggerFactory.getLogger(RemoteopenhabDiscoveryService.class);
 
     private static final int SEARCH_TIME = 10;
 
-    private @NonNullByDefault({}) RemoteopenhabBridgeHandler bridgeHandler;
     private @NonNullByDefault({}) RemoteopenhabRestClient restClient;
 
     public RemoteopenhabDiscoveryService() {
-        super(RemoteopenhabBindingConstants.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME, false);
+        super(RemoteopenhabBridgeHandler.class, RemoteopenhabBindingConstants.SUPPORTED_THING_TYPES_UIDS, SEARCH_TIME,
+                false);
     }
 
     @Override
-    public void setThingHandler(ThingHandler handler) {
-        if (handler instanceof RemoteopenhabBridgeHandler remoteopenhabBridgeHandler) {
-            this.bridgeHandler = remoteopenhabBridgeHandler;
-            this.restClient = bridgeHandler.gestRestClient();
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridgeHandler;
-    }
-
-    @Override
-    public void activate() {
-        ThingHandlerService.super.activate();
+    public void initialize() {
+        restClient = thingHandler.gestRestClient();
         restClient.addThingsDataListener(this);
+        super.initialize();
     }
 
     @Override
-    public void deactivate() {
+    public void dispose() {
+        super.dispose();
         restClient.removeThingsDataListener(this);
-        super.deactivate();
     }
 
     @Override
     protected void startScan() {
         logger.debug("Starting discovery scan for remote things");
-        if (bridgeHandler.getThing().getStatus() == ThingStatus.ONLINE) {
+        if (thingHandler.getThing().getStatus() == ThingStatus.ONLINE) {
             try {
                 List<RemoteopenhabThing> things = restClient.getRemoteThings();
-                ThingUID bridgeUID = bridgeHandler.getThing().getUID();
+                ThingUID bridgeUID = thingHandler.getThing().getUID();
                 for (RemoteopenhabThing thing : things) {
                     createDiscoveryResult(thing, bridgeUID);
                 }
@@ -101,7 +90,7 @@ public class RemoteopenhabDiscoveryService extends AbstractDiscoveryService
     @Override
     protected synchronized void stopScan() {
         super.stopScan();
-        removeOlderResults(getTimestampOfLastScan(), bridgeHandler.getThing().getUID());
+        removeOlderResults(getTimestampOfLastScan(), thingHandler.getThing().getUID());
     }
 
     @Override
@@ -111,12 +100,12 @@ public class RemoteopenhabDiscoveryService extends AbstractDiscoveryService
 
     @Override
     public void onThingAdded(RemoteopenhabThing thing) {
-        createDiscoveryResult(thing, bridgeHandler.getThing().getUID());
+        createDiscoveryResult(thing, thingHandler.getThing().getUID());
     }
 
     @Override
     public void onThingRemoved(RemoteopenhabThing thing) {
-        removeDiscoveryResult(thing, bridgeHandler.getThing().getUID());
+        removeDiscoveryResult(thing, thingHandler.getThing().getUID());
     }
 
     @Override

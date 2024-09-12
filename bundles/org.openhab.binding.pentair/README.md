@@ -1,8 +1,10 @@
 # Pentair Pool
 
 This is an openHAB binding for a Pentair Pool System.
-It is based on combined efforts of many on the internet in reverse-engineering the proprietary Pentair protocol (see References section).
-The binding was developed and tested on a system with a Pentair EasyTouch controller, but should operate with other Pentair systems.
+It is based on combined efforts of many on the Internet in reverse-engineering the proprietary Pentair protocol (see References section).
+The binding was developed and tested on a system with a Pentair EasyTouch controller, but will also operate with the Pentair IntelliTouch/SunTouch controllers.
+Note that with the Pentair IntelliCenter controllers, the functionality will be limited since that utilizes a different protocol which has not yet been implemented.
+Further, if there is interest to improve functionality or address issues with any of the Pentair controllers, please reach out to the binding author.
 
 ## Hardware Setup
 
@@ -17,24 +19,26 @@ I have cited several of those in the References section below.
 ### Connecting adapter to your system
 
 A USB or serial RS-485 interface or IP based interface can be used to interface to the Pentair system bus.
-The binding includes 2 different bridge Things depending on which type of interface you use, serial_bridge or ip_bridge.
+The binding includes 2 different Bridges depending on which type of interface you use, serial_bridge or ip_bridge.
 
 If your openHAB system is physically located far from your Pentair equipment or indoor control panel, you can use a Raspberry Pi or other computer to redirect USB/serial port traffic over the internet using a program called ser2sock (see Reference section).
 An example setup would run the following command: "ser2sock -p 10000 -s /dev/ttyUSB1 -b 9600 -d".
-Note: This is the setup utlized for the majority of my testing of this binding.
 
-Note: If you are on a Linux system, the framework may not see a symbolically linked device (i.e. /dev/ttyRS485).
-To use a symbolically linked device, add the following line to _/etc/default/openhab_ `EXTRA_JAVA_OPTS="-Dgnu.io.rxtx.SerialPorts=/dev/ttyRS485"`
+Note: This is the setup utilized for the majority of my testing of this binding.
 
 Once you have the interface connected to your system, it is best to test basic connectivity.
 Note the protocol is a binary protocol (not ASCII text based) and in order to view the communication packets, one must use a program capable of a binary/HEX mode.
 If connected properly, you will see a periodic traffic with packets staring with FF00FFA5.
-This is the preamble for Pentairs communication packet.
+This is the preamble for Pentair's communication packet.
+
 After you see this traffic, you can proceed to configuring the Pentair binding in openHAB.
+
+Note: Many adapters use A and B to represent Data+ and Data-. There is no reliable standard for determining which is Data+ and Data-. If you connect the system in reverse, you will still see serial data, however it will be corrupted. Look at your data coming from your device and look for a repeated "FFa5". If you don't see that preamble reliably, you may try switching your data lines."
 
 #### USB/Serial interface
 
-For a USB/Serial interface, you can use most terminal emulators. For Linux, you can use minicom with the following options: `minicom -H -D /dev/ttyUSB1 -b 9600`
+For a USB/Serial interface, you can use most terminal emulators.
+For Linux, you can use minicom with the following options: `minicom -H -D /dev/ttyUSB1 -b 9600`
 
 #### IP interface
 
@@ -42,27 +46,30 @@ For an IP based interface (or utilizing ser2sock) on a Linux system, you can use
 
 ### Pentair Controller panel configuration
 
-In order for the Pentair EasyTouch controller to receive commands from this binding, you may need to enable "Spa-side" remote on the controller itself.
+In order for the Pentair controller to receive commands from this binding, you may need to enable "Spa-side" remote on the controller itself.
 
 ## Supported Things
 
 This binding supports the following thing types:
 
-| Thing           | Thing Type | Description                             |
+| ThingType UID   | Thing Type | Description                             |
 | --------------- | :--------: | --------------------------------------- |
 | ip_bridge       |   Bridge   | A TCP network RS-485 bridge device.     |
 | serial_bridge   |   Bridge   | A USB or serial RS-485 device.          |
-| EasyTouch       |   Thing    | Pentiar EasyTouch pool controller.      |
-| Intelliflo Pump |   Thing    | Pentair Intelliflo variable speed pump. |
-| Intellichlor    |   Thing    | Pentair Intellichlor chlorinator.       |
+| controller      |   Thing    | Pentair EasyTouch, SunTouch, or IntelliTouch pool controller.      |
+| intelliflo      |   Thing    | Pentair IntelliFlo variable speed pump. |
+| intellichlor    |   Thing    | Pentair IntelliChlor chlorinator.       |
+| intellichem     |   Thing    | Pentair IntelliChem.
 
 ## Binding Configuration
 
-There are no overall binding configurations that need to be set up as all configuration is done at the "Thing" level.
+There are no overall binding configurations that need to be set up as all configuration is done at the "Bridge/Thing" level.
 
-## Thing Configuration
+## Bridge Configuration
 
-The following table shows the available configuration parameters for each thing.
+A Bridge item must first be configured to gain access to the Pentair bus.
+This can be done via the interactive setup pages in openHAB or manually through a .thing configuration file.
+The following table shows the parameters for each Bridge.
 
 | Thing         | Configuration Parameters                                     |
 | ------------- | ------------------------------------------------------------ |
@@ -72,120 +79,200 @@ The following table shows the available configuration parameters for each thing.
 | serial_bridge | serialPort - Serial port for the IT-100s bridge - Required.  |
 |               | baud - Baud rate of the IT-100 bridge - Not Required - default = 9600. |
 |               | pollPeriod - Period of time in minutes between the poll command being sent to the IT-100 bridge - Not Required - default=1. |
-|               | id - ID to use when communciating on Pentair control bus - default = 34. |
-
-Currently automatic discovery is not supported.
-Here is an example of a thing configuration file called 'pentair.things':
+|               | id - ID to use when communicating on Pentair control bus - default = 34. |
 
 ```java
 Bridge pentair:ip_bridge:1 [ address="192.168.1.202", port=10001 ] {
-    easytouch main [ id=16 ]
+    controller main [ id=16 ]
     intelliflo pump1 [ id=96 ]
     intellichlor ic40
+    intellichem chem
 }
 ```
 
 For a serial bridge you would use a configuration similar to this, again saved as 'pentair.things':
 
+
 ```java
 Bridge pentair:serial_bridge:1 [ serialPort="/dev/ttyUSB0" ] {
-    easytouch main [ id=16 ]
+    controller main [ id=16 ]
     intelliflo pump1 [ id=96 ]
     intellichlor ic40
+    intellichem chem
 }
 ```
 
-## Channels
+## Things & Channels
 
-Pentair things support a variety of channels as seen below in the following table:
+### Thing: Controller
 
-| Channel              | Item Type | Description                                                  |
-| -------------------- | --------- | ------------------------------------------------------------ |
-| EasyTouch Controller |           |                                                              |
-| pooltemp             | Number    | Current pool temperature (readonly)                          |
-| spatemp              | Number    | Current spa temperature (readonly)                           |
-| airtemp              | Number    | Current air temperature (readonly)                           |
-| solartemp            | Number    | Current solar temperature (readonly)                         |
-| poolheatmode         | Number    | Current heat mode setting for pool (readonly): 0=Off, 1=Heater, 2=Solar Preferred, 3=Solar |
-| poolheatmodestr      | String    | Current heat mode setting for pool in string form (readonly) |
-| spaheatmode          | Number    | Current heat mode setting for spa (readonly): 0=Off, 1=Heater, 2=Solar Preferred, 3=Solar |
-| spaheatmodestr       | String    | Current heat mode setting for spa in string form (readonly)> |
-| poolsetpoint         | Number    | Current pool temperature set point                           |
-| spasetpoint          | Number    | Current spa temperature set point                            |
-| heatactive           | Number    | Heater mode is active                                        |
-| pool                 | Switch    | Primary pool mode                                            |
-| spa                  | Switch    | Spa mode                                                     |
-| aux1                 | Switch    | Aux1 mode                                                    |
-| aux2                 | Switch    | Aux2 mode                                                    |
-| aux3                 | Switch    | Aux3 mode                                                    |
-| aux4                 | Switch    | Aux4 mode                                                    |
-| aux5                 | Switch    | Aux5 mode                                                    |
-| aux6                 | Switch    | Aux6 mode                                                    |
-| aux7                 | Switch    | Aux7 mode                                                    |
-| feature1             | Switch    | Feature1 mode                                                |
-| feature2             | Switch    | Feature2 mode                                                |
-| feature3             | Switch    | Feature3 mode                                                |
-| feature4             | Switch    | Feature4 mode                                                |
-| feature5             | Switch    | Feature5 mode                                                |
-| feature6             | Switch    | Feature6 mode                                                |
-| feature7             | Switch    | Feature7 mode                                                |
-| feature8             | Switch    | Feature8 mode                                                |
-| IntelliChlor         |           |                                                              |
-| saltoutput           | Number    | Current salt output % (readonly)                             |
-| salinity             | Number    | Salinity (ppm) (readonly)                                    |
-| IntelliFlo Pump      |           |                                                              |
-| run                  | Number    | Pump running (readonly)                                      |
-| drivestate           | Number    | Pump drivestate (readonly)                                   |
-| mode                 | Number    | Pump mode (readonly)                                         |
-| rpm                  | Number    | Pump RPM (readonly)                                          |
-| power                | Number    | Pump power in Watts (readonly)                               |
-| error                | Number    | Pump error (readonly)                                        |
-| ppc                  | Number    | Pump PPC? (readonly)                                         |
+Represents and interfaces with a Pentair pool controller in the system.  This binding should work for both Intellitouch and EasyTouch systems.
+Feature availability is dependent on the version of hardware and firmware versions of your specific controller.
 
-## Full Example
+#### Synchronize Time
 
-The following is an example of an item file (pentair.items), you can change the °F to °C if you are using metric temperature units:
+This configuration setting will instruct the binding to automatically update the controller's clock every 24 hours with the value from the openHAB server.
+This is useful to keep the pool system clock set correct and automatically adjust for daylight savings time.
+
+| Channel Group                     | Channel           | Type               |     | Description  |
+| :------------------------------:  | :-------:         | :----:             | :-: | :--------------: |
+| pool, spa, aux[1-8], feature[1-8] | switch            | Switch             | RW  | Indicates the particulcar circuit or feature is on or off.  | 
+| "                                 | name              | String             | R   | Name of circuit |
+| "                                 | feature           | String             | R   | Feature of ciruit |
+| poolheat, spaheat                 | setpoint          | Number:Temperature | RW  | Temperature setpoint |
+| "                                 | temperature       | Number:Temperature | R   | Current water temperature.  Note, the temperature is only valid while in either pool or spa mode. |
+| "                                 | heatmode          | String             | R   | Heat mode configured.  Values: NONE, HEATER, SOLARPREFERRED, SOLAR |
+| schedule[1-9]                     | schedule          | String             | RW  | Summary string of schedule.  |
+| "                                 | type              | String             | RW  | Type of schedule.  Note, to actually write the program to the controller, this channel must be written to with the same value 2 times within 5s. Values: NONE, NORMAL, EGGTIMER, ONCE ONLY |
+| "                                 | start             | Number:Time        | RW  | Time of day to start schedule expressed in minutes.  |
+| "                                 | end               | Number:Time        | RW  | Time of day to end schedule expressed in minutes. In the case of EGG TIMER, this shoud be the duration. |
+| "                                 | circuit           | Number             | RW  | Circuit/Feature the schedule will control. |
+| "                                 | days              | String             | RW  | The days the schedule will run.  S=Sunday, M=Monday, T=Tuesday, W=Wednesday, R=Thursday, F=Friday, Y=Saturday |
+| status                            | lightmode         | String             | RW  | Light mode. Values: OFF, ON, COLORSYNC, COLORSWIM, COLORSET, PARTY, ROMANCE, CARIBBEAN, AMERICAN, SUNSET, ROYAL, BLUE, GREEN, RED, WHITE, MAGENTA |
+| "                                 | solartemperature  | Number:Temperature | R   | Solar temperature sensor reading. |
+| "                                 | airtemperature    | Number:Temperature | R   | Air temperature sensor reading. |
+| "                                 | servicemode       | Switch             | R   | Indicates whether controller is in service mode. |
+| "                                 | solaron           | Switch             | R   | Indicates whether solar heat is on. |
+| "                                 | heateron          | Switch             | R   | Indicates whether heater is on. |
+
+#### Working with schedules
+
+This binding allows both reading and writing of schedules and supports up to 9 schedules.
+Programming of a schedule can be accomplished either by using the discrete channels linked to items (i.e. type, start, end, circuit, days) or you can concatenate those and use the `schedule` channel saved as a comma delimited string.
+To prevent erroneous writes to the schedules though, one must write to the `type` channel the same value twice within 5 sec.
+
+### Thing: IntelliChlor
+
+Represents an Intellichlor module connected in your system.  Currently, the values here are readonly.
+
+| Channel              | Type                       |     | Description |
+| :------------------: | :----:                     | :-: | :---------- |
+| saltOutput           | Number:Dimensionless       | R   | Current salt output %. |
+| salinity             | Number:Dimensionless       | R   | Salinity (ppm). |
+| ok                   | Switch                     | R   | System is operating normally. |
+| lowFlow              | Switch                     | R   | Water flow rate is low. |
+| lowSalt              | Switch                     | R   | Low salt level. |
+| veryLowSalt          | Switch                     | R   | Very low salt level. |
+| highCurrent          | Switch                     | R   | High current level. |
+| cleanCell            | Switch                     | R   | Clean cell. |
+| lowVoltage           | Switch                     | R   | Low voltage. |
+| lowWaterTemp         | Switch                     | R   | Water temperature is too low for chlorine generation. |
+| commError            | Switch                     | R   | Communication error. |
+
+### Thing: IntelliFlo
+
+Represents and interfaces to an Intelliflo pump.
+When a controller is active in the system all pump values are read only since the pump can only have one master at a time.
+If no controller is present or the controller is in service mode, the pump can be controlled directly from OpenHab.
+
+| Channel              | Type                       |     | Description |
+| :------------------: | :----:                     | :-: | :---------- |
+| run                  | Switch                     | RW  | Indicates whether the pump is running. |
+| rpm                  | Number                     | RW  | Pump RPM |
+| gpm                  | Number:VolumetricFlowRate  | R   | Pump GPM (only valid for VF pumps) |
+| power                | Number:Power               | R   | Pump power (Watt) |
+| status1              | Number                     | R   | Pump status1. (not reversed engineered) |
+| status2              | Number                     | R   | Pump status2. (not reversed engineered) |
+| runProgram           | Number                     | RW  | Run program (0 to stop, # to run) |
+
+### Thing: IntelliChem
+
+Represents and interfaces to an IntelliChem unit.
+This is for monitoring of values only and IntelliChem cannot be directly controlled through this binding.
+Note: This has limited testing since I don't own an IntelliChem
+
+| Channel                       | Type                   |     | Description |
+| :------------------:          | :----:                 | :-: | :---------- |
+| phReading                     | Number                 | R   | Current PH reading. |
+| orpReading                    | Number                 | R   | Current Oxidation Reduction Potential (ORP) reading. |
+| phSetPoint                    | Number                 | R   | Current PH set point. |
+| orpSetPoint                   | Number                 | R   | Oxidation Reduction Potential (ORP) set point. |
+| tank1Level                    | Number                 | R   | Tank 1 level (1-7). |
+| tank2Level                    | Number                 | R   | Tank 2 level (1-7). |
+| calciumHardness               | Number:Dimensionless   | R   | Calcium hardness PPM (mg/L). |
+| cyaReading                    | Number                 | R   | Cyanuric acid reading. |
+| alkalinity                    | Number                 | R   | Alkalinity reading. |
+| phDoserType                   | String                 | R   | The doser type for PH (None, CO2, Acid). |
+| orpDOserType                  | String                 | R   | The doser type for ORP (None, ORP). |
+| phDoserStatus                 | Switch                 | R   | Whether the chemical is currently dosing. |
+| orpDoserStatus                | Switch                 | R   | Whether the chemical is currently dosing. |
+| phDoseTime                    | Number:Time            | R   | The time a particular chemical has been dosing. |
+| orpdoseTime                   | Number:Time            | R   | The time a particular chemical has been dosing. |
+| lsi                           | Number                 | R   | Langelier Saturation Index. |
+| saltLevel                     | Number:Dimensionless   | R   | Current salt content reading of the water (PPM). |
+| temperature                   | Number:Temperature     | R   | Current temperature. |
+| alarmWaterFlow                | Switch                 | R   | Water flow alarm (on = no water flow). |
+| alarmPh                       | Switch                 | R   | PH alarm reported. |
+| alarmOrp                      | Switch                 | R   | ORP alarm reported. |
+| alarmPhTank                   | Switch                 | R   | PH tank alarm reported. |
+| alarmOrpTank                  | Switch                 | R   | ORP tank alarm reported. |
+| alarmProbeFault               | Switch                 | R   | Probe fault alarm reported. |
+| warningPhLockout              | Switch                 | R   | Unit is in PH Lockout. |
+| warningPhDailyLimitReached    | Switch                 | R   | Daily limit of PH dosing has been reached. |
+| warningOrpDailLimitReached    | Switch                 | R   | Daily limit of ORP dosing has been reached. |
+| warningInvalidSetup           | Switch                 | R   | Invalid setup for the unit. |
+| warningChlorinatorCommError   | Switch                 | R   | Error in communicating with the Chlorinator. |
+
+## Example setup
+
+### pentair.items
 
 ```java
-Group gPool          "Pool"
+Group gPool             (All)
 
-Number Pool_Temp               "Pool Temp [%.1f °F]"          <temperature>   (gPool) { channel = "pentair:easytouch:1:main:pooltemp" }
-Number Spa_Temp                "Spa Temp [%.1f °F]"           <temperature>   (gPool) { channel = "pentair:easytouch:1:main:spatemp" }
-Number Air_Temp                "Air Temp [%.1f °F]"           <temperature>   (gPool) { channel = "pentair:easytouch:1:main:airtemp" }
-Number Solar_Temp              "Solar Temp [%.1f °F]"         <temperature>   (gPool) { channel = "pentair:easytouch:1:main:solartemp" }
+Number:Temperature  Pool_Temp   "Pool Temperature"              <temperature>   (gPool)     { channel = "pentair:controller:1:main:poolheat#temperature" }
+Number:Temperature  Spa_Temp    "Spa Temperature "              <temperature>   (gPool)     { channel = "pentair:controller:1:main:spaheat#temperature" }
+Number:Temperature  Air_Temp    "Air Temperature"               <temperature>   (gPool)     { channel = "pentair:controller:1:main:status#airtemperature" }
+Number:Temperature  Solar_Temp  "Solar Temperature"             <temperature>   (gPool)     { channel = "pentair:controller:1:main:status#solartemperature" }
 
-Number PoolHeatMode            "Pool Heat Mode [%d]"                          (gPool) { channel="pentair:easytouch:1:main:poolheatmode" }
-String PoolHeatModeStr         "Pool Heat Mode [%s]"                          (gPool) { channel="pentair:easytouch:1:main:poolheatmodestr" }
-Number SpaHeatMode             "Spa Heat Mode [%d]"                           (gPool) { channel="pentair:easytouch:1:main:spaheatmode" }
-String SpaHeatModeStr          "Spa Heat Mode [%s]"                           (gPool) { channel="pentair:easytouch:1:main:spaheatmodestr" }
-Number PoolSetPoint            "Pool Set Point [%.1f °F]"     <temperature>   (gPool) { channel="pentair:easytouch:1:main:poolsetpoint" }
-Number SpaSetPoint             "Spa Set Point [%.1f °F]"      <temperature>   (gPool) { channel="pentair:easytouch:1:main:spasetpoint" }
-Number HeatActive              "Heat Active [%d]"                             (gPool) { channel="pentair:easytouch:1:main:heatactive" }
+String PoolHeatMode            "Pool Heat Mode [%s]"                            (gPool)     { channel="pentair:controller:1:main:poolheat#heatmode" }
+String SpaHeatMode             "Spa Heat Mode [%s]"                             (gPool)     { channel="pentair:controller:1:main:spaheat#heatmode" }
+Number:Temperature PoolSetPoint "Pool Set Point"                                (gPool)     { channel="pentair:controller:1:main:poolheat#setpoint" }
+Number:Temperature SpaSetPoint  "Spa Set Point"                                 (gPool)     { channel="pentair:controller:1:main:spaheat#setpoint" }
 
-Switch Mode_Spa                "Spa Mode"                                     (gPool) { channel = "pentair:easytouch:1:main:spa" }
-Switch Mode_Pool               "Pool Mode"                                    (gPool) { channel = "pentair:easytouch:1:main:pool" }
-Switch Mode_PoolLight          "Pool Light"                                   (gPool) { channel = "pentair:easytouch:1:main:aux1" }
-Switch Mode_SpaLight           "Spa Light"                                    (gPool) { channel = "pentair:easytouch:1:main:aux2" }
-Switch Mode_Jets               "Jets"                                         (gPool) { channel = "pentair:easytouch:1:main:aux3" }
-Switch Mode_Boost              "Boost Mode"                                   (gPool) { channel = "pentair:easytouch:1:main:aux4" }
-Switch Mode_Aux5               "Aux5 Mode"                                    (gPool) { channel = "pentair:easytouch:1:main:aux5" }
-Switch Mode_Aux6               "Aux6 Mode"                                    (gPool) { channel = "pentair:easytouch:1:main:aux6" }
-Switch Mode_Aux7               "Aux7 Mode"                                    (gPool) { channel = "pentair:easytouch:1:main:aux7" }
-Switch Mode_Spillway           "Spillway Mode"                                (gPool) { channel = "pentair:easytouch:1:main:feature1" }
+String PoolLightMode           "Light Mode"                                     (gPool)     { channel="pentair:controller:1:main:status#lightmode" }
 
-Number SaltOutput              "Salt Output [%d%%]"                           (gPool) { channel = "pentair:intellichlor:1:ic40:saltoutput" }
-Number Salinity                "Salinity [%d ppm]"                            (gPool) { channel = "pentair:intellichlor:1:ic40:salinity" }
+Number PoolHeatEnable           "Pool Heat Enable [%d]"                         (gPool)     { channel="pentair:controller:1:main:poolheatenable" }
+Number SpaHeatEnable            "Spa Heat Enable [%d]"                          (gPool)     { channel="pentair:controller:1:main:spaheatenable" }
 
-Switch Pump_Run                "Pump running [%d]"                            (gPool) { channel = "pentair:intelliflo:1:pump1:run" }
-Number Pump_DriveState         "Pump drivestate [%d]"                         (gPool) { channel = "pentair:intelliflo:1:pump1:drivestate" }
-Number Pump_Mode               "Pump Mode [%d]"                               (gPool) { channel = "pentair:intelliflo:1:pump1:mode" }
-Number Pump_RPM                "Pump RPM [%d]"                                (gPool) { channel = "pentair:intelliflo:1:pump1:rpm" }
-Number Pump_Power              "Pump Power [%d W]"                            (gPool) { channel = "pentair:intelliflo:1:pump1:power" }
-Number Pump_Error              "Pump Error [%d]"                              (gPool) { channel = "pentair:intelliflo:1:pump1:error" }
-Number Pump_PPC                "Pump PPC [%d]"                                (gPool) { channel = "pentair:intelliflo:1:pump1:ppc" }
+Switch Mode_Pool                "Pool Mode"                                     (gPool)     { channel = "pentair:controller:1:main:pool#switch" }
+Switch Mode_Spa                 "Spa"                                           (gPool)     { channel = "pentair:controller:1:main:spa#switch" }
+Switch Mode_PoolLight           "Pool Light"                                    (gPool)     { channel = "pentair:controller:1:main:aux1#switch" }
+Switch Mode_SpaLight            "Spa Light"                                     (gPool)     { channel = "pentair:controller:1:main:aux2#switch" }
+Switch Mode_Jets                "Jets"                                          (gPool)     { channel = "pentair:controller:1:main:aux3#switch" }
+Switch Mode_Boost               "Boost Mode"                                    (gPool)     { channel = "pentair:controller:1:main:aux4#switch" }
+Switch Mode_Aux5                "Aux5 Mode"                                     (gPool)     { channel = "pentair:controller:1:main:aux5#switch" }
+Switch Mode_Aux6                "Aux6 Mode"                                     (gPool)     { channel = "pentair:controller:1:main:aux6#switch" }
+Switch Mode_Aux7                "Aux7 Mode"                                     (gPool)     { channel = "pentair:controller:1:main:aux7#switch" }
+
+String ModeName_Pool            "Pool Name [%s]"                                (gPool)     { channel = "pentair:controller:1:main:pool#name" }
+String ModeFunc_Pool            "Pool Func [%s]"                                (gPool)     { channel = "pentair:controller:1:main:pool#function" }
+
+String ModeName_Spa            "Spa Name [%s]"                                (gPool)     { channel = "pentair:controller:1:main:spa#name" }
+String ModeFunc_Spa            "Spa Func [%s]"                                (gPool)     { channel = "pentair:controller:1:main:spa#function" }
+
+Switch Delay                    "Heater Delay"                                  (gPool)     { channel = "pentair:controller:1:main:status#heaterdelay" }
+
+Number Salt_Output              "Salt Output [%d%%]"                            (gPool)     { channel = "pentair:intellichlor:1:ic40:salt_output" }
+Number Salinity                 "Salinity [%d ppm]"                             (gPool)     { channel = "pentair:intellichlor:1:ic40:salinity" }
+
+Switch Pump_Run                 "Pump run"                                      (gPool)     { channel = "pentair:intelliflo:1:pump1:run" }
+Number Pump_RPM                 "Pump RPM [%d]"                                 (gPool)     { channel = "pentair:intelliflo:1:pump1:rpm" }
+Number Pump_GPM                 "Pump GPM [%d]"                                 (gPool)     { channel = "pentair:intelliflo:1:pump1:gpm" }
+Number Pump_Power               "Pump Power [%d W]"                             (gPool)     { channel = "pentair:intelliflo:1:pump1:power" }
+Number Pump_Error               "Pump Error [%d]"                               (gPool)     { channel = "pentair:intelliflo:1:pump1:error" }                                                                                                                                      
+Number Pump_Status1             "Pump Status 1 [%d]"                            (gPool)     { channel = "pentair:intelliflo:1:pump1:status1" }
+Number Pump_Status2             "Pump Status 2 [%d]"                            (gPool)     { channel = "pentair:intelliflo:1:pump1:status2" }
+
+Number Schedule1_Start          "Schedule 1 start"                              (gPool)     { channel = "pentair:controller:1:main:schedule1#start" }
+Number Schedule1_End            "Schedule 1 end"                                (gPool)     { channel = "pentair:controller:1:main:schedule1#end" }
+Number Schedule1_Type           "Schedule 1 type"                               (gPool)     { channel = "pentair:controller:1:main:schedule1#type" }
+String Schedule1_String         "Schedule 1 string"                             (gPool)     { channel = "pentair:controller:1:main:schedule1#schedule" }
+Number Schedule1_Circuit        "Schedule 1 circuit"                            (gPool)     { channel = "pentair:controller:1:main:schedule1#circuit" }
+String Schedule1_Days           "Schedule 1 days"                               (gPool)     { channel = "pentair:controller:1:main:schedule1#days" }                                                                                                                                     
 ```
 
-Here is an example of a complete sitemap, saved as `pentair.sitemap`.  Adjust the temperature values for metric if so desired.
+### sitemap
 
 ```perl
 sitemap pool label="Pool stuff" {
@@ -194,13 +281,14 @@ sitemap pool label="Pool stuff" {
     Switch item=Mode_PoolLight
     Text item=Pool_Temp valuecolor=[>82="red",>77="orange",<=77="blue"]
     Setpoint item=PoolSetPoint minValue=85 maxValue=103 step=1.0
+    Default item=PoolLightMode
     Group item=gPool label="Advanced"
   }
   Frame label="Spa" {
     Switch item=Mode_Spa
     Switch item=Mode_SpaLight
     Switch item=Mode_Jets
-    Text item=Pool_Temp valuecolor=[>82="red",>77="orange",<=77="blue"]
+    Text item=Spa_Temp valuecolor=[>82="red",>77="orange",<=77="blue"]
     Setpoint item=SpaSetPoint minValue=85 maxValue=103 step=1.0
   }
 }
@@ -208,12 +296,8 @@ sitemap pool label="Pool stuff" {
 
 ## References
 
+
 Setting up RS485 and basic protocol - <https://www.sdyoung.com/home/decoding-the-pentair-easytouch-rs-485-protocol/>
 ser2sock GitHub - <https://github.com/nutechsoftware/ser2sock>
+nodejs-poolController - https://github.com/tagyoureit/nodejs-poolController
 
-## Future Enhancements
-
-- Add automatic discovery of devices on RS-485
-- Add in IntelliBrite light color selection (need to capture protocol on system that has this)
-- Add direct control of pump (non read-only channels)
-- Fix heat active - not working on my system.

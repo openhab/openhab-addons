@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -168,7 +168,7 @@ public class SDMThermostatHandler extends SDMBaseHandler {
 
         SDMFanTrait fan = traits.fan;
         if (fan != null) {
-            updateState(CHANNEL_FAN_TIMER_MODE, fan.timerMode == SDMFanTimerMode.ON ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_FAN_TIMER_MODE, OnOffType.from(fan.timerMode == SDMFanTimerMode.ON));
             updateState(CHANNEL_FAN_TIMER_TIMEOUT, fan.timerTimeout == null ? UnDefType.NULL
                     : new DateTimeType(fan.timerTimeout.withZoneSameInstant(timeZoneProvider.getTimeZone())));
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,7 +55,7 @@ public class DPTUtil {
 
     // used to map vendor-specific data to standard DPT
     public static final Map<String, String> NORMALIZED_DPT = Map.of(//
-            "232.60000", "232.600");
+            "232.60000", "232.600", "251.60600", "251.600");
 
     // fall back if no specific type is defined in DPT_TYPE_MAP
     private static final Map<String, Set<Class<? extends Type>>> DPT_MAIN_TYPE_MAP = Map.ofEntries( //
@@ -64,28 +64,35 @@ public class DPTUtil {
             Map.entry("3", Set.of(IncreaseDecreaseType.class)), //
             Map.entry("4", Set.of(StringType.class)), //
             Map.entry("5", Set.of(QuantityType.class, DecimalType.class)), //
-            Map.entry("6", Set.of(QuantityType.class, DecimalType.class)), //
+            Map.entry("6", Set.of(QuantityType.class, DecimalType.class, StringType.class)), //
             Map.entry("7", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("8", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("9", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("10", Set.of(DateTimeType.class)), //
             Map.entry("11", Set.of(DateTimeType.class)), //
-            Map.entry("12", Set.of(DecimalType.class)), //
+            Map.entry("12", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("13", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("14", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("16", Set.of(StringType.class)), //
             Map.entry("17", Set.of(DecimalType.class)), //
             Map.entry("18", Set.of(DecimalType.class)), //
             Map.entry("19", Set.of(DateTimeType.class)), //
-            Map.entry("20", Set.of(StringType.class)), //
-            Map.entry("21", Set.of(StringType.class)), //
-            Map.entry("22", Set.of(StringType.class)), //
+            Map.entry("20", Set.of(StringType.class, DecimalType.class)), //
+            Map.entry("21", Set.of(StringType.class, DecimalType.class)), //
+            Map.entry("22", Set.of(StringType.class, DecimalType.class)), //
             Map.entry("28", Set.of(StringType.class)), //
             Map.entry("29", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("229", Set.of(DecimalType.class)), //
             Map.entry("232", Set.of(HSBType.class)), //
+            Map.entry("235", Set.of(QuantityType.class, DecimalType.class)), //
             Map.entry("242", Set.of(HSBType.class)), //
-            Map.entry("251", Set.of(HSBType.class, PercentType.class)));
+            Map.entry("243", Set.of(StringType.class)), //
+            Map.entry("249", Set.of(StringType.class)), //
+            Map.entry("250", Set.of(StringType.class)), //
+            Map.entry("251", Set.of(HSBType.class, PercentType.class)), //
+            Map.entry("252", Set.of(StringType.class)), //
+            Map.entry("253", Set.of(StringType.class)), //
+            Map.entry("254", Set.of(StringType.class)));
 
     // compatible types for full DPTs
     private static final Map<String, Set<Class<? extends Type>>> DPT_TYPE_MAP = Map.ofEntries(

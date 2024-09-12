@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,6 +49,7 @@ public enum MiIoDevices {
     CHUNMI_COOKER_PRESS1("chunmi.cooker.press1", "Mi IH Pressure Rice Cooker", THING_TYPE_UNSUPPORTED),
     CHUNMI_COOKER_PRESS2("chunmi.cooker.press2", "Mi IH Pressure Rice Cooker", THING_TYPE_UNSUPPORTED),
     CUCO_PLUG_CP1("cuco.plug.cp1", "Gosund Smart Plug", THING_TYPE_BASIC),
+    CUCO_PLUG_V2EUR("cuco.plug.v2eur", "Xiaomi Smart Plug 2 (Wi-Fi)", THING_TYPE_BASIC),
     DEERMA_HUMIDIFIER_JSQ("deerma.humidifier.jsq", "Mi Smart Antibacterial Humidifier", THING_TYPE_BASIC),
     DEERMA_HUMIDIFIER_JSQ1("deerma.humidifier.jsq1", "Mi S Smart Humidifer ", THING_TYPE_BASIC),
     DEERMA_HUMIDIFIER_JSQ2W("deerma.humidifier.jsq2w", "Xiaomi Smart Humidifier 2", THING_TYPE_BASIC),
@@ -72,6 +73,7 @@ public enum MiIoDevices {
     DREAME_VACUUM_P2029("dreame.vacuum.p2029", "Dreame Bot L10 Pro", THING_TYPE_BASIC),
     DREAME_VACUUM_P2036("dreame.vacuum.p2036", "Trouver Robot LDS Vacuum-Mop Finder", THING_TYPE_BASIC),
     DREAME_VACUUM_P2041O("dreame.vacuum.p2041o", "Mi Robot Vacuum-Mop 2 Pro+", THING_TYPE_BASIC),
+    DREAME_VACUUM_P2114O("dreame.vacuum.p2114o", "Mijia Omni Robot Vacuum-Mop", THING_TYPE_BASIC),
     DREAME_VACUUM_P2156O("dreame.vacuum.p2156o", "MOVA Z500 Robot Vacuum and Mop Cleaner", THING_TYPE_BASIC),
     DREAME_VACUUM_P2157("dreame.vacuum.p2157", "MOVA L600 Robot Vacuum and Mop Cleaner", THING_TYPE_BASIC),
     DREAME_VACUUM_P2259("dreame.vacuum.p2259", "Dreame Bot D9 Max", THING_TYPE_BASIC),
@@ -98,6 +100,7 @@ public enum MiIoDevices {
     HUAYI_LIGHT_ZW131("huayi.light.zw131", "HUIZUO ZIWEI Ceiling Lamp", THING_TYPE_BASIC),
     HUNMI_COOKER_NORMAL3("hunmi.cooker.normal3", "MiJia Rice Cooker", THING_TYPE_UNSUPPORTED),
     IDELAN_AIRCONDITION_V1("idelan.aircondition.v1", "Jinxing Smart Air Conditioner", THING_TYPE_UNSUPPORTED),
+    IJAI_VACUUM_V3("ijai.vacuum.v3", "Mi Robot Vacuum-Mop 2 Pro", THING_TYPE_BASIC),
     IJAI_VACUUM_V19("ijai.vacuum.v19", "Xiaomi Robot Vacuum-Mop 2S", THING_TYPE_BASIC),
     IKEA_LIGHT_LED1545G12("ikea.light.led1545g12", "IKEA E27 white spectrum opal", THING_TYPE_LUMI),
     IKEA_LIGHT_LED1546G12("ikea.light.led1546g12", "IKEA E27 white spectrum clear", THING_TYPE_LUMI),
@@ -353,6 +356,7 @@ public enum MiIoDevices {
     YEELINK_LIGHT_COLOR4("yeelink.light.color4", "Yeelight LED Bulb 1S（Color）", THING_TYPE_BASIC),
     YEELINK_LIGHT_COLOR5("yeelink.light.color5", "Mi Smart LED Bulb Essential (White and Color)", THING_TYPE_BASIC),
     YEELINK_LIGHT_COLORA("yeelink.light.colora", "Yeelight Smart LED Bulb 1SE (color)", THING_TYPE_BASIC),
+    YEELINK_LIGHT_COLORB("yeelink.light.colorb", "Yeelight Smart LED Bulb W3 (color)", THING_TYPE_BASIC),
     YEELINK_LIGHT_CT2("yeelink.light.ct2", "Yeelight LED Bulb (Tunable)", THING_TYPE_BASIC),
     YEELINK_LIGHT_LAMP1("yeelink.light.lamp1", "Mi LED Desk Lamp", THING_TYPE_BASIC),
     YEELINK_LIGHT_LAMP2("yeelink.light.lamp2", "Mi Smart LED Desk Lamp Pro", THING_TYPE_BASIC),

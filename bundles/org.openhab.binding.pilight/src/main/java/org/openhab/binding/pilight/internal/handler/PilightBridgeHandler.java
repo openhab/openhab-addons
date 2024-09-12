@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.pilight.internal.handler;
 
 import java.util.Collection;
@@ -65,8 +64,7 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
 
     private @Nullable PilightDeviceDiscoveryService discoveryService = null;
 
-    private final ExecutorService connectorExecutor = Executors
-            .newSingleThreadExecutor(new NamedThreadFactory(getThing().getUID().getAsString(), true));
+    private @Nullable ExecutorService connectorExecutor = null;
 
     public PilightBridgeHandler(Bridge bridge) {
         super(bridge);
@@ -79,10 +77,10 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
 
     @Override
     public void initialize() {
-        PilightBridgeConfiguration config = getConfigAs(PilightBridgeConfiguration.class);
+        PilightBridgeConfiguration pilightConfig = getConfigAs(PilightBridgeConfiguration.class);
 
         final @Nullable PilightDeviceDiscoveryService discoveryService = this.discoveryService;
-        PilightConnector connector = new PilightConnector(config, new IPilightCallback() {
+        PilightConnector connector = new PilightConnector(pilightConfig, new IPilightCallback() {
             @Override
             public void updateThingStatus(ThingStatus status, ThingStatusDetail statusDetail,
                     @Nullable String description) {
@@ -116,7 +114,10 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.UNKNOWN);
 
+        ExecutorService connectorExecutor = Executors
+                .newSingleThreadExecutor(new NamedThreadFactory(getThing().getUID().getAsString(), true));
         connectorExecutor.execute(connector);
+        this.connectorExecutor = connectorExecutor;
         this.connector = connector;
     }
 
@@ -133,7 +134,20 @@ public class PilightBridgeHandler extends BaseBridgeHandler {
             this.connector = null;
         }
 
-        connectorExecutor.shutdown();
+        final @Nullable ExecutorService connectorExecutor = this.connectorExecutor;
+        if (connectorExecutor != null) {
+            connectorExecutor.shutdown();
+            this.connectorExecutor = null;
+        }
+    }
+
+    /**
+     * Is background discovery for this bridge enabled?
+     *
+     * @return background discovery
+     */
+    public boolean isBackgroundDiscoveryEnabled() {
+        return getConfigAs(PilightBridgeConfiguration.class).getBackgroundDiscovery();
     }
 
     /**

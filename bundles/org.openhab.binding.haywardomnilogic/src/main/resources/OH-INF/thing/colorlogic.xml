@@ -10,7 +10,6 @@
 		</supported-bridge-type-refs>
 
 		<label>Color Logic Light</label>
-		<description>Color Logic Light</description>
 		<channels>
 			<channel id="colorLogicLightEnable" typeId="system.power"/>
 			<channel id="colorLogicLightState" typeId="lightState"/>
@@ -28,7 +27,6 @@
 	<channel-type id="lightState">
 		<item-type>String</item-type>
 		<label>Light State</label>
-		<description>Light State</description>
 		<state readOnly="true">
 			<options>
 				<option value="0">Off</option>
@@ -39,30 +37,42 @@
 		</state>
 	</channel-type>
 
+	<channel-type id="lightBrightness">
+		<item-type>String</item-type>
+		<label>Light Brightness</label>
+		<state readOnly="false">
+			<options>
+				<option value="0">20%</option>
+				<option value="1">40%</option>
+				<option value="2">60%</option>
+				<option value="3">80%</option>
+				<option value="4">100%</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="lightSpeed">
+		<item-type>String</item-type>
+		<label>Light Speed</label>
+		<state readOnly="false">
+			<options>
+				<option value="0">1/16x</option>
+				<option value="1">1/8x</option>
+				<option value="2">1/4x</option>
+				<option value="3">1/2x</option>
+				<option value="4">1x</option>
+				<option value="5">2x</option>
+				<option value="6">4x</option>
+				<option value="7">8x</option>
+				<option value="8">16x</option>
+			</options>
+		</state>
+	</channel-type>
+
 	<channel-type id="currentShow">
 		<item-type>String</item-type>
 		<label>Current Show</label>
-		<description>Current Show</description>
-		<state readOnly="false">
-			<options>
-				<option value="0">Voodoo Lounge</option>
-				<option value="1">Deep Blue Sea</option>
-				<option value="2">Royal Blue</option>
-				<option value="3">Afternoon Sky</option>
-				<option value="4">Aqua Green</option>
-				<option value="5">Emerald</option>
-				<option value="6">Cloud White</option>
-				<option value="7">Warm Red</option>
-				<option value="8">Flamingo</option>
-				<option value="9">Vivid Violet</option>
-				<option value="10">Sangria</option>
-				<option value="11">Twilight</option>
-				<option value="12">Tranquility</option>
-				<option value="13">Gemstone</option>
-				<option value="14">USA</option>
-				<option value="15">Mardi Gras</option>
-				<option value="16">Cool Cabaret</option>
-			</options>
+		<state pattern="%s" readOnly="false">
 		</state>
 	</channel-type>
 </thing:thing-descriptions>

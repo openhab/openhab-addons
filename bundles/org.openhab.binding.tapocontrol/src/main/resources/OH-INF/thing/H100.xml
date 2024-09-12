@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="tapocontrol"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<bridge-type id="H100">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bridge"/>
+		</supported-bridge-type-refs>
+
+		<label>Tapo Hub H100</label>
+		<description>Tapo SmartHub H100</description>
+
+		<channel-groups>
+			<channel-group id="alarm" typeId="smartHubAlarms"/>
+			<channel-group id="device" typeId="deviceStateS"/>
+		</channel-groups>
+
+		<representation-property>macAddress</representation-property>
+
+		<config-description-ref uri="bridge-type:tapo:hub"/>
+	</bridge-type>
+</thing:thing-descriptions>

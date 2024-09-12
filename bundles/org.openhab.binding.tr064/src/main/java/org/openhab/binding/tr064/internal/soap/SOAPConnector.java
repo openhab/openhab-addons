@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -192,7 +192,8 @@ public class SOAPConnector {
 
                 SOAPMessage soapMessage = MessageFactory.newInstance().createMessage(null, is);
                 if (soapMessage.getSOAPBody().hasFault()) {
-                    String soapError = getSOAPElement(soapMessage, "errorCode").orElse("unknown");
+                    String soapError = Objects
+                            .requireNonNull(getSOAPElement(soapMessage, "errorCode").orElse("unknown"));
                     String soapReason = getSOAPElement(soapMessage, "errorDescription").orElse("unknown");
                     String error = String.format("HTTP-Response-Code %d (%s), SOAP-Fault: %s (%s)",
                             response.getStatus(), response.getReason(), soapError, soapReason);

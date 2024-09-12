@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -256,7 +256,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
                     wemoHttpCaller.executeCall(wemoURL, soapHeader, content);
                     if ("10008".equals(capability)) {
                         OnOffType binaryState = null;
-                        binaryState = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
+                        binaryState = OnOffType.from(!"0".equals(value));
                         updateState(CHANNEL_STATE, binaryState);
                     }
                     updateStatus(ThingStatus.ONLINE);
@@ -308,7 +308,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
             String[] splitResponse = response.split(",");
             if (splitResponse[0] != null) {
                 OnOffType binaryState = null;
-                binaryState = "0".equals(splitResponse[0]) ? OnOffType.OFF : OnOffType.ON;
+                binaryState = OnOffType.from(!"0".equals(splitResponse[0]));
                 updateState(CHANNEL_STATE, binaryState);
             }
             if (splitResponse[1] != null) {
@@ -338,7 +338,7 @@ public class WemoLightHandler extends WemoBaseThingHandler {
         switch (capabilityId) {
             case "10006":
                 OnOffType binaryState = null;
-                binaryState = "0".equals(newValue) ? OnOffType.OFF : OnOffType.ON;
+                binaryState = OnOffType.from(!"0".equals(newValue));
                 updateState(CHANNEL_STATE, binaryState);
                 break;
             case "10008":

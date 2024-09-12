@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -37,6 +37,7 @@ import org.openhab.binding.hue.internal.handler.sensors.TapSwitchHandler;
 import org.openhab.binding.hue.internal.handler.sensors.TemperatureHandler;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.i18n.LocaleProvider;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.i18n.TranslationProvider;
 import org.openhab.core.io.net.http.HttpClientFactory;
 import org.openhab.core.thing.Bridge;
@@ -82,6 +83,7 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
     private final Clip2StateDescriptionProvider clip2StateDescriptionProvider;
     private final TranslationProvider i18nProvider;
     private final LocaleProvider localeProvider;
+    private final TimeZoneProvider timeZoneProvider;
     private final ThingRegistry thingRegistry;
     private final ItemChannelLinkRegistry itemChannelLinkRegistry;
 
@@ -90,13 +92,14 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             final @Reference HueStateDescriptionProvider stateDescriptionProvider,
             final @Reference Clip2StateDescriptionProvider clip2StateDescriptionProvider,
             final @Reference TranslationProvider i18nProvider, final @Reference LocaleProvider localeProvider,
-            final @Reference ThingRegistry thingRegistry,
+            final @Reference TimeZoneProvider timeZoneProvider, final @Reference ThingRegistry thingRegistry,
             final @Reference ItemChannelLinkRegistry itemChannelLinkRegistry) {
         this.httpClientFactory = httpClientFactory;
         this.stateDescriptionProvider = stateDescriptionProvider;
         this.clip2StateDescriptionProvider = clip2StateDescriptionProvider;
         this.i18nProvider = i18nProvider;
         this.localeProvider = localeProvider;
+        this.timeZoneProvider = timeZoneProvider;
         this.thingRegistry = thingRegistry;
         this.itemChannelLinkRegistry = itemChannelLinkRegistry;
     }
@@ -184,10 +187,11 @@ public class HueThingHandlerFactory extends BaseThingHandlerFactory {
             return new Clip2BridgeHandler((Bridge) thing, httpClientFactory, thingRegistry, localeProvider,
                     i18nProvider);
         } else if (Clip2ThingHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
-            return new Clip2ThingHandler(thing, clip2StateDescriptionProvider, thingRegistry, itemChannelLinkRegistry);
+            return new Clip2ThingHandler(thing, clip2StateDescriptionProvider, timeZoneProvider, thingRegistry,
+                    itemChannelLinkRegistry);
         } else if (HueBridgeHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new HueBridgeHandler((Bridge) thing, httpClientFactory.getCommonHttpClient(),
-                    stateDescriptionProvider, i18nProvider, localeProvider);
+                    stateDescriptionProvider);
         } else if (HueLightHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {
             return new HueLightHandler(thing, stateDescriptionProvider);
         } else if (DimmerSwitchHandler.SUPPORTED_THING_TYPES.contains(thingTypeUID)) {

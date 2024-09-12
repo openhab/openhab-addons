@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -243,14 +243,14 @@ class SetAudioVolume extends SonyAudioMethod {
 
     SetAudioVolume(int volume, int min, int max) {
         super("setAudioVolume", "1.1");
-        long scaled_volume = scaleVolume(volume, min, max);
-        params = new Param[] { new Param(scaled_volume) };
+        long scaledVolume = scaleVolume(volume, min, max);
+        params = new Param[] { new Param(scaledVolume) };
     }
 
     SetAudioVolume(int zone, int volume, int min, int max) {
         super("setAudioVolume", "1.1");
-        long scaled_volume = scaleVolume(volume, min, max);
-        params = new Param[] { new Param(scaled_volume, zone) };
+        long scaledVolume = scaleVolume(volume, min, max);
+        params = new Param[] { new Param(scaledVolume, zone) };
     }
 
     SetAudioVolume(String volume_change) {

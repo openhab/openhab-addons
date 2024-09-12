@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.transform.exec.internal;
 
 import java.time.Duration;
+import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -35,6 +36,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 @Component(property = { "openhab.transform=EXEC" })
 public class ExecTransformationService implements TransformationService {
+    private static final Pattern SPLIT_ON_SPACE = Pattern.compile("(['])((?:\\\\\\1|.)+?)\\1|([^\\s']+)");
     private final Logger logger = LoggerFactory.getLogger(ExecTransformationService.class);
     private final ExecTransformationWhitelistWatchService execTransformationWhitelistWatchService;
 
@@ -66,8 +68,9 @@ public class ExecTransformationService implements TransformationService {
         long startTime = System.currentTimeMillis();
 
         String formattedCommandLine = String.format(commandLine, source);
-        String result = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofSeconds(5),
-                formattedCommandLine.split(" "));
+        String[] cmdLineParts = SPLIT_ON_SPACE.matcher(formattedCommandLine).results()
+                .map(mr -> mr.group(2) == null ? mr.group() : mr.group(2)).toArray(String[]::new);
+        String result = ExecUtil.executeCommandLineAndWaitResponse(Duration.ofSeconds(5), cmdLineParts);
         logger.trace("command line execution elapsed {} ms", System.currentTimeMillis() - startTime);
 
         return result;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,7 +121,7 @@ public class FridgeHandler extends MieleApplianceHandler<FridgeChannelSelector> 
 
         // Supercool is not exposed directly as property, but can be deduced from state.
         ChannelUID channelUid = new ChannelUID(getThing().getUID(), SUPERCOOL_CHANNEL_ID);
-        State state = dp.Value.equals(String.valueOf(STATE_SUPER_COOLING)) ? OnOffType.ON : OnOffType.OFF;
+        State state = OnOffType.from(dp.Value.equals(String.valueOf(STATE_SUPER_COOLING)));
         logger.trace("Update state of {} to {} through '{}'", channelUid, state, dp.Name);
         updateState(channelUid, state);
     }

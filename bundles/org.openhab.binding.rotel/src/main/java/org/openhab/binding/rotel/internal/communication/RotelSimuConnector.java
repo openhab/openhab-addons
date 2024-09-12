@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -312,11 +312,11 @@ public class RotelSimuConnector extends RotelConnector {
             case RECORD_FONCTION_SELECT:
                 if (model.getNumberOfZones() > 1 && model.getZoneSelectCmd() == cmd) {
                     showZone++;
-                    if (showZone >= model.getNumberOfZones()) {
+                    if (showZone > model.getNumberOfZones()) {
                         showZone = 1;
-                        if (!powers[0]) {
-                            showZone++;
-                        }
+                    }
+                    if (showZone == 1 && !powers[0]) {
+                        showZone++;
                     }
                 } else {
                     showZone = 1;
@@ -325,6 +325,9 @@ public class RotelSimuConnector extends RotelConnector {
                     selectingRecord = powers[0];
                     showTreble = false;
                     textLine2 = buildRecordResponse();
+                    if (model.getRespNbChars() == 11) {
+                        text = textLine2;
+                    }
                 } else if (showZone >= 2 && showZone <= 4) {
                     selectingRecord = false;
                     text = textLine2 = buildZonePowerResponse(showZone);
@@ -1182,8 +1185,8 @@ public class RotelSimuConnector extends RotelConnector {
                 // Check if command is a change of record source
                 try {
                     recordSource = model.getRecordSourceFromCommand(cmd);
-                    text = buildSourceLine1Response();
                     textLine2 = buildRecordResponse();
+                    text = model.getRespNbChars() == 11 ? textLine2 : buildSourceLine1Response();
                     accepted = true;
                 } catch (RotelException e) {
                 }
@@ -1217,21 +1220,26 @@ public class RotelSimuConnector extends RotelConnector {
         if (protocol == RotelProtocol.HEX) {
             byte[] chars = Arrays.copyOf(text.getBytes(StandardCharsets.US_ASCII), model.getRespNbChars());
             byte[] flags = new byte[model.getRespNbFlags()];
-            try {
-                model.setMultiInput(flags, multiinput);
-            } catch (RotelException e) {
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.MULTI_INPUT)) {
+                model.setInfoInFlags(RotelFlagInfoType.MULTI_INPUT, flags, multiinput);
             }
-            try {
-                model.setZone2(flags, powers[2]);
-            } catch (RotelException e) {
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE2)) {
+                model.setInfoInFlags(RotelFlagInfoType.ZONE2, flags, powers[2]);
             }
-            try {
-                model.setZone3(flags, powers[3]);
-            } catch (RotelException e) {
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE3)) {
+                model.setInfoInFlags(RotelFlagInfoType.ZONE3, flags, powers[3]);
             }
-            try {
-                model.setZone4(flags, powers[4]);
-            } catch (RotelException e) {
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE4)) {
+                model.setInfoInFlags(RotelFlagInfoType.ZONE4, flags, powers[4]);
+            }
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.ZONE)) {
+                model.setInfoInFlags(RotelFlagInfoType.ZONE, flags, powers[2] || powers[3] || powers[4]);
+            }
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.SPEAKER_A)) {
+                model.setInfoInFlags(RotelFlagInfoType.SPEAKER_A, flags, speakerA);
+            }
+            if (model.isInfoPresentInFlags(RotelFlagInfoType.SPEAKER_B)) {
+                model.setInfoInFlags(RotelFlagInfoType.SPEAKER_B, flags, speakerB);
             }
             int size = 6 + model.getRespNbChars() + model.getRespNbFlags();
             byte[] dataBuffer = new byte[size];
@@ -1479,9 +1487,18 @@ public class RotelSimuConnector extends RotelConnector {
         if (!powers[0]) {
             text = "";
         } else if (mutes[0]) {
-            text = "MUTE ON";
+            text = model.getRespNbChars() == 11 ? "  MUTE ON  " : "MUTE ON";
         } else {
-            text = getSourceLabel(sources[0], false) + " " + getSourceLabel(recordSource, true);
+            text = getSourceLabel(sources[0], false);
+            if (model.getRespNbChars() == 11) {
+                if ("TUNER".equals(text)) {
+                    text = "104.30M 10 ";
+                } else {
+                    text += " " + buildVolumeValue(0);
+                }
+            } else {
+                text += " " + getSourceLabel(recordSource, true);
+            }
         }
         return text;
     }
@@ -1507,26 +1524,16 @@ public class RotelSimuConnector extends RotelConnector {
     }
 
     private String buildZonePowerResponse(int numZone) {
-        String zone;
-        if (numZone == 2) {
-            zone = model.getNumberOfZones() > 2 ? "ZONE2" : "ZONE";
-        } else {
-            zone = String.format("ZONE%d", numZone);
+        String zone = model.getRespNbChars() == 11 ? " Z" : "ZONE";
+        if (numZone != 2 || model.getNumberOfZones() > 2) {
+            zone += String.format("%d", numZone);
         }
         String state = powers[numZone] ? getSourceLabel(sources[numZone], true) : "OFF";
         return zone + " " + state;
     }
 
     private String buildVolumeLine1Response() {
-        String text;
-        if (volumes[0] == minVolume) {
-            text = " VOLUME  MIN ";
-        } else if (volumes[0] == maxVolume) {
-            text = " VOLUME  MAX ";
-        } else {
-            text = String.format(" VOLUME   %02d ", volumes[0]);
-        }
-        return text;
+        return String.format(model.getRespNbChars() == 11 ? "VOLUME  %s" : " VOLUME  %s ", buildVolumeValue(0));
     }
 
     private String buildVolumeLine1RightResponse() {
@@ -1535,32 +1542,36 @@ public class RotelSimuConnector extends RotelConnector {
             text = "";
         } else if (mutes[0]) {
             text = "MUTE ON";
-        } else if (volumes[0] == minVolume) {
-            text = "VOL MIN";
-        } else if (volumes[0] == maxVolume) {
-            text = "VOL MAX";
         } else {
-            text = String.format("VOL  %02d", volumes[0]);
+            text = String.format("VOL %s", buildVolumeValue(0));
         }
         return text;
     }
 
     private String buildZoneVolumeResponse(int numZone) {
-        String zone;
-        if (numZone == 2) {
-            zone = model.getNumberOfZones() > 2 ? "ZONE2" : "ZONE";
-        } else {
-            zone = String.format("ZONE%d", numZone);
+        String zone = model.getRespNbChars() == 11 ? " Z" : "ZONE";
+        if (numZone != 2 || model.getNumberOfZones() > 2) {
+            zone += String.format("%d", numZone);
         }
         String text;
         if (mutes[numZone]) {
             text = zone + " MUTE ON";
-        } else if (volumes[numZone] == minVolume) {
-            text = zone + " VOL MIN";
-        } else if (volumes[numZone] == maxVolume) {
-            text = zone + " VOL MAX";
         } else {
-            text = String.format("%s VOL %02d", zone, volumes[numZone]);
+            text = String.format("%s VOL %s", zone, buildVolumeValue(numZone));
+        }
+        return text;
+    }
+
+    private String buildVolumeValue(int numZone) {
+        String text;
+        if (volumes[numZone] == minVolume) {
+            text = "MIN";
+        } else if (volumes[numZone] == maxVolume) {
+            text = "MAX";
+        } else if (model.getRespNbChars() == 11) {
+            text = String.format(volumes[numZone] < 10 ? "  %d" : " %d", volumes[numZone]);
+        } else {
+            text = String.format(" %02d", volumes[numZone]);
         }
         return text;
     }
@@ -1568,15 +1579,15 @@ public class RotelSimuConnector extends RotelConnector {
     private String buildBassLine1Response() {
         String text;
         if (basses[0] == minToneLevel) {
-            text = "   BASS  MIN ";
+            text = model.getRespNbChars() == 11 ? " BASS  MIN " : "   BASS  MIN ";
         } else if (basses[0] == maxToneLevel) {
-            text = "   BASS  MAX ";
+            text = model.getRespNbChars() == 11 ? " BASS  MAX " : "   BASS  MAX ";
         } else if (basses[0] == 0) {
-            text = "   BASS    0 ";
+            text = model.getRespNbChars() == 11 ? " BASS    0 " : "   BASS    0 ";
         } else if (basses[0] > 0) {
-            text = String.format("   BASS  +%02d ", basses[0]);
+            text = String.format(model.getRespNbChars() == 11 ? " BASS  + %d " : "   BASS  +%02d ", basses[0]);
         } else {
-            text = String.format("   BASS  -%02d ", -basses[0]);
+            text = String.format(model.getRespNbChars() == 11 ? " BASS  - %d " : "   BASS  -%02d ", -basses[0]);
         }
         return text;
     }
@@ -1600,15 +1611,15 @@ public class RotelSimuConnector extends RotelConnector {
     private String buildTrebleLine1Response() {
         String text;
         if (trebles[0] == minToneLevel) {
-            text = " TREBLE  MIN ";
+            text = model.getRespNbChars() == 11 ? "TREBLE MIN " : " TREBLE  MIN ";
         } else if (trebles[0] == maxToneLevel) {
-            text = " TREBLE  MAX ";
+            text = model.getRespNbChars() == 11 ? "TREBLE MAX " : " TREBLE  MAX ";
         } else if (trebles[0] == 0) {
-            text = " TREBLE    0 ";
+            text = model.getRespNbChars() == 11 ? "TREBLE   0 " : " TREBLE    0 ";
         } else if (trebles[0] > 0) {
-            text = String.format(" TREBLE  +%02d ", trebles[0]);
+            text = String.format(model.getRespNbChars() == 11 ? "TREBLE + %d " : " TREBLE  +%02d ", trebles[0]);
         } else {
-            text = String.format(" TREBLE  -%02d ", -trebles[0]);
+            text = String.format(model.getRespNbChars() == 11 ? "TREBLE - %d " : " TREBLE  -%02d ", trebles[0]);
         }
         return text;
     }

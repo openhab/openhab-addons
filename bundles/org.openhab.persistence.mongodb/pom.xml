@@ -7,19 +7,73 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.persistence.mongodb</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: MongoDB</name>
 
+  <properties>
+    <bnd.importpackage>!sun.nio.ch;!org.bson.codecs.kotlin*;!jnr.unixsocket*;!javax.annotation*;!com.google*;!io.netty*;com.oracle*;resolution:=optional;com.aayushatharva*;resolution:=optional;com.mongodb.crypt*;resolution:=optional;com.amazon*;resolution:=optional;software.amazon*;resolution:=optional</bnd.importpackage>
+  </properties>
+
   <dependencies>
-    <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
     <dependency>
       <groupId>org.mongodb</groupId>
-      <artifactId>mongo-java-driver</artifactId>
-      <version>2.13.1</version>
+      <artifactId>mongodb-driver-sync</artifactId>
+      <version>4.11.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>bson</artifactId>
+      <version>4.11.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-driver-core</artifactId>
+      <version>4.11.1</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.xerial.snappy</groupId>
+      <artifactId>snappy-java</artifactId>
+      <version>1.1.10.3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.luben</groupId>
+      <artifactId>zstd-jni</artifactId>
+      <version>1.5.5-3</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>bson-record-codec</artifactId>
+      <version>4.11.1</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Test dependencies -->
+    <dependency>
+      <groupId>de.bwaldvogel</groupId>
+      <artifactId>mongo-java-server</artifactId>
+      <version>1.44.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>mongodb</artifactId>
+      <version>1.19.4</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.14.0</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

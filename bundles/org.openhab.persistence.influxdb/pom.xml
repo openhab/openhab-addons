@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.persistence.influxdb</artifactId>
@@ -16,12 +16,12 @@
 
   <properties>
     <bnd.importpackage>
-      !javax.annotation.*;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*
+      !javax.annotation.*;!android.*,!com.android.*,!com.google.appengine.*,!dalvik.system,!kotlin.*,!kotlinx.*,!org.conscrypt,!sun.security.ssl,!org.apache.harmony.*,!org.apache.http.*,!rx.*,!org.msgpack.*,!org.bouncycastle.*,!org.openjsse.*
     </bnd.importpackage>
-    <okhttp3.version>3.14.9</okhttp3.version>
-    <retrofit.version>2.7.2</retrofit.version>
-    <influx2.version>1.15.0</influx2.version>
-    <influx1.version>2.21</influx1.version>
+    <retrofit.version>2.10.0</retrofit.version>
+    <influx2.version>7.0.0</influx2.version>
+    <influx1.version>2.24</influx1.version>
+    <io.reactivex.rxjava3>3.1.8</io.reactivex.rxjava3>
   </properties>
 
   <dependencies>
@@ -33,12 +33,22 @@
     </dependency>
     <dependency>
       <groupId>com.influxdb</groupId>
+      <artifactId>influxdb-client-utils</artifactId>
+      <version>${influx2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.influxdb</groupId>
       <artifactId>influxdb-client-core</artifactId>
       <version>${influx2.version}</version>
     </dependency>
     <dependency>
       <groupId>com.influxdb</groupId>
       <artifactId>flux-dsl</artifactId>
+      <version>${influx2.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.influxdb</groupId>
+      <artifactId>influxdb-client-flux</artifactId>
       <version>${influx2.version}</version>
     </dependency>
 
@@ -57,6 +67,11 @@
       <groupId>com.squareup.retrofit2</groupId>
       <version>${retrofit.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.squareup.retrofit2</groupId>
+      <artifactId>adapter-rxjava3</artifactId>
+      <version>${retrofit.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
@@ -69,44 +84,58 @@
       <version>${okhttp3.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.squareup.okio</groupId>
+      <artifactId>okio</artifactId>
+      <version>${okio.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okio</groupId>
+      <artifactId>okio-jvm</artifactId>
+      <version>${okio.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
-      <version>2.9.1</version>
+      <version>${gson.version}</version>
     </dependency>
     <dependency>
       <groupId>io.gsonfire</groupId>
       <artifactId>gson-fire</artifactId>
-      <version>1.8.4</version>
-    </dependency>
-    <dependency>
-      <groupId>com.squareup.okio</groupId>
-      <artifactId>okio</artifactId>
-      <version>1.17.3</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-csv</artifactId>
-      <version>1.8</version>
+      <version>1.9.0</version>
     </dependency>
     <dependency>
       <artifactId>json</artifactId>
       <groupId>org.json</groupId>
-      <version>20230227</version>
+      <version>20231013</version>
     </dependency>
+
     <dependency>
-      <artifactId>rxjava</artifactId>
-      <groupId>io.reactivex.rxjava2</groupId>
-      <version>2.2.19</version>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-csv</artifactId>
+      <version>1.10.0</version>
     </dependency>
     <dependency>
       <artifactId>reactive-streams</artifactId>
       <groupId>org.reactivestreams</groupId>
-      <version>1.0.3</version>
+      <version>1.0.4</version>
     </dependency>
     <dependency>
       <artifactId>swagger-annotations</artifactId>
       <groupId>io.swagger</groupId>
-      <version>1.6.1</version>
+      <version>1.6.13</version>
+    </dependency>
+    <dependency>
+      <groupId>io.reactivex.rxjava3</groupId>
+      <artifactId>rxjava</artifactId>
+      <version>${io.reactivex.rxjava3}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib</artifactId>
+      <version>${kotlin.version}</version>
     </dependency>
     <!--END InfluxDB 2.0 -->
 
@@ -124,7 +153,7 @@
     <dependency>
       <groupId>com.squareup.moshi</groupId>
       <artifactId>moshi</artifactId>
-      <version>1.8.0</version>
+      <version>1.15.1</version>
     </dependency>
     <!-- Okhttp & Retrofit from 2.0 are ok -->
 

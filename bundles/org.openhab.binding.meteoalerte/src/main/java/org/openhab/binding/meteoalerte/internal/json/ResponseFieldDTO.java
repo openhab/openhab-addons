@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,24 +55,24 @@ public class ResponseFieldDTO {
     @SerializedName("nom_dept")
     private String nomDept = "";
     @SerializedName("etat_grand_froid")
-    private AlertLevel grandFroid = AlertLevel.UNKNOWN;;
+    private AlertLevel grandFroid = AlertLevel.UNKNOWN;
     @SerializedName("noversion")
     private String noVersion = "";
     @SerializedName("etat_pluie_inondation")
-    private AlertLevel pluieInondation = AlertLevel.UNKNOWN;;
+    private AlertLevel pluieInondation = AlertLevel.UNKNOWN;
     @SerializedName("etat_neige")
-    private AlertLevel neige = AlertLevel.UNKNOWN;;
+    private AlertLevel neige = AlertLevel.UNKNOWN;
     @SerializedName("etat_vent")
-    private AlertLevel vent = AlertLevel.UNKNOWN;;
+    private AlertLevel vent = AlertLevel.UNKNOWN;
     @SerializedName("etat_inondation")
-    private AlertLevel inondation = AlertLevel.UNKNOWN;;
+    private AlertLevel inondation = AlertLevel.UNKNOWN;
     @SerializedName("etat_avalanches")
-    private AlertLevel avalanches = AlertLevel.UNKNOWN;;
+    private AlertLevel avalanches = AlertLevel.UNKNOWN;
     @SerializedName("etat_orage")
     private AlertLevel orage = AlertLevel.UNKNOWN;
     private int echeance;
     @SerializedName("etat_vague_submersion")
-    private AlertLevel vagueSubmersion = AlertLevel.UNKNOWN;;
+    private AlertLevel vagueSubmersion = AlertLevel.UNKNOWN;
     private String dep = "";
     @SerializedName("vigilancecommentaire_texte")
     private String vigilanceComment = "";

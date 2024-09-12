@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -162,6 +162,14 @@ public class CapabilityStateDTO {
 
     public void setAlarmActuatorState(final Boolean on) {
         getState().getOnState().setValue(on);
+    }
+
+    public String getSirenActuatorState() {
+        return getState().getActiveChannelState().getValue();
+    }
+
+    public void setSirenActuatorState(final String activeChannel) {
+        getState().getActiveChannelState().setValue(activeChannel);
     }
 
     public Integer getMotionDetectionSensorState() {

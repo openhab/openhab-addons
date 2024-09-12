@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -228,7 +228,8 @@ public class PlexApiConnector {
             response = HttpUtil.executeUrl(method, url, headers, null, null, REQUEST_TIMEOUT_MS);
         } else {
             // Requests sent to the local server need to bypass certificate checking via the custom httpClient
-            final Request request = httpClient.newRequest(url).method(HttpUtil.createHttpMethod(method));
+            final Request request = httpClient.newRequest(url).method(HttpUtil.createHttpMethod(method))
+                    .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             for (String httpHeaderKey : headers.stringPropertyNames()) {
                 if (httpHeaderKey.equalsIgnoreCase(HttpHeader.USER_AGENT.toString())) {
                     request.agent(headers.getProperty(httpHeaderKey));

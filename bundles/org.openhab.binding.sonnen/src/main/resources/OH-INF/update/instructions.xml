@@ -19,5 +19,26 @@
 				<type>sonnen:energyExportedStateConsumption</type>
 			</add-channel>
 		</instruction-set>
+
+		<instruction-set targetVersion="2">
+			<update-channel id="batteryCharging">
+				<type>sonnen:batteryCharging</type>
+			</update-channel>
+			<update-channel id="batteryDischarging">
+				<type>sonnen:batteryDischarging</type>
+			</update-channel>
+			<update-channel id="consumption">
+				<type>sonnen:consumption</type>
+			</update-channel>
+			<update-channel id="gridFeedIn">
+				<type>sonnen:gridFeedIn</type>
+			</update-channel>
+			<update-channel id="gridConsumption">
+				<type>sonnen:gridConsumption</type>
+			</update-channel>
+			<update-channel id="solarProduction">
+				<type>sonnen:solarProduction</type>
+			</update-channel>
+		</instruction-set>
 	</thing-type>
 </update:update-descriptions>

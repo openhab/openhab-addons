@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,9 @@
 package org.openhab.binding.boschshc.internal.devices;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -21,6 +23,7 @@ import java.util.concurrent.TimeoutException;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInfo;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.DeviceServiceData;
 import org.openhab.binding.boschshc.internal.exceptions.BoschSHCException;
 import org.openhab.core.library.types.DecimalType;
@@ -45,14 +48,15 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
 
     @BeforeEach
     @Override
-    public void beforeEach() throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
-        super.beforeEach();
-
+    public void beforeEach(TestInfo testInfo)
+            throws InterruptedException, TimeoutException, ExecutionException, BoschSHCException {
         DeviceServiceData deviceServiceData = new DeviceServiceData();
         deviceServiceData.path = "/devices/hdm:ZigBee:000d6f0004b93361/services/BatteryLevel";
         deviceServiceData.id = "BatteryLevel";
         deviceServiceData.deviceId = "hdm:ZigBee:000d6f0004b93361";
-        lenient().when(bridgeHandler.getServiceData(anyString(), anyString())).thenReturn(deviceServiceData);
+        when(getBridgeHandler().getServiceData(anyString(), anyString())).thenReturn(deviceServiceData);
+
+        super.beforeEach(testInfo);
     }
 
     @Test
@@ -137,10 +141,11 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
                     "deviceId":"hdm:ZigBee:000d6f0004b93361" }\
                 """);
         getFixture().processUpdate("BatteryLevel", deviceServiceData);
-        verify(getCallback()).stateUpdated(
+        // state is updated twice: via short poll in initialize() and via long poll result in this test
+        verify(getCallback(), times(2)).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_BATTERY_LEVEL),
                 new DecimalType(100));
-        verify(getCallback()).stateUpdated(
+        verify(getCallback(), times(2)).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_LOW_BATTERY), OnOffType.OFF);
     }
 
@@ -165,19 +170,24 @@ public abstract class AbstractBatteryPoweredDeviceHandlerTest<T extends Abstract
         getFixture().processUpdate("BatteryLevel", deviceServiceData);
         verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_BATTERY_LEVEL),
                 UnDefType.UNDEF);
-        verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_LOW_BATTERY), OnOffType.OFF);
+        // state is updated twice: via short poll in initialize() and via long poll result in this test
+        verify(getCallback(), times(2)).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_LOW_BATTERY),
+                OnOffType.OFF);
     }
 
     @Test
     public void testHandleCommandRefreshBatteryLevelChannel() {
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_BATTERY_LEVEL), RefreshType.REFRESH);
-        verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_BATTERY_LEVEL),
+        // state is updated twice: via short poll in initialize() and via long poll result in this test
+        verify(getCallback(), times(2)).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_BATTERY_LEVEL),
                 new DecimalType(100));
     }
 
     @Test
     public void testHandleCommandRefreshLowBatteryChannel() {
         getFixture().handleCommand(getChannelUID(BoschSHCBindingConstants.CHANNEL_LOW_BATTERY), RefreshType.REFRESH);
-        verify(getCallback()).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_LOW_BATTERY), OnOffType.OFF);
+        // state is updated twice: via short poll in initialize() and via long poll result in this test
+        verify(getCallback(), times(2)).stateUpdated(getChannelUID(BoschSHCBindingConstants.CHANNEL_LOW_BATTERY),
+                OnOffType.OFF);
     }
 }

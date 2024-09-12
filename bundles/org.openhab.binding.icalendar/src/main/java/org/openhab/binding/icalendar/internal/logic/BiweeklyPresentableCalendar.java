@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -101,9 +101,9 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
 
     @Override
     public @Nullable Event getNextEvent(Instant instant) {
-        final Collection<VEventWPeriod> candidates = new ArrayList<VEventWPeriod>();
-        final Collection<VEvent> negativeEvents = new ArrayList<VEvent>();
-        final Collection<VEvent> positiveEvents = new ArrayList<VEvent>();
+        final Collection<VEventWPeriod> candidates = new ArrayList<>();
+        final Collection<VEvent> negativeEvents = new ArrayList<>();
+        final Collection<VEvent> positiveEvents = new ArrayList<>();
         classifyEvents(positiveEvents, negativeEvents);
         for (final VEvent currentEvent : positiveEvents) {
             final DateIterator startDates = this.getRecurredEventDateIterator(currentEvent);
@@ -298,8 +298,8 @@ class BiweeklyPresentableCalendar extends AbstractPresentableCalendar {
      * @return A VEventWPeriod describing the event or null if there is none.
      */
     private @Nullable VEventWPeriod getCurrentComponentWPeriod(Instant instant) {
-        final List<VEvent> negativeEvents = new ArrayList<VEvent>();
-        final List<VEvent> positiveEvents = new ArrayList<VEvent>();
+        final List<VEvent> negativeEvents = new ArrayList<>();
+        final List<VEvent> positiveEvents = new ArrayList<>();
         classifyEvents(positiveEvents, negativeEvents);
 
         VEventWPeriod earliestEndingEvent = null;

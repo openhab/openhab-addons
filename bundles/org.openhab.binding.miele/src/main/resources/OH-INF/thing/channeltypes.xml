@@ -100,6 +100,21 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
+	<channel-type id="info" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Signal Information</label>
+		<description>Signals information, check appliance for details</description>
+		<state readOnly="true"></state>
+	</channel-type>
+
+	<channel-type id="failure" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Signal Failure</label>
+		<description>Signals failure, check appliance for details</description>
+		<category>Error</category>
+		<state readOnly="true"></state>
+	</channel-type>
+
 	<channel-type id="switch">
 		<item-type>Switch</item-type>
 		<label>Switch</label>
@@ -224,10 +239,10 @@
 		<state readOnly="true"></state>
 	</channel-type>
 
-	<channel-type id="powerConsumption">
+	<channel-type id="energy-consumption">
 		<item-type>Number:Energy</item-type>
-		<label>Power Consumption</label>
-		<description>Power consumption by the currently running program on the appliance</description>
+		<label>Energy Consumption</label>
+		<description>Energy consumption by the currently running program on the appliance</description>
 		<category>Energy</category>
 		<tags>
 			<tag>Measurement</tag>
@@ -236,8 +251,8 @@
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
 
-	<channel-type id="waterConsumption">
-		<item-type>Number:Volume</item-type>
+	<channel-type id="water-consumption">
+		<item-type unitHint="l,gal">Number:Volume</item-type>
 		<label>Water Consumption</label>
 		<description>Water consumption by the currently running program on the appliance</description>
 		<category>Water</category>
@@ -246,6 +261,13 @@
 			<tag>Water</tag>
 		</tags>
 		<state readOnly="true" pattern="%.1f %unit%"/>
+	</channel-type>
+
+	<channel-type id="laundry-weight" advanced="true">
+		<item-type>Number:Mass</item-type>
+		<label>Laundry Weight</label>
+		<description>Weight of the laundry inside the appliance</description>
+		<state readOnly="true" pattern="%.3f %unit%"/>
 	</channel-type>
 
 </thing:thing-descriptions>

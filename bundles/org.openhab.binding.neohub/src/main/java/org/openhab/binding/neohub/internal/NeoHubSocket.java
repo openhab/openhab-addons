@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,7 +47,7 @@ public class NeoHubSocket extends NeoHubSocketBase {
         IOException caughtException = null;
         StringBuilder builder = new StringBuilder();
 
-        try (Socket socket = new Socket()) {
+        try (Socket socket = new Socket(); Throttler throttler = new Throttler();) {
             int port = config.portNumber > 0 ? config.portNumber : NeoHubBindingConstants.PORT_TCP;
             socket.connect(new InetSocketAddress(config.hostName, port), config.socketTimeout * 1000);
             socket.setSoTimeout(config.socketTimeout * 1000);
@@ -75,6 +75,8 @@ public class NeoHubSocket extends NeoHubSocketBase {
         } catch (IOException e) {
             // catch IOExceptions here, and save them to be re-thrown later
             caughtException = e;
+        } catch (InterruptedException e) {
+            caughtException = new IOException(e);
         }
 
         String responseJson = builder.toString().strip();

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,8 @@
 package org.openhab.binding.ism8.server;
 
 import java.nio.ByteBuffer;
+
+import javax.measure.Unit;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -32,7 +34,8 @@ public abstract class DataPointBase<@Nullable T> implements IDataPoint {
     private final String knxDataType;
     private final String description;
     private T value;
-    private String unit = "";
+    @Nullable
+    private Unit<?> unit;
 
     protected DataPointBase(int id, String knxDataType, String description) {
         this.id = id;
@@ -81,7 +84,7 @@ public abstract class DataPointBase<@Nullable T> implements IDataPoint {
     public abstract String getValueText();
 
     @Override
-    public String getUnit() {
+    public @Nullable Unit<?> getUnit() {
         return this.unit;
     }
 
@@ -89,7 +92,7 @@ public abstract class DataPointBase<@Nullable T> implements IDataPoint {
      * Sets the unit of the data-point.
      *
      */
-    public void setUnit(String value) {
+    public void setUnit(@Nullable Unit<?> value) {
         this.unit = value;
     }
 

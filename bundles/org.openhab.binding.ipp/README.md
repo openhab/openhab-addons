@@ -7,7 +7,8 @@ The main purpose is to check if there are waiting print jobs on a printer, which
 
 The binding has been tested against a CUPS Server (which implements the Internet Printing Protocol).
 So all printers in a CUPS envorinment should work fine. Many network printers also use IPP,
-but there are many differencies on which parts of IPP are supported, is is not guaranteed, that every printer will work.
+but there are many differences on which parts of IPP are supported.
+It is not guaranteed that every printer will work.
 
 ## Discovery
 
@@ -19,10 +20,10 @@ usable by the binding.
 ## Channels
 
 | Channel Type ID | Item Type | Description                                   |
-|-----------------|-----------|-----------------------------------------------|
+| --------------- | --------- | --------------------------------------------- |
 | jobs            | Number    | Total number of print jobs on the printer     |
 | waitingJobs     | Number    | Number of waiting print jobs on the printer   |
 | doneJobs        | Number    | Number of completed print jobs on the printer |
 
-<!-- TOTO Create example
+<!-- TODO Create example
 ## Full Example -->

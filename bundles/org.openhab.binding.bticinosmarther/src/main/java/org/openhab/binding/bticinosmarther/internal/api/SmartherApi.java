@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -201,7 +201,7 @@ public class SmartherApi {
         switch (settings.getMode()) {
             case AUTOMATIC:
                 // {"function":"heating","mode":"automatic","programs":[{"number":0}]}
-                Map<String, Integer> programMap = new IdentityHashMap<String, Integer>();
+                Map<String, Integer> programMap = new IdentityHashMap<>();
                 programMap.put(ATTR_NUMBER, Integer.valueOf(settings.getProgram()));
                 List<Map<String, Integer>> programsList = new ArrayList<>();
                 programsList.add(programMap);
@@ -213,7 +213,7 @@ public class SmartherApi {
                 if (newTemperature == null) {
                     throw new SmartherGatewayException("Invalid temperature unit transformation");
                 }
-                Map<String, Object> setPointMap = new IdentityHashMap<String, Object>();
+                Map<String, Object> setPointMap = new IdentityHashMap<>();
                 setPointMap.put(ATTR_VALUE, newTemperature.doubleValue());
                 setPointMap.put(ATTR_UNIT, MeasureUnit.CELSIUS.getValue());
                 rootMap.put(ATTR_SETPOINT, setPointMap);
@@ -305,7 +305,7 @@ public class SmartherApi {
     public String subscribePlant(String plantId, String notificationUrl) throws SmartherGatewayException {
         try {
             // Prepare request payload
-            Map<String, Object> rootMap = new IdentityHashMap<String, Object>();
+            Map<String, Object> rootMap = new IdentityHashMap<>();
             rootMap.put(ATTR_ENDPOINT_URL, notificationUrl);
             final String jsonPayload = ModelUtil.gsonInstance().toJson(rootMap);
             // Send request to server

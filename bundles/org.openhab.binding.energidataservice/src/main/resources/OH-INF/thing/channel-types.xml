@@ -5,28 +5,39 @@
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
 	<channel-type id="spot-price">
-		<item-type>Number</item-type>
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Spot Price</label>
 		<description>Spot price.</description>
 		<category>Price</category>
-		<state readOnly="true" pattern="%.9f"></state>
+		<state readOnly="true" pattern="%.9f %unit%"></state>
 	</channel-type>
 
 	<channel-type id="datahub-price">
-		<item-type>Number</item-type>
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Datahub Price</label>
 		<description>Datahub price.</description>
 		<category>Price</category>
-		<state readOnly="true" pattern="%.6f"></state>
+		<state readOnly="true" pattern="%.6f %unit%"></state>
 		<config-description-ref uri="channel-type:energidataservice:datahub-price"/>
 	</channel-type>
 
-	<channel-type id="hourly-prices" advanced="true">
-		<item-type>String</item-type>
-		<label>Hourly Prices</label>
-		<description>JSON array with hourly prices from 24 hours ago and onward.</description>
-		<category>Price</category>
-		<state readOnly="true"></state>
+	<channel-type id="co2-emission">
+		<item-type>Number:EmissionIntensity</item-type>
+		<label>CO₂ Emission</label>
+		<description>CO₂ emission in g/kWh.</description>
+		<category>Smoke</category>
+		<state readOnly="true" pattern="%.1f %unit%"></state>
+	</channel-type>
+
+	<channel-type id="event" advanced="true">
+		<kind>trigger</kind>
+		<label>Event</label>
+		<description>Event triggered</description>
+		<event>
+			<options>
+				<option value="DAY_AHEAD_AVAILABLE">Day-ahead prices are available</option>
+			</options>
+		</event>
 	</channel-type>
 
 </thing:thing-descriptions>

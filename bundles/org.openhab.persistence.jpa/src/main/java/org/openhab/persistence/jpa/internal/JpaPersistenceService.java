@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,11 +18,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -47,6 +42,12 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import jakarta.persistence.EntityExistsException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.Query;
 
 /**
  * JPA based implementation of QueryablePersistenceService.
@@ -164,7 +165,13 @@ public class JpaPersistenceService implements QueryablePersistenceService {
             em.getTransaction().commit();
             logger.debug("Persisting item...done");
         } catch (Exception e) {
-            logger.error("Error while persisting item! Rolling back!", e);
+            if (e.getCause() instanceof EntityExistsException) {
+                // there's a UNIQUE constraint in the database, and we tried to write
+                // a duplicate timestamp. Just ignore
+                logger.debug("Failed to persist item {} because of duplicate timestamp", name);
+            } else {
+                logger.error("Error while persisting item! Rolling back!", e);
+            }
             em.getTransaction().rollback();
         } finally {
             em.close();
@@ -270,13 +277,13 @@ public class JpaPersistenceService implements QueryablePersistenceService {
         logger.trace("Creating EntityManagerFactory...");
 
         Map<String, String> properties = new HashMap<>();
-        properties.put("javax.persistence.jdbc.url", config.dbConnectionUrl);
-        properties.put("javax.persistence.jdbc.driver", config.dbDriverClass);
+        properties.put("jakarta.persistence.jdbc.url", config.dbConnectionUrl);
+        properties.put("jakarta.persistence.jdbc.driver", config.dbDriverClass);
         if (!config.dbUserName.isBlank()) {
-            properties.put("javax.persistence.jdbc.user", config.dbUserName);
+            properties.put("jakarta.persistence.jdbc.user", config.dbUserName);
         }
         if (!config.dbPassword.isBlank()) {
-            properties.put("javax.persistence.jdbc.password", config.dbPassword);
+            properties.put("jakarta.persistence.jdbc.password", config.dbPassword);
         }
         if (config.dbUserName.isBlank() && config.dbPassword.isBlank()) {
             logger.info("It is recommended to use a password to protect the JPA persistence data store");

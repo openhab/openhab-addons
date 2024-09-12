@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -46,14 +46,16 @@ public class APManager extends ListableRest<APManager.WifiAp, APManager.APRespon
             long txBytes, // transmitted bytes (from Freebox to station)
             long txRate, // reception data rate (in bytes/s)
             long rxRate, // transmission data rate (in bytes/s)
-            WifiInformation wifiInformation) {
+            @Nullable WifiInformation wifiInformation) {
 
-        public int getSignal() {
-            return wifiInformation.signal();
+        public int getRSSI() {
+            WifiInformation local = wifiInformation;
+            return local != null ? local.signal : 1;
         }
 
         public @Nullable String getSsid() {
-            return wifiInformation().ssid();
+            WifiInformation local = wifiInformation;
+            return local != null ? local.ssid : null;
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,10 +15,6 @@ package org.openhab.binding.generacmobilelink.internal.handler;
 import static org.openhab.binding.generacmobilelink.internal.GeneracMobileLinkBindingConstants.*;
 
 import java.util.Arrays;
-
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.ElectricPotential;
-import javax.measure.quantity.Time;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -95,7 +91,7 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
         updateState(CHANNEL_CONNECTION_TIME, new DateTimeType(apparatusDetail.connectionTimestamp));
         Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 70).findFirst().ifPresent(p -> {
             try {
-                updateState(CHANNEL_RUN_HOURS, new QuantityType<Time>(Integer.parseInt(p.value), Units.HOUR));
+                updateState(CHANNEL_RUN_HOURS, new QuantityType<>(Integer.parseInt(p.value), Units.HOUR));
             } catch (NumberFormatException e) {
                 logger.debug("Could not parse runHours {}", p.value);
                 updateState(CHANNEL_RUN_HOURS, UnDefType.UNDEF);
@@ -103,8 +99,7 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
         });
         Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 69).findFirst().ifPresent(p -> {
             try {
-                updateState(CHANNEL_BATTERY_VOLTAGE,
-                        new QuantityType<ElectricPotential>(Float.parseFloat(p.value), Units.VOLT));
+                updateState(CHANNEL_BATTERY_VOLTAGE, new QuantityType<>(Float.parseFloat(p.value), Units.VOLT));
             } catch (NumberFormatException e) {
                 logger.debug("Could not parse batteryVoltage {}", p.value);
                 updateState(CHANNEL_BATTERY_VOLTAGE, UnDefType.UNDEF);
@@ -112,7 +107,7 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
         });
         Arrays.stream(apparatusDetail.properties).filter(p -> p.type == 31).findFirst().ifPresent(p -> {
             try {
-                updateState(CHANNEL_HOURS_OF_PROTECTION, new QuantityType<Time>(Float.parseFloat(p.value), Units.HOUR));
+                updateState(CHANNEL_HOURS_OF_PROTECTION, new QuantityType<>(Float.parseFloat(p.value), Units.HOUR));
             } catch (NumberFormatException e) {
                 logger.debug("Could not parse hoursOfProtection {}", p.value);
                 updateState(CHANNEL_HOURS_OF_PROTECTION, UnDefType.UNDEF);
@@ -121,7 +116,7 @@ public class GeneracMobileLinkGeneratorHandler extends BaseThingHandler {
         apparatus.properties.stream().filter(p -> p.type == 3).findFirst().ifPresent(p -> {
             try {
                 if (p.value.signalStrength != null) {
-                    updateState(CHANNEL_SIGNAL_STRENGH, new QuantityType<Dimensionless>(
+                    updateState(CHANNEL_SIGNAL_STRENGH, new QuantityType<>(
                             Integer.parseInt(p.value.signalStrength.replace("%", "")), Units.PERCENT));
                 }
             } catch (NumberFormatException e) {

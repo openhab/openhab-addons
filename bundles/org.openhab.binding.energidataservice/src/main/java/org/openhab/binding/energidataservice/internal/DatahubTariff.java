@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,10 +23,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  */
 @NonNullByDefault
 public enum DatahubTariff {
-    NET_TARIFF(CHANNEL_NET_TARIFF),
+    GRID_TARIFF(CHANNEL_GRID_TARIFF),
     SYSTEM_TARIFF(CHANNEL_SYSTEM_TARIFF),
+    TRANSMISSION_GRID_TARIFF(CHANNEL_TRANSMISSION_GRID_TARIFF),
     ELECTRICITY_TAX(CHANNEL_ELECTRICITY_TAX),
-    TRANSMISSION_NET_TARIFF(CHANNEL_TRANSMISSION_NET_TARIFF);
+    REDUCED_ELECTRICITY_TAX(CHANNEL_REDUCED_ELECTRICITY_TAX);
 
     String channelId;
 

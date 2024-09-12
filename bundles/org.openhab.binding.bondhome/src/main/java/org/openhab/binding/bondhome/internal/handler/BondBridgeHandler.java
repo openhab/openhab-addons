@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -230,7 +230,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
                 logger.trace("could not read topic type from push update or type was not state.");
             }
         } else {
-            logger.warn("Can not read device Id from push update.");
+            logger.trace("Cannot read device Id from push update.");
         }
     }
 
@@ -283,7 +283,7 @@ public class BondBridgeHandler extends BaseBridgeHandler {
      */
     public void setBridgeOnline(String bridgeAddress) {
         if (!config.isValid()) {
-            logger.warn("Configuration error, cannot set the bridghe online without configuration");
+            logger.warn("Configuration error, cannot set the bridge online without configuration");
             return;
         } else if (!config.ipAddress.equals(bridgeAddress)) {
             logger.debug("IP address of Bond {} has changed to {}", config.serialNumber, bridgeAddress);

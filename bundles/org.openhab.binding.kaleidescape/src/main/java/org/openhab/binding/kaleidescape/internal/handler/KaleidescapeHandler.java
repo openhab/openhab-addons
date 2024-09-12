@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -74,7 +74,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
 
     private final Logger logger = LoggerFactory.getLogger(KaleidescapeHandler.class);
     private final SerialPortManager serialPortManager;
-    private final Map<String, String> cache = new HashMap<String, String>();
+    private final Map<String, String> cache = new HashMap<>();
 
     protected final HttpClient httpClient;
     protected final Unit<Time> apiSecondUnit = Units.SECOND;
@@ -89,6 +89,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
     protected int metaRuntimeMultiple = 1;
     protected int volume = 0;
     protected boolean volumeEnabled = false;
+    protected boolean volumeBasicEnabled = false;
     protected boolean isMuted = false;
     protected boolean isLoadHighlightedDetails = false;
     protected boolean isLoadAlbumDetails = false;
@@ -162,6 +163,8 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             this.volume = config.initialVolume;
             this.updateState(VOLUME, new PercentType(this.volume));
             this.updateState(MUTE, OnOffType.OFF);
+        } else if (config.volumeBasicEnabled) {
+            this.volumeBasicEnabled = true;
         }
 
         if (serialPort != null) {
@@ -255,6 +258,9 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     case MUSIC_CONTROL:
                         handleControlCommand(command);
                         break;
+                    case CHANNEL_TYPE_SENDCMD:
+                        connector.sendCommand(command.toString());
+                        break;
                     default:
                         logger.debug("Command {} from channel {} failed: unexpected command", command, channel);
                         break;
@@ -339,6 +345,11 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                     if (openConnection()) {
                         try {
                             cache.clear();
+
+                            // register the connection in the Kaleidescape System log
+                            connector.sendCommand(SEND_TO_SYSLOG + "openHAB Kaleidescape Binding version "
+                                    + org.openhab.core.OpenHAB.getVersion());
+
                             Set<String> initialCommands = new HashSet<>(Arrays.asList(GET_DEVICE_TYPE_NAME,
                                     GET_FRIENDLY_NAME, GET_DEVICE_INFO, GET_SYSTEM_VERSION, GET_DEVICE_POWER_STATE,
                                     GET_CINEMASCAPE_MASK, GET_CINEMASCAPE_MODE, GET_SCALE_MODE, GET_SCREEN_MASK,
@@ -479,7 +490,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
                 updateState(channel, new PercentType(this.volume));
                 break;
             case MUTE:
-                updateState(channel, this.isMuted ? OnOffType.ON : OnOffType.OFF);
+                updateState(channel, OnOffType.from(this.isMuted));
                 break;
             case TITLE_NAME:
                 connector.sendCommand(GET_PLAYING_TITLE_NAME, cache.get("TITLE_NAME"));

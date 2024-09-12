@@ -1,0 +1,45 @@
+syntax = "proto3";
+package proto;
+
+option java_package = "com.daimler.mbcarkit.proto";
+
+message AcknowledgeServiceStatusUpdatesByVIN {
+  int32 sequence_number = 1;
+}
+
+message AcknowledgeServiceStatusUpdate {
+  int32 sequence_number = 1;
+}
+
+message ServiceStatusUpdatesByVIN {
+  int32 sequence_number = 1;
+  // Updates with VinOrFins 
+  map<string, ServiceStatusUpdate> updates = 2;
+}
+
+message ServiceStatusUpdate {
+  int32 sequence_number = 1;
+
+  string ciam_id = 7;
+
+  // FinOrVin
+  string vin = 5;
+
+  // when was the event emitted? This is the time of the update,
+  // not when the attributes where changed. To compare attribute changes, you need to look into each attribute timestamp
+  int64 emit_timestamp = 2;
+
+  // When was the event emitted (milliseconds in Unix time)
+  int64 emit_timestamp_in_ms = 8;
+
+  // serviceID -> Status
+  map<int32, ServiceStatus> updates = 6;
+};
+
+enum ServiceStatus {
+  SERVICE_STATUS_UNKNOWN = 0;
+  SERVICE_STATUS_ACTIVE = 1;
+  SERVICE_STATUS_INACTIVE = 2;
+  SERVICE_STATUS_ACTIVATION_PENDING = 3;
+  SERVICE_STATUS_DEACTIVATION_PENDING = 4;
+}

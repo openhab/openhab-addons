@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,7 +66,7 @@ public class HeliosVentilationHandler extends BaseThingHandler implements Serial
     /**
      * store received data for read-modify-write operations on bitlevel
      */
-    private final Map<Byte, Byte> memory = new HashMap<Byte, Byte>();
+    private final Map<Byte, Byte> memory = new HashMap<>();
 
     private final SerialPortManager serialPortManager;
 

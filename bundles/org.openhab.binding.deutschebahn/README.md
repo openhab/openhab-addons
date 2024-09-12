@@ -29,8 +29,9 @@ To configure a timetable you first need to register at Deutsche Bahn developer p
 
 ### Determine the EVA-No of your station
 
-For the selection of the station within openHAB you need the eva no. of the station.
-You can look up the number within the csv file available at [Haltestellendaten](https://data.deutschebahn.com/dataset.tags.EVA-Nr..html).
+For the selection of the station within openHAB you need the eva no. of the station, i.e. a 7-digit number starting with 80 for Germany.
+The station ID is no longer available on the Open Data portal of Deutsche Bahn.
+You can look up the number at [www.michaeldittrich.de](https://www.michaeldittrich.de/ibnr/) or [in the CSV file](https://github.com/ratopi/haltestellendaten).
 
 ### Configure timetable bridge
 
@@ -59,6 +60,7 @@ To specify an advanced filter you can
 - combine multiple statements as "and" conjunction by using `&`. If used, both parts must match, for example: `departure#line="RE60" & trip#category="WFB"`
 - combine multiple statements as "or" disjunction by using `|`. If used, one of the parts must match, for example: `departure#line="RE60" | departure#line="RE60"`
 - use brackets to build more complex queries like `trip#category="RE" AND (departure#line="17" OR departure#line="57")`
+- remember to enclose the value in `""` in textual config, escape inner `"` with a backslash, e.g., `additionalFilter="departure#line=\"RE60\""`
 
 If a channel has multiple values, like the channels `arrival#planned-path` and `departure#planned-path` have a list of stations,
 only one of the values must match the given expression. So you can specify a filter like `departure#planned-path="Hannover Hbf"`
@@ -138,9 +140,9 @@ Basically most information are available as planned and changed value. This allo
 timetable.things
 
 ```java
-Bridge deutschebahn:timetable:timetableLehrte "Fahrplan Lehrte" [ accessToken="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", trainFilter="departures", evaNo="8000226" ] {
-  Thing deutschebahn:train:timetableLehrte:lehrteZug1 "Zug 1" [ position="1" ]
-  Thing deutschebahn:train:timetableLehrte:lehrteZug2 "Zug 2" [ position="2" ]
+Bridge deutschebahn:timetable:timetableLehrte "Fahrplan Lehrte" [ clientId="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", clientSecret="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", trainFilter="departures", evaNo="8000226" ] {
+  Thing train lehrteZug1 "Zug 1" [ position="1" ]
+  Thing train lehrteZug2 "Zug 2" [ position="2" ]
 }
 ```
 

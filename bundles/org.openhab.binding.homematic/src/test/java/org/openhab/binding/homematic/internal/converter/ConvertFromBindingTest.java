@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,11 +18,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import org.junit.jupiter.api.Test;
 import org.openhab.binding.homematic.internal.model.HmDatapoint;
 import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.PercentType;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.ImperialUnits;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
 import org.openhab.core.types.State;
+import org.openhab.core.types.UnDefType;
 
 /**
  * Tests for
@@ -98,5 +100,30 @@ public class ConvertFromBindingTest extends BaseConverterTest {
         assertThat(((QuantityType<?>) convertedState).doubleValue(), is(70.0));
         assertThat(((QuantityType<?>) convertedState).getUnit(), is(Units.PERCENT));
         assertThat(((QuantityType<?>) convertedState).toUnit(Units.ONE).doubleValue(), is(0.7));
+    }
+
+    @Test
+    public void testPercentTypeConverter() throws ConverterException {
+        State convertedState;
+        TypeConverter<?> percentTypeConverter = ConverterFactory.createConverter("Dimmer");
+
+        // the binding is backwards compatible, so clients may still use DecimalType, even if a unit is used
+        integerDp.setUnit("%");
+
+        integerDp.setValue(99.9);
+        integerDp.setMaxValue(100);
+        convertedState = percentTypeConverter.convertFromBinding(integerDp);
+        assertThat(convertedState, instanceOf(PercentType.class));
+        assertThat(((PercentType) convertedState).doubleValue(), is(99.0));
+
+        integerDp.setValue(77.77777778);
+        convertedState = percentTypeConverter.convertFromBinding(integerDp);
+        assertThat(convertedState, instanceOf(PercentType.class));
+        assertThat(((PercentType) convertedState).doubleValue(), is(77.0));
+
+        integerDp.setValue("");
+        convertedState = percentTypeConverter.convertFromBinding(integerDp);
+        assertThat(convertedState, instanceOf(UnDefType.class));
+        assertThat(((UnDefType) convertedState), is(UnDefType.NULL));
     }
 }

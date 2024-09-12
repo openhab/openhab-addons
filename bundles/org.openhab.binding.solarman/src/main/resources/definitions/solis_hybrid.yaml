@@ -1,0 +1,964 @@
+# Solis Single Phase Hybrid
+# RHI-(3-6)K-48ES-5G
+# Modbus information retrieved from:
+# https://www.scss.tcd.ie/Brian.Coghlan/Elios4you/RS485_MODBUS-Hybrid-BACoghlan-201811228-1854.pdf
+
+requests:
+  - start: 33022
+    end:  33095
+    mb_functioncode: 0x04
+  - start: 33116
+    end:  33179
+    mb_functioncode: 0x04
+  - start: 33206
+    end:  33282
+    mb_functioncode: 0x04
+  - start: 43000
+    end: 43150
+    mb_functioncode: 0x03
+
+parameters:
+ - group: InverterStatus
+   items:
+    - name: "Inverter Status"
+      class: ""
+      state_class: "measurement"
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [33095]
+      icon: 'mdi:home-lightning-bolt'
+      isstr: true
+      lookup:
+      -  key: 0x0
+         value: "Waiting State"
+      -  key:  0x1
+         value: "Open Loop Operation"
+      -  key: 0x2
+         value: "Soft Start"
+      -  key: 0x3
+         value: "On Grid/Generating"
+      -  key: 0x1004
+         value: "Grid OverVoltage"
+      -  key: 0x1010
+         value: "Grid UnderVoltage"
+      -  key: 0x1012
+         value: "Grid OverFrequency"
+      -  key: 0x1013
+         value: "Grid UnderFrequency"
+      -  key: 0x1014
+         value: "Grid Imp too large"
+      -  key: 0x1015
+         value: "No Grid"
+      -  key: 0x1016
+         value: "Grid Imbalance"
+      -  key: 0x1017
+         value: "Grid Freq Jitter"
+      -  key: 0x1018
+         value: "Grid Overcurrent"
+      -  key: 0x1019
+         value: "Grid Tracking Fault"
+      -  key: 0x1020
+         value: "DC OverVoltage"
+      -  key: 0x1021
+         value: "DC Bus Overvoltage"
+      -  key: 0x1022
+         value: "DC Bus Uneven Voltage"
+      -  key: 0x1024
+         value: "DC Bus Uneven Voltage2"
+      -  key: 0x1025
+         value: "DC A path OverCurrent"
+      -  key: 0x1026
+         value: "DC B path OverCurrent"
+      -  key: 0x1027
+         value: "DC Input Disturbance"
+      -  key: 0x1030
+         value: "Grid Disturbance"
+      -  key: 0x1031
+         value: "DSP Initialization Protection"
+      -  key: 0x1032
+         value: "Over Temp Protection"
+      -  key: 0x1033
+         value: "PV Insulation Fault"
+      -  key: 0x1034
+         value: "Leakage Current Protection"
+      -  key: 0x1035
+         value: "Relay Detection Protection"
+      -  key: 0x1036
+         value: "DSP_B Protection"
+      -  key: 0x1037
+         value: "DC Component too Large"
+      -  key: 0x1038
+         value: "12v UnderVoltage Protection"
+      -  key: 0x1039
+         value: "Under Temperature Protection"
+      -  key: 0x1040
+         value: "Arc Self-Test Protection"
+      -  key: 0x1041
+         value: "Arc Protection"
+      -  key: 0x1042
+         value: "DSP on-chip SRAM exception"
+      -  key: 0x1043
+         value: "DSP on-chip FLASH exception"
+      -  key: 0x1044
+         value: "DSP on-chip PC pointer is abnormal"
+      -  key: 0x1045
+         value: "DSP key register exception"
+      -  key: 0x1046
+         value: "Grid disturbance 02"
+      -  key: 0x1047
+         value: "Grid current sampling abnormality"
+      -  key: 0x1048
+         value: "IGBT overcurrent"
+      -  key: 0x1050
+         value: "Network current transient overcurrent"
+      -  key: 0x1051
+         value: "Battery overvoltage hardware failure"
+      -  key: 0x1052
+         value: "LLC hardware overcurrent"
+      -  key: 0x1053
+         value: "Battery overvoltage detection"
+      -  key: 0x1054
+         value: "Battery undervoltage detection"
+      -  key: 0x1055
+         value: "Battery no connected"
+      -  key: 0x1056
+         value: "Bypass overvoltage fault"
+      -  key: 0x1057
+         value: "Bypass overload fault"
+
+    - name: "Operating Status"
+      class: ""
+      state_class: "measurement"
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [33121]
+      icon: 'mdi:home-lightning-bolt'
+      isstr: true
+      lookup:
+      -  key: 0x701
+         value: "Normal Operation"
+      -  key: 0x702
+         value: "Initial Standby"
+      -  key: 0x704
+         value: "Control Shutdown"
+      -  key: 0x708
+         value: "Downtime"
+      -  key: 0x710
+         value: "Standby"
+      -  key: 0x720
+         value: "Derating Operation"
+      -  key: 0x740
+         value: "Limit Operation"
+      -  key: 0x780
+         value: "Bypass Overload"
+
+    - name: "Grid Fault Status"
+      class: ""
+      state_class: "measurement"
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [33116]
+      icon: 'mdi:alert'
+      isstr: true
+      lookup:
+      -  key: 0x0000
+         value: "No Fault"
+      -  key: 0x1
+         value: "No Grid"
+      -  key: 0x2
+         value: "Grid OverVoltage"
+      -  key: 0x4
+         value: "Grid UnderVoltage"
+      -  key: 0x8
+         value: "Grid OverFrequency"
+      -  key: 0x10
+         value: "Grid UnderFrequency"
+      -  key: 0x20
+         value: "Grid Imbalance"
+      -  key: 0x40
+         value: "Grid Frequncy Jitter"
+      -  key: 0x80
+         value: "Grid Impedence too Large"
+      -  key: 0x100
+         value: "Grid Tracking Fault"
+      -  key: 0x200
+         value: "Meter Comm Failure"
+      -  key: 0x400
+         value: "Failsafe"
+
+    - name: "Backup Load Fault Status"
+      class: ""
+      state_class: "measurement"
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [33117]
+      icon: 'mdi:alert'
+      isstr: true
+      lookup:
+      -  key: 0x0
+         value: "No Fault"
+      -  key: 0x1
+         value: "Bypass OverVoltage Fault"
+      -  key: 0x2
+         value: "Bypass Overload Fault"
+
+    - name: "Battery Fault Status"
+      class: ""
+      state_class: "measurement"
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [33118]
+      icon: 'mdi:alert'
+      isstr: true
+      lookup:
+      -  key: 0x0
+         value: "No Fault"
+      -  key: 0x1
+         value: "Battery Not Connected"
+      -  key: 0x2
+         value: "Battery OverVoltage Detection"
+      -  key: 0x4
+         value: "Battery UnderVoltage Detection"
+
+    - name: "Fault Status 04 (Device)"
+      class: ""
+      state_class: "measurement"
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [33119]
+      icon: 'mdi:alert'
+      isstr: true
+      lookup:
+      -  key: 0x0000
+         value: "No Fault"
+      -  key: 0x1
+         value: "DC OverVoltage"
+      -  key: 0x2
+         value: "DC Bus OverVoltage"
+      -  key: 0x4
+         value: "DC Bus Uneven Voltage"
+      -  key: 0x8
+         value: "DC Bus UnderVoltage"
+      -  key: 0x10
+         value: "DC Bus2 Uneven Voltage"
+      -  key: 0x20
+         value: "DC A path OverCurrent"
+      -  key: 0x40
+         value: "DC B path OverCurrent"
+      -  key: 0x80
+         value: "DC Input Disturbance"
+      -  key: 0x100
+         value: "Grid OverCurrent"
+      -  key: 0x200
+         value: "IGBT OverCurrent"
+      -  key: 0x400
+         value: "Grid Disturbance 2"
+      -  key: 0x800
+         value: "Arc Self-Test Protection"
+      -  key: 0x1000
+         value: "Arc Fault Reservation"
+      -  key: 0x2000
+         value: "Grid Current Sample Abnormality"
+
+    - name: "Fault Status 05 (Device)"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [33120]
+      icon: 'mdi:alert'
+      isstr: true
+      lookup:
+      -  key: 0x0000
+         value: "No Fault"
+      -  key: 0x1
+         value: "Grid Disturbance"
+      -  key: 0x2
+         value: "DC Component Too Large"
+      -  key: 0x4
+         value: "Over Temp Protection"
+      -  key: 0x8
+         value: "Relay Detection Protection"
+      -  key: 0x10
+         value: "Under Temp Protection"
+      -  key: 0x20
+         value: "PV Insulation Fault"
+      -  key: 0x40
+         value: "12V UnderVoltage Protection"
+      -  key: 0x80
+         value: "Leakage Current Protection"
+      -  key: 0x100
+         value: "Leakage Current Self-Test"
+      -  key: 0x200
+         value: "DSP Initialization Protect"
+      -  key: 0x400
+         value: "DSP B Protection"
+      -  key: 0x800
+         value: "Battery Overvoltage H/W Failure"
+      -  key: 0x1000
+         value: "LLC Hardware OverCurrent"
+      -  key: 0x2000
+         value: "Network Side Transient OverCurrent"
+      -  key: 0x4000
+         value: "CAN Communication Failed"
+      -  key: 0x8000
+         value: "DSP Communication Failed"
+
+    - name: "Inverter Temperature"
+      class: "temperature"
+      state_class: "measurement"
+      uom: "°C"
+      scale: 0.1
+      rule: 2
+      registers: [33093]
+      icon: 'mdi:thermometer'
+
+    - name: "Inverter Datetime Array"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 10
+      registers: [33022,33023,33024,33025,33026,33027]
+      icon: 'mdi:calendar-clock'
+
+# Sensors below are outside of modbus request ranges.
+# If enabling, ensure to amend the request start register.
+#
+#    - name: "Inverter ID"
+#      class: ""
+#      state_class: ""
+#      uom: ""
+#      scale: 1
+#      rule: 5
+#      registers: [33004,33005,33006,33007,33008,33009,33010,33011,33012,33013,33014,33015,33016,33017,33018,33019]
+#      isstr: true
+
+#    - name: "Product Model"
+#      class: ""
+#      state_class: ""
+#      uom: ""
+#      scale: 1
+#      rule: 6
+#      registers: [33000]
+#      isstr: true
+
+#    - name: "DSP Software Version"
+#      class: ""
+#      state_class: ""
+#      uom: ""
+#      scale: 1
+#      rule: 6
+#      registers: [33001]
+#      isstr: true
+
+#    - name: "LCD Software Version"
+#      class: ""
+#      state_class: ""
+#      uom: ""
+#      scale: 1
+#      rule: 6
+#      registers: [33002]
+#      isstr: true
+
+#    - name: "Protocol Software Version"
+#      class: ""
+#      state_class: ""
+#      uom: ""
+#      scale: 1
+#      rule: 6
+#      registers: [33003]
+#      isstr: true
+
+    - name: "Storage Control Mode"
+      class: ""
+      state_class: "measurement"
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [33132]
+      icon: 'mdi:battery-clock'
+      isstr: true
+      lookup:
+      -  key: 0x21
+         value: "Self Use"
+      -  key: 0x22
+         value: "Optimized Revenue"
+      -  key: 0x23
+         value: "Time of Use"
+      -  key: 0x24
+         value: "Off-Grid Storage"
+      -  key: 0x28
+         value: "Battery Wake-Up"
+      -  key: 0x60
+         value: "Feed-In Priority"
+
+ - group: InverterDC
+   items:
+    - name: "PV1 Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [33049]
+      icon: 'mdi:solar-power'
+
+    - name: "PV2 Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [33051]
+      icon: 'mdi:solar-power'
+
+    - name: "PV1 Current"
+      class: "current"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [33050]
+      icon: 'mdi:current-dc'
+
+    - name: "PV2 Current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [33052]
+      icon: 'mdi:current-dc'
+
+    - name: "Inverter DC Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
+      scale: 1
+      rule: 3
+      registers: [33058,33057]
+      icon: 'mdi:solar-power'
+
+    - name: "Inverting/Rectifing Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
+      scale: 10
+      rule: 2
+      registers: [33157]
+      icon: 'mdi:solar-power'
+
+ - group: InverterAC
+   items:
+    - name: "Inverter AC Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
+      scale: 1
+      rule: 4
+      registers: [33152,33151]
+      icon: 'mdi:solar-power'
+
+    - name: "Inverter Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [33073]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Inverter Current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [33076]
+      icon: 'mdi:current-ac'
+
+    - name: "Inverter Active Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
+      scale: 1
+      rule: 4
+      registers: [33080,33079]
+      icon: 'mdi:transmission-tower'
+
+      # Inverter Reactive Power is defined as a signed 32 bit integer
+      # across 33082 and 33081, however the field appears to be only
+      # 20 bits wide i.e. the upper 12 bits are always zero.
+      # Define only the lower signed 16 bits for moment
+    - name: "Inverter Reactive Power"
+      class: "reactive_power"
+      state_class: "measurement"
+      uom: "var"
+      scale: 1
+      rule: 4
+      registers: [33082]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Inverter Apparent Power"
+      class: "apparent_power"
+      state_class: "measurement"
+      uom: "VA"
+      scale: 1
+      rule: 4
+      registers: [33084,33083]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Inverter Frequency"
+      class: "frequency"
+      state_class: "measurement"
+      uom: "Hz"
+      scale: 0.01
+      rule: 1
+      registers: [33094]
+      icon: 'mdi:sine-wave'
+
+ - group: Generation
+   items:
+    - name: "Daily Generation"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [33035]
+      icon: 'mdi:solar-power'
+
+    - name: "Monthly Generation"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [33032,33031]
+      icon: 'mdi:solar-power'
+
+    - name: "Yearly Generation"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [33038,33037]
+      icon: 'mdi:solar-power'
+
+    - name: "Total Generation"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [33030,33029]
+      icon: 'mdi:solar-power'
+
+ - group: Grid
+   items:
+    - name: "Meter Frequency"
+      class: "frequency"
+      state_class: "measurement"
+      uom: "Hz"
+      scale: 0.01
+      rule: 1
+      registers: [33282]
+      icon: 'mdi:sine-wave'
+
+    - name: "Meter Power Factor"
+      class: "power_factor"
+      state_class: "measurement"
+      uom: ""
+      scale: 0.01
+      rule: 2
+      registers: [33281]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Meter Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [33251]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Meter Current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.01
+      rule: 1
+      registers: [33252]
+      icon: 'mdi:current-ac'
+
+    - name: "Meter Active Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
+      scale: 1
+      rule: 4
+      registers: [33258,33257]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Meter Reactive Power"
+      class: "reactive_power"
+      state_class: "measurement"
+      uom: "var"
+      scale: 1
+      rule: 4
+      registers: [33266,33265]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Meter Apparent Power"
+      class: "apparent_power"
+      state_class: "measurement"
+      uom: "VA"
+      scale: 1
+      rule: 4
+      registers: [33274,33273]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Daily Energy Imported"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [33171]
+      icon: 'mdi:home-import-outline'
+
+    - name: "Total Energy Imported"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [33170,33169]
+      icon: 'mdi:home-import-outline'
+
+    - name: "Daily Energy Exported"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [33175]
+      icon: 'mdi:home-export-outline'
+
+    - name: "Total Energy Exported"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [33174,33173]
+      icon: 'mdi:home-export-outline'
+
+ - group: Load
+   items:
+    - name: "House Load Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
+      scale: 1
+      rule: 1
+      registers: [33147]
+      icon: 'mdi:home-lightning-bolt'
+
+    - name: "Backup Load Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
+      scale: 1
+      rule: 1
+      registers: [33148]
+      icon: 'mdi:home-battery'
+
+    - name: "Daily House+Backup Load Consumption"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [33179]
+      icon: 'mdi:lightning-bolt-outline'
+
+    - name: "Total House+Backup Load Consumption"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [33178,33177]
+      icon: 'mdi:lightning-bolt-outline'
+
+ - group: Battery
+   items:
+    - name: "Battery Status"
+      class: ""
+      state_class: "measurement"
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [33135]
+      isstr: true
+      lookup:
+      -  key: 0
+         value: "Charge"
+      -  key: 1
+         value: "Discharge"
+      icon: 'mdi:battery'
+
+    - name: "Battery Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
+      scale: 1
+      rule: 4
+      registers: [33150,33149]
+      icon: 'mdi:battery-charging'
+
+    - name: "Battery SOC"
+      class: "battery"
+      state_class: "measurement"
+      uom: "%"
+      scale: 1
+      rule: 1
+      registers: [33139]
+      icon: 'mdi:battery'
+
+    - name: "Battery SOH"
+      class: "battery"
+      state_class: "measurement"
+      uom: "%"
+      scale: 1
+      rule: 1
+      registers: [33140]
+      icon: 'mdi:battery'
+
+    - name: "Battery Current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 2
+      registers: [33134]
+      icon: 'mdi:current-dc'
+
+    - name: "Battery Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [33133]
+      icon: 'mdi:battery'
+
+    - name: "Today Battery Charge"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [33163]
+      icon: 'mdi:battery-plus'
+
+    - name: "Today Battery Discharge"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [33167]
+      icon: 'mdi:battery-minus'
+
+    - name: "Total Battery Charge"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [33162,33161]
+      icon: 'mdi:battery-plus'
+
+    - name: "Total Battery Discharge"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [33166,33165]
+      icon: 'mdi:battery-minus'
+
+    - name: "Battery Charge Current Limit"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [33206]
+      icon: 'mdi:battery-arrow-up'
+
+    - name: "Battery Discharge Current Limit"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [33207]
+      icon: 'mdi:battery-arrow-down'
+
+    - name: "BMS Battery Current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 2
+      registers: [33142]
+      icon: 'mdi:current-dc'
+
+    - name: "BMS Battery Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.01
+      rule: 1
+      registers: [33141]
+      icon: 'mdi:battery'
+
+    - name: "BMS Battery Charge Current Limit"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [33143]
+      icon: 'mdi:battery-arrow-up'
+
+    - name: "BMS Battery Discharge Current Limit"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [33144]
+      icon: 'mdi:battery-arrow-down'
+
+    - name: "Backup Mode SOC"
+      class: "battery"
+      state_class: "measurement"
+      uom: "%"
+      scale: 1
+      rule: 1
+      registers: [43024]
+      icon: 'mdi:battery'
+
+    - name: "Overdischarge SOC"
+      class: "battery"
+      state_class: "measurement"
+      uom: "%"
+      scale: 1
+      rule: 1
+      registers: [43011]
+      icon: 'mdi:battery'  
+
+ - group: TimedCharge
+   items: 
+    - name: "Timed Charge Current"
+      class: ""
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [43141]
+      icon: 'mdi:wrench-clock'
+
+    - name: "Timed Discharge Current"
+      class: ""
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [43142]
+      icon: 'mdi:wrench-clock'
+
+    - name: "Timed Charge Start Hour"
+      class: ""
+      state_class: "measurement"
+      uom: "H"
+      scale: 1
+      rule: 1
+      registers: [43143]
+      icon: 'mdi:wrench-clock'
+
+    - name: "Timed Charge Start Minute"
+      class: ""
+      state_class: "measurement"
+      uom: "M"
+      scale: 1
+      rule: 1
+      registers: [43144]
+      icon: 'mdi:wrench-clock'
+
+    - name: "Timed Charge End Hour"
+      class: ""
+      state_class: "measurement"
+      uom: "H"
+      scale: 1
+      rule: 1
+      registers: [43145]
+      icon: 'mdi:wrench-clock'
+
+    - name: "Timed Charge End Minute"
+      class: ""
+      state_class: "measurement"
+      uom: "M"
+      scale: 1
+      rule: 1
+      registers: [43146]
+      icon: 'mdi:wrench-clock'
+
+    - name: "Timed Discharge Start Hour"
+      class: ""
+      state_class: "measurement"
+      uom: "H"
+      scale: 1
+      rule: 1
+      registers: [43147]
+      icon: 'mdi:wrench-clock'
+
+    - name: "Timed Discharge Start Minute"
+      class: ""
+      state_class: "measurement"
+      uom: "M"
+      scale: 1
+      rule: 1
+      registers: [43148]
+      icon: 'mdi:wrench-clock'
+
+    - name: "Timed Discharge End Hour"
+      class: ""
+      state_class: "measurement"
+      uom: "H"
+      scale: 1
+      rule: 1
+      registers: [43149]
+      icon: 'mdi:wrench-clock'
+
+    - name: "Timed Discharge End Minute"
+      class: ""
+      state_class: "measurement"
+      uom: "M"
+      scale: 1
+      rule: 1
+      registers: [43150]
+      icon: 'mdi:wrench-clock'

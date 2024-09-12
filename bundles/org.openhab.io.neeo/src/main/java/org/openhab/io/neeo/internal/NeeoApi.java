@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -474,7 +474,7 @@ public class NeeoApi implements AutoCloseable {
         if (stackSize == 0) {
             int httpClientId = this.httpClientId + 1;
             this.httpClientId = httpClientId;
-            String httpClientIdString = "neeo-" + brainId + "-" + httpClientId;
+            String httpClientIdString = "neeo-" + brainId.substring(5) + "-" + httpClientId;
             logger.debug("getHttpClient created new client {} for brain {}", httpClientIdString, brainId);
             HttpClient httpClient = httpClientFactory.createHttpClient(httpClientIdString);
             try {

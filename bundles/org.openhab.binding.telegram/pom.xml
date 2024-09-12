@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.telegram</artifactId>
@@ -15,32 +15,44 @@
   <name>openHAB Add-ons :: Bundles :: Telegram Binding</name>
 
   <properties>
-    <bnd.importpackage>!android.*,!com.android.org.*,!dalvik.*,!javax.annotation.meta.*,!org.apache.harmony.*,!org.conscrypt.*,!sun.*</bnd.importpackage>
+    <bnd.importpackage>!android.*,!com.android.org.*,!dalvik.*,!javax.annotation.meta.*,!org.apache.harmony.*,!org.conscrypt.*,!sun.*,!kotlin.*,!org.bouncycastle.*,!org.openjsse.*</bnd.importpackage>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.github.pengrad</groupId>
       <artifactId>java-telegram-bot-api</artifactId>
-      <version>5.2.0</version>
+      <version>7.1.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
-      <version>${okhttp.version}</version>
+      <version>${okhttp3.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.squareup.okio</groupId>
       <artifactId>okio</artifactId>
-      <version>1.15.0</version>
+      <version>${okio.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okio</groupId>
+      <artifactId>okio-jvm</artifactId>
+      <version>${okio.version}</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>logging-interceptor</artifactId>
-      <version>${okhttp.version}</version>
+      <version>${okhttp3.version}</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-stdlib</artifactId>
+      <version>${kotlin.version}</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

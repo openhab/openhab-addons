@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,8 @@ import org.openhab.binding.freeboxos.internal.handler.PlayerHandler;
 import org.openhab.core.automation.annotation.RuleAction;
 import org.openhab.core.thing.binding.ThingActions;
 import org.openhab.core.thing.binding.ThingActionsScope;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,13 +28,14 @@ import org.slf4j.LoggerFactory;
  *
  * @author Gaël L'hopital - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ActivePlayerActions.class)
 @ThingActionsScope(name = "freeboxos")
 @NonNullByDefault
 public class ActivePlayerActions extends PlayerActions {
     private final Logger logger = LoggerFactory.getLogger(ActivePlayerActions.class);
 
     @RuleAction(label = "reboot freebox player", description = "Reboots the Freebox Player")
-    public void reboot() {
+    public void rebootPlayer() {
         logger.debug("Player reboot called");
         PlayerHandler localHandler = this.handler;
         if (localHandler instanceof ActivePlayerHandler apHandler) {
@@ -42,7 +45,11 @@ public class ActivePlayerActions extends PlayerActions {
         }
     }
 
-    public static void reboot(ThingActions actions) {
-        ((ActivePlayerActions) actions).reboot();
+    public static void rebootPlayer(ThingActions actions) {
+        if (actions instanceof ActivePlayerActions activePlayerActions) {
+            activePlayerActions.rebootPlayer();
+        } else {
+            throw new IllegalArgumentException("actions parameter is not an ActivePlayerActions class.");
+        }
     }
 }

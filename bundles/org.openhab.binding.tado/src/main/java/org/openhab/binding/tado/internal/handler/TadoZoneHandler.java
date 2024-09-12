@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,24 +36,24 @@ import org.openhab.binding.tado.internal.TadoBindingConstants.VerticalSwing;
 import org.openhab.binding.tado.internal.TadoBindingConstants.ZoneType;
 import org.openhab.binding.tado.internal.TadoHvacChange;
 import org.openhab.binding.tado.internal.adapter.TadoZoneStateAdapter;
-import org.openhab.binding.tado.internal.api.ApiException;
-import org.openhab.binding.tado.internal.api.GsonBuilderFactory;
 import org.openhab.binding.tado.internal.api.TadoApiTypeUtils;
-import org.openhab.binding.tado.internal.api.model.ACFanLevel;
-import org.openhab.binding.tado.internal.api.model.ACHorizontalSwing;
-import org.openhab.binding.tado.internal.api.model.ACVerticalSwing;
-import org.openhab.binding.tado.internal.api.model.AcMode;
-import org.openhab.binding.tado.internal.api.model.AcModeCapabilities;
-import org.openhab.binding.tado.internal.api.model.CoolingZoneSetting;
-import org.openhab.binding.tado.internal.api.model.GenericZoneCapabilities;
-import org.openhab.binding.tado.internal.api.model.GenericZoneSetting;
-import org.openhab.binding.tado.internal.api.model.Overlay;
-import org.openhab.binding.tado.internal.api.model.OverlayTemplate;
-import org.openhab.binding.tado.internal.api.model.OverlayTerminationCondition;
-import org.openhab.binding.tado.internal.api.model.TadoSystemType;
-import org.openhab.binding.tado.internal.api.model.Zone;
-import org.openhab.binding.tado.internal.api.model.ZoneState;
 import org.openhab.binding.tado.internal.config.TadoZoneConfig;
+import org.openhab.binding.tado.swagger.codegen.api.ApiException;
+import org.openhab.binding.tado.swagger.codegen.api.GsonBuilderFactory;
+import org.openhab.binding.tado.swagger.codegen.api.model.ACFanLevel;
+import org.openhab.binding.tado.swagger.codegen.api.model.ACHorizontalSwing;
+import org.openhab.binding.tado.swagger.codegen.api.model.ACVerticalSwing;
+import org.openhab.binding.tado.swagger.codegen.api.model.AcMode;
+import org.openhab.binding.tado.swagger.codegen.api.model.AcModeCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.CoolingZoneSetting;
+import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneCapabilities;
+import org.openhab.binding.tado.swagger.codegen.api.model.GenericZoneSetting;
+import org.openhab.binding.tado.swagger.codegen.api.model.Overlay;
+import org.openhab.binding.tado.swagger.codegen.api.model.OverlayTemplate;
+import org.openhab.binding.tado.swagger.codegen.api.model.OverlayTerminationCondition;
+import org.openhab.binding.tado.swagger.codegen.api.model.TadoSystemType;
+import org.openhab.binding.tado.swagger.codegen.api.model.Zone;
+import org.openhab.binding.tado.swagger.codegen.api.model.ZoneState;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;

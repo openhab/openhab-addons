@@ -4,11 +4,11 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<!-- Oppo Blu-ray disc player Thing -->
+	<!-- Oppo Blu-ray player Thing -->
 	<thing-type id="player">
-		<label>Oppo Blu-ray Disc Player</label>
+		<label>Oppo Blu-ray Player</label>
 		<description>
-			Controls an Oppo Blu-ray Disc Player
+			Controls an Oppo Blu-ray Player
 		</description>
 
 		<channels>

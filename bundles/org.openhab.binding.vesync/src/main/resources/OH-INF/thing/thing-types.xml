@@ -285,14 +285,14 @@
 	</channel-type>
 
 	<channel-type id="deviceHumidityType">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity Level</label>
 		<description>System representation of humidity</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 
 	<channel-type id="deviceConfigTargetHumidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity Set Point</label>
 		<description>Humidity Set Point</description>
 		<state readOnly="false" pattern="%.0f %unit%"/>

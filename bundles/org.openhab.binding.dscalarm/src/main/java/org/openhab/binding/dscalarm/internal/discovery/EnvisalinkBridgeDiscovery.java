@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -71,10 +71,10 @@ public class EnvisalinkBridgeDiscovery {
             lowIP = convertIPToNumber(subnetInfo.getLowAddress());
             highIP = convertIPToNumber(subnetInfo.getHighAddress());
         } catch (IllegalArgumentException e) {
-            logger.error("discoverBridge(): Illegal Argument Exception - {}", e.toString());
+            logger.warn("discoverBridge(): Illegal Argument Exception - {}", e.toString());
             return;
         } catch (Exception e) {
-            logger.error("discoverBridge(): Error - Unable to get Subnet Information! {}", e.toString());
+            logger.warn("discoverBridge(): Error - Unable to get Subnet Information! {}", e.toString());
             return;
         }
 

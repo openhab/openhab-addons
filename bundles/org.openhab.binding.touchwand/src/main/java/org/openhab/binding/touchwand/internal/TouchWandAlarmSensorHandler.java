@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,9 +15,6 @@ package org.openhab.binding.touchwand.internal;
 import static org.openhab.binding.touchwand.internal.TouchWandBindingConstants.*;
 
 import java.util.ArrayList;
-
-import javax.measure.quantity.Illuminance;
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.touchwand.internal.dto.TouchWandAlarmSensorCurrentStatus.BinarySensorEvent;
@@ -89,7 +86,7 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
     void updateIllumination(TouchWandUnitDataAlarmSensor unitData) {
         for (Sensor sensor : unitData.getCurrStatus().getSensorsStatus()) {
             if (sensor.type == SENSOR_TYPE_LUMINANCE) {
-                updateState(CHANNEL_ILLUMINATION, new QuantityType<Illuminance>(sensor.value, Units.LUX));
+                updateState(CHANNEL_ILLUMINATION, new QuantityType<>(sensor.value, Units.LUX));
             }
         }
     }
@@ -126,7 +123,7 @@ public class TouchWandAlarmSensorHandler extends TouchWandBaseUnitHandler {
     void updateChannelTemperature(TouchWandUnitDataAlarmSensor unitData) {
         for (Sensor sensor : unitData.getCurrStatus().getSensorsStatus()) {
             if (sensor.type == SENSOR_TYPE_TEMPERATURE) {
-                updateState(CHANNEL_TEMPERATURE, new QuantityType<Temperature>(sensor.value, SIUnits.CELSIUS));
+                updateState(CHANNEL_TEMPERATURE, new QuantityType<>(sensor.value, SIUnits.CELSIUS));
             }
         }
     }

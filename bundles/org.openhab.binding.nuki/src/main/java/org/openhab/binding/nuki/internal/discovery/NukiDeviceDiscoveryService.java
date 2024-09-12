@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,12 +21,12 @@ import org.openhab.binding.nuki.internal.constants.NukiBindingConstants;
 import org.openhab.binding.nuki.internal.dataexchange.BridgeListResponse;
 import org.openhab.binding.nuki.internal.dto.BridgeApiListDeviceDto;
 import org.openhab.binding.nuki.internal.handler.NukiBridgeHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,20 +35,19 @@ import org.slf4j.LoggerFactory;
  *
  * @author Jan Vybíral - Initial contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = NukiDeviceDiscoveryService.class)
 @NonNullByDefault
-public class NukiDeviceDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class NukiDeviceDiscoveryService extends AbstractThingHandlerDiscoveryService<NukiBridgeHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(NukiDeviceDiscoveryService.class);
-    @Nullable
-    private NukiBridgeHandler bridge;
 
     public NukiDeviceDiscoveryService() {
-        super(Set.of(NukiBindingConstants.THING_TYPE_SMARTLOCK), 5, false);
+        super(NukiBridgeHandler.class, Set.of(NukiBindingConstants.THING_TYPE_SMARTLOCK), 5, false);
     }
 
     @Override
     protected void startScan() {
-        NukiBridgeHandler bridgeHandler = bridge;
+        NukiBridgeHandler bridgeHandler = thingHandler;
         if (bridgeHandler == null) {
             logger.warn("Cannot start Nuki discovery - no bridge available");
             return;
@@ -99,21 +98,5 @@ public class NukiDeviceDiscoveryService extends AbstractDiscoveryService impleme
     protected synchronized void stopScan() {
         super.stopScan();
         removeOlderResults(getTimestampOfLastScan());
-    }
-
-    @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof NukiBridgeHandler bridgeHandler) {
-            bridge = bridgeHandler;
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return bridge;
-    }
-
-    @Override
-    public void deactivate() {
     }
 }

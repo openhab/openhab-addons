@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,7 +31,7 @@ public class KnxNetFrame {
     public static final byte[] CONNECTION_HEADER = new byte[4];
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KnxNetFrame.class);
-    private ArrayList<SetDatapointValueMessage> valueMessages = new ArrayList<SetDatapointValueMessage>();
+    private ArrayList<SetDatapointValueMessage> valueMessages = new ArrayList<>();
     private byte mainService;
     private byte subService = SubServiceType.SET_DATAPOINT_VALUE_REQUEST;
     private int startDataPoint;
@@ -51,7 +51,7 @@ public class KnxNetFrame {
     }
 
     public KnxNetFrame() {
-        this.valueMessages = new ArrayList<SetDatapointValueMessage>();
+        this.valueMessages = new ArrayList<>();
     }
 
     /**

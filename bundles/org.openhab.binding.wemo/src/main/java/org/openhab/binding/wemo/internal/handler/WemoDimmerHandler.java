@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -355,7 +355,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
             switch (variable) {
                 case "BinaryState":
                     if (oldBinaryState == null || !oldBinaryState.equals(value)) {
-                        State state = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
+                        State state = OnOffType.from(!"0".equals(value));
                         logger.debug("State '{}' for device '{}' received", state, getThing().getUID());
                         updateState(CHANNEL_BRIGHTNESS, state);
                         if (state.equals(OnOffType.OFF)) {
@@ -386,7 +386,7 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                         updateState(CHANNEL_FADER_COUNT_DOWN_TIME, faderMinutes);
                     }
                     if (splitFader[1] != null) {
-                        State isTimerRunning = "-1".equals(splitFader[1]) ? OnOffType.OFF : OnOffType.ON;
+                        State isTimerRunning = OnOffType.from(!"-1".equals(splitFader[1]));
                         logger.debug("isTimerRunning '{}' for device '{}' received", isTimerRunning,
                                 getThing().getUID());
                         updateState(CHANNEL_TIMER_START, isTimerRunning);
@@ -395,14 +395,14 @@ public class WemoDimmerHandler extends WemoBaseThingHandler {
                         }
                     }
                     if (splitFader[2] != null) {
-                        State isFaderEnabled = "0".equals(splitFader[1]) ? OnOffType.OFF : OnOffType.ON;
+                        State isFaderEnabled = OnOffType.from(!"0".equals(splitFader[1]));
                         logger.debug("isFaderEnabled '{}' for device '{}' received", isFaderEnabled,
                                 getThing().getUID());
                         updateState(CHANNEL_FADER_ENABLED, isFaderEnabled);
                     }
                     break;
                 case "nightMode":
-                    State nightModeState = "0".equals(value) ? OnOffType.OFF : OnOffType.ON;
+                    State nightModeState = OnOffType.from(!"0".equals(value));
                     currentNightModeState = value;
                     logger.debug("nightModeState '{}' for device '{}' received", nightModeState, getThing().getUID());
                     updateState(CHANNEL_NIGHT_MODE, nightModeState);

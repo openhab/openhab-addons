@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -183,7 +183,7 @@ public class RFXComLighting4Message extends RFXComDeviceMessageImpl<RFXComLighti
                 }
                 // Deprecated if statement - to be removed in a future release
                 if (config.onCommandId == null && config.offCommandId == null) {
-                    return ON_COMMAND_IDS.contains(commandId) ? OnOffType.ON : OnOffType.OFF;
+                    return OnOffType.from(ON_COMMAND_IDS.contains(commandId));
                 }
                 throw new RFXComInvalidStateException(channelId, Integer.toString(commandId),
                         "Device not configured for received commandId");

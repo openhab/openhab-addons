@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -106,7 +106,7 @@ public class BsbLanParameterConverter {
 
     private static State getStateForSwitchValueChannel(BsbLanApiParameterDTO parameter) {
         // treat "0" as OFF and everything else as ON
-        return "0".equals(parameter.value) ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(!"0".equals(parameter.value));
     }
 
     /**

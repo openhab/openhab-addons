@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -183,7 +183,7 @@ public class MyStromBulbHandler extends AbstractMyStromHandler {
 
     private void updateDevice(@Nullable MyStromBulbResponse deviceInfo) {
         if (deviceInfo != null) {
-            updateState(CHANNEL_SWITCH, deviceInfo.on ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_SWITCH, OnOffType.from(deviceInfo.on));
             updateState(CHANNEL_RAMP, QuantityType.valueOf(deviceInfo.ramp, MetricPrefix.MILLI(SECOND)));
             if (deviceInfo instanceof MyStromDeviceSpecificInfo info) {
                 updateState(CHANNEL_POWER, QuantityType.valueOf(info.power, WATT));

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,6 +22,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.openhab.core.util.StringUtils;
 
 /**
  * A XML-RPC request for sending data to the Homematic server.
@@ -122,7 +124,7 @@ public class XmlRpcRequest implements RpcRequest<String> {
         } else {
             Class<?> clazz = value.getClass();
             if (clazz == String.class || clazz == Character.class) {
-                sb.append(escapeXml(value.toString()));
+                sb.append(StringUtils.escapeXml(value.toString()));
             } else if (clazz == Long.class || clazz == Integer.class || clazz == Short.class || clazz == Byte.class) {
                 tag("int", value.toString());
             } else if (clazz == Double.class) {
@@ -175,31 +177,5 @@ public class XmlRpcRequest implements RpcRequest<String> {
                 throw new RuntimeException("Unsupported XML-RPC Type: " + value.getClass());
             }
         }
-    }
-
-    private StringBuilder escapeXml(String inValue) {
-        StringBuilder outValue = new StringBuilder(inValue.length());
-        for (int i = 0; i < inValue.length(); i++) {
-            switch (inValue.charAt(i)) {
-                case '<':
-                    outValue.append("&lt;");
-                    break;
-                case '>':
-                    outValue.append("&gt;");
-                    break;
-                case '&':
-                    outValue.append("&amp;");
-                    break;
-                case '\'':
-                    outValue.append("&apost;");
-                    break;
-                case '"':
-                    outValue.append("&quot;");
-                    break;
-                default:
-                    outValue.append(inValue.charAt(i));
-            }
-        }
-        return outValue;
     }
 }

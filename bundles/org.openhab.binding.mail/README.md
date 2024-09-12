@@ -69,7 +69,10 @@ Filters use regular expressions (e.g. `.*DHL.*` as `sender` would match all From
 If a parameter is left empty, no filter is applied.
 
 The `transformation` is applied before setting the channel status.
-Transformations can be chained by separating them with the mathematical intersection character "∩", e.g. `REGEX:.*Shipment-Status: ([a-z]+).*∩MAP:status.map` would first extract a character string with a regular expression and then apply the given MAP transformation on the result.
+Transformations are defined using this syntax: `TYPE(FUNCTION)`, e.g.: `JSONPATH($.path)`.
+The syntax: `TYPE:FUNCTION` is still supported, e.g.: `JSONPATH:$.path`.
+Transformations can be chained in the UI by listing each transformation on a separate line, or by separating them with the mathematical intersection character "∩".
+For example, `REGEX(.*Shipment-Status: ([a-z]+).*) ∩ MAP(status.map)` would first extract a character string with a regular expression and then apply the given MAP transformation on the result.
 Please note that the values will be discarded if one transformation fails (e.g. REGEX did not match).
 This means that you can also use it to filter certain emails e.g. `REGEX:(.*Sendungsbenachrichtigung.*)` would only match for mails containing the string "Sendungsbenachrichtigung" but output the whole message.
 
@@ -130,7 +133,7 @@ Both functions return a boolean as the result of the operation.
 
 `recipient` can be a single address (`mail@example.com`) or a list of addresses, concatenated by a comma (`mail@example.com, mail2@example.com`).
 
-Since there is a separate rule action instance for each `smtp` thing, this needs to be retrieved through `getActions(scope, thingUID)`.
+Since there is a separate rule action instance for each `smtp` thing, this needs to be retrieved through `getActions(scope, thingUID)` (DSL) or `actions.get(scope, thingUID)` (Javascript).
 The first parameter always has to be `mail` and the second is the full Thing UID of the SMTP server that should be used.
 Once this action instance is retrieved, you can invoke the action method on it.
 
@@ -139,9 +142,13 @@ Using different character sets may produce unwanted results.
 
 Examples:
 
+:::: tabs
+
+::: tab DSL
+
 ```java
 val mailActions = getActions("mail","mail:smtp:samplesmtp")
-val success = mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
+var success = mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
 success = mailActions.sendMail("mail1@example.com, mail2@example.com", "Test subject", "This is the mail content sent to multiple recipients.")
 
 ```
@@ -156,12 +163,58 @@ val mailActions = getActions("mail","mail:smtp:sampleserver")
 mailActions.sendHtmlMailWithAttachments("mail@example.com", "Test subject", "<h1>Header</h1>This is the mail content.", attachmentUrlList)
 ```
 
+:::
+
+::: tab JavaScript
+
+```javascript
+val mailActions = actions.get("mail","mail:smtp:samplesmtp")
+var success = mailActions.sendMail("mail@example.com", "Test subject", "This is the mail content.")
+success = mailActions.sendMail("mail1@example.com, mail2@example.com", "Test subject", "This is the mail content sent to multiple recipients.")
+```
+
+```javascript
+import java.util.List
+
+val List<String> attachmentUrlList = newArrayList(
+  "http://some.web/site/snap.jpg&param=value",
+  "file:///tmp/201601011031.jpg")
+val mailActions = actions.get("mail","mail:smtp:sampleserver")
+mailActions.sendHtmlMailWithAttachments("mail@example.com", "Test subject", "<h1>Header</h1>This is the mail content.", attachmentUrlList)
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+mail = things["mail:smtp:samplesmtp"]
+success = mail.send_mail("mail@example.com", "Test subject", "This is the mail content.")
+success = mail.send_mail("mail1@example.com, mail2@example.com", "Test subject", "This is the mail content sent to multiple recipients.")
+```
+
+```ruby
+attachment_urls = [
+  "http://some.web/site/snap.jpg&param=value",
+  "file:///tmp/201601011031.jpg"
+]
+things["mail:smtp:sampleserver"].send_html_mail_with_attachments("mail@example.com", "Test subject", "<h1>Header</h1>This is the mail content.", attachment_urls)
+```
+
+:::
+
+::::
+
 ## Mail Headers
 
 The binding allows one to add custom e-mail headers to messages that it sends.
 For example if you want e-mails sent by this binding to be grouped into a "threaded view" in your email client, you must provide an e-mail "Reference" header, which acts as the key for grouping messages together.
 Headers can be added inside a rule by calling the `mailActions.addHeader()` method before calling the respective `mailActions.sendMail()` method.
 See the example below.
+
+:::: tabs
+
+::: tab DSL
 
 ```java
 rule "Send Mail with a 'Reference' header; for threaded view in e-mail client"
@@ -174,4 +227,27 @@ then
 end
 ```
 
+:::
+
+::: tab JavaScript
+
+```javascript
+val mailActions = actions.get("mail","mail:smtp:sampleserver")
+mailActions.addHeader("Reference", "<unique-thread-identifier>")
+mailActions.sendMail("mail@example.com", "Test subject", "Test message text")
+```
+
+:::
+
+::: tab JRuby
+
+```ruby
+mail = things["mail:smtp:sampleserver"]
+mail.add_header("Reference", "<unique-thread-identifier>")
+mail.send_mail("mail@example.com", "Test subject", "Test message text")
+```
+
+:::
+
+::::
 Note: in the case of the "Reference" header, the `<unique-thread-identifier>` has to be an ASCII string enclosed in angle brackets.

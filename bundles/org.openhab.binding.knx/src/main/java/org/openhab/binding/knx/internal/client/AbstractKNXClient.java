@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,7 +15,6 @@ package org.openhab.binding.knx.internal.client;
 import static org.openhab.binding.knx.internal.dpt.DPTUtil.NORMALIZED_DPT;
 
 import java.time.Duration;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -273,19 +272,20 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             return false;
         } catch (KNXIllegalArgumentException e) {
             logger.debug("Bridge {} cannot connect: {}", thingUID, e.getMessage());
-            disconnect(e, Optional.of(ThingStatusDetail.CONFIGURATION_ERROR));
+            disconnect(e, ThingStatusDetail.CONFIGURATION_ERROR);
             return false;
         }
     }
 
     private void disconnect(@Nullable Exception e) {
-        disconnect(e, Optional.empty());
+        disconnect(e, null);
     }
 
-    private synchronized void disconnect(@Nullable Exception e, Optional<ThingStatusDetail> detail) {
+    private synchronized void disconnect(@Nullable Exception e, @Nullable ThingStatusDetail detail) {
         releaseConnection();
         if (e != null) {
-            statusUpdateCallback.updateStatus(ThingStatus.OFFLINE, detail.orElse(ThingStatusDetail.COMMUNICATION_ERROR),
+            statusUpdateCallback.updateStatus(ThingStatus.OFFLINE,
+                    detail != null ? detail : ThingStatusDetail.COMMUNICATION_ERROR,
                     KNXTranslationProvider.I18N.getLocalizedException(e));
         } else {
             statusUpdateCallback.updateStatus(ThingStatus.OFFLINE);
@@ -503,7 +503,8 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
         }
         GroupAddress groupAddress = commandSpec.getGroupAddress();
 
-        logger.trace("writeToKNX groupAddress '{}', commandSpec '{}'", groupAddress, commandSpec);
+        logger.trace("writeToKNX groupAddress '{}', commandSpec '{}:{} {}'", groupAddress, groupAddress,
+                commandSpec.getDPT(), commandSpec.getValue());
 
         sendToKNX(processCommunicator, groupAddress, commandSpec.getDPT(), commandSpec.getValue());
     }

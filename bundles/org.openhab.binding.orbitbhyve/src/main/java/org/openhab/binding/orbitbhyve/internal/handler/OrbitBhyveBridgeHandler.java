@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,6 +64,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 /**
  * The {@link OrbitBhyveBridgeHandler} is responsible for handling commands, which are
@@ -210,6 +211,9 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Get devices returned response status: " + response.getStatus());
             }
+        } catch (JsonSyntaxException e) {
+            logger.debug("Exception parsing devices json: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing devices json");
         } catch (TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error during getting devices");
         } catch (InterruptedException e) {
@@ -237,6 +241,9 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                         "Returned status: " + response.getStatus());
             }
+        } catch (JsonSyntaxException e) {
+            logger.debug("Exception parsing device json: {}", e.getMessage(), e);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Error parsing device json");
         } catch (TimeoutException | ExecutionException e) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
                     "Error during getting device info: " + deviceId);
@@ -288,7 +295,7 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
                 }
                 ch = getThingChannel(event.getDeviceId(), CHANNEL_CONTROL);
                 if (ch != null) {
-                    updateState(ch.getUID(), "off".equals(event.getMode()) ? OnOffType.OFF : OnOffType.ON);
+                    updateState(ch.getUID(), OnOffType.from(!"off".equals(event.getMode())));
                 }
                 updateDeviceStatus(event.getDeviceId());
                 break;
@@ -314,11 +321,11 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
         List<OrbitBhyveDevice> devices = getDevices();
         for (Thing th : getThing().getThings()) {
             if (th.isEnabled()) {
-                String deviceId = th.getUID().getId();
                 ThingHandler handler = th.getHandler();
                 if (handler instanceof OrbitBhyveSprinklerHandler sprinklerHandler) {
+                    String deviceId = sprinklerHandler.getSprinklerId();
                     for (OrbitBhyveDevice device : devices) {
-                        if (deviceId.equals(th.getUID().getId())) {
+                        if (deviceId.equals(device.getId())) {
                             updateDeviceStatus(device, sprinklerHandler);
                         }
                     }
@@ -338,9 +345,9 @@ public class OrbitBhyveBridgeHandler extends ConfigStatusBridgeHandler {
 
     private void updateDeviceStatus(String deviceId) {
         for (Thing th : getThing().getThings()) {
-            if (deviceId.equals(th.getUID().getId())) {
-                ThingHandler handler = th.getHandler();
-                if (handler instanceof OrbitBhyveSprinklerHandler sprinklerHandler) {
+            ThingHandler handler = th.getHandler();
+            if (handler instanceof OrbitBhyveSprinklerHandler sprinklerHandler) {
+                if (deviceId.equals(sprinklerHandler.getSprinklerId())) {
                     OrbitBhyveDevice device = getDevice(deviceId);
                     updateDeviceStatus(device, sprinklerHandler);
                 }

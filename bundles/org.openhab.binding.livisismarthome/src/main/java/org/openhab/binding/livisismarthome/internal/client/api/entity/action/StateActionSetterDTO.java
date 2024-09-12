@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -31,27 +31,38 @@ public class StateActionSetterDTO extends ActionDTO {
      * @param capabilityId String of the 32 character capability id
      * @param capabilityType the type of the {@link CapabilityDTO}, {@link CapabilityDTO#TYPE_SWITCHACTUATOR} or
      *            {@link CapabilityDTO#TYPE_VARIABLEACTUATOR}
-     * @param state the new state as boolean (true=on, false=off)
+     * @param newState the new newState as boolean (true=on, false=off)
      */
-    public StateActionSetterDTO(String capabilityId, String capabilityType, boolean state) {
+    public StateActionSetterDTO(String capabilityId, String capabilityType, boolean newState) {
         setType(ACTION_TYPE_SETSTATE);
         setTargetCapabilityById(capabilityId);
         final ActionParamsDTO params = new ActionParamsDTO();
 
         if (CapabilityDTO.TYPE_SWITCHACTUATOR.equals(capabilityType)) {
-            params.setOnState(new BooleanActionParamDTO(CONSTANT, state));
+            params.setOnState(new BooleanActionParamDTO(CONSTANT, newState));
         } else if (CapabilityDTO.TYPE_VARIABLEACTUATOR.equals(capabilityType)) {
-            params.setValue(new BooleanActionParamDTO(CONSTANT, state));
+            params.setValue(new BooleanActionParamDTO(CONSTANT, newState));
         } else if (CapabilityDTO.TYPE_ALARMACTUATOR.equals(capabilityType)) {
-            params.setOnState(new BooleanActionParamDTO(CONSTANT, state));
+            params.setOnState(new BooleanActionParamDTO(CONSTANT, newState));
         } else if (CapabilityDTO.TYPE_THERMOSTATACTUATOR.equals(capabilityType)) {
             final String operationMode;
-            if (state) {
+            if (newState) {
                 operationMode = CapabilityStateDTO.STATE_VALUE_OPERATION_MODE_AUTO;
             } else {
                 operationMode = CapabilityStateDTO.STATE_VALUE_OPERATION_MODE_MANUAL;
             }
             params.setOperationMode(new StringActionParamDTO(CONSTANT, operationMode));
+        }
+        setParams(params);
+    }
+
+    public StateActionSetterDTO(String capabilityId, String capabilityType, String newState) {
+        setType(ACTION_TYPE_SETSTATE);
+        setTargetCapabilityById(capabilityId);
+        final ActionParamsDTO params = new ActionParamsDTO();
+
+        if (CapabilityDTO.TYPE_SIRENACTUATOR.equals(capabilityType)) {
+            params.setActiveChannel(new StringActionParamDTO(CONSTANT, newState));
         }
         setParams(params);
     }

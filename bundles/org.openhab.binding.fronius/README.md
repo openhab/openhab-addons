@@ -1,28 +1,29 @@
 # Fronius Binding
 
-This binding uses the [Fronius Solar API V1](https://www.fronius.com/en/photovoltaics/products/all-products/system-monitoring/open-interfaces/fronius-solar-api-json-) to obtain data from Fronius devices.
+This binding uses the [Fronius Solar API V1](https://www.fronius.com/en/solar-energy/installers-partners/technical-data/all-products/system-monitoring/open-interfaces/fronius-solar-api-json-) to obtain data from Fronius devices.
 
-It supports Fronius inverters and Fronius Smart Meter.
-Supports:
+It supports Fronius inverters, smart meters and Ohmpilot devices connected to a Fronius Datamanager 1.0 / 2.0, Fronius Datalogger or with integrated Solar API V1 support.
 
+Inverters with integrated Solar API V1 support include:
+
+- Fronius Galvo
+- Fronius Primo
 - Fronius Symo
 - Fronius Symo Gen24
-- Fronius Smart Meter 63A
-- Fronius Smart Meter TS 65A-3
-- Fronius Ohmpilot
+- Fronius Symo Gen24 Plus
 
 ## Supported Things
 
-| Thing Type      | Description                                                                                                                                                                                                                           |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `bridge`        | The Bridge                                                                                                                                                                                                                            |
-| `powerinverter` | Fronius Galvo, Symo and other Fronius inverters in combination with the Fronius Datamanager 1.0 / 2.0 or Fronius Datalogger. You can add multiple inverters that depend on the same datalogger with different device ids. (Default 1) |
-| `meter`         | Fronius Smart Meter. You can add multiple smart meters with different device ids. (The default id = 0)                                                                                                                                |
-| `ohmpilot`      | Fronius Ohmpilot. (The default id = 0)                                                                                                                                                                                                |
+| Thing Type      | Description                                                                                                                                                    |
+|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `bridge`        | The Bridge                                                                                                                                                     |
+| `powerinverter` | Fronius Galvo, Symo and other Fronius inverters: You can add multiple inverters that depend on the same datalogger with different device ids. (default id = 1) |
+| `meter`         | Fronius Smart Meter: You can add multiple smart meters with different device ids. (default id = 0)                                                             |
+| `ohmpilot`      | Fronius Ohmpilot ( default id = 0)                                                                                                                             |
 
 ## Discovery
 
-There is no discovery implemented. You have to create your things manually and specify the hostname or IP address of the Datalogger and the device id.
+There is no discovery implemented. You have to create your Things manually and specify the hostname or IP address of the Datalogger and the device id.
 
 ## Binding Configuration
 
@@ -32,10 +33,12 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ### Bridge Thing Configuration
 
-| Parameter         | Description                                           |
-| ----------------- | ----------------------------------------------------- |
-| `hostname`        | The hostname or IP address of your Fronius Datalogger |
-| `refreshInterval` | Refresh interval in seconds                           |
+| Parameter         | Description                                                                    | Required |
+|-------------------|--------------------------------------------------------------------------------|----------|
+| `hostname`        | The hostname or IP address of your Fronius Datamanager, Datalogger or inverter | Yes      |
+| `username`        | The username to authenticate with the inverter settings for battery control    | No       |
+| `password`        | The password to authenticate with the inverter settings for battery control    | No       |
+| `refreshInterval` | Refresh interval in seconds                                                    | No       |
 
 ### Powerinverter Thing Configuration
 
@@ -63,17 +66,17 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | ------------------------------------ | ------------------------ | ----------------------------------------------------------------------------------------------------------------- |
 | `inverterdatachannelpac`             | Number:Power             | AC Power generated                                                                                                |
 | `inverterdatachannelpdc`             | Number:Power             | DC Power calculated from DC voltage * DC current                                                                  |
-| `inverterdatachannelpdc2`            | Number:Power             | DC Power 2 calculated from DC voltage 2 * DC current 2                                                            |
-| `inverterdatachannelpdc3`            | Number:Power             | DC Power 3 calculated from DC voltage 3 * DC current 3                                                            |
+| `inverterdatachannelpdc2`            | Number:Power             | DC Power generated by MPPT tracker 2                                                                              |
+| `inverterdatachannelpdc3`            | Number:Power             | DC Power generated by MPPT tracker 3                                                                              |
 | `inverterdatachannelfac`             | Number:Frequency         | AC frequency                                                                                                      |
 | `inverterdatachanneliac`             | Number:ElectricCurrent   | AC current                                                                                                        |
 | `inverterdatachannelidc`             | Number:ElectricCurrent   | DC current                                                                                                        |
-| `inverterdatachannelidc2`            | Number:ElectricCurrent   | DC current 2                                                                                                      |
-| `inverterdatachannelidc3`            | Number:ElectricCurrent   | DC current 3                                                                                                      |
+| `inverterdatachannelidc2`            | Number:ElectricCurrent   | DC current of MPPT tracker 2                                                                                      |
+| `inverterdatachannelidc3`            | Number:ElectricCurrent   | DC current of MPPT tracker 3                                                                                      |
 | `inverterdatachanneluac`             | Number:ElectricPotential | AC voltage                                                                                                        |
 | `inverterdatachanneludc`             | Number:ElectricPotential | DC voltage                                                                                                        |
-| `inverterdatachanneludc2`            | Number:ElectricPotential | DC voltage 2                                                                                                      |
-| `inverterdatachanneludc3`            | Number:ElectricPotential | DC voltage 3                                                                                                      |
+| `inverterdatachanneludc2`            | Number:ElectricPotential | DC voltage of MPPT tracker 2                                                                                      |
+| `inverterdatachanneludc3`            | Number:ElectricPotential | DC voltage of MPPT tracker 3                                                                                      |
 | `inverterdatachanneldayenergy`       | Number:Energy            | Energy generated on current day                                                                                   |
 | `inverterdatachannelyear`            | Number:Energy            | Energy generated in current year                                                                                  |
 | `inverterdatachanneltotal`           | Number:Energy            | Energy generated overall                                                                                          |
@@ -85,8 +88,10 @@ The binding has no configuration options, all configuration is done at `bridge`,
 | `powerflowchannelppv`                | Number:Power             | Solar Power (+ production)                                                                                        |
 | `powerflowautonomy`                  | Number:Dimensionless     | The current relative autonomy in %                                                                                |
 | `powerflowselfconsumption`           | Number:Dimensionless     | The current relative self consumption in %                                                                        |
-| `powerflowinverter1power`            | Number:Power             | Current power of inverter 1, null if not running (+ produce/export, - consume/import)                             |
-| `powerflowinverter1soc`              | Number:Dimensionless     | Current state of charge of inverter 1 in percent                                                                  |
+| `powerflowinverterpower`             | Number:Power             | Current power of the inverter, null if not running (+ produce/export, - consume/import)                           |
+| `powerflowinvertersoc`               | Number:Dimensionless     | Current state of charge of the battery connected to the inverter in percent.                                      |
+| `powerflowinverter1power`            | Number:Power             | Current power of inverter 1, null if not running (+ produce/export, - consume/import) - DEPRECATED                |
+| `powerflowinverter1soc`              | Number:Dimensionless     | Current state of charge of inverter 1 in percent - DEPRECATED                                                     |
 
 ### Channels for `meter` Thing
 
@@ -122,19 +127,78 @@ The binding has no configuration options, all configuration is done at `bridge`,
 
 ## Properties
 
-### The `meter` thing has the following properties:
+### The `meter` Thing has the following properties:
 
 | Property       | Description                    |
 | -------------- | ------------------------------ |
 | `modelId`      | The model name of the meter    |
 | `serialNumber` | The serial number of the meter |
 
-### The `ohmpilot` thing has the following property:
+### The `ohmpilot` Thing has the following properties:
 
 | Property       | Description                       |
 | -------------- | --------------------------------- |
 | `modelId`      | The model name of the ohmpilot    |
 | `serialNumber` | The serial number of the ohmpilot |
+
+## Actions
+
+:::warning
+Battery control uses the battery management's time-dependent battery control settings of the inverter settings and therefore overrides user-specified time of use settings.
+Please note that user-specified time of use plans cannot be used together with battery control, as battery control will override the user-specified time of use settings. 
+:::
+
+The `powerinverter` Thing provides actions to control the battery charging and discharging behaviour of hybrid inverters, such as Symo Gen24 Plus, if username and password are provided in the bridge configuration.
+
+You can retrieve the actions as follows:
+
+:::: tabs
+
+::: tab DSL
+
+```java
+val froniusInverterActions = getActions("fronius", "fronius:powerinverter:mybridge:myinverter")
+```
+:::
+
+::: tab JS
+
+```javascript
+var froniusInverterActions = actions.thingActions('fronius', 'fronius:powerinverter:mybridge:myinverter');
+```
+
+:::
+
+::::
+
+Where the first parameter must always be `fronius` and the second must be the full Thing UID of the inverter.
+
+### Available Actions
+
+Once the actions instance has been retrieved, you can invoke the following methods:
+
+- `resetBatteryControl()`: Remove all battery control schedules from the inverter.
+- `holdBatteryCharge()`: Prevent the battery from discharging (removes all battery control schedules first and applies all the time).
+- `addHoldBatteryChargeSchedule(LocalTime from, LocalTime until)`: Add a schedule to prevent the battery from discharging in the specified time range.
+- `addHoldBatteryChargeSchedule(ZonedDateTime from, ZonedDateTime until)`: Add a schedule to prevent the battery from discharging in the specified time range.
+- `forceBatteryCharging(QuantityType<Power> power)`: Force the battery to charge with the specified power (removes all battery control schedules first and applies all the time).
+- `addForcedBatteryChargingSchedule(LocalTime from, LocalTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
+- `addForcedBatteryChargingSchedule(ZonedDateTime from, ZonedDateTime until, QuantityType<Power> power)`: Add a schedule to force the battery to charge with the specified power in the specified time range.
+
+### Examples
+
+```javascript
+var froniusInverterActions = actions.thingActions('fronius', 'fronius:powerinverter:mybridge:myinverter');
+
+froniusInverterActions.resetBatteryControl();
+froniusInverterActions.holdBatteryCharge();
+froniusInverterActions.forceBatteryCharging(Quantity('5 kW'));
+
+froniusInverterActions.resetBatteryControl();
+froniusInverterActions.addHoldBatteryChargeSchedule(time.toZDT('18:00'), time.toZDT('22:00'));
+froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('22:00'), time.toZDT('23:59'), Quantity('5 kW'));
+froniusInverterActions.addForcedBatteryChargingSchedule(time.toZDT('00:00'), time.toZDT('06:00'), Quantity('5 kW'));
+```
 
 ## Full Example
 

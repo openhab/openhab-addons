@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,8 +22,6 @@ import java.util.Set;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.snmp.internal.config.SnmpServiceConfiguration;
-import org.openhab.binding.snmp.internal.types.SnmpAuthProtocol;
-import org.openhab.binding.snmp.internal.types.SnmpPrivProtocol;
 import org.openhab.core.config.core.Configuration;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -37,11 +35,22 @@ import org.snmp4j.Snmp;
 import org.snmp4j.Target;
 import org.snmp4j.event.ResponseListener;
 import org.snmp4j.mp.MPv3;
+import org.snmp4j.security.AuthHMAC128SHA224;
+import org.snmp4j.security.AuthHMAC192SHA256;
+import org.snmp4j.security.AuthHMAC256SHA384;
+import org.snmp4j.security.AuthHMAC384SHA512;
+import org.snmp4j.security.AuthMD5;
+import org.snmp4j.security.AuthSHA;
 import org.snmp4j.security.Priv3DES;
+import org.snmp4j.security.PrivAES128;
+import org.snmp4j.security.PrivAES192;
+import org.snmp4j.security.PrivAES256;
+import org.snmp4j.security.PrivDES;
 import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
+import org.snmp4j.smi.Address;
 import org.snmp4j.smi.OctetString;
 import org.snmp4j.smi.UdpAddress;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
@@ -58,7 +67,6 @@ import org.snmp4j.transport.DefaultUdpTransportMapping;
 public class SnmpServiceImpl implements SnmpService {
     private final Logger logger = LoggerFactory.getLogger(SnmpServiceImpl.class);
 
-    private @NonNullByDefault({}) SnmpServiceConfiguration config;
     private @Nullable Snmp snmp;
     private @Nullable DefaultUdpTransportMapping transport;
 
@@ -67,9 +75,7 @@ public class SnmpServiceImpl implements SnmpService {
 
     @Activate
     public SnmpServiceImpl(Map<String, Object> config) {
-        SecurityProtocols.getInstance().addDefaultProtocols();
-        SecurityProtocols.getInstance().addPrivacyProtocol(new Priv3DES());
-
+        addProtocols();
         OctetString localEngineId = new OctetString(MPv3.createLocalEngineID());
         USM usm = new USM(SecurityProtocols.getInstance(), localEngineId, 0);
         SecurityModels.getInstance().addSecurityModel(usm);
@@ -79,34 +85,33 @@ public class SnmpServiceImpl implements SnmpService {
 
     @Modified
     protected void modified(Map<String, Object> config) {
-        this.config = new Configuration(config).as(SnmpServiceConfiguration.class);
+        SnmpServiceConfiguration snmpCfg = new Configuration(config).as(SnmpServiceConfiguration.class);
         try {
             shutdownSnmp();
 
             final DefaultUdpTransportMapping transport;
 
-            if (this.config.port > 0) {
-                transport = new DefaultUdpTransportMapping(new UdpAddress(this.config.port), true);
+            if (snmpCfg.port > 0) {
+                transport = new DefaultUdpTransportMapping(new UdpAddress(snmpCfg.port), true);
             } else {
                 transport = new DefaultUdpTransportMapping();
             }
 
-            SecurityProtocols.getInstance().addDefaultProtocols();
-            SecurityProtocols.getInstance().addPrivacyProtocol(new Priv3DES());
+            addProtocols();
 
             final Snmp snmp = new Snmp(transport);
             listeners.forEach(snmp::addCommandResponder);
             snmp.listen();
 
             // re-add user entries
-            userEntries.forEach(u -> addUser(snmp, u));
+            userEntries.forEach(u -> snmp.getUSM().addUser(u.user, u.engineId));
 
             this.snmp = snmp;
             this.transport = transport;
 
             logger.debug("initialized SNMP at {}", transport.getAddress());
         } catch (IOException e) {
-            logger.warn("could not open SNMP instance on port {}: {}", this.config.port, e.getMessage());
+            logger.warn("could not open SNMP instance on port {}: {}", snmpCfg.port, e.getMessage());
         }
     }
 
@@ -118,6 +123,21 @@ public class SnmpServiceImpl implements SnmpService {
         } catch (IOException e) {
             logger.info("could not end SNMP: {}", e.getMessage());
         }
+    }
+
+    private void addProtocols() {
+        SecurityProtocols secProtocols = SecurityProtocols.getInstance();
+        secProtocols.addAuthenticationProtocol(new AuthMD5());
+        secProtocols.addAuthenticationProtocol(new AuthSHA());
+        secProtocols.addAuthenticationProtocol(new AuthHMAC128SHA224());
+        secProtocols.addAuthenticationProtocol(new AuthHMAC192SHA256());
+        secProtocols.addAuthenticationProtocol(new AuthHMAC256SHA384());
+        secProtocols.addAuthenticationProtocol(new AuthHMAC384SHA512());
+        secProtocols.addPrivacyProtocol(new PrivDES());
+        secProtocols.addPrivacyProtocol(new Priv3DES());
+        secProtocols.addPrivacyProtocol(new PrivAES128());
+        secProtocols.addPrivacyProtocol(new PrivAES192());
+        secProtocols.addPrivacyProtocol(new PrivAES256());
     }
 
     private void shutdownSnmp() throws IOException {
@@ -152,7 +172,7 @@ public class SnmpServiceImpl implements SnmpService {
     }
 
     @Override
-    public void send(PDU pdu, Target target, @Nullable Object userHandle, ResponseListener listener)
+    public void send(PDU pdu, Target<?> target, @Nullable Object userHandle, ResponseListener listener)
             throws IOException {
         Snmp snmp = this.snmp;
         if (snmp != null) {
@@ -164,33 +184,40 @@ public class SnmpServiceImpl implements SnmpService {
     }
 
     @Override
-    public void addUser(String userName, SnmpAuthProtocol snmpAuthProtocol, @Nullable String authPassphrase,
-            SnmpPrivProtocol snmpPrivProtocol, @Nullable String privPassphrase, byte[] engineId) {
-        UsmUser usmUser = new UsmUser(new OctetString(userName), snmpAuthProtocol.getOid(),
-                authPassphrase != null ? new OctetString(authPassphrase) : null, snmpPrivProtocol.getOid(),
-                privPassphrase != null ? new OctetString(privPassphrase) : null);
-        OctetString securityNameOctets = new OctetString(userName);
-
-        UserEntry userEntry = new UserEntry(securityNameOctets, new OctetString(engineId), usmUser);
+    public void addUser(UsmUser user, OctetString engineId) {
+        UserEntry userEntry = new UserEntry(user, engineId);
         userEntries.add(userEntry);
 
         Snmp snmp = this.snmp;
         if (snmp != null) {
-            addUser(snmp, userEntry);
+            snmp.getUSM().addUser(user, engineId);
         }
     }
 
-    private static void addUser(Snmp snmp, UserEntry userEntry) {
-        snmp.getUSM().addUser(userEntry.securityName, userEntry.engineId, userEntry.user);
+    @Override
+    public void removeUser(Address address, UsmUser user, OctetString engineId) {
+        Snmp snmp = this.snmp;
+        if (snmp != null) {
+            snmp.getUSM().removeAllUsers(user.getSecurityName(), engineId);
+            snmp.removeCachedContextEngineId(address);
+        }
+        userEntries.removeIf(e -> e.engineId.equals(engineId) && e.user.equals(user));
+    }
+
+    @Override
+    public byte @Nullable [] getEngineId(Address address) {
+        Snmp snmp = this.snmp;
+        if (snmp != null) {
+            return snmp.discoverAuthoritativeEngineID(address, 15000);
+        }
+        return null;
     }
 
     private static class UserEntry {
-        public OctetString securityName;
         public OctetString engineId;
         public UsmUser user;
 
-        public UserEntry(OctetString securityName, OctetString engineId, UsmUser user) {
-            this.securityName = securityName;
+        public UserEntry(UsmUser user, OctetString engineId) {
             this.engineId = engineId;
             this.user = user;
         }

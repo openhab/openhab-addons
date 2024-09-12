@@ -23,15 +23,13 @@ The following channels are yet supported:
 | Channel                        | Type          | Access | Description                                                                             |
 | ------------------------------ | ------------- | ------ | --------------------------------------------------------------------------------------- |
 | batteryChargingState           | Switch        | read   | Indicates if the Battery is charging at that moment                                     |
-| batteryCharging                | Number:Energy | read   | Indicates the actual current charging the Battery. Otherwise 0.                         |
+| batteryCharging                | Number:Power  | read   | Indicates the actual current charging the Battery. Otherwise 0.                         |
 | batteryDischargingState        | Switch        | read   | Indicates if the Battery is discharging at that moment                                  |
-| batteryDischarging             | Number:Energy | read   | Indicates the actual current discharging the Battery. Otherwise 0.                      |
-| batteryFeedIn                  | Number:Energy | read   | Indicates the actual charging current of the Battery in watt                            |
-| batteryDischarging             | Number:Energy | read   | Indicates the actual current discharging the Battery in watt                            |
-| consumption                    | Number:Energy | read   | Indicates the actual consumption of the consumer in watt                                |
-| gridFeedIn                     | Number:Energy | read   | Indicates the actual current feeding to the Grid in watt.0 if nothing is feeded         |
-| gridConsumption                | Number:Energy | read   | Indicates the actual current consumption from the Grid in watt.0 if nothing is received |
-| solarProduction                | Number:Energy | read   | Indicates the actual production of the Solar system in watt                             |
+| batteryDischarging             | Number:Power  | read   | Indicates the actual current discharging the Battery. Otherwise 0.                      |
+| consumption                    | Number:Power  | read   | Indicates the actual consumption of the consumer in watt                                |
+| gridFeedIn                     | Number:Power  | read   | Indicates the actual current feeding to the Grid in watt.0 if nothing is feeded         |
+| gridConsumption                | Number:Power  | read   | Indicates the actual current consumption from the Grid in watt.0 if nothing is received |
+| solarProduction                | Number:Power  | read   | Indicates the actual production of the Solar system in watt                             |
 | batteryLevel                   | Number        | read   | Indicates the actual Battery Level in % from 0 - 100                                    |
 | flowConsumptionBatteryState    | Switch        | read   | Indicates if there is a current flow from Battery towards Consumption                   |
 | flowConsumptionGridState       | Switch        | read   | Indicates if there is a current flow from Grid towards Consumption                      |

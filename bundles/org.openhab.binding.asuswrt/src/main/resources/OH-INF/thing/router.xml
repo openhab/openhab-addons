@@ -13,6 +13,8 @@
 			<channel-group id="client-list" typeId="client-list-group"></channel-group>
 		</channel-groups>
 
+		<representation-property>macAddress</representation-property>
+
 		<config-description>
 			<parameter name="hostname" type="text" required="true">
 				<context>network-address</context>

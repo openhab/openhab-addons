@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,6 +36,7 @@ public class TeslaBindingConstants {
     public static final String URI_OWNERS = "https://owner-api.teslamotors.com";
     public static final String VALETPIN = "valetpin";
     public static final String VEHICLES = "vehicles";
+    public static final String PRODUCTS = "products";
     public static final String VIN = "vin";
 
     // SSO URI constants
@@ -99,6 +100,9 @@ public class TeslaBindingConstants {
 
     public static final String CHANNEL_CHARGE = "charge";
     public static final String CHANNEL_COMBINED_TEMP = "combinedtemp";
+    public static final String CHANNEL_EVENTSTAMP = "eventstamp";
+
+    public static final String CHANNEL_SOFTWARE_UPDATE_AVAILABLE = "softwareupdateavailable";
 
     // thing configurations
     public static final String CONFIG_ALLOWWAKEUP = "allowWakeup";

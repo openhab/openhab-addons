@@ -32,7 +32,7 @@
 		</channels>
 		<properties>
 			<property name="vendor">sonnen</property>
-			<property name="thingTypeVersion">1</property>
+			<property name="thingTypeVersion">2</property>
 		</properties>
 
 		<config-description>
@@ -71,37 +71,37 @@
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="batteryCharging">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Battery Charging</label>
 		<description>Indicates the actual current charging the Battery. Otherwise 0.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="batteryDischarging">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Battery Discharging</label>
 		<description>Indicates the actual current discharging the Battery. Otherwise 0.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="consumption">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Consumption</label>
 		<description>Indicates the actual consumption of the House.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="gridFeedIn">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Grid Feed In</label>
 		<description>Indicates the actual current feeding to the Grid. Otherwise 0.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="gridConsumption">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Grid Consumption</label>
 		<description>Indicates the actual current consumption from the the Grid. Otherwise 0.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>
 	</channel-type>
 	<channel-type id="solarProduction">
-		<item-type>Number:Energy</item-type>
+		<item-type>Number:Power</item-type>
 		<label>Solar Production</label>
 		<description>Indicates the actual production of the Solar system.</description>
 		<state readOnly="true" pattern="%.0f %unit%"/>

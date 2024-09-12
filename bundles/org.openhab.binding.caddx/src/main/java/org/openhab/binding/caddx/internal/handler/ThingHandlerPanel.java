@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -75,7 +75,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
             // All Panel channels are OnOffType
             OnOffType onOffType;
 
-            onOffType = ("true".equals(data)) ? OnOffType.ON : OnOffType.OFF;
+            onOffType = OnOffType.from("true".equals(data));
             updateState(channelUID, onOffType);
         }
     }
@@ -156,7 +156,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
         communicatorStackPointer = pointer;
 
         // build map of log message channels to event numbers
-        HashMap<String, String> map = new HashMap<String, String>();
+        HashMap<String, String> map = new HashMap<>();
         map.put(pointer, CaddxBindingConstants.PANEL_LOG_MESSAGE_N_0);
         bridgeHandler.sendCommand(CaddxMessageContext.COMMAND, CaddxBindingConstants.PANEL_LOG_EVENT_REQUEST, pointer);
         panelLogMessagesMap = map;
@@ -194,7 +194,7 @@ public class ThingHandlerPanel extends CaddxBaseThingHandler {
         }
 
         if (communicatorStackPointer != null && eventNumberString.equals(communicatorStackPointer)) {
-            HashMap<String, String> map = new HashMap<String, String>();
+            HashMap<String, String> map = new HashMap<>();
 
             int eventNumber = Integer.parseInt(eventNumberString);
             int eventSize = Integer.parseInt(eventSizeString);

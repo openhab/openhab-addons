@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.shelly.internal.ShellyBindingConstants.*;
 import static org.openhab.binding.shelly.internal.api1.Shelly1ApiJsonDTO.*;
 import static org.openhab.binding.shelly.internal.util.ShellyUtils.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -82,7 +83,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
 
         try {
             ShellyColorUtils oldCol = getCurrentColors(lightId);
-            oldCol.mode = profile.mode;
+            oldCol.mode = profile.device.mode;
             ShellyColorUtils col = new ShellyColorUtils(oldCol);
 
             boolean update = true;
@@ -172,8 +173,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
                         logger.debug("{}: Changing brightness from {} to {}", thingName, oldCol.brightness, value);
                         col.setBrightness(value);
                     }
-                    updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER,
-                            value > 0 ? OnOffType.ON : OnOffType.OFF);
+                    updateChannel(CHANNEL_GROUP_LIGHT_CONTROL, CHANNEL_LIGHT_POWER, OnOffType.from(value > 0));
                     break;
 
                 case CHANNEL_COLOR_TEMP:
@@ -317,7 +317,7 @@ public class ShellyLightHandler extends ShellyBaseHandler {
         }
 
         ShellyStatusLight status = api.getLightStatus();
-        logger.trace("{}: Updating light status in {} mode, {} channel(s)", thingName, profile.mode,
+        logger.trace("{}: Updating light status in {} mode, {} channel(s)", thingName, profile.device.mode,
                 status.lights.size());
 
         // In white mode we have multiple channels
@@ -336,9 +336,10 @@ public class ShellyLightHandler extends ShellyBaseHandler {
             ShellyColorUtils col = getCurrentColors(lightId);
             col.power = getOnOff(light.ison);
 
-            if (profile.settings.lights != null) {
+            List<ShellySettingsRgbwLight> lights = profile.settings.lights;
+            if (lights != null) {
                 // Channel control/timer
-                ShellySettingsRgbwLight ls = profile.settings.lights.get(lightId);
+                ShellySettingsRgbwLight ls = lights.get(lightId);
                 updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOON,
                         toQuantityType(getDouble(ls.autoOn), Units.SECOND));
                 updated |= updateChannel(controlGroup, CHANNEL_TIMER_AUTOOFF,

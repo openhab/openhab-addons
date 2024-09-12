@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,6 +18,7 @@ import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.ws.rs.core.UriBuilder;
 
@@ -197,31 +198,41 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
     public static record TvContext(@Nullable Channel channel, @Nullable PlayerDetails player) {
     }
 
-    private final Map<Integer, String> subPaths = new HashMap<>();
+    private final Map<Integer, @Nullable String> subPaths = new HashMap<>();
 
     public PlayerManager(FreeboxOsSession session) throws FreeboxException {
         super(session, LoginManager.Permission.PLAYER, PlayerResponse.class,
                 session.getUriBuilder().path(THING_PLAYER));
+    }
+
+    private @Nullable String getSubPath(int id) throws FreeboxException {
+        String subPath = subPaths.get(id);
+        if (subPath != null) {
+            return subPath;
+        }
         getDevices().stream().filter(Player::apiAvailable).forEach(player -> {
             String baseUrl = player.baseUrl();
             if (baseUrl != null) {
                 subPaths.put(player.id, baseUrl);
             }
         });
+        return subPaths.get(id);
     }
 
-    public Status getPlayerStatus(int id) throws FreeboxException {
-        return getSingle(StatusResponse.class, subPaths.get(id), STATUS_PATH);
+    public @Nullable Status getPlayerStatus(int id) throws FreeboxException {
+        String subPath = getSubPath(id);
+        return subPath != null ? getSingle(StatusResponse.class, subPath, STATUS_PATH) : null;
     }
 
     // The player API does not allow to directly request a given player like others api parts
     @Override
     public Player getDevice(int id) throws FreeboxException {
-        return getDevices().stream().filter(player -> player.id == id).findFirst().orElse(null);
+        return Objects.requireNonNull(getDevices().stream().filter(player -> player.id == id).findFirst().orElse(null));
     }
 
-    public Configuration getConfig(int id) throws FreeboxException {
-        return getSingle(ConfigurationResponse.class, subPaths.get(id), SYSTEM_PATH);
+    public @Nullable Configuration getConfig(int id) throws FreeboxException {
+        String subPath = getSubPath(id);
+        return subPath != null ? getSingle(ConfigurationResponse.class, subPath, SYSTEM_PATH) : null;
     }
 
     public void sendKey(String ip, String code, String key, boolean longPress, int count) {
@@ -235,12 +246,17 @@ public class PlayerManager extends ListableRest<PlayerManager.Player, PlayerMana
         }
         try {
             session.execute(uriBuilder.build(), HttpMethod.GET, GenericResponse.class, null);
-        } catch (FreeboxException ignore) {
+        } catch (IllegalArgumentException | FreeboxException ignore) {
             // This call does not return anything, we can safely ignore
         }
     }
 
-    public void reboot(int id) throws FreeboxException {
-        post(subPaths.get(id), SYSTEM_PATH, REBOOT_ACTION);
+    public boolean reboot(int id) throws FreeboxException {
+        String subPath = getSubPath(id);
+        if (subPath != null) {
+            post(subPath, SYSTEM_PATH, REBOOT_ACTION);
+            return true;
+        }
+        return false;
     }
 }

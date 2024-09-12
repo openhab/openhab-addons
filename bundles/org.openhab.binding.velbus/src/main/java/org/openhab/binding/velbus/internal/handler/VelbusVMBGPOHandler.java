@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -38,7 +38,7 @@ import org.openhab.core.types.RefreshType;
 @NonNullByDefault
 public class VelbusVMBGPOHandler extends VelbusMemoHandler {
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = new HashSet<>(
-            Arrays.asList(THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD, THING_TYPE_VMBGPOD_2));
+            Arrays.asList(THING_TYPE_VMBGPO, THING_TYPE_VMBGPOD, THING_TYPE_VMBGPOD_2, THING_TYPE_VMBGPO_20));
 
     public static final int MODULESETTINGS_MEMORY_ADDRESS = 0x02F0;
     public static final int LAST_MEMORY_LOCATION_ADDRESS = 0x1A03;
@@ -74,10 +74,10 @@ public class VelbusVMBGPOHandler extends VelbusMemoHandler {
     }
 
     @Override
-    public void onPacketReceived(byte[] packet) {
-        super.onPacketReceived(packet);
-
-        logger.trace("onPacketReceived() was called");
+    public boolean onPacketReceived(byte[] packet) {
+        if (!super.onPacketReceived(packet)) {
+            return false;
+        }
 
         if (packet[0] == VelbusPacket.STX && packet.length >= 5) {
             byte command = packet[4];
@@ -95,11 +95,13 @@ public class VelbusVMBGPOHandler extends VelbusMemoHandler {
 
                     if ((memoryAddress + i) == MODULESETTINGS_MEMORY_ADDRESS) {
                         this.moduleSettings = data[i];
-                        OnOffType state = ((this.moduleSettings & 0x80) != 0x00) ? OnOffType.ON : OnOffType.OFF;
+                        OnOffType state = OnOffType.from((this.moduleSettings & 0x80) != 0x00);
                         updateState(screensaverChannel, state);
                     }
                 }
             }
         }
+
+        return true;
     }
 }

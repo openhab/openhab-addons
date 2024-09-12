@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -89,7 +89,8 @@ class PullJob implements Runnable {
 
     @Override
     public void run() {
-        final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET);
+        final Request request = httpClient.newRequest(sourceURI).followRedirects(true).method(HttpMethod.GET)
+                .timeout(HTTP_TIMEOUT_SECS, TimeUnit.SECONDS);
         final Authentication.Result currentAuthentication = authentication;
         if (currentAuthentication != null) {
             currentAuthentication.apply(request);

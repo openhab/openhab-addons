@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.gpstracker.internal.discovery;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -117,7 +117,7 @@ public class TrackerDiscoveryService extends AbstractDiscoveryService {
     @Override
     @Deactivate
     protected void deactivate() {
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
         super.deactivate();
     }
 

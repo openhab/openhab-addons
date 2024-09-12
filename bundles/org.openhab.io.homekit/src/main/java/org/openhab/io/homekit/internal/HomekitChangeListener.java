@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.io.homekit.internal;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.Clock;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -48,7 +47,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.github.hapjava.accessories.HomekitAccessory;
-import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 import io.github.hapjava.server.impl.HomekitRoot;
 
 /**
@@ -99,7 +97,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
         this.instance = instance;
         this.applyUpdatesDebouncer = new Debouncer("update-homekit-devices-" + instance, scheduler,
                 Duration.ofMillis(1000), Clock.systemUTC(), this::applyUpdates);
-        metadataChangeListener = new RegistryChangeListener<Metadata>() {
+        metadataChangeListener = new RegistryChangeListener<>() {
             @Override
             public void added(final Metadata metadata) {
                 final MetadataKey uid = metadata.getUID();
@@ -476,20 +474,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
                         try {
                             final AbstractHomekitAccessoryImpl additionalAccessory = HomekitAccessoryFactory
                                     .create(additionalTaggedItem, metadataRegistry, updater, settings);
-                            // Secondary accessories that don't explicitly specify a name will implicitly
-                            // get a name characteristic based on the item's name
-                            if (!additionalAccessory.getCharacteristic(HomekitCharacteristicType.NAME).isPresent()) {
-                                try {
-                                    additionalAccessory.addCharacteristic(
-                                            new NameCharacteristic(() -> additionalAccessory.getName()));
-                                } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                                    // This should never happen; all services should support NameCharacteristic as an
-                                    // optional Characteristic.
-                                    // If HAP-Java defined a service that doesn't support
-                                    // addOptionalCharacteristic(NameCharacteristic), then it's a bug there, and we're
-                                    // just going to ignore the exception here.
-                                }
-                            }
+                            additionalAccessory.promoteNameCharacteristic();
                             accessory.getServices().add(additionalAccessory.getPrimaryService());
                         } catch (HomekitException e) {
                             logger.warn("Cannot create additional accessory {}", additionalTaggedItem);
@@ -498,7 +483,7 @@ public class HomekitChangeListener implements ItemRegistryChangeListener {
             knownAccessories.put(taggedItem.getName(), accessory.toJson());
             accessoryRegistry.addRootAccessory(taggedItem.getName(), accessory);
         } catch (HomekitException e) {
-            logger.warn("Cannot create accessory {}", taggedItem);
+            logger.warn("Cannot create accessory {}: {}", taggedItem, e.getMessage());
         }
     }
 

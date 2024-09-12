@@ -15,21 +15,28 @@
 
 		<channels>
 			<channel id="power" typeId="power"/>
+			<channel id="energyToday" typeId="energyToday"/>
+			<channel id="energyThisMonth" typeId="energyThisMonth"/>
 		</channels>
 
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
 			<property name="model">BTI-F52x</property>
 			<property name="ownDeviceType">1830</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>ownId</representation-property>
-
 		<config-description>
 			<parameter name="where" type="text" required="true">
 				<label>OpenWebNet Address (where)</label>
 				<description>A "5" must be added before the energy meter address: 5N with N=[1-255]. Example energy meter "42" -->
 					where="542"</description>
+			</parameter>
+			<parameter name="energyRefreshPeriod" type="integer" unit="min" min="30" max="1440">
+				<label>Energy Totalizers Refresh Period</label>
+				<description>Sets the number of minutes between refreshes for energy totalizers (default: 30 minutes)</description>
+				<default>30</default>
 			</parameter>
 		</config-description>
 

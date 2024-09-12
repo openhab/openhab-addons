@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -189,6 +189,13 @@ public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener
                     sendCommand(EiscpCommand.LISTEN_MODE_SET, command);
                 } else if (command.equals(RefreshType.REFRESH)) {
                     sendCommand(EiscpCommand.LISTEN_MODE_QUERY);
+                }
+                break;
+            case CHANNEL_AUDYSSEYEQ:
+                if (command instanceof DecimalType) {
+                    sendCommand(EiscpCommand.AUDYSSEYEQ_SET, command);
+                } else if (command.equals(RefreshType.REFRESH)) {
+                    sendCommand(EiscpCommand.AUDYSSEYEQ_QUERY);
                 }
                 break;
 
@@ -419,6 +426,10 @@ public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener
                     updateState(CHANNEL_LISTENMODE,
                             convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
                     break;
+                case AUDYSSEYEQ:
+                    updateState(CHANNEL_AUDYSSEYEQ,
+                            convertDeviceValueToOpenHabState(data.getValue(), DecimalType.class));
+                    break;
 
                 /*
                  * ZONE 2
@@ -561,7 +572,7 @@ public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener
 
             } else if (classToConvert == OnOffType.class) {
                 index = Integer.parseInt(data, 16);
-                state = index == 0 ? OnOffType.OFF : OnOffType.ON;
+                state = OnOffType.from(index != 0);
 
             } else if (classToConvert == DecimalType.class) {
                 index = Integer.parseInt(data, 16);
@@ -826,6 +837,7 @@ public class OnkyoHandler extends OnkyoUpnpHandler implements OnkyoEventListener
             sendCommand(EiscpCommand.INFO_QUERY);
             sendCommand(EiscpCommand.AUDIOINFO_QUERY);
             sendCommand(EiscpCommand.VIDEOINFO_QUERY);
+            sendCommand(EiscpCommand.AUDYSSEYEQ_QUERY);
 
             if (isChannelAvailable(CHANNEL_POWERZONE2)) {
                 sendCommand(EiscpCommand.ZONE2_POWER_QUERY);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -68,7 +68,7 @@ public class A5_13_01 extends A5_13 {
     }
 
     protected State getRainStatus() {
-        return getBit(getDB0Value(), 1) ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(getBit(getDB0Value(), 1));
     }
 
     @Override

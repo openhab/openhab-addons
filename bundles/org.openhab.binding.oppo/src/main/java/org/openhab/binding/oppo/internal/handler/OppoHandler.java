@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -777,7 +777,7 @@ public class OppoHandler extends BaseThingHandler implements OppoMessageEventLis
                 break;
             case CHANNEL_POWER:
             case CHANNEL_MUTE:
-                state = ON.equals(value) ? OnOffType.ON : OnOffType.OFF;
+                state = OnOffType.from(ON.equals(value));
                 break;
             case CHANNEL_SOURCE:
             case CHANNEL_SUB_SHIFT:

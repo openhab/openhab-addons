@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,12 +13,20 @@
 package org.openhab.binding.boschshc.internal.discovery;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +40,7 @@ import org.openhab.binding.boschshc.internal.devices.BoschSHCBindingConstants;
 import org.openhab.binding.boschshc.internal.devices.bridge.BridgeHandler;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Device;
 import org.openhab.binding.boschshc.internal.devices.bridge.dto.Room;
+import org.openhab.binding.boschshc.internal.devices.bridge.dto.UserDefinedState;
 import org.openhab.core.config.discovery.DiscoveryListener;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryService;
@@ -39,7 +48,7 @@ import org.openhab.core.thing.Bridge;
 import org.openhab.core.thing.ThingUID;
 
 /**
- * ThingDiscoveryService Tester.
+ * Unit tests for {@link ThingDiscoveryService}.
  *
  * @author Gerd Zanker - Initial contribution
  */
@@ -70,8 +79,33 @@ class ThingDiscoveryServiceTest {
     }
 
     @Test
+    void initialize() {
+        fixture.initialize();
+        verify(bridgeHandler).registerDiscoveryListener(fixture);
+    }
+
+    @Test
     void testStartScan() throws InterruptedException {
         mockBridgeCalls();
+
+        Device device = new Device();
+        device.name = "My Smart Plug";
+        device.deviceModel = "PSM";
+        device.id = "hdm:HomeMaticIP:3014F711A00004953859F31B";
+        device.deviceServiceIds = List.of("PowerMeter", "PowerSwitch", "PowerSwitchProgram", "Routing");
+
+        List<Device> devices = new ArrayList<>();
+        devices.add(device);
+        when(bridgeHandler.getDevices()).thenReturn(devices);
+
+        UserDefinedState userDefinedState = new UserDefinedState();
+        userDefinedState.setName("My State");
+        userDefinedState.setId("23d34fa6-382a-444d-8aae-89c706e22158");
+        userDefinedState.setState(true);
+
+        List<UserDefinedState> userDefinedStates = new ArrayList<>();
+        userDefinedStates.add(userDefinedState);
+        when(bridgeHandler.getUserStates()).thenReturn(userDefinedStates);
 
         fixture.activate();
         fixture.startScan();
@@ -233,5 +267,47 @@ class ThingDiscoveryServiceTest {
         assertThat(fixture.getThingTypeUID(device), is(BoschSHCBindingConstants.THING_TYPE_SHUTTER_CONTROL));
         device.deviceModel = "TWINGUARD";
         assertThat(fixture.getThingTypeUID(device), is(BoschSHCBindingConstants.THING_TYPE_TWINGUARD));
+    }
+
+    @Test
+    void testAddUserDefinedStates() {
+        mockBridgeCalls();
+
+        ArrayList<UserDefinedState> userStates = new ArrayList<>();
+
+        UserDefinedState userState1 = new UserDefinedState();
+        userState1.setId(UUID.randomUUID().toString());
+        userState1.setName("first defined state");
+        userState1.setState(true);
+        UserDefinedState userState2 = new UserDefinedState();
+        userState2.setId(UUID.randomUUID().toString());
+        userState2.setName("another defined state");
+        userState2.setState(false);
+        userStates.add(userState1);
+        userStates.add(userState2);
+
+        verify(discoveryListener, never()).thingDiscovered(any(), any());
+
+        fixture.addUserStates(userStates);
+
+        // two calls for the two devices expected
+        verify(discoveryListener, times(2)).thingDiscovered(any(), any());
+    }
+
+    @Test
+    void dispose() {
+        Bridge thing = mock(Bridge.class);
+        when(thing.getUID()).thenReturn(new ThingUID(BoschSHCBindingConstants.THING_TYPE_SHC, "shc123456"));
+        when(bridgeHandler.getThing()).thenReturn(thing);
+        fixture.dispose();
+        verify(bridgeHandler).unregisterDiscoveryListener();
+    }
+
+    @Test
+    void getThingTypeUIDLightControl2ChildDevice() {
+        Device device = new Device();
+        device.deviceModel = ThingDiscoveryService.DEVICE_MODEL_LIGHT_CONTROL_CHILD_DEVICE;
+
+        assertThat(fixture.getThingTypeUID(device), is(nullValue()));
     }
 }

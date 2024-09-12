@@ -49,6 +49,7 @@ If you're new to Ruby, you may want to check out [Ruby Basics](https://openhab.g
     - [Script is Loaded](#script-is-loaded)
     - [openHAB System Started](#openhab-system-started)
     - [Cron Trigger](#cron-trigger)
+    - [DateTimeItem Trigger](#datetimeitem-trigger)
     - [Other Triggers](#other-triggers)
     - [Combining Multiple Triggers](#combining-multiple-triggers)
     - [Combining Multiple Conditions](#combining-multiple-conditions)
@@ -60,6 +61,7 @@ If you're new to Ruby, you may want to check out [Ruby Basics](https://openhab.g
   - [Terse Rules](#terse-rules)
   - [Early Exit From a Rule](#early-exit-from-a-rule)
   - [Dynamic Generation of Rules](#dynamic-generation-of-rules)
+  - [Scenes and Scripts](#scenes-and-scripts)
   - [Hooks](#hooks)
 - [Calling Java From JRuby](#calling-java-from-jruby)
 - [Full Documentation](#full-documentation)
@@ -99,7 +101,7 @@ Additional [example rules are available](https://openhab.github.io/openhab-jruby
 
 1. Go to `Settings -> Add-ons -> Automation` and install the jrubyscripting automation addon following the [openHAB instructions](https://www.openhab.org/docs/configuration/addons.html).
    In openHAB 4.0+ the defaults are set so the next step can be skipped.
-1. Go to `Settings -> Other Services -> JRuby Scripting`:
+1. Go to `Settings -> Add-on Settings -> JRuby Scripting`:
    - **Ruby Gems**: `openhab-scripting=~>5.0`
    - **Require Scripts**: `openhab/dsl` (not required, but recommended)
 
@@ -118,7 +120,7 @@ Additional [example rules are available](https://openhab.github.io/openhab-jruby
 
 ## Configuration
 
-After installing this add-on, you will find configuration options in the openHAB portal under _Settings -> Other Services -> JRuby Scripting_.
+After installing this add-on, you will find configuration options in the openHAB portal under _Settings -> Add-on Settings -> JRuby Scripting_.
 Alternatively, JRuby configuration parameters may be set by creating a `jruby.cfg` file in `conf/services/`.
 
 By default this add-on includes the [openhab-scripting](https://github.com/openhab/openhab-jruby) Ruby gem and automatically `require`s it.
@@ -237,7 +239,7 @@ logger.info("Kitchen Light State: #{KitchenLight.state}")
 Sending a notification:
 
 ```ruby
-notify("romeo@montague.org", "Balcony door is open")
+Notification.send("romeo@montague.org", "Balcony door is open")
 ```
 
 Querying the status of a thing:
@@ -262,12 +264,13 @@ When you use "Item event" as trigger (i.e. "[item] received a command", "[item] 
 This tables gives an overview of the `event` object for most common trigger types.
 For full details, explore [OpenHAB::Core::Events](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Events.html).
 
-| Property Name | Type                                                                                         | Trigger Types                          | Description                                          | Rules DSL Equivalent   |
-| ------------- | -------------------------------------------------------------------------------------------- | -------------------------------------- | ---------------------------------------------------- | ---------------------- |
-| `state`       | [State](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/State.html) or `nil` | `[item] changed`, `[item] was updated` | State that triggered event                           | `triggeringItem.state` |
-| `was`         | [State](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/State.html) or `nil` | `[item] changed`                       | Previous state of Item or Group that triggered event | `previousState`        |
-| `command`     | [Command](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/Command.html)      | `[item] received a command`            | Command that triggered event                         | `receivedCommand`      |
-| `item`        | [Item](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Items/Item.html)            | all                                    | Item that triggered event                            | `triggeringItem`       |
+| Property Name | Type                                                                                         | Trigger Types                                                                                        | Description                                          | Rules DSL Equivalent   |
+| ------------- | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ---------------------- |
+| `state`       | [State](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/State.html) or `nil` | `[item] changed`, `[item] was updated`                                                               | State that triggered event                           | `triggeringItem.state` |
+| `was`         | [State](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/State.html) or `nil` | `[item] changed`                                                                                     | Previous state of Item or Group that triggered event | `previousState`        |
+| `command`     | [Command](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Types/Command.html)      | `[item] received a command`                                                                          | Command that triggered event                         | `receivedCommand`      |
+| `item`        | [Item](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Items/Item.html)            | All item related triggers                                                                            | Item that triggered event                            | `triggeringItem`       |
+| `group`       | [GroupItem](https://openhab.github.io/openhab-jruby/main/OpenHAB/Core/Items/Item.html)       | `Member of [group] changed`, `Member of [group] was updated`, `Member of [group] received a command` | Group whose member triggered the event               | `triggeringGroup`      |
 
 ```ruby
 logger.info(event.state == ON)
@@ -472,6 +475,9 @@ My_Item.ensure << ON
 # ensure causes the command to return nil if the item is already in the same state
 logger.info("Turning off the light") if My_Item.ensure.off
 ```
+
+See [ensure_states](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL.html#ensure_states-class_method), [ensure_states!](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL.html#ensure_states!-class_method),
+[ensure](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Items/Ensure/Ensurable.html#ensure-instance_method).
 
 ##### Timed Commands
 
@@ -911,7 +917,7 @@ Furthermore, you can manipulate the managed timers using the built-in [timers](h
 ```ruby
 # timers is a special object to access the timers created with an id
 rule "cancel all timers" do
-  received_command Cancel_All_Timers, to: ON # Send a command to this item to cancel all timers
+  received_command Cancel_All_Timers, command: ON # Send a command to this item to cancel all timers
   run do
     gOutdoorLights.members.each do |item_as_timer_id|
       timers.cancel(item_as_timer_id)
@@ -920,7 +926,7 @@ rule "cancel all timers" do
 end
 
 rule "reschedule all timers" do
-  received_command Reschedule_All_Timers, to: ON # Send a command to this item to restart all timers
+  received_command Reschedule_All_Timers, command: ON # Send a command to this item to restart all timers
   run do
     gOutdoorLights.members.each do |item_as_timer_id|
       timers.reschedule(item_as_timer_id)
@@ -1148,7 +1154,7 @@ Time.now.between?("5am".."11pm")
 Time.now.holiday? # => false
 MonthDay.parse("12-25").holiday # => :christmas
 1.day.from_now.next_holiday # => :thanksgiving
-notify("It's #{Ephemeris.holiday_name(Date.today)}!") if Date.today.holiday?
+Notification.send("It's #{Ephemeris.holiday_name(Date.today)}!") if Date.today.holiday?
 
 Date.today.weekend? # => true
 Date.today.in_dayset?(:school) # => false
@@ -1462,9 +1468,9 @@ See [#updated](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/Bu
 
 ```ruby
 rule "Received a command" do
-  received_command DoorBell, to: ON
+  received_command DoorBell, command: ON
   run do |event|
-    notify "Someone pressed the door bell"
+    Notification.send "Someone pressed the door bell"
     play_sound "doorbell.mp3"
   end
 end
@@ -1555,6 +1561,30 @@ end
 ```
 
 See [#every](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/BuilderDSL.html#every-instance_method)
+
+#### DateTimeItem Trigger
+
+To trigger based on the date and time stored in a DateTime item, use [at ItemName](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/BuilderDSL.html#at-instance_method):
+
+```ruby
+rule "DateTime Trigger" do
+  at My_DateTimeItem
+  run do |event|
+    logger.info "Triggered by #{event.item} at #{event.item.state}"
+  end
+end
+```
+
+To trigger based on only the _time_ part of a DateTime item, use [every :day, at: ItemName](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/BuilderDSL.html#every-instance_method):
+
+```ruby
+rule "TimeOnly Trigger" do
+  every :day, at: My_DateTimeItem
+  run do |event|
+    logger.info "Triggered by #{event.item} at #{event.item.state}"
+  end
+end
+```
 
 #### Other Triggers
 
@@ -1656,7 +1686,7 @@ rule "Check for offline things 15 minutes after openHAB had started" do
   delay 15.minutes
   run do
     offline_things = things.select(&:offline?).map(&:uid).join(", ")
-    notify("Things that are still offline: #{offline_things}")
+    Notification.send("Things that are still offline: #{offline_things}")
   end
 end
 ```
@@ -1668,7 +1698,7 @@ See [Execution Blocks](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/
 A rule with a trigger and an execution block can be created with just one line.
 
 ```ruby
-received_command(My_Switch, to: ON) { My_Light.on }
+received_command(My_Switch, command: ON) { My_Light.on }
 ```
 
 See [Terse Rules](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL/Rules/Terse.html) for full details.
@@ -1739,6 +1769,24 @@ virtual_switches.each do |switch|
   end
 end
 ```
+
+### Scenes and Scripts
+
+A `scene` can be created using the [.scene](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL.html#scene-class_method) method.
+
+```ruby
+scene "Movie", id: "movie", description: "Set up the theatre for movie watching" do
+  Theatre_Window_Blinds.down
+  Theatre_Screen_Curtain.up
+  Theatre_Mood_Light.on
+  Theatre_Light.off
+  Theatre_Projector.on
+  Theatre_Receiver.on
+end
+```
+
+To create a `script`, use the [.script](https://openhab.github.io/openhab-jruby/main/OpenHAB/DSL.html#script-class_method) method.
+Note that scripts can be executed with additional contexts.
 
 ### Hooks
 

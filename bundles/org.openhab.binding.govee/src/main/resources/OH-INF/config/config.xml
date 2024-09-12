@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config-description:config-descriptions
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0 https://openhab.org/schemas/config-description-1.0.0.xsd">
+
+	<config-description uri="thing-type:govee:govee-light">
+		<parameter name="hostname" type="text" required="true">
+			<context>network-address</context>
+			<label>Hostname/IP Address</label>
+			<description>Hostname or IP address of the device</description>
+		</parameter>
+		<parameter name="macAddress" type="text" required="true">
+			<label>MAC Address</label>
+			<description>MAC Address of the device</description>
+		</parameter>
+		<parameter name="refreshInterval" type="integer" unit="s">
+			<label>Light Refresh Interval</label>
+			<description>The amount of time that passes until the device is refreshed (in seconds)</description>
+			<default>2</default>
+		</parameter>
+	</config-description>
+
+</config-description:config-descriptions>

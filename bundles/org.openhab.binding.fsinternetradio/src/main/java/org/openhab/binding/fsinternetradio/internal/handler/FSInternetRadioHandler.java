@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,7 +78,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                         // update all channels that are linked
                         switch (channel.getUID().getId()) {
                             case CHANNEL_POWER:
-                                updateState(channel.getUID(), radioOn ? OnOffType.ON : OnOffType.OFF);
+                                updateState(channel.getUID(), OnOffType.from(radioOn));
                                 break;
                             case CHANNEL_VOLUME_ABSOLUTE:
                                 updateState(channel.getUID(),
@@ -92,7 +92,7 @@ public class FSInternetRadioHandler extends BaseThingHandler {
                                 updateState(channel.getUID(), DecimalType.valueOf(String.valueOf(radio.getMode())));
                                 break;
                             case CHANNEL_MUTE:
-                                updateState(channel.getUID(), radio.getMuted() ? OnOffType.ON : OnOffType.OFF);
+                                updateState(channel.getUID(), OnOffType.from(radio.getMuted()));
                                 break;
                             case CHANNEL_PRESET:
                                 // preset is write-only, ignore

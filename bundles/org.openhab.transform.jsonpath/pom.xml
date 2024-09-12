@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.transform.jsonpath</artifactId>
@@ -15,32 +15,39 @@
   <name>openHAB Add-ons :: Bundles :: Transformation Service :: JSonPath</name>
 
   <properties>
-    <bnd.importpackage>!org.apache.tapestry5.json.*,!org.codehaus.jettison.json.*,!org.json.*,!com.fasterxml.jackson.*</bnd.importpackage>
+    <bnd.importpackage>!org.apache.tapestry5.json.*,!org.codehaus.jettison.json.*,!org.json.*,!com.fasterxml.jackson.*,!jakarta.json.*</bnd.importpackage>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>com.jayway.jsonpath</groupId>
       <artifactId>json-path</artifactId>
-      <version>2.5.0</version>
+      <version>2.9.0</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <!-- Exclude slf4j-api to prevent its scope being changed from 'provided' to 'runtime' -->
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.ow2.asm</groupId>
       <artifactId>asm</artifactId>
-      <version>5.0.4</version>
+      <version>9.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.minidev</groupId>
       <artifactId>accessors-smart</artifactId>
-      <version>1.2</version>
+      <version>2.5.0</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.minidev</groupId>
       <artifactId>json-smart</artifactId>
-      <version>2.3</version>
+      <version>2.5.0</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

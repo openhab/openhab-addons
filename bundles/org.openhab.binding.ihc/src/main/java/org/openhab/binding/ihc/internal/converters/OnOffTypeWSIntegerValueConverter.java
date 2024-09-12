@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,7 +28,7 @@ public class OnOffTypeWSIntegerValueConverter implements Converter<WSIntegerValu
     @Override
     public OnOffType convertFromResourceValue(@NonNull WSIntegerValue from,
             @NonNull ConverterAdditionalInfo convertData) throws ConversionException {
-        return from.value > 0 ^ convertData.getInverted() ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(from.value > 0 ^ convertData.getInverted());
     }
 
     @Override

@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.amplipi</artifactId>
@@ -15,7 +15,7 @@
   <name>openHAB Add-ons :: Bundles :: AmpliPi Binding</name>
 
   <properties>
-    <cxf-version>3.4.3</cxf-version>
+    <cxf-version>3.6.2</cxf-version>
   </properties>
 
   <build>
@@ -41,7 +41,7 @@
       <plugin>
         <groupId>org.openapitools</groupId>
         <artifactId>openapi-generator-maven-plugin</artifactId>
-        <version>5.1.0</version>
+        <version>7.0.1</version>
         <executions>
           <execution>
             <goals>

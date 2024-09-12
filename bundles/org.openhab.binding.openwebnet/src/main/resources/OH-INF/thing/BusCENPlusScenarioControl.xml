@@ -26,7 +26,7 @@
 			<parameter name="buttons" type="text">
 				<label>Configured Buttons</label>
 				<description>List (comma separated) of buttons numbers [0-31] configured for this scenario device, example:
-					buttons=1,2,4
+					buttons="1,2,4"
 				</description>
 			</parameter>
 			<parameter name="where" type="text" required="true">

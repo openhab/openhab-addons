@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -47,9 +47,19 @@ public class PriceListParser {
     }
 
     public Map<Instant, BigDecimal> toHourly(Collection<DatahubPricelistRecord> records) {
+        Instant firstHourStart = Instant.now(clock).minus(CacheManager.NUMBER_OF_HISTORIC_HOURS, ChronoUnit.HOURS)
+                .truncatedTo(ChronoUnit.HOURS);
+        Instant lastHourStart = Instant.now(clock).truncatedTo(ChronoUnit.HOURS).plus(2, ChronoUnit.DAYS)
+                .truncatedTo(ChronoUnit.DAYS);
+
+        return toHourly(records, firstHourStart, lastHourStart);
+    }
+
+    public Map<Instant, BigDecimal> toHourly(Collection<DatahubPricelistRecord> records, Instant firstHourStart,
+            Instant lastHourStart) {
         Map<Instant, BigDecimal> totalMap = new ConcurrentHashMap<>(CacheManager.TARIFF_MAX_CACHE_SIZE);
         records.stream().map(record -> record.chargeTypeCode()).distinct().forEach(chargeTypeCode -> {
-            Map<Instant, BigDecimal> currentMap = toHourly(records, chargeTypeCode);
+            Map<Instant, BigDecimal> currentMap = toHourly(records, chargeTypeCode, firstHourStart, lastHourStart);
             for (Entry<Instant, BigDecimal> current : currentMap.entrySet()) {
                 BigDecimal total = totalMap.get(current.getKey());
                 if (total == null) {
@@ -62,13 +72,9 @@ public class PriceListParser {
         return totalMap;
     }
 
-    public Map<Instant, BigDecimal> toHourly(Collection<DatahubPricelistRecord> records, String chargeTypeCode) {
+    private Map<Instant, BigDecimal> toHourly(Collection<DatahubPricelistRecord> records, String chargeTypeCode,
+            Instant firstHourStart, Instant lastHourStart) {
         Map<Instant, BigDecimal> tariffMap = new ConcurrentHashMap<>(CacheManager.TARIFF_MAX_CACHE_SIZE);
-
-        Instant firstHourStart = Instant.now(clock).minus(CacheManager.NUMBER_OF_HISTORIC_HOURS, ChronoUnit.HOURS)
-                .truncatedTo(ChronoUnit.HOURS);
-        Instant lastHourStart = Instant.now(clock).truncatedTo(ChronoUnit.HOURS).plus(2, ChronoUnit.DAYS)
-                .truncatedTo(ChronoUnit.DAYS);
 
         LocalDateTime previousValidFrom = LocalDateTime.MAX;
         LocalDateTime previousValidTo = LocalDateTime.MIN;

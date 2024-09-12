@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -156,9 +155,8 @@ public abstract class AbstractSnmpTargetHandlerTest extends JavaTest {
         if (refresh) {
             ArgumentCaptor<PDU> pduCaptor = ArgumentCaptor.forClass(PDU.class);
             verify(snmpService, timeout(500).atLeast(1)).send(pduCaptor.capture(), any(), eq(null), eq(thingHandler));
-            Vector<? extends VariableBinding> variables = pduCaptor.getValue().getVariableBindings();
-            assertTrue(variables.stream().filter(v -> v.getOid().toDottedString().equals(TEST_OID)).findFirst()
-                    .isPresent());
+            List<? extends VariableBinding> variables = pduCaptor.getValue().getVariableBindings();
+            assertTrue(variables.stream().anyMatch(v -> v.getOid().toDottedString().equals(TEST_OID)));
         } else {
             verify(snmpService, never()).send(any(), any(), eq(null), eq(thingHandler));
         }

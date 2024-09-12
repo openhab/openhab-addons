@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,14 +13,14 @@
 package org.openhab.binding.androiddebugbridge.internal;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URI;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
@@ -56,8 +56,8 @@ import com.tananaev.adblib.AdbStream;
  */
 @NonNullByDefault
 public class AndroidDebugBridgeDevice {
+    private static final Path ADB_FOLDER = Path.of(OpenHAB.getUserDataFolder(), ".adb");
     public static final int ANDROID_MEDIA_STREAM = 3;
-    private static final String ADB_FOLDER = OpenHAB.getUserDataFolder() + File.separator + ".adb";
     private final Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeDevice.class);
     private static final Pattern VOLUME_PATTERN = Pattern
             .compile("volume is (?<current>\\d.*) in range \\[(?<min>\\d.*)\\.\\.(?<max>\\d.*)]");
@@ -75,20 +75,6 @@ public class AndroidDebugBridgeDevice {
     private static final Pattern SECURE_SHELL_INPUT_PATTERN = Pattern.compile("^[^\\|\\&;\\\"]+$");
 
     private static @Nullable AdbCrypto adbCrypto;
-
-    static {
-        var logger = LoggerFactory.getLogger(AndroidDebugBridgeDevice.class);
-        try {
-            File directory = new File(ADB_FOLDER);
-            if (!directory.exists()) {
-                directory.mkdir();
-            }
-            adbCrypto = loadKeyPair(ADB_FOLDER + File.separator + "adb_pub.key",
-                    ADB_FOLDER + File.separator + "adb.key");
-        } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
-            logger.warn("Unable to setup adb keys: {}", e.getMessage());
-        }
-    }
 
     private final ScheduledExecutorService scheduler;
     private final ReentrantLock commandLock = new ReentrantLock();
@@ -793,20 +779,30 @@ public class AndroidDebugBridgeDevice {
         }
     }
 
-    private static AdbBase64 getBase64Impl() {
-        Charset asciiCharset = Charset.forName("ASCII");
-        return bytes -> new String(Base64.getEncoder().encode(bytes), asciiCharset);
+    public static void initADB() {
+        Logger logger = LoggerFactory.getLogger(AndroidDebugBridgeDevice.class);
+        try {
+            if (!Files.exists(ADB_FOLDER) || !Files.isDirectory(ADB_FOLDER)) {
+                Files.createDirectory(ADB_FOLDER);
+                logger.info("Binding folder {} created", ADB_FOLDER);
+            }
+            adbCrypto = loadKeyPair(ADB_FOLDER.resolve("adb_pub.key"), ADB_FOLDER.resolve("adb.key"));
+        } catch (NoSuchAlgorithmException | IOException | InvalidKeySpecException e) {
+            logger.warn("Unable to setup adb keys: {}", e.getMessage());
+        }
     }
 
-    private static AdbCrypto loadKeyPair(String pubKeyFile, String privKeyFile)
+    private static AdbBase64 getBase64Impl() {
+        return bytes -> new String(Base64.getEncoder().encode(bytes), StandardCharsets.US_ASCII);
+    }
+
+    private static AdbCrypto loadKeyPair(Path pubKey, Path privKey)
             throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
-        File pub = new File(pubKeyFile);
-        File priv = new File(privKeyFile);
         AdbCrypto c = null;
         // load key pair
-        if (pub.exists() && priv.exists()) {
+        if (Files.exists(pubKey) && Files.exists(privKey)) {
             try {
-                c = AdbCrypto.loadAdbKeyPair(getBase64Impl(), priv, pub);
+                c = AdbCrypto.loadAdbKeyPair(getBase64Impl(), privKey.toFile(), pubKey.toFile());
             } catch (IOException ignored) {
                 // Keys don't exits
             }
@@ -814,7 +810,7 @@ public class AndroidDebugBridgeDevice {
         if (c == null) {
             // generate key pair
             c = AdbCrypto.generateAdbKeyPair(getBase64Impl());
-            c.saveAdbKeyPair(priv, pub);
+            c.saveAdbKeyPair(privKey.toFile(), pubKey.toFile());
         }
         return c;
     }

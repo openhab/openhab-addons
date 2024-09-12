@@ -27,12 +27,14 @@
 			<channel id="mode" typeId="modeCentralUnit"/>
 			<channel id="weeklyProgram" typeId="weeklyProgramCentralUnit"/>
 			<channel id="scenarioProgram" typeId="scenarioProgramCentralUnit"/>
+			<channel id="vacationDays" typeId="vacationDays"/>
 		</channels>
 
 		<properties>
 			<property name="vendor">BTicino/Legrand</property>
-			<property name="model">BTicino Central Unit 3550 (99 zones) or BTI-L/NT/HC/4695 (4 zones) </property>
+			<property name="model">BTicino Central Unit 3550 (99 zones) or L/N/NT/HD/HC/HS4695 (4 zones) </property>
 			<property name="ownDeviceType">430</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>ownId</representation-property>

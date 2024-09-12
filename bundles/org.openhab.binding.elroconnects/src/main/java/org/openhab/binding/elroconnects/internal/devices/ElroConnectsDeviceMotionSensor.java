@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -99,11 +99,10 @@ public class ElroConnectsDeviceMotionSensor extends ElroConnectsDevice {
                 handler.updateStatus(ThingStatus.ONLINE, ThingStatusDetail.NONE, msg);
                 break;
             default:
-                handler.updateState(MOTION,
-                        ElroDeviceStatus.TRIGGERED.equals(elroStatus) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateState(MOTION, OnOffType.from(ElroDeviceStatus.TRIGGERED.equals(elroStatus)));
                 handler.updateState(SIGNAL_STRENGTH, new DecimalType(signalStrength));
                 handler.updateState(BATTERY_LEVEL, new DecimalType(batteryLevel));
-                handler.updateState(LOW_BATTERY, (batteryLevel < 15) ? OnOffType.ON : OnOffType.OFF);
+                handler.updateState(LOW_BATTERY, OnOffType.from(batteryLevel < 15));
                 handler.updateStatus(ThingStatus.ONLINE);
         }
     }

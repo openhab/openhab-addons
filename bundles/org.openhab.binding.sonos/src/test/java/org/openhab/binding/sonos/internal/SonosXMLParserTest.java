@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,6 +67,11 @@ public class SonosXMLParserTest {
     }
 
     @Test
+    public void buildThingTypeIdFromBoost() {
+        assertEquals("", SonosXMLParser.buildThingTypeIdFromModelName("Sonos Boost"));
+    }
+
+    @Test
     public void getRadioTimeFromXML() throws IOException {
         InputStream resourceStream = getClass().getResourceAsStream("/OPML.xml");
         assertNotNull(resourceStream);
@@ -78,5 +83,44 @@ public class SonosXMLParserTest {
             assertEquals("Le Son Pop-Rock", result.get(1));
             assertEquals("Paris, France", result.get(2));
         }
+    }
+
+    @Test
+    public void getMetaDataFromXML() throws IOException {
+        InputStream resourceStream = getClass().getResourceAsStream("/MetaData.xml");
+        assertNotNull(resourceStream);
+        final String xml = new String(resourceStream.readAllBytes(), StandardCharsets.UTF_8);
+        SonosMetaData sonosMetaData = SonosXMLParser.getMetaDataFromXML(xml);
+        assertEquals("-1", sonosMetaData.getId());
+        assertEquals("-1", sonosMetaData.getParentId());
+        assertEquals("Turn Down for What - Single", sonosMetaData.getAlbum());
+        assertEquals("DJ Snake & Lil Jon", sonosMetaData.getCreator());
+        assertEquals("Turn Down for What", sonosMetaData.getTitle());
+        assertEquals("object.item.audioItem.musicTrack", sonosMetaData.getUpnpClass());
+        assertEquals("x-sonosapi-hls-static:librarytrack%3ai.eoD8VQ5SZOB8QX7?sid=204&flags=8232&sn=9",
+                sonosMetaData.getResource());
+        assertEquals(
+                "/getaa?s=1&u=x-sonosapi-hls-static%3alibrarytrack%253ai.eoD8VQ5SZOB8QX7%3fsid%3d204%26flags%3d8232%26sn%3d9",
+                sonosMetaData.getAlbumArtUri());
+    }
+
+    @Test
+    public void compileMetadataString() {
+        SonosEntry sonosEntry = new SonosEntry("1", "Can't Buy Me Love", "0", "A Hard Day's Night", "", "",
+                "object.item.audioItem.musicTrack", "");
+        String expected = """
+                <DIDL-Lite xmlns:dc="http://purl.org/dc/elements/1.1/" \
+                xmlns:upnp="urn:schemas-upnp-org:metadata-1-0/upnp/" \
+                xmlns:r="urn:schemas-rinconnetworks-com:metadata-1-0/" \
+                xmlns="urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/">\
+                <item id="1" parentID="0" restricted="true">\
+                <dc:title>Can&apos;t Buy Me Love</dc:title>\
+                <upnp:class>object.item.audioItem.musicTrack</upnp:class>\
+                <desc id="cdudn" nameSpace="urn:schemas-rinconnetworks-com:metadata-1-0/">RINCON_AssociatedZPUDN</desc>\
+                </item>\
+                </DIDL-Lite>\
+                """;
+        String actual = SonosXMLParser.compileMetadataString(sonosEntry);
+        assertEquals(expected, actual);
     }
 }

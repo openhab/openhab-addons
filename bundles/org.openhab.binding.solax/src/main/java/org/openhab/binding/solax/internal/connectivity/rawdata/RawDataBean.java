@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,4 +25,6 @@ import org.eclipse.jdt.annotation.Nullable;
 public interface RawDataBean {
     @Nullable
     String getRawData();
+
+    public void setRawData(String rawData);
 }

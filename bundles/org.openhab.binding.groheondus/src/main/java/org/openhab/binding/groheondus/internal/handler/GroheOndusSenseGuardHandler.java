@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -131,7 +131,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
     private QuantityType<Volume> sumWaterConsumption(Data dataPoint) {
         Double waterConsumption = dataPoint.getWithdrawals().stream()
                 .mapToDouble(withdrawal -> withdrawal.getWaterconsumption()).sum();
-        return new QuantityType<Volume>(waterConsumption, Units.LITRE);
+        return new QuantityType<>(waterConsumption, Units.LITRE);
     }
 
     private Measurement getLastMeasurement(Data dataPoint) {
@@ -159,7 +159,7 @@ public class GroheOndusSenseGuardHandler<T, M> extends GroheOndusBaseHandler<App
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR, "@text/error.notsenseguard");
             return null;
         }
-        return ((ApplianceCommand) commandOptional.get()).getCommand().getValveOpen() ? OnOffType.ON : OnOffType.OFF;
+        return OnOffType.from(((ApplianceCommand) commandOptional.get()).getCommand().getValveOpen());
     }
 
     @Override

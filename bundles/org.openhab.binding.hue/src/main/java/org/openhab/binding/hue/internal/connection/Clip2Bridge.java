@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,14 +70,15 @@ import org.eclipse.jetty.http2.frames.ResetFrame;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.Promise.Completable;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.openhab.binding.hue.internal.dto.CreateUserRequest;
-import org.openhab.binding.hue.internal.dto.SuccessResponse;
-import org.openhab.binding.hue.internal.dto.clip2.BridgeConfig;
-import org.openhab.binding.hue.internal.dto.clip2.Event;
-import org.openhab.binding.hue.internal.dto.clip2.Resource;
-import org.openhab.binding.hue.internal.dto.clip2.ResourceReference;
-import org.openhab.binding.hue.internal.dto.clip2.Resources;
-import org.openhab.binding.hue.internal.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.api.dto.clip1.CreateUserRequest;
+import org.openhab.binding.hue.internal.api.dto.clip1.SuccessResponse;
+import org.openhab.binding.hue.internal.api.dto.clip2.BridgeConfig;
+import org.openhab.binding.hue.internal.api.dto.clip2.Event;
+import org.openhab.binding.hue.internal.api.dto.clip2.Resource;
+import org.openhab.binding.hue.internal.api.dto.clip2.ResourceReference;
+import org.openhab.binding.hue.internal.api.dto.clip2.Resources;
+import org.openhab.binding.hue.internal.api.dto.clip2.enums.ResourceType;
+import org.openhab.binding.hue.internal.api.serialization.InstantDeserializer;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.exceptions.HttpUnauthorizedException;
 import org.openhab.binding.hue.internal.handler.Clip2BridgeHandler;
@@ -87,6 +88,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
@@ -120,7 +122,7 @@ public class Clip2Bridge implements Closeable {
      * <li>onHeaders() HTTP unauthorized codes</li>
      */
     private abstract class BaseStreamListenerAdapter<T> extends Stream.Listener.Adapter {
-        protected final CompletableFuture<T> completable = new CompletableFuture<T>();
+        protected final CompletableFuture<T> completable = new CompletableFuture<>();
         private String contentType = "UNDEFINED";
         private int status;
 
@@ -394,7 +396,7 @@ public class Clip2Bridge implements Closeable {
         @Override
         public void onGoAway(@Nullable Session session, @Nullable GoAwayFrame frame) {
             Objects.requireNonNull(session);
-            if (http2Session == session) {
+            if (session.equals(http2Session)) {
                 Thread recreateThread = new Thread(() -> recreateSession());
                 Clip2Bridge.this.recreateThread = recreateThread;
                 recreateThread.start();
@@ -410,7 +412,7 @@ public class Clip2Bridge implements Closeable {
         public void onPing(@Nullable Session session, @Nullable PingFrame frame) {
             Objects.requireNonNull(session);
             Objects.requireNonNull(frame);
-            if (http2Session == session) {
+            if (session.equals(http2Session)) {
                 checkAliveOk();
                 if (!frame.isReply()) {
                     session.ping(new PingFrame(true), Callback.NOOP);
@@ -483,9 +485,9 @@ public class Clip2Bridge implements Closeable {
             long delay;
             synchronized (Clip2Bridge.this) {
                 Instant now = Instant.now();
-                delay = lastRequestTime
+                delay = Objects.requireNonNull(lastRequestTime
                         .map(t -> Math.max(0, Duration.between(now, t).toMillis() + REQUEST_INTERVAL_MILLISECS))
-                        .orElse(0L);
+                        .orElse(0L));
                 lastRequestTime = Optional.of(now.plusMillis(delay));
             }
             Thread.sleep(delay);
@@ -556,7 +558,8 @@ public class Clip2Bridge implements Closeable {
     private final String registrationUrl;
     private final String applicationKey;
     private final Clip2BridgeHandler bridgeHandler;
-    private final Gson jsonParser = new Gson();
+    private final Gson jsonParser = new GsonBuilder().registerTypeAdapter(Instant.class, new InstantDeserializer())
+            .create();
     private final Semaphore streamMutex = new Semaphore(MAX_CONCURRENT_STREAMS, true); // i.e. fair
     private final ReadWriteLock sessionUseCreateLock = new ReentrantReadWriteLock(true); // i.e. fair
     private final Map<Integer, Future<?>> fatalErrorTasks = new ConcurrentHashMap<>();
@@ -802,7 +805,7 @@ public class Clip2Bridge implements Closeable {
         // work around for issue #15468 (and similar)
         ResourceType resourceType = reference.getType();
         if (resourceType == ResourceType.ERROR) {
-            LOGGER.warn("Resource '{}' type '{}' unknown => GET aborted", reference.getId(), resourceType);
+            LOGGER.debug("Resource '{}' type '{}' unknown => GET aborted", reference.getId(), resourceType);
             return new Resources();
         }
         Stream stream = null;
@@ -918,12 +921,15 @@ public class Clip2Bridge implements Closeable {
             return;
         }
         List<Resource> resources = new ArrayList<>();
-        events.forEach(event -> resources.addAll(event.getData()));
+        events.forEach(event -> {
+            List<Resource> eventResources = event.getData();
+            eventResources.forEach(resource -> resource.setContentType(event.getContentType()));
+            resources.addAll(eventResources);
+        });
         if (resources.isEmpty()) {
             LOGGER.debug("onEventData() resource list is empty");
             return;
         }
-        resources.forEach(resource -> resource.markAsSparse());
         bridgeHandler.onResourcesEvent(resources);
     }
 

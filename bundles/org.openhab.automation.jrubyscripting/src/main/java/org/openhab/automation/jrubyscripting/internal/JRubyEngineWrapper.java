@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -50,12 +50,12 @@ public class JRubyEngineWrapper implements Compilable, Invocable, ScriptEngine {
 
     @Override
     public CompiledScript compile(@Nullable String script) throws ScriptException {
-        return engine.compile(script);
+        return new JRubyCompiledScriptWrapper(engine.compile(script));
     }
 
     @Override
     public CompiledScript compile(@Nullable Reader reader) throws ScriptException {
-        return engine.compile(reader);
+        return new JRubyCompiledScriptWrapper(engine.compile(reader));
     }
 
     @Override

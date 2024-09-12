@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -69,6 +69,7 @@ public class ParadoxAlarmBindingConstants {
 
     public static final String PARTITION_LABEL_CHANNEL_UID = "label";
     public static final String PARTITION_STATE_CHANNEL_UID = "state";
+    public static final String PARTITION_DETAILED_STATE_CHANNEL_UID = "detailedState";
     @Deprecated // After implementation of channels for every possible state, the summarized additional states is no
                 // longer needed. We'll keep it for backward compatibility
     public static final String PARTITION_ADDITIONAL_STATES_CHANNEL_UID = "additionalStates";

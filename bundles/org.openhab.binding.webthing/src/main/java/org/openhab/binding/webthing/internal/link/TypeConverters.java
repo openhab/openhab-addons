@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -102,7 +102,7 @@ class TypeConverters {
 
         @Override
         public Command toStateCommand(Object propertyValue) {
-            return toBoolean(propertyValue) ? OnOffType.ON : OnOffType.OFF;
+            return OnOffType.from(toBoolean(propertyValue));
         }
 
         @Override

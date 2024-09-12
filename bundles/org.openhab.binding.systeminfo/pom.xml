@@ -7,34 +7,18 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.systeminfo</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: Systeminfo Binding</name>
-
-  <properties>
-    <dep.noembedding>jna,jna-platform</dep.noembedding>
-  </properties>
+  <name>openHAB Add-ons :: Bundles :: SystemInfo Binding</name>
 
   <dependencies>
     <dependency>
-      <groupId>net.java.dev.jna</groupId>
-      <artifactId>jna-platform</artifactId>
-      <version>5.12.1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.java.dev.jna</groupId>
-      <artifactId>jna</artifactId>
-      <version>5.12.1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>com.github.oshi</groupId>
       <artifactId>oshi-core</artifactId>
-      <version>6.2.2</version>
+      <version>6.5.0</version>
       <scope>compile</scope>
       <exclusions>
         <exclusion>
@@ -42,6 +26,16 @@
           <artifactId>slf4j-api</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna</artifactId>
+      <version>${jna.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>net.java.dev.jna</groupId>
+      <artifactId>jna-platform</artifactId>
+      <version>${jna.version}</version>
     </dependency>
   </dependencies>
 

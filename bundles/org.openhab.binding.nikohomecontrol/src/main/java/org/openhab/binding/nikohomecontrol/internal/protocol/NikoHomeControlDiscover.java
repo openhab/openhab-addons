@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -30,11 +30,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class {@link NikoHomeControlDiscover} is used to get the Niko Home Control IP-interface IP address for bridge
+ * Class {@link NikoHomeControlDiscover} is used to get the Niko Home Control IP-interfaces IP address for bridge
  * discovery.
  * <p>
  * The constructor broadcasts a UDP packet with content 0x44 on port 10000.
- * The Niko Home Control IP-interface responds to this UDP packet.
+ * The Niko Home Control IP-interfaces responds to this UDP packet.
  * The IP-address from the Niko Home Control IP-interface is then extracted from the response packet.
  * The data content of the response packet is used as a unique identifier for the bridge.
  *
@@ -50,7 +50,7 @@ public final class NikoHomeControlDiscover {
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlDiscover.class);
 
     private List<String> nhcBridgeIds = new ArrayList<>();
-    private Map<String, InetAddress> addr = new HashMap<>();
+    private Map<String, InetAddress> inetAdresses = new HashMap<>();
     private Map<String, Boolean> isNhcII = new HashMap<>();
 
     /**
@@ -82,7 +82,7 @@ public final class NikoHomeControlDiscover {
                     if (isNhcController(packet)) {
                         String bridgeId = setNhcBridgeId(packet);
                         setIsNhcII(bridgeId, packet);
-                        setAddr(bridgeId, packet);
+                        InetAddress addr = setAddr(bridgeId, packet);
                         logger.debug("IP address is {}, unique ID is {}", addr, bridgeId);
                     }
                 }
@@ -104,7 +104,7 @@ public final class NikoHomeControlDiscover {
      * @return the addr, null if not in the list of discovered bridgeId's
      */
     public @Nullable InetAddress getAddr(String bridgeId) {
-        return addr.get(bridgeId);
+        return inetAdresses.get(bridgeId);
     }
 
     /**
@@ -160,13 +160,16 @@ public final class NikoHomeControlDiscover {
     }
 
     /**
-     * Sets the IP address retrieved from the packet response
+     * Sets the IP address retrieved from the packet response and keep it with bridgeId
      *
      * @param bridgeId
      * @param packet
+     * @return address from packet response
      */
-    private void setAddr(String bridgeId, DatagramPacket packet) {
-        addr.put(bridgeId, packet.getAddress());
+    private InetAddress setAddr(String bridgeId, DatagramPacket packet) {
+        InetAddress address = packet.getAddress();
+        inetAdresses.put(bridgeId, address);
+        return address;
     }
 
     /**

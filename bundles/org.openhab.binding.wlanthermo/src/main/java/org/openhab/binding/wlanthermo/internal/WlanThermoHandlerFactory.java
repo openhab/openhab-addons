@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -42,7 +42,7 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.wlanthermo", service = ThingHandlerFactory.class)
 public class WlanThermoHandlerFactory extends BaseThingHandlerFactory {
 
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(WlanThermoBindingConstants.THING_TYPE_WLANTHERMO_NANO_V1,
                     WlanThermoBindingConstants.THING_TYPE_WLANTHERMO_MINI,
                     WlanThermoBindingConstants.THING_TYPE_WLANTHERMO_ESP32));

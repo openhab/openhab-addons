@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -636,7 +636,7 @@ public class MagentaTVHandler extends BaseThingHandler implements MagentaTVListe
     }
 
     public void updateThingProperties() {
-        Map<String, String> properties = new HashMap<String, String>();
+        Map<String, String> properties = new HashMap<>();
         properties.put(PROPERTY_FRIENDLYNAME, config.getFriendlyName());
         properties.put(PROPERTY_MODEL_NUMBER, config.getModel());
         properties.put(PROPERTY_DESC_URL, config.getDescriptionUrl());

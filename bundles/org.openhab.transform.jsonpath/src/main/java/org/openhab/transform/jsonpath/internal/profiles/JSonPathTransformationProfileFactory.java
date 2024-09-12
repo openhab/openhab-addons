@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,8 +12,8 @@
  */
 package org.openhab.transform.jsonpath.internal.profiles;
 
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -31,21 +31,19 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
 /**
- * Profilefactory that creates the transformation profile for the jsonpath transformation service
+ * {@link ProfileFactory} that creates the transformation profile for the jsonpath transformation service
  *
- * @author Stefan Triller - initial contribution
- *
+ * @author Stefan Triller - Initial contribution
  */
 @NonNullByDefault
 @Component(service = { ProfileFactory.class, ProfileTypeProvider.class })
 public class JSonPathTransformationProfileFactory implements ProfileFactory, ProfileTypeProvider {
 
-    @NonNullByDefault({})
-    private TransformationService service;
+    private @NonNullByDefault({}) TransformationService service;
 
     @Override
     public Collection<ProfileType> getProfileTypes(@Nullable Locale locale) {
-        return Arrays.asList(ProfileTypeBuilder.newState(JSonPathTransformationProfile.PROFILE_TYPE_UID,
+        return List.of(ProfileTypeBuilder.newState(JSonPathTransformationProfile.PROFILE_TYPE_UID,
                 JSonPathTransformationProfile.PROFILE_TYPE_UID.getId()).build());
     }
 
@@ -57,7 +55,7 @@ public class JSonPathTransformationProfileFactory implements ProfileFactory, Pro
 
     @Override
     public Collection<ProfileTypeUID> getSupportedProfileTypeUIDs() {
-        return Arrays.asList(JSonPathTransformationProfile.PROFILE_TYPE_UID);
+        return List.of(JSonPathTransformationProfile.PROFILE_TYPE_UID);
     }
 
     @Reference(target = "(openhab.transform=JSONPATH)")

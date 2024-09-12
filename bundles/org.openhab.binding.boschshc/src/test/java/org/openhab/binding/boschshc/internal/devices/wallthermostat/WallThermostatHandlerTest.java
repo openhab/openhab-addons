@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,6 @@
 package org.openhab.binding.boschshc.internal.devices.wallthermostat;
 
 import static org.mockito.Mockito.verify;
-
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -65,7 +62,7 @@ class WallThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<
         getFixture().processUpdate("TemperatureLevel", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE),
-                new QuantityType<Temperature>(21.5, SIUnits.CELSIUS));
+                new QuantityType<>(21.5, SIUnits.CELSIUS));
     }
 
     @Test
@@ -75,6 +72,6 @@ class WallThermostatHandlerTest extends AbstractBatteryPoweredDeviceHandlerTest<
         getFixture().processUpdate("HumidityLevel", jsonObject);
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_HUMIDITY),
-                new QuantityType<Dimensionless>(42.5, Units.PERCENT));
+                new QuantityType<>(42.5, Units.PERCENT));
     }
 }

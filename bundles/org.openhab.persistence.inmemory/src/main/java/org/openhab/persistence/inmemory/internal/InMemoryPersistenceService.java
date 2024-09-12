@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -132,6 +132,11 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
     }
 
     @Override
+    public void store(Item item, ZonedDateTime date, State state, @Nullable String alias) {
+        internalStore(Objects.requireNonNullElse(alias, item.getName()), date, state);
+    }
+
+    @Override
     public boolean remove(FilterCriteria filter) throws IllegalArgumentException {
         String itemName = filter.getItemName();
         if (itemName == null) {
@@ -168,9 +173,14 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
 
         Lock lock = persistItem.lock();
         lock.lock();
+
+        Comparator<PersistEntry> comparator = filter.getOrdering() == FilterCriteria.Ordering.ASCENDING
+                ? Comparator.comparing(PersistEntry::timestamp)
+                : Comparator.comparing(PersistEntry::timestamp).reversed();
+
         try {
-            return persistItem.database().stream().filter(e -> applies(e, filter)).map(e -> toHistoricItem(itemName, e))
-                    .toList();
+            return persistItem.database().stream().filter(e -> applies(e, filter)).sorted(comparator)
+                    .map(e -> toHistoricItem(itemName, e)).toList();
         } finally {
             lock.unlock();
         }
@@ -178,8 +188,8 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
 
     @Override
     public List<PersistenceStrategy> getDefaultStrategies() {
-        // persist nothing by default
-        return List.of();
+        // persist only forecasts by default
+        return List.of(PersistenceStrategy.Globals.FORECAST);
     }
 
     private PersistenceItemInfo toItemInfo(Map.Entry<String, PersistItem> itemEntry) {
@@ -258,14 +268,14 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
         }
     }
 
-    @SuppressWarnings({ "rawType", "unchecked" })
+    @SuppressWarnings("unchecked")
     private boolean applies(PersistEntry entry, FilterCriteria filter) {
         ZonedDateTime beginDate = filter.getBeginDate();
-        if (beginDate != null && entry.timestamp().isBefore(beginDate)) {
+        if (beginDate != null && beginDate.isAfter(entry.timestamp())) {
             return false;
         }
         ZonedDateTime endDate = filter.getEndDate();
-        if (endDate != null && entry.timestamp().isAfter(endDate)) {
+        if (endDate != null && endDate.isBefore(entry.timestamp())) {
             return false;
         }
 
@@ -304,8 +314,8 @@ public class InMemoryPersistenceService implements ModifiablePersistenceService 
     }
 
     private record PersistEntry(ZonedDateTime timestamp, State state) {
-    };
+    }
 
     private record PersistItem(TreeSet<PersistEntry> database, Lock lock) {
-    };
+    }
 }

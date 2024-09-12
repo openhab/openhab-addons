@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -15,8 +15,10 @@ package org.openhab.binding.tellstick.internal.local;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.ContentResponse;
 import org.eclipse.jetty.client.api.Request;
@@ -69,6 +71,7 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
     static final String HTTP_LOCAL_API_DEVICE_TURNOFF = HTTP_LOCAL_API + "device/turnOff?id=%d";
     static final String HTTP_LOCAL_DEVICE_TURNON = HTTP_LOCAL_API + "device/turnOn?id=%d";
     private static final int MAX_RETRIES = 3;
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     public TelldusLocalDeviceController(TelldusLocalConfiguration configuration, HttpClient httpClient) {
         this.httpClient = httpClient;
@@ -247,7 +250,8 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
         setLastSend(newDevices.getTimestamp());
     }
 
-    <T> T callRestMethod(String uri, Class<T> response) throws TelldusLocalException, InterruptedException {
+    <T> @Nullable T callRestMethod(String uri, Class<T> response) throws TelldusLocalException, InterruptedException {
+        @Nullable
         T resultObj = null;
         try {
             for (int i = 0; i < MAX_RETRIES; i++) {
@@ -270,7 +274,8 @@ public class TelldusLocalDeviceController implements DeviceChangeListener, Senso
             throws ExecutionException, InterruptedException, TimeoutException, JsonSyntaxException {
         logger.trace("HTTP GET: {}", uri);
 
-        Request request = httpClient.newRequest(uri).method(HttpMethod.GET);
+        Request request = httpClient.newRequest(uri).method(HttpMethod.GET).timeout(REQUEST_TIMEOUT_MS,
+                TimeUnit.MILLISECONDS);
         request.header("Authorization", authorizationHeader);
 
         ContentResponse response = request.send();

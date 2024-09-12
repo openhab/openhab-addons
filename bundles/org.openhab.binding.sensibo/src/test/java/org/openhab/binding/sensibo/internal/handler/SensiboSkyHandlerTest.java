@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -124,6 +124,11 @@ public class SensiboSkyHandlerTest {
     @Test
     public void testAddDynamicChannels() throws IOException, SensiboCommunicationException {
         testAddDynamicChannels("/get_pod_details_response.json");
+    }
+
+    @Test
+    public void testAddDynamicChannelsValter() throws IOException, SensiboCommunicationException {
+        testAddDynamicChannels("/get_pod_details_response_valter.json");
     }
 
     private void testAddDynamicChannels(String podDetailsResponse) throws IOException, SensiboCommunicationException {

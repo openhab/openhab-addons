@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 public class RadioThermostatConnector {
     private final Logger logger = LoggerFactory.getLogger(RadioThermostatConnector.class);
 
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
     private static final String URL = "http://%s/%s";
 
     private final HttpClient httpClient;
@@ -124,7 +125,8 @@ public class RadioThermostatConnector {
         String postJson = cmdJson != null ? cmdJson : "{\"" + cmdKey + "\":" + cmdVal + "}";
 
         try {
-            Request request = httpClient.POST(buildRequestURL(resource));
+            Request request = httpClient.POST(buildRequestURL(resource)).timeout(REQUEST_TIMEOUT_MS,
+                    TimeUnit.MILLISECONDS);
             request.header(HttpHeader.ACCEPT, "text/plain");
             request.header(HttpHeader.CONTENT_TYPE, "text/plain");
             request.content(new StringContentProvider(postJson), "application/json");
@@ -156,11 +158,15 @@ public class RadioThermostatConnector {
 
     /**
      * Dispatch an event (key, value) to the event listeners
+     * Events with a null value are discarded
      *
      * @param key the key
      * @param value the value
      */
-    private void dispatchKeyValue(String key, String value) {
+    private void dispatchKeyValue(String key, @Nullable String value) {
+        if (value == null) {
+            return;
+        }
         RadioThermostatEvent event = new RadioThermostatEvent(this, key, value);
         for (RadioThermostatEventListener listener : listeners) {
             listener.onNewMessageEvent(event);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class PowerControlPower extends BaseChannelHandler<CommandConfirmation> {
     public void onReceiveCommand(String channelId, LGWebOSHandler handler, Command command) {
         final State state = handler.getSocket().getState();
         if (RefreshType.REFRESH == command) {
-            handler.postUpdate(channelId, state == State.REGISTERED ? OnOffType.ON : OnOffType.OFF);
+            handler.postUpdate(channelId, OnOffType.from(state == State.REGISTERED));
         } else if (OnOffType.ON == command) {
             switch (state) {
                 case CONNECTING:

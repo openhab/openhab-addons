@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -40,7 +40,7 @@ class TypeColor extends KNXChannel {
     public static final Set<String> SUPPORTED_CHANNEL_TYPES = Set.of(CHANNEL_COLOR, CHANNEL_COLOR_CONTROL);
 
     TypeColor(Channel channel) {
-        super(Set.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA, HSB_GA),
+        super(List.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA, HSB_GA),
                 List.of(HSBType.class, PercentType.class, OnOffType.class, IncreaseDecreaseType.class), channel);
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import java.io.StringReader;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -297,8 +298,8 @@ public class Enigma2Client {
     }
 
     private String getString(Document document, String elementId) {
-        return Optional.ofNullable(document.getElementsByTagName(elementId)).map(nodeList -> nodeList.item(0))
-                .map(Node::getTextContent).map(String::trim).orElse("");
+        return Objects.requireNonNull(Optional.ofNullable(document.getElementsByTagName(elementId))
+                .map(nodeList -> nodeList.item(0)).map(Node::getTextContent).map(String::trim).orElse(""));
     }
 
     private boolean getBoolean(Document document, String elementId) {

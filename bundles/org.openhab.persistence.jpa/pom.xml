@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.persistence.jpa</artifactId>
@@ -15,8 +15,8 @@
   <name>openHAB Add-ons :: Bundles :: Persistence Service :: JPA</name>
 
   <properties>
-    <bnd.importpackage>!com.ibm.*,!com.sun.*,!oracle.*,!javax.interceptor.*,!javax.enterprise.*,!javax.rmi,!org.apache.bval.*,!net.sf.cglib.*,!org.apache.commons.beanutils.*,!org.apache.geronimo.*,!org.apache.avalon.*,!org.apache.log,!org.apache.tools.*,!org.apache.xerces.*,!org.jboss.*,!org.postgresql.*,!org.slf4j.impl,!weblogic.*,org.apache.derby.*;resolution:=optional</bnd.importpackage>
-    <openjpa.version>3.2.2</openjpa.version>
+    <bnd.importpackage>!com.ibm.*,!com.sun.*,!oracle.*,!jakarta.interceptor.*,!jakarta.enterprise.*,!javax.enterprise.*,!javax.transaction.*,!jakarta.xml.*,!javax.rmi,!org.apache.bval.*,!net.sf.cglib.*,!org.apache.commons.beanutils.*,!org.apache.geronimo.*,!org.apache.avalon.*,!org.apache.log,!org.apache.tools.*,!org.apache.xerces.*,!org.jboss.*,!org.postgresql.*,!org.slf4j.impl,!weblogic.*,org.apache.derby.*;resolution:=optional</bnd.importpackage>
+    <openjpa.version>4.0.0</openjpa.version>
   </properties>
 
   <dependencies>
@@ -30,12 +30,12 @@
     <dependency>
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
-      <version>10.14.2.0</version>
+      <version>10.16.1.1</version>
     </dependency>
     <dependency>
-      <groupId>javax.el</groupId>
-      <artifactId>el-api</artifactId>
-      <version>2.2</version>
+      <groupId>jakarta.el</groupId>
+      <artifactId>jakarta.el-api</artifactId>
+      <version>6.0.0-RC1</version>
     </dependency>
   </dependencies>
 

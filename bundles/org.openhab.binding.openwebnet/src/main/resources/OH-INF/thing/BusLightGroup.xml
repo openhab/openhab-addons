@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="openwebnet"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+
+	<!-- Thing for controlling a group of lights -->
+	<thing-type id="bus_light_group">
+		<supported-bridge-type-refs>
+			<bridge-type-ref id="bus_gateway"/>
+		</supported-bridge-type-refs>
+
+		<label>Switch Group</label>
+		<description>An OpenWebNet BUS/SCS group of lights/loads (General, Area or Group BUS addressing).</description>
+
+		<channels>
+			<channel id="switch" typeId="switch"/>
+		</channels>
+
+		<properties>
+			<property name="vendor">BTicino/Legrand</property>
+			<property name="model">BTI-xxxx/yyyy/etc.</property>
+			<property name="ownDeviceType">1000</property>
+		</properties>
+
+		<representation-property>ownId</representation-property>
+
+		<config-description>
+			<parameter name="where" type="text" required="true">
+				<label>OpenWebNet Address (where)</label>
+				<description>Example: General (A=GEN) --> where="0", Room 5 (A=AMB PL=5) --> where="5", Group 25 (A=GR PL=25) -->
+					where="#25"</description>
+			</parameter>
+		</config-description>
+
+	</thing-type>
+</thing:thing-descriptions>

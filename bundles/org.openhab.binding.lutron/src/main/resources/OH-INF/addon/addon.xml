@@ -9,4 +9,16 @@
 		RadioRA 2, HomeWorks, HomeWorks QS, RA2 Select, Caseta, and GRAFIK Eye.</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_lutron._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

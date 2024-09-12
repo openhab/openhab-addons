@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -11,9 +11,6 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.netatmo.internal.handler.capability;
-
-import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
-import static org.openhab.core.thing.Thing.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,6 +33,7 @@ import org.openhab.binding.netatmo.internal.api.dto.NAThing;
 import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.core.thing.Thing;
+import org.openhab.core.thing.ThingUID;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.openhab.core.types.Command;
 
@@ -50,14 +48,16 @@ public class Capability {
     protected final Thing thing;
     protected final CommonInterface handler;
     protected final ModuleType moduleType;
+    protected final ThingUID thingUID;
 
-    protected boolean firstLaunch;
+    protected boolean firstLaunch = true;
     protected Map<String, String> properties = Map.of();
     protected @Nullable String statusReason;
 
     Capability(CommonInterface handler) {
         this.handler = handler;
         this.thing = handler.getThing();
+        this.thingUID = thing.getUID();
         this.moduleType = ModuleType.from(thing.getThingTypeUID());
     }
 
@@ -101,15 +101,6 @@ public class Capability {
 
     protected void beforeNewData() {
         properties = new HashMap<>(thing.getProperties());
-        firstLaunch = properties.isEmpty();
-        if (firstLaunch) {
-            properties.put(PROPERTY_THING_TYPE_VERSION, moduleType.thingTypeVersion);
-            if (!moduleType.isLogical()) {
-                String name = moduleType.apiName.isBlank() ? moduleType.name() : moduleType.apiName;
-                properties.put(PROPERTY_MODEL_ID, name);
-                properties.put(PROPERTY_VENDOR, VENDOR);
-            }
-        }
         statusReason = null;
     }
 
@@ -117,16 +108,11 @@ public class Capability {
         if (!properties.equals(thing.getProperties())) {
             thing.setProperties(properties);
         }
+        firstLaunch = false;
     }
 
     protected void updateNAThing(NAThing newData) {
-        String firmware = newData.getFirmware();
-        if (firmware != null && !firmware.isBlank()) {
-            properties.put(PROPERTY_FIRMWARE_VERSION, firmware);
-        }
-        if (!newData.isReachable()) {
-            statusReason = "@text/device-not-connected";
-        }
+        // do nothing by default, can be overridden by subclasses
     }
 
     protected void updateNAMain(NAMain newData) {
@@ -166,11 +152,9 @@ public class Capability {
     }
 
     public void expireData() {
-        if (!handler.getCapabilities().containsKey(RefreshCapability.class)) {
-            CommonInterface bridgeHandler = handler.getBridgeHandler();
-            if (bridgeHandler != null) {
-                bridgeHandler.expireData();
-            }
+        CommonInterface bridgeHandler = handler.getBridgeHandler();
+        if (bridgeHandler != null && handler.getCapabilities().getRefresh().isEmpty()) {
+            bridgeHandler.expireData();
         }
     }
 

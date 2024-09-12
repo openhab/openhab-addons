@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -143,7 +143,7 @@ public class GoEChargerV2Handler extends GoEChargerBaseHandler {
                 }
                 return new DecimalType(goeResponse.transaction);
             case ALLOW_CHARGING:
-                return goeResponse.allowCharging ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(goeResponse.allowCharging);
             case TEMPERATURE_TYPE2_PORT:
                 // It was reported that the temperature is invalid when only one value is returned
                 // That's why it is checked that at least 2 values are returned

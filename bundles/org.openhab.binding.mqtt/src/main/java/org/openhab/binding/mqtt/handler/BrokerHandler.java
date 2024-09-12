@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -83,6 +83,12 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
             logger.error("Received pins hash is empty!");
             return;
         }
+        PinMessageDigest hashDigest = pin.getHashDigest();
+        if (hashDigest == null) {
+            logger.error("Received pins message digest is not set!");
+            return;
+        }
+
         String configKey = null;
         try {
             switch (pin.getType()) {
@@ -99,7 +105,7 @@ public class BrokerHandler extends AbstractBrokerHandler implements PinnedCallba
         }
 
         Configuration thingConfig = editConfiguration();
-        thingConfig.put(configKey, HexUtils.bytesToHex(hash));
+        thingConfig.put(configKey, hashDigest.getMethod() + ":" + HexUtils.bytesToHex(hash));
         updateConfiguration(thingConfig);
     }
 

@@ -24,4 +24,16 @@
 		</parameter>
 	</config-description>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>process</service-type>
+			<match-properties>
+				<match-property>
+					<name>command</name>
+					<regex>(?i).*[/\\](mongod)(\.exe)?$</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

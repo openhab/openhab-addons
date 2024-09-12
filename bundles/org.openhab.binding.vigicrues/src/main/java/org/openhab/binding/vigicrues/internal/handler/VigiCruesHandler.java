@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,6 +34,7 @@ import org.openhab.binding.vigicrues.internal.StationConfiguration;
 import org.openhab.binding.vigicrues.internal.api.ApiHandler;
 import org.openhab.binding.vigicrues.internal.api.VigiCruesException;
 import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse;
+import org.openhab.binding.vigicrues.internal.dto.hubeau.HubEauResponse.StationData;
 import org.openhab.binding.vigicrues.internal.dto.opendatasoft.OpenDatasoftResponse;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.CdStationHydro;
 import org.openhab.binding.vigicrues.internal.dto.vigicrues.InfoVigiCru;
@@ -129,17 +130,22 @@ public class VigiCruesHandler extends BaseThingHandler {
 
         try {
             HubEauResponse stationDetails = apiHandler.discoverStations(config.id);
-            stationDetails.stations.stream().findFirst().ifPresent(station -> {
-                PointType stationLocation = new PointType(
-                        String.format(Locale.US, "%f,%f", station.latitudeStation, station.longitudeStation));
-                properties.put(LOCATION, stationLocation.toString());
-                PointType serverLocation = locationProvider.getLocation();
-                if (serverLocation != null) {
-                    DecimalType distance = serverLocation.distanceFrom(stationLocation);
-                    properties.put(DISTANCE, new QuantityType<>(distance, SIUnits.METRE).toString());
-                }
-                properties.put(RIVER, station.libelleCoursEau);
-            });
+            List<StationData> stations = stationDetails.stations;
+            if (stations != null && stations.size() > 0) {
+                stationDetails.stations.stream().findFirst().ifPresent(station -> {
+                    PointType stationLocation = new PointType(
+                            String.format(Locale.US, "%f,%f", station.latitudeStation, station.longitudeStation));
+                    properties.put(LOCATION, stationLocation.toString());
+                    PointType serverLocation = locationProvider.getLocation();
+                    if (serverLocation != null) {
+                        DecimalType distance = serverLocation.distanceFrom(stationLocation);
+                        properties.put(DISTANCE, new QuantityType<>(distance, SIUnits.METRE).toString());
+                    }
+                    properties.put(RIVER, station.libelleCoursEau);
+                });
+            } else {
+                throw new VigiCruesException("No stations provided");
+            }
         } catch (VigiCruesException e) {
             logger.info("Unable to retrieve station location details {} : {}", config.id, e.getMessage());
         }

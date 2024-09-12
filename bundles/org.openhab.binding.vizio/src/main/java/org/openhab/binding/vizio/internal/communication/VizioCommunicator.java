@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.vizio.internal.communication;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -51,6 +52,7 @@ public class VizioCommunicator {
     private static final String AUTH_HEADER = "AUTH";
     private static final String JSON_CONTENT_TYPE = "application/json";
     private static final String JSON_VALUE = "{\"VALUE\": %s}";
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final HttpClient httpClient;
     private final Gson gson = new GsonBuilder().serializeNulls().create();
@@ -230,6 +232,7 @@ public class VizioCommunicator {
     private String getCommand(String url) throws VizioException {
         try {
             final Request request = httpClient.newRequest(url).method(HttpMethod.GET);
+            request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             request.header(AUTH_HEADER, authToken);
             request.header(HttpHeader.CONTENT_TYPE, JSON_CONTENT_TYPE);
 
@@ -254,6 +257,7 @@ public class VizioCommunicator {
     private String putCommand(String url, String commandJSON) throws VizioException {
         try {
             final Request request = httpClient.newRequest(url).method(HttpMethod.PUT);
+            request.timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
             if (!url.contains("pairing")) {
                 request.header(AUTH_HEADER, authToken);
             }

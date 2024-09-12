@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,6 +64,10 @@ public class FroniusBindingConstants {
     public static final String POWER_FLOW_AUTONOMY = "powerflowautonomy";
     public static final String POWER_FLOW_SELF_CONSUMPTION = "powerflowselfconsumption";
 
+    public static final String POWER_FLOW_INVERTER_POWER = "powerflowinverterpower";
+    public static final String POWER_FLOW_INVERTER_SOC = "powerflowinvertersoc";
+
+    // For backwards compatibility
     public static final String POWER_FLOW_INVERTER_1_POWER = "powerflowinverter1power";
     public static final String POWER_FLOW_INVERTER_1_SOC = "powerflowinverter1soc";
 
@@ -99,6 +103,8 @@ public class FroniusBindingConstants {
     public static final String METER_REALTIME_DATA_URL = "http://%IP%/solar_api/v1/GetMeterRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%&DataCollection=MeterRealtimeData";
     public static final String OHMPILOT_REALTIME_DATA_URL = "http://%IP%/solar_api/v1/GetOhmPilotRealtimeData.cgi?Scope=Device&DeviceId=%DEVICEID%";
 
+    public static final int API_TIMEOUT = 5000;
+
     public static String getInverterDataUrl(String ip, int deviceId) {
         return parseUrl(INVERTER_REALTIME_DATA_URL, ip, deviceId);
     }
@@ -116,7 +122,7 @@ public class FroniusBindingConstants {
     }
 
     public static String parseUrl(String url, String ip) {
-        return url.replace("%IP%", ip == null ? "" : ip.trim());
+        return url.replace("%IP%", ip.trim());
     }
 
     public static String parseUrl(String url, String ip, int deviceId) {

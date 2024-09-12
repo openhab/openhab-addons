@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,6 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link Ffmpeg} class is responsible for handling multiple ffmpeg conversions which are used for many tasks
  *
- *
  * @author Matthew Skinner - Initial contribution
  */
 
@@ -50,7 +49,7 @@ public class Ffmpeg {
     private @Nullable Process process = null;
     private String ffmpegCommand = "";
     private FFmpegFormat format;
-    private List<String> commandArrayList = new ArrayList<String>();
+    private List<String> commandArrayList = new ArrayList<>();
     private IpCameraFfmpegThread ipCameraFfmpegThread = new IpCameraFfmpegThread();
     private int keepAlive = 8;
     private String password;
@@ -82,7 +81,7 @@ public class Ffmpeg {
     public void setKeepAlive(int numberOfEightSeconds) {
         // We poll every 8 seconds due to mjpeg stream requirement.
         if (keepAlive == -1 && numberOfEightSeconds > 1) {
-            return;// When set to -1 this will not auto turn off stream.
+            return; // When set to -1 this will not auto turn off stream.
         }
         keepAlive = numberOfEightSeconds;
     }
@@ -90,7 +89,7 @@ public class Ffmpeg {
     public void checkKeepAlive() {
         if (keepAlive == 1) {
             stopConverting();
-        } else if (keepAlive <= -1 && !getIsAlive()) {
+        } else if (keepAlive <= -1 && !isAlive()) {
             logger.warn("HLS stream was not running, restarting it now.");
             startConverting();
         }
@@ -124,65 +123,63 @@ public class Ffmpeg {
         public void run() {
             try {
                 process = Runtime.getRuntime().exec(commandArrayList.toArray(new String[commandArrayList.size()]));
-                Process localProcess = process;
-                if (localProcess != null) {
-                    InputStream errorStream = localProcess.getErrorStream();
-                    InputStreamReader errorStreamReader = new InputStreamReader(errorStream);
-                    BufferedReader bufferedReader = new BufferedReader(errorStreamReader);
-                    String line = null;
-                    while ((line = bufferedReader.readLine()) != null) {
-                        logger.trace("{}", line);
-                        switch (format) {
-                            case RTSP_ALARMS:
-                                if (line.contains("lavfi.")) {
-                                    // When the number of pixels that change are below the noise floor we need to look
-                                    // across frames to confirm it is motion and not noise.
-                                    if (countOfMotions < 10) {// Stop increasing otherwise it takes too long to go OFF
-                                        countOfMotions++;
-                                    }
-                                    if (countOfMotions > 9) {
-                                        ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                                    } else if (countOfMotions > 4 && ipCameraHandler.motionThreshold.intValue() > 10) {
-                                        ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                                    } else if (countOfMotions > 3 && ipCameraHandler.motionThreshold.intValue() > 15) {
-                                        ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                                    } else if (countOfMotions > 2 && ipCameraHandler.motionThreshold.intValue() > 30) {
-                                        ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                                    } else if (countOfMotions > 0 && ipCameraHandler.motionThreshold.intValue() > 89) {
-                                        ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                                        countOfMotions = 4;// Used to debounce the Alarm.
-                                    }
-                                } else if (line.contains("speed=")) {
-                                    if (countOfMotions > 0) {
-                                        if (ipCameraHandler.motionThreshold.intValue() > 89) {
-                                            countOfMotions--;
-                                        }
-                                        if (ipCameraHandler.motionThreshold.intValue() > 10) {
-                                            countOfMotions -= 2;
-                                        } else {
-                                            countOfMotions -= 4;
-                                        }
-                                        if (countOfMotions <= 0) {
-                                            ipCameraHandler.noMotionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
-                                            countOfMotions = 0;
-                                        }
-                                    }
-                                } else if (line.contains("silence_start")) {
-                                    ipCameraHandler.noAudioDetected();
-                                } else if (line.contains("silence_end")) {
-                                    ipCameraHandler.audioDetected();
+
+                InputStream errorStream = process.getErrorStream();
+                InputStreamReader errorStreamReader = new InputStreamReader(errorStream);
+                BufferedReader bufferedReader = new BufferedReader(errorStreamReader);
+                String line = null;
+                while ((line = bufferedReader.readLine()) != null) {
+                    logger.trace("{}", line);
+                    switch (format) {
+                        case RTSP_ALARMS:
+                            if (line.contains("lavfi.")) {
+                                // When the number of pixels that change are below the noise floor we need to look
+                                // across frames to confirm it is motion and not noise.
+                                if (countOfMotions < 10) { // Stop increasing otherwise it takes too long to go OFF
+                                    countOfMotions++;
                                 }
-                            case MJPEG:
-                            case SNAPSHOT:
-                                notFrozen = true;// RTSP_ALARMS, MJPEG and SNAPSHOT all set this to true, no break.
-                                break;
-                            default:
-                                break;
-                        }
+                                if (countOfMotions > 9) {
+                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                } else if (countOfMotions > 4 && ipCameraHandler.motionThreshold.intValue() > 10) {
+                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                } else if (countOfMotions > 3 && ipCameraHandler.motionThreshold.intValue() > 15) {
+                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                } else if (countOfMotions > 2 && ipCameraHandler.motionThreshold.intValue() > 30) {
+                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                } else if (countOfMotions > 0 && ipCameraHandler.motionThreshold.intValue() > 89) {
+                                    ipCameraHandler.motionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                    countOfMotions = 4; // Used to debounce the Alarm.
+                                }
+                            } else if (line.contains("speed=")) {
+                                if (countOfMotions > 0) {
+                                    if (ipCameraHandler.motionThreshold.intValue() > 89) {
+                                        countOfMotions--;
+                                    }
+                                    if (ipCameraHandler.motionThreshold.intValue() > 10) {
+                                        countOfMotions -= 2;
+                                    } else {
+                                        countOfMotions -= 4;
+                                    }
+                                    if (countOfMotions <= 0) {
+                                        ipCameraHandler.noMotionDetected(CHANNEL_FFMPEG_MOTION_ALARM);
+                                        countOfMotions = 0;
+                                    }
+                                }
+                            } else if (line.contains("silence_start")) {
+                                ipCameraHandler.noAudioDetected();
+                            } else if (line.contains("silence_end")) {
+                                ipCameraHandler.audioDetected();
+                            }
+                        case MJPEG:
+                        case SNAPSHOT:
+                            notFrozen = true; // RTSP_ALARMS, MJPEG and SNAPSHOT all set this to true, no break.
+                            break;
+                        default:
+                            break;
                     }
                 }
             } catch (IOException e) {
-                logger.warn("An IO error occured trying to start FFmpeg:{}", e.getMessage());
+                logger.warn("An IO error occurred trying to start FFmpeg: {}", e.getMessage());
             } finally {
                 switch (format) {
                     case GIF:
@@ -202,10 +199,10 @@ public class Ffmpeg {
         if (!ipCameraFfmpegThread.isAlive()) {
             ipCameraFfmpegThread = new IpCameraFfmpegThread();
             if (!password.isEmpty()) {
-                logger.debug("Starting ffmpeg with this command now:{}",
+                logger.debug("Starting ffmpeg with this command now: {}",
                         ffmpegCommand.replaceAll(password, "********"));
             } else {
-                logger.debug("Starting ffmpeg with this command now:{}", ffmpegCommand);
+                logger.debug("Starting ffmpeg with this command now: {}", ffmpegCommand);
             }
             ipCameraFfmpegThread.start();
             if (format.equals(FFmpegFormat.HLS)) {
@@ -217,7 +214,7 @@ public class Ffmpeg {
         }
     }
 
-    public boolean getIsAlive() {
+    public boolean isAlive() {
         Process localProcess = process;
         if (localProcess != null) {
             if (localProcess.isAlive() && notFrozen) {
@@ -230,7 +227,7 @@ public class Ffmpeg {
 
     public void stopConverting() {
         if (ipCameraFfmpegThread.isAlive()) {
-            logger.debug("Stopping ffmpeg {} now when keepalive is:{}", format, keepAlive);
+            logger.debug("Stopping ffmpeg {} now when keepalive is: {}", format, keepAlive);
             Process localProcess = process;
             if (localProcess != null) {
                 localProcess.destroyForcibly();

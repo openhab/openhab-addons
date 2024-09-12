@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -526,7 +526,7 @@ public class BondDeviceHandler extends BaseThingHandler {
 
     private void updateDevicePropertiesFromBond(BondDevice devInfo, BondDeviceProperties devProperties) {
         // Update all the thing properties based on the result
-        Map<String, String> thingProperties = new HashMap<String, String>();
+        Map<String, String> thingProperties = new HashMap<>();
         updateProperty(thingProperties, CONFIG_DEVICE_ID, config.deviceId);
         logger.trace("Updating device name to {}", devInfo.name);
         updateProperty(thingProperties, PROPERTIES_DEVICE_NAME, devInfo.name);
@@ -632,12 +632,12 @@ public class BondDeviceHandler extends BaseThingHandler {
 
         updateStatus(ThingStatus.ONLINE);
 
-        updateState(CHANNEL_POWER, updateState.power == 0 ? OnOffType.OFF : OnOffType.ON);
+        updateState(CHANNEL_POWER, OnOffType.from(updateState.power != 0));
         boolean fanOn;
         final BondDevice devInfo = this.deviceInfo;
         if (devInfo != null && devInfo.actions.contains(BondDeviceAction.TURN_FP_FAN_OFF)) {
             fanOn = updateState.fpfanPower != 0;
-            updateState(CHANNEL_FAN_POWER, fanOn ? OnOffType.OFF : OnOffType.ON);
+            updateState(CHANNEL_FAN_POWER, OnOffType.from(!fanOn));
             updateState(CHANNEL_FAN_SPEED, new PercentType(updateState.fpfanSpeed));
         } else {
             fanOn = updateState.power != 0;
@@ -653,25 +653,23 @@ public class BondDeviceHandler extends BaseThingHandler {
             updateState(CHANNEL_FAN_SPEED, formPercentType(fanOn, value));
             updateState(CHANNEL_RAW_FAN_SPEED, fanOn ? new DecimalType(updateState.speed) : DecimalType.ZERO);
         }
-        updateState(CHANNEL_FAN_BREEZE_STATE, updateState.breeze[0] == 0 ? OnOffType.OFF : OnOffType.ON);
+        updateState(CHANNEL_FAN_BREEZE_STATE, OnOffType.from(updateState.breeze[0] != 0));
         updateState(CHANNEL_FAN_BREEZE_MEAN, new PercentType(updateState.breeze[1]));
         updateState(CHANNEL_FAN_BREEZE_VAR, new PercentType(updateState.breeze[2]));
         updateState(CHANNEL_FAN_DIRECTION,
                 updateState.direction == 1 ? new StringType("summer") : new StringType("winter"));
         updateState(CHANNEL_FAN_TIMER, new DecimalType(updateState.timer));
 
-        updateState(CHANNEL_LIGHT_POWER, updateState.light == 0 ? OnOffType.OFF : OnOffType.ON);
+        updateState(CHANNEL_LIGHT_POWER, OnOffType.from(updateState.light != 0));
         updateState(CHANNEL_LIGHT_BRIGHTNESS, formPercentType(updateState.light != 0, updateState.brightness));
 
-        updateState(CHANNEL_UP_LIGHT_ENABLE, updateState.upLight == 0 ? OnOffType.OFF : OnOffType.ON);
-        updateState(CHANNEL_UP_LIGHT_POWER,
-                (updateState.upLight == 1 && updateState.light == 1) ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_UP_LIGHT_ENABLE, OnOffType.from(updateState.upLight != 0));
+        updateState(CHANNEL_UP_LIGHT_POWER, OnOffType.from(updateState.upLight == 1 && updateState.light == 1));
         updateState(CHANNEL_UP_LIGHT_BRIGHTNESS,
                 formPercentType((updateState.upLight == 1 && updateState.light == 1), updateState.upLightBrightness));
 
-        updateState(CHANNEL_DOWN_LIGHT_ENABLE, updateState.downLight == 0 ? OnOffType.OFF : OnOffType.ON);
-        updateState(CHANNEL_DOWN_LIGHT_POWER,
-                (updateState.downLight == 1 && updateState.light == 1) ? OnOffType.ON : OnOffType.OFF);
+        updateState(CHANNEL_DOWN_LIGHT_ENABLE, OnOffType.from(updateState.downLight != 0));
+        updateState(CHANNEL_DOWN_LIGHT_POWER, OnOffType.from(updateState.downLight == 1 && updateState.light == 1));
         updateState(CHANNEL_DOWN_LIGHT_BRIGHTNESS, formPercentType(
                 (updateState.downLight == 1 && updateState.light == 1), updateState.downLightBrightness));
 

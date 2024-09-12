@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -197,7 +197,7 @@ public class TransmitterStick {
         private final int updateInterval;
         private final SerialConnection connection;
 
-        private final BlockingQueue<Command> cmdQueue = new DelayQueue<Command>() {
+        private final BlockingQueue<Command> cmdQueue = new DelayQueue<>() {
             @Override
             public boolean add(Command e) {
                 if (TransmitterStick.prepareAddition(e, this)) {

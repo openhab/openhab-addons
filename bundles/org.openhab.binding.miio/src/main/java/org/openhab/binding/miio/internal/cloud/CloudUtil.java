@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -85,7 +85,7 @@ public class CloudUtil {
         if (signedNonce == null || signedNonce.length() == 0) {
             throw new MiIoCryptoException("key is not nullable");
         }
-        List<String> exps = new ArrayList<String>();
+        List<String> exps = new ArrayList<>();
 
         if (requestUrl != null) {
             URI uri = URI.create(requestUrl);
@@ -95,7 +95,7 @@ public class CloudUtil {
         exps.add(nonce);
 
         if (params != null && !params.isEmpty()) {
-            final TreeMap<String, String> sortedParams = new TreeMap<String, String>(params);
+            final TreeMap<String, String> sortedParams = new TreeMap<>(params);
             Set<Map.Entry<String, String>> entries = sortedParams.entrySet();
             for (Map.Entry<String, String> entry : entries) {
                 exps.add(String.format("%s=%s", entry.getKey(), entry.getValue()));

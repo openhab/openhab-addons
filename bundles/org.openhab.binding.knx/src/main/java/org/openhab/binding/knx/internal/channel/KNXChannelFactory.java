@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,6 +56,7 @@ public final class KNXChannelFactory {
                 .map(Map.Entry::getValue).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(channelTypeUID + " is not a valid channel type ID"));
 
-        return supplier.apply(channel);
+        // typecast to avoid warning about unsafe return type; we know that the lookup returns non null values
+        return (KNXChannel) supplier.apply(channel);
     }
 }

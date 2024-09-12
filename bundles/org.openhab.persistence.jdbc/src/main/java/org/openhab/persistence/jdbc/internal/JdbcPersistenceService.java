@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -21,10 +21,13 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.common.NamedThreadFactory;
 import org.openhab.core.config.core.ConfigurableService;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.items.GroupItem;
@@ -70,6 +73,9 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
     private final Logger logger = LoggerFactory.getLogger(JdbcPersistenceService.class);
 
     private final ItemRegistry itemRegistry;
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1,
+            new NamedThreadFactory(JdbcPersistenceServiceConstants.SERVICE_ID));
 
     @Activate
     public JdbcPersistenceService(final @Reference ItemRegistry itemRegistry,
@@ -131,21 +137,27 @@ public class JdbcPersistenceService extends JdbcMapper implements ModifiablePers
 
     @Override
     public void store(Item item) {
-        internalStore(item, null, item.getState());
+        scheduler.execute(() -> internalStore(item, null, item.getState()));
     }
 
     @Override
     public void store(Item item, @Nullable String alias) {
         // alias is not supported
-        internalStore(item, null, item.getState());
+        scheduler.execute(() -> internalStore(item, null, item.getState()));
     }
 
     @Override
     public void store(Item item, ZonedDateTime date, State state) {
-        internalStore(item, date, state);
+        scheduler.execute(() -> internalStore(item, date, state));
     }
 
-    private void internalStore(Item item, @Nullable ZonedDateTime date, State state) {
+    @Override
+    public void store(Item item, ZonedDateTime date, State state, @Nullable String alias) {
+        // alias is not supported
+        scheduler.execute(() -> internalStore(item, date, state));
+    }
+
+    private synchronized void internalStore(Item item, @Nullable ZonedDateTime date, State state) {
         // Do not store undefined/uninitialized data
         if (state instanceof UnDefType) {
             logger.debug("JDBC::store: ignore Item '{}' because it is UnDefType", item.getName());

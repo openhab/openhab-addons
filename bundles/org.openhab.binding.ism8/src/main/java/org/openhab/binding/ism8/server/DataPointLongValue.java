@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.nio.ByteBuffer;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.core.library.unit.Units;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +35,11 @@ public class DataPointLongValue extends DataPointBase<@Nullable Double> {
         super(id, knxDataType, description);
 
         if ("13.002".equals(knxDataType)) {
-            this.setUnit("m³/h");
+            this.setUnit(Units.CUBICMETRE_PER_HOUR);
             this.factor = 0.0001f;
             this.outputFormat = "%.1f";
         } else {
-            this.setUnit("");
+            this.setUnit(Units.ONE);
             this.factor = 1.0f;
             this.outputFormat = "%.1f";
         }

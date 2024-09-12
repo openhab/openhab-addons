@@ -1,0 +1,35 @@
+This content is produced and maintained by the openHAB project.
+
+* Project home: https://www.openhab.org
+
+== Declared Project Licenses
+
+This program and the accompanying materials are made available under the terms
+of the Eclipse Public License 2.0 which is available at
+https://www.eclipse.org/legal/epl-2.0/.
+
+== Source Code
+
+https://github.com/openhab/openhab-addons
+
+== Third-party Content
+
+io.github.givimad: whisper-jni
+* License: Apache 2.0 License
+* Project: https://github.com/GiviMAD/whisper-jni
+* Source: https://github.com/GiviMAD/whisper-jni/tree/main/src/
+
+native dependency: whisper.cpp
+* License: MIT License https://github.com/ggerganov/whisper.cpp/blob/master/LICENSE
+* Project: https://github.com/ggerganov/whisper.cpp
+* Source: https://github.com/ggerganov/whisper.cpp
+
+io.github.givimad: libfvad-jni
+* License: Apache 2.0 License https://github.com/GiviMAD/libfvad-jni/blob/main/LICENSE
+* Project: https://github.com/GiviMAD/libfvad-jni
+* Source: https://github.com/GiviMAD/libfvad-jni/tree/main/src/
+
+native dependency: libfvad
+* License: BSD License https://github.com/dpirch/libfvad/blob/master/LICENSE
+* Project: https://github.com/dpirch/libfvad
+* Source: https://github.com/dpirch/libfvad

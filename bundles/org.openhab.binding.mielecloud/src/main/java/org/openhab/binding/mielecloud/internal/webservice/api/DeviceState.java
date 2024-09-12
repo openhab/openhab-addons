@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -518,8 +518,8 @@ public class DeviceState {
      * @return The raw device type.
      */
     public DeviceType getRawType() {
-        return device.flatMap(Device::getIdent).flatMap(Ident::getType).map(Type::getValueRaw)
-                .orElse(DeviceType.UNKNOWN);
+        return Objects.requireNonNull(device.flatMap(Device::getIdent).flatMap(Ident::getType).map(Type::getValueRaw)
+                .orElse(DeviceType.UNKNOWN));
     }
 
     /**

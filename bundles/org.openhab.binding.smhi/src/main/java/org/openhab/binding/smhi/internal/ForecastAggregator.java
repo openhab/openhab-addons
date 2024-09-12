@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -76,8 +77,8 @@ public class ForecastAggregator {
             } else {
                 hours = dayForecasts.get(i - 1).getValidTime().until(current.getValidTime(), ChronoUnit.HOURS);
             }
-            values.add(current.getParameter(parameter).map(value -> value.multiply(BigDecimal.valueOf(hours)))
-                    .orElse(BigDecimal.ZERO));
+            values.add(Objects.requireNonNull(current.getParameter(parameter)
+                    .map(value -> value.multiply(BigDecimal.valueOf(hours))).orElse(BigDecimal.ZERO)));
         }
         return values.stream().reduce(BigDecimal::add);
     }

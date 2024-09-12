@@ -18,6 +18,20 @@
 		<config-description-ref uri="thing-type:shelly:battery-gen2"/>
 	</thing-type>
 
+	<thing-type id="shellyhtg3">
+		<label>ShellyPlus H&amp;T Gen 3</label>
+		<description>@text/thing-type.shelly.shellypludhtg3.description</description>
+		<category>Sensor</category>
+		<channel-groups>
+			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="battery" typeId="batteryStatus"/>
+			<channel-group id="device" typeId="deviceStatus"/>
+		</channel-groups>
+
+		<representation-property>serviceName</representation-property>
+		<config-description-ref uri="thing-type:shelly:battery-gen2"/>
+	</thing-type>
+
 	<thing-type id="shellyplussmoke">
 		<label>Shelly Plus Smoke</label>
 		<description>@text/thing-type.shelly.shellyplussmoke.description</description>
@@ -38,6 +52,7 @@
 		<category>Sensor</category>
 		<channel-groups>
 			<channel-group id="sensors" typeId="sensorData"/>
+			<channel-group id="relay" typeId="relayChannel"/>
 			<channel-group id="device" typeId="deviceStatus"/>
 		</channel-groups>
 

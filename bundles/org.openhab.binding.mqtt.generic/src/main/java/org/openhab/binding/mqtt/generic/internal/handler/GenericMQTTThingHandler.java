@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,6 @@ import org.openhab.binding.mqtt.generic.ChannelConfig;
 import org.openhab.binding.mqtt.generic.ChannelState;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.generic.utils.FutureCollector;
 import org.openhab.binding.mqtt.generic.values.Value;
@@ -59,21 +58,18 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
     private final Logger logger = LoggerFactory.getLogger(GenericMQTTThingHandler.class);
     final Map<ChannelUID, ChannelState> channelStateByChannelUID = new HashMap<>();
     protected final MqttChannelStateDescriptionProvider stateDescProvider;
-    protected final TransformationServiceProvider transformationServiceProvider;
 
     /**
      * Creates a new Thing handler for generic MQTT channels.
      *
      * @param thing The thing of this handler
      * @param stateDescProvider A channel state provider
-     * @param transformationServiceProvider The transformation service provider
      * @param subscribeTimeout The subscribe timeout
      */
     public GenericMQTTThingHandler(Thing thing, MqttChannelStateDescriptionProvider stateDescProvider,
-            TransformationServiceProvider transformationServiceProvider, int subscribeTimeout) {
+            int subscribeTimeout) {
         super(thing, subscribeTimeout);
         this.stateDescProvider = stateDescProvider;
-        this.transformationServiceProvider = transformationServiceProvider;
     }
 
     @Override
@@ -93,7 +89,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
         clearAllAvailabilityTopics();
         initializeAvailabilityTopicsFromConfig();
         return channelStateByChannelUID.values().stream().map(c -> c.start(connection, scheduler, 0))
-                .collect(FutureCollector.allOf()).thenRun(this::calculateThingStatus);
+                .collect(FutureCollector.allOf()).thenRun(() -> calculateAndUpdateThingStatus(false));
     }
 
     @Override
@@ -129,14 +125,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
      * @return
      */
     protected ChannelState createChannelState(ChannelConfig channelConfig, ChannelUID channelUID, Value valueState) {
-        ChannelState state = new ChannelState(channelConfig, channelUID, valueState, this);
-
-        // Incoming value transformations
-        state.addTransformation(channelConfig.transformationPattern, transformationServiceProvider);
-        // Outgoing value transformations
-        state.addTransformationOut(channelConfig.transformationPatternOut, transformationServiceProvider);
-
-        return state;
+        return new ChannelState(channelConfig, channelUID, valueState, this);
     }
 
     @Override
@@ -230,7 +219,7 @@ public class GenericMQTTThingHandler extends AbstractMQTTThingHandler implements
 
         if (availabilityTopic != null) {
             addAvailabilityTopic(availabilityTopic, config.payloadAvailable, config.payloadNotAvailable,
-                    config.transformationPattern, transformationServiceProvider);
+                    config.transformationPattern);
         } else {
             clearAllAvailabilityTopics();
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -32,10 +32,10 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openhab.binding.hue.internal.api.dto.clip1.FullLight;
 import org.openhab.binding.hue.internal.config.HueBridgeConfig;
 import org.openhab.binding.hue.internal.connection.HueBridge;
 import org.openhab.binding.hue.internal.discovery.HueDeviceDiscoveryService;
-import org.openhab.binding.hue.internal.dto.FullLight;
 import org.openhab.binding.hue.internal.exceptions.ApiException;
 import org.openhab.binding.hue.internal.handler.HueBridgeHandler;
 import org.openhab.core.config.core.Configuration;

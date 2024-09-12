@@ -1,0 +1,457 @@
+syntax = "proto3";
+package proto;
+import "service-activation.proto";
+import "user-events.proto";
+import "vehicle-commands.proto";
+import "protos.proto";
+import "vehicleapi.proto";
+
+option java_package = "com.daimler.mbcarkit.proto";
+
+// Sending direction: App <- BFF <- AppTwin
+message VEPUpdate {
+
+  int32 sequence_number = 1;
+
+  string vin = 2;
+
+  // indicates whether this is a full update of VEP-attributes.
+  // All attributes cached in the FE should be erased and completely
+  // replaced by this push.
+  bool full_update = 15;
+
+  // when was the event emitted? This is the time of the update (unix timestamp in seconds), (deprecated)
+  // not when the attributes where changed. To compare attribute changes, you need to look into each attribute timestamp
+  int64 emit_timestamp = 10;
+
+  // when was the event emitted? This is the time of the update (unix timestamp in milliseconds),
+  int64 emit_timestamp_in_ms = 14;
+
+  // the attribute changes are a list of changed attributes
+  map<string, VehicleAttributeStatus> attributes = 11;
+
+}
+
+// Part of a VEPUpdate
+// Sending direction: App <- BFF <- AppTwin
+message VehicleAttributeStatus {
+  // time of the attribute change in the car as unix timestamp in seconds with UTC timezone (deprecated)
+  int64 timestamp = 1 [ deprecated = true ];
+  // time of the attribute change in the car as unix timestamp in milliseconds with UTC timezone
+  int64 timestamp_in_ms = 10;
+  bool changed    = 2;
+  int32 status    = 3;
+
+  enum CombustionConsumptionUnit {
+    UNSPECIFIED_COMBUSTION_CONSUMPTION_UNIT = 0;
+    // Liter per 100 km
+    LITER_PER_100KM = 1;
+    // Kilometers per liter
+    KM_PER_LITER = 2;
+    // Miles Per imperial gallon
+    MPG_UK = 3;
+    // Miles Per US gallon
+    MPG_US = 4;
+  }
+
+  enum ElectricityConsumptionUnit {
+    UNSPECIFIED_ELECTRICITY_CONSUMPTION_UNIT = 0;
+    // kWh per 100 km
+    KWH_PER_100KM = 1;
+    // Kilometers per kWh
+    KM_PER_KWH = 2;
+    // kWh per 100 miles
+    KWH_PER_100MI = 3;
+    // miles per kWh
+    M_PER_KWH = 4;
+    // Miles per gallon gasoline equivalent
+    MPGE = 5;
+  }
+
+  enum GasConsumptionUnit {
+    UNSPECIFIED_GAS_CONSUMPTION_UNIT = 0;
+    // kG per 100 km
+    KG_PER_100KM = 1;
+    // km per kg
+    KM_PER_KG = 2;
+    // miles per kg
+    M_PER_KG = 3;
+  }
+
+  enum SpeedDistanceUnit {
+    option deprecated = true; // use speed unit / length unit instead
+
+    UNSPECIFIED_SPEED_DISTANCE_UNIT = 0;
+    // km/h, distance unit: km
+    KM_PER_H = 1;
+    // mph, distance unit: miles
+    M_PER_H = 2;
+  }
+
+  enum SpeedUnit {
+    UNSPECIFIED_SPEED_UNIT = 0;
+    // kilometers per hour
+    KM_PER_HOUR = 1;
+    // miles per hour
+    M_PER_HOUR = 2;
+  }
+
+  enum DistanceUnit {
+    UNSPECIFIED_DISTANCE_UNIT = 0;
+    KILOMETERS = 1;
+    MILES = 2;
+  }
+
+  enum TemperatureUnit {
+    UNSPECIFIED_TEMPERATURE_UNIT = 0;
+    CELSIUS = 1;
+    FAHRENHEIT = 2;
+  }
+
+  enum PressureUnit {
+    UNSPECIFIED_PRESSURE_UNIT = 0;
+    KPA = 1 ;
+    BAR = 2;
+    // Pounds per square inch
+    PSI = 3;
+  }
+
+  enum RatioUnit {
+    UNSPECIFIED_RATIO_UNIT = 0;
+    PERCENT = 1;
+  }
+
+  enum ClockHourUnit {
+    UNSPECIFIED_CLOCK_HOUR_UNIT = 0;
+    // 12h (AM/PM)
+    T12H = 1;
+    // 24h
+    T24H = 2;
+  }
+
+  // A list of service ids for which this attribute was sent
+  // this field ist just used backend internally and will always
+  // be empty when sent out to the client.
+  repeated int32 service_ids = 30;
+
+  string display_value = 11;
+  oneof display_unit {
+    CombustionConsumptionUnit combustion_consumption_unit = 12;
+    GasConsumptionUnit gas_consumption_unit = 13;
+    ElectricityConsumptionUnit electricity_consumption_unit = 14;
+    SpeedDistanceUnit speed_distance_unit = 15 [ deprecated = true ]; // use speed unit / length unit instead
+    SpeedUnit speed_unit = 25;
+    DistanceUnit distance_unit = 26;
+    TemperatureUnit temperature_unit = 16;
+    PressureUnit pressure_unit = 17;
+    RatioUnit ratio_unit = 18;
+    ClockHourUnit clock_hour_unit = 19;
+  }
+
+  oneof attribute_type {
+    int64 int_value = 4;
+    bool bool_value = 5;
+    string string_value = 6;
+    double double_value = 7;
+    bool nil_value = 8;
+    string unsupported_value = 9;
+    TemperaturePointsValue temperature_points_value = 20;
+    WeekdayTariffValue weekday_tariff_value = 21;
+    WeekendTariffValue weekend_tariff_value = 22;
+    StateOfChargeProfileValue state_of_charge_profile_value = 23;
+    WeeklySettingsHeadUnitValue weekly_settings_head_unit_value = 24;
+    SpeedAlertConfigurationValue speed_alert_configuration_value = 27;
+    EcoHistogramValue eco_histogram_value = 28;
+    WeeklyProfileValue weekly_profile_value = 29;
+    ChargeProgramsValue charge_programs_value = 31;
+  }
+}
+
+message ChargeProgramsValue {
+  repeated ChargeProgramParameters charge_program_parameters = 1;
+}
+
+enum ChargeProgram {
+  DEFAULT_CHARGE_PROGRAM = 0;
+  INSTANT_CHARGE_PROGRAM = 1;
+  HOME_CHARGE_PROGRAM = 2;
+  WORK_CHARGE_PROGRAM = 3;
+}
+
+message ChargeProgramParameters {
+  ChargeProgram charge_program = 1 [ json_name = "chargeprogram" ];
+
+  // Values need to be between 50 and 100 and divisible by ten
+  // Maximum value for the state of charge of the HV battery [in %].
+  // Valid value range = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+  int32 max_soc = 2 [ json_name = "maxSoc" ];
+
+  // unlock the plug after charging is finished
+  // Denotes whether the charge cable should be unlocked automatically if the HV battery is fully charged resp. charged til Max. SoC value.
+  // true - unlock automatically, false - do not unlock automatically
+  // can only be used if chargeprogram is set to home or work. Otherwise it will be ignored.
+  bool auto_unlock = 3 [ json_name = "autounlock" ];
+
+  // automatically switch between home and work program, based on the location of the car
+  // Denotes whether location based charging should be used.
+  // true - use location based charging, false - do not use location based charging
+  // can only be used if chargeprogram is set to home or work. Otherwise it will be ignored.
+  bool location_based_charging = 4 [ json_name = "locationbasedcharging" ];
+
+  // enable or disable week-profile
+  // Denotes whether weekly profile (aka. weekprofile) should be used.
+  // true - use weekly profile, false - do not use weekly profile
+
+  bool weekly_profile = 5 [ json_name = "weeklyprofile" ];
+  bool clockTimer = 6 [ json_name = "clockTimer" ];
+  int32 max_charging_current = 7 [ json_name = "MaxChargingCurrent" ];
+  bool eco_charging = 8 [ json_name = "EcoCharging" ];
+}
+
+// Same as VehicleAPI.AttributeStatus but with slightly different names. The VehicleAPI.AttributeStatus enum values
+// can't be changed because they are used to automatically parse the vehicleAPI responses. Adding type aliases would
+// confuse the contributions developers, so we added another attribute status enum
+enum AttributeStatus {
+  // Value is set and valid
+  VALUE_VALID = 0;
+  // Value has not yet been received from the vehicle (but sensor etc. should be available)
+  VALUE_NOT_RECEIVED = 1;
+  // Value has been retrieved from vehicle but is invalid (marked as invalid by DaiVB backend)
+  VALUE_INVALID = 3;
+  // Vehicle does not support this attribute (e.g. does not have the sensor etc.)
+  VALUE_NOT_AVAILABLE = 4;
+}
+
+message WeeklyProfileValue {
+  bool single_time_profile_entries_activatable = 1 [ json_name = "singleTimeProfileEntriesActivatable" ];
+
+  int32 max_number_of_weekly_time_profile_slots = 2 [ json_name = "maxNumberOfWeeklyTimeProfileSlots" ];
+
+  int32 max_number_of_time_profiles = 3 [ json_name = "maxNumberOfTimeProfiles" ];
+
+  int32 current_number_of_time_profile_slots = 4 [ json_name = "currentNumberOfTimeProfileSlots" ];
+
+  int32 current_number_of_time_profiles = 5 [ json_name = "currentNumberOfTimeProfiles" ];
+
+  repeated VVRTimeProfile time_profiles = 6 [ json_name = "timeProfiles" ];
+}
+
+// VVRTimeProfile is almost identical to the "TimeProfile" message with the exception that the identifier is not optional.
+message VVRTimeProfile {
+  // unique id of this time profile entry
+  int32 identifier = 1 [ json_name = "id" ];
+
+  // Hour after midnight range [0, 23]
+  int32 hour = 2 [json_name = "hour" ];
+
+  // Minute after full hour range [0, 59]
+  int32 minute = 3 [json_name = "min" ];
+
+  // Days for which the above time should be applied
+  repeated TimeProfileDay days = 4 [json_name = "day" ];
+
+  // Whether this profile entry is active or not
+  bool active = 5 [json_name = "active" ];
+
+  // If a timeProfile is changed or added the respective applicationId must be provided by SDK
+  //   11 = Internal Apps
+  //   12 = External Apps
+  int32 application_identifier = 6 [ json_name = "applicationId" ];
+}
+
+message EcoHistogramValue {
+  repeated EcoHistogramBin eco_histogram_bins = 1;
+}
+
+message EcoHistogramBin {
+  double interval = 1;
+  double value = 2;
+}
+
+message SpeedAlertConfigurationValue {
+  repeated SpeedAlertConfiguration speed_alert_configurations = 1;
+}
+
+message SpeedAlertConfiguration {
+  // Unix timestamp in seconds
+  int64 end_timestamp_in_s = 1;
+  // Speed in kilometers per hour
+  int32 threshold_in_kph = 2;
+  // threshold value in the users preferred unit
+  string threshold_display_value = 3;
+}
+
+message WeeklySettingsHeadUnitValue {
+  // Array with 0 to 21 tupels of day (0..6, 0 = Monday, 1= Tuesday, ..) and departure time in min since midnight (0..1439)
+  repeated WeeklySetting weekly_settings = 1;
+}
+
+message WeeklySetting {
+  int32 day = 1;
+  int32 minutes_since_midnight = 2;
+}
+
+message TemperaturePointsValue {
+  // Array with 1 to 5 tupels of zone (frontLeft, frontRight, frontCenter, rearRight, rearLeft, rearCenter, rear2center)
+  // and temperature in °C where 0 means maximum cooling (LOW) and 30 means maximum heating (HIGH)
+  repeated TemperaturePoint temperature_points = 1;
+}
+
+message TemperaturePoint {
+  string zone = 1;
+  double temperature = 2;
+  string temperature_display_value = 3;
+}
+
+message WeekdayTariffValue {
+  // List of sampling points. Hint: Array will be empty in initial state. I. e.: rate and time will not be existent in initial state.
+  repeated Tariff tariffs = 1;
+}
+
+message WeekendTariffValue {
+  // List of sampling points. Hint: Array will be empty in initial state. I. e.: rate and time will not be existent in initial state.
+  repeated Tariff tariffs = 1;
+}
+
+message Tariff {
+  // 33 - off-peak, 44 - mid-peak, 66 - on-peak
+  int32 rate = 1;
+  // Seconds from midnight
+  int32 time = 2;
+}
+
+message StateOfChargeProfileValue {
+  // Array with tupels of state of charge and time offset related to the timestamp of the attribute,
+  // e.g. [{t, soc}, {t, soc}, .., {t, soc}] (every soc with value range 0..100, every timestamp in seconds, UTC)
+  repeated StateOfCharge states_of_charge = 1;
+}
+
+message StateOfCharge {
+  // timestamp in seconds, UTC
+  int64 timestamp_in_s = 1;
+
+  // soc with value range 0..100
+  int32 state_of_charge = 2;
+}
+
+// Sending direction: App <- BFF <- AppTwin
+message VEPUpdatesByVIN {
+
+  int32 sequence_number = 2;
+
+  // VIN -> Update
+  map<string, VEPUpdate> updates = 1;
+}
+
+// Sending direction: App <- BFF
+message DebugMessage {
+  string message = 1;
+}
+
+// Represents a status response from the
+// VVA backend for a given VIN and CIAM ID.
+message VehicleStatus {
+  string vin = 1;
+  map<string, VehicleAttributeStatus> attributes = 2;
+}
+
+// message that is pushed from the vep status service
+// Sending direction: App <- BFF
+message PushMessage {
+  reserved 7,8;
+  string tracking_id = 5;
+  oneof msg {
+    VEPUpdate vepUpdate = 1;
+    VEPUpdatesByVIN vepUpdates = 2;
+    DebugMessage debugMessage = 3;
+    ServiceStatusUpdatesByVIN service_status_updates = 9;
+    ServiceStatusUpdate service_status_update = 13;
+    UserDataUpdate user_data_update = 10;
+    UserVehicleAuthChangedUpdate user_vehicle_auth_changed_update = 14;
+    UserPictureUpdate user_picture_update = 11;
+    UserPINUpdate user_pin_update = 12;
+    VehicleUpdated vehicle_updated = 15;
+    PreferredDealerChange preferred_dealer_change = 16;
+    AppTwinCommandStatusUpdatesByVIN apptwin_command_status_updates_by_vin = 17;
+    AppTwinPendingCommandsRequest apptwin_pending_command_request = 18;
+    AssignedVehicles assigned_vehicles = 19;
+  }
+}
+
+// message type to track an event, e.g. a user interaction with content
+// Sending direction: App -> BFF
+message TrackingEvent {
+
+  // a unique id associated with this event
+  string tracking_id = 1;
+
+  // the unix epoch time in nanoseconds when the event occurred
+  int64 timestamp = 2;
+
+  // a unique identifier describing a single interaction or event
+  string event_type = 3;
+
+  // additional meta data describing the event
+  map<string, PayloadValue> payload = 4;
+}
+
+message PayloadValue {
+  oneof msg {
+    string string_value = 1;
+    int32 int_value = 2;
+    bool bool_value = 3;
+    double double_value = 4;
+  }
+}
+
+// acknowledge that the VEP updates of up to `sequenceNumber` have been received
+// Sending direction: App -> BFF -> AppTwin
+message AcknowledgeVEPRequest {
+  // This message will be replaced by AcknowledgeVEPUpdatesByVIN
+  option deprecated = true;
+
+  int32 sequence_number = 1;
+}
+
+// acknowledge that the VEP updates by vin of up to `sequenceNumber` have been received
+// Sending direction: App -> BFF -> AppTwin
+// This message should replace the AcknowledgeVEPRequest
+message AcknowledgeVEPUpdatesByVIN {
+  int32 sequence_number = 1;
+}
+
+// the client can optionally send this message to reconfigure the ping interval
+// Sending direction: App -> BFF
+message ConfigurePingInterval {
+  int32 ping_time_millis = 1;
+}
+
+message AcknowledgeVehicleUpdated {
+  int32 sequence_number = 1;
+}
+
+message AcknowledgePreferredDealerChange {
+  int32 sequence_number = 1;
+}
+
+message VehicleUpdated {
+  int32 sequence_number = 1;
+
+  string ciam_id = 2;
+
+  string vin = 3;
+
+  // When was the event emitted (milliseconds in Unix time)
+  int64 emit_timestamp_in_ms = 10;
+}
+
+message PreferredDealerChange {
+  int32 sequence_number = 1;
+
+  string ciam_id = 2;
+
+  string vin = 3;
+
+  // When was the event emitted (milliseconds in Unix time)
+  int64 emit_timestamp_in_ms = 10;
+}

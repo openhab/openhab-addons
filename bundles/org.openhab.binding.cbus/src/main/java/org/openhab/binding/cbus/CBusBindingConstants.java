@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -55,10 +55,10 @@ public class CBusBindingConstants {
     public static final String CHANNEL_TEMP = "temp";
     public static final String CHANNEL_VALUE = "value";
 
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(BRIDGE_TYPE_CGATE, BRIDGE_TYPE_NETWORK, THING_TYPE_GROUP, THING_TYPE_LIGHT,
                     THING_TYPE_TEMPERATURE, THING_TYPE_TRIGGER, THING_TYPE_DALI));
-    public static final Set<ThingTypeUID> NETWORK_DISCOVERY_THING_TYPES_UIDS = new HashSet<ThingTypeUID>(
+    public static final Set<ThingTypeUID> NETWORK_DISCOVERY_THING_TYPES_UIDS = new HashSet<>(
             Arrays.asList(BRIDGE_TYPE_NETWORK));
 
     public static final String CONFIG_NETWORK_ID = "id";

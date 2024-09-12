@@ -905,6 +905,8 @@
 			<channel id="itemTaken" typeId="itemTaken"/>
 			<channel id="autoLED" typeId="autoLED"/>
 			<channel id="enableLED" typeId="enableLED"/>
+			<channel id="whiteLED" typeId="whiteLED"/>
+			<channel id="autoWhiteLED" typeId="autoWhiteLED"/>
 			<channel id="textOverlay" typeId="textOverlay"/>
 			<channel id="pan" typeId="pan"/>
 			<channel id="tilt" typeId="tilt"/>
@@ -921,6 +923,11 @@
 			<channel id="sceneChangeAlarm" typeId="sceneChangeAlarm"/>
 			<channel id="tooBlurryAlarm" typeId="tooBlurryAlarm"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -1437,6 +1444,7 @@
 			<channel id="mp4History" typeId="mp4History"/>
 			<channel id="mp4HistoryLength" typeId="mp4HistoryLength"/>
 			<channel id="lastMotionType" typeId="lastMotionType"/>
+			<channel id="lineCrossingAlarm" typeId="lineCrossingAlarm"/>
 			<channel id="ffmpegMotionControl" typeId="ffmpegMotionControl"/>
 			<channel id="ffmpegMotionAlarm" typeId="ffmpegMotionAlarm"/>
 			<channel id="enableMotionAlarm" typeId="enableMotionAlarm"/>
@@ -1455,7 +1463,13 @@
 			<channel id="rtspUrl" typeId="rtspUrl"/>
 			<channel id="imageUrl" typeId="imageUrl"/>
 			<channel id="hlsUrl" typeId="hlsUrl"/>
+			<channel id="carAlarm" typeId="carAlarm"/>
+			<channel id="humanAlarm" typeId="humanAlarm"/>
+			<channel id="animalAlarm" typeId="animalAlarm"/>
 		</channels>
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -2297,13 +2311,22 @@
 			<channel id="animalAlarm" typeId="animalAlarm"/>
 			<channel id="faceDetected" typeId="faceDetected"/>
 			<channel id="autoLED" typeId="autoLED"/>
+			<channel id="autoWhiteLED" typeId="autoWhiteLED"/>
 			<channel id="enableLED" typeId="enableLED"/>
+			<channel id="whiteLED" typeId="whiteLED"/>
 			<channel id="textOverlay" typeId="textOverlay"/>
 			<channel id="activateAlarmOutput" typeId="activateAlarmOutput"/>
 			<channel id="doorBell" typeId="doorBell"/>
 			<channel id="enableRecordings" typeId="enableRecordings"/>
 			<channel id="enableFTP" typeId="enableFTP"/>
+			<channel id="enableEmail" typeId="enableEmail"/>
+			<channel id="enablePush" typeId="enablePush"/>
 		</channels>
+
+		<properties>
+			<property name="thingTypeVersion">1</property>
+		</properties>
+
 		<config-description>
 
 			<parameter-group name="Settings">
@@ -2948,6 +2971,13 @@
 		<category>Light</category>
 	</channel-type>
 
+	<channel-type id="whiteLED" advanced="true">
+		<item-type>Dimmer</item-type>
+		<label>White LED</label>
+		<description>Turn the visible white LED ON and OFF and if supported 0-100% dimming.</description>
+		<category>Light</category>
+	</channel-type>
+
 	<channel-type id="enablePrivacyMode" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Enable Privacy Mode</label>
@@ -2966,10 +2996,28 @@
 		<description>Turn the FTP features of the camera on and off</description>
 	</channel-type>
 
+	<channel-type id="enableEmail" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enable Email</label>
+		<description>Turn the email features of the camera on or off</description>
+	</channel-type>
+
+	<channel-type id="enablePush" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Enable Push</label>
+		<description>Turn the push notification features of the camera on or off</description>
+	</channel-type>
+
 	<channel-type id="autoLED" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Auto LED</label>
 		<description>Turn the automatic mode for the LED ON and OFF.</description>
+	</channel-type>
+
+	<channel-type id="autoWhiteLED" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Auto White LED</label>
+		<description>Turn the automatic mode for the visible white LED ON or OFF.</description>
 	</channel-type>
 
 	<channel-type id="externalLight" advanced="true">

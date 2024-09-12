@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,6 +19,7 @@ import java.net.UnknownHostException;
 import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -239,9 +240,9 @@ public class OmnilinkBridgeHandler extends BaseBridgeHandler implements Notifica
              * HAI only supports one audio player - cycle through features until we find a feature that is an audio
              * player.
              */
-            audioPlayer = reqSystemFeatures().getFeatures().stream()
+            audioPlayer = Objects.requireNonNull(reqSystemFeatures().getFeatures().stream()
                     .map(featureCode -> AudioPlayer.getAudioPlayerForFeatureCode(featureCode))
-                    .filter(Optional::isPresent).findFirst().orElse(Optional.empty());
+                    .filter(Optional::isPresent).findFirst().orElse(Optional.empty()));
 
             systemType = SystemType.getType(reqSystemInformation().getModel());
 

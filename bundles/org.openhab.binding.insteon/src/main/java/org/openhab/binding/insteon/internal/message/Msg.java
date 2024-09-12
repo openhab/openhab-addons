@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -457,7 +457,7 @@ public class Msg {
     public String toString() {
         String s = (direction == Direction.TO_MODEM) ? "OUT:" : "IN:";
         // need to first sort the fields by offset
-        Comparator<Field> cmp = new Comparator<Field>() {
+        Comparator<Field> cmp = new Comparator<>() {
             @Override
             public int compare(Field f1, Field f2) {
                 return f1.getOffset() - f2.getOffset();

@@ -6,4 +6,17 @@
 	<name>OneWire Binding</name>
 	<description>This is the binding for OneWire.</description>
 	<connection>local</connection>
+
+	<discovery-methods>
+		<discovery-method>
+			<service-type>process</service-type>
+			<match-properties>
+				<match-property>
+					<name>command</name>
+					<regex>(?i).*[/\\](owserver)(\.exe)?$</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

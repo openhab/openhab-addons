@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -1097,10 +1097,10 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
 
             updateState(CHANNEL_MUSIC_PROVIDER_ID, new StringType(musicProviderId));
             updateState(CHANNEL_AMAZON_MUSIC_TRACK_ID, new StringType(amazonMusicTrackId));
-            updateState(CHANNEL_AMAZON_MUSIC, isPlaying && amazonMusic ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_AMAZON_MUSIC, OnOffType.from(isPlaying && amazonMusic));
             updateState(CHANNEL_AMAZON_MUSIC_PLAY_LIST_ID, new StringType(amazonMusicPlayListId));
             updateState(CHANNEL_RADIO_STATION_ID, new StringType(radioStationId));
-            updateState(CHANNEL_RADIO, isPlaying && isRadio ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_RADIO, OnOffType.from(isPlaying && isRadio));
             updateState(CHANNEL_PROVIDER_DISPLAY_NAME, new StringType(providerDisplayName));
             updateState(CHANNEL_PLAYER, isPlaying ? PlayPauseType.PLAY : PlayPauseType.PAUSE);
             updateState(CHANNEL_IMAGE_URL, new StringType(imageUrl));
@@ -1111,13 +1111,13 @@ public class EchoHandler extends BaseThingHandler implements IEchoThingHandler {
             updateState(CHANNEL_SUBTITLE1, new StringType(subTitle1));
             updateState(CHANNEL_SUBTITLE2, new StringType(subTitle2));
             if (bluetoothState != null) {
-                updateState(CHANNEL_BLUETOOTH, bluetoothIsConnected ? OnOffType.ON : OnOffType.OFF);
+                updateState(CHANNEL_BLUETOOTH, OnOffType.from(bluetoothIsConnected));
                 updateState(CHANNEL_BLUETOOTH_MAC, new StringType(bluetoothMAC));
                 updateState(CHANNEL_BLUETOOTH_DEVICE_NAME, new StringType(bluetoothDeviceName));
             }
 
             updateState(CHANNEL_ASCENDING_ALARM,
-                    ascendingAlarm != null ? (ascendingAlarm ? OnOffType.ON : OnOffType.OFF) : UnDefType.UNDEF);
+                    ascendingAlarm != null ? OnOffType.from(ascendingAlarm) : UnDefType.UNDEF);
 
             final Integer notificationVolumeLevel = this.notificationVolumeLevel;
             if (notificationVolumeLevel != null) {

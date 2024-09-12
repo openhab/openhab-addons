@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,7 +13,8 @@
 package org.openhab.binding.openweathermap.internal.dto.forecast.hourly;
 
 /**
- * Generated Plain Old Java Objects class for {@link Sys} from JSON.
+ * Holds the data from the <code>pod</code> object of the JSON response of the Hourly forecast API and the 5 day weather
+ * forecast API.
  *
  * @author Christoph Weitkamp - Initial contribution
  */

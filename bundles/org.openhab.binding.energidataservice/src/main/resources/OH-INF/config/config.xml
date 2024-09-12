@@ -65,6 +65,11 @@
 			<advanced>true</advanced>
 			<default>5790000432752</default>
 		</parameter>
+		<parameter name="reducedElectricityTax" type="boolean">
+			<label>Reduced Electricity Tax</label>
+			<description>Reduced electricity tax applies. For electric heating customers only.</description>
+			<default>false</default>
+		</parameter>
 	</config-description>
 
 	<config-description uri="channel-type:energidataservice:datahub-price">

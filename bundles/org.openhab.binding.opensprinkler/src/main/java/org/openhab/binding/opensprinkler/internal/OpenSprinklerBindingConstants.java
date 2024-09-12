@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -48,6 +48,8 @@ public class OpenSprinklerBindingConstants {
     public static final String JSON_OPTION_STATION_COUNT = "nstations";
     public static final String JSON_OPTION_RESULT = "result";
     public static final int DEFAULT_REFRESH_RATE = 60;
+    public static final int DEFAULT_TIMEOUT = 5;
+    public static final int DEFFAULT_RETRIES = 3;
     public static final int DISCOVERY_THREAD_POOL_SIZE = 15;
     public static final boolean DISCOVERY_DEFAULT_AUTO_DISCOVER = false;
     public static final int DISCOVERY_DEFAULT_TIMEOUT_RATE = 500;
@@ -82,4 +84,7 @@ public class OpenSprinklerBindingConstants {
     public static final String NEXT_DURATION = "nextDuration";
     public static final String CHANNEL_IGNORE_RAIN = "ignoreRain";
     public static final String CHANNEL_RAIN_DELAY = "rainDelay";
+    public static final String CHANNEL_QUEUED_ZONES = "queuedZones";
+    public static final String CHANNEL_CLOUD_CONNECTED = "cloudConnected";
+    public static final String CHANNEL_PAUSE_PROGRAMS = "pausePrograms";
 }

@@ -58,7 +58,8 @@ The following optional parameters can be set for the Thing:
 - **availabilityTopic**: The MQTT topic that represents the availability of the thing. This can be the thing's LWT topic.
 - **payloadAvailable**: Payload of the `Availability Topic`, when the device is available. Default: `ON`.
 - **payloadNotAvailable**: Payload of the `Availability Topic`, when the device is _not_ available. Default: `OFF`.
-- **transformationPattern**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to the incoming availability payload. Transformations can be chained by separating them with the mathematical intersection character "∩". The result of the transformations is then checked against `payloadAvailable` and `payloadNotAvailable`.
+- **transformationPattern**: An optional transformation pattern like [JSONPath](https://goessner.net/articles/JsonPath/index.html#e2) that is applied to the incoming availability payload.
+  The result of the transformations is then checked against `payloadAvailable` and `payloadNotAvailable`.
 
 ## Supported Channels
 
@@ -199,6 +200,7 @@ The channel expects values on the corresponding MQTT topic to be in this format 
 - **on**: An optional string (like "Open") that is recognized as `UP` state.
 - **off**: An optional string (like "Close") that is recognized as `DOWN` state.
 - **stop**: An optional string (like "Stop") that is recognized as `STOP` state.
+- **stopCommandTopic**: An optional topic to send `STOP` commands to. If not set, `STOP` commands are sent to the main **commandTopic**.
 
 Internally `UP` is converted to 0%, `DOWN` to 100%.
 If strings are defined for these values, they are used for sending commands to the broker, too.
@@ -265,7 +267,16 @@ If the availability status is available, it can be configured to set the Thing s
 ```java
 Thing mqtt:topic:bedroom1-switch (mqtt:broker:myInsecureBroker) [ availabilityTopic="tele/bedroom1-switch/LWT", payloadAvailable="Online", payloadNotAvailable="Offline" ] {
     Channels:
-         Type switch        : power        [ stateTopic="stat/bedroom1-switch/RESULT", transformationPattern="REGEX:(.*POWER.*)∩JSONPATH:$.POWER", commandTopic="cmnd/bedroom1-switch/POWER" ]
+         Type switch : power [ stateTopic="stat/bedroom1-switch/RESULT", transformationPattern="REGEX((.*POWER.*))∩JSONPATH($.POWER)", commandTopic="cmnd/bedroom1-switch/POWER" ]
+}
+```
+
+The transformation pattern can be chained using the intersection character "∩" as above, or by listing them separately:
+
+```java
+Thing mqtt:topic:bedroom1-switch (mqtt:broker:myInsecureBroker) [ availabilityTopic="tele/bedroom1-switch/LWT", payloadAvailable="Online", payloadNotAvailable="Offline" ] {
+    Channels:
+         Type switch : power [ stateTopic="stat/bedroom1-switch/RESULT", transformationPattern="REGEX((.*POWER.*))","JSONPATH($.POWER)", commandTopic="cmnd/bedroom1-switch/POWER" ]
 }
 ```
 
@@ -276,6 +287,19 @@ Thing mqtt:topic:bedroom1-switch (mqtt:broker:myInsecureBroker) [ availabilityTo
 - The HomeAssistant Light Component does not support XY color changes.
 - The HomeAssistant Climate Components is not yet supported.
 
+## Value Transformations
+
+[Transformations](/docs/configuration/transformations.html) can be applied to:
+
+- Incoming availability payload
+- Incoming value
+- Outgoing value
+
+Transformations can be chained in the UI by listing each transformation on a separate line, or by separating them with the mathematical intersection character "∩".
+Transformations are defined using this syntax: `TYPE(FUNCTION)`, e.g.: `JSONPATH($.path)`.
+The syntax: `TYPE:FUNCTION` is still supported, e.g.: `JSONPATH:$.path`.
+Please note that the values will be discarded if one of the transformations failed (e.g. REGEX did not match) or returned `null`.
+
 ## Incoming Value Transformation
 
 All mentioned channels allow an optional transformation for incoming MQTT topic values.
@@ -284,20 +308,22 @@ This is required if your received value is wrapped in a JSON or XML response.
 
 Here are a few examples to unwrap a value from a complex response:
 
-| Received value                                                      | Tr. Service | Transformation                            |
-|---------------------------------------------------------------------|-------------|-------------------------------------------|
-| `{device: {status: { temperature: 23.2 }}}`                         | JSONPATH    | `JSONPATH:$.device.status.temperature`    |
-| `<device><status><temperature>23.2</temperature></status></device>` | XPath       | `XPath:/device/status/temperature/text()` |
-| `THEVALUE:23.2°C`                                                   | REGEX       | `REGEX::(.*?)°`                           |
-
-Transformations can be chained by separating them with the mathematical intersection character "∩".
-Please note that the incoming value will be discarded if one transformation fails (e.g. REGEX did not match).
+| Received value                                                      | Tr. Service      | Transformation                             |
+| ------------------------------------------------------------------- | ---------------- | ------------------------------------------ |
+| `{device: {status: { temperature: 23.2 }}}`                         | JSONPATH         | `JSONPATH($.device.status.temperature)`    |
+| `<device><status><temperature>23.2</temperature></status></device>` | XPath            | `XPath(/device/status/temperature/text())` |
+| `THEVALUE:23.2°C`                                                   | REGEX            | `REGEX(:(.*?)°)`                           |
+| `abc`                                                               | JS (UI defined)  | `JS(config:js:35edb3735a)`                 |
+| `abc`                                                               | JS (file based)  | `JS(to_uppercase.js)`                      |
+| `abc`                                                               | JS (inline)      | `JS(\| input.toUpperCase() )`              |
+| `true`                                                              | MAP (UI defined) | `MAP(config:map:54facda0f7)`               |
+| `true`                                                              | MAP (file based) | `MAP(status.map)`                          |
+| `true`                                                              | MAP (inline)     | `MAP(\|true=ON;false=OFF)`                 |
 
 ## Outgoing Value Transformation
 
 All mentioned channels allow an optional transformation for outgoing values.
 Please prefer formatting as described in the next section whenever possible.
-Please note that value will be discarded and not sent if one transformation fails (e.g. REGEX did not match).
 
 ## Format before Publish
 
@@ -320,19 +346,19 @@ Here are a few examples:
   - For an output of _23:15_ use "%1$**tH**:%1$**tM**".
 
 Default pattern applied for each type:
-| Type             | Parameter                         | Pattern             | Comment |
-| ---------------- | --------------------------------- | ------------------- | ------- |
-| **string**       | String                            | "%s"                |
-| **number**       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point.
-| **dimmer**       | BigDecimal                        | "%f"                | The default will remove trailing zeros after the decimal point.
-| **contact**      | String                            | --                  | No pattern supported. Always **on** and **off** strings.
-| **switch**       | String                            | --                  | No pattern supported. Always **on** and **off** strings.
-| **colorRGB**     | BigDecimal, BigDecimal, BigDecimal| "%1$d,%2$d,%3$d"    | Parameters are **red**, **green** and **blue** components.
-| **colorHSB**     | BigDecimal, BigDecimal, BigDecimal| "%1$d,%2$d,%3$d"    | Parameters are **hue**, **saturation** and **brightness** components.
-| **location**     | BigDecimal, BigDecimal            | "%2$f,%3$f,%1$f"    | Parameters are **altitude**, **latitude** and **longitude**, altitude is only in default pattern, if value is not '0'.
-| **image**        | --                                | --                  | No publishing supported.
-| **datetime**     | ZonedDateTime                     | "%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tN" | Trailing zeros of the nanoseconds are removed.
-| **rollershutter**| String                            | "%s"                | No pattern supported. Always **up**, **down**, **stop** string or integer percent value.
+| Type              | Parameter                          | Pattern                                     | Comment                                                                                                                |
+| ----------------- | ---------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **string**        | String                             | "%s"                                        |                                                                                                                        |
+| **number**        | BigDecimal                         | "%f"                                        | The default will remove trailing zeros after the decimal point.                                                        |
+| **dimmer**        | BigDecimal                         | "%f"                                        | The default will remove trailing zeros after the decimal point.                                                        |
+| **contact**       | String                             | --                                          | No pattern supported. Always **on** and **off** strings.                                                               |
+| **switch**        | String                             | --                                          | No pattern supported. Always **on** and **off** strings.                                                               |
+| **colorRGB**      | BigDecimal, BigDecimal, BigDecimal | "%1$d,%2$d,%3$d"                            | Parameters are **red**, **green** and **blue** components.                                                             |
+| **colorHSB**      | BigDecimal, BigDecimal, BigDecimal | "%1$d,%2$d,%3$d"                            | Parameters are **hue**, **saturation** and **brightness** components.                                                  |
+| **location**      | BigDecimal, BigDecimal             | "%2$f,%3$f,%1$f"                            | Parameters are **altitude**, **latitude** and **longitude**, altitude is only in default pattern, if value is not '0'. |
+| **image**         | --                                 | --                                          | No publishing supported.                                                                                               |
+| **datetime**      | ZonedDateTime                      | "%1$tY-%1$tm-%1$tdT%1$tH:%1$tM:%1$tS.%1$tN" | Trailing zeros of the nanoseconds are removed.                                                                         |
+| **rollershutter** | String                             | "%s"                                        | No pattern supported. Always **up**, **down**, **stop** string or integer percent value.                               |
 
 Any outgoing value transformation will **always** result in a **string** value.
 

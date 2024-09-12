@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -23,12 +23,13 @@ import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.thing.profiles.ProfileCallback;
 import org.openhab.core.thing.profiles.ProfileContext;
 import org.openhab.core.thing.profiles.ProfileTypeUID;
-import org.openhab.core.thing.profiles.StateProfile;
+import org.openhab.core.thing.profiles.TimeSeriesProfile;
 import org.openhab.core.transform.TransformationException;
 import org.openhab.core.transform.TransformationHelper;
 import org.openhab.core.transform.TransformationService;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.State;
+import org.openhab.core.types.TimeSeries;
 import org.openhab.core.types.Type;
 import org.openhab.core.types.UnDefType;
 import org.openhab.transform.vat.internal.config.VATConfig;
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
  * @author Jacob Laursen - Initial contribution
  */
 @NonNullByDefault
-public class VATTransformationProfile implements StateProfile {
+public class VATTransformationProfile implements TimeSeriesProfile {
 
     private final Logger logger = LoggerFactory.getLogger(VATTransformationProfile.class);
 
@@ -81,6 +82,14 @@ public class VATTransformationProfile implements StateProfile {
     @Override
     public void onStateUpdateFromHandler(State state) {
         callback.sendUpdate((State) transformState(state));
+    }
+
+    @Override
+    public void onTimeSeriesFromHandler(TimeSeries timeSeries) {
+        TimeSeries transformedTimeSeries = new TimeSeries(timeSeries.getPolicy());
+        timeSeries.getStates()
+                .forEach(entry -> transformedTimeSeries.add(entry.timestamp(), (State) transformState(entry.state())));
+        callback.sendTimeSeries(transformedTimeSeries);
     }
 
     private Type transformState(Type state) {

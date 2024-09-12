@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -93,9 +93,9 @@ public class PlugwiseSwitchHandler extends AbstractSleepingEndDeviceHandler {
     @Override
     protected void handleBroadcastGroupSwitchResponseMessage(BroadcastGroupSwitchResponseMessage message) {
         if (message.getPortMask() == 1) {
-            updateState(CHANNEL_LEFT_BUTTON_STATE, message.getPowerState() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_LEFT_BUTTON_STATE, OnOffType.from(message.getPowerState()));
         } else if (message.getPortMask() == 2) {
-            updateState(CHANNEL_RIGHT_BUTTON_STATE, message.getPowerState() ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_RIGHT_BUTTON_STATE, OnOffType.from(message.getPowerState()));
         }
     }
 

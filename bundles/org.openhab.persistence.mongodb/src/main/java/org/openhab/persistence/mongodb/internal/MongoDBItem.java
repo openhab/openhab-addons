@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,6 +14,7 @@ package org.openhab.persistence.mongodb.internal;
 
 import java.text.DateFormat;
 import java.time.ZonedDateTime;
+import java.util.Date;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.persistence.HistoricItem;
@@ -54,6 +55,7 @@ public class MongoDBItem implements HistoricItem {
 
     @Override
     public String toString() {
-        return DateFormat.getDateTimeInstance().format(timestamp) + ": " + name + " -> " + state.toString();
+        Date date = Date.from(timestamp.toInstant());
+        return DateFormat.getDateTimeInstance().format(date) + ": " + name + " -> " + state.toString();
     }
 }

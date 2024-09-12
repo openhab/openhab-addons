@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -127,7 +127,12 @@ public class OpenWeatherMapAirPollutionHandler extends AbstractOpenWeatherMapHan
 
     @Override
     protected void updateChannel(ChannelUID channelUID) {
-        switch (channelUID.getGroupId()) {
+        String channelGroupId = channelUID.getGroupId();
+        if (channelGroupId == null) {
+            logger.debug("Cannot update {} as it has no GroupId", channelUID);
+            return;
+        }
+        switch (channelGroupId) {
             case CHANNEL_GROUP_CURRENT_AIR_POLLUTION:
                 updateCurrentAirPollutionChannel(channelUID);
                 break;

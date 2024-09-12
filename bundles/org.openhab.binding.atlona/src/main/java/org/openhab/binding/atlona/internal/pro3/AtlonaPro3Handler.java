@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -577,7 +577,7 @@ public class AtlonaPro3Handler extends AtlonaHandler<AtlonaPro3Capabilities> {
         if (retryConnection == null) {
             final AtlonaPro3Config config = getAtlonaConfig();
             if (config != null) {
-                logger.info("Will try to reconnect in {} seconds", config.getRetryPolling());
+                logger.debug("Will try to reconnect in {} seconds", config.getRetryPolling());
                 retryConnection = this.scheduler.schedule(() -> {
                     retryConnection = null;
                     connect();

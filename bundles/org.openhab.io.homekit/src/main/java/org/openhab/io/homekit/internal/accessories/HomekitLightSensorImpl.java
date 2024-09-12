@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,12 +22,13 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.io.homekit.internal.HomekitAccessoryUpdater;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
+import org.openhab.io.homekit.internal.HomekitException;
 import org.openhab.io.homekit.internal.HomekitSettings;
 import org.openhab.io.homekit.internal.HomekitTaggedItem;
 
 import io.github.hapjava.accessories.LightSensorAccessory;
+import io.github.hapjava.characteristics.Characteristic;
 import io.github.hapjava.characteristics.HomekitCharacteristicChangeCallback;
-import io.github.hapjava.characteristics.impl.lightsensor.CurrentAmbientLightLevelCharacteristic;
 import io.github.hapjava.services.impl.LightSensorService;
 
 /**
@@ -38,9 +39,15 @@ import io.github.hapjava.services.impl.LightSensorService;
 public class HomekitLightSensorImpl extends AbstractHomekitAccessoryImpl implements LightSensorAccessory {
 
     public HomekitLightSensorImpl(HomekitTaggedItem taggedItem, List<HomekitTaggedItem> mandatoryCharacteristics,
-            HomekitAccessoryUpdater updater, HomekitSettings settings) {
-        super(taggedItem, mandatoryCharacteristics, updater, settings);
-        getServices().add(new LightSensorService(this));
+            List<Characteristic> mandatoryRawCharacteristics, HomekitAccessoryUpdater updater,
+            HomekitSettings settings) {
+        super(taggedItem, mandatoryCharacteristics, mandatoryRawCharacteristics, updater, settings);
+    }
+
+    @Override
+    public void init() throws HomekitException {
+        super.init();
+        addService(new LightSensorService(this));
     }
 
     @Override
@@ -53,13 +60,13 @@ public class HomekitLightSensorImpl extends AbstractHomekitAccessoryImpl impleme
     @Override
     public double getMinCurrentAmbientLightLevel() {
         return getAccessoryConfiguration(HomekitCharacteristicType.LIGHT_LEVEL, HomekitTaggedItem.MIN_VALUE,
-                BigDecimal.valueOf(CurrentAmbientLightLevelCharacteristic.DEFAULT_MIN_VALUE)).doubleValue();
+                BigDecimal.valueOf(HomekitCharacteristicFactory.CURRENT_AMBIENT_LIGHT_LEVEL_MIN_LUX)).doubleValue();
     }
 
     @Override
     public double getMaxCurrentAmbientLightLevel() {
         return getAccessoryConfiguration(HomekitCharacteristicType.LIGHT_LEVEL, HomekitTaggedItem.MAX_VALUE,
-                BigDecimal.valueOf(CurrentAmbientLightLevelCharacteristic.DEFAULT_MAX_VALUE)).doubleValue();
+                BigDecimal.valueOf(HomekitCharacteristicFactory.CURRENT_AMBIENT_LIGHT_LEVEL_MAX_LUX)).doubleValue();
     }
 
     @Override

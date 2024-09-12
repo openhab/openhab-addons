@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -56,7 +56,7 @@ public class CommandGetstate extends AbstractCommand {
 
         setModule(deviceReply.substring(6, 7));
         setConnector(deviceReply.substring(8, 9));
-        setState((deviceReply.charAt(10) == '0' ? OnOffType.OFF : OnOffType.ON));
+        setState(OnOffType.from(deviceReply.charAt(10) != '0'));
     }
 
     private void setState(OnOffType s) {

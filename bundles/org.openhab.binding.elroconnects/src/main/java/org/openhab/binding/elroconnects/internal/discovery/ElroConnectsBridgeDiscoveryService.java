@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -25,12 +25,12 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.elroconnects.internal.ElroConnectsBindingConstants;
 import org.openhab.binding.elroconnects.internal.devices.ElroConnectsConnector;
 import org.openhab.binding.elroconnects.internal.handler.ElroConnectsAccountHandler;
-import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.config.discovery.AbstractThingHandlerDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingUID;
-import org.openhab.core.thing.binding.ThingHandler;
-import org.openhab.core.thing.binding.ThingHandlerService;
+import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.ServiceScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,12 +39,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Mark Herwege - Initial Contribution
  */
+@Component(scope = ServiceScope.PROTOTYPE, service = ElroConnectsBridgeDiscoveryService.class)
 @NonNullByDefault
-public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService implements ThingHandlerService {
+public class ElroConnectsBridgeDiscoveryService
+        extends AbstractThingHandlerDiscoveryService<ElroConnectsAccountHandler> {
 
     private final Logger logger = LoggerFactory.getLogger(ElroConnectsBridgeDiscoveryService.class);
-
-    private @Nullable ElroConnectsAccountHandler accountHandler;
 
     private volatile @Nullable ScheduledFuture<?> discoveryJob;
 
@@ -54,7 +54,7 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
     private static final int REFRESH_INTERVAL_S = 60;
 
     public ElroConnectsBridgeDiscoveryService() {
-        super(ElroConnectsBindingConstants.SUPPORTED_CONNECTOR_TYPES_UIDS, TIMEOUT_S);
+        super(ElroConnectsAccountHandler.class, ElroConnectsBindingConstants.SUPPORTED_CONNECTOR_TYPES_UIDS, TIMEOUT_S);
         logger.debug("Bridge discovery service started");
     }
 
@@ -67,14 +67,10 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
 
     private void discoverConnectors() {
         logger.debug("Starting hub discovery scan");
-        ElroConnectsAccountHandler account = accountHandler;
-        if (account == null) {
-            return;
-        }
 
-        ThingUID bridgeUID = account.getThing().getUID();
+        ThingUID bridgeUID = thingHandler.getThing().getUID();
 
-        Map<String, ElroConnectsConnector> connectors = account.getDevices();
+        Map<String, ElroConnectsConnector> connectors = thingHandler.getDevices();
         if (connectors == null) {
             return;
         }
@@ -134,21 +130,14 @@ public class ElroConnectsBridgeDiscoveryService extends AbstractDiscoveryService
     }
 
     @Override
-    public void deactivate() {
+    public void dispose() {
+        super.dispose();
         removeOlderResults(Instant.now().toEpochMilli());
-        super.deactivate();
     }
 
     @Override
-    public void setThingHandler(@Nullable ThingHandler handler) {
-        if (handler instanceof ElroConnectsAccountHandler accountHandler) {
-            this.accountHandler = accountHandler;
-            accountHandler.setDiscoveryService(this);
-        }
-    }
-
-    @Override
-    public @Nullable ThingHandler getThingHandler() {
-        return accountHandler;
+    public void initialize() {
+        thingHandler.setDiscoveryService(this);
+        super.initialize();
     }
 }

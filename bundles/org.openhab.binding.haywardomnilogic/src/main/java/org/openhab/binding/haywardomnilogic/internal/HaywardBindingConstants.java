@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -10,7 +10,6 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  */
-
 package org.openhab.binding.haywardomnilogic.internal;
 
 import java.util.Set;
@@ -27,7 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 @NonNullByDefault
 public class HaywardBindingConstants {
 
-    private static final String BINDING_ID = "haywardomnilogic";
+    public static final String BINDING_ID = "haywardomnilogic";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_BACKYARD = new ThingTypeUID(BINDING_ID, "backyard");
@@ -88,8 +87,13 @@ public class HaywardBindingConstants {
 
     // List of all Channel ids (colorlogic)
     public static final String CHANNEL_COLORLOGIC_ENABLE = "colorLogicLightEnable";
-    public static final String CHANNEL_COLORLOGIC_LIGHTSTATE = "colorLogicLightState";
+    public static final String CHANNEL_COLORLOGIC_STATE = "colorLogicLightState";
     public static final String CHANNEL_COLORLOGIC_CURRENTSHOW = "colorLogicLightCurrentShow";
+    public static final String CHANNEL_COLORLOGIC_BRIGHTNESS = "colorLogicLightBrightness";
+    public static final String CHANNEL_COLORLOGIC_SPEED = "colorLogicLightSpeed";
+
+    public static final String TYPE_COLORLOGIC_LIGHTBRIGHTNESS = "lightBrightness";
+    public static final String TYPE_COLORLOGIC_LIGHTSPEED = "lightSpeed";
 
     public static final String PROPERTY_COLORLOGIC_TYPE = "colorlogicType";
 

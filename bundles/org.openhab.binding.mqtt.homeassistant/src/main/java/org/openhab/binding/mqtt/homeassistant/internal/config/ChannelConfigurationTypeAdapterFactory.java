@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -78,7 +78,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
         /* The delegate is the 'default' adapter */
         final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
 
-        return new TypeAdapter<T>() {
+        return new TypeAdapter<>() {
             @Override
             public @Nullable T read(JsonReader in) throws IOException {
                 /* read the object using the default adapter, but translate the names in the reader */
@@ -99,7 +99,7 @@ public class ChannelConfigurationTypeAdapterFactory implements TypeAdapterFactor
         /* The delegate is the 'default' adapter */
         final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
 
-        return new TypeAdapter<T>() {
+        return new TypeAdapter<>() {
             @Override
             public @Nullable T read(JsonReader in) throws IOException {
                 /* read the object using the default adapter, but translate the names in the reader */

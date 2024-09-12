@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -296,27 +296,27 @@ public class VentaThingHandler extends BaseThingHandler {
                 int discReplaceHours = info.getDiscIonT() * 5 / 60;
                 int cleaningHours = info.getCleaningT() * 5 / 60;
 
-                QuantityType<Time> opHoursState = new QuantityType<Time>(opHours, Units.HOUR);
+                QuantityType<Time> opHoursState = new QuantityType<>(opHours, Units.HOUR);
                 updateState(VentaAirBindingConstants.CHANNEL_OPERATION_TIME, opHoursState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_OPERATION_TIME, opHoursState);
 
-                QuantityType<Time> discReplaceHoursState = new QuantityType<Time>(2200 - discReplaceHours, Units.HOUR);
+                QuantityType<Time> discReplaceHoursState = new QuantityType<>(2200 - discReplaceHours, Units.HOUR);
                 updateState(VentaAirBindingConstants.CHANNEL_DISC_REPLACE_TIME, discReplaceHoursState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_DISC_REPLACE_TIME, discReplaceHoursState);
 
-                QuantityType<Time> cleaningHoursState = new QuantityType<Time>(4400 - cleaningHours, Units.HOUR);
+                QuantityType<Time> cleaningHoursState = new QuantityType<>(4400 - cleaningHours, Units.HOUR);
                 updateState(VentaAirBindingConstants.CHANNEL_CLEANING_TIME, cleaningHoursState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_CLEANING_TIME, cleaningHoursState);
 
-                OnOffType cleanModeState = info.isCleanMode() ? OnOffType.ON : OnOffType.OFF;
+                OnOffType cleanModeState = OnOffType.from(info.isCleanMode());
                 updateState(VentaAirBindingConstants.CHANNEL_CLEAN_MODE, cleanModeState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_CLEAN_MODE, cleanModeState);
 
-                QuantityType<Time> timerTimePassedState = new QuantityType<Time>(info.getTimerT(), Units.MINUTE);
+                QuantityType<Time> timerTimePassedState = new QuantityType<>(info.getTimerT(), Units.MINUTE);
                 updateState(VentaAirBindingConstants.CHANNEL_TIMER_TIME_PASSED, timerTimePassedState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_TIMER_TIME_PASSED, timerTimePassedState);
 
-                QuantityType<Time> serviceTimeState = new QuantityType<Time>(info.getServiceT(), Units.MINUTE);
+                QuantityType<Time> serviceTimeState = new QuantityType<>(info.getServiceT(), Units.MINUTE);
                 updateState(VentaAirBindingConstants.CHANNEL_SERVICE_TIME, serviceTimeState);
                 channelValueCache.put(VentaAirBindingConstants.CHANNEL_SERVICE_TIME, serviceTimeState);
 

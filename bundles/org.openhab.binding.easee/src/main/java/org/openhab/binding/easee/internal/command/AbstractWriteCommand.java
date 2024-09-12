@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -76,7 +76,7 @@ public abstract class AbstractWriteCommand extends AbstractCommand {
      * @throws ValidationException
      */
     protected String getJsonContent() throws ValidationException {
-        Map<String, String> content = new HashMap<String, String>(1);
+        Map<String, String> content = new HashMap<>(1);
         content.put(channel.getUID().getIdWithoutGroup(), getCommandValue());
 
         return gson.toJson(content);

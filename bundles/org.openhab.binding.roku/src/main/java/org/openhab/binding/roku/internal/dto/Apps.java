@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -35,7 +35,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @XmlRootElement(name = "apps")
 public class Apps {
     @XmlElement
-    private List<Apps.App> app = new ArrayList<Apps.App>();
+    private List<Apps.App> app = new ArrayList<>();
 
     public List<Apps.App> getApp() {
         return this.app;

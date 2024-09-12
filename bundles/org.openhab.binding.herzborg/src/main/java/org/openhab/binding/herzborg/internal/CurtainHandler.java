@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -208,8 +208,8 @@ public class CurtainHandler extends BaseThingHandler {
             // If calibration has been lost, position is reported as -1.
             updateState(CHANNEL_POSITION,
                     (position > 100 || position < 0) ? UnDefType.UNDEF : new PercentType(position));
-            updateState(CHANNEL_REVERSE, reverse != 0 ? OnOffType.ON : OnOffType.OFF);
-            updateState(CHANNEL_HAND_START, handStart == 0 ? OnOffType.ON : OnOffType.OFF);
+            updateState(CHANNEL_REVERSE, OnOffType.from(reverse != 0));
+            updateState(CHANNEL_HAND_START, OnOffType.from(handStart == 0));
             updateState(CHANNEL_MODE, new StringType(String.valueOf(mode)));
         }
 

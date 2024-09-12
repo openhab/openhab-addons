@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -748,7 +748,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 return;
             }
             logger.debug("Process fan power update for {}: {}", thing.getUID(), messageParts[3]);
-            OnOffType state = "ON".equalsIgnoreCase(messageParts[3]) ? OnOffType.ON : OnOffType.OFF;
+            OnOffType state = OnOffType.from("ON".equalsIgnoreCase(messageParts[3]));
             updateChannel(CHANNEL_FAN_POWER, state);
             fanStateMap.put(CHANNEL_FAN_POWER, state);
         }
@@ -781,7 +781,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 return;
             }
             logger.debug("Process fan auto update for {}: {}", thing.getUID(), messageParts[3]);
-            OnOffType state = "ON".equalsIgnoreCase(messageParts[3]) ? OnOffType.ON : OnOffType.OFF;
+            OnOffType state = OnOffType.from("ON".equalsIgnoreCase(messageParts[3]));
             updateChannel(CHANNEL_FAN_AUTO, state);
             fanStateMap.put(CHANNEL_FAN_AUTO, state);
         }
@@ -792,7 +792,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 return;
             }
             logger.debug("Process fan whoosh update for {}: {}", thing.getUID(), messageParts[4]);
-            OnOffType state = "ON".equalsIgnoreCase(messageParts[4]) ? OnOffType.ON : OnOffType.OFF;
+            OnOffType state = OnOffType.from("ON".equalsIgnoreCase(messageParts[4]));
             updateChannel(CHANNEL_FAN_WHOOSH, state);
             fanStateMap.put(CHANNEL_FAN_WHOOSH, state);
         }
@@ -803,7 +803,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 return;
             }
             logger.debug("Process fan wintermode update for {}: {}", thing.getUID(), messageParts[3]);
-            OnOffType state = "ON".equalsIgnoreCase(messageParts[3]) ? OnOffType.ON : OnOffType.OFF;
+            OnOffType state = OnOffType.from("ON".equalsIgnoreCase(messageParts[3]));
             updateChannel(CHANNEL_FAN_WINTERMODE, state);
             fanStateMap.put(CHANNEL_FAN_WINTERMODE, state);
         }
@@ -847,7 +847,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 return;
             }
             logger.debug("Process fan sleep mode for {}: {}", thing.getUID(), messageParts[3]);
-            OnOffType state = "ON".equalsIgnoreCase(messageParts[3]) ? OnOffType.ON : OnOffType.OFF;
+            OnOffType state = OnOffType.from("ON".equalsIgnoreCase(messageParts[3]));
             updateChannel(CHANNEL_FAN_SLEEP, state);
             fanStateMap.put(CHANNEL_FAN_SLEEP, state);
         }
@@ -880,7 +880,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 return;
             }
             logger.debug("Process light power update for {}: {}", thing.getUID(), messageParts[3]);
-            OnOffType state = "ON".equalsIgnoreCase(messageParts[3]) ? OnOffType.ON : OnOffType.OFF;
+            OnOffType state = OnOffType.from("ON".equalsIgnoreCase(messageParts[3]));
             updateChannel(CHANNEL_LIGHT_POWER, state);
             fanStateMap.put(CHANNEL_LIGHT_POWER, state);
         }
@@ -914,7 +914,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 return;
             }
             logger.debug("Process light auto update for {}: {}", thing.getUID(), messageParts[3]);
-            OnOffType state = "ON".equalsIgnoreCase(messageParts[3]) ? OnOffType.ON : OnOffType.OFF;
+            OnOffType state = OnOffType.from("ON".equalsIgnoreCase(messageParts[3]));
             updateChannel(CHANNEL_LIGHT_AUTO, state);
             fanStateMap.put(CHANNEL_LIGHT_AUTO, state);
         }
@@ -964,7 +964,7 @@ public class BigAssFanHandler extends BaseThingHandler {
                 return;
             }
             logger.debug("Process motion sensor update for {}: {}", thing.getUID(), messageParts[3]);
-            OnOffType state = "OCCUPIED".equalsIgnoreCase(messageParts[3]) ? OnOffType.ON : OnOffType.OFF;
+            OnOffType state = OnOffType.from("OCCUPIED".equalsIgnoreCase(messageParts[3]));
             updateChannel(CHANNEL_MOTION, state);
             fanStateMap.put(CHANNEL_MOTION, state);
         }

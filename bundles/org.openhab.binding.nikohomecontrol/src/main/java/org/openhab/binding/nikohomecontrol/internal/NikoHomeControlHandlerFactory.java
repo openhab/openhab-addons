@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,10 +16,12 @@ import static org.openhab.binding.nikohomecontrol.internal.NikoHomeControlBindin
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlAccessHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlActionHandler;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlAlarmHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler1;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlBridgeHandler2;
-import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlEnergyMeterHandler;
+import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlMeterHandler;
 import org.openhab.binding.nikohomecontrol.internal.handler.NikoHomeControlThermostatHandler;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.net.NetworkAddressService;
@@ -68,12 +70,16 @@ public class NikoHomeControlHandlerFactory extends BaseThingHandlerFactory {
             } else {
                 return new NikoHomeControlBridgeHandler1((Bridge) thing, timeZoneProvider);
             }
-        } else if (THING_TYPE_THERMOSTAT.equals(thing.getThingTypeUID())) {
-            return new NikoHomeControlThermostatHandler(thing);
-        } else if (THING_TYPE_ENERGYMETER.equals(thing.getThingTypeUID())) {
-            return new NikoHomeControlEnergyMeterHandler(thing);
         } else if (ACTION_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
             return new NikoHomeControlActionHandler(thing);
+        } else if (THERMOSTAT_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
+            return new NikoHomeControlThermostatHandler(thing);
+        } else if (METER_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
+            return new NikoHomeControlMeterHandler(thing);
+        } else if (ACCESS_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
+            return new NikoHomeControlAccessHandler(thing);
+        } else if (ALARM_THING_TYPES_UIDS.contains(thing.getThingTypeUID())) {
+            return new NikoHomeControlAlarmHandler(thing);
         }
 
         return null;

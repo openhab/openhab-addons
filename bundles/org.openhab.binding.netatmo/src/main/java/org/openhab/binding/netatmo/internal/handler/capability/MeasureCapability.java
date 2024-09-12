@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,12 +44,12 @@ import org.slf4j.LoggerFactory;
  *
  */
 @NonNullByDefault
-public class MeasureCapability extends CacheWeatherCapability {
+public class MeasureCapability extends CacheCapability<WeatherApi> {
     private final Logger logger = LoggerFactory.getLogger(MeasureCapability.class);
     private final Map<String, State> measures = new HashMap<>();
 
     public MeasureCapability(CommonInterface handler, List<ChannelHelper> helpers) {
-        super(handler, Duration.ofMinutes(30));
+        super(handler, Duration.ofMinutes(30), WeatherApi.class);
         MeasuresChannelHelper measureChannelHelper = (MeasuresChannelHelper) helpers.stream()
                 .filter(c -> c instanceof MeasuresChannelHelper).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(

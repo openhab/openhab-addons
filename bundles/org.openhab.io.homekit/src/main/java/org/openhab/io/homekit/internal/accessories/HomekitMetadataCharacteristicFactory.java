@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,6 +27,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.io.homekit.internal.HomekitCharacteristicType;
 
 import io.github.hapjava.characteristics.Characteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.FirmwareRevisionCharacteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.HardwareRevisionCharacteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.ManufacturerCharacteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.ModelCharacteristic;
+import io.github.hapjava.characteristics.impl.accessoryinformation.SerialNumberCharacteristic;
 import io.github.hapjava.characteristics.impl.airquality.AirQualityCharacteristic;
 import io.github.hapjava.characteristics.impl.airquality.AirQualityEnum;
 import io.github.hapjava.characteristics.impl.common.ActiveCharacteristic;
@@ -38,6 +43,8 @@ import io.github.hapjava.characteristics.impl.common.IsConfiguredCharacteristic;
 import io.github.hapjava.characteristics.impl.common.IsConfiguredEnum;
 import io.github.hapjava.characteristics.impl.common.NameCharacteristic;
 import io.github.hapjava.characteristics.impl.common.ServiceLabelIndexCharacteristic;
+import io.github.hapjava.characteristics.impl.common.ServiceLabelNamespaceCharacteristic;
+import io.github.hapjava.characteristics.impl.common.ServiceLabelNamespaceEnum;
 import io.github.hapjava.characteristics.impl.heatercooler.CurrentHeaterCoolerStateCharacteristic;
 import io.github.hapjava.characteristics.impl.heatercooler.CurrentHeaterCoolerStateEnum;
 import io.github.hapjava.characteristics.impl.heatercooler.TargetHeaterCoolerStateCharacteristic;
@@ -60,6 +67,8 @@ import io.github.hapjava.characteristics.impl.thermostat.CurrentHeatingCoolingSt
 import io.github.hapjava.characteristics.impl.thermostat.CurrentHeatingCoolingStateEnum;
 import io.github.hapjava.characteristics.impl.thermostat.TargetHeatingCoolingStateCharacteristic;
 import io.github.hapjava.characteristics.impl.thermostat.TargetHeatingCoolingStateEnum;
+import io.github.hapjava.characteristics.impl.thermostat.TemperatureDisplayUnitCharacteristic;
+import io.github.hapjava.characteristics.impl.thermostat.TemperatureDisplayUnitEnum;
 
 /**
  * Creates an optional characteristics from metadata
@@ -83,27 +92,41 @@ public class HomekitMetadataCharacteristicFactory {
             put(CURRENT_HEATING_COOLING_STATE,
                     HomekitMetadataCharacteristicFactory::createCurrentHeatingCoolingStateCharacteristic);
             put(CURRENT_VISIBILITY, HomekitMetadataCharacteristicFactory::createCurrentVisibilityCharacteristic);
+            put(FIRMWARE_REVISION, HomekitMetadataCharacteristicFactory::createFirmwareRevisionCharacteristic);
+            put(HARDWARE_REVISION, HomekitMetadataCharacteristicFactory::createHardwareRevisionCharacteristic);
             put(IDENTIFIER, HomekitMetadataCharacteristicFactory::createIdentifierCharacteristic);
             put(INPUT_DEVICE_TYPE, HomekitMetadataCharacteristicFactory::createInputDeviceTypeCharacteristic);
             put(INPUT_SOURCE_TYPE, HomekitMetadataCharacteristicFactory::createInputSourceTypeCharacteristic);
+            put(MANUFACTURER, HomekitMetadataCharacteristicFactory::createManufacturerCharacteristic);
+            put(MODEL, HomekitMetadataCharacteristicFactory::createModelCharacteristic);
             put(NAME, HomekitMetadataCharacteristicFactory::createNameCharacteristic);
             put(PICTURE_MODE, HomekitMetadataCharacteristicFactory::createPictureModeCharacteristic);
+            put(SERIAL_NUMBER, HomekitMetadataCharacteristicFactory::createSerialNumberCharacteristic);
             put(SERVICE_INDEX, HomekitMetadataCharacteristicFactory::createServiceIndexCharacteristic);
+            put(SERVICE_LABEL, HomekitMetadataCharacteristicFactory::createServiceLabelNamespaceCharacteristic);
             put(SLEEP_DISCOVERY_MODE, HomekitMetadataCharacteristicFactory::createSleepDiscoveryModeCharacteristic);
             put(TARGET_HEATER_COOLER_STATE,
                     HomekitMetadataCharacteristicFactory::createTargetHeaterCoolerStateCharacteristic);
             put(TARGET_HEATING_COOLING_STATE,
                     HomekitMetadataCharacteristicFactory::createTargetHeatingCoolingStateCharacteristic);
+            put(TEMPERATURE_UNIT, HomekitMetadataCharacteristicFactory::createTemperatureDisplayUnitCharacteristic);
             put(VOLUME_CONTROL_TYPE, HomekitMetadataCharacteristicFactory::createVolumeControlTypeCharacteristic);
         }
     };
 
     public static Optional<Characteristic> createCharacteristic(String characteristic, Object value) {
         var type = HomekitCharacteristicType.valueOfTag(characteristic);
-        if (type.isEmpty() || !OPTIONAL.containsKey(type.get())) {
+        if (type.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(OPTIONAL.get(type.get()).apply(value));
+        return createCharacteristic(type.get(), value);
+    }
+
+    public static Optional<Characteristic> createCharacteristic(HomekitCharacteristicType type, Object value) {
+        if (!OPTIONAL.containsKey(type)) {
+            return Optional.empty();
+        }
+        return Optional.of(OPTIONAL.get(type).apply(value));
     }
 
     private static Supplier<CompletableFuture<Integer>> getInteger(Object value) {
@@ -221,6 +244,14 @@ public class HomekitMetadataCharacteristicFactory {
                 });
     }
 
+    private static Characteristic createFirmwareRevisionCharacteristic(Object value) {
+        return new FirmwareRevisionCharacteristic(getString(value));
+    }
+
+    private static Characteristic createHardwareRevisionCharacteristic(Object value) {
+        return new HardwareRevisionCharacteristic(getString(value));
+    }
+
     private static Characteristic createIdentifierCharacteristic(Object value) {
         return new IdentifierCharacteristic(getInteger(value));
     }
@@ -237,6 +268,14 @@ public class HomekitMetadataCharacteristicFactory {
         });
     }
 
+    private static Characteristic createManufacturerCharacteristic(Object value) {
+        return new ManufacturerCharacteristic(getString(value));
+    }
+
+    private static Characteristic createModelCharacteristic(Object value) {
+        return new ModelCharacteristic(getString(value));
+    }
+
     private static Characteristic createNameCharacteristic(Object value) {
         return new NameCharacteristic(getString(value));
     }
@@ -248,8 +287,16 @@ public class HomekitMetadataCharacteristicFactory {
         });
     }
 
+    private static Characteristic createSerialNumberCharacteristic(Object value) {
+        return new SerialNumberCharacteristic(getString(value));
+    }
+
     private static Characteristic createServiceIndexCharacteristic(Object value) {
         return new ServiceLabelIndexCharacteristic(getInteger(value));
+    }
+
+    private static Characteristic createServiceLabelNamespaceCharacteristic(Object value) {
+        return new ServiceLabelNamespaceCharacteristic(getEnum(value, ServiceLabelNamespaceEnum.class));
     }
 
     private static Characteristic createSleepDiscoveryModeCharacteristic(Object value) {
@@ -289,6 +336,22 @@ public class HomekitMetadataCharacteristicFactory {
                 }, v -> {
                 }, () -> {
                 });
+    }
+
+    private static Characteristic createTemperatureDisplayUnitCharacteristic(Object value) {
+        var enumSupplier = getEnum(value, TemperatureDisplayUnitEnum.class);
+        TemperatureDisplayUnitEnum enumValue;
+        try {
+            enumValue = enumSupplier.get().get();
+        } catch (InterruptedException | ExecutionException e) {
+            enumValue = HomekitCharacteristicFactory.useFahrenheit() ? TemperatureDisplayUnitEnum.FAHRENHEIT
+                    : TemperatureDisplayUnitEnum.CELSIUS;
+        }
+
+        return new TemperatureDisplayUnitCharacteristic(enumSupplier, v -> {
+        }, v -> {
+        }, () -> {
+        });
     }
 
     private static Characteristic createVolumeControlTypeCharacteristic(Object value) {

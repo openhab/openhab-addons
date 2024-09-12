@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -404,7 +404,7 @@ public class JdbcMapper {
             initialized = false;
         }
 
-        List<ItemsVO> itemIdTableNames = ifItemsTableExists() ? getItemIDTableNames() : new ArrayList<ItemsVO>();
+        List<ItemsVO> itemIdTableNames = ifItemsTableExists() ? getItemIDTableNames() : new ArrayList<>();
         var itemTables = getItemTables().stream().map(ItemsVO::getTableName).collect(Collectors.toList());
         List<ItemVO> oldNewTableNames;
 

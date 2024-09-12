@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.network.internal.utils;
 
-import java.util.Optional;
+import static org.openhab.binding.network.internal.utils.NetworkUtils.millisToDuration;
+
+import java.time.Duration;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,18 +47,18 @@ public class LatencyParser {
      * Examine a single ping command output line and try to extract the latency value if it is contained.
      *
      * @param inputLine Single output line of the ping command.
-     * @return Latency value provided by the ping command. Optional is empty if the provided line did not contain a
+     * @return Latency value provided by the ping command. <code>null</code> if the provided line did not contain a
      *         latency value which matches the known patterns.
      */
-    public Optional<Double> parseLatency(String inputLine) {
+    public @Nullable Duration parseLatency(String inputLine) {
         logger.debug("Parsing latency from input {}", inputLine);
 
         Matcher m = LATENCY_PATTERN.matcher(inputLine);
         if (m.find() && m.groupCount() == 1) {
-            return Optional.of(Double.parseDouble(m.group(1)));
+            return millisToDuration(Double.parseDouble(m.group(1).replace(",", ".")));
         }
 
         logger.debug("Did not find a latency value");
-        return Optional.empty();
+        return null;
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class GatewayQueryService implements AutoCloseable {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private static final Lock REQUEST_LOCK = new ReentrantLock();
 

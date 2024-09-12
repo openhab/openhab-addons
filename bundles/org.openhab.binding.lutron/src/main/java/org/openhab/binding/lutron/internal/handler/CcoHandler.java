@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -191,7 +191,7 @@ public class CcoHandler extends LutronHandler {
                 }
                 try {
                     BigDecimal state = new BigDecimal(parameters[1]);
-                    updateState(CHANNEL_SWITCH, state.compareTo(BigDecimal.ZERO) == 0 ? OnOffType.OFF : OnOffType.ON);
+                    updateState(CHANNEL_SWITCH, OnOffType.from(state.compareTo(BigDecimal.ZERO) != 0));
                 } catch (NumberFormatException e) {
                     logger.warn("Unable to parse update {} {} from CCO {}", type, Arrays.asList(parameters),
                             integrationId);

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -115,9 +115,9 @@ public abstract class AbstractTypeConverter<T extends State> implements TypeConv
         if (dp.getValue() == null) {
             return (T) UnDefType.NULL;
         } else if (!fromBindingValidation(dp)) {
-            String errorMessage = String.format("Can't convert %s value '%s' with %s for '%s'", dp.getType(),
-                    dp.getValue(), this.getClass().getSimpleName(), new HmDatapointInfo(dp));
-            throw new ConverterTypeException(errorMessage);
+            logger.debug("Can't convert {} value '{}' with {} for '{}'", dp.getType(), dp.getValue(),
+                    this.getClass().getSimpleName(), new HmDatapointInfo(dp));
+            return (T) UnDefType.NULL;
         }
 
         return fromBinding(dp);

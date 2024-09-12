@@ -28,6 +28,8 @@ Due to this method used, it is very slow at finding devices and can saturate net
 - port: Port the OpenSprinkler device is listening on. Usually 80.
 - password: Admin password of the API. Factory default is: opendoor
 - refresh: Number of seconds in between refreshing the Thing state with the API.
+- timeout: (optional) Number of seconds to wait for a timeout when calling the OpenSprinkler HTTP API.
+- retry: (optional) Number of retries on connection timeouts.
 - basicUsername: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
 - basicPassword: (optional) Only needed when the OpenSprinkler device is behind a basic auth enforcing reverse proxy.
 
@@ -61,22 +63,25 @@ NOTE: Some channels will only show up if the hardware has the required sensor an
 
 | Channel Type ID | Item Type              |    | Description                                                                        |
 |-----------------|------------------------|----|------------------------------------------------------------------------------------|
-| rainsensor      | Switch                 | RO | This channel indicates whether rain is detected by the device or not.              |
-| sensor2         | Switch                 | RO | This channel is for the second sensor (if your hardware supports it).              |
+| cloudConnected  | Switch                 | RO | If the device is fully connected to the OpenSprinkler cloud this will show as 'ON'.|
 | currentDraw     | Number:ElectricCurrent | RO | Shows the current draw of the device.                                              |
-| waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level in percent (0-250%). The water level is |
-|                 |                        |    | calculated based on the weather and influences the duration of the water programs. |
-| signalStrength  | Number                 | RO | Shows how strong the WiFi Signal is.     |
+| enablePrograms  | Switch                 | RW | Allow programs to auto run. When OFF, manually started stations will still work.   |
 | flowSensorCount | Number:Dimensionless   | RO | Shows the number of pulses the optional water flow sensor has reported.            |
-| programs        | String                 | RW | Displays a list of the programs that are setup in your OpenSprinkler and when      |
-|                 |                        |    | selected will start that program for you.                                          |
-| stations        | String                 | RW | Display a list of stations that can be run when selected to the length of time set |
-|                 |                        |    | in the `nextDuration` channel.                                                  |
 | nextDuration    | Number:Time            | RW | The time the station will open for when any stations are selected from the         |
 |                 |                        |    | `stations` channel. Defaults to 30 minutes if not set.                           |
-| resetStations   | Switch                 | RW | The ON command will stop all stations immediately, including those waiting to run. |
-| enablePrograms  | Switch                 | RW | Allow programs to auto run. When OFF, manually started stations will still work.   |
+| pausePrograms   | Number:Time            | RW | Sets/Shows the amount of time that programs will be paused for.                    |
+| programs        | String                 | RW | Displays a list of the programs that are setup in your OpenSprinkler and when      |
+|                 |                        |    | selected will start that program for you.                                          |
 | rainDelay       | Number:Time            | RW | Sets/Shows the amount of time (hours) that rain has caused programs to be delayed. |
+| rainsensor      | Switch                 | RO | This channel indicates whether rain is detected by the device or not.              |
+| resetStations   | Switch                 | RW | The ON command will stop all stations immediately, including those waiting to run. |
+| sensor2         | Switch                 | RO | This channel is for the second sensor (if your hardware supports it).              |
+| signalStrength  | Number                 | RO | Shows how strong the WiFi Signal is.     |
+| stations        | String                 | RW | Display a list of stations that can be run when selected to the length of time set |
+|                 |                        |    | in the `nextDuration` channel.                                                  |
+| waterlevel      | Number:Dimensionless   | RO | This channel shows the current water level in percent (0-250%). The water level is |
+|                 |                        |    | calculated based on the weather and influences the duration of the water programs. |
+| queuedZones     | Number                 | RO | A count of how many zones are running and also waiting to run in the queue.        |
 
 ## Textual Example
 

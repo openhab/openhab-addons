@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -45,4 +45,14 @@ public class ShellyThingConfiguration {
     public String serviceName = "";
 
     public Boolean enableBluGateway = false;
+    public Boolean enableRangeExtender = true;
+
+    @Override
+    public String toString() {
+        return "Device address=" + deviceAddress + ", HTTP user/password=" + userId + "/"
+                + (password.isEmpty() ? "<none>" : "***") + ", update interval=" + updateInterval + "\n"
+                + "Events: Button: " + eventsButton + ", Switch (on/off): " + eventsSwitch + ", Push: " + eventsPush
+                + ", Roller: " + eventsRoller + "Sensor: " + eventsSensorReport + ", CoIoT: " + eventsCoIoT + "\n"
+                + "Blu Gateway=" + enableBluGateway + ", Range Extender: " + enableRangeExtender;
+    }
 }

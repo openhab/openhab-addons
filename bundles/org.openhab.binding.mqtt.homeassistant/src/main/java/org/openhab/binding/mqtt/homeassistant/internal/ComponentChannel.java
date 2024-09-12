@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.mqtt.homeassistant.internal;
 
-import java.net.URI;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Predicate;
@@ -21,25 +21,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.mqtt.generic.ChannelConfigBuilder;
 import org.openhab.binding.mqtt.generic.ChannelState;
-import org.openhab.binding.mqtt.generic.ChannelStateTransformation;
 import org.openhab.binding.mqtt.generic.ChannelStateUpdateListener;
-import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.generic.values.Value;
-import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.binding.mqtt.homeassistant.internal.component.AbstractComponent;
 import org.openhab.core.config.core.Configuration;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
 import org.openhab.core.thing.Channel;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.binding.builder.ChannelBuilder;
+import org.openhab.core.thing.binding.generic.ChannelTransformation;
+import org.openhab.core.thing.type.AutoUpdatePolicy;
 import org.openhab.core.thing.type.ChannelDefinition;
 import org.openhab.core.thing.type.ChannelDefinitionBuilder;
+import org.openhab.core.thing.type.ChannelKind;
 import org.openhab.core.thing.type.ChannelType;
-import org.openhab.core.thing.type.ChannelTypeBuilder;
 import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
-import org.openhab.core.types.StateDescriptionFragment;
+import org.openhab.core.types.CommandDescription;
+import org.openhab.core.types.StateDescription;
 
 /**
  * An {@link AbstractComponent}s derived class consists of one or multiple channels.
@@ -60,26 +59,20 @@ import org.openhab.core.types.StateDescriptionFragment;
 public class ComponentChannel {
     private static final String JINJA = "JINJA";
 
-    private final ChannelUID channelUID;
     private final ChannelState channelState;
     private final Channel channel;
-    private final ChannelType type;
-    private final ChannelTypeUID channelTypeUID;
+    private final @Nullable StateDescription stateDescription;
+    private final @Nullable CommandDescription commandDescription;
     private final ChannelStateUpdateListener channelStateUpdateListener;
 
-    private ComponentChannel(ChannelUID channelUID, ChannelState channelState, Channel channel, ChannelType type,
-            ChannelTypeUID channelTypeUID, ChannelStateUpdateListener channelStateUpdateListener) {
+    private ComponentChannel(ChannelState channelState, Channel channel, @Nullable StateDescription stateDescription,
+            @Nullable CommandDescription commandDescription, ChannelStateUpdateListener channelStateUpdateListener) {
         super();
-        this.channelUID = channelUID;
         this.channelState = channelState;
         this.channel = channel;
-        this.type = type;
-        this.channelTypeUID = channelTypeUID;
+        this.stateDescription = stateDescription;
+        this.commandDescription = commandDescription;
         this.channelStateUpdateListener = channelStateUpdateListener;
-    }
-
-    public ChannelUID getChannelUID() {
-        return channelUID;
     }
 
     public Channel getChannel() {
@@ -88,6 +81,14 @@ public class ComponentChannel {
 
     public ChannelState getState() {
         return channelState;
+    }
+
+    public @Nullable StateDescription getStateDescription() {
+        return stateDescription;
+    }
+
+    public @Nullable CommandDescription getCommandDescription() {
+        return commandDescription;
     }
 
     public CompletableFuture<@Nullable Void> stop() {
@@ -102,16 +103,9 @@ public class ComponentChannel {
         return channelState.start(connection, scheduler, timeout);
     }
 
-    public void addChannelTypes(MqttChannelTypeProvider channelTypeProvider) {
-        channelTypeProvider.setChannelType(channelTypeUID, type);
-    }
-
-    public void removeChannelTypes(MqttChannelTypeProvider channelTypeProvider) {
-        channelTypeProvider.removeChannelType(channelTypeUID);
-    }
-
-    public ChannelDefinition type() {
-        return new ChannelDefinitionBuilder(channelUID.getId(), channelTypeUID).build();
+    public ChannelDefinition channelDefinition() {
+        return new ChannelDefinitionBuilder(channel.getUID().getId(),
+                Objects.requireNonNull(channel.getChannelTypeUID())).withLabel(channel.getLabel()).build();
     }
 
     public void resetState() {
@@ -121,6 +115,7 @@ public class ComponentChannel {
     public static class Builder {
         private final AbstractComponent<?> component;
         private final String channelID;
+        private ChannelTypeUID channelTypeUID;
         private final Value valueState;
         private final String label;
         private final ChannelStateUpdateListener channelStateUpdateListener;
@@ -130,6 +125,7 @@ public class ComponentChannel {
         private boolean retain;
         private boolean trigger;
         private boolean isAdvanced;
+        private @Nullable AutoUpdatePolicy autoUpdatePolicy;
         private @Nullable Integer qos;
         private @Nullable Predicate<Command> commandFilter;
 
@@ -138,10 +134,11 @@ public class ComponentChannel {
 
         private String format = "%s";
 
-        public Builder(AbstractComponent<?> component, String channelID, Value valueState, String label,
-                ChannelStateUpdateListener channelStateUpdateListener) {
+        public Builder(AbstractComponent<?> component, String channelID, ChannelTypeUID channelTypeUID,
+                Value valueState, String label, ChannelStateUpdateListener channelStateUpdateListener) {
             this.component = component;
             this.channelID = channelID;
+            this.channelTypeUID = channelTypeUID;
             this.valueState = valueState;
             this.label = label;
             this.isAdvanced = false;
@@ -203,6 +200,11 @@ public class ComponentChannel {
             return this;
         }
 
+        public Builder withAutoUpdatePolicy(@Nullable AutoUpdatePolicy autoUpdatePolicy) {
+            this.autoUpdatePolicy = autoUpdatePolicy;
+            return this;
+        }
+
         public Builder commandFilter(@Nullable Predicate<Command> commandFilter) {
             this.commandFilter = commandFilter;
             return this;
@@ -221,31 +223,45 @@ public class ComponentChannel {
             ChannelUID channelUID;
             ChannelState channelState;
             Channel channel;
-            ChannelType type;
-            ChannelTypeUID channelTypeUID;
+            ChannelTransformation incomingTransformation = null, outgoingTransformation = null;
 
-            channelUID = new ChannelUID(component.getGroupUID(), channelID);
-            channelTypeUID = new ChannelTypeUID(MqttBindingConstants.BINDING_ID,
-                    channelUID.getGroupId() + "_" + channelID);
-            channelState = new HomeAssistantChannelState(
-                    ChannelConfigBuilder.create().withRetain(retain).withQos(qos).withStateTopic(stateTopic)
-                            .withCommandTopic(commandTopic).makeTrigger(trigger).withFormatter(format).build(),
-                    channelUID, valueState, channelStateUpdateListener, commandFilter);
+            channelUID = component.buildChannelUID(channelID);
+            ChannelConfigBuilder channelConfigBuilder = ChannelConfigBuilder.create().withRetain(retain).withQos(qos)
+                    .withStateTopic(stateTopic).withCommandTopic(commandTopic).makeTrigger(trigger)
+                    .withFormatter(format);
+
+            String localTemplateIn = templateIn;
+            if (localTemplateIn != null) {
+                incomingTransformation = new HomeAssistantChannelTransformation(component.getJinjava(), component,
+                        localTemplateIn);
+            }
+            String localTemplateOut = templateOut;
+            if (localTemplateOut != null) {
+                outgoingTransformation = new HomeAssistantChannelTransformation(component.getJinjava(), component,
+                        localTemplateOut);
+            }
+
+            channelState = new HomeAssistantChannelState(channelConfigBuilder.build(), channelUID, valueState,
+                    channelStateUpdateListener, commandFilter, incomingTransformation, outgoingTransformation);
 
             // disabled by default components should always show up as advanced
             if (!component.isEnabledByDefault()) {
                 isAdvanced = true;
             }
+            if (isAdvanced) {
+                channelTypeUID = new ChannelTypeUID(channelTypeUID.getBindingId(),
+                        channelTypeUID.getId() + "-advanced");
+            }
 
+            ChannelKind kind;
+            StateDescription stateDescription = null;
+            CommandDescription commandDescription = null;
             if (this.trigger) {
-                type = ChannelTypeBuilder.trigger(channelTypeUID, label)
-                        .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
-                        .isAdvanced(isAdvanced).build();
+                kind = ChannelKind.TRIGGER;
             } else {
-                StateDescriptionFragment description = valueState.createStateDescription(commandTopic == null).build();
-                type = ChannelTypeBuilder.state(channelTypeUID, label, channelState.getItemType())
-                        .withConfigDescriptionURI(URI.create(MqttBindingConstants.CONFIG_HA_CHANNEL))
-                        .withStateDescriptionFragment(description).isAdvanced(isAdvanced).build();
+                kind = ChannelKind.STATE;
+                stateDescription = valueState.createStateDescription(commandTopic == null).build().toStateDescription();
+                commandDescription = valueState.createCommandDescription().build();
             }
 
             Configuration configuration = new Configuration();
@@ -253,23 +269,12 @@ public class ComponentChannel {
             component.getHaID().toConfig(configuration);
 
             channel = ChannelBuilder.create(channelUID, channelState.getItemType()).withType(channelTypeUID)
-                    .withKind(type.getKind()).withLabel(label).withConfiguration(configuration).build();
+                    .withKind(kind).withLabel(label).withConfiguration(configuration)
+                    .withAutoUpdatePolicy(autoUpdatePolicy).build();
 
-            ComponentChannel result = new ComponentChannel(channelUID, channelState, channel, type, channelTypeUID,
+            ComponentChannel result = new ComponentChannel(channelState, channel, stateDescription, commandDescription,
                     channelStateUpdateListener);
 
-            TransformationServiceProvider transformationProvider = component.getTransformationServiceProvider();
-
-            final String templateIn = this.templateIn;
-            if (templateIn != null && transformationProvider != null) {
-                channelState
-                        .addTransformation(new ChannelStateTransformation(JINJA, templateIn, transformationProvider));
-            }
-            final String templateOut = this.templateOut;
-            if (templateOut != null && transformationProvider != null) {
-                channelState.addTransformationOut(
-                        new ChannelStateTransformation(JINJA, templateOut, transformationProvider));
-            }
             if (addToComponent) {
                 component.getChannelMap().put(channelID, result);
             }

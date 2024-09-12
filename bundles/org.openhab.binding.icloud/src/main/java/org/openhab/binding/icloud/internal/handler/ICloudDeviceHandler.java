@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -62,6 +62,8 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
 
     private @Nullable String deviceId;
 
+    private @Nullable ICloudDeviceInformation deviceInformationRecord;
+
     public ICloudDeviceHandler(Thing thing) {
         super(thing);
     }
@@ -70,6 +72,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     public void deviceInformationUpdate(List<ICloudDeviceInformation> deviceInformationList) {
         ICloudDeviceInformation deviceInformationRecord = getDeviceInformationRecord(deviceInformationList);
         if (deviceInformationRecord != null) {
+            this.deviceInformationRecord = deviceInformationRecord;
             if (deviceInformationRecord.getDeviceStatus() == 200) {
                 updateStatus(ONLINE);
             } else {
@@ -81,7 +84,7 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
             Double batteryLevel = deviceInformationRecord.getBatteryLevel();
             if (batteryLevel != Double.NaN) {
                 updateState(BATTERY_LEVEL, new DecimalType(deviceInformationRecord.getBatteryLevel() * 100));
-                updateState(LOW_BATTERY, batteryLevel < 0.2 ? OnOffType.ON : OnOffType.OFF);
+                updateState(LOW_BATTERY, OnOffType.from(batteryLevel < 0.2));
             }
 
             if (deviceInformationRecord.getLocation() != null) {
@@ -137,12 +140,18 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         if (channelId.equals(FIND_MY_PHONE)) {
             if (command == OnOffType.ON) {
                 try {
-                    final String deviceId = this.deviceId;
-                    if (deviceId == null) {
-                        this.logger.debug("Can't send Find My Device request, because deviceId is null!");
+
+                    if (deviceInformationRecord == null) {
+                        this.logger
+                                .debug("Can't send Find My Device request, because deviceInformationRecord is null!");
                         return;
                     }
-                    bridgeHandler.findMyDevice(deviceId);
+                    if (deviceInformationRecord.getId() == null) {
+                        this.logger.debug(
+                                "Can't send Find My Device request, because deviceInformationRecord.getId() is null!");
+                        return;
+                    }
+                    bridgeHandler.findMyDevice(deviceInformationRecord.getId());
                 } catch (IOException | InterruptedException e) {
                     this.logger.warn("Unable to execute find my device request", e);
                 }
@@ -183,7 +192,6 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
     private @Nullable ICloudDeviceInformation getDeviceInformationRecord(
             List<ICloudDeviceInformation> deviceInformationList) {
         this.logger.debug("Device: [{}]", this.deviceId);
-
         for (ICloudDeviceInformation deviceInformationRecord : deviceInformationList) {
             String currentId = deviceInformationRecord.getDeviceDiscoveryId();
             if (currentId == null || currentId.isBlank()) {

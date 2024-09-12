@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -22,7 +22,6 @@ import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.sonos.internal.handler.ZonePlayerHandler;
 import org.openhab.core.audio.AudioFormat;
 import org.openhab.core.audio.AudioHTTPServer;
-import org.openhab.core.audio.AudioSink;
 import org.openhab.core.audio.AudioSinkSync;
 import org.openhab.core.audio.AudioStream;
 import org.openhab.core.audio.FileAudioStream;
@@ -39,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This makes a Sonos speaker to serve as an {@link AudioSink}-
+ * This makes a Sonos speaker to serve as an {@link org.openhab.core.audio.AudioSink}-
  *
  * @author Kai Kreuzer - Initial contribution and API
  * @author Christoph Weitkamp - Added getSupportedStreams() and UnsupportedAudioStreamException

@@ -6,11 +6,12 @@ This extension adds support for [Airthings](https://www.airthings.com) indoor ai
 
 Following thing types are supported by this extension:
 
-| Thing Type ID       | Description                            |
-| ------------------- | -------------------------------------- |
-| airthings_wave_plus | Airthings Wave Plus                    |
-| airthings_wave_mini | Airthings Wave Mini                    |
-| airthings_wave_gen1 | Airthings Wave 1st Gen (SN 2900xxxxxx) |
+| Thing Type ID        | Description                            |
+|----------------------|----------------------------------------|
+| airthings_wave_plus  | Airthings Wave Plus                    |
+| airthings_wave_mini  | Airthings Wave Mini                    |
+| airthings_wave_gen1  | Airthings Wave 1st Gen (SN 2900xxxxxx) |
+| airthings_wave_radon | Airthings Wave Radon / Wave 2          |
 
 ## Discovery
 
@@ -44,7 +45,7 @@ The `Airthings Wave Plus` thing has additionally the following channels:
 | radon_st_avg       | Number:RadiationSpecificActivity | The measured radon short term average level |
 | radon_lt_avg       | Number:RadiationSpecificActivity | The measured radon long term average level  |
 
-The `Airthings Wave Gen 1` thing has the following channels:
+The `Airthings Wave Gen 1` and `Airthings Wave Radon / Wave 2` thing has the following channels:
 
 | Channel ID         | Item Type                        | Description                                 |
 | ------------------ | -------------------------------- | ------------------------------------------- |

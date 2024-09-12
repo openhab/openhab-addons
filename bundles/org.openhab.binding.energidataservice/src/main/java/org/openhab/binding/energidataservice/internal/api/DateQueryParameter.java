@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -70,6 +70,14 @@ public class DateQueryParameter {
 
     public boolean isEmpty() {
         return this == EMPTY;
+    }
+
+    public @Nullable DateQueryParameterType getDateType() {
+        return dateType;
+    }
+
+    public @Nullable LocalDate getDate() {
+        return date;
     }
 
     public static DateQueryParameter of(LocalDate localDate) {

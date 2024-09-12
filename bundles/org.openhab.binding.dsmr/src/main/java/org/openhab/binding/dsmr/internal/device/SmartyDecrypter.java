@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,7 +17,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
-import java.util.Optional;
+import java.util.Objects;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -227,7 +227,7 @@ public class SmartyDecrypter implements TelegramParser {
                 logger.warn("Exception of failed decryption of telegram: ", e);
             }
             telegramListener.onError(DSMRErrorStatus.INVALID_DECRYPTION_KEY,
-                    Optional.ofNullable(e.getMessage()).orElse(""));
+                    Objects.requireNonNullElse(e.getMessage(), ""));
         }
         return null;
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,6 +13,7 @@
 package org.openhab.binding.nikohomecontrol.internal.protocol.nhc2;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
@@ -45,14 +46,16 @@ public class NhcSystemInfo2 {
      * @return the NhcVersion
      */
     public String getNhcVersion() {
-        return swVersions.stream().map(p -> p.nhcVersion).filter(v -> !v.isEmpty()).findFirst().orElse("");
+        return Objects.requireNonNull(
+                swVersions.stream().map(p -> p.nhcVersion).filter(v -> !v.isEmpty()).findFirst().orElse(""));
     }
 
     /**
      * @return the CocoImage version
      */
     public String getCocoImage() {
-        return swVersions.stream().map(p -> p.cocoImage).filter(v -> !v.isEmpty()).findFirst().orElse("");
+        return Objects.requireNonNull(
+                swVersions.stream().map(p -> p.cocoImage).filter(v -> !v.isEmpty()).findFirst().orElse(""));
     }
 
     /**

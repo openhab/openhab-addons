@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -58,8 +58,9 @@ public class MieleBindingConstants {
     public static final String START_CHANNEL_ID = "start";
     public static final String END_CHANNEL_ID = "end";
     public static final String FINISH_CHANNEL_ID = "finish";
-    public static final String POWER_CONSUMPTION_CHANNEL_ID = "powerConsumption";
+    public static final String ENERGY_CONSUMPTION_CHANNEL_ID = "energyConsumption";
     public static final String WATER_CONSUMPTION_CHANNEL_ID = "waterConsumption";
+    public static final String LAUNDRY_WEIGHT_CHANNEL_ID = "laundryWeight";
 
     // List of all Thing Type UIDs
     public static final ThingTypeUID THING_TYPE_XGW3000 = new ThingTypeUID(BINDING_ID, "xgw3000");

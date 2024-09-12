@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,14 +13,20 @@
 package org.openhab.binding.boschshc.internal.devices.intrusion;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.openhab.binding.boschshc.internal.devices.AbstractBoschSHCHandlerTest;
@@ -29,6 +35,8 @@ import org.openhab.binding.boschshc.internal.services.intrusion.actions.arm.dto.
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.StringType;
 import org.openhab.core.thing.ChannelUID;
+import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.ThingTypeUID;
 
 import com.google.gson.JsonElement;
@@ -64,11 +72,39 @@ class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<Intrusio
         assertEquals("0", armRequest.profileId);
     }
 
+    @ParameterizedTest
+    @MethodSource("org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils#getExecutionAndTimeoutAndInterruptedExceptionArguments()")
+    void testHandleCommandArmActionHandleExceptions(Exception e)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        when(getBridgeHandler().postAction(any(), any())).thenThrow(e);
+
+        getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_ARM_ACTION),
+                new StringType("0"));
+
+        verify(getBridgeHandler()).postAction(eq("intrusion/actions/arm"), armActionRequestCaptor.capture());
+        ArmActionRequest armRequest = armActionRequestCaptor.getValue();
+        assertEquals("0", armRequest.profileId);
+    }
+
     @Test
     void testHandleCommandDisarmAction() throws InterruptedException, TimeoutException, ExecutionException {
         getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_DISARM_ACTION),
                 OnOffType.ON);
         verify(getBridgeHandler()).postAction("intrusion/actions/disarm");
+    }
+
+    @ParameterizedTest
+    @MethodSource("org.openhab.binding.boschshc.internal.tests.common.CommonTestUtils#getExecutionAndTimeoutAndInterruptedExceptionArguments()")
+    void testHandleCommandDisarmActionHandleExceptions(Exception e)
+            throws InterruptedException, TimeoutException, ExecutionException {
+        when(getBridgeHandler().postAction(any())).thenThrow(e);
+
+        getFixture().handleCommand(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_DISARM_ACTION),
+                OnOffType.ON);
+
+        verify(getCallback()).statusUpdated(same(getThing()),
+                argThat(status -> status.getStatus().equals(ThingStatus.OFFLINE)
+                        && status.getStatusDetail().equals(ThingStatusDetail.COMMUNICATION_ERROR)));
     }
 
     @Test
@@ -161,6 +197,9 @@ class IntrusionDetectionHandlerTest extends AbstractBoschSHCHandlerTest<Intrusio
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_ARMING_STATE),
                 new StringType("SYSTEM_ARMING"));
+        verify(getCallback()).stateUpdated(
+                new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_ACTIVE_CONFIGURATION_PROFILE),
+                new StringType("0"));
     }
 
     @Test

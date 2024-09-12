@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -13,9 +13,6 @@
 package org.openhab.binding.boschshc.internal.devices.twinguard;
 
 import static org.mockito.Mockito.verify;
-
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Temperature;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.junit.jupiter.api.Test;
@@ -66,7 +63,7 @@ class TwinguardHandlerTest extends AbstractSmokeDetectorHandlerTest<TwinguardHan
 
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE),
-                new QuantityType<Temperature>(23.77, SIUnits.CELSIUS));
+                new QuantityType<>(23.77, SIUnits.CELSIUS));
 
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_TEMPERATURE_RATING),
@@ -74,14 +71,14 @@ class TwinguardHandlerTest extends AbstractSmokeDetectorHandlerTest<TwinguardHan
 
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_HUMIDITY),
-                new QuantityType<Dimensionless>(32.69, Units.PERCENT));
+                new QuantityType<>(32.69, Units.PERCENT));
 
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_HUMIDITY_RATING),
                 new StringType("MEDIUM"));
 
         verify(getCallback()).stateUpdated(new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_PURITY),
-                new QuantityType<Dimensionless>(620, Units.PARTS_PER_MILLION));
+                new QuantityType<>(620, Units.PARTS_PER_MILLION));
 
         verify(getCallback()).stateUpdated(
                 new ChannelUID(getThing().getUID(), BoschSHCBindingConstants.CHANNEL_PURITY_RATING),

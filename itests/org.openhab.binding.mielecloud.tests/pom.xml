@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.itests</groupId>
     <artifactId>org.openhab.addons.reactor.itests</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.mielecloud.tests</artifactId>

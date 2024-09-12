@@ -23,7 +23,10 @@
 		<label>System Informations</label>
 		<channels>
 			<channel id="uptime" typeId="uptime"/>
-			<channel id="box-event" typeId="box-event"/>
+			<channel id="box-event" typeId="box-event">
+				<label>Player Event</label>
+				<description>Triggers when an event related to the Freebox player has been detected</description>
+			</channel>
 		</channels>
 	</channel-group-type>
 

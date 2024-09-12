@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -14,8 +14,8 @@ package org.openhab.binding.digitalstrom.internal.discovery;
 
 import static org.openhab.binding.digitalstrom.internal.DigitalSTROMBindingConstants.BINDING_ID;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -76,7 +76,7 @@ public class DeviceDiscoveryService extends AbstractDiscoveryService {
     public void deactivate() {
         logger.debug("deactivate discovery service for device type {} thing types are: {}", deviceType,
                 super.getSupportedThingTypes().toString());
-        removeOlderResults(new Date().getTime());
+        removeOlderResults(Instant.now().toEpochMilli());
     }
 
     @Override

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<thing:thing-descriptions bindingId="mercedesme"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
+	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
+	<channel-group-type id="lock-ev-values">
+		<label>Lock Status</label>
+		<description>Door Lock Status</description>
+		<channels>
+			<channel id="front-left" typeId="front-left-lock"/>
+			<channel id="front-right" typeId="front-right-lock"/>
+			<channel id="rear-left" typeId="rear-left-lock"/>
+			<channel id="rear-right" typeId="rear-right-lock"/>
+			<channel id="deck-lid" typeId="deck-lid-lock"/>
+		</channels>
+	</channel-group-type>
+</thing:thing-descriptions>

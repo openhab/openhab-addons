@@ -10,11 +10,12 @@ If you are not familiar with adb I suggest you to search "How to enable adb over
 
 This binding was tested on :
 
-| Device             | Android version | Comments                   |
-|--------------------|-----------------|----------------------------|
-| Fire TV Stick      | 7.1.2           | Volume control not working |
-| Nexus5x            | 8.1.0           | Everything works nice      |
-| Freebox Pop Player | 9               | Everything works nice      |
+| Device                 | Android version | Comments                           |
+|------------------------|-----------------|------------------------------------|
+| Fire TV Stick          | 7.1.2           | Volume control not working         |
+| Nexus5x                | 8.1.0           | Everything works nice              |
+| Freebox Pop Player     | 9               | Everything works nice              |
+| ChromeCast Google TV   | 12              | Volume control partially working   |
 
 Please update this document if you tested it with other android versions to reflect the compatibility of the binding.
 
@@ -30,29 +31,31 @@ You could customize the discovery process through the binding options.
 
 ## Binding Configuration
 
-| Config   |  Type  | description                  |
-|----------|----------|------------------------------|
-| discoveryPort | int | Port used on discovery to connect to the device through adb |
-| discoveryReachableMs | int | Milliseconds to wait while discovering to determine if the ip is reachable |
-| discoveryIpRangeMin | int | Used to limit the number of IPs checked while discovering |
-| discoveryIpRangeMax | int | Used to limit the number of IPs checked while discovering |
+| Config              |  Type    | description                                                                       |
+|---------------------|----------|-----------------------------------------------------------------------------------|
+| discoveryPort       | int      | Port used on discovery to connect to the device through adb                       |
+| discoveryReachableMs| int      | Milliseconds to wait while discovering to determine if the ip is reachable        |
+| discoveryIpRangeMin | int      | Used to limit the number of IPs checked while discovering                         |
+| discoveryIpRangeMax | int      | Used to limit the number of IPs checked while discovering                         |
 
 ## Thing Configuration
 
-| ThingTypeID   | description                  |
-|----------|------------------------------|
-| android | Android device |
+| ThingTypeID   | Description             |
+|---------------|-------------------------|
+| android       | Android device          |
 
-| Config   |  Type  | description                  |
-|----------|----------|------------------------------|
-| ip | String | Device ip address |
-| port | int | Device port listening to adb connections (default: 5555) |
-| refreshTime | int | Seconds between device status refreshes (default: 30) |
-| timeout | int | Command timeout in seconds (default: 5) |
-| recordDuration | int | Record input duration in seconds |
-| deviceMaxVolume | int | Assumed max volume for devices with android versions that do not expose this value. |
-| volumeSettingKey | String | Settings key for android versions where volume is gather using settings command (>=android 11). |
-| mediaStateJSONConfig | String | Expects a JSON array. Allow to configure the media state detection method per app. Described in the following section |
+| Config               |  Type  | Description                                                                                                            |
+|----------------------|--------|------------------------------------------------------------------------------------------------------------------------|
+| ip                   | String | Device ip address.                                                                                                     |
+| port                 | int    | Device port listening to adb connections. (default: 5555)                                                              |
+| refreshTime          | int    | Seconds between device status refreshes. (default: 30)                                                                 |
+| timeout              | int    | Command timeout in seconds. (default: 5)                                                                               |
+| recordDuration       | int    | Record input duration in seconds.                                                                                      |
+| deviceMaxVolume      | int    | Assumed max volume for devices with android versions that do not expose this value.                                    |
+| volumeSettingKey     | String | Settings key for android versions where volume is gather using settings command. (>=android 11)                        |
+| volumeStepPercent    | int    | Percent to increase/decrease volume.                                                                                   |
+| mediaStateJSONConfig | String | Expects a JSON array. Allow to configure the media state detection method per app. Described in the following section. |
+| maxADBTimeouts       | int    | Max ADB command consecutive timeouts to force to reset the connection.                                                 |
 
 ## Media State Detection
 

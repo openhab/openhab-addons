@@ -16,8 +16,11 @@
 		<channels>
 			<!-- read only -->
 			<channel id="temperature" typeId="temperature"/>
-			<channel id="conditioningValves" typeId="conditioningValves"/>
+			<channel id="targetTemperature" typeId="targetTemperature"/>
 			<channel id="heatingValves" typeId="heatingValves"/>
+			<channel id="conditioningValves" typeId="conditioningValves"/>
+			<channel id="heating" typeId="heating"/>
+			<channel id="cooling" typeId="cooling"/>
 			<channel id="actuators" typeId="actuators"/>
 			<channel id="localOffset" typeId="localOffset"/>
 			<!-- read/write -->
@@ -31,6 +34,7 @@
 			<property name="vendor">BTicino/Legrand</property>
 			<property name="model">Zone thermostat BTI-LN4691 (stand-alone), 3550 (99 zones Central Unit)</property>
 			<property name="ownDeviceType">410/420</property>
+			<property name="thingTypeVersion">1</property>
 		</properties>
 
 		<representation-property>ownId</representation-property>

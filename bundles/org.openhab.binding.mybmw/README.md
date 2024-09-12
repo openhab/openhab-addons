@@ -105,10 +105,10 @@ So if want your UI in english language place _en_ as desired language.
 
 Same configuration is needed for all things
 
-| Parameter       | Type    | Description                           |
-|-----------------|---------|---------------------------------------|
-| vin             | text    | Vehicle Identification Number (VIN)   |
-| refreshInterval | integer | Refresh Interval in Minutes           |
+| Parameter       | Type    | Description                                                                                                             |
+|-----------------|---------|-------------------------------------------------------------------------------------------------------------------------|
+| vin             | text    | Vehicle Identification Number (VIN)                                                                                     |
+| refreshInterval | integer | Refresh Interval in Minutes (by default set to 60; to be set to 0 if no automated refresh should be triggered)          |
 
 #### Advanced Configuration
 
@@ -132,9 +132,10 @@ They differ for each vehicle type, build-in sensors and activated services.
 
 | Channel Group ID                 | Description                                       | conv | phev | bev_rex | bev |
 |----------------------------------|---------------------------------------------------|------|------|---------|-----|
+| [update](#vehicle-update)        | Overall vehicle status                            |  X   |  X   |    X    |  X  |
 | [status](#vehicle-status)        | Overall vehicle status                            |  X   |  X   |    X    |  X  |
+| [doors](#doors-details)          | Details of all doors and windows                  |  X   |  X   |    X    |  X  |
 | [range](#range-data)             | Provides mileage, range and charge / fuel levels  |  X   |  X   |    X    |  X  |
-| [doors](#doors-details)          | Detials of all doors and windows                  |  X   |  X   |    X    |  X  |
 | [check](#check-control)          | Shows current active CheckControl messages        |  X   |  X   |    X    |  X  |
 | [service](#services)             | Future vehicle service schedules                  |  X   |  X   |    X    |  X  |
 | [location](#location)            | Coordinates and heading of the vehicle            |  X   |  X   |    X    |  X  |
@@ -145,6 +146,25 @@ They differ for each vehicle type, build-in sensors and activated services.
 | [tires](#tire-pressure)          | Current and wanted pressure for all tires         |  X   |  X   |    X    |  X  |
 | [image](#image)                  | Provides an image of your vehicle                 |  X   |  X   |    X    |  X  |
 
+#### Vehicle Update
+
+The BMW API has limits in the requests per time period.
+This leads to unexpected errors stating that some quota is reached and the next successful request can be triggered in X minutes.
+In this case the bridge as well as the vehicle things can be set to offline and nothing can be done with them anymore until the next successful refresh.
+To reduce the probability of the error, the default automated API update has been set to 60 Minutes, but this is often not sufficient to retrieve continuous range or charging updates.
+These channels can be used to control the update behavior from openHAB, e.g. via rules.
+
+- Channel Group ID is status
+- Available for all vehicles (charging channel only for xEV)
+- switches which can be triggered by a command
+- if the switches are set to ON, then immediately they will be set to OFF again for being able to trigger the next update
+
+| Channel ID      | Type   | Description                                                                                              | conv | phev | bev_rex | bev |
+|-----------------|--------|----------------------------------------------------------------------------------------------------------|------|------|---------|-----|
+| state-update    | Switch | When set to ON, the state channels of the vehicle will be updated                                        |  X   |  X   |    X    |  X  |
+| charging-update | Switch | When set to ON, the charging statistics and charging sessions channels of the vehicle will be updated    |      |  X   |    X    |  X  |
+| image-update    | Switch | When set to ON, the image of the vehicle will be updated                                                 |  X   |  X   |    X    |  X  |
+
 #### Vehicle Status
 
 Reflects overall status of the vehicle.
@@ -153,19 +173,19 @@ Reflects overall status of the vehicle.
 - Available for all vehicles
 - Read-only values
 
-| Channel Label             | Channel ID          | Type          | Description                                    | conv | phev | bev_rex | bev |
-|---------------------------|---------------------|---------------|------------------------------------------------|------|------|---------|-----|
-| Overall Door Status       | doors               | String        | Combined status for all doors                  |  X   |  X   |    X    |  X  |
-| Overall Window Status     | windows             | String        | Combined status for all windows                |  X   |  X   |    X    |  X  |
-| Doors Locked              | lock                | String        | Status if vehicle is secured                   |  X   |  X   |    X    |  X  |
-| Next Service Date         | service-date        | DateTime      | Date of next upcoming service                  |  X   |  X   |    X    |  X  |
-| Mileage till Next Service | service-mileage     | Number:Length | Mileage till upcoming service                  |  X   |  X   |    X    |  X  |
-| Check Control             | check-control       | String        | Presence of active warning messages            |  X   |  X   |    X    |  X  |
-| Plug Connection Status    | plug-connection     | String        | Plug is _Connected_ or _Not connected_         |      |  X   |    X    |  X  |
-| Charging Status           | charge              | String        | Current charging status                        |      |  X   |    X    |  X  |
-| Charging Information      | charge-info         | String        | Information regarding current charging session |      |  X   |    X    |  X  |
-| Motion Status             | motion              | Switch        | Driving state - depends on vehicle hardware    |  X   |  X   |    X    |  X  |
-| Last Status Timestamp     | last-update         | DateTime      | Date and time of last status update            |  X   |  X   |    X    |  X  |
+| Channel ID          | Type          | Description                                    | conv | phev | bev_rex | bev |
+|---------------------|---------------|------------------------------------------------|------|------|---------|-----|
+| doors               | String        | Combined status for all doors                  |  X   |  X   |    X    |  X  |
+| windows             | String        | Combined status for all windows                |  X   |  X   |    X    |  X  |
+| lock                | String        | Status if vehicle is secured                   |  X   |  X   |    X    |  X  |
+| service-date        | DateTime      | Date of next upcoming service                  |  X   |  X   |    X    |  X  |
+| service-mileage     | Number:Length | Mileage till upcoming service                  |  X   |  X   |    X    |  X  |
+| check-control       | String        | Presence of active warning messages            |  X   |  X   |    X    |  X  |
+| plug-connection     | String        | Plug is _Connected_ or _Not connected_         |      |  X   |    X    |  X  |
+| charge              | String        | Current charging status                        |      |  X   |    X    |  X  |
+| charge-remaining    | Number:Time   | Remaining time for current charging session    |      |  X   |    X    |  X  |
+| last-update         | DateTime      | Date and time of last status update            |  X   |  X   |    X    |  X  |
+| last-fetched        | DateTime      | Date and time of last time status fetched      |  X   |  X   |    X    |  X  |
 
 Overall Door Status values
 
@@ -208,9 +228,9 @@ The _raw data channel_ is marked as _advanced_ and isn't shown by default.
 Target are advanced users to derive even more data out of BMW API replies.
 As the replies are formatted as JSON use the [JsonPath Transformation Service](https://www.openhab.org/addons/transformations/jsonpath/) to extract data for an item,
 
-| Channel Label             | Channel ID          | Type          | Description                                    |
-|---------------------------|---------------------|---------------|------------------------------------------------|
-| Raw Data                  | raw                 | String        | Unfiltered JSON String of vehicle data         |
+| Channel ID          | Type          | Description                                    |
+|---------------------|---------------|------------------------------------------------|
+| raw                 | String        | Unfiltered JSON String of vehicle data         |
 
 <img align="right" src="./doc/RawData.png" width="400" height="125"/>
 
@@ -239,17 +259,19 @@ See description [Range vs Range Radius](#range-vs-range-radius) to get more info
 - Availability according to table
 - Read-only values
 
-| Channel Label             | Channel ID              | Type                 | conv | phev | bev_rex | bev |
-|---------------------------|-------------------------|----------------------|------|------|---------|-----|
-| Mileage                   | mileage                 | Number:Length        |  X   |  X   |    X    |  X  |
-| Fuel Range                | range-fuel              | Number:Length        |  X   |  X   |    X    |     |
-| Electric Range            | range-electric          | Number:Length        |      |  X   |    X    |  X  |
-| Hybrid Range              | range-hybrid            | Number:Length        |      |  X   |    X    |     |
-| Battery Charge Level      | soc                     | Number:Dimensionless |      |  X   |    X    |  X  |
-| Remaining Fuel            | remaining-fuel          | Number:Volume        |  X   |  X   |    X    |     |
-| Fuel Range Radius         | range-radius-fuel       | Number:Length        |  X   |  X   |    X    |     |
-| Electric Range Radius     | range-radius-electric   | Number:Length        |      |  X   |    X    |  X  |
-| Hybrid Range Radius       | range-radius-hybrid     | Number:Length        |      |  X   |    X    |     |
+| Channel ID                 | Type                 | Description                                   | conv | phev | bev_rex | bev |
+|----------------------------|----------------------|-----------------------------------------------|------|------|---------|-----|
+| mileage                    | Number:Length        | Current mileage of the vehicle                |  X   |  X   |    X    |  X  |
+| range-fuel                 | Number:Length        | Fuel range                                    |  X   |  X   |    X    |     |
+| range-electric             | Number:Length        | Electric range                                |      |  X   |    X    |  X  |
+| range-hybrid               | Number:Length        | Combined hybrid range                         |      |  X   |    X    |     |
+| soc                        | Number:Dimensionless | State of charge                               |      |  X   |    X    |  X  |
+| remaining-fuel             | Number:Volume        | Remaining fuel in l                           |  X   |  X   |    X    |     |
+| estimated-fuel-l-100km     | Number               | Estimated fuel consumption in l               |  X   |  X   |    X    |     |
+| estimated-fuel-mpg         | Number               | Estimated fuel consumption in mpg             |  X   |  X   |    X    |     |
+| range-radius-fuel          | Number:Length        | The calculated range radius combustion        |  X   |  X   |    X    |     |
+| range-radius-electric      | Number:Length        | The calculated range radius electric          |      |  X   |    X    |  X  |
+| range-radius-hybrid        | Number:Length        | The calculated range radius hybrid combined   |      |  X   |    X    |     |
 
 #### Doors Details
 
@@ -259,20 +281,20 @@ Detailed status of all doors and windows.
 - Available for all vehicles if corresponding sensors are built-in
 - Read-only values
 
-| Channel Label              | Channel ID              | Type          |
-|----------------------------|-------------------------|---------------|
-| Driver Door                | driver-front            | String        |
-| Driver Door Rear           | driver-rear             | String        |
-| Passenger Door             | passenger-front         | String        |
-| Passenger Door Rear        | passenger-rear          | String        |
-| Trunk                      | trunk                   | String        |
-| Hood                       | hood                    | String        |
-| Driver Window              | win-driver-front        | String        |
-| Driver Rear Window         | win-driver-rear         | String        |
-| Passenger Window           | win-passenger-front     | String        |
-| Passenger Rear Window      | win-passenger-rear      | String        |
-| Rear Window                | win-rear                | String        |
-| Sunroof                    | sunroof                 | String        |
+| Channel ID              | Type          | Description                             |
+|-------------------------|---------------|-----------------------------------------|
+| driver-front            | String        | Status of front door driver's side      |
+| driver-rear             | String        | Status of rear door driver's side       |
+| passenger-front         | String        | Status of front door passenger's side   |
+| passenger-rear          | String        | Status of rear door passenger's side    |
+| trunk                   | String        | Status of trunk                         |
+| hood                    | String        | Status of hood                          |
+| win-driver-front        | String        | Status of front window driver's side    |
+| win-driver-rear         | String        | Status of rear window driver's side     |
+| win-passenger-front     | String        | Status of front window passenger's side |
+| win-passenger-rear      | String        | Status of rear window passenger's side  |
+| win-rear                | String        | Status of rear window                   |
+| sunroof                 | String        | Status of sunroof                       |
 
 Possible states
 
@@ -291,11 +313,11 @@ If more than one message is active the channel _name_ contains all active messag
 - Available for all vehicles
 - Read/Write access
 
-| Channel Label                   | Channel ID          | Type           | Access     |
-|---------------------------------|---------------------|----------------|------------|
-| Check Control Description       | name                | String         | Read/Write |
-| Check Control Details           | details             | String         | Read       |
-| Severity Level                  | severity            | String         | Read       |
+| Channel ID          | Type           | Access     |
+|---------------------|----------------|------------|
+| name                | String         | Read/Write |
+| details             | String         | Read       |
+| severity            | String         | Read       |
 
 Severity Levels
 
@@ -312,12 +334,12 @@ If more than one service is scheduled in the future the channel _name_ contains 
 - Available for all vehicles
 - Read/Write access
 
-| Channel Label                  | Channel ID          | Type           | Access     |
-|--------------------------------|---------------------|----------------|------------|
-| Service Name                   | name                | String         | Read/Write |
-| Service Details                | details             | String         | Read       |
-| Service Date                   | date                | DateTime       | Read       |
-| Mileage till Service           | mileage             | Number:Length  | Read       |
+| Channel ID          | Type           | Access     |
+|---------------------|----------------|------------|
+| name                | String         | Read/Write |
+| details             | String         | Read       |
+| date                | DateTime       | Read       |
+| mileage             | Number:Length  | Read       |
 
 #### Location
 
@@ -327,12 +349,12 @@ GPS location and heading of the vehicle.
 - Available for all vehicles with built-in GPS sensor. Function can be enabled/disabled in the head unit
 - Read-only values
 
-| Channel Label       | Channel ID          | Type          |
-|---------------------|---------------------|---------------|
-| GPS Coordinates     | gps                 | Location      |
-| Heading             | heading             | Number:Angle  |
-| Address             | address             | String        |
-| Distance from Home  | home-distance       | Number:Length |
+| Channel ID          | Type          | Description                                                  |
+|---------------------|---------------|--------------------------------------------------------------|
+| gps                 | Location      | Current GPS coordinates of the vehicle                       |
+| heading             | Number:Angle  | Current direction of the vehicle                             |
+| address             | String        | Current address                                              |
+| home-distance       | Number:Length | Calculated distance from configured home position of Openhab |
 
 #### Remote Services
 
@@ -345,10 +367,10 @@ Parallel execution isn't supported.
 - Available for all commands mentioned in _Services Activated_. See [Vehicle Properties](#properties) for further details
 - Read/Write access
 
-| Channel Label           | Channel ID          | Type    | Access |
-|-------------------------|---------------------|---------|--------|
-| Remote Service Command  | command             | String  | Write  |
-| Service Execution State | state               | String  | Read   |
+| Channel ID          | Type    | Access |
+|---------------------|---------|--------|
+| command             | String  | Write  |
+| state               | String  | Read   |
 
 The channel _command_ provides options
 
@@ -359,6 +381,8 @@ The channel _command_ provides options
 - _horn-blow_
 - _climate-now-start_
 - _climate-now-stop_
+- _start-charging_
+- _stop-charging_
 
 The channel _state_ shows the progress of the command execution in the following order
 
@@ -376,25 +400,25 @@ Charging options with date and time for preferred time windows and charging mode
 - Read access for UI.
 - There are 4 timers _T1, T2, T3 and T4_ available. Replace _X_ with number 1,2 or 3 to target the correct timer
 
-| Channel Label              | Channel ID                | Type     |
-|----------------------------|---------------------------|----------|
-| Charge Mode                | mode                      | String   |
-| Charge Preferences         | prefs                     | String   |
-| Charging Plan              | control                   | String   |
-| SoC Target                 | target                    | String   |
-| Charging Energy Limited    | limit                     | Switch   |
-| Window Start Time          | window-start              | DateTime |
-| Window End Time            | window-end                | DateTime |
-| A/C at Departure           | climate                   | Switch   |
-| T_X_ Enabled               | timer_X_-enabled          | Switch   |
-| T_X_ Departure Time        | timer_X_-departure        | DateTime |
-| T_X_ Monday                | timer_X_-day-mon          | Switch   |
-| T_X_ Tuesday               | timer_X_-day-tue          | Switch   |
-| T_X_ Wednesday             | timer_X_-day-wed          | Switch   |
-| T_X_ Thursday              | timer_X_-day-thu          | Switch   |
-| T_X_ Friday                | timer_X_-day-fri          | Switch   |
-| T_X_ Saturday              | timer_X_-day-sat          | Switch   |
-| T_X_ Sunday                | timer_X_-day-sun          | Switch   |
+| Channel ID                | Type     |
+|---------------------------|----------|
+| mode                      | String   |
+| prefs                     | String   |
+| control                   | String   |
+| target                    | String   |
+| limit                     | Switch   |
+| window-start              | DateTime |
+| window-end                | DateTime |
+| climate                   | Switch   |
+| timer_X_-enabled          | Switch   |
+| timer_X_-departure        | DateTime |
+| timer_X_-day-mon          | Switch   |
+| timer_X_-day-tue          | Switch   |
+| timer_X_-day-wed          | Switch   |
+| timer_X_-day-thu          | Switch   |
+| timer_X_-day-fri          | Switch   |
+| timer_X_-day-sat          | Switch   |
+| timer_X_-day-sun          | Switch   |
 
 The channel _profile-mode_ supports
 
@@ -414,11 +438,11 @@ Shows charge statistics of the current month
 - Available for electric and hybrid vehicles
 - Read-only values
 
-| Channel Label              | Channel ID              | Type           |
-|----------------------------|-------------------------|----------------|
-| Charge Statistic Month     | title                   | String         |
-| Energy Charged             | energy                  | Number:Energy  |
-| Charge Sessions            | sessions                | Number         |
+| Channel ID              | Type           | Description             |
+|-------------------------|----------------|-------------------------|
+| title                   | String         | Title of the statistics |
+| energy                  | Number:Energy  | Consumed energy         |
+| sessions                | Number         | Number of sessions      |
 
 #### Charge Sessions
 
@@ -429,13 +453,13 @@ If more than one message is active the channel _name_ contains all active messag
 - Available for electric and hybrid vehicles
 - Read-only values
 
-| Channel Label                   | Channel ID   | Type     |
-|---------------------------------|--------------|----------|
-| Session Title                   | title        | String   |
-| Session Details                 | subtitle     | String   |
-| Charged Energy in Session       | energy       | String   |
-| Issues during Session           | issue        | String   |
-| Session Status                  | status       | String   |
+| Channel ID   | Type     | Description             |
+|--------------|----------|-------------------------|
+| title        | String   | Title of the session    |
+| subtitle     | String   | Subtitle of the session |
+| energy       | String   | Consumed energy         |
+| issue        | String   | If an issue occurred    |
+| status       | String   | Status of the session   |
 
 #### Tire Pressure
 
@@ -445,16 +469,16 @@ Current and target tire pressure values
 - Available for all vehicles if corresponding sensors are built-in
 - Read-only values
 
-| Channel Label              | Channel ID              | Type             |
-|----------------------------|-------------------------|------------------|
-| Front Left                 | fl-current              | Number:Pressure  |
-| Front Left Target          | fl-target               | Number:Pressure  |
-| Front Right                | fr-current              | Number:Pressure  |
-| Front Right Target         | fr-target               | Number:Pressure  |
-| Rear Left                  | rl-current              | Number:Pressure  |
-| Rear Left Target           | rl-target               | Number:Pressure  |
-| Rear Right                 | rr-current              | Number:Pressure  |
-| Rear Right Target          | rr-target               | Number:Pressure  |
+| Channel ID              | Type             | Description                  |
+|-------------------------|------------------|------------------------------|
+| fl-current              | Number:Pressure  | Current pressure front left  |
+| fl-target               | Number:Pressure  | Target pressure front left   |
+| fr-current              | Number:Pressure  | Current pressure front right |
+| fr-target               | Number:Pressure  | Target pressure front right  |
+| rl-current              | Number:Pressure  | Current pressure rear left   |
+| rl-target               | Number:Pressure  | Target pressure rear left    |
+| rr-current              | Number:Pressure  | Current pressure rear right  |
+| rr-target               | Number:Pressure  | Target pressure rear right   |
 
 #### Image
 
@@ -464,17 +488,18 @@ Image representation of the vehicle.
 - Available for all vehicles
 - Read/Write access
 
-| Channel Label              | Channel ID          | Type   |  Access  |
-|----------------------------|---------------------|--------|----------|
-| Rendered Vehicle Image     | png                 | Image  | Read     |
-| Image Viewport             | view                | String | Write    |
+| Channel ID          | Type   |  Access  | Description               |
+|---------------------|--------|----------|---------------------------|
+| png                 | Image  | Read     | The image as png          |
+| view                | String | Write    | The view port of the car  |
 
 Possible view ports:
 
-- _VehicleStatus_ Front Side View
-- _VehicleInfo_ Front View
-- _ChargingHistory_ Side View
-- _Default_ Front Side View
+- _VehicleStatus_ Front Left Side View
+- _FrontView_ Front View
+- _FrontLeft_ Front Left Side View
+- _FrontRight_ Front Right Side View
+- _RearView_ Rear View
 
 ## Further Descriptions
 
@@ -491,7 +516,8 @@ There are 3 occurrences of dynamic data delivered
 The channel id _name_ shows the first element as default.
 All other possibilities are attached as options.
 The picture on the right shows the _Session Title_ item and 3 possible options.
-Select the desired service and the corresponding Charge Session with _Energy Charged_, _Session Status_ and _Session Issues_ will be shown.  
+Select the desired service and the corresponding Charge Session with _Energy Charged_, _Session Status_ and
+_Session Issues_ will be shown.  
 
 ### TroubleShooting
 
@@ -507,31 +533,33 @@ If these preconditions are fulfilled proceed with the fingerprint generation.
 
 #### Generate Debug Fingerprint
 
-<img align="right" src="./doc/DiscoveryScan.png" width="400" height="350"/>
+Login to the openHAB console and use the `mybmw fingerprint` command.
 
-First [enable debug logging](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) for the binding.
+Fingerprint information on your account and vehicle(s) will show in the console and can be copiedfrom there.
+A zip file with fingerprint information for your vehicle(s) will also be generated and put into the `mybmw` folder in the userdata folder.
+This fingerprint information is valuable for the developers to better support your vehicle.
 
-```shell
-log:set DEBUG org.openhab.binding.mybmw
-```
+You can restrict the accounts and vehicles for the fingerprint generation.
+Full syntax is available through the `mybmw help` console command.
 
-The debug fingerprint is generated every time the discovery is executed.
-To force a new fingerprint perform a _Scan_ for MyBMW things.
-Personal data is eliminated from the log entries so it should be possible to share them in public.
+Personal data is eliminated from fingerprints so it should be possible to share them in public.
 Data like
 
 - Vehicle Identification Number (VIN)
 - Location data
 
-are anonymized.
-You'll find the fingerprint in the logs with the command
+are anonymized in the JSON response and URL's.
 
-```shell
-grep "Discovery Fingerprint Data" openhab.log
-```
+After the corresponding fingerprint is generated please [follow the instructions to raise an issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the fingerprint!
 
-After the corresponding fingerprint is generated please [follow the instructions to raise an issue](https://community.openhab.org/t/how-to-file-an-issue/68464) and attach the fingerprint data!
 Your feedback is highly appreciated!
+
+#### Debug Logging
+
+You can [enable debug logging](https://www.openhab.org/docs/administration/logging.html#defining-what-to-log) to get more information on the behaviour of the binding.
+The package.subpackage in this case would be "org.openhab.binding.mybmw".
+
+As with fingerprint data, personal data is eliminated from logs.
 
 ### Range vs Range Radius
 

@@ -7,13 +7,30 @@
 	<config-description uri="thing-type:shelly:blubattery">
 		<parameter name="deviceAddress" type="text" required="true">
 			<label>@text/thing-type.config.shelly.deviceAddress.label</label>
-			<description>@text/thing-type.config.shelly.@text/thing-type.config.shelly.deviceAddress.label.description</description>
+			<description>
+				@text/thing-type.config.shelly.deviceAddress.description</description>
 		</parameter>
 		<parameter name="lowBattery" type="integer" required="false">
 			<label>@text/thing-type.config.shelly.battery.lowBattery.label</label>
-			<description>@text/thing-type.config.shelly.battery.lowBattery.description</description>
+			<description>
+				@text/thing-type.config.shelly.battery.lowBattery.description</description>
 			<default>20</default>
 			<unitLabel>%</unitLabel>
+		</parameter>
+	</config-description>
+
+	<config-description uri="thing-type:shelly:blugw">
+		<parameter name="deviceIp" type="text" required="true">
+			<label>@text/thing-type.config.shelly.deviceIp.label</label>
+			<description>@text/thing-type.config.shelly.deviceIp.description</description>
+			<context>network-address</context>
+		</parameter>
+
+		<parameter name="enableBluGateway" type="boolean" required="false">
+			<label>@text/thing-type.config.shelly.enableBluGateway.label</label>
+			<description>
+				@text/thing-type.config.shelly.enableBluGateway.description</description>
+			<default>true</default>
 		</parameter>
 	</config-description>
 

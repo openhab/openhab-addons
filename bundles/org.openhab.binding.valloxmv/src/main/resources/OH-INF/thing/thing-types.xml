@@ -145,7 +145,7 @@
 	</channel-type>
 
 	<channel-type id="humidity">
-		<item-type>Number:Dimensionless</item-type>
+		<item-type unitHint="%">Number:Dimensionless</item-type>
 		<label>Humidity</label>
 		<description>Current humidity of the air flow exhausting the building.</description>
 		<state readOnly="true" min="0" max="100" pattern="%d %unit%"/>

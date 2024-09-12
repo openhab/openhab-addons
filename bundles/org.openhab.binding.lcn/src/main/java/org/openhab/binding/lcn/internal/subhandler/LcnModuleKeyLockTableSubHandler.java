@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -79,7 +79,7 @@ public class LcnModuleKeyLockTableSubHandler extends AbstractLcnModuleSubHandler
                 try {
                     LcnChannelGroup channelGroup = LcnChannelGroup.fromTableId(tableId);
                     for (int i = 0; i < states.length; i++) {
-                        fireUpdate(channelGroup, i, states[i] ? OnOffType.ON : OnOffType.OFF);
+                        fireUpdate(channelGroup, i, OnOffType.from(states[i]));
                     }
                 } catch (LcnException e) {
                     logger.warn("Failed to set key table lock state: {}", e.getMessage());

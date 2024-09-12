@@ -7,11 +7,176 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.binding.mybmw</artifactId>
 
   <name>openHAB Add-ons :: Bundles :: MyBMW Binding</name>
 
+  <profiles>
+    <profile>
+      <id>test-coverage</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemPropertyVariables>
+                <jacoco-agent.destfile>target/jacoco.exec</jacoco-agent.destfile>
+              </systemPropertyVariables>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.8.11</version>
+            <executions>
+              <execution>
+                <id>default-instrument</id>
+                <goals>
+                  <goal>instrument</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>default-restore-instrumented-classes</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>restore-instrumented-classes</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>default-report</id>
+                <phase>test</phase>
+                <goals>
+                  <goal>report</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>default-check</id>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+                <configuration>
+                  <rules>
+                    <rule>
+                      <element>BUNDLE</element>
+                      <limits>
+                        <limit>
+                          <counter>INSTRUCTION</counter>
+                          <value>COVEREDRATIO</value>
+                          <minimum>0.20</minimum>
+                        </limit>
+                        <limit>
+                          <counter>BRANCH</counter>
+                          <value>COVEREDRATIO</value>
+                          <minimum>0.20</minimum>
+                        </limit>
+                      </limits>
+                    </rule>
+                  </rules>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+
+      <dependencies>
+        <dependency>
+          <!-- must be on the classpath -->
+          <groupId>org.jacoco</groupId>
+          <artifactId>org.jacoco.agent</artifactId>
+          <classifier>runtime</classifier>
+          <version>0.8.11</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <!--
+        If you activate this profile, the MyBmwProxyIT is executed which means real
+        backend requests. The test is only successful if you provide CONNECTED_USER and
+        CONNECTED_PASSWORD as environment variable of the Maven command.
+      -->
+      <id>integration-tests</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>3.2.5</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!--
+        This profile generates a jar file <regular-jar-file-name>-testenv.jar in the target folder. This
+        testenv jar contains the regular classes and in addition all responses from
+        src/test/resources. If you copy this jar file to your addons folder, you can simulate all
+        accounts which are available as fingerprints in the responses folder. This can be done like
+        this:
+        1. start openhab with the environment variable "ENVIRONMENT=test"
+
+        2. configure the connected account with username "testuser"
+
+        3. configure as connected password the folder which you want to test, e.g. "BEV", "BEV2", "PHEV", "ICE", "ICE2",
+        "MILD_HYBRID"
+
+        after that you should get the vehicles loaded properly so you can check if the channels are populated with data properly.
+      -->
+      <id>test-jar</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-resources</id>
+                <!-- here the phase you need -->
+                <phase>package</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${basedir}/target/classes</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>src/test/resources</directory>
+                      <filtering>true</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+                <configuration>
+                  <classifier>testenv</classifier>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

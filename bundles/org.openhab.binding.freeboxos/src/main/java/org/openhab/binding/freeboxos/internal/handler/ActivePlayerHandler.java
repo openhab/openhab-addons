@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,6 +17,7 @@ import static org.openhab.binding.freeboxos.internal.FreeboxOsBindingConstants.*
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.freeboxos.internal.action.ActivePlayerActions;
@@ -30,13 +31,14 @@ import org.openhab.core.library.unit.Units;
 import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
+import org.openhab.core.thing.ThingStatusDetail;
 import org.openhab.core.thing.binding.ThingHandlerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The {@link ActivePlayerHandler} is responsible for handling everything associated to Freebox Player with api
- * capabilities.
+ * The {@link ActivePlayerHandler} is responsible for handling everything associated to Freebox Player
+ * with api capabilities.
  *
  * @author Gaël L'hopital - Initial contribution
  */
@@ -50,7 +52,8 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
 
     public ActivePlayerHandler(Thing thing) {
         super(thing);
-        eventChannelUID = new ChannelUID(getThing().getUID(), SYS_INFO, BOX_EVENT);
+        statusDrivenByLanConnectivity = false;
+        eventChannelUID = new ChannelUID(getThing().getUID(), GROUP_SYS_INFO, BOX_EVENT);
     }
 
     @Override
@@ -59,32 +62,65 @@ public class ActivePlayerHandler extends PlayerHandler implements FreeDeviceIntf
         Player player = getManager(PlayerManager.class).getDevice(getClientId());
         if (player.reachable()) {
             Configuration config = getManager(PlayerManager.class).getConfig(player.id());
-            properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.serial());
-            properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.firmwareVersion());
+            if (config != null) {
+                properties.put(Thing.PROPERTY_SERIAL_NUMBER, config.serial());
+                properties.put(Thing.PROPERTY_FIRMWARE_VERSION, config.firmwareVersion());
+            }
         }
     }
 
     @Override
     protected void internalPoll() throws FreeboxException {
         super.internalPoll();
-        if (thing.getStatus().equals(ThingStatus.ONLINE)) {
-            Status status = getManager(PlayerManager.class).getPlayerStatus(getClientId());
-            updateChannelString(PLAYER_STATUS, PLAYER_STATUS, status.powerState().name());
-            ForegroundApp foreground = status.foregroundApp();
-            if (foreground != null) {
-                updateChannelString(PLAYER_STATUS, PACKAGE, foreground._package());
-            }
-            Configuration config = getManager(PlayerManager.class).getConfig(getClientId());
+        poll();
+    }
 
-            uptime = checkUptimeAndFirmware(config.uptimeVal(), uptime, config.firmwareVersion());
-            updateChannelQuantity(SYS_INFO, UPTIME, uptime, Units.SECOND);
+    @Override
+    protected void internalForcePoll() throws FreeboxException {
+        super.internalForcePoll();
+        poll();
+    }
+
+    private void poll() throws FreeboxException {
+        if (reachable) {
+            Player player = getManager(PlayerManager.class).getDevice(getClientId());
+            logger.debug("{}: poll with player.reachable() = {}", thing.getUID(), player.reachable());
+            if (player.reachable()) {
+                updateStatus(ThingStatus.ONLINE);
+            } else {
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-player-not-reachable");
+            }
+            if (player.reachable()) {
+                if (anyChannelLinked(GROUP_PLAYER_STATUS, Set.of(PLAYER_STATUS, PACKAGE))) {
+                    Status status = getManager(PlayerManager.class).getPlayerStatus(getClientId());
+                    if (status != null) {
+                        updateChannelString(GROUP_PLAYER_STATUS, PLAYER_STATUS, status.powerState().name());
+                        ForegroundApp foreground = status.foregroundApp();
+                        if (foreground != null) {
+                            updateChannelString(GROUP_PLAYER_STATUS, PACKAGE, foreground._package());
+                        }
+                    }
+                }
+                Configuration config = getManager(PlayerManager.class).getConfig(getClientId());
+                if (config != null) {
+                    uptime = checkUptimeAndFirmware(config.uptimeVal(), uptime, config.firmwareVersion());
+                } else {
+                    uptime = 0;
+                }
+            }
+            updateChannelQuantity(GROUP_SYS_INFO, UPTIME, uptime, Units.SECOND);
+        } else {
+            logger.debug("{}: poll with reachable={}", thing.getUID(), reachable);
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.NONE, "@text/info-player-not-reachable");
         }
     }
 
     public void reboot() {
         processReboot(() -> {
             try {
-                getManager(PlayerManager.class).reboot(getClientId());
+                if (!getManager(PlayerManager.class).reboot(getClientId())) {
+                    logger.warn("Unable to reboot the player - probably not reachable");
+                }
             } catch (FreeboxException e) {
                 logger.warn("Error rebooting: {}", e.getMessage());
             }

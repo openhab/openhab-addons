@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -67,8 +67,7 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
     private final Logger logger = LoggerFactory.getLogger(AbstractOpenWeatherMapHandler.class);
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES = Set.of(THING_TYPE_WEATHER_AND_FORECAST,
-            THING_TYPE_UVINDEX, THING_TYPE_AIR_POLLUTION, THING_TYPE_ONECALL_WEATHER_AND_FORECAST,
-            THING_TYPE_ONECALL_HISTORY);
+            THING_TYPE_AIR_POLLUTION, THING_TYPE_ONECALL_WEATHER_AND_FORECAST, THING_TYPE_ONECALL_HISTORY);
 
     private final TimeZoneProvider timeZoneProvider;
 
@@ -84,11 +83,10 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
     public void initialize() {
         OpenWeatherMapLocationConfiguration config = getConfigAs(OpenWeatherMapLocationConfiguration.class);
 
-        boolean configValid = true;
         if (config.location == null || config.location.trim().isEmpty()) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-missing-location");
-            configValid = false;
+            return;
         }
 
         try {
@@ -97,13 +95,10 @@ public abstract class AbstractOpenWeatherMapHandler extends BaseThingHandler {
             logger.warn("Error parsing 'location' parameter: {}", e.getMessage());
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                     "@text/offline.conf-error-parsing-location");
-            location = null;
-            configValid = false;
+            return;
         }
 
-        if (configValid) {
-            updateStatus(ThingStatus.UNKNOWN);
-        }
+        updateStatus(ThingStatus.UNKNOWN);
     }
 
     @Override

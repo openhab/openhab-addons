@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -121,7 +121,7 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
     private @Nullable ScheduledFuture<?> loginFuture;
 
     // List of futures used for command retries
-    private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<ScheduledFuture<?>>();
+    private Collection<ScheduledFuture<?>> retryFutures = new ConcurrentLinkedQueue<>();
 
     /**
      * List of executions
@@ -307,8 +307,15 @@ public class SomfyTahomaBridgeHandler extends BaseBridgeHandler {
                             isDevModeReady() ? "LAN mode" : cloudFallback ? "Cloud mode fallback" : "Cloud mode");
                 } else {
                     logger.debug("Events id error: {}", id);
-                    updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                            "unable to register events");
+                    if (!thingConfig.isDevMode()) {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "unable to register events");
+                    } else {
+                        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
+                                "LAN mode is not properly configured");
+                        logger.debug("Forcing the gateway discovery");
+                        discoverGateway();
+                    }
                 }
             }
         } catch (JsonSyntaxException e) {

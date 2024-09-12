@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -64,7 +64,6 @@ public class AirQualityHandlerFactory extends BaseThingHandlerFactory {
 
         return THING_TYPE_STATION.equals(thingTypeUID)
                 ? new AirQualityStationHandler(thing, timeZoneProvider, locationProvider)
-                : BRIDGE_TYPE_API.equals(thingTypeUID) ? new AirQualityBridgeHandler((Bridge) thing, locationProvider)
-                        : null;
+                : BRIDGE_TYPE_API.equals(thingTypeUID) ? new AirQualityBridgeHandler((Bridge) thing) : null;
     }
 }

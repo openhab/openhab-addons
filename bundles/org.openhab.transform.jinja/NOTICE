@@ -29,16 +29,6 @@ jinjava
 * Project: https://github.com/HubSpot/jinjava
 * Source:  https://github.com/HubSpot/jinjava
 
-jsoup
-* License: MIT License
-* Project: https://jsoup.org/
-* Source:  https://github.com/jhy/jsoup
-
-re2j
-* License: Go License
-* Project: https://github.com/google/re2j
-* Source:  https://github.com/google/re2j
-
 == Third-party license(s)
 
 === Go License

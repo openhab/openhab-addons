@@ -8,4 +8,45 @@
 	<description>Binding for HP Printers with Embedded Web Servers</description>
 	<connection>local</connection>
 
+	<discovery-methods>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_printer._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>rp</name>
+					<regex>.*</regex>
+				</match-property>
+				<match-property>
+					<name>ty</name>
+					<regex>(?i)HP .*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+		<discovery-method>
+			<service-type>mdns</service-type>
+			<discovery-parameters>
+				<discovery-parameter>
+					<name>mdnsServiceType</name>
+					<value>_ipp._tcp.local.</value>
+				</discovery-parameter>
+			</discovery-parameters>
+			<match-properties>
+				<match-property>
+					<name>rp</name>
+					<regex>.*</regex>
+				</match-property>
+				<match-property>
+					<name>ty</name>
+					<regex>(?i)HP .*</regex>
+				</match-property>
+			</match-properties>
+		</discovery-method>
+	</discovery-methods>
+
 </addon:addon>

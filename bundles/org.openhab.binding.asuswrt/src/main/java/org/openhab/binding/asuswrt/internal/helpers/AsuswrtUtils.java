@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -324,14 +324,14 @@ public class AsuswrtUtils {
      * Returns an {@link OnOffType} from a {@link Boolean}.
      */
     public static OnOffType getOnOffType(@Nullable Boolean boolVal) {
-        return (boolVal != null ? boolVal ? OnOffType.ON : OnOffType.OFF : OnOffType.OFF);
+        return boolVal != null ? OnOffType.from(boolVal) : OnOffType.OFF;
     }
 
     /**
      * Returns an {@link OnOffType} from an {@link Integer}.
      */
     public static OnOffType getOnOffType(Integer intVal) {
-        return intVal == 0 ? OnOffType.OFF : OnOffType.ON;
+        return OnOffType.from(intVal != 0);
     }
 
     /**

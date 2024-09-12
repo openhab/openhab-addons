@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -66,6 +66,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
     private static final String IDS = "ids";
     private static final int SLEEP_SECONDS = 360;
     private static final Set<Integer> HTTP_OK_CODES = Set.of(HttpStatus.OK_200, HttpStatus.NO_CONTENT_204);
+    private static final int REQUEST_TIMEOUT_MS = 10_000;
 
     private final Logger logger = LoggerFactory.getLogger(GatewayWebTargets.class);
     private final Gson jsonParser = new Gson();
@@ -172,7 +173,7 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
                     Thing.PROPERTY_FIRMWARE_VERSION, result.getFwVersion(), //
                     Thing.PROPERTY_SERIAL_NUMBER, result.getSerialNumber());
         } catch (JsonParseException e) {
-            throw new HubProcessingException("getFirmwareVersions(): JsonParseException");
+            throw new HubProcessingException("getInformation(): JsonParseException");
         }
     }
 
@@ -248,7 +249,8 @@ public class GatewayWebTargets implements Closeable, HostnameVerifier {
                 logger.trace("invoke() request JSON:{}", jsonCommand);
             }
         }
-        Request request = httpClient.newRequest(url).method(method).header("Connection", "close").accept("*/*");
+        Request request = httpClient.newRequest(url).method(method).header("Connection", "close").accept("*/*")
+                .timeout(REQUEST_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         if (query != null) {
             request.param(query.getKey(), query.getValue());
         }

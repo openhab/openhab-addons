@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -148,7 +148,7 @@ public class GoEChargerHandler extends GoEChargerBaseHandler {
                 if (goeResponse.allowCharging == null) {
                     return UnDefType.UNDEF;
                 }
-                return goeResponse.allowCharging == 1 ? OnOffType.ON : OnOffType.OFF;
+                return OnOffType.from(goeResponse.allowCharging == 1);
             case PHASES:
                 if (goeResponse.energy == null) {
                     return UnDefType.UNDEF;

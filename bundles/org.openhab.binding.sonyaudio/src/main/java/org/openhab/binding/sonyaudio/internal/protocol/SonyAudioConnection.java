@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
     private final String host;
     private final int port;
     private final String path;
-    private final URI base_uri;
+    private final URI baseUri;
 
     private final WebSocketClient webSocketClient;
 
@@ -59,8 +59,8 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
 
     private final SonyAudioEventListener listener;
 
-    private int min_volume = 0;
-    private int max_volume = 50;
+    private int minVolume = 0;
+    private int maxVolume = 50;
 
     private final Gson gson;
 
@@ -73,14 +73,14 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
         this.gson = new Gson();
         this.webSocketClient = webSocketClient;
 
-        base_uri = new URI(String.format("ws://%s:%d/%s", host, port, path)).normalize();
+        baseUri = new URI(String.format("ws://%s:%d/%s", host, port, path)).normalize();
 
-        URI wsAvContentUri = base_uri.resolve(base_uri.getPath() + "/avContent").normalize();
+        URI wsAvContentUri = baseUri.resolve(baseUri.getPath() + "/avContent").normalize();
         avContentSocket = new SonyAudioClientSocket(this, wsAvContentUri, scheduler);
-        URI wsAudioUri = base_uri.resolve(base_uri.getPath() + "/audio").normalize();
+        URI wsAudioUri = baseUri.resolve(baseUri.getPath() + "/audio").normalize();
         audioSocket = new SonyAudioClientSocket(this, wsAudioUri, scheduler);
 
-        URI wsSystemUri = base_uri.resolve(base_uri.getPath() + "/system").normalize();
+        URI wsSystemUri = baseUri.resolve(baseUri.getPath() + "/system").normalize();
         systemSocket = new SonyAudioClientSocket(this, wsSystemUri, scheduler);
     }
 
@@ -123,7 +123,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
             input.input = param.get("uri").getAsString();
             if (param.has("broadcastFreq")) {
                 int freq = param.get("broadcastFreq").getAsInt();
-                input.radio_freq = Optional.of(freq);
+                input.radioFrequency = Optional.of(freq);
                 checkRadioPreset(input.input);
             }
             listener.updateInput(zone, input);
@@ -134,7 +134,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
             SonyAudioVolume volume = new SonyAudioVolume();
 
             int rawVolume = param.get("volume").getAsInt();
-            volume.volume = Math.round(100 * (rawVolume - min_volume) / (max_volume - min_volume));
+            volume.volume = Math.round(100 * (rawVolume - minVolume) / (maxVolume - minVolume));
 
             volume.mute = "on".equalsIgnoreCase(param.get("mute").getAsString());
             listener.updateVolume(zone, volume);
@@ -274,8 +274,8 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
     }
 
     public String getConnectionName() {
-        if (base_uri != null) {
-            return base_uri.toString();
+        if (baseUri != null) {
+            return baseUri.toString();
         }
         return String.format("ws://%s:%d/%s", host, port, path);
     }
@@ -292,8 +292,9 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
                 Iterator<JsonElement> terminals = element.getAsJsonArray().get(0).getAsJsonArray().iterator();
                 while (terminals.hasNext()) {
                     JsonObject terminal = terminals.next().getAsJsonObject();
+                    String zoneUri = "extOutput:zone?zone=" + Integer.toString(zone);
                     String uri = terminal.get("uri").getAsString();
-                    if (uri.equalsIgnoreCase("extOutput:zone?zone=" + Integer.toString(zone))) {
+                    if (uri.equalsIgnoreCase(zoneUri)) {
                         return "active".equalsIgnoreCase(terminal.get("active").getAsString()) ? true : false;
                     }
                 }
@@ -338,7 +339,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
 
     public class SonyAudioInput {
         public String input = "";
-        public Optional<Integer> radio_freq = Optional.empty();
+        public Optional<Integer> radioFrequency = Optional.empty();
     }
 
     public SonyAudioInput getInput() throws IOException {
@@ -367,7 +368,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
 
             if (result.has("broadcastFreq")) {
                 int freq = result.get("broadcastFreq").getAsInt();
-                ret.radio_freq = Optional.of(freq);
+                ret.radioFrequency = Optional.of(freq);
             }
             return ret;
         }
@@ -425,9 +426,9 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
             SonyAudioVolume ret = new SonyAudioVolume();
 
             int volume = result.get("volume").getAsInt();
-            min_volume = result.get("minVolume").getAsInt();
-            max_volume = result.get("maxVolume").getAsInt();
-            int vol = Math.round(100 * (volume - min_volume) / (max_volume - min_volume));
+            minVolume = result.get("minVolume").getAsInt();
+            maxVolume = result.get("maxVolume").getAsInt();
+            int vol = Math.round(100 * (volume - minVolume) / (maxVolume - minVolume));
             if (vol < 0) {
                 vol = 0;
             }
@@ -445,7 +446,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
         if (audioSocket == null) {
             throw new IOException("Audio Socket not connected");
         }
-        SetAudioVolume setAudioVolume = new SetAudioVolume(volume, min_volume, max_volume);
+        SetAudioVolume setAudioVolume = new SetAudioVolume(volume, minVolume, maxVolume);
         audioSocket.callMethod(setAudioVolume);
     }
 
@@ -461,7 +462,7 @@ public class SonyAudioConnection implements SonyAudioClientSocketEventListener {
         if (audioSocket == null) {
             throw new IOException("Audio Socket not connected");
         }
-        SetAudioVolume setAudioVolume = new SetAudioVolume(zone, volume, min_volume, max_volume);
+        SetAudioVolume setAudioVolume = new SetAudioVolume(zone, volume, minVolume, maxVolume);
         audioSocket.callMethod(setAudioVolume);
     }
 

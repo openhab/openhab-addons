@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -59,16 +59,16 @@ public class NAThing extends NAObject implements NAModule {
         return dashboardData;
     }
 
-    public @Nullable String getFirmware() {
-        return firmware;
+    public Optional<String> getFirmware() {
+        return Optional.ofNullable(firmware);
     }
 
     public int getRadioStatus() {
         return radioStatus;
     }
 
-    public Optional<ZonedDateTime> getLastSeen() {
-        return Optional.ofNullable(lastSeen);
+    public @Nullable ZonedDateTime getLastSeen() {
+        return lastSeen;
     }
 
     /**

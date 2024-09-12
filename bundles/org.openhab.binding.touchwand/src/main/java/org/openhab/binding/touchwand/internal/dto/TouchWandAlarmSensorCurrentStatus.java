@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -28,9 +28,9 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class TouchWandAlarmSensorCurrentStatus {
 
     private int batt;
-    private List<Sensor> sensorsStatus = new ArrayList<Sensor>();
-    private List<AlarmEvent> alarmsStatus = new ArrayList<AlarmEvent>();
-    private List<BinarySensorEvent> bSensorsStatus = new ArrayList<BinarySensorEvent>();
+    private List<Sensor> sensorsStatus = new ArrayList<>();
+    private List<AlarmEvent> alarmsStatus = new ArrayList<>();
+    private List<BinarySensorEvent> bSensorsStatus = new ArrayList<>();
 
     public void setBatt(Integer batt) {
         this.batt = batt;

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -36,8 +36,6 @@ import org.openhab.core.thing.ChannelUID;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingStatus;
 import org.openhab.core.thing.ThingStatusDetail;
-import org.openhab.core.thing.ThingStatusInfo;
-import org.openhab.core.thing.binding.BaseThingHandler;
 import org.openhab.core.types.Command;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,15 +47,12 @@ import org.slf4j.LoggerFactory;
  * @author Mark Herwege - Initial Contribution
  */
 @NonNullByDefault
-public class NikoHomeControlActionHandler extends BaseThingHandler implements NhcActionEvent {
+public class NikoHomeControlActionHandler extends NikoHomeControlBaseHandler implements NhcActionEvent {
 
     private final Logger logger = LoggerFactory.getLogger(NikoHomeControlActionHandler.class);
 
     private volatile @Nullable NhcAction nhcAction;
 
-    private volatile boolean initialized = false;
-
-    private String actionId = "";
     private int stepValue;
     private boolean invert;
 
@@ -66,29 +61,10 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     }
 
     @Override
-    public void handleCommand(ChannelUID channelUID, Command command) {
-        NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
-        if (nhcComm == null) {
-            logger.debug("communication not up yet, cannot handle command {} for {}", command, channelUID);
-            return;
-        }
-
-        // This can be expensive, therefore do it in a job.
-        scheduler.submit(() -> {
-            if (!nhcComm.communicationActive()) {
-                restartCommunication(nhcComm);
-            }
-
-            if (nhcComm.communicationActive()) {
-                handleCommandSelection(channelUID, command);
-            }
-        });
-    }
-
-    private void handleCommandSelection(ChannelUID channelUID, Command command) {
+    void handleCommandSelection(ChannelUID channelUID, Command command) {
         NhcAction nhcAction = this.nhcAction;
         if (nhcAction == null) {
-            logger.debug("action with ID {} not initialized", actionId);
+            logger.debug("action with ID {} not initialized", deviceId);
             return;
         }
 
@@ -103,15 +79,12 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
             case CHANNEL_BUTTON:
             case CHANNEL_SWITCH:
                 handleSwitchCommand(command);
-                updateStatus(ThingStatus.ONLINE);
                 break;
             case CHANNEL_BRIGHTNESS:
                 handleBrightnessCommand(command);
-                updateStatus(ThingStatus.ONLINE);
                 break;
             case CHANNEL_ROLLERSHUTTER:
                 handleRollershutterCommand(command);
-                updateStatus(ThingStatus.ONLINE);
                 break;
             default:
                 logger.debug("unexpected command for channel {}", channelUID.getId());
@@ -121,7 +94,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     private void handleSwitchCommand(Command command) {
         NhcAction nhcAction = this.nhcAction;
         if (nhcAction == null) {
-            logger.debug("action with ID {} not initialized", actionId);
+            logger.debug("action with ID {} not initialized", deviceId);
             return;
         }
 
@@ -137,7 +110,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     private void handleBrightnessCommand(Command command) {
         NhcAction nhcAction = this.nhcAction;
         if (nhcAction == null) {
-            logger.debug("action with ID {} not initialized", actionId);
+            logger.debug("action with ID {} not initialized", deviceId);
             return;
         }
 
@@ -177,7 +150,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     private void handleRollershutterCommand(Command command) {
         NhcAction nhcAction = this.nhcAction;
         if (nhcAction == null) {
-            logger.debug("action with ID {} not initialized", actionId);
+            logger.debug("action with ID {} not initialized", deviceId);
             return;
         }
 
@@ -209,7 +182,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         } else {
             config = getConfig().as(NikoHomeControlActionConfig.class);
         }
-        actionId = config.actionId;
+        deviceId = config.actionId;
 
         NikoHomeControlBridgeHandler bridgeHandler = getBridgeHandler();
         if (bridgeHandler == null) {
@@ -224,11 +197,12 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
         if ((bridge != null) && ThingStatus.ONLINE.equals(bridge.getStatus())) {
             // We need to do this in a separate thread because we may have to wait for the
             // communication to become active
-            scheduler.submit(this::startCommunication);
+            commStartThread = scheduler.submit(this::startCommunication);
         }
     }
 
-    private synchronized void startCommunication() {
+    @Override
+    synchronized void startCommunication() {
         NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
 
         if (nhcComm == null) {
@@ -241,10 +215,18 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
             return;
         }
 
-        NhcAction nhcAction = nhcComm.getActions().get(actionId);
+        NhcAction nhcAction = nhcComm.getActions().get(deviceId);
         if (nhcAction == null) {
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.actionId");
+                    "@text/offline.configuration-error.deviceId");
+            return;
+        }
+
+        ActionType actionType = nhcAction.getType();
+        if (!(ActionType.TRIGGER.equals(actionType) || ActionType.RELAY.equals(actionType)
+                || ActionType.DIMMER.equals(actionType) || ActionType.ROLLERSHUTTER.equals(actionType))) {
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "@text/offline.configuration-error.actionType");
             return;
         }
 
@@ -259,25 +241,23 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
         this.nhcAction = nhcAction;
 
-        logger.debug("action initialized {}", actionId);
-
-        Bridge bridge = getBridge();
-        if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.ONLINE);
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
-        }
-
-        actionEvent(nhcAction.getState());
-
         initialized = true;
+        deviceInitialized();
+    }
+
+    @Override
+    void refresh() {
+        NhcAction action = nhcAction;
+        if (action != null) {
+            actionEvent(action.getState());
+        }
     }
 
     @Override
     public void dispose() {
         NikoHomeControlCommunication nhcComm = getCommunication(getBridgeHandler());
         if (nhcComm != null) {
-            NhcAction action = nhcComm.getActions().get(actionId);
+            NhcAction action = nhcComm.getActions().get(deviceId);
             if (action != null) {
                 action.unsetEventHandler();
             }
@@ -308,7 +288,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
     public void actionEvent(int actionState) {
         NhcAction nhcAction = this.nhcAction;
         if (nhcAction == null) {
-            logger.debug("action with ID {} not initialized", actionId);
+            logger.debug("action with ID {} not initialized", deviceId);
             return;
         }
 
@@ -316,10 +296,10 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
 
         switch (actionType) {
             case TRIGGER:
-                updateState(CHANNEL_BUTTON, (actionState == 0) ? OnOffType.OFF : OnOffType.ON);
+                updateState(CHANNEL_BUTTON, OnOffType.from(actionState != 0));
                 updateStatus(ThingStatus.ONLINE);
             case RELAY:
-                updateState(CHANNEL_SWITCH, (actionState == 0) ? OnOffType.OFF : OnOffType.ON);
+                updateState(CHANNEL_SWITCH, OnOffType.from(actionState != 0));
                 updateStatus(ThingStatus.ONLINE);
                 break;
             case DIMMER:
@@ -332,66 +312,7 @@ public class NikoHomeControlActionHandler extends BaseThingHandler implements Nh
                 updateStatus(ThingStatus.ONLINE);
                 break;
             default:
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                        "@text/offline.configuration-error.actionType");
-        }
-    }
-
-    @Override
-    public void actionInitialized() {
-        Bridge bridge = getBridge();
-        if ((bridge != null) && (bridge.getStatus() == ThingStatus.ONLINE)) {
-            updateStatus(ThingStatus.ONLINE);
-        }
-    }
-
-    @Override
-    public void actionRemoved() {
-        updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                "@text/offline.configuration-error.actionRemoved");
-    }
-
-    private void restartCommunication(NikoHomeControlCommunication nhcComm) {
-        // We lost connection but the connection object is there, so was correctly started.
-        // Try to restart communication.
-        nhcComm.scheduleRestartCommunication();
-        // If still not active, take thing offline and return.
-        if (!nhcComm.communicationActive()) {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR,
-                    "@text/offline.communication-error");
-            return;
-        }
-        // Also put the bridge back online
-        NikoHomeControlBridgeHandler nhcBridgeHandler = getBridgeHandler();
-        if (nhcBridgeHandler != null) {
-            nhcBridgeHandler.bridgeOnline();
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                    "@text/offline.configuration-error.invalid-bridge-handler");
-        }
-    }
-
-    private @Nullable NikoHomeControlCommunication getCommunication(
-            @Nullable NikoHomeControlBridgeHandler nhcBridgeHandler) {
-        return nhcBridgeHandler != null ? nhcBridgeHandler.getCommunication() : null;
-    }
-
-    private @Nullable NikoHomeControlBridgeHandler getBridgeHandler() {
-        Bridge nhcBridge = getBridge();
-        return nhcBridge != null ? (NikoHomeControlBridgeHandler) nhcBridge.getHandler() : null;
-    }
-
-    @Override
-    public void bridgeStatusChanged(ThingStatusInfo bridgeStatusInfo) {
-        ThingStatus bridgeStatus = bridgeStatusInfo.getStatus();
-        if (ThingStatus.ONLINE.equals(bridgeStatus)) {
-            if (!initialized) {
-                scheduler.submit(this::startCommunication);
-            } else {
-                updateStatus(ThingStatus.ONLINE);
-            }
-        } else {
-            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.BRIDGE_OFFLINE);
+                break;
         }
     }
 }

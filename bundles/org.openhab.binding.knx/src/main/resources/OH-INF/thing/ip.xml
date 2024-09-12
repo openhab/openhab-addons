@@ -8,6 +8,8 @@
 		<label>KNX/IP Gateway</label>
 		<description>This is a KNX IP interface or router</description>
 
+		<representation-property>serialNumber</representation-property>
+
 		<config-description>
 			<parameter-group name="knxsecure">
 				<label>KNX secure</label>

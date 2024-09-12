@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -183,8 +182,9 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
 
         updateStatus(ThingStatus.ONLINE);
 
-        getThing().getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler).filter(Objects::nonNull)
-                .map(CommonInterface.class::cast).forEach(CommonInterface::expireData);
+        getThing().getThings().stream().filter(Thing::isEnabled).map(Thing::getHandler)
+                .filter(CommonInterface.class::isInstance).map(CommonInterface.class::cast)
+                .forEach(CommonInterface::expireData);
     }
 
     private boolean authenticate(@Nullable String code, @Nullable String redirectUri) {
@@ -232,7 +232,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
         servlet.startListening();
         grantServlet = Optional.of(servlet);
         updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
-                ConfigurationLevel.REFRESH_TOKEN_NEEDED.message);
+                ConfigurationLevel.REFRESH_TOKEN_NEEDED.message.formatted(servlet.getPath()));
     }
 
     public ApiHandlerConfiguration getConfiguration() {
@@ -293,7 +293,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                     logger.info("Unable to instantiate {}, expected scope {} is not active", clazz, expected);
                 }
             } catch (SecurityException | ReflectiveOperationException e) {
-                logger.warn("Error invoking RestManager constructor for class {} : {}", clazz, e.getMessage());
+                logger.warn("Error invoking RestManager constructor for class {}: {}", clazz, e.getMessage());
             }
         }
         return (T) managers.get(clazz);
@@ -319,7 +319,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                     request.content(inputStreamContentProvider, contentType);
                     request.header(HttpHeader.ACCEPT, "application/json");
                 }
-                logger.trace(" -with payload : {} ", payload);
+                logger.trace(" -with payload: {} ", payload);
             }
 
             if (isLinked(requestCountChannelUID)) {
@@ -331,15 +331,16 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                 }
                 updateState(requestCountChannelUID, new DecimalType(requestsTimestamps.size()));
             }
-            logger.trace(" -with headers : {} ",
+            logger.trace(" -with headers: {} ",
                     String.join(", ", request.getHeaders().stream().map(HttpField::toString).toList()));
             ContentResponse response = request.send();
 
             Code statusCode = HttpStatus.getCode(response.getStatus());
             String responseBody = new String(response.getContent(), StandardCharsets.UTF_8);
-            logger.trace(" -returned : code {} body {}", statusCode, responseBody);
+            logger.trace(" -returned: code {} body {}", statusCode, responseBody);
 
             if (statusCode == Code.OK) {
+                updateStatus(ThingStatus.ONLINE);
                 return deserializer.deserialize(clazz, responseBody);
             }
 
@@ -347,22 +348,22 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
             try {
                 exception = new NetatmoException(deserializer.deserialize(ApiError.class, responseBody));
             } catch (NetatmoException e) {
-                exception = new NetatmoException("Error deserializing error : %s".formatted(statusCode.getMessage()));
+                exception = new NetatmoException("Error deserializing error: %s".formatted(statusCode.getMessage()));
             }
             throw exception;
         } catch (NetatmoException e) {
             if (e.getStatusCode() == ServiceError.MAXIMUM_USAGE_REACHED) {
-                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
+                updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/maximum-usage-reached");
                 prepareReconnection(null, null);
             }
             throw e;
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, e.getMessage());
-            throw new NetatmoException(String.format("%s: \"%s\"", e.getClass().getName(), e.getMessage()));
+            throw new NetatmoException("Request interrupted");
         } catch (TimeoutException | ExecutionException e) {
             if (retryCount > 0) {
-                logger.debug("Request timedout, retry counter : {}", retryCount);
+                logger.debug("Request timedout, retry counter: {}", retryCount);
                 return executeUri(uri, method, clazz, payload, contentType, retryCount - 1);
             }
             updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "@text/request-time-out");
@@ -427,7 +428,7 @@ public class ApiBridgeHandler extends BaseBridgeHandler {
                         });
             }
         } catch (NetatmoException e) {
-            logger.warn("Error while identifying all modules : {}", e.getMessage());
+            logger.warn("Error while identifying all modules: {}", e.getMessage());
         }
     }
 

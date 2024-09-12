@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -98,12 +98,12 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     break;
                 case PANEL_TIME_STAMP:
                     boolState = state != 0;
-                    onOffType = boolState ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(boolState);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_TIME_BROADCAST:
                     boolState = state != 0;
-                    onOffType = boolState ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(boolState);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_COMMAND:
@@ -114,67 +114,67 @@ public class PanelThingHandler extends DSCAlarmBaseThingHandler {
                     break;
                 case PANEL_TROUBLE_LED:
                     boolState = state != 0;
-                    onOffType = boolState ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(boolState);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_SERVICE_REQUIRED:
                     trouble = state != 0;
-                    onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trouble);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_AC_TROUBLE:
                     trouble = state != 0;
-                    onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trouble);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_TELEPHONE_TROUBLE:
                     trouble = state != 0;
-                    onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trouble);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_FTC_TROUBLE:
                     trouble = state != 0;
-                    onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trouble);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_ZONE_FAULT:
                     trouble = state != 0;
-                    onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trouble);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_ZONE_TAMPER:
                     trouble = state != 0;
-                    onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trouble);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_ZONE_LOW_BATTERY:
                     trouble = state != 0;
-                    onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trouble);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_TIME_LOSS:
                     trouble = state != 0;
-                    onOffType = trouble ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trouble);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_FIRE_KEY_ALARM:
                     trigger = state != 0;
-                    onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trigger);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_PANIC_KEY_ALARM:
                     trigger = state != 0;
-                    onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trigger);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_AUX_KEY_ALARM:
                     trigger = state != 0;
-                    onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trigger);
                     updateState(channelUID, onOffType);
                     break;
                 case PANEL_AUX_INPUT_ALARM:
                     trigger = state != 0;
-                    onOffType = trigger ? OnOffType.ON : OnOffType.OFF;
+                    onOffType = OnOffType.from(trigger);
                     updateState(channelUID, onOffType);
                     break;
                 default:

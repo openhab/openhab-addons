@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,7 +12,6 @@
  */
 package org.openhab.binding.nikohomecontrol.internal;
 
-import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,17 +45,30 @@ public class NikoHomeControlBindingConstants {
     public static final ThingTypeUID THING_TYPE_DIMMABLE_LIGHT = new ThingTypeUID(BINDING_ID, "dimmer");
     public static final ThingTypeUID THING_TYPE_BLIND = new ThingTypeUID(BINDING_ID, "blind");
     public static final ThingTypeUID THING_TYPE_THERMOSTAT = new ThingTypeUID(BINDING_ID, "thermostat");
+    public static final ThingTypeUID THING_TYPE_ENERGYMETER_LIVE = new ThingTypeUID(BINDING_ID, "energyMeterLive");
     public static final ThingTypeUID THING_TYPE_ENERGYMETER = new ThingTypeUID(BINDING_ID, "energyMeter");
+    public static final ThingTypeUID THING_TYPE_GASMETER = new ThingTypeUID(BINDING_ID, "gasMeter");
+    public static final ThingTypeUID THING_TYPE_WATERMETER = new ThingTypeUID(BINDING_ID, "waterMeter");
+    public static final ThingTypeUID THING_TYPE_ACCESS = new ThingTypeUID(BINDING_ID, "access");
+    public static final ThingTypeUID THING_TYPE_ACCESS_RINGANDCOMEIN = new ThingTypeUID(BINDING_ID,
+            "accessRingAndComeIn");
+    public static final ThingTypeUID THING_TYPE_ALARM = new ThingTypeUID(BINDING_ID, "alarm");
 
     // thing type sets
-    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(BRIDGEI_THING_TYPE, BRIDGEII_THING_TYPE).collect(Collectors.toSet()));
-    public static final Set<ThingTypeUID> ACTION_THING_TYPES_UIDS = Collections.unmodifiableSet(
-            Stream.of(THING_TYPE_PUSHBUTTON, THING_TYPE_ON_OFF_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_BLIND)
-                    .collect(Collectors.toSet()));
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections
-            .unmodifiableSet(Stream.of(THING_TYPE_PUSHBUTTON, THING_TYPE_ON_OFF_LIGHT, THING_TYPE_DIMMABLE_LIGHT,
-                    THING_TYPE_BLIND, THING_TYPE_THERMOSTAT, THING_TYPE_ENERGYMETER).collect(Collectors.toSet()));
+    public static final Set<ThingTypeUID> BRIDGE_THING_TYPES_UIDS = Set.of(BRIDGEI_THING_TYPE, BRIDGEII_THING_TYPE);
+    public static final Set<ThingTypeUID> ACTION_THING_TYPES_UIDS = Set.of(THING_TYPE_PUSHBUTTON,
+            THING_TYPE_ON_OFF_LIGHT, THING_TYPE_DIMMABLE_LIGHT, THING_TYPE_BLIND);
+    public static final Set<ThingTypeUID> THERMOSTAT_THING_TYPES_UIDS = Set.of(THING_TYPE_THERMOSTAT);
+    public static final Set<ThingTypeUID> METER_THING_TYPES_UIDS = Set.of(THING_TYPE_ENERGYMETER_LIVE,
+            THING_TYPE_ENERGYMETER, THING_TYPE_GASMETER, THING_TYPE_WATERMETER);
+    public static final Set<ThingTypeUID> ACCESS_THING_TYPES_UIDS = Set.of(THING_TYPE_ACCESS,
+            THING_TYPE_ACCESS_RINGANDCOMEIN);
+    public static final Set<ThingTypeUID> ALARM_THING_TYPES_UIDS = Set.of(THING_TYPE_ALARM);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Stream
+            .of(BRIDGE_THING_TYPES_UIDS.stream(), ACTION_THING_TYPES_UIDS.stream(),
+                    THERMOSTAT_THING_TYPES_UIDS.stream(), METER_THING_TYPES_UIDS.stream(),
+                    ACCESS_THING_TYPES_UIDS.stream(), ALARM_THING_TYPES_UIDS.stream())
+            .flatMap(i -> i).collect(Collectors.toSet());
 
     // List of all Channel ids
     public static final String CHANNEL_BUTTON = "button";
@@ -73,6 +85,23 @@ public class NikoHomeControlBindingConstants {
     public static final String CHANNEL_HEATING_DEMAND = "heatingdemand";
 
     public static final String CHANNEL_POWER = "power";
+    public static final String CHANNEL_ENERGY = "energy";
+    public static final String CHANNEL_GAS = "gas";
+    public static final String CHANNEL_WATER = "water";
+    public static final String CHANNEL_ENERGY_DAY = "energyday";
+    public static final String CHANNEL_GAS_DAY = "gasday";
+    public static final String CHANNEL_WATER_DAY = "waterday";
+    public static final String CHANNEL_ENERGY_LAST = "energylast";
+    public static final String CHANNEL_GAS_LAST = "gaslast";
+    public static final String CHANNEL_WATER_LAST = "waterlast";
+
+    public static final String CHANNEL_BELL_BUTTON = "bellbutton";
+    public static final String CHANNEL_RING_AND_COME_IN = "ringandcomein";
+    public static final String CHANNEL_LOCK = "lock";
+
+    public static final String CHANNEL_ARM = "arm";
+    public static final String CHANNEL_ARMED = "armed";
+    public static final String CHANNEL_STATE = "state";
 
     public static final String CHANNEL_ALARM = "alarm";
     public static final String CHANNEL_NOTICE = "notice";
@@ -87,11 +116,17 @@ public class NikoHomeControlBindingConstants {
     // Thing config properties
     public static final String CONFIG_ACTION_ID = "actionId";
     public static final String CONFIG_STEP_VALUE = "step";
+    public static final String CONFIG_INVERT = "invert";
 
     public static final String CONFIG_THERMOSTAT_ID = "thermostatId";
     public static final String CONFIG_OVERRULETIME = "overruleTime";
 
-    public static final String CONFIG_ENERGYMETER_ID = "energyMeterId";
+    public static final String METER_ID = "meterId";
+    public static final String CONFIG_METER_REFRESH = "refresh";
+
+    public static final String CONFIG_ACCESS_ID = "accessId";
+
+    public static final String CONFIG_ALARM_ID = "alarmId";
 
     // Thing properties
     public static final String PROPERTY_DEVICE_TYPE = "deviceType";

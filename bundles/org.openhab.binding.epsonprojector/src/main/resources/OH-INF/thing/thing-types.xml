@@ -142,7 +142,7 @@
 	<channel-type id="lamptime">
 		<item-type>Number</item-type>
 		<label>Lamp Time</label>
-		<description>Retrieves the Lamp Hours</description>
+		<description>Retrieves the number of hours the lamp has been used</description>
 		<state readOnly="true" pattern="%d h"/>
 	</channel-type>
 	<channel-type id="keycode" advanced="true">

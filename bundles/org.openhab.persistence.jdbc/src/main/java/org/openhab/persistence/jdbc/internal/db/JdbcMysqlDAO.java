@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -60,7 +60,10 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
      */
     private void initSqlTypes() {
         logger.debug("JDBC::initSqlTypes: Initialize the type array");
-        sqlTypes.put("STRINGITEM", "VARCHAR(21717)");// mysql using utf-8 max 65535/3 = 21845, using 21845-128 = 21717
+
+        // MySQL using utf8mb4 max 65535/4 = 16383, using 16383-128 = 16255
+        sqlTypes.put("IMAGEITEM", "VARCHAR(16255)");
+        sqlTypes.put("STRINGITEM", "VARCHAR(16255)");
     }
 
     /**
@@ -90,7 +93,7 @@ public class JdbcMysqlDAO extends JdbcBaseDAO {
         this.dbMeta = dbMeta;
         // Initialize sqlTypes, depending on DB version for example
         if (dbMeta.isDbVersionGreater(5, 5)) {
-            sqlTypes.put("DATETIMEITEM", "TIMESTAMP(3)");
+            sqlTypes.put("DATETIMEITEM", "DATETIME(3)");
             sqlTypes.put("tablePrimaryKey", "TIMESTAMP(3)");
             sqlTypes.put("tablePrimaryValue", "NOW(3)");
         }

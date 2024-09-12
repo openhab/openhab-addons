@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -18,9 +18,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.smaenergymeter.internal.handler.EnergyMeter;
+import org.openhab.binding.smaenergymeter.internal.packet.PacketListener;
+import org.openhab.binding.smaenergymeter.internal.packet.PacketListenerRegistry;
+import org.openhab.binding.smaenergymeter.internal.packet.PayloadHandler;
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
 import org.openhab.core.config.discovery.DiscoveryResult;
 import org.openhab.core.config.discovery.DiscoveryResultBuilder;
@@ -28,7 +32,9 @@ import org.openhab.core.config.discovery.DiscoveryService;
 import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
+import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,13 +44,18 @@ import org.slf4j.LoggerFactory;
  *
  * @author Osman Basha - Initial contribution
  */
+@NonNullByDefault
 @Component(service = DiscoveryService.class, configurationPid = "discovery.smaenergymeter")
-public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService {
+public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService implements PayloadHandler {
 
     private final Logger logger = LoggerFactory.getLogger(SMAEnergyMeterDiscoveryService.class);
+    private final PacketListenerRegistry listenerRegistry;
+    private @Nullable PacketListener packetListener;
 
-    public SMAEnergyMeterDiscoveryService() {
+    @Activate
+    public SMAEnergyMeterDiscoveryService(@Reference PacketListenerRegistry listenerRegistry) {
         super(SUPPORTED_THING_TYPES_UIDS, 15, true);
+        this.listenerRegistry = listenerRegistry;
     }
 
     @Override
@@ -54,35 +65,48 @@ public class SMAEnergyMeterDiscoveryService extends AbstractDiscoveryService {
 
     @Override
     protected void startBackgroundDiscovery() {
+        PacketListener packetListener = this.packetListener;
+        if (packetListener != null) {
+            return;
+        }
+
         logger.debug("Start SMAEnergyMeter background discovery");
-        scheduler.schedule(this::discover, 0, TimeUnit.SECONDS);
+        try {
+            packetListener = listenerRegistry.getListener(PacketListener.DEFAULT_MCAST_GRP,
+                    PacketListener.DEFAULT_MCAST_PORT);
+        } catch (IOException e) {
+            logger.warn("Could not start background discovery", e);
+            return;
+        }
+
+        packetListener.addPayloadHandler(this);
+        this.packetListener = packetListener;
+    }
+
+    @Override
+    protected void stopBackgroundDiscovery() {
+        PacketListener packetListener = this.packetListener;
+        if (packetListener != null) {
+            packetListener.removePayloadHandler(this);
+            this.packetListener = null;
+        }
     }
 
     @Override
     public void startScan() {
-        logger.debug("Start SMAEnergyMeter scan");
-        discover();
     }
 
-    private synchronized void discover() {
-        logger.debug("Try to discover a SMA Energy Meter device");
-
-        EnergyMeter energyMeter = new EnergyMeter(EnergyMeter.DEFAULT_MCAST_GRP, EnergyMeter.DEFAULT_MCAST_PORT);
-        try {
-            energyMeter.update();
-        } catch (IOException e) {
-            logger.debug("No SMA Energy Meter found.");
-            logger.debug("Diagnostic: ", e);
-            return;
-        }
-
-        logger.debug("Adding a new SMA Engergy Meter with S/N '{}' to inbox", energyMeter.getSerialNumber());
+    @Override
+    public void handle(EnergyMeter energyMeter) throws IOException {
+        String identifier = energyMeter.getSerialNumber();
+        logger.debug("Adding a new SMA Energy Meter with S/N '{}' to inbox", identifier);
         Map<String, Object> properties = new HashMap<>();
         properties.put(Thing.PROPERTY_VENDOR, "SMA");
-        properties.put(Thing.PROPERTY_SERIAL_NUMBER, energyMeter.getSerialNumber());
-        ThingUID uid = new ThingUID(THING_TYPE_ENERGY_METER, energyMeter.getSerialNumber());
+        properties.put(Thing.PROPERTY_SERIAL_NUMBER, identifier);
+        ThingUID uid = new ThingUID(THING_TYPE_ENERGY_METER, identifier);
         DiscoveryResult result = DiscoveryResultBuilder.create(uid).withProperties(properties)
-                .withLabel("SMA Energy Meter").build();
+                .withRepresentationProperty(Thing.PROPERTY_SERIAL_NUMBER).withLabel("SMA Energy Meter #" + identifier)
+                .build();
         thingDiscovered(result);
 
         logger.debug("Thing discovered '{}'", result);

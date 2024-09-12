@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -17,12 +17,7 @@ import static org.openhab.binding.bluetooth.airthings.internal.AirthingsBindingC
 import java.util.Map;
 import java.util.UUID;
 
-import javax.measure.quantity.Dimensionless;
-import javax.measure.quantity.Pressure;
-import javax.measure.quantity.Temperature;
-
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.core.library.dimension.RadiationSpecificActivity;
 import org.openhab.core.library.types.QuantityType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.library.unit.Units;
@@ -57,33 +52,33 @@ public class AirthingsWavePlusHandler extends AbstractAirthingsHandler {
             logger.debug("Parsed data: {}", data);
             Number humidity = data.get(AirthingsDataParser.HUMIDITY);
             if (humidity != null) {
-                updateState(CHANNEL_ID_HUMIDITY, new QuantityType<Dimensionless>(humidity, Units.PERCENT));
+                updateState(CHANNEL_ID_HUMIDITY, new QuantityType<>(humidity, Units.PERCENT));
             }
             Number temperature = data.get(AirthingsDataParser.TEMPERATURE);
             if (temperature != null) {
-                updateState(CHANNEL_ID_TEMPERATURE, new QuantityType<Temperature>(temperature, SIUnits.CELSIUS));
+                updateState(CHANNEL_ID_TEMPERATURE, new QuantityType<>(temperature, SIUnits.CELSIUS));
             }
             Number pressure = data.get(AirthingsDataParser.PRESSURE);
             if (pressure != null) {
-                updateState(CHANNEL_ID_PRESSURE, new QuantityType<Pressure>(pressure, Units.MILLIBAR));
+                updateState(CHANNEL_ID_PRESSURE, new QuantityType<>(pressure, Units.MILLIBAR));
             }
             Number co2 = data.get(AirthingsDataParser.CO2);
             if (co2 != null) {
-                updateState(CHANNEL_ID_CO2, new QuantityType<Dimensionless>(co2, Units.PARTS_PER_MILLION));
+                updateState(CHANNEL_ID_CO2, new QuantityType<>(co2, Units.PARTS_PER_MILLION));
             }
             Number tvoc = data.get(AirthingsDataParser.TVOC);
             if (tvoc != null) {
-                updateState(CHANNEL_ID_TVOC, new QuantityType<Dimensionless>(tvoc, Units.PARTS_PER_BILLION));
+                updateState(CHANNEL_ID_TVOC, new QuantityType<>(tvoc, Units.PARTS_PER_BILLION));
             }
             Number radonShortTermAvg = data.get(AirthingsDataParser.RADON_SHORT_TERM_AVG);
             if (radonShortTermAvg != null) {
-                updateState(CHANNEL_ID_RADON_ST_AVG, new QuantityType<RadiationSpecificActivity>(radonShortTermAvg,
-                        Units.BECQUEREL_PER_CUBIC_METRE));
+                updateState(CHANNEL_ID_RADON_ST_AVG,
+                        new QuantityType<>(radonShortTermAvg, Units.BECQUEREL_PER_CUBIC_METRE));
             }
             Number radonLongTermAvg = data.get(AirthingsDataParser.RADON_LONG_TERM_AVG);
             if (radonLongTermAvg != null) {
                 updateState(CHANNEL_ID_RADON_LT_AVG,
-                        new QuantityType<RadiationSpecificActivity>(radonLongTermAvg, Units.BECQUEREL_PER_CUBIC_METRE));
+                        new QuantityType<>(radonLongTermAvg, Units.BECQUEREL_PER_CUBIC_METRE));
             }
         } catch (AirthingsParserException e) {
             logger.error("Failed to parse data received from Airthings sensor: {}", e.getMessage());

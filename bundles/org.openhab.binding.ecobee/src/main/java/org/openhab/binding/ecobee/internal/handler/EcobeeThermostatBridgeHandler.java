@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -49,7 +49,6 @@ import org.openhab.binding.ecobee.internal.dto.thermostat.WeatherDTO;
 import org.openhab.binding.ecobee.internal.dto.thermostat.WeatherForecastDTO;
 import org.openhab.binding.ecobee.internal.function.AbstractFunction;
 import org.openhab.binding.ecobee.internal.function.FunctionRequest;
-import org.openhab.binding.ecobee.internal.util.StringUtils;
 import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -74,6 +73,7 @@ import org.openhab.core.thing.type.ChannelTypeUID;
 import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.openhab.core.types.State;
+import org.openhab.core.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -179,7 +179,8 @@ public class EcobeeThermostatBridgeHandler extends BaseBridgeHandler {
             for (Channel channel : thing.getChannelsOfGroup(group)) {
                 if (isLinked(channel.getUID())) {
                     try {
-                        Field field = selection.getClass().getField("include" + StringUtils.capitalizeWords(group));
+                        Field field = selection.getClass()
+                                .getField("include" + StringUtils.capitalizeByWhitespace(group));
                         logger.trace("ThermostatBridge: Thermostat thing '{}' including object '{}' in selection",
                                 thing.getUID(), field.getName());
                         field.set(selection, Boolean.TRUE);

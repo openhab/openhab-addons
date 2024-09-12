@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -29,7 +29,7 @@ public class F750 {
 
     @SuppressWarnings("serial")
     private static final Map<Integer, VariableInformation> VARIABLE_INFO_F750 = Collections
-            .unmodifiableMap(new HashMap<Integer, VariableInformation>() {
+            .unmodifiableMap(new HashMap<>() {
                 {
             // @formatter:off
                     put(32260, new VariableInformation(   1, NibeDataType.U8 , Type.SENSOR  , "NIBE Inverter 216-state"));

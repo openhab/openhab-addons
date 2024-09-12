@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -34,19 +34,19 @@ public class Settings {
     public System system;
     @SerializedName("hardware")
     @Expose
-    public List<String> hardware = new ArrayList<String>();
+    public List<String> hardware = new ArrayList<>();
     @SerializedName("api")
     @Expose
     public Api api;
     @SerializedName("sensors")
     @Expose
-    public List<String> sensors = new ArrayList<String>();
+    public List<String> sensors = new ArrayList<>();
     @SerializedName("pid")
     @Expose
-    public List<Pid> pid = new ArrayList<Pid>();
+    public List<Pid> pid = new ArrayList<>();
     @SerializedName("aktor")
     @Expose
-    public List<String> aktor = new ArrayList<String>();
+    public List<String> aktor = new ArrayList<>();
     @SerializedName("iot")
     @Expose
     public Iot iot;

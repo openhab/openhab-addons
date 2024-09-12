@@ -19,7 +19,7 @@ Here is a product picture of how this Weather Station looks like:
 
 ![WH2650](doc/WH2650.png)
 
-This binding works offline by [implementing the wire protocol](https://osswww.ecowitt.net/uploads/20210716/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.0%20.pdf) of the WiFi gateway device.
+This binding works offline by [implementing the wire protocol](https://community.openhab.org/uploads/short-url/cuV8oOaCYHZhdm0hVJUN7hxMMfe.pdf) of the WiFi gateway device.
 
 ## Discussion
 
@@ -27,7 +27,7 @@ If you have any issues or feedback, please feel free to [get in touch via the co
 
 ## Supported Things
 
-- `weatherstation`: A Fine Offset gateway device with the ThingTypeUID `fineoffsetweatherstation:weatherstation` which supports the [wire protocol](https://osswww.ecowitt.net/uploads/20220407/WN1900%20GW1000,1100%20WH2680,2650%20telenet%20v1.6.4.pdf) e.g.:
+- `weatherstation`: A Fine Offset gateway device with the ThingTypeUID `fineoffsetweatherstation:weatherstation` which supports the [wire protocol](https://community.openhab.org/uploads/short-url/cuV8oOaCYHZhdm0hVJUN7hxMMfe.pdf) e.g.:
   - HP2550
   - HP3500
   - GW1000
@@ -280,6 +280,7 @@ Valid sensors:
 | piezo-rain-week                       | Number:Length        | R          | Piezo - Rainfall this Week                     |
 | piezo-rain-month                      | Number:Length        | R          | Piezo - Rainfall this Month                    |
 | piezo-rain-year                       | Number:Length        | R          | Piezo - Rainfall this Year                     |
+| free-heap-size                        | Number:DataAmount    | R          | Free Heap Size                                 |
 
 NOTE: Not every gateway provides all available data, even if they are displayed in the WS-View app.
 Especially the channels `temperature-dew-point` or `temperature-wind-chill` are derived from other measured values.

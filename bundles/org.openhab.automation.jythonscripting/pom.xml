@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.bundles</groupId>
     <artifactId>org.openhab.addons.reactor.bundles</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.automation.jythonscripting</artifactId>
@@ -16,14 +16,14 @@
 
   <properties>
     <bnd.fixupmessages><![CDATA["Classes found in the wrong directory","The default package '.' is not permitted by the Import-Package syntax"; restrict:=error; is:=warning]]></bnd.fixupmessages>
-    <bnd.importpackage>*blockhound*;resolution:=optional,com.cloudius.util;resolution:=optional,com.github.luben.zstd;resolution:=optional,com.informix.jdbc;resolution:=optional,com.jcraft.jzlib;resolution:=optional,com.ning.compress.*;resolution:=optional,com.oracle.svm.core.annotate;resolution:=optional,com.sun.management;resolution:=optional,custom_proxymaker.tests;resolution:=optional,jnr.*;resolution;resolution:=optional,*jpountz*;resolution:=optional,junit.framework;resolution:=optional,lzma.sdk.*;resolution:=optional,oracle.*;resolution:=optional,org.antlr.stringtemplate;resolution:=optional,org.apache.tools.*;resolution:=optional,org.brotli.dec;resolution:=optional,org.checkerframework.*;resolution:=optional,org.conscrypt;resolution:=optional,org.eclipse.jetty.*;resolution:=optional,org.hamcrest;resolution:=optional,org.jboss.marshalling;resolution:=optional,org.junit.*;resolution:=optional,org.python.apache.xml.resolver.*;resolution:=optional,org.python.google.*;resolution:=optional,org.python.netty.internal.tcnative;resolution:=optional,org.python.objectweb.asm.tree.*;resolution:=optional,org.python.proxies;resolution:=optional,org.tukaani.xz;resolution:=optional,sun.*;resolution:=optional</bnd.importpackage>
+    <bnd.importpackage>*blockhound*;resolution:=optional,com.cloudius.util;resolution:=optional,com.github.luben.zstd;resolution:=optional,com.informix.jdbc;resolution:=optional,com.jcraft.jzlib;resolution:=optional,com.ning.compress.*;resolution:=optional,com.oracle.svm.core.annotate;resolution:=optional,com.sun.management;resolution:=optional,custom_proxymaker.tests;resolution:=optional,jnr.*;resolution;resolution:=optional,*jpountz*;resolution:=optional,junit.framework;resolution:=optional,lzma.sdk.*;resolution:=optional,oracle.*;resolution:=optional,org.antlr.stringtemplate;resolution:=optional,org.apache.tools.*;resolution:=optional,org.brotli.dec;resolution:=optional,org.checkerframework.*;resolution:=optional,org.conscrypt;resolution:=optional,org.eclipse.jetty.*;resolution:=optional,org.hamcrest;resolution:=optional,org.jboss.marshalling;resolution:=optional,org.junit.*;resolution:=optional,org.python.apache.xml.resolver.*;resolution:=optional,org.python.google.*;resolution:=optional,org.python.netty.internal.tcnative;resolution:=optional,org.python.objectweb.asm.tree.*;resolution:=optional,org.python.proxies;resolution:=optional,org.tukaani.xz;resolution:=optional,sun.*;resolution:=optional,com.aayushatharva.brotli4j.*;resolution:=optional,javax.annotation.meta;resolution:=optional,org.python.bouncycastle.*;resolution:=optional</bnd.importpackage>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.python</groupId>
       <artifactId>jython-standalone</artifactId>
-      <version>2.7.2</version>
+      <version>2.7.3</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.core.addon.AddonInfo;
@@ -27,6 +26,7 @@ import org.openhab.core.thing.Thing;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.io.neeo.internal.models.NeeoDevice;
 import org.openhab.io.neeo.internal.models.TokenScore;
+import org.openhab.io.neeo.internal.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,8 +91,7 @@ public class TokenSearch {
         NeeoUtil.requireNotEmpty(query, "query cannot be empty");
 
         final List<TokenScore<NeeoDevice>> results = new ArrayList<>();
-
-        final String[] needles = StringUtils.split(query, DELIMITER);
+        final String[] needles = StringUtils.split(query, String.valueOf(DELIMITER));
         int maxScore = -1;
 
         for (NeeoDevice device : context.getDefinitions().getExposed()) {
@@ -142,7 +141,8 @@ public class TokenSearch {
      * @return the score of the match
      */
     private int search(String haystack, String[] needles) {
-        return Arrays.stream(StringUtils.split(haystack, DELIMITER)).mapToInt(hs -> searchAlgorithm(hs, needles)).sum();
+        return Arrays.stream(StringUtils.split(haystack, String.valueOf(DELIMITER)))
+                .mapToInt(hs -> searchAlgorithm(hs, needles)).sum();
     }
 
     /**

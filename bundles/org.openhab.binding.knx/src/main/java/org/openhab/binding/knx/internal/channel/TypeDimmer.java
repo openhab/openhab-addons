@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -39,7 +39,7 @@ class TypeDimmer extends KNXChannel {
     public static final Set<String> SUPPORTED_CHANNEL_TYPES = Set.of(CHANNEL_DIMMER, CHANNEL_DIMMER_CONTROL);
 
     TypeDimmer(Channel channel) {
-        super(Set.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA),
+        super(List.of(SWITCH_GA, POSITION_GA, INCREASE_DECREASE_GA),
                 List.of(PercentType.class, OnOffType.class, IncreaseDecreaseType.class), channel);
     }
 

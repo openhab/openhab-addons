@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -16,6 +16,7 @@ import static org.openhab.binding.netatmo.internal.NetatmoBindingConstants.*;
 import static org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.netatmo.internal.api.dto.NAObject;
@@ -23,8 +24,7 @@ import org.openhab.binding.netatmo.internal.api.dto.WebhookEvent;
 import org.openhab.binding.netatmo.internal.handler.CommonInterface;
 import org.openhab.binding.netatmo.internal.handler.channelhelper.ChannelHelper;
 import org.openhab.binding.netatmo.internal.providers.NetatmoDescriptionProvider;
-import org.openhab.core.thing.ChannelUID;
-import org.openhab.core.thing.ThingUID;
+import org.openhab.binding.netatmo.internal.utils.ChannelTypeUtils;
 import org.openhab.core.types.UnDefType;
 
 /**
@@ -45,21 +45,19 @@ public class AlarmEventCapability extends HomeSecurityThingCapability {
     protected void updateWebhookEvent(WebhookEvent event) {
         super.updateWebhookEvent(event);
 
-        final ThingUID thingUid = handler.getThing().getUID();
-        handler.updateState(new ChannelUID(thingUid, GROUP_LAST_EVENT, CHANNEL_EVENT_TYPE),
-                toStringType(event.getEventType()));
-        handler.updateState(new ChannelUID(thingUid, GROUP_LAST_EVENT, CHANNEL_EVENT_TIME),
-                toDateTimeType(event.getTime()));
-        handler.updateState(new ChannelUID(thingUid, GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE),
-                event.getSubTypeDescription().map(d -> toStringType(d)).orElse(UnDefType.NULL));
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_TYPE, toStringType(event.getEventType()));
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_TIME, toDateTimeType(event.getTime()));
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_SUBTYPE, Objects.requireNonNull(
+                event.getSubTypeDescription().map(ChannelTypeUtils::toStringType).orElse(UnDefType.NULL)));
         final String message = event.getName();
-        handler.updateState(new ChannelUID(thingUid, GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE),
+        handler.updateState(GROUP_LAST_EVENT, CHANNEL_EVENT_MESSAGE,
                 message == null || message.isBlank() ? UnDefType.NULL : toStringType(message));
     }
 
     @Override
     public List<NAObject> updateReadings() {
-        return getSecurityCapability().map(cap -> cap.getDeviceLastEvent(handler.getId(), moduleType.apiName))
-                .map(event -> List.of((NAObject) event)).orElse(List.of());
+        return Objects.requireNonNull(
+                getSecurityCapability().map(cap -> cap.getDeviceLastEvent(handler.getId(), moduleType.apiName))
+                        .map(event -> List.of((NAObject) event)).orElse(List.of()));
     }
 }

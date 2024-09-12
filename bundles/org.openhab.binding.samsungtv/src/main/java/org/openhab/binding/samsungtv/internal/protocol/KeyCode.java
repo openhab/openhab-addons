@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -12,6 +12,8 @@
  */
 package org.openhab.binding.samsungtv.internal.protocol;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * The {@link KeyCode} presents all available key codes of Samsung TV.
  *
@@ -21,7 +23,9 @@ package org.openhab.binding.samsungtv.internal.protocol;
  * 
  *
  * @author Pauli Anttila - Initial contribution
+ * @author Nick Waterton - added KEY_AMBIENT, KEY_BT_VOICE
  */
+@NonNullByDefault
 public enum KeyCode {
 
     KEY_0,
@@ -42,6 +46,7 @@ public enum KeyCode {
     KEY_AD,
     KEY_ADDDEL,
     KEY_ALT_MHP,
+    KEY_AMBIENT,
     KEY_ANGLE,
     KEY_ANTENA,
     KEY_ANYNET,
@@ -82,6 +87,7 @@ public enum KeyCode {
     KEY_AV3,
     KEY_BACK_MHP,
     KEY_BOOKMARK,
+    KEY_BT_VOICE,
     KEY_CALLER_ID,
     KEY_CAPTION,
     KEY_CATV_MODE,
@@ -190,6 +196,7 @@ public enum KeyCode {
     KEY_MOVIE1,
     KEY_MS,
     KEY_MTS,
+    KEY_MULTI_VIEW,
     KEY_MUTE,
     KEY_NINE_SEPERATE,
     KEY_OPEN,
@@ -272,7 +279,7 @@ public enum KeyCode {
     private final String value;
 
     KeyCode() {
-        value = null;
+        value = "";
     }
 
     KeyCode(String value) {
@@ -284,7 +291,7 @@ public enum KeyCode {
     }
 
     public String getValue() {
-        if (value == null) {
+        if ("".equals(value)) {
             return this.name();
         }
         return value;

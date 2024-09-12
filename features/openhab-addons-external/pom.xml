@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.openhab.addons.features.karaf</groupId>
     <artifactId>org.openhab.addons.reactor.features.karaf</artifactId>
-    <version>4.1.0-SNAPSHOT</version>
+    <version>4.3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>org.openhab.addons.features.karaf.openhab-addons-external</artifactId>
@@ -18,6 +18,37 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <id>create-addonsinfo</id>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <phase>generate-sources</phase>
+            <configuration>
+              <target>
+                <concat destfile="${project.build.directory}/addons.xml">
+                  <header file="src/main/resources/addon-header.xml" filtering="no"/>
+                  <fileset dir="${basedirRoot}/bundles">
+                    <include name="*/src/main/resources/OH-INF/addon/addon*.xml"/>
+                  </fileset>
+                  <filterchain>
+                    <linecontainsRegExp negate="true">
+                      <regexp pattern="&lt;\?xml"/>
+                    </linecontainsRegExp>
+                  </filterchain>
+                  <footer file="src/main/resources/addon-footer.xml" filtering="no"/>
+                </concat>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
@@ -30,6 +61,11 @@
             <phase>package</phase>
             <configuration>
               <artifacts>
+                <artifact>
+                  <file>${project.build.directory}/addons.xml</file>
+                  <type>xml</type>
+                  <classifier>addons</classifier>
+                </artifact>
                 <artifact>
                   <file>src/main/resources/conf/dynamodb.cfg</file>
                   <type>cfg</type>

@@ -49,6 +49,7 @@
 			<channel id="playuri" typeId="playuri"/>
 			<channel id="albumArt" typeId="albumArt"/>
 			<channel id="albumArtUrl" typeId="albumArtUrl"/>
+			<channel id="audysseyeq" typeId="audysseyeq"/>
 		</channels>
 	</channel-group-type>
 

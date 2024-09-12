@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2010-2023 Contributors to the openHAB project
+ * Copyright (c) 2010-2024 Contributors to the openHAB project
  *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
@@ -288,12 +288,19 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         connector.removeEventListener(this);
 
         // Disable Remote Temp and Message Area on shutdown
-        if (isLinked(REMOTE_TEMP)) {
-            connector.sendCommand("rem_mode", "0", REMOTE_TEMP_RESOURCE);
-        }
+        if (ThingStatus.ONLINE.equals(this.getThing().getStatus())) {
+            final boolean isRemoteTempLinked = isLinked(REMOTE_TEMP);
+            final boolean isMessageLinked = isLinked(MESSAGE);
 
-        if (isLinked(MESSAGE)) {
-            connector.sendCommand("mode", "0", PMA_RESOURCE);
+            scheduler.schedule(() -> {
+                if (isRemoteTempLinked) {
+                    connector.sendCommand("rem_mode", "0", REMOTE_TEMP_RESOURCE);
+                }
+
+                if (isMessageLinked) {
+                    connector.sendCommand("mode", "0", PMA_RESOURCE);
+                }
+            }, 0, TimeUnit.SECONDS);
         }
 
         ScheduledFuture<?> refreshJob = this.refreshJob;
@@ -516,8 +523,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
         switch (channelId) {
             case TEMPERATURE:
                 if (data.getThermostatData().getTemperature() != null) {
-                    return new QuantityType<Temperature>(data.getThermostatData().getTemperature(),
-                            API_TEMPERATURE_UNIT);
+                    return new QuantityType<>(data.getThermostatData().getTemperature(), API_TEMPERATURE_UNIT);
                 } else {
                     return null;
                 }
@@ -535,7 +541,7 @@ public class RadioThermostatHandler extends BaseThingHandler implements RadioThe
                 return data.getThermostatData().getProgramMode();
             case SET_POINT:
                 if (data.getThermostatData().getSetpoint() != 0) {
-                    return new QuantityType<Temperature>(data.getThermostatData().getSetpoint(), API_TEMPERATURE_UNIT);
+                    return new QuantityType<>(data.getThermostatData().getSetpoint(), API_TEMPERATURE_UNIT);
                 } else {
                     return null;
                 }

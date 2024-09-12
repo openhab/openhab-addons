@@ -71,6 +71,7 @@ Advanced channels:
 | enable_pool                      | Switch               | no        | Enable Pool                                                             |
 | enable_pv                        | Switch               | no        | Enable PV                                                               |
 | hysteresis_heating               | Number:Temperature   | no        | Hysteresis Heating                                                      |
+| hysteresis_warmwater             | Number:Temperature   | no        | Hysteresis Warm Water                                                   |
 | interruptions                    | Number:Dimensionless | yes       | Interruptions                                                           |
 | manual_4wayvalve                 | Number:Dimensionless | no        | Operating Mode 4Way Valve                                               |
 | manual_coolvalve                 | Number:Dimensionless | no        | Operating Mode Cooling Valve                                            |
@@ -131,6 +132,10 @@ Advanced channels:
 | temperature_storage              | Number:Temperature   | yes       | Temperature Storage                                                     |
 | temperature_suction              | Number:Temperature   | yes       | Temperature Suction                                                     |
 | temperature_water_set            | Number:Temperature   | yes       | Temperature Water Setpoint                                              |
+| percent_water_limit_min          | Number:Dimensionless | no        | Percent Water Power limit Min                                           |
+| percent_water_limit_max          | Number:Dimensionless | no        | Percent Water Power limit Max                                           |
+| percent_heating_limit_min        | Number:Dimensionless | no        | Percent Heating Power limit Min                                         |
+| percent_heating_limit_max        | Number:Dimensionless | no        | Percent Heating Power limit Min                                         |
 | time_hour                        | Number:Dimensionless | yes       | Hour                                                                    |
 | time_minute                      | Number:Dimensionless | yes       | Minute                                                                  |
 | version_bios                     | Number:Dimensionless | yes       | Version BIOS                                                            |
