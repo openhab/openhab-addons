@@ -1,16 +1,35 @@
 /**
  * Copyright (c) 2010-2024 Contributors to the openHAB project
- * <p>
+ *
  * See the NOTICE file(s) distributed with this work for additional
  * information.
- * <p>
+ *
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0
- * <p>
+ * 
  * SPDX-License-Identifier: EPL-2.0
  */
 package org.openhab.binding.pihole.internal;
+
+import static java.util.concurrent.TimeUnit.*;
+import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.*;
+import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DisableEnable.ENABLE;
+import static org.openhab.core.library.unit.Units.PERCENT;
+import static org.openhab.core.thing.ThingStatus.OFFLINE;
+import static org.openhab.core.thing.ThingStatus.ONLINE;
+import static org.openhab.core.thing.ThingStatus.UNKNOWN;
+import static org.openhab.core.thing.ThingStatusDetail.*;
+
+import java.math.BigDecimal;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -31,25 +50,6 @@ import org.openhab.core.types.Command;
 import org.openhab.core.types.RefreshType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.math.BigDecimal;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.ScheduledFuture;
-
-import static java.util.concurrent.TimeUnit.*;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.*;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DisableEnable.ENABLE;
-import static org.openhab.core.library.unit.Units.PERCENT;
-import static org.openhab.core.thing.ThingStatus.OFFLINE;
-import static org.openhab.core.thing.ThingStatus.ONLINE;
-import static org.openhab.core.thing.ThingStatus.UNKNOWN;
-import static org.openhab.core.thing.ThingStatusDetail.*;
 
 /**
  * The {@link PiHoleHandler} is responsible for handling commands, which are
