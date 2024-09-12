@@ -45,7 +45,7 @@
 	</channel-type>
 
 	<channel-type id="co2_concentration">
-		<item-type>Number:DimensionLess</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>CO2 concentration</label>
 		<description>A CO2 sensor carbon dioxide concentration in ppm</description>
 		<state readOnly="true" pattern="%d %unit%"/>

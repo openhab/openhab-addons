@@ -4,7 +4,7 @@
 	xmlns:config-description="https://openhab.org/schemas/config-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/config-description/v1.0.0
 		https://openhab.org/schemas/config-description-1.0.0.xsd">
-	<config-description uri="binding:mqtt.homeassistant">
+	<config-description uri="binding:mqtt:homeassistant">
 
 		<parameter name="status" type="boolean" required="false">
 			<label>Publish Online Status</label>
