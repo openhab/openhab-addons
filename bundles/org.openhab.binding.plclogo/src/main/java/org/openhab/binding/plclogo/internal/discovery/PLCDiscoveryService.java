@@ -106,7 +106,7 @@ public class PLCDiscoveryService extends AbstractDiscoveryService {
         ExecutorService executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
         for (InetAddress address : addressesToScan) {
             try {
-                executor.execute(new Runner(address.getHostName()));
+                executor.execute(new Runner(address.getHostAddress()));
             } catch (RejectedExecutionException exception) {
                 logger.warn("LOGO! bridge discovering: {}.", exception.toString());
             }
