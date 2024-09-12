@@ -39,11 +39,11 @@ import org.w3c.dom.Node;
  * The zone protocol class is used to control one zone of a Yamaha receiver with HTTP/xml.
  * No state will be saved in here, but in {@link ZoneControlState} instead.
  *
+ * @author Tomasz Maruszak - Initial contribution, refactoring, input mapping fix, added
+ *         Straight surround, volume DB fix and config improvement.
  * @author David Gräff - Refactored
- * @author Eric Thill
- * @author Ben Jones
- * @author Tomasz Maruszak - Refactoring, input mapping fix, added Straight surround, volume DB fix and config
- *         improvement.
+ * @author Eric Thill - Unknown
+ * @author Ben Jones - Unknown
  */
 public class ZoneControlXML implements ZoneControl {
 

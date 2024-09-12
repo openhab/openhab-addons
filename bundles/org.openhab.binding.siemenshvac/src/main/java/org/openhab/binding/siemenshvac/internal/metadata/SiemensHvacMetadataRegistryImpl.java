@@ -835,7 +835,6 @@ public class SiemensHvacMetadataRegistryImpl implements SiemensHvacMetadataRegis
                 lcHvacConnector.resetSessionId(null, false);
                 lcHvacConnector.resetSessionId(null, true);
             }
-
         } catch (Exception e) {
             logger.error("siemensHvac:ResolveDpt:Error during dp reading: {}", e.getLocalizedMessage());
             // Reset sessionId so we redone _auth on error

@@ -52,7 +52,7 @@
 	</channel-type>
 
 	<channel-type id="noise">
-		<item-type>Number:DimensionLess</item-type>
+		<item-type>Number:Dimensionless</item-type>
 		<label>Noise</label>
 		<description>A noise sensor noise in decibel</description>
 		<state readOnly="true" pattern="%d %unit%"/>

@@ -188,14 +188,14 @@ public class StateFilterProfileTest {
         return item;
     }
 
-    private Item numberItemWithState(String itemType, String itemName, State value) {
+    /* private Item numberItemWithState(String itemType, String itemName, State value) {
         NumberItem item = new NumberItem(itemType, itemName, null);
         item.setState(value);
         return item;
-    }
+    } */
 
     @Test
-    public void testMultipleCondition_AllMatch() throws ItemNotFoundException {
+    public void testMultipleConditionAllMatch() throws ItemNotFoundException {
         when(mockContext.getConfiguration())
                 .thenReturn(new Configuration(Map.of("conditions", "ItemName eq 'Value', ItemName2 eq 'Value2'")));
         when(mockItemRegistry.getItem("ItemName")).thenReturn(stringItemWithState("ItemName", "Value"));
@@ -209,7 +209,7 @@ public class StateFilterProfileTest {
     }
 
     @Test
-    public void testMultipleCondition_SingleMatch() throws ItemNotFoundException {
+    public void testMultipleConditionSingleMatch() throws ItemNotFoundException {
         when(mockContext.getConfiguration())
                 .thenReturn(new Configuration(Map.of("conditions", "ItemName eq Value, ItemName2 eq Value2")));
         when(mockItemRegistry.getItem("ItemName")).thenReturn(stringItemWithState("ItemName", "Value"));
@@ -276,7 +276,7 @@ public class StateFilterProfileTest {
         StringType s_foo = StringType.valueOf("foo");
         StringType s_NULL = StringType.valueOf("NULL");
         StringType s_UNDEF = StringType.valueOf("UNDEF");
-        StringType s_OPEN = StringType.valueOf("OPEN");
+        // StringType s_OPEN = StringType.valueOf("OPEN");
 
         return Stream.of( //
                 // We should be able to check item state is/isn't UNDEF/NULL
@@ -605,7 +605,6 @@ public class StateFilterProfileTest {
     @MethodSource
     public void testComparingInputStateWithValue(GenericItem linkedItem, State inputState, String operator,
             String value, boolean expected) throws ItemNotFoundException {
-
         String linkedItemName = linkedItem.getName();
 
         when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", operator + value)));
