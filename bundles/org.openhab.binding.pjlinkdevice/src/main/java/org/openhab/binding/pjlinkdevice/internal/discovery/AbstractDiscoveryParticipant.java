@@ -22,8 +22,9 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.openhab.binding.pjlinkdevice.internal.PJLinkDeviceBindingConstants;
-import org.openhab.binding.pjlinkdevice.internal.util.IPUtils;
+
 import org.openhab.core.config.discovery.AbstractDiscoveryService;
+import org.openhab.core.net.NetUtil;
 import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.ThingUID;
 import org.slf4j.Logger;
@@ -60,7 +61,7 @@ public abstract class AbstractDiscoveryParticipant extends AbstractDiscoveryServ
     @Override
     protected void startScan() {
         logger.trace("PJLinkProjectorDiscoveryParticipant startScan");
-        List<InetAddress> addressesToScan = IPUtils.getFullRangeOfAddressesToScan();
+        List<InetAddress> addressesToScan = NetUtil.getFullRangeOfAddressesToScan();
         scannedIPcount = 0;
         for (InetAddress ip : addressesToScan) {
             getExecutorService().execute(() -> {
