@@ -137,7 +137,6 @@ public class PilightConnector implements Runnable, Closeable {
                     connect();
                 }
             }
-
         } catch (InterruptedException e) {
             logger.debug("Interrupting thread.");
             Thread.currentThread().interrupt();

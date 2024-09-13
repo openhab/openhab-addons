@@ -103,7 +103,7 @@ public abstract class HomeWizardDeviceHandler extends BaseThingHandler {
      *
      * @param payload The data parsed from the data Json file
      */
-    abstract protected void handleDataPayload(DataPayload payload);
+    protected abstract void handleDataPayload(DataPayload payload);
 
     /**
      *
