@@ -120,7 +120,7 @@ public class HomematicDeviceDiscoveryService
     private void disableInstallMode() {
         try {
             synchronized (installModeSync) {
-                HomematicGateway gateway = thingHandler.getGateway();
+                final HomematicGateway gateway = thingHandler.getGateway();
                 if (isInInstallMode && gateway != null) {
                     isInInstallMode = false;
                     installModeSync.notify();
@@ -177,7 +177,7 @@ public class HomematicDeviceDiscoveryService
      * Starts a thread which loads all Homematic devices connected to the gateway.
      */
     public void loadDevices() {
-        HomematicGateway gateway = thingHandler.getGateway();
+        final HomematicGateway gateway = thingHandler.getGateway();
         if (loadDevicesFuture == null && gateway != null) {
             loadDevicesFuture = scheduler.submit(() -> {
                 try {
