@@ -50,7 +50,7 @@
 		<parameter name="duvThreshold" type="decimal" required="true" min="0" max="1" step="0.001">
 			<label>Duv Threshold</label>
 			<description><![CDATA[
-			    Duv values at or below this value on a RGBWW color control will trigger white mode at the appropriate color temperature.
+				Duv values at or below this value on a RGBWW color control will trigger white mode at the appropriate color temperature.
 				1 will effectively disable this feature.
 				See <a href="https://www.waveformlighting.com/tech/calculate-duv-from-cie-1931-xy-coordinates/">this link</a> for more information on how this is calculated.
 				]]>

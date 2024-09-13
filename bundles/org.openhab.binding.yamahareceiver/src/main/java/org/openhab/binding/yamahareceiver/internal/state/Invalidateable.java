@@ -15,7 +15,8 @@ package org.openhab.binding.yamahareceiver.internal.state;
 /**
  * Represent object whose state can be invalidated.
  *
- * @author Tomasz Maruszak - [yamaha] Tuner band selection and preset feature for dual band models (RX-S601D)
+ * @author Tomasz Maruszak - Initial contribution, [yamaha] Tuner band selection and preset feature for dual band models
+ *         (RX-S601D)
  */
 public interface Invalidateable {
 

@@ -207,7 +207,6 @@ public class AwattarBridgeHandler extends BaseBridgeHandler {
 
         // refresh then every 3 hours, if the last refresh was more than an hour ago
         if (now.getHour() % 3 == 0 && lastRefresh.getEpochSecond() < now.minusHours(1).toEpochSecond()) {
-
             // update the last refresh time
             lastRefresh = Instant.now();
 
