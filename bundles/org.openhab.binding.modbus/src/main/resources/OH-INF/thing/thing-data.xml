@@ -48,7 +48,7 @@
 	<br />Any other value than the above types will be interpreted as static text, in which case the actual content of the polled
 		value is ignored.
 	<br />Multiple transformations can be chained by listing each transformation on a separate line,
-	  or by concatenating them with "∩", for example SERVICE1(ARG1)∩SERVICE2(ARG2)]]></description>
+	or by concatenating them with "∩", for example SERVICE1(ARG1)∩SERVICE2(ARG2)]]></description>
 				<default>default</default>
 			</parameter>
 			<parameter name="readValueType" type="text">
@@ -103,9 +103,9 @@
 	<br /><br />Use "default" to communicate that no transformation is done and value should be passed as is.
 	<br />Use SERVICENAME(ARG) or SERVICENAME:ARG to use transformation service.
 	<br />Any other value than the above types will be interpreted as static text, in which case the actual content of the command
-	  value is ignored.
+	value is ignored.
 	<br />Multiple transformations can be chained by listing each transformation on a separate line,
-	  or by concatenating them with "∩", for example SERVICE1(ARG1)∩SERVICE2(ARG2)]]></description>
+	or by concatenating them with "∩", for example SERVICE1(ARG1)∩SERVICE2(ARG2)]]></description>
 				<default>default</default>
 			</parameter>
 			<parameter name="writeValueType" type="text">

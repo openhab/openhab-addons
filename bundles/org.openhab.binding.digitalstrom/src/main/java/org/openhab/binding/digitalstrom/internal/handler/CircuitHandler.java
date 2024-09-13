@@ -47,8 +47,8 @@ import org.slf4j.LoggerFactory;
  * For that it uses the {@link BridgeHandler} to register this class as a {@link DeviceStatusListener} to get informed
  * about changes from the accompanying {@link Circuit}.
  *
- * @author Michael Ochel
- * @author Matthias Siegele
+ * @author Michael Ochel - Initial contribution
+ * @author Matthias Siegele - Initial contribution
  */
 public class CircuitHandler extends BaseThingHandler implements DeviceStatusListener {
 

@@ -228,7 +228,6 @@ public class SiemensHvacRequestListener extends BufferingResponseListener
                                     mayRetry);
                             return;
                         }
-
                     } else {
                         logger.debug("error(5): invalid response from gateway, missing Result entry");
                         hvacConnector.onError(result.getRequest(), requestHandler, ErrorSource.ErrorBridge, mayRetry);

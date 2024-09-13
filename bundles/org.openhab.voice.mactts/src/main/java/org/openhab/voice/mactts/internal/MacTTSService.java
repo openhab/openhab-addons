@@ -39,9 +39,9 @@ import org.slf4j.LoggerFactory;
  * This is a TTS service implementation for Mac OS, which simply uses the "say" command from the OS.
  *
  * @author Kai Kreuzer - Initial contribution and API
- * @author Pauli Antilla
- * @author Kelly Davis
- * @author Laurent Garnier : Implement TTS LRU cache
+ * @author Pauli Antilla - Improvements
+ * @author Kelly Davis - Improvements
+ * @author Laurent Garnier - Implement TTS LRU cache
  */
 @Component(service = TTSService.class)
 @NonNullByDefault

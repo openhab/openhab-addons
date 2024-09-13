@@ -132,7 +132,6 @@ public class SolarMaxHandler extends BaseThingHandler {
                 State state = solarMaxData.getDataDateTime();
                 logger.debug("Update channel state: {} - {}", channelId, state);
                 updateState(channel.getUID(), state);
-
             } else {
                 // must be somthing to collect from the device, so...
                 if (solarMaxData.has(SolarMaxCommandKey.valueOf(channelId))) {

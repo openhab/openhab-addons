@@ -438,14 +438,14 @@
 	</channel-type>
 
 	<channel-type id="autoOFF" advanced="true">
-		<item-type>Number:Duration</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Auto Off</label>
 		<description>Automatically switch to off</description>
 		<state pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="delayRadioOFF" advanced="true">
-		<item-type>Number:Duration</item-type>
+		<item-type>Number:Time</item-type>
 		<label>Delay Radio Off</label>
 		<description>Delay switch off by radio for given seconds</description>
 		<state pattern="%d %unit%"/>

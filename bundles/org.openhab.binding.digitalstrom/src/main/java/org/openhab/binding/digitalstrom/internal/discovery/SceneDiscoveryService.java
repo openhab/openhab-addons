@@ -113,7 +113,6 @@ public class SceneDiscoveryService extends AbstractDiscoveryService {
                             .withBridge(bridgeUID).withLabel(scene.getSceneName()).build();
 
                     thingDiscovered(discoveryResult);
-
                 } else {
                     logger.debug("discovered unsupported scene: name '{}' with id {}", scene.getSceneName(),
                             scene.getID());

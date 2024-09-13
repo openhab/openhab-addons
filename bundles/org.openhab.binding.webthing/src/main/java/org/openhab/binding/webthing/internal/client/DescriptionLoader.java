@@ -67,7 +67,7 @@ public class DescriptionLoader {
             }
             var body = response.getContentAsString();
             var description = gson.fromJson(body, WebThingDescription.class);
-            if ((description != null) && (description.properties != null) && (description.properties.size() > 0)) {
+            if ((description != null) && (description.properties != null) && !description.properties.isEmpty()) {
                 if ((description.contextKeyword == null) || description.contextKeyword.trim().length() == 0) {
                     description.contextKeyword = "https://webthings.io/schemas";
                 }

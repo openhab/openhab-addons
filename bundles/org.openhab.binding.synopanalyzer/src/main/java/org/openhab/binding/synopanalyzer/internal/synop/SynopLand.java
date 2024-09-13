@@ -39,7 +39,6 @@ public class SynopLand extends Synop {
                     }
                 } catch (NumberFormatException ignore) {
                 }
-
             }
         }
     }

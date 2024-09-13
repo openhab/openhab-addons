@@ -73,8 +73,7 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
         if ("----".equals(value.getAsString())) {
             return new DateTimeType(ZonedDateTime.now(this.timeZoneProvider.getTimeZone()));
         } else {
-
-            if (unit.equals("h:m")) {
+            if ("h:m".equals(unit)) {
                 String st = value.getAsString();
                 String[] parts = st.split(":");
                 int h = Integer.parseInt(parts[0]);
@@ -83,7 +82,7 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
                 Unit<Time> targetUnit = Units.MINUTE;
                 return new QuantityType<>(h * 60 + m, targetUnit);
 
-            } else if (unit.equals("m:s")) {
+            } else if ("m:s".equals(unit)) {
                 String st = value.getAsString();
                 String[] parts = st.split(":");
                 int m = Integer.parseInt(parts[0]);
@@ -92,7 +91,7 @@ public class TimeOfDayTypeConverter extends AbstractTypeConverter {
                 Unit<Time> targetUnit = Units.SECOND;
                 return new QuantityType<>(m * 60 + s, targetUnit);
 
-            } else if (unit.equals("h")) {
+            } else if ("h".equals(unit)) {
                 int val = Integer.parseInt(value.getAsString());
 
                 Unit<Time> targetUnit = Units.HOUR;

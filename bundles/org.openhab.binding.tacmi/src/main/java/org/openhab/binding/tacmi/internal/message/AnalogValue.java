@@ -19,7 +19,7 @@ import org.openhab.binding.tacmi.internal.TACmiMeasureType;
  * This class handles analog values as used in the analog message.
  *
  * @author Timo Wendt - Initial contribution
- * @author Wolfgang Klimt
+ * @author Wolfgang Klimt - Improvements
  * @author Christian Niessner - Ported to OpenHAB2
  */
 @NonNullByDefault

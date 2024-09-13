@@ -140,7 +140,6 @@ public class ICloudDeviceHandler extends BaseThingHandler implements ICloudDevic
         if (channelId.equals(FIND_MY_PHONE)) {
             if (command == OnOffType.ON) {
                 try {
-
                     if (deviceInformationRecord == null) {
                         this.logger
                                 .debug("Can't send Find My Device request, because deviceInformationRecord is null!");

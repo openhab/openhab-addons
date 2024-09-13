@@ -29,7 +29,7 @@ import org.openhab.core.types.UnDefType;
 /**
  * RFXCOM data class for UV and temperature message.
  *
- * @author Damien Servant - OpenHAB1 version
+ * @author Damien Servant - Initial contribution, OpenHAB1 version
  * @author Mike Jagdis - Initial contribution, OpenHAB2 version
  */
 public class RFXComUVMessage extends RFXComBatteryDeviceMessage<RFXComUVMessage.SubType> {

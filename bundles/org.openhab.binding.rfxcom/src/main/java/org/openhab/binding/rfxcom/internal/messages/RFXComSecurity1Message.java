@@ -32,7 +32,7 @@ import org.openhab.core.types.Type;
  * (i.e. X10 Security, Visonic PowerCode, Meiantech, etc.)
  *
  * @author David Kalff - Initial contribution
- * @author Pauli Anttila
+ * @author Pauli Anttila - Improvements
  */
 public class RFXComSecurity1Message extends RFXComBatteryDeviceMessage<RFXComSecurity1Message.SubType> {
 

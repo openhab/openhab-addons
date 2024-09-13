@@ -47,7 +47,7 @@ public abstract class HomeWizardStatefulDeviceHandler extends HomeWizardDeviceHa
      *
      * @param payload The data parsed from the state Json file
      */
-    abstract protected void handleStatePayload(StatePayload payload);
+    protected abstract void handleStatePayload(StatePayload payload);
 
     protected void pollState() {
         final String stateResult;

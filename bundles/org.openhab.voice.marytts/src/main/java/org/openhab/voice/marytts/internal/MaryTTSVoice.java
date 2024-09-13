@@ -65,9 +65,7 @@ public class MaryTTSVoice implements Voice {
         return label;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    // automatically inherit doc
     @Override
     public Locale getLocale() {
         return locale;

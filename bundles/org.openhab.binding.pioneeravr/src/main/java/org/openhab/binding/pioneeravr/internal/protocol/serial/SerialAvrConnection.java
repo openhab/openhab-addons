@@ -59,7 +59,6 @@ public class SerialAvrConnection extends StreamAvrConnection {
                     .collect(Collectors.joining(", "));
             throw new IOException(
                     "Serial port with name " + portName + " does not exist. Available port names: " + availablePorts);
-
         }
 
         try {

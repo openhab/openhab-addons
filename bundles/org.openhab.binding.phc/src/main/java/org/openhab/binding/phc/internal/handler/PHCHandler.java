@@ -79,7 +79,6 @@ public class PHCHandler extends BaseThingHandler {
             times[1] = (short) (((BigDecimal) getConfig().get(UP_DOWN_TIME_2)).shortValue() * 10);
             times[2] = (short) (((BigDecimal) getConfig().get(UP_DOWN_TIME_3)).shortValue() * 10);
             times[3] = (short) (((BigDecimal) getConfig().get(UP_DOWN_TIME_4)).shortValue() * 10);
-
         } else if (getThing().getThingTypeUID().equals(THING_TYPE_DIM)) {
             times[0] = (((BigDecimal) getConfig().get(DIM_TIME_1)).shortValue());
             times[1] = (((BigDecimal) getConfig().get(DIM_TIME_2)).shortValue());

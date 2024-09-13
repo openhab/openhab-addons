@@ -73,7 +73,6 @@ public class HTTPHandler {
                         }
                         callback.onError(Objects.requireNonNullElse(failure, "Unknown error"));
                     } else {
-
                         callback.onResponse(Objects.requireNonNull(getContentAsString()));
                     }
                 }

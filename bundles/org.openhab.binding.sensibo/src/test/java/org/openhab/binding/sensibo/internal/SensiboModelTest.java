@@ -32,7 +32,6 @@ public class SensiboModelTest {
 
     @Test
     public void testCaseInsensitiveMacAddress() throws IOException {
-
         final PodDetailsDTO rsp = wireHelper.deSerializeResponse("/get_pod_details_response.json", PodDetailsDTO.class);
         SensiboSky sky = new SensiboSky(rsp);
 

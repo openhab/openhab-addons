@@ -114,7 +114,6 @@ public class GatewayPayloadParser {
                 // below
                 // The payload length (might depend on format version ) is validated by parser.parse call
                 throw new IllegalArgumentException("Manufacturerer data is too short");
-
             }
             if ((bytes[4] & 0xff) != 0xff) {
                 logger.debug("Data is not representing manufacturer specific bluetooth advertisement: {}",

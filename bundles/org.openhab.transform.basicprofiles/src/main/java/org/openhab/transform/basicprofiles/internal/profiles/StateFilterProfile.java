@@ -55,7 +55,7 @@ import org.slf4j.LoggerFactory;
 @NonNullByDefault
 public class StateFilterProfile implements StateProfile {
 
-    private final static String OPERATOR_NAME_PATTERN = Stream.of(StateCondition.ComparisonType.values())
+    private static final String OPERATOR_NAME_PATTERN = Stream.of(StateCondition.ComparisonType.values())
             .map(StateCondition.ComparisonType::name)
             // We want to match the longest operator first, e.g. `GTE` before `GT`
             .sorted(Comparator.comparingInt(String::length).reversed())
@@ -63,13 +63,13 @@ public class StateFilterProfile implements StateProfile {
             // so we can have conditions against input data without needing a leading space, e.g. `GTE 0`
             .collect(Collectors.joining("|", "(?:(?<=\\S)\\s+|^\\s*)(?:", ")\\s"));
 
-    private final static String OPERATOR_SYMBOL_PATTERN = Stream.of(StateCondition.ComparisonType.values())
+    private static final String OPERATOR_SYMBOL_PATTERN = Stream.of(StateCondition.ComparisonType.values())
             .map(StateCondition.ComparisonType::symbol)
             // We want to match the longest operator first, e.g. `<=` before `<`
             .sorted(Comparator.comparingInt(String::length).reversed()) //
             .collect(Collectors.joining("|", "(?:", ")"));
 
-    private final static Pattern EXPRESSION_PATTERN = Pattern.compile(
+    private static final Pattern EXPRESSION_PATTERN = Pattern.compile(
             // - Without the non-greedy operator in the first capture group,
             // it will match `Item<` when encountering `Item<>X` condition
             // - Symbols may be more prevalently used, so check them first

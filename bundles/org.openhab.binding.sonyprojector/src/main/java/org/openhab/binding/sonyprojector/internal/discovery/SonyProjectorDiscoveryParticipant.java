@@ -73,7 +73,6 @@ public class SonyProjectorDiscoveryParticipant implements SddpDiscoveryParticipa
         if (device.manufacturer.toUpperCase(Locale.ENGLISH).contains(SONY)
                 && device.type.toUpperCase(Locale.ENGLISH).contains(TYPE_PROJECTOR) && !device.macAddress.isBlank()
                 && !device.ipAddress.isBlank()) {
-
             logger.debug("Sony projector with mac {} found at {}", device.macAddress, device.ipAddress);
             return new ThingUID(THING_TYPE_ETHERNET, device.macAddress);
         }

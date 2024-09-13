@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The {@link BluetoothChannelUtils} contains utility functions used by the GattChannelHandler
  *
- * @author Vlad Kolotov - Original author
+ * @author Vlad Kolotov - Initial contribution
  * @author Connor Petty - Modified for openHAB use
  */
 @NonNullByDefault
@@ -75,11 +75,11 @@ public class BluetoothChannelUtils {
             case SINT:
             case FLOAT_IEE754:
             case FLOAT_IEE11073:
-                BluetoothUnit unit = BluetoothUnit.findByType(field.getUnit());
-                if (unit != null) {
-                    // TODO
-                    // return "Number:" + unit.getUnit().getDimension();
-                }
+                // BluetoothUnit unit = BluetoothUnit.findByType(field.getUnit());
+                // if (unit != null) {
+                // TODO
+                // return "Number:" + unit.getUnit().getDimension();
+                // }
                 return "Number";
             case UTF8S:
             case UTF16S:
@@ -208,7 +208,7 @@ public class BluetoothChannelUtils {
         if (decimalType != null) {
             try {
                 return field.getEnumeration(new BigInteger(decimalType.toString()));
-            } catch (NumberFormatException ex) {
+            } catch (NumberFormatException ignored) {
                 // do nothing
             }
         }

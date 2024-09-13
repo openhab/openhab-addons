@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test for LEDStateDTO
  *
- * @author Ries van Twisk - Prevent flashes during classic driver color + white updates
+ * @author Ries van Twisk - Initial contribution, prevent flashes during classic driver color + white updates
  */
 public class LEDStateDTOTest {
 

@@ -47,8 +47,18 @@ import org.openhab.core.items.GenericItem;
 import org.openhab.core.items.Item;
 import org.openhab.core.items.ItemNotFoundException;
 import org.openhab.core.items.ItemRegistry;
-import org.openhab.core.library.items.*;
-import org.openhab.core.library.types.*;
+import org.openhab.core.library.items.ContactItem;
+import org.openhab.core.library.items.DimmerItem;
+import org.openhab.core.library.items.NumberItem;
+import org.openhab.core.library.items.RollershutterItem;
+import org.openhab.core.library.items.StringItem;
+import org.openhab.core.library.items.SwitchItem;
+import org.openhab.core.library.types.DecimalType;
+import org.openhab.core.library.types.OnOffType;
+import org.openhab.core.library.types.OpenClosedType;
+import org.openhab.core.library.types.PercentType;
+import org.openhab.core.library.types.QuantityType;
+import org.openhab.core.library.types.StringType;
 import org.openhab.core.library.unit.SIUnits;
 import org.openhab.core.thing.link.ItemChannelLink;
 import org.openhab.core.thing.profiles.ProfileCallback;
@@ -178,14 +188,16 @@ public class StateFilterProfileTest {
         return item;
     }
 
-    private Item numberItemWithState(String itemType, String itemName, State value) {
-        NumberItem item = new NumberItem(itemType, itemName, null);
-        item.setState(value);
-        return item;
-    }
+    /*
+     * private Item numberItemWithState(String itemType, String itemName, State value) {
+     * NumberItem item = new NumberItem(itemType, itemName, null);
+     * item.setState(value);
+     * return item;
+     * }
+     */
 
     @Test
-    public void testMultipleCondition_AllMatch() throws ItemNotFoundException {
+    public void testMultipleConditionAllMatch() throws ItemNotFoundException {
         when(mockContext.getConfiguration())
                 .thenReturn(new Configuration(Map.of("conditions", "ItemName eq 'Value', ItemName2 eq 'Value2'")));
         when(mockItemRegistry.getItem("ItemName")).thenReturn(stringItemWithState("ItemName", "Value"));
@@ -199,7 +211,7 @@ public class StateFilterProfileTest {
     }
 
     @Test
-    public void testMultipleCondition_SingleMatch() throws ItemNotFoundException {
+    public void testMultipleConditionSingleMatch() throws ItemNotFoundException {
         when(mockContext.getConfiguration())
                 .thenReturn(new Configuration(Map.of("conditions", "ItemName eq Value, ItemName2 eq Value2")));
         when(mockItemRegistry.getItem("ItemName")).thenReturn(stringItemWithState("ItemName", "Value"));
@@ -266,7 +278,7 @@ public class StateFilterProfileTest {
         StringType s_foo = StringType.valueOf("foo");
         StringType s_NULL = StringType.valueOf("NULL");
         StringType s_UNDEF = StringType.valueOf("UNDEF");
-        StringType s_OPEN = StringType.valueOf("OPEN");
+        // StringType s_OPEN = StringType.valueOf("OPEN");
 
         return Stream.of( //
                 // We should be able to check item state is/isn't UNDEF/NULL
@@ -595,7 +607,6 @@ public class StateFilterProfileTest {
     @MethodSource
     public void testComparingInputStateWithValue(GenericItem linkedItem, State inputState, String operator,
             String value, boolean expected) throws ItemNotFoundException {
-
         String linkedItemName = linkedItem.getName();
 
         when(mockContext.getConfiguration()).thenReturn(new Configuration(Map.of("conditions", operator + value)));

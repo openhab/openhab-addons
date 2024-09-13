@@ -37,7 +37,7 @@ import org.openhab.core.util.HexUtils;
 /**
  * RFXCOM data class for raw messages.
  *
- * @author James Hewitt-Thomas - New addition to the PRO RFXCom firmware
+ * @author James Hewitt-Thomas - Initial contribution, new addition to the PRO RFXCom firmware
  */
 public class RFXComRawMessage extends RFXComDeviceMessageImpl<RFXComRawMessage.SubType> {
 

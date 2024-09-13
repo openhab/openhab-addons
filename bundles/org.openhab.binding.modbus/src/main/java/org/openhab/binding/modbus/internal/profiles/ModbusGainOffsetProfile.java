@@ -157,7 +157,6 @@ public class ModbusGainOffsetProfile<Q extends Quantity<Q>> implements StateProf
                     result = applyGainTowardsItem(offsetted, gain);
                 } else {
                     result = applyGainTowardsHandler(quantityState, gain).subtract(pregainOffsetQt);
-
                 }
             } catch (UnconvertibleException | UnsupportedOperationException e) {
                 logger.warn(

@@ -121,7 +121,6 @@ public class GenericResponseTransformer {
                         // call the custom handler to handle specific / composite channels which do not map 1:1 to JSON
                         // fields.
                         result.putAll(customResponseTransformer.transform(channel, value, jsonData));
-
                     } catch (NumberFormatException | DateTimeParseException ex) {
                         logger.warn("caught exception while parsing data for channel {} (value '{}'). Exception: {}",
                                 channel.getUID().getId(), value, ex.getMessage());

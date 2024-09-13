@@ -66,9 +66,7 @@ public class PollyTTSVoice implements Voice {
         return label;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    // automatically inherit doc
     @Override
     public Locale getLocale() {
         return locale;

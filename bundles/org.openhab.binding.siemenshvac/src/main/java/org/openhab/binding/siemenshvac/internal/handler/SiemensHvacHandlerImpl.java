@@ -253,7 +253,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
             } catch (ConverterException ex) {
                 logger.warn("{}, for uid: {}, please check the item type", ex.getMessage(), uid);
             }
-
         }
     }
 
@@ -336,7 +335,6 @@ public class SiemensHvacHandlerImpl extends BaseThingHandler {
 
                         logger.trace("Write request response: {} ", response);
                     }
-
                 } else {
                     logger.debug("Failed to get converted state from datapoint '{}'", dp);
                 }
