@@ -225,8 +225,12 @@ public class HueSyncConnection {
 
         Request request = this.httpClient.newRequest(uri).method(method);
 
+        this.logger.trace("uri: {}", uri);
+        this.logger.trace("method: {}", method);
+        this.logger.trace("payload: {}", payload);
+
         if (!payload.isBlank()) {
-            request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON.asString())
+            request.header(HttpHeader.CONTENT_TYPE, MimeTypes.Type.APPLICATION_JSON_UTF_8.toString())
                     .content(new StringContentProvider(payload));
         }
 
