@@ -55,6 +55,13 @@ public class MideaACHandlerFactory extends BaseThingHandlerFactory {
         return SUPPORTED_THING_TYPES_UIDS.contains(thingTypeUID);
     }
 
+    /**
+     * The MideaACHandlerFactory class parameters
+     * 
+     * @param networkAddressService OH networkAddressService
+     * @param unitProvider OH unitProvider
+     * @param httpClientFactory OH httpClientFactory
+     */
     @Activate
     public MideaACHandlerFactory(@Reference NetworkAddressService networkAddressService,
             @Reference UnitProvider unitProvider, @Reference HttpClientFactory httpClientFactory) {

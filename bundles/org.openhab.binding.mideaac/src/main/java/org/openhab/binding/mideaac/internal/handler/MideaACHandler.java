@@ -91,21 +91,45 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     private String ipPort = "";
     private String deviceId = "";
     private int version = 0;
+
+    /**
+     * Create new nonnull cloud provider to start
+     */
     public CloudProvider cloudProvider = new CloudProvider("", "", "", "", "", "", "", "");
     private Security security = new Security(cloudProvider);
 
+    /**
+     * Gets the users Cloud provider
+     * 
+     * @return cloud Provider
+     */
     public CloudProvider getCloudProvider() {
         return cloudProvider;
     }
 
+    /**
+     * Gets the Security class
+     * 
+     * @return security
+     */
     public @Nullable Security getSecurity() {
         return security;
     }
 
+    /**
+     * Gets the Device Version (2 or 3)
+     * 
+     * @return version
+     */
     public int getVersion() {
         return version;
     }
 
+    /**
+     * Set the device version
+     * 
+     * @param version device version
+     */
     public void setVersion(int version) {
         this.version = version;
     }
@@ -138,10 +162,18 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     private final HttpClient httpClient;
 
     /**
-     * Switches to optimize logging, retries and commands
+     * Set to false when Set Command recieved to speed response
      */
     public boolean doPoll = true;
+
+    /**
+     * True allows one short retry after connection problem
+     */
     public boolean retry = true;
+
+    /**
+     * Suppresses the connection message if was online before
+     */
     public boolean connectionMessage = true;
 
     private ConnectionManager getConnectionManager() {
@@ -152,6 +184,15 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         return getConnectionManager().getLastResponse();
     }
 
+    /**
+     * Initial creation of the Midea AC Handler
+     * 
+     * @param thing thing name
+     * @param ipv4Address IP address of the device
+     * @param unitProvider OH core unit provider
+     * @param httpClient http Client
+     * @param clouds cloud
+     */
     public MideaACHandler(Thing thing, String ipv4Address, UnitProvider unitProvider, HttpClient httpClient,
             Clouds clouds) {
         super(thing);
@@ -164,6 +205,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
     /**
      * Returns Cloud Provider
+     * 
+     * @return clouds
      */
     public Clouds getClouds() {
         return clouds;
@@ -229,6 +272,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
     /**
      * Device Power ON OFF
+     * 
+     * @param command On or Off
      */
     public void handlePower(Command command) {
         CommandSet commandSet = CommandSet.fromResponse(getLastResponse());
@@ -247,6 +292,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
     /**
      * Supported AC - Heat Pump modes
+     * 
+     * @param command Operational Mode Cool, Heat, etc.
      */
     public void handleOperationalMode(Command command) {
         CommandSet commandSet = CommandSet.fromResponse(getLastResponse());
@@ -290,6 +337,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * Fahrenheit is rounded to fit (example
      * setting to 64 F is 18 C but will result in 64.4 F display in OH)
      * The evaporator only displays 2 digits, so will show 64.
+     * 
+     * @param command Target Temperature
      */
     @SuppressWarnings("null")
     public void handleTargetTemperature(Command command) {
@@ -322,6 +371,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
     /**
      * Fan Speeds vary by V2 or V3 and device. This command also turns the power ON
+     * 
+     * @param command Fan Speed Auto, Low, High, etc.
      */
     public void handleFanSpeed(Command command) {
         CommandSet commandSet = CommandSet.fromResponse(getLastResponse());
@@ -378,6 +429,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     /**
      * Must be set in Cool mode. Fan will switch to Auto
      * and temp will be 24 C or 75 F on unit (75.2 F in OH)
+     * 
+     * @param command Eco Mode
      */
     public void handleEcoMode(Command command) {
         CommandSet commandSet = CommandSet.fromResponse(getLastResponse());
@@ -397,6 +450,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     /**
      * Modes supported depends on the device
      * Power is turned on when swing mode is changed
+     * 
+     * @param command Swing Mode
      */
     public void handleSwingMode(Command command) {
         CommandSet commandSet = CommandSet.fromResponse(getLastResponse());
@@ -440,6 +495,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     /**
      * Turbo mode is only with Heat or Cool to quickly change
      * Room temperature. Power is turned on.
+     * 
+     * @param command Turbo mode - Fast cooling or Heating
      */
     public void handleTurboMode(Command command) {
         CommandSet commandSet = CommandSet.fromResponse(getLastResponse());
@@ -460,6 +517,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
     /**
      * May not be supported via LAN in all models - IR only
+     * 
+     * @param command Screen Display Toggle to ON or Off - One command
      */
     public void handleScreenDisplay(Command command) {
         CommandSet commandSet = CommandSet.fromResponse(getLastResponse());
@@ -478,6 +537,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
     /**
      * This is only for the AC LED device display units, calcs always in Celsius
+     * 
+     * @param command Temp unit on the indoor evaporator
      */
     public void handleTempUnit(Command command) {
         CommandSet commandSet = CommandSet.fromResponse(getLastResponse());
@@ -497,6 +558,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
     /**
      * Power turned on with Sleep Mode Change
      * Sleep mode increases temp slightly in first 2 hours of sleep
+     * 
+     * @param command Sleep function
      */
     public void handleSleepFunction(Command command) {
         CommandSet commandSet = CommandSet.fromResponse(getLastResponse());
@@ -517,6 +580,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
     /**
      * Sets the time (from now) that the device will turn on at it's current settings
+     * 
+     * @param command Sets On Timer
      */
     public void handleOnTimer(Command command) {
         CommandSet commandSet = CommandSet.fromResponse(getLastResponse());
@@ -556,6 +621,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
     /**
      * Sets the time (from now) that the device will turn off
+     * 
+     * @param command Sets Off Timer
      */
     public void handleOffTimer(Command command) {
         CommandSet commandSet = CommandSet.fromResponse(getLastResponse());
@@ -750,11 +817,16 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
      * if a Command is being sent and picked up by
      * the Connection Manager. Then is reset to true
      * after the Set command is complete
+     * 
+     * @return doPoll Sets if the binding will poll after authorization
      */
     public boolean getDoPoll() {
         return doPoll;
     }
 
+    /**
+     * Resets the doPoll switch
+     */
     public void resetDoPoll() {
         doPoll = true;
     }
@@ -781,10 +853,20 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         return thing.getStatusInfo().getStatusDetail();
     }
 
+    /**
+     * Sets Cloud Provider
+     * 
+     * @param cloudProvider Cloud Provider
+     */
     public void setCloudProvider(CloudProvider cloudProvider) {
         this.cloudProvider = cloudProvider;
     }
 
+    /**
+     * Security methods
+     * 
+     * @param security security class
+     */
     public void setSecurity(Security security) {
         this.security = security;
     }
@@ -821,6 +903,11 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         private Response lastResponse = new Response(data, getVersion(), responseType, bodyType);
         private MideaACHandler mideaACHandler;
 
+        /**
+         * Gets last response
+         * 
+         * @return byte array of last response
+         */
         public Response getLastResponse() {
             return this.lastResponse;
         }
@@ -831,11 +918,23 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             connect();
         };
 
+        /**
+         * Set the parameters for the connection manager
+         * 
+         * @param ipv4Address IP4 Address
+         * @param mideaACHandler mideaACHandler class
+         */
         public ConnectionManager(String ipv4Address, MideaACHandler mideaACHandler) {
             deviceIsConnected = false;
             this.mideaACHandler = mideaACHandler;
         }
 
+        /**
+         * Validate if String is blank
+         * 
+         * @param str string to be evaluated
+         * @return boolean true or false
+         */
         public static boolean isBlank(String str) {
             return str.trim().isEmpty();
         }
@@ -850,6 +949,11 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
             droppedCommands = 0;
         }
 
+        /**
+         * Resets Dropped command
+         * 
+         * @return dropped commands
+         */
         public int getDroppedCommands() {
             return droppedCommands = 0;
         }
@@ -1055,6 +1159,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
         /**
          * After authentication, this switch to either send a
          * Poll or the Set command
+         * 
+         * @param polling polling true or false
          */
         public void requestStatus(boolean polling) {
             if (polling) {
@@ -1067,6 +1173,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
          * Calls the sendCommand method, resets the doPoll to true
          * Disconnects the socket and schedules the connection manager
          * job, if was stopped (to avoid collision) due to a Set command
+         * 
+         * @param command either the set or polling command
          */
         public void sendCommandAndMonitor(CommandBase command) {
             sendCommand(command);
@@ -1084,6 +1192,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
          * If still empty, send the bytes again. If there are bytes, the read method is called.
          * If the socket times out with no response the command is dropped. There will be another poll
          * in the time set by the user (30 seconds min) or the set command can be retried
+         * 
+         * @param command either the set or polling command
          */
         @SuppressWarnings("null")
         public void sendCommand(CommandBase command) {
@@ -1313,6 +1423,8 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
         /**
          * Reads the inputStream byte array
+         * 
+         * @return byte array
          */
         @SuppressWarnings("null")
         public synchronized byte @Nullable [] read() {
@@ -1340,6 +1452,9 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
         /**
          * Writes the packet that will be sent to the device
+         * 
+         * @param buffer socket writer
+         * @throws IOException writer could be null
          */
         @SuppressWarnings("null")
         public synchronized void write(byte[] buffer) throws IOException {

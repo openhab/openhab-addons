@@ -30,6 +30,13 @@ public class Packet {
     private byte[] packet;
     private MideaACHandler mideaACHandler;
 
+    /**
+     * The Packet class parameters
+     * 
+     * @param command command from Command Base
+     * @param deviceId the device ID
+     * @param mideaACHandler the MideaACHandler class
+     */
     @SuppressWarnings("deprecation")
     public Packet(CommandBase command, String deviceId, MideaACHandler mideaACHandler) {
         this.command = command;
@@ -103,6 +110,11 @@ public class Packet {
         // logger.trace("Packet after checksum {}", Utils.bytesToHex(packet));
     }
 
+    /**
+     * Returns the packet for sending
+     * 
+     * @return packet for socket writer
+     */
     public byte[] getBytes() {
         return packet;
     }

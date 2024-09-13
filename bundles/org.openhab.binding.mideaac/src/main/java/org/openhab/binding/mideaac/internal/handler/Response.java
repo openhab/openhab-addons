@@ -44,6 +44,14 @@ public class Response {
         return version;
     }
 
+    /**
+     * Response class Parameters
+     * 
+     * @param data byte array from device
+     * @param version version of the device
+     * @param responseType response type
+     * @param bodyType Body type
+     */
     public Response(byte[] data, int version, String responseType, byte bodyType) {
         this.data = data;
         this.version = version;
@@ -95,6 +103,8 @@ public class Response {
 
     /**
      * Device On or Off
+     * 
+     * @return power state true or false
      */
     public boolean getPowerState() {
         return (data[0x01] & 0x1) > 0;
@@ -102,6 +112,8 @@ public class Response {
 
     /**
      * Read only
+     * 
+     * @return prompt tone true or false
      */
     public boolean getPromptTone() {
         return (data[0x01] & 0x40) > 0;
@@ -109,6 +121,8 @@ public class Response {
 
     /**
      * Read only
+     * 
+     * @return appliance error true or false
      */
     public boolean getApplianceError() {
         return (data[0x01] & 0x80) > 0;
@@ -116,6 +130,8 @@ public class Response {
 
     /**
      * Setpoint for Heat Pump
+     * 
+     * @return current setpoint in degrees C
      */
     public float getTargetTemperature() {
         return (data[0x02] & 0xf) + 16.0f + (((data[0x02] & 0x10) > 0) ? 0.5f : 0.0f);
@@ -123,6 +139,8 @@ public class Response {
 
     /**
      * Cool, Heat, Fan Only, etc. See Command Base class
+     * 
+     * @return Cool, Heat, Fan Only, etc.
      */
     public OperationalMode getOperationalMode() {
         return OperationalMode.fromId((data[0x02] & 0xe0) >> 5);
@@ -130,6 +148,8 @@ public class Response {
 
     /**
      * Low, Medium, High, Auto etc. See Command Base class
+     * 
+     * @return Low, Medium, High, Auto etc.
      */
     public FanSpeed getFanSpeed() {
         return FanSpeed.fromId(data[0x03] & 0x7f, getVersion());
@@ -137,6 +157,8 @@ public class Response {
 
     /**
      * Creates String representation of the On timer to the channel
+     * 
+     * @return String of HH:MM
      */
     public Timer getOnTimer() {
         return new Timer((data[0x04] & 0x80) > 0, ((data[0x04] & (byte) 0x7c) >> 2),
@@ -146,6 +168,8 @@ public class Response {
     /**
      * This is used to carry the current On Timer (last response) through
      * subsequent Set commands, so it is not overwritten.
+     * 
+     * @return status plus String of HH:MM
      */
     public TimerData getOnTimerData() {
         int hours = 0;
@@ -159,6 +183,8 @@ public class Response {
 
     /**
      * Creates String representation of the Off timer to the channel
+     * 
+     * @return String of HH:MM
      */
     public Timer getOffTimer() {
         return new Timer((data[0x05] & 0x80) > 0, ((data[0x05] & (byte) 0x7c) >> 2),
@@ -168,6 +194,8 @@ public class Response {
     /**
      * This is used to carry the Off timer (last response) through
      * subsequent Set commands, so it is not overwritten.
+     * 
+     * @return status plus String of HH:MM
      */
     public TimerData getOffTimerData() {
         int hours = 0;
@@ -181,13 +209,17 @@ public class Response {
 
     /**
      * Status of the vertical and/or horzontal louver
+     * 
+     * @return Vertical, Horizontal, Off, Both
      */
     public SwingMode getSwingMode() {
         return SwingMode.fromId(data[0x07] & 0x3f, getVersion());
     }
 
     /**
-     * Read only
+     * Read only - heat mode only
+     * 
+     * @return auxiliary heat active
      */
     public boolean getAuxHeat() {
         return (data[0x09] & (byte) 0x08) != 0;
@@ -195,6 +227,8 @@ public class Response {
 
     /**
      * Ecomode status - Fan to Auto and temp to 24 C
+     * 
+     * @return Eco mode on (true) or (false)
      */
     public boolean getEcoMode() {
         return (data[0x09] & (byte) 0x10) != 0;
@@ -203,6 +237,8 @@ public class Response {
     /**
      * Sleep function status. Setpoint Temp increases in first
      * two hours of sleep by 1 degree in Cool mode
+     * 
+     * @return Sleep mode on (true) or (false)
      */
     public boolean getSleepFunction() {
         return (data[0x0a] & (byte) 0x01) != 0;
@@ -210,6 +246,8 @@ public class Response {
 
     /**
      * Turbo mode status for maximum cooling or heat
+     * 
+     * @return Turbo mode on (true) or (false)
      */
     public boolean getTurboMode() {
         return (data[0x0a] & (byte) 0x02) != 0;
@@ -217,6 +255,8 @@ public class Response {
 
     /**
      * If true display on indoor unit is degrees F, else C
+     * 
+     * @return Fahrenheit on (true) or Celsius
      */
     public boolean getFahrenheit() {
         return (data[0x0a] & (byte) 0x04) != 0;
@@ -225,6 +265,8 @@ public class Response {
     /**
      * There is some variation in how this is handled by different
      * AC models. This covers at least 2 versions found.
+     * 
+     * @return Indoor temperature
      */
     public Float getIndoorTemperature() {
         double indoorTempInteger;
@@ -292,6 +334,8 @@ public class Response {
      * There is some variation in how this is handled by different
      * AC models. This covers at least 2 versions. Some models
      * do not report outside temp when the AC is off. Returns 0.0 in that case.
+     * 
+     * @return Outdoor temperature
      */
     public Float getOutdoorTemperature() {
         if (data[12] != (byte) 0xff) {
@@ -308,6 +352,8 @@ public class Response {
 
     /**
      * Returns the Alternative Target Temperature (not used)
+     * 
+     * @return Alternate target Temperature
      */
     public Float getAlternateTargetTemperature() {
         if ((data[13] & 0x1f) != 0) {
@@ -319,6 +365,8 @@ public class Response {
 
     /**
      * Returns status of Device LEDs
+     * 
+     * @return LEDs on (true) or (false)
      */
     public boolean getDisplayOn() {
         return (data[14] & (byte) 0x70) != (byte) 0x70;
@@ -327,6 +375,8 @@ public class Response {
     /**
      * Not observed with units being tested
      * From reference Document
+     * 
+     * @return humidity
      */
     public int getHumidity() {
         return (data[19] & (byte) 0x7f);

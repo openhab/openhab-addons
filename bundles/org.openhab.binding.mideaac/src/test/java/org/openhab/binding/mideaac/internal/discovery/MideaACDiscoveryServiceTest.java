@@ -40,6 +40,9 @@ public class MideaACDiscoveryServiceTest {
     String mSmartId = "", mSmartVersion = "", mSmartip = "", mSmartPort = "", mSmartSN = "", mSmartSSID = "",
             mSmartType = "";
 
+    /**
+     * Test Id
+     */
     @Test
     public void testId() {
         if (Utils.bytesToHex(Arrays.copyOfRange(data, 8, 10)).equals("5A5A")) {
@@ -51,6 +54,9 @@ public class MideaACDiscoveryServiceTest {
         assertEquals("151732605161920", mSmartId);
     }
 
+    /**
+     * Test IP address of device
+     */
     @Test
     public void testIPAddress() {
         mSmartip = Byte.toUnsignedInt(reply[3]) + "." + Byte.toUnsignedInt(reply[2]) + "."
@@ -58,6 +64,9 @@ public class MideaACDiscoveryServiceTest {
         assertEquals("192.168.0.246", mSmartip);
     }
 
+    /**
+     * Test Device Port
+     */
     @Test
     public void testPort() {
         BigInteger portId = new BigInteger(Utils.reverse(Arrays.copyOfRange(reply, 4, 8)));
@@ -65,18 +74,27 @@ public class MideaACDiscoveryServiceTest {
         assertEquals("6444", mSmartPort);
     }
 
+    /**
+     * Test serial Number
+     */
     @Test
     public void testSN() {
         mSmartSN = new String(reply, 8, 40 - 8, StandardCharsets.UTF_8);
         assertEquals("000000P0000000Q1B88C295643BC0000", mSmartSN);
     }
 
+    /**
+     * Test SSID - SN converted
+     */
     @Test
     public void testSSID() {
         mSmartSSID = new String(reply, 41, reply[40], StandardCharsets.UTF_8);
         assertEquals("net_ac_43BC", mSmartSSID);
     }
 
+    /**
+     * Test Type
+     */
     @Test
     public void testType() {
         mSmartSSID = new String(reply, 41, reply[40], StandardCharsets.UTF_8);

@@ -70,6 +70,9 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
 
     private Security security;
 
+    /**
+     * Discovery Service
+     */
     public MideaACDiscoveryService() {
         super(SUPPORTED_THING_TYPES_UIDS, discoveryTimeoutSeconds, false);
         this.security = new Security(CloudProvider.getCloudProvider(""));
@@ -123,7 +126,10 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
     }
 
     /**
-     * Performs the actual discovery of a specific Midea AC device (thing).
+     * Performs the actual discovery of a specific Midea AC device (thing)
+     * 
+     * @param ipAddress IP Address
+     * @param discoveryHandler Discovery Handler
      */
     @SuppressWarnings("null")
     public void discoverThing(String ipAddress, DiscoveryHandler discoveryHandler) {
@@ -166,6 +172,14 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
         startDiscoverSocket("255.255.255.255", null);
     }
 
+    /**
+     * Start the discovery Socket
+     * 
+     * @param ipAddress IP Address
+     * @param discoveryHandler Discovery handler
+     * @throws SocketException Socket Exception
+     * @throws IOException IO Exception
+     */
     @SuppressWarnings("null")
     public void startDiscoverSocket(String ipAddress, @Nullable DiscoveryHandler discoveryHandler)
             throws SocketException, IOException {
@@ -224,6 +238,9 @@ public class MideaACDiscoveryService extends AbstractDiscoveryService {
 
     /**
      * Parses the packet to extract the device properties
+     * 
+     * @param packet returned paket from device
+     * @return extracted device properties
      */
     @Nullable
     public DiscoveryResult discoveryPacketReceived(DatagramPacket packet) {

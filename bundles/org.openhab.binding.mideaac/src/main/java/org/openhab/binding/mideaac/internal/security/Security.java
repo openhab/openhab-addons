@@ -49,6 +49,7 @@ import com.google.gson.JsonObject;
  * The basic aes Protocol is used by both V2 and V3 devices.
  *
  * @author Jacek Dobrowolski - Initial Contribution
+ * @author Bob Eckhoff - JavaDoc
  */
 @NonNullByDefault
 public class Security {
@@ -59,12 +60,20 @@ public class Security {
 
     CloudProvider cloudProvider;
 
+    /**
+     * Set Cloud Provider
+     * 
+     * @param cloudProvider Name of Cloud provider
+     */
     public Security(CloudProvider cloudProvider) {
         this.cloudProvider = cloudProvider;
     }
 
     /**
      * Basic Decryption for all devices using common signkey
+     * 
+     * @param encryptData encrypted array
+     * @return decypted array
      */
     public byte[] aesDecrypt(byte[] encryptData) {
         byte[] plainText = {};
@@ -102,6 +111,9 @@ public class Security {
 
     /**
      * Basic Encryption for all devices using common signkey
+     * 
+     * @param plainText Plain Text
+     * @return encrpted byte[] array
      */
     public byte[] aesEncrypt(byte[] plainText) {
         byte[] encryptData = {};
@@ -137,6 +149,12 @@ public class Security {
         return encryptData;
     }
 
+    /**
+     * Secret key using MD5
+     * 
+     * @return encKey
+     * @throws NoSuchAlgorithmException missing algorithm
+     */
     public @Nullable SecretKeySpec getEncKey() throws NoSuchAlgorithmException {
         if (encKey == null) {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -150,6 +168,12 @@ public class Security {
         return encKey;
     }
 
+    /**
+     * Encode32 Data
+     * 
+     * @param raw byte array
+     * @return byte[]
+     */
     public byte[] encode32Data(byte[] raw) {
         byte[] combine = ByteBuffer
                 .allocate(raw.length + cloudProvider.getSignKey().getBytes(StandardCharsets.US_ASCII).length).put(raw)
@@ -180,10 +204,21 @@ public class Security {
             this.value = value;
         }
 
+        /**
+         * Message type Id
+         * 
+         * @return message type
+         */
         public int getId() {
             return value;
         }
 
+        /**
+         * Plain language message
+         * 
+         * @param id id
+         * @return message type
+         */
         public static MsgType fromId(int id) {
             for (MsgType type : values()) {
                 if (type.getId() == id) {
@@ -200,6 +235,10 @@ public class Security {
 
     /**
      * Advanced Encryption for V3 devices
+     * 
+     * @param data input data array
+     * @param msgtype message type
+     * @return encoded byte array
      */
     public byte[] encode8370(byte[] data, MsgType msgtype) {
         ByteBuffer headerBuffer = ByteBuffer.allocate(256);
@@ -261,6 +300,10 @@ public class Security {
 
     /**
      * Advanced Decryption for V3 devices
+     * 
+     * @param data input data array
+     * @return decrypted byte array
+     * @throws IOException IO exception
      */
     public Decryption8370Result decode8370(byte[] data) throws IOException {
         if (data.length < 6) {
@@ -329,6 +372,13 @@ public class Security {
         return new Decryption8370Result(responses, new byte[] {});
     }
 
+    /**
+     * Retrieve TCP key
+     * 
+     * @param response message
+     * @param key key
+     * @return tcp key
+     */
     public boolean tcpKey(byte[] response, byte key[]) {
         byte[] payload = Arrays.copyOfRange(response, 0, 32);
         byte[] sign = Arrays.copyOfRange(response, 32, 64);
@@ -438,6 +488,13 @@ public class Security {
         return random;
     }
 
+    /**
+     * Path to cloud provider
+     * 
+     * @param url url of cloud provider
+     * @param payload message
+     * @return lower case hex string
+     */
     public @Nullable String sign(String url, JsonObject payload) {
         logger.trace("url: {}", url);
         String path;
@@ -450,7 +507,7 @@ public class Security {
 
             String query = Utils.getQueryString(payload);
 
-            String sign = path + query + cloudProvider.getAppKey();
+            String sign = path + query + cloudProvider.getLoginKey();
             logger.trace("sign: {}", sign);
             return Utils.bytesToHexLowercase(sha256((sign).getBytes(StandardCharsets.US_ASCII)));
         } catch (URISyntaxException e) {
@@ -462,6 +519,10 @@ public class Security {
 
     /**
      * Provides a randown iotKey for Cloud Providers that do not have one
+     * 
+     * @param data input data array
+     * @param random random values
+     * @return sign
      */
     public @Nullable String newSign(String data, String random) {
         String msg = cloudProvider.getIotKey();
@@ -487,11 +548,12 @@ public class Security {
     /**
      * Converts parameters to lower case string for communication with cloud
      * 
-     * @param data
-     * @param key
-     * @param algorithm
-     * @throws NoSuchAlgorithmException
-     * @throws InvalidKeyException
+     * @param data data array
+     * @param key key
+     * @param algorithm method
+     * @throws NoSuchAlgorithmException no Algorithm
+     * @throws InvalidKeyException bad key
+     * @return lower case string
      */
     public String hmac(String data, String key, String algorithm) throws NoSuchAlgorithmException, InvalidKeyException {
         SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(), algorithm);
@@ -501,10 +563,11 @@ public class Security {
     }
 
     /**
-     * Encrypts password for cloud API using MD5
+     * Encrypts password for cloud API using SHA-256
      * 
-     * @param loginId
-     * @param password
+     * @param loginId Login ID
+     * @param password Login password
+     * @return string
      */
     public @Nullable String encryptPassword(@Nullable String loginId, String password) {
         try {
@@ -525,6 +588,10 @@ public class Security {
 
     /**
      * Encrypts password for cloud API using MD5
+     * 
+     * @param loginId Login ID
+     * @param password Login password
+     * @return string
      */
     public @Nullable String encryptIamPassword(@Nullable String loginId, String password) {
         try {
@@ -545,6 +612,12 @@ public class Security {
         return null;
     }
 
+    /**
+     * Gets UDPID from byte data
+     * 
+     * @param data data array
+     * @return string of lower case bytes
+     */
     public String getUdpId(byte[] data) {
         byte[] b = sha256(data);
         byte[] b1 = Arrays.copyOfRange(b, 0, 16);

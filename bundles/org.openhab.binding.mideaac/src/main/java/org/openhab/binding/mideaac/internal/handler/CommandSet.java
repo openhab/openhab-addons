@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 public class CommandSet extends CommandBase {
     private final Logger logger = LoggerFactory.getLogger(CommandSet.class);
 
+    /**
+     * Byte array structure for Command set
+     */
     public CommandSet() {
         data[0x01] = (byte) 0x23;
         data[0x09] = (byte) 0x02;
@@ -48,6 +51,9 @@ public class CommandSet extends CommandBase {
     /**
      * These provide continuity so a new command on another channel
      * doesn't delete the current states of the other channels
+     * 
+     * @param response response from last poll or set command
+     * @return commandSet
      */
     public static CommandSet fromResponse(Response response) {
         CommandSet commandSet = new CommandSet();
@@ -67,7 +73,9 @@ public class CommandSet extends CommandBase {
     }
 
     /**
-     * Causes indoor evaporator to beep when command received
+     * Causes indoor evaporator to beep when Set command received
+     * 
+     * @param feedbackEnabled will indoor unit beep
      */
     public void setPromptTone(boolean feedbackEnabled) {
         if (!feedbackEnabled) {
@@ -79,6 +87,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * Turns device On or Off
+     * 
+     * @param state on or off
      */
     public void setPowerState(boolean state) {
         if (!state) {
@@ -90,6 +100,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * For Testing assertion get result
+     * 
+     * @return true or false
      */
     public boolean getPowerState() {
         return (data[0x0b] & 0x1) > 0;
@@ -97,6 +109,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * Cool, Heat, Fan Only, etc. See Command Base class
+     * 
+     * @param mode cool, heat, etc.
      */
     public void setOperationalMode(OperationalMode mode) {
         data[0x0c] &= ~(byte) 0xe0;
@@ -105,6 +119,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * For Testing assertion get result
+     * 
+     * @return operational mode
      */
     public int getOperationalMode() {
         return data[0x0c] &= (byte) 0xe0;
@@ -113,6 +129,8 @@ public class CommandSet extends CommandBase {
     /**
      * Clear, then set the temperature bits, including the 0.5 bit
      * This is all degrees C
+     * 
+     * @param temperature target temperature
      */
     public void setTargetTemperature(float temperature) {
         data[0x0c] &= ~0x0f;
@@ -122,6 +140,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * For Testing assertion get Setpoint results
+     * 
+     * @return target temperature as a number
      */
     public float getTargetTemperature() {
         return (data[0x0c] & 0xf) + 16.0f + (((data[0x0c] & 0x10) > 0) ? 0.5f : 0.0f);
@@ -129,6 +149,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * Low, Medium, High, Auto etc. See Command Base class
+     * 
+     * @param speed Set fan speed
      */
     public void setFanSpeed(FanSpeed speed) {
         data[0x0d] = (byte) (speed.getId());
@@ -136,6 +158,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * For Testing assertion get Fan Speed results
+     * 
+     * @return fan speed as a number
      */
     public int getFanSpeed() {
         return data[0x0d];
@@ -143,6 +167,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * In cool mode sets Fan to Auto and temp to 24 C
+     * 
+     * @param ecoModeEnabled true or false
      */
     public void setEcoMode(boolean ecoModeEnabled) {
         if (!ecoModeEnabled) {
@@ -154,6 +180,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * If unit supports, set the vertical and/or horzontal louver
+     * 
+     * @param mode sets swing mode
      */
     public void setSwingMode(SwingMode mode) {
         data[0x11] &= ~0x3f; // Clear the mode bits
@@ -162,6 +190,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * For Testing assertion get Swing result
+     * 
+     * @return swing mode
      */
     public int getSwingMode() {
         return data[0x11];
@@ -170,6 +200,8 @@ public class CommandSet extends CommandBase {
     /**
      * Activates the sleep function. Setpoint Temp increases in first
      * two hours of sleep by 1 degree in Cool mode
+     * 
+     * @param sleepModeEnabled true or false
      */
     public void setSleepMode(boolean sleepModeEnabled) {
         if (sleepModeEnabled) {
@@ -181,6 +213,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * Sets the Turbo mode for maximum cooling or heat
+     * 
+     * @param turboModeEnabled true or false
      */
     public void setTurboMode(boolean turboModeEnabled) {
         if (turboModeEnabled) {
@@ -192,6 +226,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * Set the Indoor Unit display to Fahrenheit from Celsius
+     * 
+     * @param fahrenheitEnabled true or false
      */
     public void setFahrenheit(boolean fahrenheitEnabled) {
         if (fahrenheitEnabled) {
@@ -205,6 +241,8 @@ public class CommandSet extends CommandBase {
      * Toggles the LED display.
      * This uses the request format, so needed modification, but need to keep
      * current beep and operating state.
+     * 
+     * @param screenDisplayToggle true (On) or false (off)
      */
     public void setScreenDisplay(boolean screenDisplayToggle) {
         modifyBytesForDisplayOff();
@@ -249,11 +287,20 @@ public class CommandSet extends CommandBase {
 
     /**
      * Set the ON timer for AC device start.
+     * 
+     * @param timerData status (On or Off), hours, minutes
      */
     public void setOnTimer(TimerData timerData) {
         setOnTimer(timerData.status, timerData.hours, timerData.minutes);
     }
 
+    /**
+     * Calculates remaining time until On
+     * 
+     * @param on is timer on
+     * @param hours hours remaining
+     * @param minutes minutes remaining
+     */
     public void setOnTimer(boolean on, int hours, int minutes) {
         // Process minutes (1 bit = 15 minutes)
         int bits = (int) Math.floor(minutes / 15);
@@ -278,6 +325,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * For Testing assertion get On Timer result
+     * 
+     * @return timer data base
      */
     public int getOnTimer() {
         return (data[0x0e] & 0xff);
@@ -285,6 +334,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * For Testing assertion get On Timer result (subtraction amount)
+     * 
+     * @return timer data subtraction
      */
     public int getOnTimer2() {
         return ((data[0x10] & (byte) 0xf0) >> 4) & 0x0f;
@@ -292,11 +343,20 @@ public class CommandSet extends CommandBase {
 
     /**
      * Set the timer for AC device stop.
+     * 
+     * @param timerData status (On or Off), hours, minutes
      */
     public void setOffTimer(TimerData timerData) {
         setOffTimer(timerData.status, timerData.hours, timerData.minutes);
     }
 
+    /**
+     * Calculates remaining time until Off
+     * 
+     * @param on is timer on
+     * @param hours hours remaining
+     * @param minutes minutes remaining
+     */
     public void setOffTimer(boolean on, int hours, int minutes) {
         int bits = (int) Math.floor(minutes / 15);
         int subtract = 0;
@@ -320,6 +380,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * For Testing assertion get Off Timer result
+     * 
+     * @return hours and minutes
      */
     public int getOffTimer() {
         return (data[0x0f] & 0xff);
@@ -327,6 +389,8 @@ public class CommandSet extends CommandBase {
 
     /**
      * For Testing assertion get Off Timer result (subtraction)
+     * 
+     * @return minutes to subtract
      */
     public int getOffTimer2() {
         return ((data[0x10] & (byte) 0x0f)) & 0x0f;

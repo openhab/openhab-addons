@@ -42,6 +42,7 @@ import com.google.gson.JsonObject;
  * Token and Key.
  *
  * @author Jacek Dobrowolski - Initial contribution
+ * @author Bob Eckhoff - JavaDoc
  */
 public class CloudDTO {
     private final Logger logger = LoggerFactory.getLogger(CloudDTO.class);
@@ -59,22 +60,42 @@ public class CloudDTO {
         tokenRequestedAt = new Date();
     }
 
+    /**
+     * Token rquested date
+     * 
+     * @return tokenRequestedAt
+     */
     public Date getTokenRequested() {
         return tokenRequestedAt;
     }
 
     private @Nullable HttpClient httpClient;
 
+    /**
+     * Client for Http requests
+     * 
+     * @return httpClient
+     */
     public HttpClient getHttpClient() {
         return httpClient;
     }
 
+    /**
+     * Sets Http Client
+     * 
+     * @param httpClient Http Client
+     */
     public void setHttpClient(HttpClient httpClient) {
         this.httpClient = httpClient;
     }
 
     private String errMsg;
 
+    /**
+     * Gets error message
+     * 
+     * @return errMsg
+     */
     public String getErrMsg() {
         return errMsg;
     }
@@ -89,6 +110,13 @@ public class CloudDTO {
     private @Nullable String loginId;
     private @Nullable String sessionId;
 
+    /**
+     * Parameters for Cloud Provider
+     * 
+     * @param email email
+     * @param password password
+     * @param cloudProvider Cloud Provider
+     */
     public CloudDTO(String email, String password, CloudProvider cloudProvider) {
         this.loginAccount = email;
         this.password = password;
@@ -108,7 +136,7 @@ public class CloudDTO {
             data.addProperty("format", FORMAT);
             data.addProperty("clientType", CLIENT_TYPE);
             data.addProperty("language", LANGUAGE);
-            data.addProperty("src", cloudProvider.getSrc());
+            data.addProperty("src", cloudProvider.getAppId());
             data.addProperty("stamp", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
         }
 
@@ -222,6 +250,8 @@ public class CloudDTO {
 
     /**
      * Performs a user login with the credentials supplied to the constructor
+     * 
+     * @return true or false
      */
     @SuppressWarnings("null")
     public boolean login() {
@@ -253,7 +283,7 @@ public class CloudDTO {
             iotData.addProperty("password", security.encryptPassword(loginId, password));
             iotData.addProperty("pushToken", Utils.tokenUrlsafe(120));
             iotData.addProperty("reqId", Utils.tokenHex(16));
-            iotData.addProperty("src", cloudProvider.getSrc());
+            iotData.addProperty("src", cloudProvider.getAppId());
             iotData.addProperty("stamp", new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
             newData.add("iotData", iotData);
 
@@ -287,6 +317,9 @@ public class CloudDTO {
 
     /**
      * Get tokenlist with udpid
+     * 
+     * @param udpid udp id
+     * @return token and key
      */
     public TokenKey getToken(String udpid) {
         long i = Long.valueOf(udpid);

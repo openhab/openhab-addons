@@ -30,6 +30,9 @@ public class MideaACConfigurationTest {
 
     MideaACConfiguration mideaACConfiguration = new MideaACConfiguration();
 
+    /**
+     * Test for valid Configs
+     */
     @Test
     public void testValidConfigs() {
         String ip = "192.168.0.1";
@@ -51,6 +54,9 @@ public class MideaACConfigurationTest {
         assertFalse(mideaACConfiguration.isDiscoveryNeeded());
     }
 
+    /**
+     * Test for non-valid configs
+     */
     @Test
     public void testnonValidConfigs() {
         String ip = "192.168.0.1";
@@ -72,6 +78,9 @@ public class MideaACConfigurationTest {
         assertTrue(mideaACConfiguration.isDiscoveryNeeded());
     }
 
+    /**
+     * Test for bad IP configs
+     */
     @Test
     public void testBadIpConfigs() {
         String ip = "192.1680.1";
@@ -93,6 +102,9 @@ public class MideaACConfigurationTest {
         assertTrue(mideaACConfiguration.isDiscoveryNeeded());
     }
 
+    /**
+     * Test to return cloud provider
+     */
     @Test
     public void testCloudProvider() {
         String cloudProvider = "NetHome Plus";
@@ -102,6 +114,9 @@ public class MideaACConfigurationTest {
         assertEquals(cloudProvider, cloudTest);
     }
 
+    /**
+     * Test token and key pair
+     */
     @Test
     public void testTokenKey() {
         String token = "D24046B597DB9C8A7CA029660BC606F3FD7EBF12693E73B2EF1FFE4C3B7CA00C824E408C9F3CE972CC0D3F8250AD79D0E67B101B47AC2DD84B396E52EA05193F";

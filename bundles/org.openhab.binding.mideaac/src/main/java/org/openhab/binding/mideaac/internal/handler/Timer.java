@@ -15,7 +15,7 @@ package org.openhab.binding.mideaac.internal.handler;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link Timer} class returns the On & Off AC Timer values
+ * The {@link Timer} class returns the On and Off AC Timer values
  * to the channels.
  *
  * @author Jacek Dobrowolski - Initial contribution
@@ -28,6 +28,13 @@ public class Timer {
     private int hours;
     private int minutes;
 
+    /**
+     * Timer class parameters
+     * 
+     * @param status on or off
+     * @param hours hours
+     * @param minutes minutes
+     */
     public Timer(boolean status, int hours, int minutes) {
         this.status = status;
         this.hours = hours;
@@ -47,6 +54,8 @@ public class Timer {
 
     /**
      * Timer format of the OH channel
+     * 
+     * @return conforming String
      */
     public String toChannel() {
         if (status) {
@@ -61,6 +70,12 @@ public class Timer {
      * so the AC start and stop timers can be set
      */
     public class TimeParser {
+        /**
+         * Parse Time string into components
+         * 
+         * @param time conforming string
+         * @return hours and minutes
+         */
         public int[] parseTime(String time) {
             String[] parts = time.split(":");
             int hours = Integer.parseInt(parts[0]);
@@ -75,10 +90,28 @@ public class Timer {
      * when new commands on other channels are set.
      */
     public class TimerData {
+        /**
+         * Status if timer is on
+         */
         public boolean status;
+
+        /**
+         * Current hours
+         */
         public int hours;
+
+        /**
+         * Current minutes
+         */
         public int minutes;
 
+        /**
+         * Sets the TimerData from the response
+         * 
+         * @param status true if timer is on
+         * @param hours hours left
+         * @param minutes minutes left
+         */
         public TimerData(boolean status, int hours, int minutes) {
             this.status = status;
             this.hours = hours;

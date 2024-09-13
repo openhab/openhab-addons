@@ -19,6 +19,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * to allow encryption and decryption for the supported Cloud Providers
  *
  * @author Jacek Dobrowolski - Initial Contribution
+ * @author Bob Eckhoff - JavaDoc
  */
 @NonNullByDefault
 public class CloudProvider {
@@ -33,46 +34,90 @@ public class CloudProvider {
     private String iotkey;
     private String hmackey;
 
+    /**
+     * Cloud provider Name
+     * 
+     * @return name
+     */
     public String getName() {
         return name;
     }
 
-    public String getAppKey() {
-        return appkey;
-    }
-
+    /**
+     * Cloud provider application key
+     * 
+     * @return appkey
+     */
     public String getLoginKey() {
         return appkey;
     }
 
+    /**
+     * Cloud provider application ID
+     * 
+     * @return appid
+     */
     public String getAppId() {
         return appid;
     }
 
-    public String getSrc() {
-        return appid;
-    }
-
+    /**
+     * Cloud provider url
+     * 
+     * @return apiurl
+     */
     public String getApiUrl() {
         return apiurl;
     }
 
+    /**
+     * Cloud Provider Sign Key
+     * 
+     * @return signkey
+     */
     public String getSignKey() {
         return signkey;
     }
 
+    /**
+     * Cloud provider proxy - MSmarthome only
+     * 
+     * @return proxied
+     */
     public String getProxied() {
         return proxied;
     }
 
+    /**
+     * Cloud provider iot key - MSmarthome only
+     * 
+     * @return iotkey
+     */
     public String getIotKey() {
         return iotkey;
     }
 
+    /**
+     * Cloud provider hmackey - MSmarthome only
+     * 
+     * @return hmackey
+     */
     public String getHmacKey() {
         return hmackey;
     }
 
+    /**
+     * Cloud provider data
+     * 
+     * @param name Cloud provider
+     * @param appkey application key
+     * @param appid application id
+     * @param apiurl application url
+     * @param signkey sign key for AES
+     * @param iotkey iot key - MSmarthome only
+     * @param hmackey hmac key - MSmarthome only
+     * @param proxied proxy - MSmarthome only
+     */
     public CloudProvider(String name, String appkey, String appid, String apiurl, String signkey, String iotkey,
             String hmackey, String proxied) {
         super();
@@ -87,8 +132,12 @@ public class CloudProvider {
     }
 
     /**
+     * Cloud provider information
      * All providers use the same signkey for AES encryption and Decryption.
      * V2 Devices do not require a Cloud Provider entry as they only use AES
+     * 
+     * @param name Cloud provider
+     * @return Cloud provider information
      */
     public static CloudProvider getCloudProvider(String name) {
         switch (name) {

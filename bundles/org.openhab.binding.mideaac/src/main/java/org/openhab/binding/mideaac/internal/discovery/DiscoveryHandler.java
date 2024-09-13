@@ -22,5 +22,10 @@ import org.openhab.core.config.discovery.DiscoveryResult;
  */
 @NonNullByDefault
 public interface DiscoveryHandler {
+    /**
+     * Discovery result
+     * 
+     * @param discoveryResult AC device
+     */
     public void discovered(DiscoveryResult discoveryResult);
 }

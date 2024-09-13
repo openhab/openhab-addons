@@ -31,9 +31,12 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 public class Connection implements Closeable {
 
     /**
-     * UDP port to send command.
+     * UDP port1 to send command.
      */
     public static final int MIDEAAC_SEND_PORT1 = 6445;
+    /**
+     * UDP port2 to send command.
+     */
     public static final int MIDEAAC_SEND_PORT2 = 20086;
     /**
      * UDP port devices send discover replies back.

@@ -20,13 +20,24 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  * The {@link Decryption8370Result} Protocol. V3 Only
  *
  * @author Jacek Dobrowolski - Initial Contribution
+ * @author Bob Eckhoff - JavaDoc
  */
 @NonNullByDefault
 public class Decryption8370Result {
+    /**
+     * Set up for decryption
+     * 
+     * @return responses
+     */
     public ArrayList<byte[]> getResponses() {
         return responses;
     }
 
+    /**
+     * Buffer
+     * 
+     * @return buffer
+     */
     public byte[] getBuffer() {
         return buffer;
     }
@@ -34,6 +45,12 @@ public class Decryption8370Result {
     ArrayList<byte[]> responses;
     byte[] buffer;
 
+    /**
+     * Decryption result
+     * 
+     * @param responses responses
+     * @param buffer buffer
+     */
     public Decryption8370Result(ArrayList<byte[]> responses, byte[] buffer) {
         super();
         this.responses = responses;

@@ -28,6 +28,7 @@ import com.google.gson.JsonObject;
  * which are used across the whole binding.
  *
  * @author Jacek Dobrowolski - Initial contribution
+ * @author Bob Eckhoff - JavaDoc
  */
 @NonNullByDefault
 public class Utils {
@@ -37,6 +38,9 @@ public class Utils {
 
     /**
      * Converts byte array to upper case hex string
+     * 
+     * @param bytes bytes to convert
+     * @return string of hex chars
      */
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
@@ -50,6 +54,9 @@ public class Utils {
 
     /**
      * Converts byte array to binary string
+     * 
+     * @param bytes bytes to convert
+     * @return string of hex chars
      */
     public static String bytesToBinary(byte[] bytes) {
         String s1 = "";
@@ -64,6 +71,9 @@ public class Utils {
 
     /**
      * Converts byte array to lower case hex string
+     * 
+     * @param bytes bytes to convert
+     * @return string of hex chars
      */
     public static String bytesToHexLowercase(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
@@ -77,6 +87,9 @@ public class Utils {
 
     /**
      * Validates the IP address format
+     * 
+     * @param ip string of IP Address
+     * @return IP pattern OK
      */
     public static boolean validateIP(final String ip) {
         String pattern = "^((0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)\\.){3}(0|1\\d?\\d?|2[0-4]?\\d?|25[0-5]?|[3-9]\\d?)$";
@@ -86,6 +99,9 @@ public class Utils {
 
     /**
      * Converts hex string to a byte array
+     * 
+     * @param s string to convert to byte array
+     * @return byte array
      */
     public static byte[] hexStringToByteArray(String s) {
         int len = s.length();
@@ -98,6 +114,10 @@ public class Utils {
 
     /**
      * Adds two byte arrays together
+     * 
+     * @param a input byte array 1
+     * @param b input byte array 2
+     * @return byte array
      */
     public static byte[] concatenateArrays(byte[] a, byte[] b) {
         byte[] c = new byte[a.length + b.length];
@@ -106,6 +126,12 @@ public class Utils {
         return c;
     }
 
+    /**
+     * Arrange byte order
+     * 
+     * @param i input
+     * @return @return byte array
+     */
     public static byte[] toBytes(short i) {
         ByteBuffer b = ByteBuffer.allocate(2);
         b.order(ByteOrder.BIG_ENDIAN); // optional, the initial order of a byte buffer is always BIG_ENDIAN.
@@ -113,6 +139,13 @@ public class Utils {
         return b.array();
     }
 
+    /**
+     * Combine byte arrays
+     * 
+     * @param array1 input array
+     * @param array2 input array
+     * @return byte array
+     */
     public static byte[] strxor(byte[] array1, byte[] array2) {
         byte[] result = new byte[array1.length];
         int i = 0;
@@ -122,6 +155,12 @@ public class Utils {
         return result;
     }
 
+    /**
+     * Create String of the v3 Token
+     * 
+     * @param nbytes number of bytes
+     * @return String
+     */
     public static String tokenHex(int nbytes) {
         Random r = new Random();
         StringBuffer sb = new StringBuffer();
@@ -131,6 +170,12 @@ public class Utils {
         return sb.toString().substring(0, nbytes);
     }
 
+    /**
+     * Create URL safe token
+     * 
+     * @param nbytes number of bytes
+     * @return encoded string
+     */
     public static String tokenUrlsafe(int nbytes) {
         Random r = new Random();
         byte[] bytes = new byte[nbytes];
@@ -140,6 +185,10 @@ public class Utils {
 
     /**
      * Extracts 6 bits and reorders them based on signed or unsigned
+     * 
+     * @param i input
+     * @param order byte order
+     * @return reordered array
      */
     public static byte[] toIntTo6ByteArray(long i, ByteOrder order) {
         final ByteBuffer bb = ByteBuffer.allocate(8);
@@ -160,7 +209,8 @@ public class Utils {
     /**
      * String Builder
      * 
-     * @param json
+     * @param json JSON object
+     * @return string
      */
     public static String getQueryString(JsonObject json) {
         StringBuilder sb = new StringBuilder();
@@ -180,6 +230,9 @@ public class Utils {
 
     /**
      * Used to reverse (or unreverse) the deviceId
+     * 
+     * @param array input array
+     * @return reversed array
      */
     public static byte[] reverse(byte[] array) {
         int left = 0;

@@ -33,12 +33,16 @@ public class MideaACBindingConstants {
 
     private static final String BINDING_ID = "mideaac";
 
-    // List of all Thing Type UIDs
+    /**
+     * Thing Type
+     */
     public static final ThingTypeUID THING_TYPE_MIDEAAC = new ThingTypeUID(BINDING_ID, "ac");
 
     public static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Collections.singleton(THING_TYPE_MIDEAAC);
 
-    // List of all Channel ids
+    /**
+     * List of all channel IDS
+     */
     public static final String CHANNEL_POWER = "power";
     public static final String CHANNEL_APPLIANCE_ERROR = "appliance-error";
     public static final String CHANNEL_TARGET_TEMPERATURE = "target-temperature";
@@ -62,10 +66,14 @@ public class MideaACBindingConstants {
 
     public static final Unit<Temperature> API_TEMPERATURE_UNIT = SIUnits.CELSIUS;
 
-    // Commands sent to/from AC wall unit are ASCII
+    /**
+     * Commands sent to/from AC wall unit are ASCII
+     */
     public static final String CHARSET = "US-ASCII";
 
-    // List of all property ids
+    /**
+     * List of all AC thing properties
+     */
     public static final String CONFIG_IP_ADDRESS = "ipAddress";
     public static final String CONFIG_IP_PORT = "ipPort";
     public static final String CONFIG_DEVICEID = "deviceId";

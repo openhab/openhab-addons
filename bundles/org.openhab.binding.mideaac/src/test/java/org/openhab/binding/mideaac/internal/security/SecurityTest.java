@@ -38,6 +38,9 @@ public class SecurityTest {
     private CloudProvider cloudProvider = mock(CloudProvider.class);;
     private Security security = new Security(cloudProvider);
 
+    /**
+     * Set up Security Test
+     */
     @SuppressWarnings("null")
     @BeforeEach
     public void setUp() {
@@ -45,8 +48,12 @@ public class SecurityTest {
         security = new Security(cloudProvider);
     }
 
-    // This is from a real life session. I test the Discovery String against the
-    // returned result from the aesDecrypt()
+    /**
+     * This is from a real life session. I test the Discovery String against the
+     * returned result from the aesDecrypt()
+     * 
+     * @throws Exception problem with decryption
+     */
     @Test
     public void testAesDecrypt() throws Exception {
         // Mock the getSignKey method to return a non-null value
@@ -71,6 +78,11 @@ public class SecurityTest {
         assertEquals(reply1, decryptedString);
     }
 
+    /**
+     * Validate Security coding
+     * 
+     * @throws NoSuchAlgorithmException no Algorithm
+     */
     @Test
     public void testGetEncKey() throws NoSuchAlgorithmException {
         // Mock the cloudProvider's getSignKey method

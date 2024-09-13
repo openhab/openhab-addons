@@ -44,7 +44,7 @@ public class CommandBase {
     protected byte[] data;
 
     /**
-     * Operational Modes byte/label of the Midea AC device
+     * Operational Modes
      */
     public enum OperationalMode {
         AUTO(1),
@@ -60,10 +60,21 @@ public class CommandBase {
             this.value = value;
         }
 
+        /**
+         * Gets Operational Mode value
+         * 
+         * @return value
+         */
         public int getId() {
             return value;
         }
 
+        /**
+         * Provides Operational Mode Common name
+         * 
+         * @param id integer from byte response
+         * @return type
+         */
         public static OperationalMode fromId(int id) {
             for (OperationalMode type : values()) {
                 if (type.getId() == id) {
@@ -106,14 +117,31 @@ public class CommandBase {
             this.version = version;
         }
 
+        /**
+         * Gets Swing Mode value
+         * 
+         * @return value
+         */
         public int getId() {
             return value;
         }
 
+        /**
+         * Gets device version for swing mode
+         * 
+         * @return version
+         */
         public int getVersion() {
             return version;
         }
 
+        /**
+         * Gets Swing mode in common language horiontal, vertical, off, etc.
+         * 
+         * @param id integer from byte response
+         * @param version device version
+         * @return type
+         */
         public static SwingMode fromId(int id, int version) {
             for (SwingMode type : values()) {
                 if (type.getId() == id && type.getVersion() == version) {
@@ -162,14 +190,31 @@ public class CommandBase {
             this.version = version;
         }
 
+        /**
+         * Gets Fan Speed value
+         * 
+         * @return value
+         */
         public int getId() {
             return value;
         }
 
+        /**
+         * Gets device version for Fan Speed
+         * 
+         * @return version
+         */
         public int getVersion() {
             return version;
         }
 
+        /**
+         * Returns Fan Speed high, medium, low, etc
+         * 
+         * @param id integer from byte response
+         * @param version version
+         * @return type
+         */
         public static FanSpeed fromId(int id, int version) {
             for (FanSpeed type : values()) {
                 if (type.getId() == id && type.getVersion() == version) {
@@ -188,6 +233,7 @@ public class CommandBase {
 
     /**
      * Returns the command to discover devices.
+     * Command is defined above
      *
      * @return discover command
      */
@@ -248,6 +294,11 @@ public class CommandBase {
         data = newData2;
     }
 
+    /**
+     * Gets byte array
+     * 
+     * @return data array
+     */
     public byte[] getBytes() {
         return data;
     }

@@ -29,6 +29,9 @@ import org.openhab.binding.mideaac.internal.handler.CommandBase.SwingMode;
 @NonNullByDefault
 public class CommandSetTest {
 
+    /**
+     * Power State Test
+     */
     @Test
     public void setPowerStateTest() {
         boolean status = true;
@@ -38,6 +41,9 @@ public class CommandSetTest {
         assertEquals(status1, commandSet.getPowerState());
     }
 
+    /**
+     * Target temperature tests
+     */
     @Test
     public void testsetTargetTemperature() {
         CommandSet commandSet = new CommandSet();
@@ -71,6 +77,9 @@ public class CommandSetTest {
         assertEquals(19.0f, commandSet.getTargetTemperature());
     }
 
+    /**
+     * Swing Mode test
+     */
     @Test
     public void testHandleSwingMode() {
         SwingMode mode = SwingMode.VERTICAL3;
@@ -80,6 +89,9 @@ public class CommandSetTest {
         assertEquals(mode1, commandSet.getSwingMode());
     }
 
+    /**
+     * Fan Speed test
+     */
     @Test
     public void testHandleFanSpeedCommand() {
         FanSpeed speed = FanSpeed.AUTO3;
@@ -89,6 +101,9 @@ public class CommandSetTest {
         assertEquals(speed1, commandSet.getFanSpeed());
     }
 
+    /**
+     * Operational mode test
+     */
     @Test
     public void testHandleOperationalMode() {
         OperationalMode mode = OperationalMode.COOL;
@@ -98,6 +113,9 @@ public class CommandSetTest {
         assertEquals(mode1, commandSet.getOperationalMode());
     }
 
+    /**
+     * On timer test
+     */
     @Test
     public void testHandleOnTimer() {
         CommandSet commandSet = new CommandSet();
@@ -112,6 +130,9 @@ public class CommandSetTest {
         assertEquals(remainder, commandSet.getOnTimer2());
     }
 
+    /**
+     * On timer test3
+     */
     @Test
     public void testHandleOnTimer2() {
         CommandSet commandSet = new CommandSet();
@@ -125,6 +146,9 @@ public class CommandSetTest {
         assertEquals(remainder, commandSet.getOnTimer2());
     }
 
+    /**
+     * On timer test3
+     */
     @Test
     public void testHandleOnTimer3() {
         CommandSet commandSet = new CommandSet();
@@ -138,6 +162,9 @@ public class CommandSetTest {
         assertEquals(remainder, commandSet.getOnTimer2());
     }
 
+    /**
+     * Off timer test
+     */
     @Test
     public void testHandleOffTimer() {
         CommandSet commandSet = new CommandSet();
@@ -152,6 +179,9 @@ public class CommandSetTest {
         assertEquals(remainder, commandSet.getOffTimer2());
     }
 
+    /**
+     * Off timer test2
+     */
     @Test
     public void testHandleOffTimer2() {
         CommandSet commandSet = new CommandSet();
@@ -165,6 +195,9 @@ public class CommandSetTest {
         assertEquals(remainder, commandSet.getOffTimer2());
     }
 
+    /**
+     * Off timer test3
+     */
     @Test
     public void testHandleOffTimer3() {
         CommandSet commandSet = new CommandSet();
@@ -178,6 +211,9 @@ public class CommandSetTest {
         assertEquals(remainder, commandSet.getOffTimer2());
     }
 
+    /**
+     * Test screen display change command
+     */
     @Test
     public void testSetScreenDisplayOff() {
         CommandSet commandSet = new CommandSet();

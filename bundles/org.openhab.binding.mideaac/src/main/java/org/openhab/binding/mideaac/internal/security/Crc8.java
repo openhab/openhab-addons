@@ -15,7 +15,7 @@ package org.openhab.binding.mideaac.internal.security;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link CRC8} calculation.
+ * The {@link Crc8} calculation.
  *
  * @author Jacek Dobrowolski - Initial Contribution
  */
@@ -55,6 +55,12 @@ public class Crc8 {
             (byte) 0x4B, (byte) 0xA9, (byte) 0xF7, (byte) 0xB6, (byte) 0xE8, (byte) 0x0A, (byte) 0x54, (byte) 0xD7,
             (byte) 0x89, (byte) 0x6B, (byte) 0x35 };
 
+    /**
+     * Calculate crc value
+     * 
+     * @param bytes input bytes
+     * @return crcValue
+     */
     public static int calculate(byte[] bytes) {
         int crcValue = 0;
         for (byte m : bytes) {
