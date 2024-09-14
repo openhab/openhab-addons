@@ -12,11 +12,14 @@
  */
 package org.openhab.binding.robonect.internal.model;
 
+import org.eclipse.jdt.annotation.NonNullByDefault;
+
 /**
  * Blade information from the mower.
  *
  * @author Christian Jonak-Moechel
  */
+@NonNullByDefault
 public class Blades {
 
     private int quality;
