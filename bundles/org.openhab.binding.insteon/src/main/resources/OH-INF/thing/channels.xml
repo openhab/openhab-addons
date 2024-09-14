@@ -62,7 +62,7 @@
 		<label>Battery Level</label>
 		<description>Battery Level</description>
 		<category>BatteryLevel</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="batteryPowered">
@@ -172,10 +172,10 @@
 		<description>Contact State</description>
 	</channel-type>
 
-	<channel-type id="coolSetPoint">
+	<channel-type id="coolSetpoint">
 		<item-type>Number:Temperature</item-type>
-		<label>Cool Set Point</label>
-		<description>Cool Set Point</description>
+		<label>Cool Setpoint</label>
+		<description>Cool Setpoint</description>
 		<category>Temperature</category>
 		<state step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -197,8 +197,8 @@
 
 	<channel-type id="energyOffset" advanced="true">
 		<item-type>Number:Temperature</item-type>
-		<label>Energy Set Point Offset</label>
-		<description>Energy Set Point Offset</description>
+		<label>Energy Setpoint Offset</label>
+		<description>Energy Setpoint Offset</description>
 		<state step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
 
@@ -212,7 +212,7 @@
 	<channel-type id="energyUsage">
 		<item-type>Number:Energy</item-type>
 		<label>Energy Usage</label>
-		<description>Energy Usage in Kilowatt Hour</description>
+		<description>Energy Usage</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -257,6 +257,13 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="fastOnOff" advanced="true">
+		<item-type>Switch</item-type>
+		<label>Fast On/Off</label>
+		<description>Fast On/Off (command only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- command only -->
+	</channel-type>
+
 	<channel-type id="heartbeatInterval" advanced="true">
 		<item-type>Number:Time</item-type>
 		<label>Heartbeat Interval</label>
@@ -274,14 +281,14 @@
 
 	<channel-type id="heartbeatOnOff" advanced="true">
 		<item-type>Switch</item-type>
-		<label>Heartbeat On/Off</label>
-		<description>Heartbeat On/Off</description>
+		<label>Heartbeat Enabled</label>
+		<description>Heartbeat Enabled</description>
 	</channel-type>
 
-	<channel-type id="heatSetPoint">
+	<channel-type id="heatSetpoint">
 		<item-type>Number:Temperature</item-type>
-		<label>Heat Set Point</label>
-		<description>Heat Set Point</description>
+		<label>Heat Setpoint</label>
+		<description>Heat Setpoint</description>
 		<category>Temperature</category>
 		<state step="0.5" pattern="%.1f %unit%"/>
 	</channel-type>
@@ -291,7 +298,7 @@
 		<label>Humidity</label>
 		<description>Current Humidity</description>
 		<category>Humidity</category>
-		<state readOnly="true" pattern="%.1f %unit%"/>
+		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="humidityControl">
@@ -312,7 +319,7 @@
 		<label>Humidity High</label>
 		<description>Humidity High Setpoint</description>
 		<category>Humidity</category>
-		<state step="1" pattern="%.1f %unit%"/>
+		<state step="1" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="humidityLow">
@@ -320,7 +327,7 @@
 		<label>Humidity Low</label>
 		<description>Humidity Low Setpoint</description>
 		<category>Humidity</category>
-		<state step="1" pattern="%.1f %unit%"/>
+		<state step="1" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="lastHeardFrom">
@@ -347,8 +354,8 @@
 
 	<channel-type id="ledOnOff" advanced="true">
 		<item-type>Switch</item-type>
-		<label>LED On/Off</label>
-		<description>LED On/Off</description>
+		<label>LED Enabled</label>
+		<description>LED Enabled</description>
 	</channel-type>
 
 	<channel-type id="ledTraffic" advanced="true">
@@ -357,11 +364,11 @@
 		<description>LED Blink on Traffic</description>
 	</channel-type>
 
-	<channel-type id="lightLevel">
+	<channel-type id="lightSensitivity">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Light Level</label>
-		<description>Light Level</description>
-		<state readOnly="true"/>
+		<label>Light Sensitivity</label>
+		<description>Light Sensitivity</description>
+		<state readOnly="true" pattern="%.1f %%"/>
 	</channel-type>
 
 	<channel-type id="load">
@@ -402,6 +409,13 @@
 		<description>Low Battery Alert</description>
 		<category>LowBattery</category>
 		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="manualChange" advanced="true">
+		<item-type>Rollershutter</item-type>
+		<label>Manual Change</label>
+		<description>Manual Change (command only)</description>
+		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- command only -->
 	</channel-type>
 
 	<channel-type id="momentaryDuration" advanced="true">
@@ -461,7 +475,7 @@
 	<channel-type id="powerUsage">
 		<item-type>Number:Power</item-type>
 		<label>Power Usage</label>
-		<description>Power Usage in Watts</description>
+		<description>Power Usage</description>
 		<category>Energy</category>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
@@ -591,25 +605,11 @@
 		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- binding controls state updates -->
 	</channel-type>
 
-	<channel-type id="sceneOnOff">
+	<channel-type id="scene">
 		<item-type>Switch</item-type>
-		<label>Scene On/Off</label>
-		<description>Scene On/Off</description>
+		<label>Scene</label>
+		<description>Scene</description>
 		<category>Switch</category>
-	</channel-type>
-
-	<channel-type id="sceneFastOnOff" advanced="true">
-		<item-type>Switch</item-type>
-		<label>Scene Fast On/Off</label>
-		<description>Scene Fast On/Off (command only)</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- command only -->
-	</channel-type>
-
-	<channel-type id="sceneManualChange" advanced="true">
-		<item-type>Rollershutter</item-type>
-		<label>Scene Manual Change</label>
-		<description>Scene Manual Change (command only)</description>
-		<autoUpdatePolicy>veto</autoUpdatePolicy> <!-- command only -->
 	</channel-type>
 
 	<channel-type id="siren">

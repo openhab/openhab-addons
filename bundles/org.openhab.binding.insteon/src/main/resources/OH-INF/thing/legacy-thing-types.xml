@@ -211,7 +211,7 @@
 
 	<channel-type id="legacyCoolSetPoint">
 		<item-type>Number</item-type>
-		<label>Cool Set Point</label>
+		<label>Cool Setpoint</label>
 	</channel-type>
 
 	<channel-type id="legacyDimmer">
@@ -285,7 +285,7 @@
 
 	<channel-type id="legacyHeatSetPoint">
 		<item-type>Number</item-type>
-		<label>Heat Set Point</label>
+		<label>Heat Setpoint</label>
 	</channel-type>
 
 	<channel-type id="legacyHumidity">

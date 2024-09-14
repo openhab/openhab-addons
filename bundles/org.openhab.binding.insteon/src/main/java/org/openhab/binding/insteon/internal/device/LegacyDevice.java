@@ -81,8 +81,6 @@ public class LegacyDevice {
         lastMsgReceived = System.currentTimeMillis();
     }
 
-    // --------------------- simple getters -----------------------------
-
     public boolean hasProductKey() {
         return productKey != null;
     }
@@ -146,7 +144,6 @@ public class LegacyDevice {
         }
         return false;
     }
-    // --------------------- simple setters -----------------------------
 
     public void setStatus(DeviceStatus aI) {
         status = aI;

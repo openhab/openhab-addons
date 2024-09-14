@@ -261,12 +261,6 @@ public abstract class MessageHandler extends FeatureBaseHandler {
      */
     public abstract void handleMessage(byte cmd1, Msg msg);
 
-    //
-    //
-    // ---------------- the various message handlers start here -------------------
-    //
-    //
-
     /**
      * Default message handler
      */
@@ -658,8 +652,8 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     /**
      * Button event message handler
      */
-    public static class ButtonEventHandler extends MessageHandler {
-        ButtonEventHandler(DeviceFeature feature) {
+    public static class ButtonEventMsgHandler extends MessageHandler {
+        ButtonEventMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 
@@ -1853,8 +1847,8 @@ public abstract class MessageHandler extends FeatureBaseHandler {
     /**
      * IM button event message handler
      */
-    public static class IMButtonEventHandler extends MessageHandler {
-        IMButtonEventHandler(DeviceFeature feature) {
+    public static class IMButtonEventMsgHandler extends MessageHandler {
+        IMButtonEventMsgHandler(DeviceFeature feature) {
             super(feature);
         }
 

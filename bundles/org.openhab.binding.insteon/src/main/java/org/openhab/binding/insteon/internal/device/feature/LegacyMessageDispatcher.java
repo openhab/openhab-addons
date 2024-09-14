@@ -124,12 +124,6 @@ public abstract class LegacyMessageDispatcher {
      */
     public abstract boolean dispatch(Msg msg);
 
-    //
-    //
-    // ------------ implementations of MessageDispatchers start here ------------------
-    //
-    //
-
     public static class DefaultDispatcher extends LegacyMessageDispatcher {
         DefaultDispatcher(LegacyDeviceFeature f) {
             super(f);

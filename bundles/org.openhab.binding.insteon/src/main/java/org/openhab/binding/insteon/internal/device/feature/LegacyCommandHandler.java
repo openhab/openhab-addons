@@ -408,10 +408,6 @@ public abstract class LegacyCommandHandler {
         @Override
         public void handleCommand(InsteonLegacyChannelConfiguration conf, Command cmd, LegacyDevice dev) {
             try {
-                //
-                // I did not have hardware that would respond to the PRESET_DIM codes.
-                // This code path needs testing.
-                //
                 X10Address address = (X10Address) dev.getAddress();
                 Msg munit = Msg.makeX10AddressMessage(address); // send unit code
                 dev.enqueueMessage(munit, feature);
@@ -715,9 +711,7 @@ public abstract class LegacyCommandHandler {
             try {
                 int dc = transform(((DecimalType) cmd).intValue());
                 int intFactor = getIntParameter("factor", 1);
-                //
                 // determine what level should be, and what field it should be in
-                //
                 int ilevel = dc * intFactor;
                 byte level = (byte) (ilevel > 255 ? 0xFF : ((ilevel < 0) ? 0 : ilevel));
                 String vfield = getStringParameter("value", "");
@@ -725,10 +719,8 @@ public abstract class LegacyCommandHandler {
                     logger.warn("{} has no value field specified", nm());
                     return;
                 }
-                //
                 // figure out what cmd1, cmd2, d1, d2, d3 are supposed to be
                 // to form a proper message
-                //
                 int cmd1 = getIntParameter("cmd1", -1);
                 if (cmd1 < 0) {
                     logger.warn("{} has no cmd1 specified!", nm());

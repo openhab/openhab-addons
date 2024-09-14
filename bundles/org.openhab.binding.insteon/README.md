@@ -26,21 +26,21 @@ It is important to note that once the migration has occurred, downgrading to an 
 
 ## Supported Things
 
-| Thing | Type | Description |
-|-------|------|-------------|
-| hub1  | Bridge | An Insteon Hub Legacy that communicates with Insteon devices. |
-| hub2  | Bridge | An Insteon Hub 2 that communicates with Insteon devices. |
-| plm  | Bridge | An Insteon PLM that communicates with Insteon devices. |
-| device | Thing | An Insteon device such as a switch, dimmer, keypad, sensor, etc. |
-| scene | Thing | An Insteon scene that controls multiple devices simultaneously. |
-| x10 | Thing | An X10 device such as a switch, dimmer or sensor. |
+| Thing  | Type   | Description                                                      |
+| ------ | ------ | ---------------------------------------------------------------- |
+| hub1   | Bridge | An Insteon Hub Legacy that communicates with Insteon devices.    |
+| hub2   | Bridge | An Insteon Hub 2 that communicates with Insteon devices.         |
+| plm    | Bridge | An Insteon PLM that communicates with Insteon devices.           |
+| device | Thing  | An Insteon device such as a switch, dimmer, keypad, sensor, etc. |
+| scene  | Thing  | An Insteon scene that controls multiple devices simultaneously.  |
+| x10    | Thing  | An X10 device such as a switch, dimmer or sensor.                |
 
 ### Legacy Things
 
-| Thing | Type | Description |
-|-------|------|-------------|
-| network | Bridge | An Insteon PLM or Hub that communicates with Insteon devices. |
-| legacy_device | Thing | An Insteon or X10 device such as a switch, dimmer, keypad, sensor, etc. |
+| Thing         | Type   | Description                                                             |
+| ------------- | ------ | ----------------------------------------------------------------------- |
+| network       | Bridge | An Insteon PLM or Hub that communicates with Insteon devices.           |
+| legacy_device | Thing  | An Insteon or X10 device such as a switch, dimmer, keypad, sensor, etc. |
 
 ## Discovery
 
@@ -54,162 +54,163 @@ X10 devices are not auto discovered.
 
 ## Thing Configuration
 
-### Insteon Hub Configuration
+For bridge things, if the poll interval is too short, it will result in sluggish performance and no response when trying to send messages to devices.
+The default poll interval of 300 seconds has been tested and found to be a good compromise in a configuration of about 110 switches/dimmers.
 
-The Insteon Hub Legacy is configured with the following parameters:
+### `hub1`
 
-| Parameter | Default | Required | Description |
-|-----------|:-------:|:--------:|-------------|
-| hostname | | Yes | Network address of the hub. |
-| port | 9761 | No | Network port of the hub. |
-| devicePollIntervalInSeconds | 300 | No | Device poll interval in seconds. The hub will be overloaded if interval is too short, leading to sluggish or no response when trying to send messages to devices. The default poll interval of 300 seconds has been tested and found to be a good compromise in a configuration of about 110 switches/dimmers. |
-| deviceDiscoveryEnabled | true | No | Discover Insteon devices found in the hub database but not configured. |
-| sceneDiscoveryEnabled | false | No | Discover Insteon scenes found in the hub database but not configured. |
-| deviceSyncEnabled | false | No | Synchronize related devices based on their all-link database. |
+| Parameter                   | Default | Required | Description                                                            |
+| --------------------------- | :-----: | :------: | ---------------------------------------------------------------------- |
+| hostname                    |         |   Yes    | Network address of the hub.                                            |
+| port                        |  9761   |    No    | Network port of the hub.                                               |
+| devicePollIntervalInSeconds |   300   |    No    | Device poll interval in seconds.                                       |
+| deviceDiscoveryEnabled      |  true   |    No    | Discover Insteon devices found in the hub database but not configured. |
+| sceneDiscoveryEnabled       |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.  |
+| deviceSyncEnabled           |  false  |    No    | Synchronize related devices based on their all-link database.          |
 
-### Insteon Hub 2 Configuration
+>NOTE: Use this bridge to connect to a networked PLM via ser2net.
 
-The Insteon Hub 2 is configured with the following parameters:
+### `hub2`
 
-| Parameter | Default | Required | Description |
-|-----------|:-------:|:--------:|-------------|
-| hostname | | Yes | Network address of the hub. |
-| port | 25105 | No | Network port of the hub. |
-| username | | Yes | Username to access the hub. |
-| password | | Yes | Password to access the hub. |
-| hubPollIntervalInMilliseconds | 1000 | No | Hub poll interval in milliseconds. |
-| devicePollIntervalInSeconds | 300 | No | Device poll interval in seconds. The hub will be overloaded if interval is too short, leading to sluggish or no response when trying to send messages to devices. The default poll interval of 300 seconds has been tested and found to be a good compromise in a configuration of about 110 switches/dimmers. |
-| deviceDiscoveryEnabled | true | No | Discover Insteon devices found in the hub database but not configured. |
-| sceneDiscoveryEnabled | false | No | Discover Insteon scenes found in the hub database but not configured. |
-| deviceSyncEnabled | false | No | Synchronize related devices based on their all-link database. |
+| Parameter                     | Default | Required | Description                                                            |
+| ----------------------------- | :-----: | :------: | ---------------------------------------------------------------------- |
+| hostname                      |         |   Yes    | Network address of the hub.                                            |
+| port                          |  25105  |    No    | Network port of the hub.                                               |
+| username                      |         |   Yes    | Username to access the hub.                                            |
+| password                      |         |   Yes    | Password to access the hub.                                            |
+| hubPollIntervalInMilliseconds |  1000   |    No    | Hub poll interval in milliseconds.                                     |
+| devicePollIntervalInSeconds   |   300   |    No    | Device poll interval in seconds.                                       |
+| deviceDiscoveryEnabled        |  true   |    No    | Discover Insteon devices found in the hub database but not configured. |
+| sceneDiscoveryEnabled         |  false  |    No    | Discover Insteon scenes found in the hub database but not configured.  |
+| deviceSyncEnabled             |  false  |    No    | Synchronize related devices based on their all-link database.          |
 
-### Insteon PLM Configuration
+### `plm`
 
-The Insteon PLM is configured with the following parameters:
+| Parameter                   | Default | Required | Description                                                              |
+| --------------------------- | :-----: | :------: | ------------------------------------------------------------------------ |
+| serialPort                  |         |   Yes    | Serial port connected to the modem. Example: `/dev/ttyS0` or `COM1`      |
+| baudRate                    |  19200  |    No    | Serial port baud rate connected to the modem.                            |
+| devicePollIntervalInSeconds |   300   |    No    | Device poll interval in seconds.                                         |
+| deviceDiscoveryEnabled      |  true   |    No    | Discover Insteon devices found in the modem database but not configured. |
+| sceneDiscoveryEnabled       |  false  |    No    | Discover Insteon scenes found in the modem database but not configured.  |
+| deviceSyncEnabled           |  false  |    No    | Synchronize related devices based on their all-link database.            |
 
-| Parameter | Default | Required | Description |
-|-----------|:-------:|:--------:|-------------|
-| serialPort | | Yes | Serial port connected to the modem. Example: `/dev/ttyS0` or `COM1` |
-| baudRate | 19200 | No | Serial port baud rate connected to the modem. |
-| devicePollIntervalInSeconds | 300 | No | Device poll interval in seconds. The modem will be overloaded if interval is too short, leading to sluggish or no response when trying to send messages to devices. The default poll interval of 300 seconds has been tested and found to be a good compromise in a configuration of about 110 switches/dimmers. |
-| deviceDiscoveryEnabled | true | No | Discover Insteon devices found in the modem database but not configured. |
-| sceneDiscoveryEnabled | false | No | Discover Insteon scenes found in the modem database but not configured. |
-| deviceSyncEnabled | false | No | Synchronize related devices based on their all-link database. |
+### `device`
 
-### Insteon Device Configuration
-
-The Insteon device is configured with the following parameter:
-
-| Parameter | Required | Description |
-|-----------|:--------:|-------------|
-| address | Yes | Insteon address of the device. It can be found on the device. Example: `12.34.56`. |
+| Parameter | Required | Description                                                                        |
+| --------- | :------: | ---------------------------------------------------------------------------------- |
+| address   |   Yes    | Insteon address of the device. It can be found on the device. Example: `12.34.56`. |
 
 The device type is automatically determined by the binding using the device product data.
 For a [battery powered device](#battery-powered-devices) that was never configured previously, it may take until the next time that device sends a broadcast message to be modeled properly.
 To speed up the process for this case, it is recommended to force the device to become awake after the associated bridge is online.
 Likewise, for a device that wasn't accessible during the binding initialization phase, press on its SET button once powered on to notify the binding that it is available.
 
-### Insteon Scene Configuration
+### `scene`
 
-The Insteon scene is configured with the following parameter:
+| Parameter | Required | Description                                                                                                                |
+| --------- | :------: | -------------------------------------------------------------------------------------------------------------------------- |
+| group     |   Yes    | Insteon scene group number between 2 and 254. It can be found in the scene detailed information in the Insteon mobile app. |
 
-| Parameter | Required | Description |
-|-----------|:--------:|-------------|
-| group | Yes | Insteon scene group number between 2 and 254. It can be found in the scene detailed information in the Insteon mobile app. |
+### `x10`
 
-### X10 Device Configuration
-
-The X10 device is configured with the following parameters:
-
-| Parameter | Required | Description |
-|-----------|:--------:|-------------|
-| houseCode | Yes | X10 house code of the device. Example: `A`|
-| unitCode | Yes | X10 unit code of the device. Example: `1` |
-| deviceType | Yes | X10 device type |
-
+| Parameter  | Required | Description                                |
+| ---------- | :------: | ------------------------------------------ |
+| houseCode  |   Yes    | X10 house code of the device. Example: `A` |
+| unitCode   |   Yes    | X10 unit code of the device. Example: `1`  |
+| deviceType |   Yes    | X10 device type                            |
 
 <details>
   <summary>Supported X10 device types</summary>
 
   | Device Type | Description |
-  |-------------|-------------|
-  | X10_Switch | X10 Switch |
-  | X10_Dimmer | X10 Dimmer |
-  | X10_Sensor | X10 Sensor |
+  | ----------- | ----------- |
+  | X10_Switch  | X10 Switch  |
+  | X10_Dimmer  | X10 Dimmer  |
+  | X10_Sensor  | X10 Sensor  |
 </details>
 
-### Legacy Network Configuration
+### `network`
 
-The Insteon PLM or hub is configured with the following parameters:
-
-| Parameter | Default | Required | Description |
-|-----------|:-------:|:--------:|-------------|
-| port | | Yes | **Examples:**<br>- PLM on Linux: `/dev/ttyS0` or `/dev/ttyUSB0`<br>- Smartenit ZBPLM on Linux: `/dev/ttyUSB0,baudRate=115200`<br>- PLM on Windows: `COM1`<br>- Current hub (2245-222) at 192.168.1.100 on port 25105, with a poll interval of 1000 ms (1 second): `/hub2/my_user_name:my_password@192.168.1.100:25105,poll_time=1000`<br>- Legacy hub (2242-222) at 192.168.1.100 on port 9761:`/hub/192.168.1.100:9761`<br>- Networked PLM using ser2net at 192.168.1.100 on port 9761:`/tcp/192.168.1.100:9761` |
-| devicePollIntervalSeconds | 300 | No | Poll interval of devices in seconds. Poll too often and you will overload the insteon network, leading to sluggish or no response when trying to send messages to devices. The default poll interval of 300 seconds has been tested and found to be a good compromise in a configuration of about 110 switches/dimmers. |
-| additionalDevices | | No | File with additional device types. The syntax of the file is identical to the `device_types.xml` file in the source tree. Please remember to post successfully added device types to the openhab group so the developers can include them into the `device_types.xml` file! |
-| additionalFeatures | | No | File with additional feature templates, like in the `device_features.xml` file in the source tree. |
+| Parameter                 | Default | Required | Description                             |
+| ------------------------- | :-----: | :------: | --------------------------------------- |
+| port                      |         |   Yes    | Port configuration.                     |
+| devicePollIntervalSeconds |   300   |    No    | Poll interval of devices in seconds.    |
+| additionalDevices         |         |    No    | File with additional device types.      |
+| additionalFeatures        |         |    No    | File with additional feature templates. |
 
 >NOTE: For users upgrading from InsteonPLM, The parameter port_1 is now port.
 
-### Legacy Device Configuration
+<details>
+  <summary>Port configuration examples</summary>
 
-| Parameter | Required | Description |
-|-----------|:--------:|-------------|
-| address | Yes | Insteon or X10 address of the device. Insteon device addresses are in the format 'xx.xx.xx', and can be found on the device. X10 device address are in the format 'x.y' and are typically configured on the device. |
-| productKey | Yes | Insteon binding product key that is used to identy the device. Every Insteon device type is uniquely identified by its Insteon product key, typically a six digit hex number. For some of the older device types (in particular the SwitchLinc switches and dimmers), Insteon does not give a product key, so an arbitrary fake one of the format Fxx.xx.xx (or Xxx.xx.xx for X10 devices) is assigned by the binding. |
-| deviceConfig | No | Optional JSON object with device specific configuration. The JSON object will contain one or more key/value pairs. The key is a parameter for the device and the type of the value will vary. |
+  | Modem Type            | Port Configuration                                                                                              |
+  | --------------------- | --------------------------------------------------------------------------------------------------------------- |
+  | Hub (2245-222)        | `/hub2/my_user_name:my_password@192.168.1.100:25105,poll_time=1000`                                             |
+  | Legacy Hub (2242-222) | `/hub/192.168.1.100:9761`                                                                                       |
+  | PLM                   | `/dev/ttyS0` or `/dev/ttyUSB0` (Linux)<br>`COM1` (Windows)<br>`/tcp/192.168.1.100:9761` (Networked via ser2net) |
+  | Smartenit ZBPLM       | `/dev/ttyUSB0,baudRate=115200` (Linux)                                                                          |
+</details>
+
+### `legacy-device`
+
+| Parameter    | Required | Description                                                  |
+| ------------ | :------: | ------------------------------------------------------------ |
+| address      |   Yes    | Device address. Example: `12.34.56` (Insteon) or `A.1` (X10) |
+| productKey   |   Yes    | Product key used to identify the model of the device.        |
+| deviceConfig |    No    | Optional JSON object with device specific configuration.     |
 
 <details>
   <summary>Supported product keys</summary>
 
-  | Model | Description | Product Key |
-  |-------|-------------|-------------|
-  | 2477D | SwitchLinc Dimmer | F00.00.01 |
-  | 2477S | SwitchLinc Switch | F00.00.02 |
-  | 2845-222 | Hidden Door Sensor | F00.00.03 |
-  | 2876S | ICON Switch | F00.00.04 |
-  | 2456D3 | LampLinc V2 | F00.00.05 |
-  | 2442-222 | Micro Dimmer | F00.00.06 |
-  | 2453-222 | DIN Rail On/Off | F00.00.07 |
-  | 2452-222 | DIN Rail Dimmer | F00.00.08 |
-  | 2458-A1 | MorningLinc RF Lock Controller | F00.00.09 |
-  | 2852-222 | Leak Sensor | F00.00.0A |
-  | 2672-422 | LED Dimmer | F00.00.0B |
-  | 2476D | SwitchLinc Dimmer | F00.00.0C |
-  | 2634-222 | On/Off Dual-Band Outdoor Module | F00.00.0D |
-  | 2342-2 | Mini Remote | F00.00.10 |
-  | 2663-222 | On/Off Outlet | 0x000039 |
-  | 2466D | ToggleLinc Dimmer | F00.00.11 |
-  | 2466S | ToggleLinc Switch | F00.00.12 |
-  | 2672-222 | LED Bulb | F00.00.13 |
-  | 2487S | KeypadLinc On/Off 6-Button | F00.00.14 |
-  | 2334-232 | KeypadLink Dimmer 6-Button | F00.00.15 |
-  | 2334-232 | KeypadLink Dimmer 8-Button | F00.00.16 |
-  | 2423A1 | iMeter Solo Power Meter | F00.00.17 |
-  | 2423A1 | Thermostat 2441TH | F00.00.18 |
-  | 2457D2 | LampLinc Dimmer | F00.00.19 |
-  | 2475SDB | In-LineLinc Relay | F00.00.1A |
-  | 2635-222 | On/Off Module | F00.00.1B |
-  | 2475F | FanLinc Module | F00.00.1C |
-  | 2456S3 | ApplianceLinc | F00.00.1D |
-  | 2674-222 | LED Bulb (recessed) | F00.00.1E |
-  | 2477SA1 | 220V 30-amp Load Controller N/O | F00.00.1F |
-  | 2342-222 | Mini Remote (8 Button) | F00.00.20 |
-  | 2441V | Insteon Thermostat Adaptor for Venstar | F00.00.21 |
-  | 2982-222 | Insteon Smoke Bridge | F00.00.22 |
-  | 2487S | KeypadLinc On/Off 8-Button | F00.00.23 |
-  | 2450 | IO Link | 0x00001A |
-  | 2486D | KeypadLinc Dimmer | 0x000037 |
-  | 2484DWH8 | KeypadLinc Countdown Timer | 0x000041 |
-  | Various | PLM or Hub | 0x000045 |
-  | 2843-222 | Wireless Open/Close Sensor | 0x000049 |
-  | 2842-222 | Motion Sensor | 0x00004A |
-  | 2844-222 | Motion Sensor II | F00.00.24 |
-  | 2486DWH8 | KeypadLinc Dimmer | 0x000051 |
-  | 2472D | OutletLincDimmer | 0x000068 |
-  | X10 switch | generic X10 switch | X00.00.01 |
-  | X10 dimmer | generic X10 dimmer | X00.00.02 |
-  | X10 motion | generic X10 motion sensor | X00.00.03 |
+  | Model      | Description                            | Product Key |
+  | ---------- | -------------------------------------- | ----------- |
+  | 2477D      | SwitchLinc Dimmer                      | F00.00.01   |
+  | 2477S      | SwitchLinc Switch                      | F00.00.02   |
+  | 2845-222   | Hidden Door Sensor                     | F00.00.03   |
+  | 2876S      | ICON Switch                            | F00.00.04   |
+  | 2456D3     | LampLinc V2                            | F00.00.05   |
+  | 2442-222   | Micro Dimmer                           | F00.00.06   |
+  | 2453-222   | DIN Rail On/Off                        | F00.00.07   |
+  | 2452-222   | DIN Rail Dimmer                        | F00.00.08   |
+  | 2458-A1    | MorningLinc RF Lock Controller         | F00.00.09   |
+  | 2852-222   | Leak Sensor                            | F00.00.0A   |
+  | 2672-422   | LED Dimmer                             | F00.00.0B   |
+  | 2476D      | SwitchLinc Dimmer                      | F00.00.0C   |
+  | 2634-222   | On/Off Dual-Band Outdoor Module        | F00.00.0D   |
+  | 2342-2     | Mini Remote                            | F00.00.10   |
+  | 2663-222   | On/Off Outlet                          | 0x000039    |
+  | 2466D      | ToggleLinc Dimmer                      | F00.00.11   |
+  | 2466S      | ToggleLinc Switch                      | F00.00.12   |
+  | 2672-222   | LED Bulb                               | F00.00.13   |
+  | 2487S      | KeypadLinc On/Off 6-Button             | F00.00.14   |
+  | 2334-232   | KeypadLink Dimmer 6-Button             | F00.00.15   |
+  | 2334-232   | KeypadLink Dimmer 8-Button             | F00.00.16   |
+  | 2423A1     | iMeter Solo Power Meter                | F00.00.17   |
+  | 2423A1     | Thermostat 2441TH                      | F00.00.18   |
+  | 2457D2     | LampLinc Dimmer                        | F00.00.19   |
+  | 2475SDB    | In-LineLinc Relay                      | F00.00.1A   |
+  | 2635-222   | On/Off Module                          | F00.00.1B   |
+  | 2475F      | FanLinc Module                         | F00.00.1C   |
+  | 2456S3     | ApplianceLinc                          | F00.00.1D   |
+  | 2674-222   | LED Bulb (recessed)                    | F00.00.1E   |
+  | 2477SA1    | 220V 30-amp Load Controller N/O        | F00.00.1F   |
+  | 2342-222   | Mini Remote (8 Button)                 | F00.00.20   |
+  | 2441V      | Insteon Thermostat Adaptor for Venstar | F00.00.21   |
+  | 2982-222   | Insteon Smoke Bridge                   | F00.00.22   |
+  | 2487S      | KeypadLinc On/Off 8-Button             | F00.00.23   |
+  | 2450       | IO Link                                | 0x00001A    |
+  | 2486D      | KeypadLinc Dimmer                      | 0x000037    |
+  | 2484DWH8   | KeypadLinc Countdown Timer             | 0x000041    |
+  | Various    | PLM or Hub                             | 0x000045    |
+  | 2843-222   | Wireless Open/Close Sensor             | 0x000049    |
+  | 2842-222   | Motion Sensor                          | 0x00004A    |
+  | 2844-222   | Motion Sensor II                       | F00.00.24   |
+  | 2486DWH8   | KeypadLinc Dimmer                      | 0x000051    |
+  | 2472D      | OutletLincDimmer                       | 0x000068    |
+  | X10 switch | generic X10 switch                     | X00.00.01   |
+  | X10 dimmer | generic X10 dimmer                     | X00.00.02   |
+  | X10 motion | generic X10 motion sensor              | X00.00.03   |
 </details>
 
 ## Channels
@@ -219,150 +220,150 @@ In order to determine which channels a device supports, check the device in the 
 
 ### State Channels
 
-| Channel | Type | Access Mode | Description |
-|---------|------|-------------|-------------|
-| 3WayMode | Switch | R/W | 3-Way Toggle Mode |
-| acDelay | Number:Time | R/W | AC Delay |
-| alarmDelay | Switch | R/W | Alarm Delay |
-| alarmDuration | Number:Time | R/W | Alarm Duration |
-| alarmType | String | R/W | Alarm Type |
-| armed | Switch | R/W | Armed State |
-| backlightDuration | Number:Time | R/W | Back Light Duration |
-| batteryLevel | Number:Dimensionless | R | Battery Level |
-| batteryPowered | Switch | R | Battery Powered State |
-| beep | Switch | W | Beep |
-| buttonA | Switch | R/W | Button A |
-| buttonB | Switch | R/W | Button B |
-| buttonC | Switch | R/W | Button C |
-| buttonD | Switch | R/W | Button D |
-| buttonE | Switch | R/W | Button E |
-| buttonF | Switch | R/W | Button F |
-| buttonG | Switch | R/W | Button G |
-| buttonH | Switch | R/W | Button H |
-| buttonBeep | Switch | R/W | Beep on Button Press |
-| buttonConfig | String | R/W | Button Config |
-| buttonLock | Switch | R/W | Button Lock |
-| carbonMonoxideAlarm | Switch | R | Carbon Monoxide Alarm |
-| contact | Contact | R | Contact State |
-| coolSetPoint | Number:Temperature | R/W | Cool Set Point |
-| daylight | Contact | R | Daylight State |
-| dimmer | Dimmer | R/W | Dimmer |
-| energyOffset | Number:Temperature | R/W | Energy Set Point Offset |
-| energySaving | Switch | R | Energy Saving |
-| energyUsage | Number:Energy | R | Energy Usage in Kilowatt Hour |
-| error | Switch | R | Error |
-| fanMode | String | R/W | Fan Mode |
-| fanSpeed | String | R/W | Fan Speed |
-| fanState | Switch | R | Fan State |
-| heartbeatInterval | Number:Time | R/W | Heartbeat Interval |
-| heartbeatOnOff | Switch | R/W | Heartbeat On/Off |
-| heatSetPoint | Number:Temperature | R/W | Heat Set Point |
-| humidity | Number:Dimensionless | R | Current Humidity |
-| humidityControl | String | R | Humidity Control State |
-| humidityHigh | Number:Dimensionless | R/W | Humidity High |
-| humidityLow | Number:Dimensionless | R/W | Humidity Low |
-| lastHeardFrom | DateTime | R | Last Heard From |
-| leak | Switch | R | Leak Detected |
-| ledBrightness | Dimmer | R/W | LED Brightness |
-| ledOnOff | Switch | R/W | LED On/Off |
-| ledTraffic | Switch | R/W | LED Blink on Traffic |
-| lightLevel | Number:Dimensionless | R | Light Level |
-| load | Switch | R | Load State |
-| loadSense | Switch | R/W | Load Sense |
-| loadSenseBottom | Switch | R/W | Load Sense Bottom |
-| loadSenseTop | Switch | R/W | Load Sense Top |
-| lock | Switch | R/W | Lock |
-| lowBattery | Switch | R | Low Battery Alert |
-| momentaryDuration | Number:Time | R/W | Momentary Duration |
-| monitorMode | Switch | R/W | Monitor Mode |
-| motion | Switch | R | Motion Detected |
-| onLevel | Dimmer | R/W | On Level |
-| operationMode | String | R/W | Switch Operation Mode |
-| outletBottom | Switch | R/W | Outlet Bottom |
-| outletTop | Switch | R/W | Outlet Top |
-| powerUsage | Number:Power | R | Power Usage in Watts |
-| program1 | Player | R/W | Program 1 |
-| program2 | Player | R/W | Program 2 |
-| program3 | Player | R/W | Program 3 |
-| program4 | Player | R/W | Program 4 |
-| programLock | Switch | R/W | Local Programming Lock |
-| pump | Switch | R/W | Pump |
-| rampRate | Number:Time | R/W | Ramp Rate |
-| relayMode | String | R/W | Output Relay Mode |
-| relaySensorFollow | Switch | R/W | Output Relay Follows Input Sensor |
-| reset | Switch | W | Reset |
-| resumeDim | Switch | R/W | Resume Dim |
-| reverseDirection | Switch | R/W | Reverse Direction |
-| rollershutter | Rollershutter | R/W | Rollershutter |
-| sceneOnOff | Switch | R/W | Scene On/Off |
-| sceneFastOnOff | Switch | W | Scene Fast On/Off |
-| sceneManualChange | Rollershutter | W | Scene Manual Change |
-| siren | Switch | R/W | Siren |
-| smokeAlarm | Switch | R | Smoke Alarm |
-| stage1Duration | Number:Time | R/W | Stage 1 Duration |
-| stayAwake | Switch | R/W | Stay Awake for Extended Time |
-| switch | Switch | R/W | Switch |
-| syncTime | Switch | W | Sync Time |
-| systemMode | String | R/W | System Mode |
-| systemState | String | R | System State |
-| tamperSwitch | Contact | R | Tamper Switch |
-| temperature | Number:Temperature | R | Current Temperature |
-| temperatureFormat | String | R/W | Temperature Format |
-| testAlarm | Switch | R | Test Alarm |
-| timeFormat | String | R/W | Time Format |
-| toggleModeButtonA | String | R/W | Toggle Mode Button A |
-| toggleModeButtonB | String | R/W | Toggle Mode Button B |
-| toggleModeButtonC | String | R/W | Toggle Mode Button C |
-| toggleModeButtonD | String | R/W | Toggle Mode Button D |
-| toggleModeButtonE | String | R/W | Toggle Mode Button E |
-| toggleModeButtonF | String | R/W | Toggle Mode Button F |
-| toggleModeButtonG | String | R/W | Toggle Mode Button G |
-| toggleModeButtonH | String | R/W | Toggle Mode Button H |
-| valve1 | Switch | R/W | Valve 1 |
-| valve2 | Switch | R/W | Valve 2 |
-| valve3 | Switch | R/W | Valve 3 |
-| valve4 | Switch | R/W | Valve 4 |
-| valve5 | Switch | R/W | Valve 5 |
-| valve6 | Switch | R/W | Valve 6 |
-| valve7 | Switch | R/W | Valve 7 |
-| valve8 | Switch | R/W | Valve 8 |
+| Channel             | Type                 | Access Mode | Description                       |
+| ------------------- | -------------------- | :---------: | --------------------------------- |
+| 3WayMode            | Switch               |     R/W     | 3-Way Toggle Mode                 |
+| acDelay             | Number:Time          |     R/W     | AC Delay                          |
+| alarmDelay          | Switch               |     R/W     | Alarm Delay                       |
+| alarmDuration       | Number:Time          |     R/W     | Alarm Duration                    |
+| alarmType           | String               |     R/W     | Alarm Type                        |
+| armed               | Switch               |     R/W     | Armed State                       |
+| backlightDuration   | Number:Time          |     R/W     | Back Light Duration               |
+| batteryLevel        | Number:Dimensionless |      R      | Battery Level                     |
+| batteryPowered      | Switch               |      R      | Battery Powered State             |
+| beep                | Switch               |      W      | Beep                              |
+| buttonA             | Switch               |     R/W     | Button A                          |
+| buttonB             | Switch               |     R/W     | Button B                          |
+| buttonC             | Switch               |     R/W     | Button C                          |
+| buttonD             | Switch               |     R/W     | Button D                          |
+| buttonE             | Switch               |     R/W     | Button E                          |
+| buttonF             | Switch               |     R/W     | Button F                          |
+| buttonG             | Switch               |     R/W     | Button G                          |
+| buttonH             | Switch               |     R/W     | Button H                          |
+| buttonBeep          | Switch               |     R/W     | Beep on Button Press              |
+| buttonConfig        | String               |     R/W     | Button Config                     |
+| buttonLock          | Switch               |     R/W     | Button Lock                       |
+| carbonMonoxideAlarm | Switch               |      R      | Carbon Monoxide Alarm             |
+| contact             | Contact              |      R      | Contact State                     |
+| coolSetpoint        | Number:Temperature   |     R/W     | Cool Setpoint                     |
+| daylight            | Contact              |      R      | Daylight State                    |
+| dimmer              | Dimmer               |     R/W     | Dimmer                            |
+| energyOffset        | Number:Temperature   |     R/W     | Energy Setpoint Offset            |
+| energySaving        | Switch               |      R      | Energy Saving                     |
+| energyUsage         | Number:Energy        |      R      | Energy Usage                      |
+| error               | Switch               |      R      | Error                             |
+| fanMode             | String               |     R/W     | Fan Mode                          |
+| fanSpeed            | String               |     R/W     | Fan Speed                         |
+| fanState            | Switch               |      R      | Fan State                         |
+| fastOnOff           | Switch               |      W      | Fast On/Off                       |
+| heartbeatInterval   | Number:Time          |     R/W     | Heartbeat Interval                |
+| heartbeatOnOff      | Switch               |     R/W     | Heartbeat Enabled                 |
+| heatSetpoint        | Number:Temperature   |     R/W     | Heat Setpoint                     |
+| humidity            | Number:Dimensionless |      R      | Current Humidity                  |
+| humidityControl     | String               |      R      | Humidity Control State            |
+| humidityHigh        | Number:Dimensionless |     R/W     | Humidity High                     |
+| humidityLow         | Number:Dimensionless |     R/W     | Humidity Low                      |
+| lastHeardFrom       | DateTime             |      R      | Last Heard From                   |
+| leak                | Switch               |      R      | Leak Detected                     |
+| ledBrightness       | Dimmer               |     R/W     | LED Brightness                    |
+| ledOnOff            | Switch               |     R/W     | LED Enabled                       |
+| ledTraffic          | Switch               |     R/W     | LED Blink on Traffic              |
+| lightSensitivity    | Number:Dimensionless |      R      | Light Sensitivity                 |
+| load                | Switch               |      R      | Load State                        |
+| loadSense           | Switch               |     R/W     | Load Sense                        |
+| loadSenseBottom     | Switch               |     R/W     | Load Sense Bottom                 |
+| loadSenseTop        | Switch               |     R/W     | Load Sense Top                    |
+| lock                | Switch               |     R/W     | Lock                              |
+| lowBattery          | Switch               |      R      | Low Battery Alert                 |
+| manualChange        | Rollershutter        |      W      | Manual Change                     |
+| momentaryDuration   | Number:Time          |     R/W     | Momentary Duration                |
+| monitorMode         | Switch               |     R/W     | Monitor Mode                      |
+| motion              | Switch               |      R      | Motion Detected                   |
+| onLevel             | Dimmer               |     R/W     | On Level                          |
+| operationMode       | String               |     R/W     | Switch Operation Mode             |
+| outletBottom        | Switch               |     R/W     | Outlet Bottom                     |
+| outletTop           | Switch               |     R/W     | Outlet Top                        |
+| powerUsage          | Number:Power         |      R      | Power Usage                       |
+| program1            | Player               |     R/W     | Program 1                         |
+| program2            | Player               |     R/W     | Program 2                         |
+| program3            | Player               |     R/W     | Program 3                         |
+| program4            | Player               |     R/W     | Program 4                         |
+| programLock         | Switch               |     R/W     | Local Programming Lock            |
+| pump                | Switch               |     R/W     | Pump                              |
+| rampRate            | Number:Time          |     R/W     | Ramp Rate                         |
+| relayMode           | String               |     R/W     | Output Relay Mode                 |
+| relaySensorFollow   | Switch               |     R/W     | Output Relay Follows Input Sensor |
+| reset               | Switch               |      W      | Reset                             |
+| resumeDim           | Switch               |     R/W     | Resume Dim                        |
+| reverseDirection    | Switch               |     R/W     | Reverse Direction                 |
+| rollershutter       | Rollershutter        |     R/W     | Rollershutter                     |
+| scene               | Switch               |     R/W     | Scene                             |
+| siren               | Switch               |     R/W     | Siren                             |
+| smokeAlarm          | Switch               |      R      | Smoke Alarm                       |
+| stage1Duration      | Number:Time          |     R/W     | Stage 1 Duration                  |
+| stayAwake           | Switch               |     R/W     | Stay Awake for Extended Time      |
+| switch              | Switch               |     R/W     | Switch                            |
+| syncTime            | Switch               |      W      | Sync Time                         |
+| systemMode          | String               |     R/W     | System Mode                       |
+| systemState         | String               |      R      | System State                      |
+| tamperSwitch        | Contact              |      R      | Tamper Switch                     |
+| temperature         | Number:Temperature   |      R      | Current Temperature               |
+| temperatureFormat   | String               |     R/W     | Temperature Format                |
+| testAlarm           | Switch               |      R      | Test Alarm                        |
+| timeFormat          | String               |     R/W     | Time Format                       |
+| toggleModeButtonA   | String               |     R/W     | Toggle Mode Button A              |
+| toggleModeButtonB   | String               |     R/W     | Toggle Mode Button B              |
+| toggleModeButtonC   | String               |     R/W     | Toggle Mode Button C              |
+| toggleModeButtonD   | String               |     R/W     | Toggle Mode Button D              |
+| toggleModeButtonE   | String               |     R/W     | Toggle Mode Button E              |
+| toggleModeButtonF   | String               |     R/W     | Toggle Mode Button F              |
+| toggleModeButtonG   | String               |     R/W     | Toggle Mode Button G              |
+| toggleModeButtonH   | String               |     R/W     | Toggle Mode Button H              |
+| valve1              | Switch               |     R/W     | Valve 1                           |
+| valve2              | Switch               |     R/W     | Valve 2                           |
+| valve3              | Switch               |     R/W     | Valve 3                           |
+| valve4              | Switch               |     R/W     | Valve 4                           |
+| valve5              | Switch               |     R/W     | Valve 5                           |
+| valve6              | Switch               |     R/W     | Valve 6                           |
+| valve7              | Switch               |     R/W     | Valve 7                           |
+| valve8              | Switch               |     R/W     | Valve 8                           |
 
 ### Trigger Channels
 
-| Channel | Description |
-|---------|-------------|
-| eventButton | Event Button |
-| eventButtonA | Event Button A |
-| eventButtonB | Event Button B |
-| eventButtonC | Event Button C |
-| eventButtonD | Event Button D |
-| eventButtonE | Event Button E |
-| eventButtonF | Event Button F |
-| eventButtonG | Event Button G |
-| eventButtonH | Event Button H |
-| eventButtonMain | Event Button Main |
+| Channel           | Description         |
+| ----------------- | ------------------- |
+| eventButton       | Event Button        |
+| eventButtonA      | Event Button A      |
+| eventButtonB      | Event Button B      |
+| eventButtonC      | Event Button C      |
+| eventButtonD      | Event Button D      |
+| eventButtonE      | Event Button E      |
+| eventButtonF      | Event Button F      |
+| eventButtonG      | Event Button G      |
+| eventButtonH      | Event Button H      |
+| eventButtonMain   | Event Button Main   |
 | eventButtonBottom | Event Button Bottom |
-| eventButtonTop | Event Button Top |
-| imEventButton | Event Button |
+| eventButtonTop    | Event Button Top    |
+| imEventButton     | Event Button        |
 
 The supported triggered events for Insteon Device things:
 
-| Event | Description |
-|-------|-------------|
-| `PRESSED_ON` | Button Pressed On (Regular On) |
-| `PRESSED_OFF` | Button Pressed Off (Regular Off) |
-| `DOUBLE_PRESSED_ON` | Button Double Pressed On (Fast On) |
-| `DOUBLE_PRESSED_OFF` | Button Double Pressed Off (Fast Off) |
-| `HELD_UP` | Button Held Up (Manual Change Up) |
-| `HELD_DOWN` | Button Held Down (Manual Change Down) |
-| `RELEASED` | Button Released (Manual Change Stop) |
+| Event                | Description                           |
+| -------------------- | ------------------------------------- |
+| `PRESSED_ON`         | Button Pressed On (Regular On)        |
+| `PRESSED_OFF`        | Button Pressed Off (Regular Off)      |
+| `DOUBLE_PRESSED_ON`  | Button Double Pressed On (Fast On)    |
+| `DOUBLE_PRESSED_OFF` | Button Double Pressed Off (Fast Off)  |
+| `HELD_UP`            | Button Held Up (Manual Change Up)     |
+| `HELD_DOWN`          | Button Held Down (Manual Change Down) |
+| `RELEASED`           | Button Released (Manual Change Stop)  |
 
 And for Insteon Hub and PLM things:
 
-| Event | Description |
-|-------|-------------|
-| `PRESSED` | Button Pressed |
-| `HELD` | Button Held |
+| Event      | Description     |
+| ---------- | --------------- |
+| `PRESSED`  | Button Pressed  |
+| `HELD`     | Button Held     |
 | `RELEASED` | Button Released |
 
 
@@ -370,79 +371,79 @@ And for Insteon Hub and PLM things:
 
 <details>
 
-  | channel | type | description |
-  |---------|------|-------------|
-  | acDelay | Number | AC Delay |
-  | backlightDuration | Number | Back Light Duration |
-  | batteryLevel | Number | Battery Level |
-  | batteryPercent | Number:Dimensionless | Battery Percent |
-  | batteryWatermarkLevel | Number | Battery Watermark Level |
-  | beep | Switch | Beep |
-  | bottomOutlet | Switch | Bottom Outlet |
-  | buttonA | Switch | Button A |
-  | buttonB | Switch | Button B |
-  | buttonC | Switch | Button C |
-  | buttonD | Switch | Button D |
-  | buttonE | Switch | Button E |
-  | buttonF | Switch | Button F |
-  | buttonG | Switch | Button G |
-  | buttonH | Switch | Button H |
-  | broadcastOnOff | Switch | Broadcast On/Off |
-  | contact | Contact | Contact |
-  | coolSetPoint | Number | Cool Set Point |
-  | dimmer | Dimmer | Dimmer |
-  | fan | Number | Fan |
-  | fanMode | Number | Fan Mode |
-  | fastOnOff | Switch | Fast On/Off |
-  | fastOnOffButtonA | Switch | Fast On/Off Button A |
-  | fastOnOffButtonB | Switch | Fast On/Off Button B |
-  | fastOnOffButtonC | Switch | Fast On/Off Button C |
-  | fastOnOffButtonD | Switch | Fast On/Off Button D |
-  | heatSetPoint | Number | Heat Set Point |
-  | humidity | Number | Humidity |
-  | humidityHigh | Number | Humidity High |
-  | humidityLow | Number | Humidity Low |
-  | isCooling | Number | Is Cooling |
-  | isHeating | Number | Is Heating |
-  | keypadButtonA | Switch | Keypad Button A |
-  | keypadButtonB | Switch | Keypad Button B |
-  | keypadButtonC | Switch | Keypad Button C |
-  | keypadButtonD | Switch | Keypad Button D |
-  | keypadButtonE | Switch | Keypad Button E |
-  | keypadButtonF | Switch | Keypad Button F |
-  | keypadButtonG | Switch | Keypad Button G |
-  | keypadButtonH | Switch | Keypad Button H |
-  | kWh | Number:Energy | Kilowatt Hour |
-  | lastHeardFrom | DateTime | Last Heard From |
-  | ledBrightness | Number | LED brightness |
-  | ledOnOff | Switch | LED On/Off |
-  | lightDimmer | Dimmer | light Dimmer |
-  | lightLevel | Number | Light Level |
-  | lightLevelAboveThreshold | Contact | Light Level Above/Below Threshold |
-  | loadDimmer | Dimmer | Load Dimmer |
-  | loadSwitch | Switch | Load Switch |
-  | loadSwitchFastOnOff | Switch | Load Switch Fast On/Off |
-  | loadSwitchManualChange | Number | Load Switch Manual Change |
-  | lowBattery | Contact | Low Battery |
-  | manualChange | Number | Manual Change |
-  | manualChangeButtonA | Number | Manual Change Button A |
-  | manualChangeButtonB | Number | Manual Change Button B |
-  | manualChangeButtonC | Number | Manual Change Button C |
-  | manualChangeButtonD | Number | Manual Change Button D |
-  | notification | Number | Notification |
-  | onLevel | Number | On Level |
-  | rampDimmer | Dimmer | Ramp Dimmer |
-  | rampRate | Number | Ramp Rate |
-  | reset | Switch | Reset |
-  | stage1Duration | Number | Stage 1 Duration |
-  | switch | Switch | Switch |
-  | systemMode | Number | System Mode |
-  | tamperSwitch | Contact | Tamper Switch |
-  | temperature | Number:Temperature | Temperature |
-  | temperatureLevel | Number | Temperature Level |
-  | topOutlet | Switch | Top Outlet |
-  | update | Switch | Update |
-  | watts | Number:Power | Watts |
+  | Channel                  | Type                 | Description                       |
+  | ------------------------ | -------------------- | --------------------------------- |
+  | acDelay                  | Number               | AC Delay                          |
+  | backlightDuration        | Number               | Back Light Duration               |
+  | batteryLevel             | Number               | Battery Level                     |
+  | batteryPercent           | Number:Dimensionless | Battery Percent                   |
+  | batteryWatermarkLevel    | Number               | Battery Watermark Level           |
+  | beep                     | Switch               | Beep                              |
+  | bottomOutlet             | Switch               | Bottom Outlet                     |
+  | buttonA                  | Switch               | Button A                          |
+  | buttonB                  | Switch               | Button B                          |
+  | buttonC                  | Switch               | Button C                          |
+  | buttonD                  | Switch               | Button D                          |
+  | buttonE                  | Switch               | Button E                          |
+  | buttonF                  | Switch               | Button F                          |
+  | buttonG                  | Switch               | Button G                          |
+  | buttonH                  | Switch               | Button H                          |
+  | broadcastOnOff           | Switch               | Broadcast On/Off                  |
+  | contact                  | Contact              | Contact                           |
+  | coolSetPoint             | Number               | Cool Setpoint                     |
+  | dimmer                   | Dimmer               | Dimmer                            |
+  | fan                      | Number               | Fan                               |
+  | fanMode                  | Number               | Fan Mode                          |
+  | fastOnOff                | Switch               | Fast On/Off                       |
+  | fastOnOffButtonA         | Switch               | Fast On/Off Button A              |
+  | fastOnOffButtonB         | Switch               | Fast On/Off Button B              |
+  | fastOnOffButtonC         | Switch               | Fast On/Off Button C              |
+  | fastOnOffButtonD         | Switch               | Fast On/Off Button D              |
+  | heatSetPoint             | Number               | Heat Setpoint                     |
+  | humidity                 | Number               | Humidity                          |
+  | humidityHigh             | Number               | Humidity High                     |
+  | humidityLow              | Number               | Humidity Low                      |
+  | isCooling                | Number               | Is Cooling                        |
+  | isHeating                | Number               | Is Heating                        |
+  | keypadButtonA            | Switch               | Keypad Button A                   |
+  | keypadButtonB            | Switch               | Keypad Button B                   |
+  | keypadButtonC            | Switch               | Keypad Button C                   |
+  | keypadButtonD            | Switch               | Keypad Button D                   |
+  | keypadButtonE            | Switch               | Keypad Button E                   |
+  | keypadButtonF            | Switch               | Keypad Button F                   |
+  | keypadButtonG            | Switch               | Keypad Button G                   |
+  | keypadButtonH            | Switch               | Keypad Button H                   |
+  | kWh                      | Number:Energy        | Kilowatt Hour                     |
+  | lastHeardFrom            | DateTime             | Last Heard From                   |
+  | ledBrightness            | Number               | LED brightness                    |
+  | ledOnOff                 | Switch               | LED On/Off                        |
+  | lightDimmer              | Dimmer               | light Dimmer                      |
+  | lightLevel               | Number               | Light Level                       |
+  | lightLevelAboveThreshold | Contact              | Light Level Above/Below Threshold |
+  | loadDimmer               | Dimmer               | Load Dimmer                       |
+  | loadSwitch               | Switch               | Load Switch                       |
+  | loadSwitchFastOnOff      | Switch               | Load Switch Fast On/Off           |
+  | loadSwitchManualChange   | Number               | Load Switch Manual Change         |
+  | lowBattery               | Contact              | Low Battery                       |
+  | manualChange             | Number               | Manual Change                     |
+  | manualChangeButtonA      | Number               | Manual Change Button A            |
+  | manualChangeButtonB      | Number               | Manual Change Button B            |
+  | manualChangeButtonC      | Number               | Manual Change Button C            |
+  | manualChangeButtonD      | Number               | Manual Change Button D            |
+  | notification             | Number               | Notification                      |
+  | onLevel                  | Number               | On Level                          |
+  | rampDimmer               | Dimmer               | Ramp Dimmer                       |
+  | rampRate                 | Number               | Ramp Rate                         |
+  | reset                    | Switch               | Reset                             |
+  | stage1Duration           | Number               | Stage 1 Duration                  |
+  | switch                   | Switch               | Switch                            |
+  | systemMode               | Number               | System Mode                       |
+  | tamperSwitch             | Contact              | Tamper Switch                     |
+  | temperature              | Number:Temperature   | Temperature                       |
+  | temperatureLevel         | Number               | Temperature Level                 |
+  | topOutlet                | Switch               | Top Outlet                        |
+  | update                   | Switch               | Update                            |
+  | watts                    | Number:Power         | Watts                             |
 
 </details>
 
@@ -508,7 +509,7 @@ Switch keypadA { channel="insteon:device:home:22F8A8:buttonA" }
 Switch keypadB { channel="insteon:device:home:22F8A8:buttonB" }
 Switch keypadC { channel="insteon:device:home:22F8A8:buttonC" }
 Switch keypadD { channel="insteon:device:home:22F8A8:buttonD" }
-Switch scene42 { channel="insteon:scene:home:scene42:sceneOnOff" }
+Switch scene42 { channel="insteon:scene:home:scene42:scene" }
 Switch switch2 { channel="insteon:x10:home:A2:switch" }
 ```
 
@@ -585,8 +586,8 @@ Since Insteon devices can have multiple features (for instance a switchable rela
 For example, the following lines would create two Number items referring to the same thermostat device, but to different features of it:
 
 ```java
-Number:Temperature  thermostatCoolPoint "cool point [%.1f °F]" { channel="insteon:device:home:32F422:coolSetPoint" }
-Number:Temperature  thermostatHeatPoint "heat point [%.1f °F]" { channel="insteon:device:home:32F422:heatSetPoint" }
+Number:Temperature  thermostatCoolPoint "cool point [%.1f °F]" { channel="insteon:device:home:32F422:coolSetpoint" }
+Number:Temperature  thermostatHeatPoint "heat point [%.1f °F]" { channel="insteon:device:home:32F422:heatSetpoint" }
 ```
 
 ### Switches
@@ -659,12 +660,12 @@ The button numbering used internally by the device must be mapped to whatever la
 Here is an example correspondence table:
 
 | Group | Button Number | 2487S Label |
-|-------|---------------|-------------|
-|  0x01 |        1      |   (Load)    |
-|  0x03 |        3      |     A       |
-|  0x04 |        4      |     B       |
-|  0x05 |        5      |     C       |
-|  0x06 |        6      |     D       |
+| :---: | :-----------: | :---------: |
+| 0x01  |       1       |   (Load)    |
+| 0x03  |       3       |      A      |
+| 0x04  |       4       |      B      |
+| 0x05  |       5       |      C      |
+| 0x06  |       6       |      D      |
 
 When e.g. the "A" button is pressed (that's button #3 internally) a broadcast message will be sent out to all responders configured to listen to Insteon group #3.
 In this case, the modem must be configured as a responder to group #3 (and #4, #5, #6) messages coming from the keypad.
@@ -851,10 +852,13 @@ Link such that the modem is a responder to the motion sensor.
 ##### Items
 
 ```java
-Switch               motionSensor             "motion sensor [MAP(motion.map):%s]"  { channel="insteon:device:home:AABBCC:motion"}
-Number:Dimensionless motionSensorBatteryLevel "battery level [%.1f %%]"             { channel="insteon:device:home:AABBCC:batteryLevel" }
-Number:Dimensionless motionSensorLightLevel   "light level [%.1f %%]"               { channel="insteon:device:home:AABBCC:lightLevel" }
+Switch               motionSensor                 "motion sensor [MAP(motion.map):%s]"  { channel="insteon:device:home:AABBCC:motion"}
+Number:Dimensionless motionSensorBatteryLevel     "battery level [%.1f %%]"             { channel="insteon:device:home:AABBCC:batteryLevel" }
+Number:Dimensionless motionSensorLightSensitivity "light sensitivity [%.1f %%]"         { channel="insteon:device:home:AABBCC:lightSensitivity" }
 ```
+
+<details>
+  <summary>Legacy</summary>
 
   ```java
   Contact motionSensor             "motion sensor [MAP(motion.map):%s]" { channel="insteon:device:home:AABBCC:contact"}
@@ -882,7 +886,7 @@ Number:Temperature motionSensorTemperature  "temperature [%.1f °F]"            
 The temperature is automatically calculated in Fahrenheit based on the motion sensor II powered source.
 Since that sensor might not be calibrated correctly, the output temperature may need to be offset on the openHAB side.
 
-Note that battery and light level are only updated when either there is motion, light level above/below threshold, tamper switch activated, or the sensor battery runs low.
+The battery and light sensitivity are only updated when either there is motion, light sensitivity above/below threshold, tamper switch activated, or the sensor battery runs low.
 
 <details>
   <summary>Legacy</summary>
@@ -1018,7 +1022,7 @@ Switch item=fanLincFan mappings=[ OFF="OFF", LOW="LOW", MEDIUM="MEDIUM", HIGH="H
 
 ### Power Meters
 
-The iMeter Solo reports both wattage and kilowatt hours, and is updated during the normal polling process of the devices.
+The iMeter Solo reports both energy and power usage, and is updated during the normal polling process of the devices.
 Send a `REFRESH` command to force update the current values for the device.
 Additionally, the device can be reset.
 
@@ -1106,8 +1110,8 @@ To ensure all links are configured between the modem and device, and the status 
 ##### Items
 
 ```java
-Number:Temperature   thermostatCoolPoint   "cool point [%.1f °F]"  { channel="insteon:device:home:AABBCC:coolSetPoint" }
-Number:Temperature   thermostatHeatPoint   "heat point [%.1f °F]"  { channel="insteon:device:home:AABBCC:heatSetPoint" }
+Number:Temperature   thermostatCoolPoint   "cool point [%.1f °F]"  { channel="insteon:device:home:AABBCC:coolSetpoint" }
+Number:Temperature   thermostatHeatPoint   "heat point [%.1f °F]"  { channel="insteon:device:home:AABBCC:heatSetpoint" }
 String               thermostatSystemMode  "system mode [%s]"      { channel="insteon:device:home:AABBCC:systemMode" }
 String               thermostatSystemState "system state [%s]"     { channel="insteon:device:home:AABBCC:systemState" }
 String               thermostatFanMode     "fan mode [%s]"         { channel="insteon:device:home:AABBCC:fanMode" }
@@ -1219,21 +1223,21 @@ Bridge insteon:plm:home [serialPort="/dev/ttyUSB0"] {
 ### Items
 
 ```java
-Switch sceneOnOff               "scene on/off"        { channel="insteon:scene:home:scene42:sceneOnOff" }
-Switch sceneFastOnOff           "scene fast on/off"   { channel="insteon:scene:home:scene42:sceneFastOnOff" }
-Rollershutter sceneManualChange "scene manual change" { channel="insteon:scene:home:scene42:sceneManualChange" }
+Switch scene                    "scene"         { channel="insteon:scene:home:scene42:scene" }
+Switch sceneFastOnOff           "fast on/off"   { channel="insteon:scene:home:scene42:fastOnOff" }
+Rollershutter sceneManualChange "manual change" { channel="insteon:scene:home:scene42:manualChange" }
 ```
 
 ### Sitemap
 
 ```perl
-Switch item=sceneOnOff
+Switch item=scene
 Switch item=sceneFastOnOff mappings=[ ON="ON", OFF="OFF" ]
 Switch item=sceneManualChange mappings=[ UP="UP", DOWN="DOWN", STOP="STOP" ]
 ```
 
-Sending `ON` command to `sceneOnOff` will cause the modem to send a broadcast message with group=42, and all devices that are configured to respond to it should react.
-The current state of a scene is published on the `sceneOnOff` channel.
+Sending `ON` command to `scene` will cause the modem to send a broadcast message to group 42, and all devices that are configured to respond to it should react.
+The current state of a scene is published on the `scene` channel.
 An `ON` state indicates that all the device states associated to a scene are matching their configured link on level.
 
 <details>

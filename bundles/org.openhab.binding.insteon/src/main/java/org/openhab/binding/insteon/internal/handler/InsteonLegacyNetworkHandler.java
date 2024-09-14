@@ -324,9 +324,6 @@ public class InsteonLegacyNetworkHandler extends BaseBridgeHandler {
     }
 
     private void display(Console console, Map<String, String> info) {
-        info.entrySet().stream() //
-                .sorted(Entry.comparingByKey()) //
-                .map(Entry::getValue) //
-                .forEach(console::println);
+        info.entrySet().stream().sorted(Entry.comparingByKey()).map(Entry::getValue).forEach(console::println);
     }
 }

@@ -43,12 +43,12 @@
 	</feature-type>
 	<feature-type name="GenericButtonEvent" event="true">
 		<message-dispatcher>DefaultDispatcher</message-dispatcher>
-		<message-handler command="0x11" group="1">ButtonEventHandler</message-handler>
-		<message-handler command="0x12" group="1">ButtonEventHandler</message-handler>
-		<message-handler command="0x13" group="1">ButtonEventHandler</message-handler>
-		<message-handler command="0x14" group="1">ButtonEventHandler</message-handler>
-		<message-handler command="0x17" group="1" duplicate="false">ButtonEventHandler</message-handler>
-		<message-handler command="0x18" group="1" duplicate="false">ButtonEventHandler</message-handler>
+		<message-handler command="0x11" group="1">ButtonEventMsgHandler</message-handler>
+		<message-handler command="0x12" group="1">ButtonEventMsgHandler</message-handler>
+		<message-handler command="0x13" group="1">ButtonEventMsgHandler</message-handler>
+		<message-handler command="0x14" group="1">ButtonEventMsgHandler</message-handler>
+		<message-handler command="0x17" group="1" duplicate="false">ButtonEventMsgHandler</message-handler>
+		<message-handler command="0x18" group="1" duplicate="false">ButtonEventMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 		<poll-handler>NoPollHandler</poll-handler>
@@ -651,7 +651,7 @@
 		<poll-handler ext="2" cmd1="0x2E" cmd2="0x02">FlexPollHandler</poll-handler>
 	</feature-type>
 
-	<feature-type name="ThermostatCoolSetPoint">
+	<feature-type name="ThermostatCoolSetpoint">
 		<message-dispatcher>DefaultDispatcher</message-dispatcher>
 		<!-- handles direct ack after set point has been changed -->
 		<message-handler command="0x19" ext="0" cmd1="0x6C" field="command2" factor="0.5" scale="fahrenheit">CustomTemperatureMsgHandler</message-handler>
@@ -668,7 +668,7 @@
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData2Group -->
 	</feature-type>
-	<feature-type name="ThermostatHeatSetPoint">
+	<feature-type name="ThermostatHeatSetpoint">
 		<message-dispatcher>DefaultDispatcher</message-dispatcher>
 		<!-- handles direct ack after set point has been changed -->
 		<message-handler command="0x19" ext="0" cmd1="0x6D" field="command2" factor="0.5" scale="fahrenheit">CustomTemperatureMsgHandler</message-handler>
@@ -896,7 +896,7 @@
 		<poll-handler>NoPollHandler</poll-handler>
 	</feature-type>
 
-	<feature-type name="VenstarCoolSetPoint">
+	<feature-type name="VenstarCoolSetpoint">
 		<message-dispatcher>DefaultDispatcher</message-dispatcher>
 		<!-- handles direct ack after set point has been changed -->
 		<message-handler command="0x19" ext="0" cmd1="0x6C" field="command2" factor="0.5">VenstarTemperatureMsgHandler</message-handler>
@@ -912,7 +912,7 @@
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 		<poll-handler>NoPollHandler</poll-handler> <!-- polled by ThermostatData1Group -->
 	</feature-type>
-	<feature-type name="VenstarHeatSetPoint">
+	<feature-type name="VenstarHeatSetpoint">
 		<message-dispatcher>DefaultDispatcher</message-dispatcher>
 		<!-- handles direct ack after set point has been changed -->
 		<message-handler command="0x19" ext="0" cmd1="0x6D" field="command2" factor="0.5">VenstarTemperatureMsgHandler</message-handler>
@@ -1000,7 +1000,7 @@
 
 	<feature-type name="IMButtonEvent" event="true">
 		<message-dispatcher>IMDispatcher</message-dispatcher>
-		<message-handler command="0x54">IMButtonEventHandler</message-handler>
+		<message-handler command="0x54">IMButtonEventMsgHandler</message-handler>
 		<message-handler default="true">NoOpMsgHandler</message-handler>
 		<command-handler default="true">NoOpCommandHandler</command-handler>
 		<poll-handler>NoPollHandler</poll-handler>

@@ -58,7 +58,7 @@ public class HubIOStream extends IOStream {
     private int bufferIdx = -1;
 
     /**
-     * Constructor for HubIOStream
+     * Constructor
      *
      * @param host host name of hub device
      * @param port port to connect to
@@ -67,11 +67,11 @@ public class HubIOStream extends IOStream {
      * @param pollInterval hub poll interval (in milliseconds)
      * @param scheduler the scheduler
      */
-    public HubIOStream(String host, int port, String user, String pass, int pollInterval,
+    public HubIOStream(String host, int port, String username, String password, int pollInterval,
             ScheduledExecutorService scheduler) {
         this.host = host;
         this.port = port;
-        this.auth = Base64.getEncoder().encodeToString((user + ":" + pass).getBytes(StandardCharsets.UTF_8));
+        this.auth = Base64.getEncoder().encodeToString((username + ":" + password).getBytes(StandardCharsets.UTF_8));
         this.pollInterval = pollInterval;
         this.scheduler = scheduler;
     }
@@ -206,10 +206,8 @@ public class HubIOStream extends IOStream {
         if (logger.isTraceEnabled()) {
             logger.trace("poll: {}", buffer);
         }
-        //
         // The Hub maintains a ring buffer where the last two digits (in hex!) represent
         // the position of the last byte read.
-        //
         String data = buffer.substring(0, buffer.length() - 2); // pure data w/o index pointer
 
         int nIdx = -1;

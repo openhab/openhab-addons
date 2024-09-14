@@ -127,21 +127,15 @@ public class LegacyRequestManager {
                             long expTime = q.getExpirationTime();
                             LegacyDevice dev = q.getDevice();
                             if (expTime > now) {
-                                //
                                 // The head of the queue is not up for processing yet, wait().
-                                //
                                 logger.trace("request queue head: {} must wait for {} msec", dev.getAddress(),
                                         expTime - now);
                                 requestQueues.wait(expTime - now);
-                                //
                                 // note that the wait() can also return because of changes to
                                 // the queue, not just because the time expired!
-                                //
                                 continue;
                             }
-                            //
                             // The head of the queue has expired and can be processed!
-                            //
                             q = requestQueues.poll(); // remove front element
                             requestQueueHash.remove(dev); // and remove from hash map
                             long nextExp = dev.processRequestQueue(now);

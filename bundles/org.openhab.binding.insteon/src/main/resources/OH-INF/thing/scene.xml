@@ -15,9 +15,9 @@
 		<description>An Insteon scene that controls multiple devices simultaneously.</description>
 
 		<channels>
-			<channel id="sceneOnOff" typeId="sceneOnOff"/>
-			<channel id="sceneFastOnOff" typeId="sceneFastOnOff"/>
-			<channel id="sceneManualChange" typeId="sceneManualChange"/>
+			<channel id="scene" typeId="scene"/>
+			<channel id="fastOnOff" typeId="fastOnOff"/>
+			<channel id="manualChange" typeId="manualChange"/>
 		</channels>
 
 		<representation-property>group</representation-property>

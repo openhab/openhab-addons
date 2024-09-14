@@ -5,7 +5,6 @@
 	<product devCat="0x00">
 		<description>Generalized Controller</description>
 		<vendor>Generic</vendor>
-		<device-type>GeneralizedController</device-type>
 	</product>
 	<product devCat="0x00" subCat="0x04">
 		<description>ControLinc</description>

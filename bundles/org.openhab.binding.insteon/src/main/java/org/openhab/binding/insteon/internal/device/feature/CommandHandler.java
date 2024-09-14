@@ -89,7 +89,7 @@ public abstract class CommandHandler extends FeatureBaseHandler {
     /**
      * Constructor
      *
-     * @param f The DeviceFeature for which this command was intended.
+     * @param feature The DeviceFeature for which this command was intended.
      *            The openHAB commands are issued on an openhab item. The .items files bind
      *            an openHAB item to a DeviceFeature.
      */
@@ -122,12 +122,6 @@ public abstract class CommandHandler extends FeatureBaseHandler {
      * @param cmd the openhab command to handle
      */
     public abstract void handleCommand(InsteonChannelConfiguration config, Command cmd);
-
-    //
-    //
-    // ---------------- the various command handlers start here -------------------
-    //
-    //
 
     /**
      * Default command handler
@@ -2273,10 +2267,6 @@ public abstract class CommandHandler extends FeatureBaseHandler {
 
         @Override
         protected int getCommandCode(Command cmd, byte houseCode) {
-            //
-            // I did not have hardware that would respond to the PRESET_DIM codes.
-            // This code path needs testing.
-            //
             int level = ((PercentType) cmd).intValue() * 32 / 100;
             int levelCode = X10_LEVEL_CODES[level % 16];
             int cmdCode = level >= 16 ? X10Command.PRESET_DIM_2.code() : X10Command.PRESET_DIM_1.code();

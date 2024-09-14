@@ -90,8 +90,10 @@ public class LegacyPort {
     /**
      * Constructor
      *
-     * @param devName the name of the port, i.e. '/dev/insteon'
-     * @param d The Driver object that manages this port
+     * @param config the network bridge config
+     * @param driver the driver that manages this port
+     * @param serialPortManager the serial port manager
+     * @param scheduler the scheduler
      */
     public LegacyPort(InsteonLegacyNetworkConfiguration config, LegacyDriver driver,
             SerialPortManager serialPortManager, ScheduledExecutorService scheduler) {

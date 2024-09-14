@@ -325,12 +325,6 @@ public abstract class LegacyMessageHandler {
         parameters = map;
     }
 
-    //
-    //
-    // ---------------- the various command handler start here -------------------
-    //
-    //
-
     public static class DefaultMsgHandler extends LegacyMessageHandler {
         public DefaultMsgHandler(LegacyDeviceFeature p) {
             super(p);

@@ -92,12 +92,12 @@ public class InsteonBindingConstants {
     public static final String FEATURE_TYPE_OUTLET_SWITCH = "OutletSwitch";
     public static final String FEATURE_TYPE_THERMOSTAT_FAN_MODE = "ThermostatFanMode";
     public static final String FEATURE_TYPE_THERMOSTAT_SYSTEM_MODE = "ThermostatSystemMode";
-    public static final String FEATURE_TYPE_THERMOSTAT_COOL_SETPOINT = "ThermostatCoolSetPoint";
-    public static final String FEATURE_TYPE_THERMOSTAT_HEAT_SETPOINT = "ThermostatHeatSetPoint";
+    public static final String FEATURE_TYPE_THERMOSTAT_COOL_SETPOINT = "ThermostatCoolSetpoint";
+    public static final String FEATURE_TYPE_THERMOSTAT_HEAT_SETPOINT = "ThermostatHeatSetpoint";
     public static final String FEATURE_TYPE_VENSTAR_FAN_MODE = "VenstarFanMode";
     public static final String FEATURE_TYPE_VENSTAR_SYSTEM_MODE = "VenstarSystemMode";
-    public static final String FEATURE_TYPE_VENSTAR_COOL_SETPOINT = "VenstarCoolSetPoint";
-    public static final String FEATURE_TYPE_VENSTAR_HEAT_SETPOINT = "VenstarHeatSetPoint";
+    public static final String FEATURE_TYPE_VENSTAR_COOL_SETPOINT = "VenstarCoolSetpoint";
+    public static final String FEATURE_TYPE_VENSTAR_HEAT_SETPOINT = "VenstarHeatSetpoint";
 
     // List of specific device types
     public static final String DEVICE_TYPE_CLIMATE_CONTROL_VENSTAR_THERMOSTAT = "ClimateControl_VenstarThermostat";

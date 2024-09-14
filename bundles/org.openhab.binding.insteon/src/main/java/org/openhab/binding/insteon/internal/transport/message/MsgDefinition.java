@@ -35,11 +35,6 @@ public class MsgDefinition {
     MsgDefinition() {
     }
 
-    /*
-     * Copy constructor, needed to make a copy of a message
-     *
-     * @param m the definition to copy
-     */
     MsgDefinition(MsgDefinition m) {
         fields = new HashMap<>(m.fields);
     }
