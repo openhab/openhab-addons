@@ -196,7 +196,7 @@
 					<option value="END">Events that end in the period</option>
 				</options>
 				<default>START</default>
-				<label>Search mode</label>
+				<label>Search Mode</label>
 				<description>Defines which part of an event must fall within the search period between start and end</description>
 			</parameter>
 			<parameter name="textEventField" type="text" groupName="text_based">

@@ -10,7 +10,8 @@ The primary thing type is the calendar.
 It is based on a single iCalendar file and implemented as bridge.
 There can be multiple things having different properties representing different calendars.
 
-Each calendar can have event filters which allow to get multiple events, maybe filtered by additional criteria. Standard time-based filtering is done by each event's start, but it can also be configured to match other aspects.
+Each calendar can have event filters which allow to get multiple events, maybe filtered by additional criteria.
+Standard time-based filtering is done by each event's start, but it can also be configured to match other aspects.
 
 ## Thing Configuration
 
