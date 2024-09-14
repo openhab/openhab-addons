@@ -46,9 +46,9 @@
 			<channel id="health-temperature" typeId="temperatureType"/>
 			<channel id="health-humidity" typeId="humidityType"/>
 
-			<channel id="blades-quality" typeId="bladesQualityType"/>
-			<channel id="blades-days" typeId="bladesQualityDaysType"/>
-			<channel id="blades-hours" typeId="bladesQualityHoursType"/>
+			<channel id="blades-quality" typeId="blades-quality"/>
+			<channel id="blades-replacement-days" typeId="blades-replacement-days"/>
+			<channel id="blades-usage-hours" typeId="blades-usage-hours"/>
 		</channels>
 
 		<properties>
@@ -159,24 +159,24 @@
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
-	<channel-type id="bladesQualityType">
+	<channel-type id="blades-quality">
 		<item-type>Number:Dimensionless</item-type>
-		<label>Blade quality</label>
+		<label>Blade Quality</label>
 		<description>The quality of the blades</description>
 		<state readOnly="true" pattern="%d %%"/>
 	</channel-type>
 
-	<channel-type id="bladesQualityHoursType">
+	<channel-type id="blades-usage-hours">
 		<item-type>Number:Time</item-type>
-		<label>Blade usage hours</label>
+		<label>Blade Usage Hours</label>
 		<description>The usage time in hours of the blades</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
-	<channel-type id="bladesQualityDaysType">
+	<channel-type id="blades-replacement-days">
 		<item-type>Number:Time</item-type>
-		<label>Blade in use days</label>
-		<description>The number of days since the blades have been changed</description>
+		<label>Blade In Use Days</label>
+		<description>The number of days since the blades have been replaced</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 

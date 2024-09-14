@@ -250,8 +250,8 @@ public class RobonectHandler extends BaseThingHandler {
             }
             if (info.getBlades() != null) {
                 updateState(CHANNEL_BLADES_QUALITY, new QuantityType<>(info.getBlades().getQuality(), Units.PERCENT));
-                updateState(CHANNEL_BLADES_DAYS, new QuantityType<>(info.getBlades().getDays(), Units.DAY));
-                updateState(CHANNEL_BLADES_HOURS, new QuantityType<>(info.getBlades().getHours(), Units.HOUR));
+                updateState(CHANNEL_BLADES_REPL_DAYS, new QuantityType<>(info.getBlades().getDays(), Units.DAY));
+                updateState(CHANNEL_BLADES_USAGE_HOURS, new QuantityType<>(info.getBlades().getHours(), Units.HOUR));
             }
             if (info.getTimer() != null) {
                 if (info.getTimer().getNext() != null) {
