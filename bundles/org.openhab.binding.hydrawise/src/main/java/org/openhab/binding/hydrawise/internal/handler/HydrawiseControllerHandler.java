@@ -27,6 +27,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import javax.measure.quantity.Speed;
+import javax.measure.quantity.Temperature;
 import javax.measure.quantity.Volume;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -250,7 +252,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                 updateForecast(controller.location.forecast);
             }
             if (controller.zones != null) {
-                updateZones(controller.zones);
+                updateZones(controller.zones, controller.hardware.model.maxZones);
             }
 
             // update values with what the cloud tells us even though the controller may be offline
@@ -278,20 +280,22 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                         : UnDefType.NULL);
     }
 
-    private void updateZones(List<Zone> zones) {
+    private void updateZones(List<Zone> zones, int maxZones) {
         AtomicReference<Boolean> anyRunning = new AtomicReference<>(false);
         AtomicReference<Boolean> anySuspended = new AtomicReference<>(false);
         for (Zone zone : zones) {
-            // there are 12 relays per expander, expanders will have a zoneNumber like:
+            // for expansion modules who zones numbers are > 99
+            // there are maxZones relays per expander, expanders will have a zoneNumber like:
+            // maxZones = 12
             // 10 for expander 0, relay 10 = zone10
             // 101 for expander 1, relay 1 = zone13
             // 212 for expander 2, relay 12 = zone36
             // division of integers in Java give whole numbers, not remainders FYI
-            int zoneNumber = ((zone.number.value / 100) * 12) + (zone.number.value % 100);
-
+            int zoneNumber = zone.number.value <= 99 ? zone.number.value
+                    : ((zone.number.value / 100) * maxZones) + (zone.number.value % 100);
             String group = "zone" + zoneNumber;
             zoneMaps.put(group, zone);
-            logger.trace("Updateing Zone {} {} ", group, zone.name);
+            logger.trace("Updating Zone {} {} ", group, zone.name);
             updateGroupState(group, CHANNEL_ZONE_NAME, new StringType(zone.name));
             updateGroupState(group, CHANNEL_ZONE_ICON, new StringType(BASE_IMAGE_URL + zone.icon.fileName));
             if (zone.scheduledRuns != null) {
@@ -328,8 +332,9 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
                 updateGroupState(group, CHANNEL_ZONE_SUSPENDUNTIL, UnDefType.UNDEF);
             }
         }
-        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN, OnOffType.from(anyRunning.get()));
-        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_SUSPEND, OnOffType.from(anySuspended.get()));
+        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_RUN, anyRunning.get() ? OnOffType.ON : OnOffType.OFF);
+        updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_SUSPEND,
+                anySuspended.get() ? OnOffType.ON : OnOffType.OFF);
         updateGroupState(CHANNEL_GROUP_ALLZONES, CHANNEL_ZONE_SUSPENDUNTIL, UnDefType.UNDEF);
     }
 
@@ -362,6 +367,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
         int i = 1;
         for (Forecast forecast : forecasts) {
             String group = "forecast" + (i++);
+            logger.trace("Updating {} {}", group, forecast.time);
             updateGroupState(group, CHANNEL_FORECAST_TIME, stringToDateTime(forecast.time));
             updateGroupState(group, CHANNEL_FORECAST_CONDITIONS, new StringType(forecast.conditions));
             updateGroupState(group, CHANNEL_FORECAST_HUMIDITY, new DecimalType(forecast.averageHumidity.intValue()));
@@ -383,12 +389,12 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
 
     private void updateTemperature(UnitValue temperature, String group, String channel) {
         logger.debug("TEMP {} {} {} {}", group, channel, temperature.unit, temperature.value);
-        updateGroupState(group, channel, new QuantityType<>(temperature.value,
-                "\\u00b0F".equals(temperature.unit) ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS));
+        updateGroupState(group, channel, new QuantityType<Temperature>(temperature.value,
+                temperature.unit.indexOf("F") >= 0 ? ImperialUnits.FAHRENHEIT : SIUnits.CELSIUS));
     }
 
     private void updateWindspeed(UnitValue wind, String group, String channel) {
-        updateGroupState(group, channel, new QuantityType<>(wind.value,
+        updateGroupState(group, channel, new QuantityType<Speed>(wind.value,
                 "mph".equals(wind.unit) ? ImperialUnits.MILES_PER_HOUR : SIUnits.KILOMETRE_PER_HOUR));
     }
 
@@ -439,10 +445,7 @@ public class HydrawiseControllerHandler extends BaseThingHandler implements Hydr
     }
 
     private QuantityType<Volume> waterFlowToQuantityType(Number flow, String units) {
-        double waterFlow = flow.doubleValue();
-        if ("gals".equals(units)) {
-            waterFlow = waterFlow * 3.785;
-        }
-        return new QuantityType<>(waterFlow, Units.LITRE);
+        return new QuantityType<>(flow.doubleValue(),
+                "gal".equals(units) ? ImperialUnits.GALLON_LIQUID_US : Units.LITRE);
     }
 }

@@ -194,7 +194,7 @@ public class CloudConnector {
             try {
                 JsonObject homelistInfo = cl.getHomeList(country.trim().toLowerCase());
                 final HomeListDTO homelist = GSON.fromJson(homelistInfo, HomeListDTO.class);
-                if (homelist != null && homelist.getHomelist() != null && homelist.getHomelist().size() > 0) {
+                if (homelist != null && homelist.getHomelist() != null && !homelist.getHomelist().isEmpty()) {
                     homeLists.put(country, homelist);
                 }
             } catch (JsonSyntaxException e) {

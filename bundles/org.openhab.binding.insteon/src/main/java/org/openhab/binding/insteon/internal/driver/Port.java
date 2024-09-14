@@ -444,7 +444,6 @@ public class Port {
                                 logger.trace("retransmitting msg: {}", msg);
                                 ioStream.write(msg.getData());
                             }
-
                         }
                         // if rate limited, need to sleep now.
                         if (msg.getQuietTime() > 0) {

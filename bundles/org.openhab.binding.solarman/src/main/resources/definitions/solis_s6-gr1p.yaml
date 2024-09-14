@@ -1,0 +1,318 @@
+# Solis S6-GR1P4.6K Configuration
+# NH-Networks 2023
+#
+requests:
+  - start: 2999
+    end:  3024
+    mb_functioncode: 0x04
+  - start: 3035
+    end:  3043
+    mb_functioncode: 0x04
+  - start: 3071
+    end:  3071
+    mb_functioncode: 0x04
+
+parameters:
+ - group: InverterStatus
+   items:
+    - name: "Inverter Status"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [3043]
+      icon: 'mdi:home-lightning-bolt'
+      lookup: 
+      -  key: 0x0
+         value: "Waiting State"
+      -  key:  0x1
+         value: "Open Loop Operation"
+      -  key: 0x2
+         value: "Soft Start"
+      -  key: 0x3
+         value: "On Grid/Generating"
+      -  key: 0x1004
+         value: "Grid OverVoltage"         
+      -  key: 0x1010
+         value: "Grid UnderVoltage"        
+      -  key: 0x1012
+         value: "Grid OverFrequency"         
+      -  key: 0x1013
+         value: "Grid UnderFrequency"          
+      -  key: 0x1014
+         value: "Grid Imp too large"
+      -  key: 0x1015
+         value: "No Grid"         
+      -  key: 0x1016
+         value: "Grid Imbalance"         
+      -  key: 0x1017
+         value: "Grid Freq Jitter"         
+      -  key: 0x1018
+         value: "Grid Overcurrent"         
+      -  key: 0x1019
+         value: "Grid Tracking Fault"         
+      -  key: 0x1020
+         value: "DC OverVoltage"         
+      -  key: 0x1021
+         value: "DC Bus Overvoltage"
+      -  key: 0x1022
+         value: "DC Bus Uneven Voltage"         
+      -  key: 0x1024
+         value: "DC Bus Uneven Voltage2"
+      -  key: 0x1025
+         value: "DC A path OverCurrent"
+      -  key: 0x1026
+         value: "DC B path OverCurrent"         
+      -  key: 0x1027
+         value: "DC Input Disturbance"         
+      -  key: 0x1030
+         value: "Grid Disturbance"         
+      -  key: 0x1031
+         value: "DSP Initialization Protection "         
+      -  key: 0x1032
+         value: "Over Temp Protection"         
+      -  key: 0x1033
+         value: "PV Insulation Fault"         
+      -  key: 0x1034
+         value: "Leakage Current Protection"         
+      -  key: 0x1035
+         value: "Relay Detection Protection"         
+      -  key: 0x1036
+         value: "DSP_B Protection"         
+      -  key: 0x1037
+         value: "DC Component too Large"         
+      -  key: 0x1038
+         value: "12v UnderVoltage Protection"         
+      -  key: 0x1039
+         value: "Under Temperature Protection"         
+      -  key: 0x1040
+         value: "Arc Self-Test Protection"         
+      -  key: 0x1041
+         value: "Arc Protection"         
+      -  key: 0x1042
+         value: "DSP on-chip SRAM exception"         
+      -  key: 0x1043
+         value: "DSP on-chip FLASH exception"
+      -  key: 0x1044
+         value: "DSP on-chip PC pointer is abnormal"        
+      -  key: 0x1045
+         value: "DSP key register exception"
+      -  key: 0x1046
+         value: "Grid disturbance 02"         
+      -  key: 0x1047
+         value: "Grid current sampling abnormality"         
+      -  key: 0x1048
+         value: "IGBT overcurrent"
+      -  key: 0x1050
+         value: "Network current transient overcurrent"         
+      -  key: 0x1051
+         value: "Battery overvoltage hardware failure"         
+      -  key: 0x1052
+         value: "LLC hardware overcurrent"         
+      -  key: 0x1053
+         value: "Battery overvoltage detection"         
+      -  key: 0x1054
+         value: "Battery undervoltage detection"         
+      -  key: 0x1055
+         value: "Battery no connected"         
+      -  key: 0x1056
+         value: "Bypass overvoltage fault"         
+      -  key: 0x1057
+         value: "Bypass overload fault"        
+
+    - name: "Operating Status"
+      class: ""
+      state_class: ""
+      uom: ""
+      scale: 1
+      rule: 1
+      registers: [3071]
+      icon: 'mdi:home-lightning-bolt'
+      lookup: 
+      -  key: 0x1
+         value: "Normal Operation"
+      -  key: 0x2
+         value: "Initial Standby"
+      -  key: 0x4
+         value: "Control Shutdown"
+      -  key: 0x8
+         value: "Downtime"
+      -  key: 0x10
+         value: "Standby"         
+      -  key: 0x20
+         value: "Derating Operation"        
+      -  key: 0x40
+         value: "Limit Operation"      
+      -  key: 0x80
+         value: "Bypass Overload" 
+
+    - name: "Inverter Temperature"
+      class: "temperature"
+      state_class: "measurement"
+      uom: "°C"
+      scale: 0.1
+      rule: 2
+      registers: [3041]
+      icon: 'mdi:thermometer'
+      
+# Sensors below are outside of modbus request ranges.
+# If enabling, ensure to amend the request start register.
+#    - name: "Inverter ID"
+#      class: ""
+#      state_class: ""
+#      uom: ""
+#      scale: 1
+#      rule: 5
+#      registers: [33004,33005,33006,33007,33008,33009,33010,33011,33012,33013,33014,33015,33016,33017,33018,33019]
+#      isstr: true
+
+#    - name: "Product Model"
+#      class: ""
+#     state_class: ""
+#     uom: ""
+#      scale: 1
+#      rule: 6
+#      registers: [2999]
+#      isstr: true
+
+#    - name: "DSP Software Version"
+#      class: ""
+#      state_class: ""
+#      uom: ""
+#      scale: 1
+#      rule: 6
+#     registers: [3000]
+#      isstr: true
+
+#    - name: "LCD Software Version"
+#      class: ""
+#      state_class: ""
+#      uom: ""
+#      scale: 1
+#      rule: 6
+#      registers: [3001]
+#      isstr: true
+
+ - group: InverterDC
+   items:
+    - name: "PV1 Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [3021]
+      icon: 'mdi:solar-power'
+
+    - name: "PV2 Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [3023]
+      icon: 'mdi:solar-power'
+
+    - name: "PV1 Current"
+      class: "current"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [3022]
+      icon: 'mdi:current-dc'
+
+    - name: "PV2 Current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [3024]
+      icon: 'mdi:current-dc'
+
+    - name: "Total DC Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "kW"
+      scale: 0.001
+      rule: 3
+      registers: [3007, 3006]
+      icon: 'mdi:solar-power'
+
+ - group: InverterAC
+   items:
+    - name: "Inverter AC Power"
+      class: "power"
+      state_class: "measurement"
+      uom: "W"
+      scale: 1
+      rule: 1
+      registers: [3005, 3004]
+      icon: 'mdi:solar-power'
+
+    - name: "Inverter Voltage"
+      class: "voltage"
+      state_class: "measurement"
+      uom: "V"
+      scale: 0.1
+      rule: 1
+      registers: [3035]
+      icon: 'mdi:transmission-tower'
+
+    - name: "Inverter Current"
+      class: "current"
+      state_class: "measurement"
+      uom: "A"
+      scale: 0.1
+      rule: 1
+      registers: [3038]
+      icon: 'mdi:current-ac'
+
+    - name: "Inverter Frequency"
+      class: "frequency"
+      state_class: "measurement"
+      uom: "Hz"
+      scale: 0.01
+      rule: 1
+      registers: [3042]
+      icon: 'mdi:sine-wave'
+
+ - group: Generation
+   items:
+    - name: "Daily Generation"
+      class: "energy"
+      state_class: "measurement"
+      uom: "kWh"
+      scale: 0.1
+      rule: 1
+      registers: [3014]
+      icon: 'mdi:solar-power'
+
+    - name: "Monthly Generation"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [3011, 3010]
+      icon: 'mdi:solar-power'
+
+    - name: "Yearly Generation"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [3017, 3016]
+      icon: 'mdi:solar-power'
+
+    - name: "Total Generation"
+      class: "energy"
+      state_class: "total_increasing"
+      uom: "kWh"
+      scale: 1
+      rule: 3
+      registers: [3009, 3008]
+      icon: 'mdi:solar-power'
+

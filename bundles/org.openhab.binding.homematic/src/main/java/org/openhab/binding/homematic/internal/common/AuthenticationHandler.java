@@ -23,7 +23,7 @@ import org.openhab.core.i18n.ConfigurationException;
 /**
  * Handles the authentication to Homematic server.
  *
- * @author Christian Kittel
+ * @author Christian Kittel - Initial contribution
  */
 @NonNullByDefault
 public class AuthenticationHandler {

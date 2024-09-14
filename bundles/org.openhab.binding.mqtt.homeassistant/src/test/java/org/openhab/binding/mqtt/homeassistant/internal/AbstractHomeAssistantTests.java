@@ -37,7 +37,6 @@ import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import org.openhab.binding.mqtt.generic.MqttChannelStateDescriptionProvider;
 import org.openhab.binding.mqtt.generic.MqttChannelTypeProvider;
-import org.openhab.binding.mqtt.generic.TransformationServiceProvider;
 import org.openhab.binding.mqtt.handler.BrokerHandler;
 import org.openhab.binding.mqtt.homeassistant.generic.internal.MqttBindingConstants;
 import org.openhab.core.io.transport.mqtt.MqttBrokerConnection;
@@ -57,8 +56,10 @@ import org.openhab.core.thing.type.ChannelTypeRegistry;
 import org.openhab.core.thing.type.ThingType;
 import org.openhab.core.thing.type.ThingTypeBuilder;
 import org.openhab.core.thing.type.ThingTypeRegistry;
-import org.openhab.transform.jinja.internal.JinjaTransformationService;
-import org.openhab.transform.jinja.internal.profiles.JinjaTransformationProfile;
+import org.openhab.core.transform.TransformationHelper;
+import org.openhab.core.transform.TransformationService;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 /**
  * Abstract class for HomeAssistant unit tests.
@@ -86,7 +87,6 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
 
     protected @Mock @NonNullByDefault({}) MqttBrokerConnection bridgeConnection;
     protected @Mock @NonNullByDefault({}) ThingTypeRegistry thingTypeRegistry;
-    protected @Mock @NonNullByDefault({}) TransformationServiceProvider transformationServiceProvider;
 
     protected @NonNullByDefault({}) MqttChannelTypeProvider channelTypeProvider;
     protected @NonNullByDefault({}) MqttChannelStateDescriptionProvider stateDescriptionProvider;
@@ -97,16 +97,21 @@ public abstract class AbstractHomeAssistantTests extends JavaTest {
     protected final Thing haThing = ThingBuilder.create(HA_TYPE_UID, HA_UID).withBridge(BRIDGE_UID).build();
     protected final ConcurrentMap<String, Set<MqttMessageSubscriber>> subscriptions = new ConcurrentHashMap<>();
 
-    private final JinjaTransformationService jinjaTransformationService = new JinjaTransformationService();
+    private @Mock @NonNullByDefault({}) TransformationService transformationService1Mock;
+
+    private @Mock @NonNullByDefault({}) BundleContext bundleContextMock;
+    private @Mock @NonNullByDefault({}) ServiceReference<TransformationService> serviceRefMock;
+
+    private @NonNullByDefault({}) TransformationHelper transformationHelper;
 
     @BeforeEach
     public void beforeEachAbstractHomeAssistantTests() {
+        transformationHelper = new TransformationHelper(bundleContextMock);
+        transformationHelper.setTransformationService(serviceRefMock);
+
         when(thingTypeRegistry.getThingType(BRIDGE_TYPE_UID))
                 .thenReturn(ThingTypeBuilder.instance(BRIDGE_TYPE_UID, BRIDGE_TYPE_LABEL).build());
         when(thingTypeRegistry.getThingType(MqttBindingConstants.HOMEASSISTANT_MQTT_THING)).thenReturn(HA_THING_TYPE);
-        when(transformationServiceProvider
-                .getTransformationService(JinjaTransformationProfile.PROFILE_TYPE_UID.getId()))
-                .thenReturn(jinjaTransformationService);
 
         channelTypeProvider = spy(new MqttChannelTypeProvider(thingTypeRegistry, new VolatileStorageService()));
         stateDescriptionProvider = spy(new MqttChannelStateDescriptionProvider());

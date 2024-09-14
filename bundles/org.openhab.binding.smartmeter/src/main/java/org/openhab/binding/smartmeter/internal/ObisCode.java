@@ -82,6 +82,10 @@ public class ObisCode {
      * @return the obis as string.
      */
     public String asDecimalString() {
+        Byte a = this.a;
+        Byte b = this.b;
+        Byte c = this.c;
+        Byte f = this.f;
         try (Formatter format = new Formatter()) {
             format.format(SmartMeterBindingConstants.OBIS_FORMAT, a != null ? a & 0xFF : 0, b != null ? b & 0xFF : 0,
                     c & 0xFF, d & 0xFF, e & 0xFF, f != null ? f & 0xFF : 0);
@@ -118,10 +122,15 @@ public class ObisCode {
         return asDecimalString();
     }
 
-    public boolean matches(@Nullable Byte a, @Nullable Byte b, Byte c, Byte d, Byte e, @Nullable Byte f) {
-        return (this.a == null || a == null || this.a.equals(a)) && (this.b == null || b == null || this.b.equals(b))
-                && this.c.equals(c) && this.d.equals(d) && this.e.equals(e)
-                && (this.f == null || f == null || this.f.equals(f));
+    public boolean matches(@Nullable Byte otherA, @Nullable Byte otherB, Byte otherC, Byte d, Byte e,
+            @Nullable Byte otherF) {
+        Byte a = this.a;
+        Byte b = this.b;
+        Byte c = this.c;
+        Byte f = this.f;
+        return (a == null || otherA == null || a.equals(otherA)) && (b == null || otherB == null || b.equals(otherB))
+                && c.equals(otherC) && this.d.equals(d) && this.e.equals(e)
+                && (f == null || otherF == null || f.equals(otherF));
     }
 
     public boolean matches(Byte c, Byte d, Byte e) {
