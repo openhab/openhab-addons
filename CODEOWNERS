@@ -104,6 +104,7 @@
 /bundles/org.openhab.binding.enigma2/ @gdolfen
 /bundles/org.openhab.binding.enocean/ @fruggy83
 /bundles/org.openhab.binding.enphase/ @Hilbrand
+/bundles/org.openhab.binding.entsoe/ @jmelhus
 /bundles/org.openhab.binding.enturno/ @klocsson
 /bundles/org.openhab.binding.ephemeris/ @clinique
 /bundles/org.openhab.binding.epsonprojector/ @mlobstein
