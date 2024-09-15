@@ -168,14 +168,14 @@
 	</channel-type>
 
 	<channel-type id="blades-usage-hours">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="h">Number:Time</item-type>
 		<label>Blade Usage Hours</label>
 		<description>The usage time in hours of the blades</description>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
 	<channel-type id="blades-replacement-days">
-		<item-type>Number:Time</item-type>
+		<item-type unitHint="d">Number:Time</item-type>
 		<label>Blade In Use Days</label>
 		<description>The number of days since the blades have been replaced</description>
 		<state readOnly="true" pattern="%d %unit%"/>
