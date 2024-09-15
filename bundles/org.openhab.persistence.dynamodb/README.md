@@ -59,7 +59,6 @@ For users with old table schema, one can use pre-existing policy `AmazonDynamoDB
 * Modify the AWS account id from `055251986555` to to the one you have on clipboard (see step 2 above)
 * If you are on some other region than `eu-west-1`, change the entry accordingly
 
-
 ```json
 {
     "Version": "2012-10-17",
@@ -267,4 +266,3 @@ Eclipse instructions
 ```
 
 The `--add-opens` parameter is necessary also with the local temporary DynamoDB server, otherwise the mockito will fail at runtime with (`java.base does not "opens java.lang" to unnamed module`).
-

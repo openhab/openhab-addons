@@ -79,6 +79,7 @@ The control outlet supports the `power` channel.
 A blind or curtain supports, beside `battery_level` and `battery_low` channels,  a `positon` channel.
 
 An air purifier supports:
+
 * `fan_mode` and `fan_speed` channels, which allows for control of the fan and reading of the current speed.
 * `disable_led` and `lock_button` channels, to respectively disable the LED's and lock the button on the physical device.
 * `air_quality_pm25` and `air_quality_rating` channels, which reads the particulate matter 2.5μm and corresponding indication of air quality (similar to Tradfri app rating).

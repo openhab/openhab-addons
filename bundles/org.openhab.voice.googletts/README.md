@@ -1,7 +1,7 @@
 # Google Cloud Text-to-Speech
 
-Google Cloud TTS Service uses the non-free Google Cloud Text-to-Speech API to convert text or Speech Synthesis Markup Language (SSML) input into audio data of natural human speech. 
-It provides multiple voices, available in different languages and variants and applies DeepMind’s groundbreaking research in WaveNet and Google’s powerful neural networks. 
+Google Cloud TTS Service uses the non-free Google Cloud Text-to-Speech API to convert text or Speech Synthesis Markup Language (SSML) input into audio data of natural human speech.
+It provides multiple voices, available in different languages and variants and applies DeepMind’s groundbreaking research in WaveNet and Google’s powerful neural networks.
 The Google Cloud TTS service uses the openHAB TTS cache to cache audio files produced from the most recent queries in order to reduce traffic, improve performance and reduce number of requests.
 Be aware, that using this service may incur cost on your Google Cloud account.
 You can find pricing information on the [documentation page](https://cloud.google.com/text-to-speech/#pricing-summary).
@@ -53,7 +53,7 @@ In case you would like to setup the service via a text file, create a new file i
 
 Its contents should look similar to:
 
-```
+```perl
 org.openhab.voice.googletts:clientId=ID
 org.openhab.voice.googletts:clientSecret=SECRET
 org.openhab.voice.googletts:authcode=XXXXX
@@ -73,11 +73,13 @@ You can setup your preferred default Text-to-Speech and default voice in the UI:
 
 In case you would like to setup these settings via a text file, you can edit the file `runtime.cfg` in `$OPENHAB_ROOT/conf/services` and set the following entries:
 
-```
+```perl
 org.openhab.voice:defaultTTS=googletts
 org.openhab.voice:defaultVoice=googletts:XXX
 ```
+
 You can see the available voices by entering `voice voices` in the karaf console
+
 ```shell
 openhab> voice voices
   ...

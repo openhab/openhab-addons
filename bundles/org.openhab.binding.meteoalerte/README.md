@@ -63,19 +63,18 @@ The Météo Alerte information that are retrieved is available as these channels
 
 This binding has its own IconProvider and makes available the following list of icons
 
-| Icon Name                       | Dynamic | Illustration |
-|---------------------------------|---------|--------------|
-| oh:meteoalerte:vent             |   Yes   | ![](src/main/resources/icon/vent.svg) |
-| oh:meteoalerte:pluie-inondation |   Yes   | ![](src/main/resources/icon/pluie-inondation.svg) |
-| oh:meteoalerte:orage            |   Yes   | ![](src/main/resources/icon/orage.svg) |
-| oh:meteoalerte:inondation       |   Yes   | ![](src/main/resources/icon/inondation.svg) |
-| oh:meteoalerte:neige            |   Yes   | ![](src/main/resources/icon/neige.svg) |
-| oh:meteoalerte:canicule         |   Yes   | ![](src/main/resources/icon/canicule.svg) |
-| oh:meteoalerte:grand-froid      |   Yes   | ![](src/main/resources/icon/grand-froid.svg) |
-| oh:meteoalerte:avalanches       |   Yes   | ![](src/main/resources/icon/avalanches.svg) |
-| oh:meteoalerte:vague-submersion |   Yes   | ![](src/main/resources/icon/vague-submersion.svg) |
-| oh:meteoalerte:meteo_france     |   No    | ![](src/main/resources/icon/meteo_france.svg) |
-
+| Icon Name                       | Dynamic | Illustration                       |
+|---------------------------------|---------|------------------------------------|
+| oh:meteoalerte:vent             | Yes     | ![](doc/icon/vent.svg)             |
+| oh:meteoalerte:pluie-inondation | Yes     | ![](doc/icon/pluie-inondation.svg) |
+| oh:meteoalerte:orage            | Yes     | ![](doc/icon/orage.svg)            |
+| oh:meteoalerte:inondation       | Yes     | ![](doc/icon/inondation.svg)       |
+| oh:meteoalerte:neige            | Yes     | ![](doc/icon/neige.svg)            |
+| oh:meteoalerte:canicule         | Yes     | ![](doc/icon/canicule.svg)         |
+| oh:meteoalerte:grand-froid      | Yes     | ![](doc/icon/grand-froid.svg)      |
+| oh:meteoalerte:avalanches       | Yes     | ![](doc/icon/avalanches.svg)       |
+| oh:meteoalerte:vague-submersion | Yes     | ![](doc/icon/vague-submersion.svg) |
+| oh:meteoalerte:meteo_france     | No      | ![](doc/icon/meteo_france.svg)     |
 
 ## Full Example
 

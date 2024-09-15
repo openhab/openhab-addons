@@ -212,7 +212,7 @@ homematic:bridge:NAME
 - **bridge** the type, fixed
 - **name** the name of the bridge
 
-### Example
+### Bridge Configuration Example
 
 #### Minimum configuration
 
@@ -448,7 +448,7 @@ Adds multiple virtual datapoints to the HM-Dis-WM55 and HM-Dis-EP-WM55 devices t
 
 **Note:** The HM-Dis-EP-WM55 has only a black and white display and therefore does not support datapoints for colored lines. In addition, only lines 1-3 can be set.
 
-#### Example
+#### Button Example
 
 Display text at line 1,3 and 5 when the bottom button on the display is pressed
 
@@ -734,6 +734,7 @@ The problem can be solved by increasing the `bufferSize` value in the bridge con
 
 openHAB and the CCU are using different values for the same state of a rollershutter.
 Examples: HmIP-BROLL, HmIP-FROLL, HmIP-BBL, HmIP-FBL and HmIP-DRBLI4
+
 |         | Open | Closed |
 | ------- | ---- | ------ |
 | openHAB | 0%   | 100%   |

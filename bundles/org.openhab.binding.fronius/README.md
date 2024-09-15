@@ -159,6 +159,7 @@ You can retrieve the actions as follows:
 ```java
 val froniusInverterActions = getActions("fronius", "fronius:powerinverter:mybridge:myinverter")
 ```
+
 :::
 
 ::: tab JS

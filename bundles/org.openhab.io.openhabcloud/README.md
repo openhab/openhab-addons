@@ -57,7 +57,7 @@ This is also not required for remote access through the cloud service to functio
 
 Alternatively, you can configure the settings in the file `conf/services/openhabcloud.cfg`:
 
-```
+```perl
 ############################## openHAB Cloud Connector #############################
 
 # The URL of the openHAB Cloud service to connect to.
@@ -93,24 +93,24 @@ To send push notifications, the notification actions have to be used in rules.
 
 Three different actions are available:
 
-- `sendNotification(emailAddress, message)`: Send a notification to a _specific_ openHAB Cloud user.
-- `sendBroadcastNotification(message)`: Send a broadcast notification to _all_ devices of _all_ users.
-- `sendLogNotification(message)`: Send a log notification to the notifications list. Log notifications do not trigger a notification on the device.
+* `sendNotification(emailAddress, message)`: Send a notification to a _specific_ openHAB Cloud user.
+* `sendBroadcastNotification(message)`: Send a broadcast notification to _all_ devices of _all_ users.
+* `sendLogNotification(message)`: Send a log notification to the notifications list. Log notifications do not trigger a notification on the device.
 
 For each of the three actions, there's another variant accepting an icon name and a tag:
 
-- `sendNotification(emailAddress, message, icon, tag)`
-- `sendBroadcastNotification(message, icon, tag)`
-- `sendLogNotification(message, icon, tag)`
+* `sendNotification(emailAddress, message, icon, tag)`
+* `sendBroadcastNotification(message, icon, tag)`
+* `sendLogNotification(message, icon, tag)`
 
 Icon and tag can potentially be used by cloud instance clients (such as the openHAB apps for Android or iOS) to be displayed in the notification itself and the list of notifications.
 
 The parameters for these actions have the following meaning:
 
-- `emailAddress`: String containing the email address the target user is registered with in the cloud instance.
-- `message`: String containing the notification message text.
-- `icon`: String containing the icon name (as described in [Items: Icons]({{base}}/configuration/items.html#icons)).
-- `tag`: String containing the tag for the notification.
+* `emailAddress`: String containing the email address the target user is registered with in the cloud instance.
+* `message`: String containing the notification message text.
+* `icon`: String containing the icon name (as described in [Items: Icons]({{base}}/configuration/items.html#icons)).
+* `tag`: String containing the tag for the notification.
 
 `null` may be used to skip the `icon` or `tag` parameter.
 
@@ -118,32 +118,32 @@ The parameters for these actions have the following meaning:
 
 The `sendNotification` and `sendBroadcastNotification` actions additionally support setting a title, reference id, media attachments and actions.
 
-- The tag is used for tagging messages for grouping when displaying in the app and to hide/remove groups of messages from a user's device. Tag was previously referred to as "severity".
-- The title is displayed as the notification title on the device and defaults to "openHAB" for the Android and iOS apps.
-- The reference id is a user supplied identifier that when set will replace messages with the same id on the user's device (so only the last version exists). It can be used to update or remove notifications.
-- Media attachments are displayed together with the notification on the device and can be used to display images, e.g. a camera snapshot.
-- Actions allow the user to interact with the notification, e.g. to open a specific page in the app or to send a command to an Item.
+* The tag is used for tagging messages for grouping when displaying in the app and to hide/remove groups of messages from a user's device. Tag was previously referred to as "severity".
+* The title is displayed as the notification title on the device and defaults to "openHAB" for the Android and iOS apps.
+* The reference id is a user supplied identifier that when set will replace messages with the same id on the user's device (so only the last version exists). It can be used to update or remove notifications.
+* Media attachments are displayed together with the notification on the device and can be used to display images, e.g. a camera snapshot.
+* Actions allow the user to interact with the notification, e.g. to open a specific page in the app or to send a command to an Item.
 
 There are four different actions available:
 
-- Click action: Is performed when the user clicks on the notification.
-- Action button 1, 2 or 3: Is performed when the user clicks on the first, second or third action button.
+* Click action: Is performed when the user clicks on the notification.
+* Action button 1, 2 or 3: Is performed when the user clicks on the first, second or third action button.
 
 To specify media attachments and actions, there is another variant of the `sendNotification` and `sendBroadcastNotification` actions:
 
-- `sendNotification(emailAddress, message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
-- `sendBroadcastNotification(message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
-
+* `sendNotification(emailAddress, message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
+* `sendBroadcastNotification(message, icon, tag, title, referenceId, onClickAction, mediaAttachmentUrl, actionButton1, actionButton2, actionButton3)`
 
 The additional parameter for these variants have the following meaning:
-- `tag` : A user supplied tag to group messages for removing using the `hideNotificationByTag` action or grouping messages when displayed in the app. This renames the `severity` parameter, both are functionally identical. 
-- `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
-- `referenceId`: A user supplied id to both replace existing messages when pushed, and later remove messages with the `hideNotificationByReferenceId` actions.
-- `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
-- `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This can either be a fully qualified URL, prefixed with `http://` or `https://` and reachable by the client device, a relative path on the user's openHAB instance starting with `/`, or an image item with the format `item:MyImageItem`
-- `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
-- `actionButton2`: The action to be performed when the user clicks on the second action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
-- `actionButton3`: The action to be performed when the user clicks on the third action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
+
+* `tag` : A user supplied tag to group messages for removing using the `hideNotificationByTag` action or grouping messages when displayed in the app. This renames the `severity` parameter, both are functionally identical. 
+* `title`: The title of the notification. Defaults to "openHAB" inside the Android and iOS apps.
+* `referenceId`: A user supplied id to both replace existing messages when pushed, and later remove messages with the `hideNotificationByReferenceId` actions.
+* `onClickAction`: The action to be performed when the user clicks on the notification. Specified using the [action syntax](#action-syntax).
+* `mediaAttachmentUrl`: The URL of the media attachment to be displayed with the notification. This can either be a fully qualified URL, prefixed with `http://` or `https://` and reachable by the client device, a relative path on the user's openHAB instance starting with `/`, or an image item with the format `item:MyImageItem`
+* `actionButton1`: The action to be performed when the user clicks on the first action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
+* `actionButton2`: The action to be performed when the user clicks on the second action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
+* `actionButton3`: The action to be performed when the user clicks on the third action button. Specified as `Title=$action`, where `$action` follows the [action syntax](#action-syntax).
 
 These parameters may be skipped by setting them to `null`.
 
@@ -153,34 +153,34 @@ The action syntax is a string containing the action type and the action payload 
 
 There are several types of actions available:
 
-- `command`: Sends a command to an Item by using the following syntax: `command:$itemName:$commandString` where `$itemName` is the name of the Item and `$commandString` is the command to be sent.
-- `ui`: Controls the UI in two possible ways:
-  - `ui:$path` where `$path` is either `/basicui/app?...` for navigating sitemaps (using the native renderer) or `/some/absolute/path` for navigating (using the web view).
-  - `ui:$commandItemSyntax` where `$commandItemSyntax` is the same syntax as used for the [UI Command Item]({{base}}/mainui/about.html#ui-command-item).
-- `http:` or `https:` : Opens the fully qualified URL in an embedded browser on the device.
-- `rule`: Runs a rule by using the following syntax: `rule:$ruleId:$prop1Key=$prop1Value,$prop2Key=$prop2Value,...` where `$ruleId` is the id of the rule, and optional properties to send to the rule are in the format `name=value` separated by commas. Most rules can omit the properties.
-- `app`: Launches a native app when possible using the following syntax: `app:android=$appId,ios=$appId:$path` where `$appId` on Android is a qualified app id like `com.acme.app` (see [partial list of Android ids](https://github.com/petarov/google-android-app-ids)), and on iOS is the registered URL scheme along with an optional `$path` like `acme://foo` (see [partial list of iOS ids](https://github.com/bhagyas/app-urls)). Either `android` or `ios` can be omitted if that platform is not used.
+* `command`: Sends a command to an Item by using the following syntax: `command:$itemName:$commandString` where `$itemName` is the name of the Item and `$commandString` is the command to be sent.
+* `ui`: Controls the UI in two possible ways:
+  * `ui:$path` where `$path` is either `/basicui/app?...` for navigating sitemaps (using the native renderer) or `/some/absolute/path` for navigating (using the web view).
+  * `ui:$commandItemSyntax` where `$commandItemSyntax` is the same syntax as used for the [UI Command Item]({{base}}/mainui/about.html#ui-command-item).
+* `http:` or `https:` : Opens the fully qualified URL in an embedded browser on the device.
+* `rule`: Runs a rule by using the following syntax: `rule:$ruleId:$prop1Key=$prop1Value,$prop2Key=$prop2Value,...` where `$ruleId` is the id of the rule, and optional properties to send to the rule are in the format `name=value` separated by commas. Most rules can omit the properties.
+* `app`: Launches a native app when possible using the following syntax: `app:android=$appId,ios=$appId:$path` where `$appId` on Android is a qualified app id like `com.acme.app` (see [partial list of Android ids](https://github.com/petarov/google-android-app-ids)), and on iOS is the registered URL scheme along with an optional `$path` like `acme://foo` (see [partial list of iOS ids](https://github.com/bhagyas/app-urls)). Either `android` or `ios` can be omitted if that platform is not used.
 
 Examples:
 
-- `command:KitchenLights:ON`
-- `command:KitchenBlinds:50`
-- `ui:/basicui/app?w=0000&sitemap=main` (use Basic UI to get sitemap URL locations)
-- `ui:/some/absolute/path`: Navigates to the absolut path `/some/absolute/path`.
-- `ui:navigate:/page/my_floorplan_page`: Navigates Main UI to the page with the ID `my_floorplan_page`.
-- `ui:popup:oh-clock-card`: Opens a popup with `oh-clock-card`.
-- `https://openhab.org`: Opens an embedded browser to the site `https://openhab.org`
-- `rule:02ffc3a297:prop1=foo`: Runs the rule with an id of `02ffc3a297` passing in an optional parameter named `prop1` with a value of `foo`
-- `app:android=com.sonos.acr2,ios=sonos-2://`: Opens the Sonos app depending on the device type (Android or iOS)
+* `command:KitchenLights:ON`
+* `command:KitchenBlinds:50`
+* `ui:/basicui/app?w=0000&sitemap=main` (use Basic UI to get sitemap URL locations)
+* `ui:/some/absolute/path`: Navigates to the absolut path `/some/absolute/path`.
+* `ui:navigate:/page/my_floorplan_page`: Navigates Main UI to the page with the ID `my_floorplan_page`.
+* `ui:popup:oh-clock-card`: Opens a popup with `oh-clock-card`.
+* `https://openhab.org`: Opens an embedded browser to the site `https://openhab.org`
+* `rule:02ffc3a297:prop1=foo`: Runs the rule with an id of `02ffc3a297` passing in an optional parameter named `prop1` with a value of `foo`
+* `app:android=com.sonos.acr2,ios=sonos-2://`: Opens the Sonos app depending on the device type (Android or iOS)
 
 ### Hide Notification Actions
 
 There are also actions to hide existing notifications, either by `referenceId` or `tag` (formerly severity):
 
-- `hideNotificationByReferenceId(emailAddress, referenceId)`
-- `hideBroadcastNotificationByReferenceId(referenceId)`
-- `hideNotificationByTag(emailAddress, tag)`
-- `hideBroadcastNotificationByTag(tag)`
+* `hideNotificationByReferenceId(emailAddress, referenceId)`
+* `hideBroadcastNotificationByReferenceId(referenceId)`
+* `hideNotificationByTag(emailAddress, tag)`
+* `hideBroadcastNotificationByTag(tag)`
 
 ### Examples
 
@@ -198,6 +198,7 @@ then
   sendNotification("me@email.com", "Front door was opened!")
 end
 ```
+
 :::
 
 ::: tab JS
