@@ -185,7 +185,7 @@ public enum TpmInterface {
 
     /**
      * @param secret plain text representation of password
-     * @return offline representation enctypted and bound to this TPM
+     * @return offline representation encrypted and bound to this TPM
      * @throws SecurityException
      */
     public SecuredPassword encryptSecret(String secret) throws SecurityException {
@@ -237,7 +237,7 @@ public enum TpmInterface {
     }
 
     /**
-     * @param secret offline repesentation of secret encrypted with this TPM.
+     * @param secret offline representation of secret encrypted with this TPM.
      * @return secret in clear text
      * @throws SecurityException
      */
@@ -292,7 +292,7 @@ public enum TpmInterface {
         }
     }
 
-    public String deserializeAndDectryptSecret(String encryptedSecret) throws SecurityException {
+    public String deserializeAndDecryptSecret(String encryptedSecret) throws SecurityException {
         init();
         Tpm tpm = this.tpm; // local copy to avoid Null warnings
         if (tpm == null) {
@@ -313,7 +313,7 @@ public enum TpmInterface {
     }
 
     /**
-     * Fetch random numbers from the hardware random number genrator of the TPM.
+     * Fetch random numbers from the hardware random number generator of the TPM.
      *
      * @param bytesRequested
      * @return array of random numbers
@@ -341,7 +341,7 @@ public enum TpmInterface {
             int ret = TpmHelpers.getTpmProperty(tpm, TPM_PT.FIRMWARE_VERSION_1);
             int major = ret >> 16;
             int minor = ret & 0xffff;
-            return "" + major + "." + minor;
+            return major + "." + minor;
         } catch (TpmException e) {
             throw new SecurityException("TPM exception", e);
         }
@@ -435,7 +435,7 @@ public enum TpmInterface {
         }
         try {
             int ret = TpmHelpers.getTpmProperty(tpm, TPM_PT.REVISION);
-            return "" + (ret / 100) + "." + (ret % 100);
+            return (ret / 100) + "." + (ret % 100);
         } catch (TpmException e) {
             throw new SecurityException("TPM exception", e);
         }
@@ -444,7 +444,7 @@ public enum TpmInterface {
     /**
      * @return Return supported version of TPM standard is supported, typically
      *         "1.2" or "2.0".
-     * @throws SecurityException
+     * @throws SecurityException in case of a TPM error
      */
     public String getTpmVersion() throws SecurityException {
         init();
