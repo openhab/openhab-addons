@@ -82,6 +82,13 @@ The following channels are supported:
 | doorLock                    | Switch                | This channel reports the status of the door lock (On/Off).                     |
 | startTime                   | Number:Time           | This channel reports the start time for a washing program.                     |
 | timeToEnd                   | Number:Time           | This channel reports the time to end for a washing program.                    |
+| cyclePhase                  | String                | This channel reports the washing cycle phase.                                  |
+| analogTemperature           | String                | This channel reports the washing temperature.                                  |
+| steamValue                  | String                | This channel reports the washing steam value.                                  |
+| programsOrder               | String                | This channel reports the washing program.                                      |
+| analogSpinSpeed             | String                | This channel reports the washing spin speed.                                   |
+| applianceState              | String                | This channel reports the appliance state.                                      |
+| applianceMode               | String                | This channel reports the appliance mode.                                       |
 | applianceTotalWorkingTime   | Number:Time           | This channel reports the total working time for the washing machine.           |
 | applianceUiSwVersion        | String                | This channel reports the appliance UI SW version.                              |
 | optisenseResult             | String                | This channel reports the optisense result.                                     |

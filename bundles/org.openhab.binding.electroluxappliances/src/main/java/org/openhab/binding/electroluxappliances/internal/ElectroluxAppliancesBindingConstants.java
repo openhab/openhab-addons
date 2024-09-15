@@ -57,16 +57,23 @@ public class ElectroluxAppliancesBindingConstants {
 
     // List of all Channel ids for Washing Machines
     public static final String DOOR_STATE = "doorState";
+    public static final String DOOR_LOCK = "doorLock";
+    public static final String START_TIME = "startTime";
     public static final String TIME_TO_END = "timeToEnd";
     public static final String APPLIANCE_UI_SW_VERSION = "applianceUiSwVersion";
     public static final String APPLIANCE_TOTAL_WORKING_TIME = "applianceTotalWorkingTime";
+    public static final String APPLIANCE_STATE = "applianceState";
+    public static final String APPLIANCE_MODE = "applianceMode";
     public static final String OPTISENSE_RESULT = "optisenseResult";
     public static final String DETERGENT_EXTRA_DOSAGE = "detergentExtradosage";
     public static final String SOFTENER_EXTRA_DOSAGE = "softenerExtradosage";
     public static final String WATER_USAGE = "waterUsage";
-    public static final String START_TIME = "startTime";
+    public static final String CYCLE_PHASE = "cyclePhase";
     public static final String TOTAL_WASH_CYCLES_COUNT = "totalWashCyclesCount";
-    public static final String DOOR_LOCK = "doorLock";
+    public static final String ANALOG_TEMPERATURE = "analogTemperature";
+    public static final String ANALOG_SPIN_SPEED = "analogSpinSpeed";
+    public static final String STEAM_VALUE = "steamValue";
+    public static final String PROGRAMS_ORDER = "programsOrder";
 
     // List of all Properties ids
     public static final String PROPERTY_BRAND = "brand";

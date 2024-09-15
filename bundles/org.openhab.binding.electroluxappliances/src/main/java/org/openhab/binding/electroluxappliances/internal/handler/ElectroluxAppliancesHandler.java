@@ -235,7 +235,7 @@ public class ElectroluxAppliancesHandler extends BaseThingHandler {
                         ? OpenClosedType.OPEN
                         : OpenClosedType.CLOSED;
             case DOOR_STATE:
-                return "CLOSED".equals(
+                return "OPEN".equals(
                         ((WashingMachineStateDTO) dto.getApplianceState()).getProperties().getReported().getDoorState())
                                 ? OpenClosedType.OPEN
                                 : OpenClosedType.CLOSED;
@@ -282,9 +282,30 @@ public class ElectroluxAppliancesHandler extends BaseThingHandler {
             case TOTAL_WASH_CYCLES_COUNT:
                 return new StringType(Integer.toString(((WashingMachineStateDTO) dto.getApplianceState())
                         .getProperties().getReported().getTotalWashCyclesCount()));
+            case CYCLE_PHASE:
+                return new StringType(((WashingMachineStateDTO) dto.getApplianceState()).getProperties().getReported()
+                        .getCyclePhase());
             case APPLIANCE_TOTAL_WORKING_TIME:
                 return new StringType(Integer.toString(((WashingMachineStateDTO) dto.getApplianceState())
                         .getProperties().getReported().getApplianceTotalWorkingTime()));
+            case APPLIANCE_STATE:
+                return new StringType(((WashingMachineStateDTO) dto.getApplianceState()).getProperties().getReported()
+                        .getApplianceState());
+            case APPLIANCE_MODE:
+                return new StringType(((WashingMachineStateDTO) dto.getApplianceState()).getProperties().getReported()
+                        .getApplianceMode());
+            case ANALOG_TEMPERATURE:
+                return new StringType(((WashingMachineStateDTO) dto.getApplianceState()).getProperties().getReported()
+                        .getUserSelections().getAnalogTemperature());
+            case ANALOG_SPIN_SPEED:
+                return new StringType(((WashingMachineStateDTO) dto.getApplianceState()).getProperties().getReported()
+                        .getUserSelections().getAnalogSpinSpeed());
+            case STEAM_VALUE:
+                return new StringType(((WashingMachineStateDTO) dto.getApplianceState()).getProperties().getReported()
+                        .getUserSelections().getSteamValue());
+            case PROGRAMS_ORDER:
+                return new StringType(((WashingMachineStateDTO) dto.getApplianceState()).getProperties().getReported()
+                        .getUserSelections().getProgramUID());
 
         }
         return UnDefType.UNDEF;

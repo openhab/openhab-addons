@@ -86,16 +86,23 @@
 
 		<channels>
 			<channel id="doorState" typeId="doorState"/>
+			<channel id="doorLock" typeId="doorLock"/>
+			<channel id="startTime" typeId="startTime"/>
 			<channel id="timeToEnd" typeId="timeToEnd"/>
+			<channel id="cyclePhase" typeId="cyclePhase"/>
+			<channel id="analogTemperature" typeId="analogTemperature"/>
+			<channel id="analogSpinSpeed" typeId="analogSpinSpeed"/>
+			<channel id="steamValue" typeId="steamValue"/>
+			<channel id="programsOrder" typeId="programsOrder"/>
+			<channel id="applianceState" typeId="applianceState"/>
+			<channel id="applianceMode" typeId="applianceMode"/>
 			<channel id="applianceUiSwVersion" typeId="applianceUiSwVersion"/>
 			<channel id="applianceTotalWorkingTime" typeId="applianceTotalWorkingTime"/>
 			<channel id="optisenseResult" typeId="optisenseResult"/>
 			<channel id="detergentExtradosage" typeId="detergentExtradosage"/>
 			<channel id="softenerExtradosage" typeId="softenerExtradosage"/>
 			<channel id="waterUsage" typeId="waterUsage"/>
-			<channel id="startTime" typeId="startTime"/>
 			<channel id="totalWashCyclesCount" typeId="totalWashCyclesCount"/>
-			<channel id="doorLock" typeId="doorLock"/>
 			<channel id="connectionState" typeId="connectionState"/>
 		</channels>
 
@@ -248,17 +255,17 @@
 		<state readOnly="true"/>
 	</channel-type>
 
-	<channel-type id="connectionState">
-		<item-type>Switch</item-type>
-		<label>Connection State</label>
-		<description>The connection state status.</description>
-		<state readOnly="true"/>
-	</channel-type>
-
 	<channel-type id="doorState">
 		<item-type>Contact</item-type>
 		<label>Door Status</label>
 		<description>The door status Open/Closed.</description>
+		<state readOnly="true"/>
+	</channel-type>
+
+	<channel-type id="connectionState">
+		<item-type>Switch</item-type>
+		<label>Connection State</label>
+		<description>The connection state status.</description>
 		<state readOnly="true"/>
 	</channel-type>
 
@@ -325,5 +332,141 @@
 		<state readOnly="true"/>
 	</channel-type>
 
+	<channel-type id="cyclePhase">
+		<item-type>String</item-type>
+		<label>Cycle Phase</label>
+		<description>The washing cycle phase.</description>
+		<state readOnly="true">
+			<options>
+				<option value="UNAVAILABLE">Unavailable</option>
+				<option value="ANTICREASE">Anicrease</option>
+				<option value="DRAIN">Drain</option>
+				<option value="DRY">Dry</option>
+				<option value="PREWASH">Prewash</option>
+				<option value="RINSE">Rinse</option>
+				<option value="SPIN">Spin</option>
+				<option value="STEAM">Steam</option>
+				<option value="WASH">Wash</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="applianceState">
+		<item-type>String</item-type>
+		<label>Appliance State</label>
+		<description>The appliance state.</description>
+		<state readOnly="true">
+			<options>
+				<option value="ALARM">Alarm</option>
+				<option value="DELAYED_START">Delayed start</option>
+				<option value="END_OF_CYCLE">End of cycle</option>
+				<option value="IDLE">Idle</option>
+				<option value="OFF">Off</option>
+				<option value="PAUSED">Paused</option>
+				<option value="READY_TO_START">Ready to start</option>
+				<option value="RUNNING">Running</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="applianceMode">
+		<item-type>String</item-type>
+		<label>Appliance Mode</label>
+		<description>The appliance mode.</description>
+		<state readOnly="true">
+			<options>
+				<option value="DEMO">Demo</option>
+				<option value="DIAGNOSTIC">Diagnostic</option>
+				<option value="NORMAL">Normal</option>
+				<option value="SERVICE">Service</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="analogTemperature">
+		<item-type>String</item-type>
+		<label>Washing Temperature </label>
+		<description>The user configured washing temperature.</description>
+		<state readOnly="true">
+			<options>
+				<option value="20_CELSIUS">20°C</option>
+				<option value="30_CELSIUS">30°C</option>
+				<option value="40_CELSIUS">40°C</option>
+				<option value="50_CELSIUS">50°C</option>
+				<option value="60_CELSIUS">60°C</option>
+				<option value="90_CELSIUS">90°C</option>
+				<option value="COLD">Cold</option>
+			</options>
+		</state>
+	</channel-type>
+
+
+	<channel-type id="analogSpinSpeed">
+		<item-type>String</item-type>
+		<label>Spin Speed</label>
+		<description>The spin speed.</description>
+		<state readOnly="true">
+			<options>
+				<option value="DISABLED">Disabled</option>
+				<option value="0_RPM">0 rpm</option>
+				<option value="400_RPM">400 rpm</option>
+				<option value="600_RPM">600 rpm</option>
+				<option value="800_RPM">800 rpm</option>
+				<option value="1000_RPM">1000 rpm</option>
+				<option value="1200_RPM">1200 rpm</option>
+				<option value="1400_RPM">1400 rpm</option>
+				<option value="1600_RPM">1600 rpm</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="steamValue">
+		<item-type>String</item-type>
+		<label>Steam Value</label>
+		<description>The user configured steam value.</description>
+		<state readOnly="true">
+			<options>
+				<option value="STEAM_OFF">Steam off</option>
+				<option value="STEAM_MIN">Steam minumum</option>
+				<option value="STEAM_MED">Steam medium</option>
+				<option value="STEAM_MAX">Steam max</option>
+			</options>
+		</state>
+	</channel-type>
+
+	<channel-type id="programsOrder">
+		<item-type>String</item-type>
+		<label>Programs Order</label>
+		<description>The user configured washing program.</description>
+		<state readOnly="true">
+			<options>
+				<option value="MACHINE_SETTINGS_HIDDEN_TEST">Machine settings hidden test</option>
+				<option value="COTTON_PR_ECO40-60">Cotton Eco 40°C-60°C</option>
+				<option value="COTTON_PR_COTTONS">Cotton</option>
+				<option value="SYNTHETIC_PR_SYNTHETICS">Synthetics</option>
+				<option value="DELICATE_PR_DELICATES">Delicates</option>
+				<option value="WOOL_PR_WOOL_SILK">Wool Silk</option>
+				<option value="STEAM_REFRESH_PR_STEAMFRESHSCENT">Steam fresh cent</option>
+				<option value="SPIN_PR_DRAIN_SPIN">Drain spin</option>
+				<option value="SOFTENER_PR_RINSE">Softener rinse</option>
+				<option value="QUICK_20_MIN_PR_RAPID20MIN">Rapid 20min</option>
+				<option value="SPORT_JACKETS_PR_OUTDOOR">Sport jackets outdoor</option>
+				<option value="SYNTHETIC_PR_SPORT">Synthetic sport</option>
+				<option value="DENIM_PR_DENIM">Denim</option>
+				<option value="BLANKET_PR_DUVET">Blanket duvet</option>
+				<option value="SANITISE60_PR_ANTIALLERGYVAPOUR">Anti allergy vapour</option>
+				<option value="COTTON_PR_BUSINESSSHIRTS">Cotton business shirts</option>
+				<option value="DRUM_CLEAN_PR_MACHINECLEAN">Drum machine clean</option>
+				<option value="STEAM_DEWRINKLER_PR_STEAMCASHMERE">Steam cashmere</option>
+				<option value="SYNTHETIC_PR_BEDLINEN">Synthetic bedlinen</option>
+				<option value="COTTON_PR_TOWELS">Cotton towels</option>
+				<option value="DELICATE_PR_CURTAINS">Delicate curtains</option>
+				<option value="SYNTHETIC_PR_FLEECE">Synthetic fleece</option>
+				<option value="COTTON_PR_WORKINGCLOTHES">Cotton working clothes</option>
+				<option value="SYNTHETIC_PR_MICROFIBRE">Synthetic microfibre</option>
+				<option value="DELICATE_PR_BABY">Delicate baby</option>
+			</options>
+		</state>
+	</channel-type>
 
 </thing:thing-descriptions>
