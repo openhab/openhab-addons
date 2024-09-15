@@ -70,7 +70,7 @@ public class BridgeConfiguration {
         if (secret.startsWith(KNXBindingConstants.ENCYRPTED_PASSWORD_SERIALIZATION_PREFIX)) {
             try {
                 logger.info("trying to access TPM module");
-                return TpmInterface.TPM.deserializeAndDectryptSecret(
+                return TpmInterface.TPM.deserializeAndDecryptSecret(
                         secret.substring(KNXBindingConstants.ENCYRPTED_PASSWORD_SERIALIZATION_PREFIX.length()));
             } catch (SecurityException e) {
                 logger.error("Unable to decode stored password using TPM: {}", e.getMessage());
