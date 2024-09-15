@@ -113,7 +113,7 @@ public class KNXnetDiscoveryService extends AbstractDiscoveryService {
                                 .withLabel(response.getDevice().getName()).withProperty("serialNumber", serial)
                                 .withProperty("type", "TUNNEL")
                                 .withProperty("ipAddress",
-                                        response.getControlEndpoint().endpoint().getAddress().getHostAddress())
+                                        "" + response.getControlEndpoint().endpoint().getAddress().getHostAddress())
                                 .withProperty("port", "" + response.getControlEndpoint().endpoint().getPort())
                                 .withRepresentationProperty("serialNumber").build());
                     }
