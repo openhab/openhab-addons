@@ -346,7 +346,7 @@ public class OnvifConnection {
             if (start > -1 && end > start) {
                 subscriptionId = message.substring(start, end + 22);
             }
-            logger.info("subscriptionXAddr={} subscriptionId={}", subscriptionXAddr, subscriptionId);
+            logger.debug("subscriptionXAddr={} subscriptionId={}", subscriptionXAddr, subscriptionId);
             sendOnvifRequest(RequestType.PullMessages, subscriptionXAddr);
         } else if (message.contains("GetStatusResponse")) {
             processPTZLocation(message);
