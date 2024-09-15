@@ -8,7 +8,7 @@
 		<label>KNX FT1.2 Interface</label>
 		<description>This is a serial interface for accessing the KNX bus</description>
 		<config-description>
-			<parameter-group name="knxsecure" advanced="true">
+			<parameter-group name="knxsecure">
 				<label>KNX secure</label>
 				<description>Settings for KNX secure. Optional. Requires KNX secure features to be active in KNX installation.</description>
 			</parameter-group>
