@@ -50,7 +50,7 @@ import tuwien.auto.calimero.dptxlator.DPTXlatorString;
 public class DPTUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(DPTUtil.class);
 
-    // DPT: "123.001", 1-3 digits main type (no leading zero), optional sub-type 3-4 digits (leading zeros allowed)
+    // DPT: "123.001", 1-3 digits main type (no leading zero), optional subtype 3-4 digits (leading zeros allowed)
     public static final Pattern DPT_PATTERN = Pattern.compile("^(?<main>[1-9][0-9]{0,2})(?:\\.(?<sub>\\d{3,5}))?$");
 
     // used to map vendor-specific data to standard DPT

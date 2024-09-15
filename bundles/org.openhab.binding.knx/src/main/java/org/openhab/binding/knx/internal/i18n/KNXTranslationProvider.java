@@ -26,7 +26,7 @@ import org.osgi.framework.FrameworkUtil;
  * This class provides translations. It is a helper class for i18n / localization efforts.
  *
  * @implNote It is implemented as a static singleton, enforced by the single-element enum pattern.
- * @apiNote {@link #setProvider(LocaleProvider, TranslationProvider)} must be called to provide tanslation service,
+ * @apiNote {@link #setProvider(LocaleProvider, TranslationProvider)} must be called to provide translation service,
  *          otherwise all functions will return untranslated text.
  *          Thread safety is ensured.
  * @author Holger Friedrich - Initial contribution
@@ -38,9 +38,9 @@ public enum KNXTranslationProvider {
 
     private @Nullable LocaleProvider localeProvider;
     private @Nullable TranslationProvider translationProvider;
-    private Bundle bundle;
+    private final Bundle bundle;
 
-    private KNXTranslationProvider() {
+    KNXTranslationProvider() {
         localeProvider = null;
         translationProvider = null;
         bundle = FrameworkUtil.getBundle(this.getClass());
@@ -59,7 +59,7 @@ public enum KNXTranslationProvider {
         final TranslationProvider translationProvider = this.translationProvider;
         final LocaleProvider localeProvider = this.localeProvider;
         if (translationProvider != null) {
-            // localeProvider might be null, but if not, getLocale will return NonNull Locale
+            // localeProvider might be null, but if not, getLocale will return NonNull Locale;
             // locale cannot be cached, as getLocale() will return different result once locale is changed by user
             final Locale locale = (localeProvider != null) ? localeProvider.getLocale() : Locale.getDefault();
             final String res = translationProvider.getText(bundle, text, text, locale, arguments);
@@ -67,7 +67,7 @@ public enum KNXTranslationProvider {
                 return res;
             }
         }
-        // translating not possible, we still have the original text without any subsititutions
+        // translating not possible, we still have the original text without any substitutions
         if (arguments == null || arguments.length == 0) {
             return text;
         }
@@ -80,14 +80,14 @@ public enum KNXTranslationProvider {
      *
      * @param e any exception
      * @return localized message in form [description (translated)] [class name], [e.getLocalizedMessage (not
-     *         translated)]), empty string for null. May possibly change in further releases.
+     *         translated)], empty string for null. May change in further releases.
      */
     public String getLocalizedException(final Throwable e) {
         StringBuilder res = new StringBuilder();
         final String exName = e.getClass().getSimpleName();
         final String key = "exception." + exName;
         final String translatedDescription = KNXTranslationProvider.I18N.get(key);
-        Boolean foundTranslation = !key.equals(translatedDescription);
+        boolean foundTranslation = !key.equals(translatedDescription);
         // detailed message cannot be translated, e.getLocalizedMessage will likely return English
         String detail = e.getLocalizedMessage();
         if (detail == null) {

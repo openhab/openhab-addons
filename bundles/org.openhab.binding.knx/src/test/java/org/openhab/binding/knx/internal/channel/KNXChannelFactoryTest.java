@@ -45,9 +45,7 @@ class KNXChannelFactoryTest {
     public void testNullChannelUidFails() {
         Channel channel = Objects.requireNonNull(mock(Channel.class));
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            KNXChannelFactory.createKnxChannel(channel);
-        });
+        assertThrows(IllegalArgumentException.class, () -> KNXChannelFactory.createKnxChannel(channel));
     }
 
     @Test
@@ -55,9 +53,7 @@ class KNXChannelFactoryTest {
         Channel channel = Objects.requireNonNull(mock(Channel.class));
         when(channel.getChannelTypeUID()).thenReturn(new ChannelTypeUID("a:b:c"));
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            KNXChannelFactory.createKnxChannel(channel);
-        });
+        assertThrows(IllegalArgumentException.class, () -> KNXChannelFactory.createKnxChannel(channel));
     }
 
     @ParameterizedTest
@@ -65,11 +61,11 @@ class KNXChannelFactoryTest {
             CHANNEL_DATETIME, CHANNEL_DATETIME_CONTROL, CHANNEL_DIMMER, CHANNEL_DIMMER_CONTROL, CHANNEL_NUMBER,
             CHANNEL_NUMBER_CONTROL, CHANNEL_ROLLERSHUTTER, CHANNEL_ROLLERSHUTTER_CONTROL, CHANNEL_STRING,
             CHANNEL_STRING_CONTROL, CHANNEL_SWITCH, CHANNEL_SWITCH_CONTROL })
-    public void testSuccess(String channeltype) {
+    public void testSuccess(String channelType) {
         Channel channel = Objects.requireNonNull(mock(Channel.class));
         Configuration configuration = new Configuration(
                 Map.of("key1", "5.001:<1/2/3+4/5/6+1/5/6", "key2", "1.001:7/1/9+1/1/2"));
-        when(channel.getChannelTypeUID()).thenReturn(new ChannelTypeUID("knx:" + channeltype));
+        when(channel.getChannelTypeUID()).thenReturn(new ChannelTypeUID("knx:" + channelType));
         when(channel.getConfiguration()).thenReturn(configuration);
         when(channel.getAcceptedItemType()).thenReturn("none");
 

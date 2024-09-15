@@ -198,14 +198,14 @@ public class ValueEncoder {
             if (DPTXlator2ByteFloat.DPT_TEMPERATURE_DIFFERENCE.getID().equals(dptId)
                     || DPTXlator2ByteFloat.DPT_TEMPERATURE_GRADIENT.getID().equals(dptId)
                     || DPTXlator2ByteFloat.DPT_KELVIN_PER_PERCENT.getID().equals(dptId)) {
-                // match unicode character or °C
+                // match Unicode character or °C
                 if (value.toString().contains(SIUnits.CELSIUS.getSymbol()) || value.toString().contains("°C")) {
                     if (unit != null) {
                         unit = unit.replace("K", "°C");
                     }
                 } else if (value.toString().contains("°F")) {
-                    // an new approach to handle temperature differences was introduced to core
-                    // after 4.0, stripping the unit and and creating a new QuantityType works
+                    // A new approach to handle temperature differences was introduced to core
+                    // after 4.0, stripping the unit and creating a new QuantityType works
                     // both with core release 4.0 and current snapshot
                     boolean perPercent = value.toString().contains("/%");
                     value = new QuantityType<>(((QuantityType<?>) value).doubleValue() * 5.0 / 9.0, Units.KELVIN);
@@ -248,16 +248,12 @@ public class ValueEncoder {
                 return bigDecimal.stripTrailingZeros().toPlainString();
             case "2":
                 DPT valueDPT = ((DPTXlator1BitControlled.DPT1BitControlled) dpt).getValueDPT();
-                switch (bigDecimal.intValue()) {
-                    case 0:
-                        return "0 " + valueDPT.getLowerValue();
-                    case 1:
-                        return "0 " + valueDPT.getUpperValue();
-                    case 2:
-                        return "1 " + valueDPT.getLowerValue();
-                    default:
-                        return "1 " + valueDPT.getUpperValue();
-                }
+                return switch (bigDecimal.intValue()) {
+                    case 0 -> "0 " + valueDPT.getLowerValue();
+                    case 1 -> "0 " + valueDPT.getUpperValue();
+                    case 2 -> "1 " + valueDPT.getLowerValue();
+                    default -> "1 " + valueDPT.getUpperValue();
+                };
             case "18":
                 int intVal = bigDecimal.intValue();
                 if (intVal > 63) {
@@ -281,7 +277,7 @@ public class ValueEncoder {
     /**
      * convert 0...100% to 1 byte 0..255
      *
-     * @param percent
+     * @param percent percentage 0..1
      * @return int 0..255
      */
     private static int convertPercentToByte(PercentType percent) {

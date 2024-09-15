@@ -234,7 +234,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             // Protected ctor using given ManagementClientImpl is available (custom class to be inherited)
             managementProcedures = new CustomManagementProceduresImpl(managementClient, tl);
 
-            // OH helper for reading device info, based on managementClient above
+            // OpenHab helper for reading device info, based on managementClient above
             deviceInfoClient = new DeviceInfoClientImpl(managementClient);
 
             // ProcessCommunicator provides main KNX communication (Calimero).

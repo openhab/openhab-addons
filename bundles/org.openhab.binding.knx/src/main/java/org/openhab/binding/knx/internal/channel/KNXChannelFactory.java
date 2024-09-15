@@ -56,7 +56,7 @@ public final class KNXChannelFactory {
                 .map(Map.Entry::getValue).findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(channelTypeUID + " is not a valid channel type ID"));
 
-        // typecast to avoid warning about unsafe return type; we know that the lookup returns non null values
+        // typecast to avoid warning about unsafe return type; we know that the lookup returns non-null values
         return (KNXChannel) supplier.apply(channel);
     }
 }
