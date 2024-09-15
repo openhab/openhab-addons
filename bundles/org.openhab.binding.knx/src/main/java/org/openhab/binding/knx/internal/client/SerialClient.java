@@ -66,7 +66,7 @@ public class SerialClient extends AbstractKNXClient {
     /**
      * try automatic detection of cEMI devices via the PEI identification frame
      *
-     * @implNote This is based on an vendor specific extension and may not work for other devices.
+     * @implNote This is based on a vendor specific extension and may not work for other devices.
      */
     protected boolean detectCemi() throws InterruptedException {
         final byte[] peiIdentifyReqFrame = { (byte) 0xa7 };

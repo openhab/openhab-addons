@@ -12,10 +12,7 @@
  */
 package org.openhab.binding.knx.internal.itests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -71,7 +68,6 @@ import tuwien.auto.calimero.process.ProcessCommunicatorImpl;
  * handled by this test. However, new subtypes are not detected.
  *
  * @see DummyKNXNetworkLink
- * @see DummyClient
  * @author Holger Friedrich - Initial contribution
  *
  */
@@ -80,7 +76,6 @@ public class Back2BackTest {
     public static final Logger LOGGER = LoggerFactory.getLogger(Back2BackTest.class);
     static Set<Integer> dptTested = new HashSet<>();
     static final byte[] F32_MINUS_ONE = new byte[] { (byte) 0xbf, (byte) 0x80, 0, 0 };
-    boolean testsMissing = false;
 
     /**
      * helper method for integration tests
@@ -90,7 +85,7 @@ public class Back2BackTest {
      * @param ohReferenceData OpenHAB data type, initialized to known good value
      * @param maxDistance byte array containing maximal deviations when comparing byte arrays (rawData against created
      *            KNX frame), may be empty if no deviation is considered
-     * @param bitmask to mask certain bits in the raw to raw comparison, required for multi-valued KNX frames
+     * @param bitmask to mask certain bits in the raw to raw comparison, required for multivalued KNX frames
      */
     void helper(String dpt, byte[] rawData, Type ohReferenceData, byte[] maxDistance, byte[] bitmask) {
         try {
@@ -104,7 +99,7 @@ public class Back2BackTest {
                     DPTUtil.NORMALIZED_DPT.getOrDefault(dpt, dpt));
 
             // 0) check usage of helper()
-            assertEquals(true, rawData.length > 0);
+            assertTrue(rawData.length > 0);
             if (maxDistance.length == 0) {
                 maxDistance = new byte[rawData.length];
             }
@@ -115,7 +110,7 @@ public class Back2BackTest {
             }
             assertEquals(rawData.length, bitmask.length, "incorrect length of bitmask array");
             int mainType = Integer.parseUnsignedInt(dpt.substring(0, dpt.indexOf('.')));
-            dptTested.add(Integer.valueOf(mainType));
+            dptTested.add(mainType);
             // check if OH would be able to send out a frame, given the type
             Set<Integer> knownWorking = Set.of(1, 3, 5);
             if (!knownWorking.contains(mainType)) {
@@ -146,7 +141,8 @@ public class Back2BackTest {
 
             // 2) check the encoding (ohData to raw data)
             //
-            // Test approach is to a) encode the value into String format using ValueEncoder.encode(),
+            // Test approach is to
+            // a) encode the value into String format using ValueEncoder.encode(),
             // b) pass it to Calimero for conversion into a raw representation, and
             // c) finally grab raw data bytes from a custom KNXNetworkLink implementation
             String enc = ValueEncoder.encode(ohData, dpt);
@@ -178,7 +174,7 @@ public class Back2BackTest {
 
             pc.close();
         } catch (KNXException e) {
-            LOGGER.warn("exception occurred", e.toString());
+            LOGGER.warn("exception occurred: {}", e.toString());
             assertEquals("", e.toString());
         }
     }
@@ -949,10 +945,10 @@ public class Back2BackTest {
         };
         TranslatorTypes.getAllMainTypes().forEach((i, t) -> {
             if (!dptTested.contains(i)) {
-                LOGGER.warn("missing tests for main DPT type " + i);
+                LOGGER.warn("missing tests for main DPT type {}", i);
                 wrapper.testsMissing = true;
             }
         });
-        assertEquals(false, wrapper.testsMissing, "add tests for new DPT main types");
+        assertFalse(wrapper.testsMissing, "add tests for new DPT main types");
     }
 }
