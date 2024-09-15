@@ -508,7 +508,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
                             "Check latitude is between -85 / +85");
                 }
                 this.latitude = latitude;
-            } catch (final Exception e) {
+            } catch (final NumberFormatException | NullPointerException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Check latitude has been entered as a number");
             }
@@ -527,7 +527,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
                             "Check longitude is between -180 / +180");
                 }
                 this.longitude = longitude;
-            } catch (final Exception e) {
+            } catch (final NumberFormatException | NullPointerException e) {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "Check longitude has been entered as a number");
             }
