@@ -238,7 +238,7 @@ public abstract class AbstractKNXClient implements NetworkLinkListener, KNXClien
             deviceInfoClient = new DeviceInfoClientImpl(managementClient);
 
             // ProcessCommunicator provides main KNX communication (Calimero).
-            final var useGoDiagnostics = true;
+            final boolean useGoDiagnostics = true;
             ProcessCommunicator processCommunicator = new ProcessCommunicatorImpl(link, sal, useGoDiagnostics);
             processCommunicator.responseTimeout(Duration.ofSeconds(responseTimeout));
             processCommunicator.addProcessListener(processListener);
