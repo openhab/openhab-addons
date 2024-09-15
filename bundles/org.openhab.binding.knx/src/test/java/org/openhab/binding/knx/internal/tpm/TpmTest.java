@@ -27,7 +27,7 @@ import org.openhab.core.auth.SecurityException;
  *
  * @author Holger Friedrich - Initial contribution
  *
- *         This tests are intended to test the interface class for Trusted Platform Modules (TPM).
+ *         These tests are intended to test the interface class for Trusted Platform Modules (TPM).
  *         The tests will succeed, in case no TPM is available during test execution.
  *         Some tests will be skipped on Windows, as some operations require admin access to the TPM.
  *
@@ -62,7 +62,7 @@ class TpmTest {
 
                 assertEquals(secret, TpmInterface.TPM.decryptSecret(sPwd));
             } catch (SecurityException e) {
-                assertEquals("", e.toString() + " " + Objects.toString(e.getCause(), ""));
+                assertEquals("", e + " " + Objects.toString(e.getCause(), ""));
             }
         }
     }
@@ -74,7 +74,7 @@ class TpmTest {
                 byte[] r = TpmInterface.TPM.getRandom(20);
                 assertEquals(20, r.length);
             } catch (SecurityException e) {
-                assertEquals("", e.toString() + " " + Objects.toString(e.getCause(), ""));
+                assertEquals("", e + " " + Objects.toString(e.getCause(), ""));
             }
         }
     }

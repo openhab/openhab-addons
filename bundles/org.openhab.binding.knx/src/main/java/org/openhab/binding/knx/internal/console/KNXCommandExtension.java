@@ -89,7 +89,7 @@ public class KNXCommandExtension extends AbstractConsoleCommandExtension impleme
                 console.println(KNXBindingConstants.ENCYRPTED_PASSWORD_SERIALIZATION_PREFIX + p);
 
                 // check if TPM can decrypt
-                String decrypted = TpmInterface.TPM.deserializeAndDectryptSecret(p);
+                String decrypted = TpmInterface.TPM.deserializeAndDecryptSecret(p);
                 if (args[1].equals(decrypted)) {
                     console.println("Password successfully recovered from encrypted representation");
                 } else {
