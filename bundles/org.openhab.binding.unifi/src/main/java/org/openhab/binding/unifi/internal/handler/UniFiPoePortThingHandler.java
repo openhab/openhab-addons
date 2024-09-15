@@ -140,7 +140,7 @@ public class UniFiPoePortThingHandler extends UniFiBaseThingHandler<UniFiSwitchP
         return state;
     }
 
-    private <Q extends Quantity<Q>> State safeDouble(final String value, final Unit<Q> unit) {
+    private <Q extends Quantity<Q>> State safeDouble(@Nullable final String value, final Unit<Q> unit) {
         try {
             return value == null ? UnDefType.UNDEF : QuantityType.valueOf(Double.parseDouble(value), unit);
         } catch (final NumberFormatException e) {
