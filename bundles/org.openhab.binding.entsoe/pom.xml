@@ -12,6 +12,6 @@
 
   <artifactId>org.openhab.binding.entsoe</artifactId>
 
-  <name>openHAB Add-ons :: Bundles :: entsoe Binding</name>
+  <name>openHAB Add-ons :: Bundles :: ENTSO-E Binding</name>
 
 </project>

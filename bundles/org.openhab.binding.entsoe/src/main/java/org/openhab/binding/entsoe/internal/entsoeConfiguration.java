@@ -15,16 +15,14 @@ package org.openhab.binding.entsoe.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * The {@link entsoeConfiguration} class contains fields mapping thing configuration parameters.
+ * The {@link EntsoeConfiguration} class contains fields mapping thing configuration parameters.
  *
  * @author Jørgen Melhus - Initial contribution
  */
 @NonNullByDefault
-public class entsoeConfiguration {
+public class EntsoeConfiguration {
     public String securityToken = "";
     public String area = "";
-    public double additionalCost = 0.0;
-    public double vat = 0.0;
     public int spotPricesAvailableUtcHour = 11;
     public int historicDays = 1;
 }

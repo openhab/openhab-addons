@@ -1,16 +1,16 @@
-
-# entsoe Binding
+# ENTSO-E Binding
 
 This binding fetches day-ahead energy spot prices from ENTSO-E, the European Network of Transmission System Operators for Electricity. Users can select a specific area to retrieve the relevant energy prices. This binding helps users monitor and manage their energy consumption based on real-time pricing data.
-
+This binding fetches day-ahead energy spot prices from ENTSO-E, the European Network of Transmission System Operators for Electricity.
+Users can select a specific area to retrieve the relevant energy prices.
+This binding helps users monitor and manage their energy consumption based on real-time pricing data.
 Prerequisites:
 
-- openHAB version 4.2 since it makes use of persisted timeseries.
 - Currency provider configured in unit settings of openHAB. We recommend using Freecurrency binding to fetch up to date exchange values.
 
 ## Supported Things
 
-- `entsoe`: This is the main and single thing of the binding. 
+- `day-ahead`: This is the main and single thing of the binding. 
 
 ## Thing Configuration
 
@@ -22,8 +22,8 @@ Thing can be added in graphical user interface of openHAB or manually within a t
 
 ### `entsoe` Thing Configuration
 
-| Name            | Type    | Description                           | Default | Required | Advanced |
-|-----------------|---------|---------------------------------------|---------|----------|----------|
+| Name                          | Type              | Description                                                               | Default   | Required | Advanced |
+|-------------------------------|-------------------|---------------------------------------------------------------------------|-----------|----------|----------|
 | securityToken                 | text              | Security token to fetch from ENTSO-E                                      | N/A       | yes      | no       |
 | area                          | text              | Area                                                                      | N/A       | yes      | no       |
 | vat                           | double            | Value added tax                                                           | 0         | no       | no       |
@@ -35,31 +35,52 @@ Thing can be added in graphical user interface of openHAB or manually within a t
 
 Binding has two channels.
 
-Prices which are the values fetched from ENTSOE and persisted in openHAB as timeseries. The price is per kWh at your selected base currency.
-LastDayAheadReceived which is at which date and time the prices was received from ENTSO-E.
+spot-price which are the values fetched from ENTSO-E and persisted in openHAB as time series.
+The price is per kWh at your selected base currency.
 
-| Channel | Type   | Read/Write | Description                 |
-|---------|--------|------------|-----------------------------|
-| prices                | Number    | R         | Spot prices                               |
-| lastDayAheadReceived  | DateTime  | R         | Date and time spot prices was received    |
+| Channel                  | Type                  | Read/Write | Description                               |
+|--------------------------|-----------------------|------------|-------------------------------------------|
+| spot-price               | Number:EnergyPrice    | R          | Spot prices                               |
 
 ### Thing Configuration
 
 ```java
-Thing entsoe:dayAhead:eda "Entsoe Day Ahead" [ securityToken="your-security-token", area="10YNO-3--------J", vat=25.0, historicDays=14, additionalCost=0 ] 
+Thing entsoe:day-ahead:eda "Entsoe Day Ahead" [ securityToken="your-security-token", area="10YNO-3--------J", historicDays=14 ] 
 ```
 
 ### Item Configuration
 
 ```java
-Number energySpotPrice "Current Spot Price" <price> { channel="entsoe:dayAhead:eda:prices" }
-DateTime lastReceived "Last received spot prices" {channel="entsoe:dayAhead:eda:lastDayAheadReceived"}
+Number:EnergyPrice energySpotPrice "Current Spot Price" <price> { channel="entsoe:day-ahead:eda:spot-price" }
+```
 
+#### Value-Added Tax
+
+VAT is not included in any of the prices.
+To include VAT for items linked to the `Number` channels, the [VAT profile](https://www.openhab.org/addons/transformations/vat/) can be used.
+This must be installed separately.
+Once installed, simply select "Value-Added Tax" as Profile when linking an item.
+
+#### Total Price
+
+_Please note:_ There is no channel providing the total price.
+Instead, create a group item with `SUM` as aggregate function and add the individual price items as children.
+Read more about how to in this similar binding [energidataservice](https://www.openhab.org/addons/bindings/energidataservice/#total-price)
+
+### Trigger Channels
+
+Channel `prices-received` is triggered when new prices are available
+
+### Examples
+
+examples.rules
+
+```java
 rule "Spot prices received"
 when
-    Channel "entsoe:dayAhead:eda:pricesReceived" triggered
+    Channel "entsoe:day-ahead:eda:prices-received" triggered
 then
     // Do something within rule
-    logInfo("entsoeRule", "entsoe channel triggered")
+    logInfo("ENTSO-E Rule", "ENTSO-E channel triggered, new spot prices available")
 end
 ```

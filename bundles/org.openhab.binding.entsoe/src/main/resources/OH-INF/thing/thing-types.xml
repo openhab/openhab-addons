@@ -4,16 +4,15 @@
 	xmlns:thing="https://openhab.org/schemas/thing-description/v1.0.0"
 	xsi:schemaLocation="https://openhab.org/schemas/thing-description/v1.0.0 https://openhab.org/schemas/thing-description-1.0.0.xsd">
 
-	<thing-type id="dayAhead">
+	<thing-type id="day-ahead">
 
 		<label>Day ahead prices</label>
 		<description>Hourly spot prices of the electricity market from European Network of Transmission System Operators
 			(ENTSO-E)</description>
 		<category>WebService</category>
 		<channels>
-			<channel id="prices" typeId="spot-prices"/>
-			<channel id="lastDayAheadReceived" typeId="last-day-ahead-received"/>
-			<channel id="pricesReceived" typeId="trigger-prices-received"/>
+			<channel id="spot-price" typeId="spot-prices"/>
+			<channel id="prices-received" typeId="trigger-prices-received"/>
 		</channels>
 
 		<config-description>
@@ -148,21 +147,11 @@
 					<option value="67Y-VISKOL-2003T">VISKOL2003 VISKOL DOO NOVI SAD SRBIJA</option>
 				</options>
 			</parameter>
-			<parameter name="vat" type="decimal" required="false">
-				<label>VAT %</label>
-				<default>0</default>
-				<description>Value added tax (percent)</description>
-			</parameter>
 			<parameter name="historicDays" type="integer" min="1" max="365" required="false">
 				<label>Historic Data</label>
 				<default>1</default>
 				<description>Specify number of days to download historic data of energy spot prices (historic data will get exchange
 					rate of today)</description>
-			</parameter>
-			<parameter name="additionalCost" type="decimal" min="0" max="100" step="0.00001" required="false">
-				<label>Additional cost per kWh</label>
-				<description>Additional cost (taxes/tariffs, excluding VAT) per kWh in you local currency</description>
-				<advanced>true</advanced>
 			</parameter>
 			<parameter name="spotPricesAvailableUtcHour" type="integer" min="0" max="23" required="false">
 				<label>Publish Hour</label>
@@ -174,16 +163,9 @@
 	</thing-type>
 
 	<channel-type id="spot-prices">
-		<item-type>Number</item-type>
+		<item-type>Number:EnergyPrice</item-type>
 		<label>Spot Price</label>
 		<category>Price</category>
-		<state readOnly="true"/>
-	</channel-type>
-	<channel-type id="last-day-ahead-received">
-		<item-type>DateTime</item-type>
-		<label>Last Day Ahead Received</label>
-		<description>The timestamp of the last retrieved set of day ahead spot prices.</description>
-		<category>Time</category>
 		<state readOnly="true"/>
 	</channel-type>
 

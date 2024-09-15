@@ -19,15 +19,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public class entsoeConfigurationException extends Exception {
+public class EntsoeConfigurationException extends Exception {
 
-    private static final long serialVersionUID = -2792399185046072564L;
+    private static final long serialVersionUID = 1L;
 
-    public entsoeConfigurationException(String message) {
+    public EntsoeConfigurationException(String message) {
         super(message);
     }
 
-    public entsoeConfigurationException(Throwable cause) {
+    public EntsoeConfigurationException(Throwable cause) {
         super(cause);
     }
 }

@@ -24,7 +24,7 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 @NonNullByDefault
 public class Request {
 
-    private static DateTimeFormatter REQUEST_FORMAT = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+    private static DateTimeFormatter requestFormat = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
 
     private static final String BASE_URL = "https://web-api.tp.entsoe.eu/api?";
     private static final String DOCUMENT_TYPE_PRICE = "A44";
@@ -48,8 +48,8 @@ public class Request {
                 .append("&documentType=").append(DOCUMENT_TYPE_PRICE)
                 .append("&in_domain=").append(area)
                 .append("&out_domain=").append(area)
-                .append("&periodStart=").append(periodStart.format(REQUEST_FORMAT))
-                .append("&periodEnd=").append(periodEnd.format(REQUEST_FORMAT));
+                .append("&periodStart=").append(periodStart.format(requestFormat))
+                .append("&periodEnd=").append(periodEnd.format(requestFormat));
         return urlBuilder.toString();
     }
 
@@ -60,8 +60,8 @@ public class Request {
                 .append("&documentType=").append(DOCUMENT_TYPE_PRICE)
                 .append("&in_domain=").append(area)
                 .append("&out_domain=").append(area)
-                .append("&periodStart=").append(periodStart.format(REQUEST_FORMAT))
-                .append("&periodEnd=").append(periodEnd.format(REQUEST_FORMAT));
+                .append("&periodStart=").append(periodStart.format(requestFormat))
+                .append("&periodEnd=").append(periodEnd.format(requestFormat));
         return urlBuilder.toString();
      // @formatter:on
     }

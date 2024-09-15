@@ -19,14 +19,14 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.types.TimeSeries.Policy;
 
 /**
- * The {@link entsoeBindingConstants} class defines common constants, which are
+ * The {@link EntsoeBindingConstants} class defines common constants, which are
  * used across the whole binding.
  *
  * @author Jørgen Melhus - Initial contribution
  * @author Miika Jukka - Initial contribution
  */
 @NonNullByDefault
-public class entsoeBindingConstants {
+public class EntsoeBindingConstants {
 
     private static final String BINDING_ID = "entsoe";
 
@@ -34,15 +34,13 @@ public class entsoeBindingConstants {
 
     public static final String ENTSOE_CURRENCY = "EUR";
 
-    public static final String CHANNEL_SPOT_PRICES = "prices";
+    public static final String CHANNEL_SPOT_PRICES = "spot-price";
 
-    public static final String CHANNEL_LAST_DAY_AHEAD_RECEIVED = "lastDayAheadReceived";
-
-    public static final String CHANNEL_TRIGGER_PRICES_RECEIVED = "pricesReceived";
+    public static final String CHANNEL_TRIGGER_PRICES_RECEIVED = "prices-received";
 
     // Thing Type UIDs
-    public static final ThingTypeUID THING_TYPE_DAY_AHEAD_PRICES = new ThingTypeUID(BINDING_ID, "dayAhead");
+    public static final ThingTypeUID THING_TYPE_DAY_AHEAD = new ThingTypeUID(BINDING_ID, "day-ahead");
 
     // List of all Thing Type UIDs
-    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_DAY_AHEAD_PRICES);
+    public static final Set<ThingTypeUID> SUPPORTED_THING_TYPE_UIDS = Set.of(THING_TYPE_DAY_AHEAD);
 }

@@ -19,15 +19,15 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
  *
  */
 @NonNullByDefault
-public class entsoeResponseMapException extends Exception {
+public class EntsoeResponseMapException extends Exception {
 
-    private static final long serialVersionUID = -2792399185046072564L;
+    private static final long serialVersionUID = 1L;
 
-    public entsoeResponseMapException(String message) {
+    public EntsoeResponseMapException(String message) {
         super(message);
     }
 
-    public entsoeResponseMapException(Throwable cause) {
+    public EntsoeResponseMapException(Throwable cause) {
         super(cause);
     }
 }

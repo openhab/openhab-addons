@@ -12,7 +12,7 @@
  */
 package org.openhab.binding.entsoe.internal;
 
-import static org.openhab.binding.entsoe.internal.entsoeBindingConstants.*;
+import static org.openhab.binding.entsoe.internal.EntsoeBindingConstants.*;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
@@ -24,14 +24,14 @@ import org.openhab.core.thing.binding.ThingHandlerFactory;
 import org.osgi.service.component.annotations.Component;
 
 /**
- * The {@link entsoeHandlerFactory} is responsible for creating things and thing
+ * The {@link EntsoeHandlerFactory} is responsible for creating things and thing
  * handlers.
  *
  * @author Jørgen Melhus - Initial contribution
  */
 @NonNullByDefault
 @Component(configurationPid = "binding.entsoe", service = ThingHandlerFactory.class)
-public class entsoeHandlerFactory extends BaseThingHandlerFactory {
+public class EntsoeHandlerFactory extends BaseThingHandlerFactory {
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {
@@ -42,8 +42,8 @@ public class entsoeHandlerFactory extends BaseThingHandlerFactory {
     protected @Nullable ThingHandler createHandler(Thing thing) {
         ThingTypeUID thingTypeUID = thing.getThingTypeUID();
 
-        if (THING_TYPE_DAY_AHEAD_PRICES.equals(thingTypeUID)) {
-            return new entsoeHandler(thing);
+        if (THING_TYPE_DAY_AHEAD.equals(thingTypeUID)) {
+            return new EntsoeHandler(thing);
         }
 
         return null;

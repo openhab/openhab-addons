@@ -23,9 +23,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.openhab.binding.entsoe.internal.exception.entsoeConfigurationException;
-import org.openhab.binding.entsoe.internal.exception.entsoeResponseException;
-import org.openhab.binding.entsoe.internal.exception.entsoeUnexpectedException;
+import org.openhab.binding.entsoe.internal.exception.EntsoeConfigurationException;
+import org.openhab.binding.entsoe.internal.exception.EntsoeResponseException;
 import org.openhab.core.io.net.http.HttpUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,39 +41,35 @@ import org.xml.sax.SAXException;
  */
 @NonNullByDefault
 public class Client {
-
     private final Logger logger = LoggerFactory.getLogger(Client.class);
 
     private DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-    // private @Nullable DocumentBuilder documentBuilder;
 
     private Map<ZonedDateTime, Double> responseMap = new TreeMap<>();
 
     public Map<ZonedDateTime, Double> doGetRequest(Request request, int timeout)
-            throws entsoeResponseException, entsoeUnexpectedException, entsoeConfigurationException {
+            throws EntsoeResponseException, EntsoeConfigurationException {
         try {
             logger.debug("Sending GET request with parameters: {}", request);
             String url = request.toUrl();
             String responseText = HttpUtil.executeUrl("GET", url, timeout);
             if (responseText == null) {
-                logger.error("GET request failed and returned null for request url: {}", url);
-                throw new entsoeResponseException("Request failed");
+                throw new EntsoeResponseException("Request failed");
             }
             logger.debug("{}", responseText);
             return parseXmlResponse(responseText);
         } catch (IOException e) {
             if (e.getMessage().contains("Authentication challenge without WWW-Authenticate header")) {
-                throw new entsoeConfigurationException("Authentication failed. Please check your security token");
+                throw new EntsoeConfigurationException("Authentication failed. Please check your security token");
             }
-            throw new entsoeResponseException(e);
+            throw new EntsoeResponseException(e);
         } catch (ParserConfigurationException | SAXException e) {
-            throw new entsoeUnexpectedException(e);
+            throw new EntsoeResponseException(e);
         }
     }
 
-    private Map<ZonedDateTime, Double> parseXmlResponse(String responseText) throws ParserConfigurationException,
-            SAXException, IOException, entsoeResponseException, entsoeUnexpectedException {
-
+    private Map<ZonedDateTime, Double> parseXmlResponse(String responseText)
+            throws ParserConfigurationException, SAXException, IOException, EntsoeResponseException {
         responseMap.clear();
 
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -88,7 +83,7 @@ public class Client {
             Element reasonElement = (Element) reasonNode;
             String reasonCode = reasonElement.getElementsByTagName("code").item(0).getTextContent();
             String reasonText = reasonElement.getElementsByTagName("text").item(0).getTextContent();
-            throw new entsoeResponseException(
+            throw new EntsoeResponseException(
                     String.format("Request failed with API response: Code %s, Text %s", reasonCode, reasonText));
         }
 
