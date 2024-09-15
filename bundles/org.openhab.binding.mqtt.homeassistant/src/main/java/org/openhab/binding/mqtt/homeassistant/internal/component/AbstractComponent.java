@@ -49,6 +49,7 @@ import org.openhab.core.types.CommandDescription;
 import org.openhab.core.types.StateDescription;
 
 import com.google.gson.Gson;
+import com.hubspot.jinjava.Jinjava;
 
 /**
  * A HomeAssistant component is comparable to a channel group.
@@ -332,6 +333,10 @@ public abstract class AbstractComponent<C extends AbstractChannelConfiguration> 
 
     public Gson getGson() {
         return componentConfiguration.getGson();
+    }
+
+    public Jinjava getJinjava() {
+        return componentConfiguration.getJinjava();
     }
 
     public C getChannelConfiguration() {

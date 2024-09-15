@@ -82,13 +82,13 @@ public class SolcastObject implements SolarForecast {
         }
     }
 
-    public SolcastObject(String id, TimeZoneProvider tzp) {
+    public SolcastObject(String id, Instant expiration, TimeZoneProvider tzp) {
         // invalid forecast object
         identifier = id;
         timeZoneProvider = tzp;
         dateOutputFormatter = DateTimeFormatter.ofPattern(SolarForecastBindingConstants.PATTERN_FORMAT)
                 .withZone(tzp.getTimeZone());
-        expirationDateTime = Instant.now().minusSeconds(1);
+        expirationDateTime = expiration;
     }
 
     public SolcastObject(String id, String content, Instant expiration, TimeZoneProvider tzp) {
@@ -458,6 +458,11 @@ public class SolcastObject implements SolarForecast {
         return Instant.MIN;
     }
 
+    @Override
+    public void triggerUpdate() {
+        expirationDateTime = Instant.MIN;
+    }
+
     private QueryMode evalArguments(String[] args) {
         if (args.length > 0) {
             if (args.length > 1) {
@@ -501,7 +506,11 @@ public class SolcastObject implements SolarForecast {
     }
 
     private String getTimeRange() {
-        return "Valid range: " + dateOutputFormatter.format(getForecastBegin()) + " - "
-                + dateOutputFormatter.format(getForecastEnd());
+        if (getForecastBegin().isBefore(Instant.MAX) && getForecastEnd().isAfter(Instant.MIN)) {
+            return "Valid range: " + dateOutputFormatter.format(getForecastBegin()) + " - "
+                    + dateOutputFormatter.format(getForecastEnd());
+        } else {
+            return "Invalid time range";
+        }
     }
 }

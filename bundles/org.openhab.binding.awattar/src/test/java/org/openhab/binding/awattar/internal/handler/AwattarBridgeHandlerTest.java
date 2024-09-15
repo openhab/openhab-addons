@@ -95,7 +95,6 @@ public class AwattarBridgeHandlerTest extends JavaTest {
 
     @BeforeEach
     public void setUp() throws IOException, IllegalArgumentException, IllegalAccessException, AwattarApiException {
-
         // mock the API response
         try (InputStream inputStream = AwattarBridgeHandlerTest.class.getResourceAsStream("api_response.json")) {
             SortedSet<AwattarPrice> result = new TreeSet<>(Comparator.comparing(AwattarPrice::timerange));

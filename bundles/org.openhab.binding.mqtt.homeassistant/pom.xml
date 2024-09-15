@@ -35,21 +35,22 @@
     </dependency>
 
     <dependency>
-      <groupId>org.openhab.addons.bundles</groupId>
-      <artifactId>org.openhab.transform.jinja</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.hubspot.jinjava.jinjava</artifactId>
+      <version>2.7.2_0</version>
+      <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>com.hubspot.jinjava</groupId>
-      <artifactId>jinjava</artifactId>
-      <version>2.7.2</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.re2j</groupId>
-      <artifactId>re2j</artifactId>
+      <groupId>org.openhab.osgiify</groupId>
+      <artifactId>com.google.re2j.re2j</artifactId>
       <version>1.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.obermuhlner</groupId>
+      <artifactId>big-math</artifactId>
+      <version>2.3.2</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>

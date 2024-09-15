@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * It utilizes color fading when changing colors or turning the light on of off.
  *
  * @author Stefan Endrullis - Initial contribution
- * @author Ries van Twisk
+ * @author Ries van Twisk - Improvements
  */
 public class FadingWiFiLEDDriver extends AbstractWiFiLEDDriver {
 

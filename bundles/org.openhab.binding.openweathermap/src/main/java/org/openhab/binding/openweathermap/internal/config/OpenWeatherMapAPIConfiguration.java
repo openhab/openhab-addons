@@ -16,10 +16,10 @@ import java.util.Set;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
-import org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler;
 
 /**
- * The {@link OpenWeatherMapAPIConfiguration} is the class used to match the {@link OpenWeatherMapAPIHandler}s
+ * The {@link OpenWeatherMapAPIConfiguration} is the class used to match the
+ * {@link org.openhab.binding.openweathermap.internal.handler.OpenWeatherMapAPIHandler}s
  * configuration.
  *
  * @author Christoph Weitkamp - Initial contribution
@@ -32,7 +32,7 @@ public class OpenWeatherMapAPIConfiguration {
             "lt", "mk", "nl", "no", "pl", "pt", "pt_br", "ro", "ru", "se", "sv", "sk", "sl", "sr", "th", "tr", "uk",
             "ua", "vi", "zh_cn", "zh_tw", "zu");
 
-    public @Nullable String apikey;
+    public String apikey = "";
     public int refreshInterval;
     public @Nullable String language;
     public String apiVersion = "2.5";

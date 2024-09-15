@@ -123,7 +123,6 @@ public class HomematicDeviceDiscoveryService
                     thingHandler.getGateway().setInstallMode(false, 0);
                 }
             }
-
         } catch (Exception ex) {
             logger.warn("Failed to disable Homematic controller's install mode", ex);
         }

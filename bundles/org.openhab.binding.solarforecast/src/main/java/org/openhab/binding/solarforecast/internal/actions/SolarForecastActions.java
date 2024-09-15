@@ -160,6 +160,18 @@ public class SolarForecastActions implements ThingActions {
         }
     }
 
+    @RuleAction(label = "@text/actionTriggerUpdateLabel", description = "@text/actionTriggerUpdateDesc")
+    public void triggerUpdate() {
+        if (thingHandler.isPresent()) {
+            List<SolarForecast> forecastObjectList = ((SolarForecastProvider) thingHandler.get()).getSolarForecasts();
+            forecastObjectList.forEach(forecast -> {
+                forecast.triggerUpdate();
+            });
+        } else {
+            logger.trace("Handler missing");
+        }
+    }
+
     public static State getDay(ThingActions actions, LocalDate ld, String... args) {
         return ((SolarForecastActions) actions).getDay(ld, args);
     }
@@ -178,6 +190,10 @@ public class SolarForecastActions implements ThingActions {
 
     public static Instant getForecastEnd(ThingActions actions) {
         return ((SolarForecastActions) actions).getForecastEnd();
+    }
+
+    public static void triggerUpdate(ThingActions actions) {
+        ((SolarForecastActions) actions).triggerUpdate();
     }
 
     @Override

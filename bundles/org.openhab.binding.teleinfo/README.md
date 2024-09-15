@@ -105,7 +105,7 @@ Channel availability depends on the electricity connection (single or three-phas
 | bbrhpjw  | `Number:Energy`           | Total consumed energy at high rate pricing on white days | All    | Tempo |
 | bbrhcjr  | `Number:Energy`           | Total consumed energy at low rate pricing on red days    | All    | Tempo |
 | bbrhpjr  | `Number:Energy`           | Total consumed energy at high rate pricing on red days   | All    | Tempo |
-| pejp     | `Number:Duration`         | Prior notice to EJP start                                | All    | EJP   |
+| pejp     | `Number:Time`             | Prior notice to EJP start                                | All    | EJP   |
 | demain   | `String`                  | Following day color                                      | All    | Tempo |
 
 ### Standard TIC mode
