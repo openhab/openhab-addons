@@ -465,7 +465,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         if (responseProps.getLocation() != null) {
             name = responseProps.getLocation().getName();
         }
-        updateState("commonResponseData#" + SITE_HOURLY_LOCATION_NAME, new StringType(name));
+        updateState("common-data#" + SITE_HOURLY_LOCATION_NAME, new StringType(name));
     }
 
     private static String calculatePrefix(final String prefix, final int plusOffset) {

@@ -161,9 +161,9 @@ public class MetOfficeDataHubBindingConstants {
     public static final String SITE_DAILY_DAY_MAX_SCREEN_TEMPERATURE = "day-max-scn-temp";
     public static final String SITE_DAILY_NIGHT_MIN_SCREEN_TEMPERATURE = "night-min-scn-temp";
 
-    public static final String GROUP_PREFIX_HOURS_FORECAST = "currentHoursForecast";
-    public static final String GROUP_PREFIX_DAILY_FORECAST = "currentDailyForecast";
-    public static final String GROUP_POSTFIX_BOTH_FORECASTS = "Plus";
+    public static final String GROUP_PREFIX_HOURS_FORECAST = "current-forecast";
+    public static final String GROUP_PREFIX_DAILY_FORECAST = "daily-forecast";
+    public static final String GROUP_POSTFIX_BOTH_FORECASTS = "-plus";
     public static final char GROUP_PREFIX_TO_ITEM = '#';
 
     public static final String GET_FORECAST_URL_DAILY = "https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/daily?includeLocationName=true&latitude=<LATITUDE>&longitude=<LONGITUDE>";
