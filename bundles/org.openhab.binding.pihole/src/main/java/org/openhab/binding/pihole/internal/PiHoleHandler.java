@@ -13,36 +13,8 @@
 package org.openhab.binding.pihole.internal;
 
 import static java.util.concurrent.TimeUnit.*;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.ADS_BLOCKED_TODAY_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.ADS_PERCENTAGE_TODAY_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.CLIENTS_EVER_SEEN_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DISABLE_ENABLE_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DNS_QUERIES_ALL_REPLIES_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DNS_QUERIES_ALL_TYPES_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DNS_QUERIES_TODAY_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DOMAINS_BEING_BLOCKED_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DisableEnable;
+import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.*;
 import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.DisableEnable.ENABLE;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.ENABLED_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.PRIVACY_LEVEL_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.QUERIES_CACHED_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.QUERIES_FORWARDED_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_BLOB_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_CNAME_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_DNSSEC_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_DOMAIN_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_IP_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_NODATA_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_NONE_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_NOTIMP_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_NXDOMAIN_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_OTHER_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_REFUSED_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_RRNAME_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_SERVFAIL_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.REPLY_UNKNOWN_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.UNIQUE_CLIENTS_CHANNEL;
-import static org.openhab.binding.pihole.internal.PiHoleBindingConstants.Channels.UNIQUE_DOMAINS_CHANNEL;
 import static org.openhab.core.library.unit.Units.PERCENT;
 import static org.openhab.core.thing.ThingStatus.OFFLINE;
 import static org.openhab.core.thing.ThingStatus.ONLINE;
@@ -52,6 +24,7 @@ import static org.openhab.core.thing.ThingStatusDetail.*;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -63,6 +36,8 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.pihole.internal.rest.AdminService;
 import org.openhab.binding.pihole.internal.rest.JettyAdminService;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
+import org.openhab.core.i18n.TimeZoneProvider;
+import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
 import org.openhab.core.library.types.QuantityType;
@@ -87,14 +62,16 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
     private static final int HTTP_DELAY_SECONDS = 1;
     private final Logger logger = LoggerFactory.getLogger(PiHoleHandler.class);
     private final Object lock = new Object();
+    private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
 
     private @Nullable AdminService adminService;
     private @Nullable DnsStatistics dnsStatistics;
     private @Nullable ScheduledFuture<?> scheduledFuture;
 
-    public PiHoleHandler(Thing thing, HttpClient httpClient) {
+    public PiHoleHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
         this.httpClient = httpClient;
     }
 
@@ -217,6 +194,19 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
         updateState(ENABLED_CHANNEL, OnOffType.from(localDnsStatistics.enabled()));
         if (localDnsStatistics.enabled()) {
             updateState(DISABLE_ENABLE_CHANNEL, new StringType(ENABLE.toString()));
+        }
+        var gravityLastUpdated = localDnsStatistics.gravityLastUpdated();
+        if (gravityLastUpdated != null) {
+            var absolute = gravityLastUpdated.absolute();
+            if (absolute != null) {
+                var instant = Instant.ofEpochSecond(absolute);
+                var zonedDateTime = instant.atZone(timeZoneProvider.getTimeZone());
+                updateState(GRAVITY_LAST_UPDATE, new DateTimeType(zonedDateTime));
+            }
+            var fileExists = gravityLastUpdated.fileExists();
+            if (fileExists != null) {
+                updateState(GRAVITY_FILE_EXISTS, OnOffType.from(fileExists));
+            }
         }
     }
 
