@@ -5,7 +5,8 @@ Its purpose is to allow the retrieval of forecast for a given location (Site).
 
 The website can be found here: https://datahub.metoffice.gov.uk/
 
-It retrieves two sets of data. A hourly forecast, and daily forecast. 
+It retrieves two sets of data. 
+A hourly forecast, and daily forecast. 
 Due to the current frequency of updates of the data retrieved, the hourly forecast data updates once per hour.
 The daily every 3 hours by default. 
 These are configurable but likely should only need to be lowered to reduce data if needed given the point below.
@@ -46,8 +47,7 @@ The bridge counts the total number of requests from 00:00 -> 23:59 under its pro
 | siteSpecificRateDailyLimit | Number | For the runtime of the system, this is the limit of how many polls for updates are allowed for updates for the SiteSpecific API | 250            |
 | siteSpecificApiKey         | String | The API Key for the Site Specific subscription in your MET Office Data Hub account.                                             |                |
 
-**NOTE:** siteSpecificRateDailyLimit: This **should** prevent any more poll's for the rest of the day to the SiteSpecific API, once this limit is reached as a failsafe against a bad configuration,
-if you don't reboot / delete and re-add the bridge.
+**NOTE:** siteSpecificRateDailyLimit: This **should** prevent any more poll's for the rest of the day to the SiteSpecific API, once this limit is reached as a failsafe against a bad configuration, if you don't reboot / delete and re-add the bridge.
 
 ### Site Specific API configuration parameters
 
