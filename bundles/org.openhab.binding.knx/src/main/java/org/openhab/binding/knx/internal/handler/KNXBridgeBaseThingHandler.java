@@ -367,7 +367,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
     /***
      * Show all secure group addresses and surrogates. A surrogate is the device which is asked to carry out an indirect
      * read/write request.
-     * Simpler approach w/o surrogates: Security.defaultInstallation().groupSenders().toString());
+     * Simpler approach w/o surrogates: Security.defaultInstallation().groupSenders().toString();
      */
     public static String secHelperGetSecureGroupAddresses(final Security openhabSecurity) {
         Map<GroupAddress, Set<String>> groupSendersWithSurrogate = new HashMap<GroupAddress, Set<String>>();
@@ -379,7 +379,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
             IndividualAddress surrogate = null;
             try {
                 surrogate = senders.getOrDefault(ga, Set.of()).stream().findAny().get();
-            } catch (NoSuchElementException e) {
+            } catch (NoSuchElementException ignored) {
             }
             Set<String> devices = new HashSet<String>();
             for (var device : entry.getValue()) {
