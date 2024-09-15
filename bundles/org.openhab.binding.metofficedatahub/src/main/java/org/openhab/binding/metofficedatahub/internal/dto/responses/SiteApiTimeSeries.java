@@ -15,7 +15,7 @@ package org.openhab.binding.metofficedatahub.internal.dto.responses;
 import com.google.gson.annotations.SerializedName;
 
 /**
- * The {@link SiteApiFeaturePoInteger} is a Java class used as a DTO to hold part of the response to the Site Specific
+ * The {@link SiteApiTimeSeries} is a Java class used as a DTO to hold part of the response to the Site Specific
  * API.
  *
  * @author David Goodyear - Initial contribution
