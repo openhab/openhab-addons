@@ -427,11 +427,6 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
 
         HttpClient httpClient = httpClientProvider.getHttpClient();
 
-        if (httpClient == null) {
-            logger.warn("No HTTP client ready");
-            return;
-        }
-
         Request request = httpClient.newRequest(url).method(HttpMethod.GET).header("Accept", "application/json")
                 .header("apikey", uplinkBridge.getApiKey()).idleTimeout(3, TimeUnit.SECONDS);
 

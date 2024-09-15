@@ -13,7 +13,6 @@
 package org.openhab.binding.metofficedatahub.internal;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
-import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 
 /**
@@ -21,6 +20,5 @@ import org.eclipse.jetty.client.HttpClient;
  */
 @NonNullByDefault
 public interface IHttpClientProvider {
-    @Nullable
     HttpClient getHttpClient();
 }

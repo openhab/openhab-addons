@@ -26,6 +26,7 @@ import org.openhab.core.thing.ThingTypeUID;
 import org.openhab.core.thing.binding.BaseThingHandlerFactory;
 import org.openhab.core.thing.binding.ThingHandler;
 import org.openhab.core.thing.binding.ThingHandlerFactory;
+import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Reference;
 
@@ -39,7 +40,13 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.metofficedatahub", service = ThingHandlerFactory.class)
 public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory implements IHttpClientProvider {
 
-    private @Nullable HttpClient httpClientRef = null;
+    private final HttpClientFactory httpClientFactory;
+
+    @Activate
+    public MetOfficeDataHubHandlerFactory(@Reference HttpClientFactory httpClientFactory) {
+        super();
+        this.httpClientFactory = httpClientFactory;
+    }
 
     private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
             THING_TYPE_SITE_SPEC_API);
@@ -62,13 +69,8 @@ public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory impl
         return null;
     }
 
-    @Reference
-    protected void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        httpClientRef = httpClientFactory.getCommonHttpClient();
-    }
-
     @Override
-    public @Nullable HttpClient getHttpClient() {
-        return httpClientRef;
+    public HttpClient getHttpClient() {
+        return httpClientFactory.getCommonHttpClient();
     }
 }
