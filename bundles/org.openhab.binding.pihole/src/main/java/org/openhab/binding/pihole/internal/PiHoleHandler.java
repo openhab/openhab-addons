@@ -25,7 +25,6 @@ import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
@@ -37,6 +36,7 @@ import org.eclipse.jetty.client.HttpClient;
 import org.openhab.binding.pihole.internal.rest.AdminService;
 import org.openhab.binding.pihole.internal.rest.JettyAdminService;
 import org.openhab.binding.pihole.internal.rest.model.DnsStatistics;
+import org.openhab.core.i18n.TimeZoneProvider;
 import org.openhab.core.library.types.DateTimeType;
 import org.openhab.core.library.types.DecimalType;
 import org.openhab.core.library.types.OnOffType;
@@ -62,14 +62,16 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
     private static final int HTTP_DELAY_SECONDS = 1;
     private final Logger logger = LoggerFactory.getLogger(PiHoleHandler.class);
     private final Object lock = new Object();
+    private final TimeZoneProvider timeZoneProvider;
     private final HttpClient httpClient;
 
     private @Nullable AdminService adminService;
     private @Nullable DnsStatistics dnsStatistics;
     private @Nullable ScheduledFuture<?> scheduledFuture;
 
-    public PiHoleHandler(Thing thing, HttpClient httpClient) {
+    public PiHoleHandler(Thing thing, TimeZoneProvider timeZoneProvider, HttpClient httpClient) {
         super(thing);
+        this.timeZoneProvider = timeZoneProvider;
         this.httpClient = httpClient;
     }
 
@@ -198,7 +200,7 @@ public class PiHoleHandler extends BaseThingHandler implements AdminService {
             var absolute = gravityLastUpdated.absolute();
             if (absolute != null) {
                 var instant = Instant.ofEpochSecond(absolute);
-                var zonedDateTime = instant.atZone(ZoneId.of("UTC"));
+                var zonedDateTime = instant.atZone(timeZoneProvider.getTimeZone());
                 updateState(GRAVITY_LAST_UPDATE, new DateTimeType(zonedDateTime));
             }
             var fileExists = gravityLastUpdated.fileExists();
