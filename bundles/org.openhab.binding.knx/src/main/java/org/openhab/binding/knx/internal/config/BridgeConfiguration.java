@@ -26,6 +26,8 @@ public class BridgeConfiguration {
     private int readingPause = 0;
     private int readRetriesLimit = 0;
     private int responseTimeout = 0;
+    private String keyringFile = "";
+    private String keyringPassword = "";
 
     public int getAutoReconnectPeriod() {
         return autoReconnectPeriod;
@@ -45,5 +47,13 @@ public class BridgeConfiguration {
 
     public void setAutoReconnectPeriod(int period) {
         autoReconnectPeriod = period;
+    }
+
+    public String getKeyringFile() {
+        return keyringFile;
+    }
+
+    public String getKeyringPassword() {
+        return keyringPassword;
     }
 }

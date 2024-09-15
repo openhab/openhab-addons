@@ -72,14 +72,25 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
         IPBridgeConfiguration config = getConfigAs(IPBridgeConfiguration.class);
         boolean securityAvailable = false;
         try {
-            securityAvailable = initializeSecurity(config.getRouterBackboneKey(),
-                    config.getTunnelDeviceAuthentication(), config.getTunnelUserId(), config.getTunnelUserPassword());
+            securityAvailable = initializeSecurity(config.getKeyringFile(), config.getKeyringPassword(),
+                    config.getRouterBackboneKey(), config.getTunnelDeviceAuthentication(), config.getTunnelUserId(),
+                    config.getTunnelUserPassword(), config.getTunnelSourceAddress());
             if (securityAvailable) {
                 logger.debug("KNX secure: router backboneGroupKey is {} set",
                         ((secureRouting.backboneGroupKey.length == 16) ? "properly" : "not"));
                 boolean tunnelOk = ((secureTunnel.user > 0) && (secureTunnel.devKey.length == 16)
                         && (secureTunnel.userKey.length == 16));
                 logger.debug("KNX secure: tunnel keys are {} set", (tunnelOk ? "properly" : "not"));
+
+                if (keyring.isPresent()) {
+                    logger.debug("KNX secure available for {} devices, {} group addresses",
+                            openhabSecurity.deviceToolKeys().size(), openhabSecurity.groupKeys().size());
+
+                    logger.debug("Secure group addresses and associated devices: {}",
+                            secHelperGetSecureGroupAddresses(openhabSecurity));
+                } else {
+                    logger.debug("KNX secure: keyring is not available");
+                }
             } else {
                 logger.debug("KNX security not configured");
             }
@@ -154,7 +165,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
                 return;
             }
             if (secureRouting.backboneGroupKey.length != 16) {
-                // failed to read shared backbone group key from config
+                // failed to read shared backbone group key from config or keyring
                 logger.warn("Bridge {} invalid security configuration for secure routing", thing.getUID());
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
                         "@text/error.knx-secure-routing-backbonegroupkey-invalid");
@@ -186,7 +197,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
                 secureRouting.backboneGroupKey, secureRouting.latencyToleranceMs, secureTunnel.devKey,
                 secureTunnel.user, secureTunnel.userKey, thing.getUID(), config.getResponseTimeout(),
                 config.getReadingPause(), config.getReadRetriesLimit(), getScheduler(), getCommandExtensionData(),
-                this);
+                openhabSecurity, this);
 
         IPClient tmpClient = client;
         if (tmpClient != null) {
@@ -200,7 +211,7 @@ public class IPBridgeThingHandler extends KNXBridgeBaseThingHandler {
     public void dispose() {
         Future<?> tmpInitJob = initJob;
         if (tmpInitJob != null) {
-            while (!tmpInitJob.isDone()) {
+            if (!tmpInitJob.isDone()) {
                 logger.trace("Bridge {}, shutdown during init, trying to cancel", thing.getUID());
                 tmpInitJob.cancel(true);
                 try {
