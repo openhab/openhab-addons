@@ -89,7 +89,8 @@ public class UniFiPoePortThingHandler extends UniFiBaseThingHandler<UniFiSwitchP
         } else {
             final String channelConfigPoeEnableMode = (String) channel.getConfiguration()
                     .get(CHANNEL_ENABLE_PARAMETER_MODE);
-            poeEnableMode = channelConfigPoeEnableMode == null || channelConfigPoeEnableMode.isBlank() ? CHANNEL_ENABLE_PARAMETER_MODE_AUTO
+            poeEnableMode = channelConfigPoeEnableMode == null || channelConfigPoeEnableMode.isBlank()
+                    ? CHANNEL_ENABLE_PARAMETER_MODE_AUTO
                     : channelConfigPoeEnableMode;
             return true;
         }
