@@ -9,7 +9,7 @@
 			<bridge-type-ref id="broker"/>
 		</supported-bridge-type-refs>
 		<label>FPP Player</label>
-		<description>FPP Player.</description>
+		<description>FPP Player</description>
 		<channels>
 			<channel id="player" typeId="player"/>
 			<channel id="status" typeId="status"/>
@@ -87,8 +87,8 @@
 	</channel-type>
 	<channel-type id="uptime" advanced="true">
 		<item-type>Number:Time</item-type>
-		<label>FPP Uptime</label>
-		<description>FPP uptime (time after start)</description>
+		<label>Uptime</label>
+		<description>FPP System Uptime (time after start)</description>
 		<state readOnly="true" pattern="%.1f sec"/>
 	</channel-type>
 	<channel-type id="player">
@@ -99,24 +99,24 @@
 	<channel-type id="volume">
 		<item-type>Dimmer</item-type>
 		<label>Volume</label>
-		<description>FPP Volume of the sound</description>
+		<description>FPP Volume of the Output</description>
 	</channel-type>
 	<channel-type id="bridging-enabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Bridging</label>
-		<description>FPP Is Bridging</description>
+		<description>FPP Recieving Bridge Data</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="multisync-enabled" advanced="true">
 		<item-type>Switch</item-type>
 		<label>Multisync</label>
-		<description>FPP Multisync</description>
+		<description>FPP Multisync Mode Enabled</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="testing-enabled">
 		<item-type>Switch</item-type>
 		<label>Testing</label>
-		<description>FPP Is Testing</description>
+		<description>FPP Is In Test Mode</description>
 	</channel-type>
 	<channel-type id="last-playlist" advanced="true">
 		<item-type>String</item-type>
@@ -133,7 +133,7 @@
 	<channel-type id="scheduler-current-playlist">
 		<item-type>String</item-type>
 		<label>Scheduler Current Playlist</label>
-		<description>FPP Current Playlist</description>
+		<description>FPP Scheduler Current Playlist</description>
 		<state readOnly="true"/>
 	</channel-type>
 	<channel-type id="scheduler-current-playlist-start" advanced="true">
