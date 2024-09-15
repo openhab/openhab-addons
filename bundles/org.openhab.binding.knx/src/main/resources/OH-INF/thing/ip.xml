@@ -73,29 +73,61 @@
 				<description>Seconds between connection retries when KNX link has been lost, 0 means never retry, minimum 30s</description>
 				<default>60</default>
 			</parameter>
+			<parameter name="keyringFile" type="text" groupName="knxsecure">
+				<label>Keyring file</label>
+				<description>Keyring file exported from ETS and placed in openHAB config/misc folder, e.g.
+					knx.knxkeys. This file is
+					mandatory to decode secure group addresses. It can provide settings
+					and credentials for IP Secure if not configured
+					separately.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="keyringPassword" type="text" groupName="knxsecure">
+				<context>password</context>
+				<label>Keyring password</label>
+				<description>Keyring file password (set during export from ETS).</description>
+				<advanced>true</advanced>
+			</parameter>
 			<parameter name="routerBackboneKey" type="text" groupName="knxsecure">
 				<context>password</context>
 				<label>Router backbone key</label>
 				<description>Backbone key for secure router mode. 16 bytes
 					in hex notation. Can also be found
-					in ETS security report.</description>
+					in ETS security report.
+					Optional, can be read from
+					keyring file if it is configured.</description>
+				<advanced>true</advanced>
+			</parameter>
+			<parameter name="tunnelSourceAddress" type="text" groupName="knxsecure">
+				<label>Tunnel source address</label>
+				<description>Physical KNX address of tunnel in secure mode. Optional, only used in combination
+					with keyring file to
+					uniquely identify a tunnel. If given, openHAB will try to read user id, user
+					password and device authentication from
+					keyring.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="tunnelUserId" type="text" groupName="knxsecure">
 				<label>Tunnel user id</label>
-				<description>Tunnel user id for secure tunnel mode.</description>
+				<description>Tunnel user id for secure tunnel mode. Optional, can be read from
+					keyring file if tunnelSourceAddr is
+					configured.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="tunnelUserPassword" type="text" groupName="knxsecure">
 				<context>password</context>
 				<label>Tunnel user password</label>
-				<description>Tunnel user key for secure tunnel mode.</description>
+				<description>Tunnel user key for secure tunnel mode. Optional, can be read from
+					keyring file if tunnelSourceAddr is
+					configured.</description>
 				<advanced>true</advanced>
 			</parameter>
 			<parameter name="tunnelDeviceAuthentication" type="text" groupName="knxsecure">
 				<context>password</context>
 				<label>Tunnel device authentication</label>
-				<description>Tunnel device authentication for secure tunnel mode.</description>
+				<description>Tunnel device authentication for secure tunnel mode. Optional, can be read from
+					keyring file if
+					tunnelSourceAddr is configured.</description>
 				<advanced>true</advanced>
 			</parameter>
 		</config-description>
