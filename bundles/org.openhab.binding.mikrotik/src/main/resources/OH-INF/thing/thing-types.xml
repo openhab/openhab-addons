@@ -374,7 +374,7 @@
 
 	<channel-type id="poeOutStatus" advanced="true">
 		<item-type>String</item-type>
-		<label>PoE out status</label>
+		<label>PoE Out Status</label>
 		<description>Shows current PoE-Out status on port</description>
 		<state readOnly="true">
 			<options>
@@ -391,7 +391,7 @@
 
 	<channel-type id="poeOutPower" advanced="true">
 		<item-type>Number:Power</item-type>
-		<label>PoE out power consumption</label>
+		<label>PoE Out Consumption</label>
 		<state readOnly="true" pattern="%d %unit%"/>
 	</channel-type>
 
