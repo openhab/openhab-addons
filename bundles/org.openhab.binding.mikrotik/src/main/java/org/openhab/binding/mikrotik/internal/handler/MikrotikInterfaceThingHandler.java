@@ -374,7 +374,7 @@ public class MikrotikInterfaceThingHandler extends MikrotikBaseThingHandler<Inte
                     logger.warn("Ignoring unsupported command = {} for channel = {}", command, channelUID);
             }
         } catch (MikrotikApiException e) {
-            logger.error("RouterOS command execution failed in {} due to Mikrotik API error", getThing().getUID(), e);
+            logger.warn("RouterOS command execution failed in {} due to Mikrotik API error", getThing().getUID(), e);
         }
     }
 }
