@@ -84,7 +84,7 @@
 			<channel id="txErrors" typeId="txErrors"/>
 			<channel id="rxErrors" typeId="rxErrors"/>
 			<!-- ethernet POE channels -->
-			<channel id="poeOutState" typeId="poeOut"/>
+			<channel id="poeOutState" typeId="poeOutState"/>
 			<channel id="poeOutStatus" typeId="poeOutStatus"/>
 			<channel id="poeOutPower" typeId="poeOutPower"/>
 			<!-- ethernet interface channels -->
