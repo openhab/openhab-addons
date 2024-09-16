@@ -386,6 +386,7 @@
 		<description>The date/time when the currently playing movie will end</description>
 		<category>Time</category>
 		<tags>
+			<tag>Point</tag>
 			<tag>Timestamp</tag>
 		</tags>
 		<state readOnly="true"/>
