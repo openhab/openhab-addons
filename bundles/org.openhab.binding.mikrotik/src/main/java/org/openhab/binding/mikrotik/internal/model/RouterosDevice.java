@@ -367,7 +367,7 @@ public class RouterosDevice {
         }
 
         if (!state.equals("auto-on") && !state.equals("forced-on") && !state.equals("off")) {
-            logger.error("Unsupported PoE state '{}'", state);
+            logger.warn("Unsupported PoE state '{}'", state);
 
             return;
         }
