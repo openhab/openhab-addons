@@ -4,19 +4,20 @@ This binding fetches day-ahead energy spot prices from ENTSO-E, the European Net
 This binding fetches day-ahead energy spot prices from ENTSO-E, the European Network of Transmission System Operators for Electricity.
 Users can select a specific area to retrieve the relevant energy prices.
 This binding helps users monitor and manage their energy consumption based on real-time pricing data.
-Prerequisites:
-
-- Currency provider configured in unit settings of openHAB. We recommend using Freecurrency binding to fetch up to date exchange values.
+It is recommended to use this binding together with a currency provider (g.e. Freecurrency binding) for UoM support and exchanging euro spot prices in to local valuta.
 
 ## Supported Things
 
-- `day-ahead`: This is the main and single thing of the binding. 
+- `day-ahead`: This is the main and single Thing of the binding. 
 
 ## Thing Configuration
 
-To access the ENTSO-E Transparency Platform API, users need a **security token** for authentication and authorization. This token ensure secure access to the platform's data and services. For detailed instructions on obtaining this token, you can refer to the [ENTSO-E API Guide 2. Authentication and Authorisation](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html#_authentication_and_authorisation).
+To access the ENTSO-E Transparency Platform API, users need a **security token** for authentication and authorization.
+This token ensure secure access to the platform's data and services.
+For detailed instructions on obtaining this token, you can refer to the [ENTSO-E API Guide 2. Authentication and Authorisation](https://transparency.entsoe.eu/content/static_content/Static%20content/web%20api/Guide.html#_authentication_and_authorisation).
 
-Mandatory parameters of the thing is security token and area. Optional parameters are VAT, additional cost and historic days.
+Mandatory parameters of the Thing is security token and area.
+Optional parameter are historic days.
 
 Thing can be added in graphical user interface of openHAB or manually within a things file.
 
@@ -26,14 +27,12 @@ Thing can be added in graphical user interface of openHAB or manually within a t
 |-------------------------------|-------------------|---------------------------------------------------------------------------|-----------|----------|----------|
 | securityToken                 | text              | Security token to fetch from ENTSO-E                                      | N/A       | yes      | no       |
 | area                          | text              | Area                                                                      | N/A       | yes      | no       |
-| vat                           | double            | Value added tax                                                           | 0         | no       | no       |
-| additionalCost                | double            | Additional cost to add to price                                           | 0         | no       | no       |
 | historicDays                  | integer           | Historic days to get prices from (will use exchange rate as of today)     | 0         | no       | no       |
 | spotPricesAvailableUtcHour    | integer           | Which UTC hour binding assumes new spot prices for next day is available  | 12        | no       | yes      |
 
 ## Channels
 
-Binding has two channels.
+Binding has one channel.
 
 spot-price which are the values fetched from ENTSO-E and persisted in openHAB as time series.
 The price is per kWh at your selected base currency.

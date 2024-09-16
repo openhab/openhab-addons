@@ -56,7 +56,7 @@ public class Client {
             if (responseText == null) {
                 throw new EntsoeResponseException("Request failed");
             }
-            logger.debug("{}", responseText);
+            logger.trace("Response: {}", responseText);
             return parseXmlResponse(responseText);
         } catch (IOException e) {
             if (e.getMessage().contains("Authentication challenge without WWW-Authenticate header")) {
