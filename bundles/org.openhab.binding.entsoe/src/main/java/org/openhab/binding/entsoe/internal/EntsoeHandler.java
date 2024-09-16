@@ -221,8 +221,7 @@ public class EntsoeHandler extends BaseThingHandler {
             } finally {
                 schedule(success);
             }
-        }
-        else {
+        } else {
             logger.debug("Updating current hour");
             updateCurrentHourState(EntsoeBindingConstants.CHANNEL_SPOT_PRICES);
             schedule(true);
