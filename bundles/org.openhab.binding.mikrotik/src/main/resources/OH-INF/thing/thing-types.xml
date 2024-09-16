@@ -361,7 +361,7 @@
 
 	<channel-type id="poeOutState" advanced="true">
 		<item-type>String</item-type>
-		<label>PoE out state</label>
+		<label>PoE Out State</label>
 		<description>https://wiki.mikrotik.com/wiki/Manual:PoE-Out</description>
 		<command>
 			<options>
