@@ -1242,7 +1242,7 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
                                 logger.trace("Bytes in HEX, decoded and with header: length: {}, data: {}", data.length,
                                         Utils.bytesToHex(data));
-                                byte bodyType2 = data[0x1];
+                                byte bodyType2 = data[0x1]; // This is the byte length after but including this one
 
                                 // data[3]: Device Type - 0xAC = AC
                                 // https://github.com/georgezhao2010/midea_ac_lan/blob/06fc4b582a012bbbfd6bd5942c92034270eca0eb/custom_components/midea_ac_lan/midea_devices.py#L96
@@ -1279,12 +1279,12 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
                                     default:
                                         logger.debug("Invalid response type: {}", data[0x9]);
                                 }
-                                logger.trace("Response Type: {} and bodyType:{}", responseType, data[0x1]);
+                                logger.trace("Response Type: {} and bodyType2:{}", responseType, bodyType2);
 
                                 // The response data from the appliance includes a packet header which we don't want
                                 data = Arrays.copyOfRange(data, 10, data.length);
                                 byte bodyType = data[0x0];
-                                logger.trace("Response Type expected: {} and bodyType2:{}", responseType, bodyType2);
+                                logger.trace("Response Type expected: {} and bodyType:{}", responseType, bodyType);
                                 logger.trace("Bytes in HEX, decoded and stripped without header: length: {}, data: {}",
                                         data.length, Utils.bytesToHex(data));
                                 logger.debug(
@@ -1293,7 +1293,11 @@ public class MideaACHandler extends BaseThingHandler implements DiscoveryHandler
 
                                 if (data.length > 0) {
                                     if (data.length < 21) {
-                                        logger.warn("Response data is {} long minimum is 21!", data.length);
+                                        logger.warn("Response data is {} long, minimum is 21!", data.length);
+                                        return;
+                                    }
+                                    if (bodyType != -64 || bodyType == 30) {
+                                        logger.warn("Unexpected response bodyType {}", bodyType);
                                         return;
                                     }
                                     lastResponse = new Response(data, getVersion(), responseType, bodyType);
