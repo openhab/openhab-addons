@@ -117,7 +117,7 @@ public class InsteonDiscoveryService extends AbstractDiscoveryService {
 
     private void addInsteonDevice(InsteonAddress address, @Nullable ProductData productData) {
         ThingUID bridgeUID = handler.getThing().getUID();
-        String id = address.toString().replace(".", "");
+        String id = address.toString().replace(".", "").toLowerCase();
         ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, bridgeUID, id);
         String label = Optional.ofNullable(productData).map(ProductData::getLabel).orElse("Insteon Device " + address);
         Map<String, Object> properties = new HashMap<>();
@@ -149,7 +149,7 @@ public class InsteonDiscoveryService extends AbstractDiscoveryService {
 
     private void removeInsteonDevice(InsteonAddress address) {
         ThingUID bridgeUID = handler.getThing().getUID();
-        String id = address.toString().replace(".", "");
+        String id = address.toString().replace(".", "").toLowerCase();
         ThingUID thingUID = new ThingUID(THING_TYPE_DEVICE, bridgeUID, id);
 
         thingRemoved(thingUID);

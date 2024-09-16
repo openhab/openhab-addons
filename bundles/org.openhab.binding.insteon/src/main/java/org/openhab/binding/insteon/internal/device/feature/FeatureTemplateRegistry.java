@@ -37,9 +37,13 @@ import org.xml.sax.SAXException;
 @NonNullByDefault
 public class FeatureTemplateRegistry extends ResourceLoader {
     private static final FeatureTemplateRegistry FEATURE_TEMPLATE_REGISTRY = new FeatureTemplateRegistry();
-    private static final String RESOURCE_NAME = "/device_features.xml";
+    private static final String RESOURCE_NAME = "/device-features.xml";
 
     private Map<String, FeatureTemplate> templates = new HashMap<>();
+
+    private FeatureTemplateRegistry() {
+        super(RESOURCE_NAME);
+    }
 
     /**
      * Returns feature template for a given type
@@ -73,14 +77,6 @@ public class FeatureTemplateRegistry extends ResourceLoader {
                 templates.values().stream().map(String::valueOf).forEach(logger::trace);
             }
         }
-    }
-
-    /**
-     * Returns feature template resource name
-     */
-    @Override
-    protected String getResourceName() {
-        return RESOURCE_NAME;
     }
 
     /**

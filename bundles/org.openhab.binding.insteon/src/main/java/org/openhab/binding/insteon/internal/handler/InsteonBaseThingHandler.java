@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.eclipse.jdt.annotation.NonNullByDefault;
@@ -55,6 +56,9 @@ import org.slf4j.LoggerFactory;
  */
 @NonNullByDefault
 public abstract class InsteonBaseThingHandler extends BaseThingHandler implements InsteonThingHandler {
+    private final static Pattern CHANNEL_ID_PATTERN = Pattern.compile("-([a-z])");
+    private final static Pattern FEATURE_NAME_PATTERN = Pattern.compile("(?!^)(?=[A-Z])");
+
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private Map<ChannelUID, InsteonChannelHandler> channelHandlers = new ConcurrentHashMap<>();
@@ -115,10 +119,11 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
             return;
         }
 
-        DeviceFeature feature = device.getFeature(channelTypeUID.getId());
+        String featureName = channelIdToFeatureName(channelTypeUID.getId());
+        DeviceFeature feature = device.getFeature(featureName);
         if (feature == null) {
             logger.warn("channel {} references unknown feature {} for device {}, it will be ignored", channelUID,
-                    channelTypeUID.getId(), device.getAddress());
+                    featureName, device.getAddress());
             return;
         }
 
@@ -242,17 +247,26 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
             return "unknown channel type uid for " + channelUID;
         }
         InsteonChannelConfiguration config = channel.getConfiguration().as(InsteonChannelConfiguration.class);
+        String featureName = channelIdToFeatureName(channelTypeUID.getId());
 
         StringBuilder builder = new StringBuilder(channelUID.getAsString());
         builder.append(config);
         builder.append(" feature=");
-        builder.append(channelTypeUID.getId());
+        builder.append(featureName);
         builder.append(" kind=");
         builder.append(channel.getKind());
         builder.append(" isLinked=");
         builder.append(isLinked(channelUID));
 
         return builder.toString();
+    }
+
+    protected String channelIdToFeatureName(String channelId) {
+        return CHANNEL_ID_PATTERN.matcher(channelId).replaceAll(matchResult -> matchResult.group(1).toUpperCase());
+    }
+
+    protected String featureNameToChannelId(String featureName) {
+        return FEATURE_NAME_PATTERN.matcher(featureName).replaceAll("-").toLowerCase();
     }
 
     protected void initializeChannels(Device device) {
@@ -277,18 +291,18 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
                             deviceTypeName);
                 }
             } else {
-                // create channel using feature name as channel id
-                Channel channel = createChannel(featureName);
+                String channelId = featureNameToChannelId(featureName);
+                Channel channel = createChannel(channelId);
                 if (channel != null) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("adding channel {}", channel.getUID());
                     }
                     channels.add(channel);
                 } else {
-                    logger.warn("unable to create channel {} for {}", featureName, deviceTypeName);
+                    logger.warn("unable to create channel {} for {}", channelId, deviceTypeName);
                 }
-                // add existing custom channels with the same feature name as channel type id
-                for (Channel customChannel : getCustomChannels(featureName)) {
+                // add existing custom channels with the same channel type id but different channel id
+                for (Channel customChannel : getCustomChannels(channelId)) {
                     if (logger.isTraceEnabled()) {
                         logger.trace("adding custom channel {}", customChannel.getUID());
                     }

@@ -33,9 +33,13 @@ import org.xml.sax.SAXException;
 @NonNullByDefault
 public class ProductDataRegistry extends ResourceLoader {
     private static final ProductDataRegistry PRODUCT_DATA_REGISTRY = new ProductDataRegistry();
-    private static final String RESOURCE_NAME = "/device_products.xml";
+    private static final String RESOURCE_NAME = "/device-products.xml";
 
     private Map<Integer, ProductData> products = new HashMap<>();
+
+    private ProductDataRegistry() {
+        super(RESOURCE_NAME);
+    }
 
     /**
      * Returns the product data for a given dev/sub category
@@ -100,14 +104,6 @@ public class ProductDataRegistry extends ResourceLoader {
                 products.values().stream().map(String::valueOf).forEach(logger::trace);
             }
         }
-    }
-
-    /**
-     * Returns device product data resource name
-     */
-    @Override
-    protected String getResourceName() {
-        return RESOURCE_NAME;
     }
 
     /**

@@ -159,7 +159,7 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
             return;
         }
 
-        String key = deviceTypeName + ":" + channelTypeUID.getId();
+        String key = deviceTypeName + ":" + channelIdToFeatureName(channelTypeUID.getId());
         String[] stateDescriptionOptions = CUSTOM_STATE_DESCRIPTION_OPTIONS.get(key);
         if (stateDescriptionOptions == null) {
             return;

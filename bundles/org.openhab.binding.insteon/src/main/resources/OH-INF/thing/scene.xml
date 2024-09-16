@@ -16,8 +16,8 @@
 
 		<channels>
 			<channel id="scene" typeId="scene"/>
-			<channel id="fastOnOff" typeId="fastOnOff"/>
-			<channel id="manualChange" typeId="manualChange"/>
+			<channel id="fast-on-off" typeId="fast-on-off"/>
+			<channel id="manual-change" typeId="manual-change"/>
 		</channels>
 
 		<representation-property>group</representation-property>

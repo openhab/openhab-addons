@@ -446,7 +446,7 @@ public class LegacyDeviceFeature {
      */
     static {
         // read features from xml file and store them in a map
-        InputStream input = LegacyDeviceFeature.class.getResourceAsStream("/legacy_device_features.xml");
+        InputStream input = LegacyDeviceFeature.class.getResourceAsStream("/legacy-device-features.xml");
         Objects.requireNonNull(input);
         readFeatureTemplates(input);
     }

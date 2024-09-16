@@ -38,9 +38,13 @@ import org.xml.sax.SAXException;
 @NonNullByDefault
 public class MsgDefinitionRegistry extends ResourceLoader {
     private static final MsgDefinitionRegistry MSG_DEFINITION_REGISTRY = new MsgDefinitionRegistry();
-    private static final String RESOURCE_NAME = "/msg_definitions.xml";
+    private static final String RESOURCE_NAME = "/msg-definitions.xml";
 
     private Map<String, Msg> definitions = new LinkedHashMap<>();
+
+    private MsgDefinitionRegistry() {
+        super(RESOURCE_NAME);
+    }
 
     /**
      * Returns message template for a given type
@@ -100,14 +104,6 @@ public class MsgDefinitionRegistry extends ResourceLoader {
                         .forEach(logger::trace);
             }
         }
-    }
-
-    /**
-     * Returns message definition resource name
-     */
-    @Override
-    protected String getResourceName() {
-        return RESOURCE_NAME;
     }
 
     /**

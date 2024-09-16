@@ -200,7 +200,7 @@ public class LegacyDeviceTypeLoader {
     @Nullable
     public static synchronized LegacyDeviceTypeLoader instance() {
         if (deviceTypeLoader.getDeviceTypes().isEmpty()) {
-            InputStream input = LegacyDeviceTypeLoader.class.getResourceAsStream("/legacy_device_types.xml");
+            InputStream input = LegacyDeviceTypeLoader.class.getResourceAsStream("/legacy-device-types.xml");
             try {
                 if (input != null) {
                     deviceTypeLoader.loadDeviceTypesXML(input);

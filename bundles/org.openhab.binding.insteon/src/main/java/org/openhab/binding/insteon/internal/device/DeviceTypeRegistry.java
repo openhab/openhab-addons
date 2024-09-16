@@ -40,10 +40,14 @@ import org.xml.sax.SAXException;
 @NonNullByDefault
 public class DeviceTypeRegistry extends ResourceLoader {
     private static final DeviceTypeRegistry DEVICE_TYPE_REGISTRY = new DeviceTypeRegistry();
-    private static final String RESOURCE_NAME = "/device_types.xml";
+    private static final String RESOURCE_NAME = "/device-types.xml";
 
     private Map<String, DeviceType> deviceTypes = new LinkedHashMap<>();
     private Map<String, FeatureEntry> baseFeatures = new LinkedHashMap<>();
+
+    private DeviceTypeRegistry() {
+        super(RESOURCE_NAME);
+    }
 
     /**
      * Returns the device type for a given name
@@ -77,14 +81,6 @@ public class DeviceTypeRegistry extends ResourceLoader {
                 deviceTypes.values().stream().map(String::valueOf).forEach(logger::trace);
             }
         }
-    }
-
-    /**
-     * Returns device type resource name
-     */
-    @Override
-    protected String getResourceName() {
-        return RESOURCE_NAME;
     }
 
     /**

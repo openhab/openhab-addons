@@ -43,8 +43,13 @@ import org.xml.sax.SAXException;
 public abstract class ResourceLoader {
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private final String name;
+
+    protected ResourceLoader(String name) {
+        this.name = name;
+    }
+
     protected void initialize() {
-        String name = getResourceName();
         InputStream stream = getClass().getResourceAsStream(name);
         if (stream != null) {
             loadDocument(stream);
@@ -52,8 +57,6 @@ public abstract class ResourceLoader {
             logger.warn("Resource stream {} cannot be found.", name);
         }
     }
-
-    protected abstract String getResourceName();
 
     protected void loadDocument(InputStream stream) {
         try {
@@ -127,7 +130,7 @@ public abstract class ResourceLoader {
     }
 
     protected int getAttributeAsInteger(Element element, String name, int defaultValue) throws SAXException {
-        return "".equals(element.getAttribute(name)) ? defaultValue : getAttributeAsInteger(element, name);
+        return element.hasAttribute(name) ? getAttributeAsInteger(element, name) : defaultValue;
     }
 
     protected int getHexAttributeAsInteger(Element element, String name) throws SAXException {
@@ -139,7 +142,7 @@ public abstract class ResourceLoader {
     }
 
     protected int getHexAttributeAsInteger(Element element, String name, int defaultValue) throws SAXException {
-        return "".equals(element.getAttribute(name)) ? defaultValue : getHexAttributeAsInteger(element, name);
+        return element.hasAttribute(name) ? getHexAttributeAsInteger(element, name) : defaultValue;
     }
 
     protected byte getHexAttributeAsByte(Element element, String name) throws SAXException {
@@ -147,6 +150,6 @@ public abstract class ResourceLoader {
     }
 
     protected byte getHexAttributeAsByte(Element element, String name, byte defaultValue) throws SAXException {
-        return "".equals(element.getAttribute(name)) ? defaultValue : getHexAttributeAsByte(element, name);
+        return element.hasAttribute(name) ? getHexAttributeAsByte(element, name) : defaultValue;
     }
 }
