@@ -46,10 +46,13 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
 
     private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubBridgeHandler.class);
 
-    public main.java.org.openhab.binding.metofficedatahub.internal.RequestLimiter forecastDataLimiter = new RequestLimiter();
+    protected final RequestLimiter forecastDataLimiter = new RequestLimiter();
 
     private volatile MetOfficeDataHubBridgeConfiguration config = getConfigAs(
             MetOfficeDataHubBridgeConfiguration.class);
+
+    private @Nullable ScheduledFuture<?> timerResetScheduler = null;
+    private final Object timerResetSchedulerLock = new Object();
 
     public MetOfficeDataHubBridgeHandler(final Bridge bridge) {
         super(bridge);
@@ -61,10 +64,8 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
         this.updateProperties(newProps);
     }
 
-    private String configuredApiKey = "";
-
     protected String getApiKey() {
-        return configuredApiKey;
+        return config.siteSpecificApiKey;
     }
 
     private static long getMillisUntilMidnight() {
@@ -80,7 +81,6 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
         updateLimiterStats();
         config = getConfigAs(MetOfficeDataHubBridgeConfiguration.class);
         forecastDataLimiter.updateLimit(config.siteSpecificRateDailyLimit);
-        configuredApiKey = config.siteSpecificApiKey;
 
         updateStatus(ThingStatus.UNKNOWN);
 
@@ -101,10 +101,6 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
     /**
      * Forecast Data Limiter Reset Scheduling
      */
-
-    @Nullable
-    private ScheduledFuture<?> timerResetScheduler = null;
-    private final Object timerResetSchedulerLock = new Object();
 
     private void scheduleResetDailyLimiters() {
         logger.trace("Scheduling reset of forecast data limiter");

@@ -40,6 +40,9 @@ import org.osgi.service.component.annotations.Reference;
 @Component(configurationPid = "binding.metofficedatahub", service = ThingHandlerFactory.class)
 public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory implements IHttpClientProvider {
 
+    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
+            THING_TYPE_SITE_SPEC_API);
+
     private final HttpClientFactory httpClientFactory;
 
     @Activate
@@ -47,9 +50,6 @@ public class MetOfficeDataHubHandlerFactory extends BaseThingHandlerFactory impl
         super();
         this.httpClientFactory = httpClientFactory;
     }
-
-    private static final Set<ThingTypeUID> SUPPORTED_THING_TYPES_UIDS = Set.of(THING_TYPE_BRIDGE,
-            THING_TYPE_SITE_SPEC_API);
 
     @Override
     public boolean supportsThingType(ThingTypeUID thingTypeUID) {

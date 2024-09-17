@@ -71,8 +71,44 @@ import main.java.org.openhab.binding.metofficedatahub.internal.RequestLimiter;
 @NonNullByDefault
 public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements IForecastDataPollable {
 
+    private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubSiteApiHandler.class);
+
+    private IHttpClientProvider httpClientProvider;
+
+    private boolean requiresDailyData = false;
+
+    private boolean requiresHourlyData = false;
+
+    private volatile boolean authFailed = false;
+
     private volatile MetOfficeDataHubSiteApiConfiguration config = getConfigAs(
             MetOfficeDataHubSiteApiConfiguration.class);
+
+    private volatile String lastDailyResponse = "";
+    private volatile String lastHourlyResponse = "";
+
+    private String latitude = "";
+    private String longitude = "";
+
+    private @Nullable ScheduledFuture<?> checkDataRequiredScheduler = null;
+    private final Object checkDataRequiredSchedulerLock = new Object();
+
+    private @Nullable ScheduledFuture<?> dailyScheduler = null;
+    private final Object checkDailySchedulerLock = new Object();
+
+    /**
+     * This handles the scheduling of an hourly forecast poll, to be applied with the given delay.
+     * When run, if requests the run-time of the next one is calculated and scheduled.
+     */
+    MetOfficeDelayedExecutor dailyForecastJob = new MetOfficeDelayedExecutor(scheduler);
+    private volatile long lastDailyForecastPoll = -1;
+
+    /**
+     * This handles the scheduling of an hourly forecast poll, to be applied with the given delay.
+     * When run, if requests the run-time of the next one is calculated and scheduled.
+     */
+    MetOfficeDelayedExecutor hourlyForecastJob = new MetOfficeDelayedExecutor(scheduler);
+    private volatile long lastHourlyForecastPoll = -1;
 
     public MetOfficeDataHubSiteApiHandler(Thing thing, IHttpClientProvider httpClientProvider) {
         super(thing);
@@ -95,14 +131,6 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     protected State getDecimalTypeState(@Nullable Number value) {
         return (value == null) ? UnDefType.UNDEF : new DecimalType(value);
     }
-
-    private final Logger logger = LoggerFactory.getLogger(MetOfficeDataHubSiteApiHandler.class);
-
-    private IHttpClientProvider httpClientProvider;
-
-    private boolean requiresDailyData = false;
-
-    private boolean requiresHourlyData = false;
 
     private void checkDataRequired() {
         final List<@Nullable String> activeGroups = getThing().getChannels().stream().filter(x -> isLinked(x.getUID()))
@@ -402,11 +430,8 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
 
             updateState(channelPrefix + SITE_DAILY_NIGHT_PROBABILITY_OF_SFERICS,
                     getQuantityTypeState(data.getNightProbabilityOfSferics(), Units.PERCENT));
-
         }
     }
-
-    private volatile boolean authFailed = false;
 
     private void handleNon200Response(final Response resp) {
         // Handle failed credentials
@@ -494,9 +519,6 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             }
         });
     }
-
-    private volatile String lastDailyResponse = "";
-    private volatile String lastHourlyResponse = "";
 
     private void updateCommonData(final SiteApiFeatureProperties responseProps) {
         String name = null;
@@ -670,9 +692,6 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         scheduleDailyDataPoll();
     }
 
-    private String latitude = "";
-    private String longitude = "";
-
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
         scheduler.execute(() -> {
@@ -729,16 +748,10 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         }
     }
 
-    private @Nullable ScheduledFuture<?> dailyScheduler = null;
-    private final Object checkDailySchedulerLock = new Object();
-
     /**
      * Scheduler to evaluate which data is required to be polled from
      * the APIs
      */
-
-    private @Nullable ScheduledFuture<?> checkDataRequiredScheduler = null;
-    private final Object checkDataRequiredSchedulerLock = new Object();
 
     private void scheduleDataRequiredCheck() {
         synchronized (checkDataRequiredSchedulerLock) {
@@ -850,18 +863,4 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             });
         }
     }
-
-    /**
-     * This handles the scheduling of an hourly forecast poll, to be applied with the given delay.
-     * When run, if requests the run-time of the next one is calculated and scheduled.
-     */
-    MetOfficeDelayedExecutor dailyForecastJob = new MetOfficeDelayedExecutor(scheduler);
-    private volatile long lastDailyForecastPoll = -1;
-
-    /**
-     * This handles the scheduling of an hourly forecast poll, to be applied with the given delay.
-     * When run, if requests the run-time of the next one is calculated and scheduled.
-     */
-    MetOfficeDelayedExecutor hourlyForecastJob = new MetOfficeDelayedExecutor(scheduler);
-    private volatile long lastHourlyForecastPoll = -1;
 }
