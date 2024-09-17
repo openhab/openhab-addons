@@ -33,9 +33,11 @@ import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.eclipse.jdt.annotation.Nullable;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.api.Response;
 import org.eclipse.jetty.client.api.Result;
 import org.eclipse.jetty.client.util.BufferingResponseListener;
 import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.http.HttpStatus;
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiFeatureCollection;
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiFeatureProperties;
 import org.openhab.binding.metofficedatahub.internal.dto.responses.SiteApiTimeSeries;
@@ -72,6 +74,15 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     public MetOfficeDataHubSiteApiHandler(Thing thing, IHttpClientProvider httpClientProvider) {
         super(thing);
         this.httpClientProvider = httpClientProvider;
+    }
+
+    @Override
+    public void dispose() {
+        dailyForecastJob.cancelScheduledTask(true);
+        hourlyForecastJob.cancelScheduledTask(true);
+        cancelDataRequiredCheck();
+        cancelScheduleDailyDataPoll(true);
+        super.dispose();
     }
 
     protected State getQuantityTypeState(@Nullable Number value, Unit<?> unit) {
@@ -392,6 +403,18 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
         }
     }
 
+    private volatile boolean authFailed = false;
+
+    private void handleNon200Response(final Response resp) {
+        // Handle failed credentials
+        if (resp.getStatus() == HttpStatus.UNAUTHORIZED_401) {
+            // Remove this once the status is updated accordingly
+            updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.CONFIGURATION_ERROR,
+                    "Check siteSpecificApiKey is correct in bridge - authentication failure");
+            authFailed = true;
+        }
+    }
+
     private @Nullable MetOfficeDataHubBridgeHandler getMetOfficeDataHubBridge() {
         Bridge baseBridge = getBridge();
 
@@ -410,18 +433,21 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             return;
         }
 
-        if (!getThing().getStatus().equals(ThingStatus.ONLINE)) {
-            logger.warn("Disabled requesting data - this thing is not ONLINE");
+        final boolean authFailedPreviously = authFailed;
+
+        if (!getThing().getStatus().equals(ThingStatus.ONLINE) && !authFailedPreviously) {
+            logger.debug("Disabled requesting data - this thing is not ONLINE");
             return;
         }
 
-        if (uplinkBridge.forecastDataLimiter.getRequestId() == RequestLimiter.INVALID_REQUEST_ID) {
-            logger.warn("Disabled requesting data - request limit has been hit");
+        if (!authFailed && uplinkBridge.forecastDataLimiter.getRequestId() == RequestLimiter.INVALID_REQUEST_ID) {
+            logger.debug("Disabled requesting data - request limit has been hit");
             return;
         } else {
             uplinkBridge.updateLimiterStats();
         }
 
+        authFailed = false;
         String url = ((daily) ? GET_FORECAST_URL_DAILY : GET_FORECAST_URL_HOURLY)
                 .replace("<LATITUDE>", String.valueOf(latitude)).replace("<LONGITUDE>", String.valueOf(longitude));
 
@@ -445,8 +471,20 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
                             pollForDataHourlyData(lastHourlyResponse);
                         }
                     });
+                    if (authFailedPreviously && getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                        updateStatus(ThingStatus.ONLINE);
+                    }
                 } else {
-                    logger.warn("Failed to get latest MET office forecast");
+                    logger.debug("Failed to get latest MET office forecast");
+                    // Clear the web servers thread
+                    if (result != null) {
+                        final Response resp = result.getResponse();
+                        if (resp != null) {
+                            scheduler.execute(() -> {
+                                handleNon200Response(resp);
+                            });
+                        }
+                    }
                 }
             }
         });
@@ -703,9 +741,7 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     private void scheduleDataRequiredCheck() {
         synchronized (checkDataRequiredSchedulerLock) {
             cancelDataRequiredCheck();
-            checkDataRequiredScheduler = scheduler.schedule(() -> {
-                checkDataRequired();
-            }, 3, TimeUnit.SECONDS);
+            checkDataRequiredScheduler = scheduler.schedule(this::checkDataRequired, 3, TimeUnit.SECONDS);
         }
     }
 

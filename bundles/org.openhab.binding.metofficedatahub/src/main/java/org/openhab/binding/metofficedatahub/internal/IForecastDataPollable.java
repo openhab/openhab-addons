@@ -15,14 +15,20 @@ package org.openhab.binding.metofficedatahub.internal;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 
 /**
- * @author David Goodyear - Initial contribution
+ * This defines the behaviours for forecast polling.
  *
- *         This defines the behaviours for forecast polling.
+ * @author David Goodyear - Initial contribution
  */
 @NonNullByDefault
 public interface IForecastDataPollable {
 
+    /**
+     * When called this provides the implementation to do a poll for hourly data, and process it.
+     */
     void pollHourlyForecast();
 
+    /**
+     * When called this provides the implementation to do a poll for daily data, and process it.
+     */
     void pollDailyForecast();
 }
