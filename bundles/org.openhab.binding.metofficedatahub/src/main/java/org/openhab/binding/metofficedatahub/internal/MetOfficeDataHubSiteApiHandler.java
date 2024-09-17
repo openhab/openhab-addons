@@ -71,6 +71,9 @@ import main.java.org.openhab.binding.metofficedatahub.internal.RequestLimiter;
 @NonNullByDefault
 public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements IForecastDataPollable {
 
+    private volatile MetOfficeDataHubSiteApiConfiguration config = getConfigAs(
+            MetOfficeDataHubSiteApiConfiguration.class);
+
     public MetOfficeDataHubSiteApiHandler(Thing thing, IHttpClientProvider httpClientProvider) {
         super(thing);
         this.httpClientProvider = httpClientProvider;
@@ -521,15 +524,14 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     public void initialize() {
         updateStatus(ThingStatus.UNKNOWN);
 
+        config = getConfigAs(MetOfficeDataHubSiteApiConfiguration.class);
+
         /**
          * Validate latitude and longitude
          */
 
         latitude = "";
         longitude = "";
-
-        org.openhab.binding.metofficedatahub.internal.MetOfficeDataHubSiteApiConfiguration config = getConfigAs(
-                org.openhab.binding.metofficedatahub.internal.MetOfficeDataHubSiteApiConfiguration.class);
 
         String[] coordinates = config.location.split(",");
         if (coordinates.length != 2) {
@@ -605,9 +607,8 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     }
 
     private void reconfigureHourlyPolling() {
-        final MetOfficeDataHubSiteApiConfiguration config = getConfigAs(MetOfficeDataHubSiteApiConfiguration.class);
         long millisSinceDayStart = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
-        long pollRateMillis = config.hourlyForecastPollRate * 3600000;
+        long pollRateMillis = config.hourlyForecastPollRate * 3600000L;
         long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % pollRateMillis))
                 + pollRateMillis) - millisSinceDayStart;
         long lastPollExpectedTime = System.currentTimeMillis() - (pollRateMillis - initialDelayTimeToFirstCycle);
@@ -639,9 +640,8 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
     }
 
     private void reconfigureDailyPolling() {
-        final MetOfficeDataHubSiteApiConfiguration config = getConfigAs(MetOfficeDataHubSiteApiConfiguration.class);
         long millisSinceDayStart = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
-        long pollRateMillis = config.dailyForecastPollRate * 3600000;
+        long pollRateMillis = config.dailyForecastPollRate * 3600000L;
         long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % pollRateMillis))
                 + pollRateMillis) - millisSinceDayStart;
         long lastPollExpectedTime = System.currentTimeMillis() - (pollRateMillis - initialDelayTimeToFirstCycle);
@@ -803,9 +803,8 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
      * at that time.
      */
     private void scheduleNextHourlyForecastPoll() {
-        final MetOfficeDataHubSiteApiConfiguration config = getConfigAs(MetOfficeDataHubSiteApiConfiguration.class);
         long millisSinceDayStart = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
-        long pollRateMillis = config.hourlyForecastPollRate * 3600000;
+        long pollRateMillis = config.hourlyForecastPollRate * 3600000L;
         long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % pollRateMillis))
                 + pollRateMillis) - millisSinceDayStart;
         initialDelayTimeToFirstCycle += RANDOM_GENERATOR.nextInt(60000);
@@ -832,9 +831,8 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
      * at that time.
      */
     private void scheduleNextDailyForecastPoll() {
-        final MetOfficeDataHubSiteApiConfiguration config = getConfigAs(MetOfficeDataHubSiteApiConfiguration.class);
         long millisSinceDayStart = DAY_IN_MILLIS - (DAY_IN_MILLIS - getMillisSinceDayStart());
-        long pollRateMillis = config.dailyForecastPollRate * 3600000;
+        long pollRateMillis = config.dailyForecastPollRate * 3600000L;
         long initialDelayTimeToFirstCycle = ((millisSinceDayStart - (millisSinceDayStart % pollRateMillis))
                 + pollRateMillis) - millisSinceDayStart;
         if (initialDelayTimeToFirstCycle + millisSinceDayStart > DAY_IN_MILLIS) {
