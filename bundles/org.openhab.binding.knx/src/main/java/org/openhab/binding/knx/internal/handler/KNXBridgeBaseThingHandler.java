@@ -207,7 +207,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
                 } catch (KNXMLException e) {
                     throw new KnxSecureException("keyring file configured, but loading failed: ", e);
                 }
-                if (!keyring.isPresent()) {
+                if (keyring.isEmpty()) {
                     throw new KnxSecureException("keyring file configured, but loading failed: " + keyringUri);
                 }
 
@@ -263,7 +263,7 @@ public abstract class KNXBridgeBaseThingHandler extends BaseBridgeHandler implem
         // step 6: tunnel: load data from keyring
         if (secureTunnelSourceAddr != null) {
             // requires a valid keyring
-            if (!keyring.isPresent()) {
+            if (keyring.isEmpty()) {
                 throw new KnxSecureException("valid keyring specification required for secure tunnel mode");
             }
             // other parameters will not be accepted, since all is read from keyring in this case
