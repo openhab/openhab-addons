@@ -500,6 +500,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             case TITLE_NUM:
             case TITLE_LENGTH:
             case TITLE_LOC:
+            case ENDTIME:
             case CHAPTER_NUM:
             case CHAPTER_LENGTH:
             case CHAPTER_LOC:
@@ -565,6 +566,7 @@ public class KaleidescapeHandler extends BaseThingHandler implements Kaleidescap
             case MUSIC_TRACK:
             case MUSIC_ARTIST:
             case MUSIC_ALBUM:
+            case MUSIC_TITLE_RAW:
             case MUSIC_TRACK_HANDLE:
             case MUSIC_ALBUM_HANDLE:
             case MUSIC_NOWPLAY_HANDLE:
