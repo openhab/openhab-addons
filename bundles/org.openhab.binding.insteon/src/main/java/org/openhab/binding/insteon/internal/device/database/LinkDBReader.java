@@ -85,7 +85,7 @@ public class LinkDBReader implements PortListener {
             case PEEK_POKE:
                 getPeekRecords();
                 break;
-            default:
+            case UNKNOWN:
                 logger.debug("unsupported database read/write mode for {}, aborting", device.getAddress());
                 done();
         }

@@ -269,8 +269,8 @@ public class LinkDB {
     public ReadWriteMode getReadWriteMode() {
         switch (device.getInsteonEngine()) {
             case I1:
-            case I2:
                 return ReadWriteMode.PEEK_POKE;
+            case I2:
             case I2CS:
                 return ReadWriteMode.STANDARD;
             default:
