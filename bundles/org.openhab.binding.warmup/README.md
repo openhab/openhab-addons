@@ -56,7 +56,7 @@ Once credentials are successfully added to the bridge, any rooms (devices) detec
 | password         | String  | Password for my.warmup.com                      | true     |         |
 | refreshInterval  | Integer | Interval in seconds between automatic refreshes | true     | 300     |
 
-### `Room` Thing Configuration
+### `room` Thing Configuration
 
 Rooms are configured automatically with a Serial Number on discovery, or can be added manually using the "Device Number" from the device, excluding the last 3 characters. Changing the target temperature results in a temporary override to that temperature, for the duration configured on the thing. This defaults to 60 minutes.
 
