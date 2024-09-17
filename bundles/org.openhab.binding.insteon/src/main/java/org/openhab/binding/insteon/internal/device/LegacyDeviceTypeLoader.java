@@ -118,7 +118,7 @@ public class LegacyDeviceTypeLoader {
      */
     private void processDevice(Element e) throws SAXException {
         String productKey = e.getAttribute("productKey");
-        if ("".equals(productKey)) {
+        if (productKey.isEmpty()) {
             throw new SAXException("device in device_types file has no product key!");
         }
         if (deviceTypes.containsKey(productKey)) {
@@ -150,7 +150,7 @@ public class LegacyDeviceTypeLoader {
 
     private String processFeature(LegacyDeviceType devType, Element e) throws SAXException {
         String name = e.getAttribute("name");
-        if ("".equals(name)) {
+        if (name.isEmpty()) {
             throw new SAXException("feature " + e.getNodeName() + " has feature without name!");
         }
         if (!name.equals(name.toLowerCase())) {
@@ -164,11 +164,11 @@ public class LegacyDeviceTypeLoader {
 
     private String processFeatureGroup(LegacyDeviceType devType, Element e) throws SAXException {
         String name = e.getAttribute("name");
-        if ("".equals(name)) {
+        if (name.isEmpty()) {
             throw new SAXException("feature group " + e.getNodeName() + " has no name attr!");
         }
         String type = e.getAttribute("type");
-        if ("".equals(type)) {
+        if (type.isEmpty()) {
             throw new SAXException("feature group " + e.getNodeName() + " has no type attr!");
         }
         FeatureGroup fg = new FeatureGroup(name, type);

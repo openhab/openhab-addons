@@ -330,9 +330,7 @@ public class DeviceFeature {
     }
 
     public synchronized void setLastMsgValue(double lastMsgValue) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("{}:{} setting last message value to: {}", device.getAddress(), name, lastMsgValue);
-        }
+        logger.trace("{}:{} setting last message value to: {}", device.getAddress(), name, lastMsgValue);
         this.lastMsgValue = lastMsgValue;
     }
 
@@ -341,16 +339,12 @@ public class DeviceFeature {
     }
 
     public synchronized void setQueryStatus(QueryStatus queryStatus) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("{}:{} setting query status to: {}", device.getAddress(), name, queryStatus);
-        }
+        logger.trace("{}:{} setting query status to: {}", device.getAddress(), name, queryStatus);
         this.queryStatus = queryStatus;
     }
 
     public synchronized void setState(State state) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("{}:{} setting state to: {}", device.getAddress(), name, state);
-        }
+        logger.trace("{}:{} setting state to: {}", device.getAddress(), name, state);
         this.state = state;
     }
 
@@ -491,10 +485,8 @@ public class DeviceFeature {
             logger.warn("{}:{} no dispatcher for msg {}", device.getAddress(), name, msg);
             return false;
         }
-        if (logger.isTraceEnabled()) {
-            logger.trace("{}:{} handling message using dispatcher {}", device.getAddress(), name,
-                    dispatcher.getClass().getSimpleName());
-        }
+        logger.trace("{}:{} handling message using dispatcher {}", device.getAddress(), name,
+                dispatcher.getClass().getSimpleName());
         return dispatcher.dispatch(msg);
     }
 
@@ -517,16 +509,12 @@ public class DeviceFeature {
         String cmdType = cmd.getClass().getSimpleName();
         CommandHandler cmdHandler = getOrDefaultCommandHandler(cmdType);
         if (!cmdHandler.canHandle(cmd)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("{}:{} command {}:{} cannot be handled by {}", device.getAddress(), name, cmdType, cmd,
-                        cmdHandler.getClass().getSimpleName());
-            }
+            logger.debug("{}:{} command {}:{} cannot be handled by {}", device.getAddress(), name, cmdType, cmd,
+                    cmdHandler.getClass().getSimpleName());
             return;
         }
-        if (logger.isTraceEnabled()) {
-            logger.trace("{}:{} handling command {}:{} using handler {}", device.getAddress(), name, cmdType, cmd,
-                    cmdHandler.getClass().getSimpleName());
-        }
+        logger.trace("{}:{} handling command {}:{} using handler {}", device.getAddress(), name, cmdType, cmd,
+                cmdHandler.getClass().getSimpleName());
         cmdHandler.handleCommand(config, cmd);
     }
 
@@ -540,10 +528,8 @@ public class DeviceFeature {
         if (pollHandler == null) {
             return null;
         }
-        if (logger.isTraceEnabled()) {
-            logger.trace("{}:{} making poll msg using handler {}", device.getAddress(), name,
-                    pollHandler.getClass().getSimpleName());
-        }
+        logger.trace("{}:{} making poll msg using handler {}", device.getAddress(), name,
+                pollHandler.getClass().getSimpleName());
         return pollHandler.makeMsg();
     }
 
@@ -592,18 +578,13 @@ public class DeviceFeature {
         }
         // trigger feature poll if pollable
         if (doPoll(delay) != null) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("{}:{} triggered poll on this feature", device.getAddress(), name);
-            }
+            logger.trace("{}:{} triggered poll on this feature", device.getAddress(), name);
             return;
         }
         // trigger group feature poll if defined and pollable, as fallback
         DeviceFeature groupFeature = getGroupFeature();
         if (groupFeature != null && groupFeature.doPoll(delay) != null) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("{}:{} triggered poll on group feature {}", device.getAddress(), name,
-                        groupFeature.getName());
-            }
+            logger.trace("{}:{} triggered poll on group feature {}", device.getAddress(), name, groupFeature.getName());
             return;
         }
         // trigger device poll limiting to responder features, otherwise

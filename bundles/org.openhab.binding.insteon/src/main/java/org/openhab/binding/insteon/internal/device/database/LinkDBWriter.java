@@ -58,9 +58,7 @@ public class LinkDBWriter implements PortListener {
     }
 
     public void write(InsteonDevice device) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("starting link database writer for {}", device.getAddress());
-        }
+        logger.debug("starting link database writer for {}", device.getAddress());
 
         this.device = device;
 
@@ -94,9 +92,7 @@ public class LinkDBWriter implements PortListener {
     }
 
     public void stop() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("link database writer finished for {}", device.getAddress());
-        }
+        logger.debug("link database writer finished for {}", device.getAddress());
 
         ScheduledFuture<?> job = this.job;
         if (job != null) {
@@ -117,9 +113,7 @@ public class LinkDBWriter implements PortListener {
     private void setNextAllLinkRecord() {
         LinkDBChange change = device.getLinkDB().pollNextChange();
         if (change == null) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("all link db changes written using standard mode for {}", device.getAddress());
-            }
+            logger.trace("all link db changes written using standard mode for {}", device.getAddress());
             done();
         } else {
             setAllLinkRecord(change.getRecord());
@@ -129,9 +123,7 @@ public class LinkDBWriter implements PortListener {
     private void setNextPokeRecord() {
         LinkDBChange change = device.getLinkDB().pollNextChange();
         if (change == null) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("all link db changes written using peek/poke mode for {}", device.getAddress());
-            }
+            logger.trace("all link db changes written using peek/poke mode for {}", device.getAddress());
             done();
         } else {
             setPokeRecord(change.getRecord());

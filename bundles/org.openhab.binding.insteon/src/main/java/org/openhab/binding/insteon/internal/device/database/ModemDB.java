@@ -230,9 +230,7 @@ public class ModemDB {
             dbe.addResponderGroup(record.getGroup());
         }
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("added record: {}", record);
-        }
+        logger.trace("added record: {}", record);
     }
 
     /**
@@ -259,9 +257,7 @@ public class ModemDB {
             dbe.removeResponderGroup(record.getGroup());
         }
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("deleted record: {}", record);
-        }
+        logger.trace("deleted record: {}", record);
     }
 
     /**
@@ -273,9 +269,7 @@ public class ModemDB {
     public void deleteRecord(InsteonAddress address, int group) {
         ModemDBRecord record = getRecord(address, group);
         if (record == null) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("no record found to delete for {} group:{}", address, group);
-            }
+            logger.trace("no record found to delete for {} group:{}", address, group);
         } else {
             deleteRecord(record);
         }
@@ -308,9 +302,7 @@ public class ModemDB {
         ModemDBRecord prevRecord;
         synchronized (records) {
             if (records.get(index).equals(record)) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("no change needed for record: {}", record);
-                }
+                logger.trace("no change needed for record: {}", record);
                 return;
             }
             prevRecord = records.set(index, record);
@@ -328,9 +320,7 @@ public class ModemDB {
             dbe.addResponderGroup(record.getGroup());
         }
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("modified record from: {} to: {}", prevRecord, record);
-        }
+        logger.trace("modified record from: {} to: {}", prevRecord, record);
     }
 
     /**
@@ -399,17 +389,13 @@ public class ModemDB {
             synchronized (changes) {
                 changes.add(change);
             }
-            if (logger.isTraceEnabled()) {
-                logger.trace("added change: {}", change);
-            }
+            logger.trace("added change: {}", change);
         } else {
             ModemDBChange prevChange;
             synchronized (changes) {
                 prevChange = changes.set(index, change);
             }
-            if (logger.isTraceEnabled()) {
-                logger.trace("modified change from: {} to: {}", prevChange, change);
-            }
+            logger.trace("modified change from: {} to: {}", prevChange, change);
         }
     }
 
@@ -462,9 +448,7 @@ public class ModemDB {
     public void markRecordForAddOrModify(InsteonAddress address, int group, boolean isController) {
         ProductData productData = getProductData(address);
         if (productData == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("no product data for device {}", address);
-            }
+            logger.debug("no product data for device {}", address);
             return;
         }
         byte[] data = isController ? productData.getRecordData() : new byte[3];
@@ -478,9 +462,7 @@ public class ModemDB {
      */
     public void markRecordForDelete(ModemDBRecord record) {
         if (record.isAvailable()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("ignoring already deleted record: {}", record);
-            }
+            logger.debug("ignoring already deleted record: {}", record);
             return;
         }
         addChange(ModemDBChange.forDelete(record));
@@ -495,9 +477,7 @@ public class ModemDB {
     public void markRecordForDelete(InsteonAddress address, int group) {
         ModemDBRecord record = getRecord(address, group);
         if (record == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("no record found to delete for {} group:{}", address, group);
-            }
+            logger.debug("no record found to delete for {} group:{}", address, group);
             return;
         }
         markRecordForDelete(record);
@@ -590,9 +570,7 @@ public class ModemDB {
 
         modem.databaseProductDataUpdated(address, productData);
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("set product data for {} as {}", address, productData);
-        }
+        logger.trace("set product data for {} as {}", address, productData);
     }
 
     /**

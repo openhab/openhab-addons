@@ -161,9 +161,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
     }
 
     public void setInsteonEngine(InsteonEngine engine) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("setting insteon engine for {} to {}", address, engine);
-        }
+        logger.trace("setting insteon engine for {} to {}", address, engine);
         this.engine = engine;
         // notify properties changed
         propertiesChanged(false);
@@ -254,19 +252,13 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
             if (stateMachine == null) {
                 stateMachine = new GroupMessageStateMachine();
                 groupState.put(group, stateMachine);
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{} created group {} state", address, group);
-                }
+                logger.trace("{} created group {} state", address, group);
             }
             if (stateMachine.getLastCommand() == cmd1 && stateMachine.getLastTimestamp() == timestamp) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{} using previous group {} state for {}", address, group, type);
-                }
+                logger.trace("{} using previous group {} state for {}", address, group, type);
                 return stateMachine.isDuplicate();
             } else {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{} updating group {} state to {}", address, group, type);
-                }
+                logger.trace("{} updating group {} state to {}", address, group, type);
                 return stateMachine.update(address, group, cmd1, timestamp, type);
             }
         }
@@ -371,10 +363,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
         if (modem != null) {
             linkDB.getRelatedDevices(group).stream().map(modem::getInsteonDevice).filter(Objects::nonNull)
                     .map(Objects::requireNonNull).forEach(device -> {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("polling related device {} to controller {} group {}", device.getAddress(),
-                                    address, group);
-                        }
+                        logger.debug("polling related device {} to controller {} group {}", device.getAddress(),
+                                address, group);
                         device.pollResponders(address, group, delay);
                     });
         }
@@ -412,10 +402,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
         if (modem != null) {
             linkDB.getRelatedDevices(group).stream().map(modem::getInsteonDevice).filter(Objects::nonNull)
                     .map(Objects::requireNonNull).forEach(device -> {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("adjusting related device {} to controller {} group {}", device.getAddress(),
-                                    address, group);
-                        }
+                        logger.debug("adjusting related device {} to controller {} group {}", device.getAddress(),
+                                address, group);
                         device.adjustResponders(address, group, config, cmd);
                     });
         }
@@ -445,9 +433,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      */
     public void replayMessages(List<Msg> messages) {
         for (Msg msg : messages) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("replaying msg: {}", msg);
-            }
+            logger.trace("replaying msg: {}", msg);
             msg.setIsReplayed(true);
             handleMessage(msg);
         }
@@ -467,9 +453,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
         }
         // store message if no feature defined
         if (!hasFeatures()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("storing message for unknown device {}", address);
-            }
+            logger.debug("storing message for unknown device {}", address);
+
             synchronized (storedMessages) {
                 storedMessages.add(msg);
             }
@@ -481,9 +466,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
         if (msg.isFailureReport()) {
             getFeatures().stream().filter(feature -> feature.isMyDirectAckOrNack(msg)).findFirst()
                     .ifPresent(feature -> {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("got a failure report reply of direct for {}", feature.getName());
-                        }
+                        logger.debug("got a failure report reply of direct for {}", feature.getName());
                         // increase failed message counter
                         failedMsgCount++;
                         // mark feature queried as processed and never queried
@@ -499,9 +482,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
             // update non-status features
             getFeatures().stream().filter(feature -> !feature.isStatusFeature() && feature.handleMessage(msg))
                     .findFirst().ifPresent(feature -> {
-                        if (logger.isTraceEnabled()) {
-                            logger.trace("handled reply of direct for {}", feature.getName());
-                        }
+                        logger.trace("handled reply of direct for {}", feature.getName());
                         // reset failed message counter
                         failedMsgCount = 0;
                         // mark feature queried as processed and answered
@@ -553,9 +534,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
                     DeviceFeature feature = request.getFeature();
                     deferredQueueHash.remove(msg);
                     request.setExpirationTime(delay);
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("enqueuing deferred request for {}", feature.getName());
-                    }
+                    logger.trace("enqueuing deferred request for {}", feature.getName());
                     addDeviceRequest(msg, feature, delay);
                 }
             }
@@ -568,16 +547,13 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      * @param request device request to add
      */
     private void addDeferredRequest(Msg msg, DeviceFeature feature) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("deferring request for sleeping device {}", address);
-        }
+        logger.trace("deferring request for sleeping device {}", address);
+
         synchronized (deferredQueue) {
             DeviceRequest request = new DeviceRequest(feature, msg, 0L);
             DeviceRequest prevRequest = deferredQueueHash.get(msg);
             if (prevRequest != null) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("overwriting existing deferred request for {}: {}", feature.getName(), msg);
-                }
+                logger.trace("overwriting existing deferred request for {}: {}", feature.getName(), msg);
                 deferredQueue.remove(prevRequest);
                 deferredQueueHash.remove(msg);
             }
@@ -610,9 +586,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
             setProductData(newData);
             propertiesChanged(true);
         } else {
-            if (logger.isTraceEnabled()) {
-                logger.trace("updating product data for {} to {}", address, newData);
-            }
+            logger.trace("updating product data for {} to {}", address, newData);
             if (productData.update(newData)) {
                 propertiesChanged(true);
             } else {
@@ -632,10 +606,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
         ProductData productData = getProductData();
         DeviceType currentType = getType();
         if (productData != null && !newType.equals(currentType)) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("updating device type from {} to {} for {}",
-                        currentType != null ? currentType.getName() : "undefined", newType.getName(), address);
-            }
+            logger.trace("updating device type from {} to {} for {}",
+                    currentType != null ? currentType.getName() : "undefined", newType.getName(), address);
             productData.setDeviceType(newType);
             propertiesChanged(true);
         }
@@ -684,9 +656,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      * @param link the default link to add
      */
     private void addDefaultLink(DefaultLink link) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("adding default link {} for {}", link.getName(), address);
-        }
+        logger.trace("adding default link {} for {}", link.getName(), address);
+
         synchronized (defaultLinks) {
             defaultLinks.put(link.getName(), link);
         }
@@ -762,13 +733,9 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
         }
         List<LinkDBChange> changes = getMissingDeviceLinks().values().stream().distinct().toList();
         if (changes.isEmpty()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("no missing default links from link db to add for {}", address);
-            }
+            logger.debug("no missing default links from link db to add for {}", address);
         } else {
-            if (logger.isTraceEnabled()) {
-                logger.trace("adding missing default links to link db for {}", address);
-            }
+            logger.trace("adding missing default links to link db for {}", address);
             linkDB.clearChanges();
             changes.forEach(linkDB::addChange);
             linkDB.update();
@@ -797,13 +764,9 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
         }
         List<ModemDBChange> changes = getMissingModemLinks().values().stream().distinct().toList();
         if (changes.isEmpty()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("no missing default links from modem db to add for {}", address);
-            }
+            logger.debug("no missing default links from modem db to add for {}", address);
         } else {
-            if (logger.isTraceEnabled()) {
-                logger.trace("adding missing default links to modem db for {}", address);
-            }
+            logger.trace("adding missing default links to modem db for {}", address);
             ModemDB modemDB = modem.getDB();
             modemDB.clearChanges();
             changes.forEach(modemDB::addChange);
@@ -912,9 +875,7 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
         }
 
         if (!hasModemDBEntry()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("device {} found in the modem database.", address);
-            }
+            logger.debug("device {} found in the modem database.", address);
             setHasModemDBEntry(true);
         }
 
@@ -949,9 +910,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      * Notifies that the link db has been updated for this device
      */
     public void linkDBUpdated() {
-        if (logger.isTraceEnabled()) {
-            logger.trace("link db for {} has been updated", address);
-        }
+        logger.trace("link db for {} has been updated", address);
+
         if (linkDB.isComplete()) {
             if (isBatteryPowered() && isAwake() || getStatus() == DeviceStatus.POLLING) {
                 // poll database delta feature
@@ -975,9 +935,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      * @param reset if the device should be reset
      */
     public void propertiesChanged(boolean reset) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("properties for {} has changed", address);
-        }
+        logger.trace("properties for {} has changed", address);
+
         InsteonDeviceHandler handler = getHandler();
         if (handler != null) {
             if (reset) {
@@ -992,9 +951,8 @@ public class InsteonDevice extends BaseDevice<InsteonAddress, InsteonDeviceHandl
      * Notifies that the status has changed for this device
      */
     public void statusChanged() {
-        if (logger.isTraceEnabled()) {
-            logger.trace("status for {} has changed", address);
-        }
+        logger.trace("status for {} has changed", address);
+
         InsteonDeviceHandler handler = getHandler();
         if (handler != null) {
             handler.updateStatus();

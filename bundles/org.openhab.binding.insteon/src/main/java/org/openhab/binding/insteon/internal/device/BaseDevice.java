@@ -158,9 +158,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     }
 
     public void setProductData(ProductData productData) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("setting product data for {} to {}", address, productData);
-        }
+        logger.trace("setting product data for {} to {}", address, productData);
         this.productData = productData;
     }
 
@@ -169,9 +167,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     }
 
     public void setFlag(String key, boolean value) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("setting {} flag for {} to {}", key, address, value);
-        }
+        logger.trace("setting {} flag for {} to {}", key, address, value);
         synchronized (flags) {
             flags.put(key, value);
         }
@@ -189,9 +185,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
 
     public void setPollInterval(long pollInterval) {
         if (pollInterval > 0) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("setting poll interval for {} to {}", address, pollInterval);
-            }
+            logger.trace("setting poll interval for {} to {}", address, pollInterval);
             this.pollInterval = pollInterval;
         }
     }
@@ -319,9 +313,8 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      * Clears request queue
      */
     protected void clearRequestQueue() {
-        if (logger.isTraceEnabled()) {
-            logger.trace("clearing request queue for {}", address);
-        }
+        logger.trace("clearing request queue for {}", address);
+
         synchronized (requestQueue) {
             requestQueue.clear();
             requestQueueHash.clear();
@@ -378,9 +371,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
             if (feature == null) {
                 logger.warn("group feature {} references unknown feature {}", groupFeature.getName(), name);
             } else {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{} connected feature: {}", groupFeature.getName(), feature.getName());
-                }
+                logger.trace("{} connected feature: {}", groupFeature.getName(), feature.getName());
                 feature.addParameters(groupFeature.getParameters());
                 feature.setGroupFeature(groupFeature);
                 feature.setPollHandler(null);
@@ -394,9 +385,8 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      */
     public void resetFeaturesQueryStatus() {
         if (getStatus() == DeviceStatus.POLLING) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("resetting device features query status for {}", address);
-            }
+            logger.trace("resetting device features query status for {}", address);
+
             DeviceFeature featureQueried = getFeatureQueried();
             getFeatures().stream().filter(feature -> !feature.equals(featureQueried))
                     .forEach(DeviceFeature::initializeQueryStatus);
@@ -412,9 +402,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     @Override
     public void handleMessage(Msg msg) {
         getFeatures().stream().filter(feature -> feature.handleMessage(msg)).findFirst().ifPresent(feature -> {
-            if (logger.isTraceEnabled()) {
-                logger.trace("handled reply of direct for {}", feature.getName());
-            }
+            logger.trace("handled reply of direct for {}", feature.getName());
             // mark feature queried as processed and answered
             setFeatureQueried(null);
             feature.setQueryMessage(null);
@@ -442,16 +430,13 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      * @param delay time (in milliseconds) to delay before sending message
      */
     protected void addDeviceRequest(Msg msg, DeviceFeature feature, long delay) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("enqueuing request with delay {} msec", delay);
-        }
+        logger.trace("enqueuing request with delay {} msec", delay);
+
         synchronized (requestQueue) {
             DeviceRequest request = new DeviceRequest(feature, msg, delay);
             DeviceRequest prevRequest = requestQueueHash.get(msg);
             if (prevRequest != null) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("overwriting existing request for {}: {}", feature.getName(), msg);
-                }
+                logger.trace("overwriting existing request for {}: {}", feature.getName(), msg);
                 requestQueue.remove(prevRequest);
                 requestQueueHash.remove(msg);
             }
@@ -471,14 +456,14 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      */
     @Override
     public long handleNextRequest() {
+        long now = System.currentTimeMillis();
+        // wait for feature queried to complete
+        long waitTime = checkFeatureQueried(now);
+        if (waitTime > 0) {
+            return waitTime;
+        }
+
         synchronized (requestQueue) {
-            if (requestQueue.isEmpty()) {
-                return 0L;
-            }
-            long waitTime = checkFeatureQueried();
-            if (waitTime > 0) {
-                return waitTime;
-            }
             // take the next request off the queue
             DeviceRequest request = requestQueue.poll();
             if (request == null) {
@@ -490,12 +475,10 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
             // remove request from queue hash
             requestQueueHash.remove(msg);
             // set last request queued time
-            lastRequestQueued = System.currentTimeMillis();
+            lastRequestQueued = now;
             // set feature queried for non-broadcast request message
             if (!msg.isAllLinkBroadcast()) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("request taken off direct for {}: {}", feature.getName(), msg);
-                }
+                logger.debug("request taken off direct for {}: {}", feature.getName(), msg);
                 // mark requested feature query status as queued
                 feature.setQueryStatus(QueryStatus.QUERY_QUEUED);
                 // store requested feature query message
@@ -503,9 +486,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
                 // set feature queried
                 setFeatureQueried(feature);
             } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("request taken off bcast for {}: {}", feature.getName(), msg);
-                }
+                logger.debug("request taken off bcast for {}: {}", feature.getName(), msg);
             }
             // write message
             InsteonModem modem = getModem();
@@ -520,11 +501,8 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
             long quietTime = msg.getQuietTime();
             long nextExpTime = Optional.ofNullable(requestQueue.peek()).map(DeviceRequest::getExpirationTime)
                     .orElse(0L);
-            long nextTime = Math.max(lastRequestQueued + quietTime, nextExpTime);
-            if (logger.isDebugEnabled()) {
-                logger.debug("next request queue processed in {} msec, quiettime {} msec", nextTime - lastRequestQueued,
-                        quietTime);
-            }
+            long nextTime = Math.max(now + quietTime, nextExpTime);
+            logger.debug("next request queue processed in {} msec, quiettime {} msec", nextTime - now, quietTime);
             return nextTime;
         }
     }
@@ -532,26 +510,23 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
     /**
      * Checks feature queried status
      *
+     * @param now the current time
      * @return wait time if necessary otherwise 0
      */
-    private long checkFeatureQueried() {
-        long now = System.currentTimeMillis();
+    private long checkFeatureQueried(long now) {
         DeviceFeature feature = getFeatureQueried();
         if (feature != null) {
-            switch (feature.getQueryStatus()) {
+            QueryStatus queryStatus = feature.getQueryStatus();
+            switch (queryStatus) {
                 case QUERY_QUEUED:
                     // wait for feature queried request to be sent
                     long maxQueueTime = lastRequestQueued + REQUEST_QUEUE_TIMEOUT;
                     if (maxQueueTime > now) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("still waiting for {} query to be sent to {} for another {} msec",
-                                    feature.getName(), address, maxQueueTime - now);
-                        }
+                        logger.debug("still waiting for {} query to be sent to {} for another {} msec",
+                                feature.getName(), address, maxQueueTime - now);
                         return now + 1000L; // retry in 1000 ms
                     }
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("gave up waiting for {} query to be sent to {}", feature.getName(), address);
-                    }
+                    logger.debug("gave up waiting for {} query to be sent to {}", feature.getName(), address);
                     // reset feature queried as never queried
                     feature.setQueryMessage(null);
                     feature.setQueryStatus(QueryStatus.NEVER_QUERIED);
@@ -561,29 +536,23 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
                     // wait for the feature queried to be answered
                     long maxAckTime = lastRequestSent + DIRECT_ACK_TIMEOUT;
                     if (maxAckTime > now) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("still waiting for {} query reply from {} for another {} msec",
-                                    feature.getName(), address, maxAckTime - now);
-                        }
+                        logger.debug("still waiting for {} query reply from {} for another {} msec", feature.getName(),
+                                address, maxAckTime - now);
                         return now + 500L; // retry in 500 ms
                     }
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("gave up waiting for {} query reply from {}", feature.getName(), address);
-                    }
+                    logger.debug("gave up waiting for {} query reply from {}", feature.getName(), address);
                     // reset feature queried as never queried
                     feature.setQueryMessage(null);
                     feature.setQueryStatus(QueryStatus.NEVER_QUERIED);
                     break;
                 default:
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("unexpected feature {} query status {} for {}", feature.getName(),
-                                feature.getQueryStatus(), address);
-                    }
+                    logger.debug("unexpected feature {} query status {} for {}", feature.getName(), queryStatus,
+                            address);
             }
             // reset feature queried otheriwse
             setFeatureQueried(null);
         }
-        return 0;
+        return 0L;
     }
 
     /**
@@ -599,9 +568,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
                 // mark feature queried as acked
                 feature.setQueryStatus(QueryStatus.QUERY_ACKED);
             } else {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("got a reply nack msg: {}", msg);
-                }
+                logger.debug("got a reply nack msg: {}", msg);
                 // mark feature queried as processed and answered
                 setFeatureQueried(null);
                 feature.setQueryMessage(null);
@@ -632,9 +599,7 @@ public abstract class BaseDevice<@NonNull T extends DeviceAddress, @NonNull S ex
      */
     @Override
     public void refresh() {
-        if (logger.isTraceEnabled()) {
-            logger.trace("refreshing device {}", address);
-        }
+        logger.trace("refreshing device {}", address);
         @Nullable
         S handler = getHandler();
         if (handler != null) {

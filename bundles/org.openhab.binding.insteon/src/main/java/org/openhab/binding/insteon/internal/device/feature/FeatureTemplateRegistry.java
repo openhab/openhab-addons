@@ -71,11 +71,9 @@ public class FeatureTemplateRegistry extends ResourceLoader {
     protected void initialize() {
         super.initialize();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("loaded {} feature templates", templates.size());
-            if (logger.isTraceEnabled()) {
-                templates.values().stream().map(String::valueOf).forEach(logger::trace);
-            }
+        logger.debug("loaded {} feature templates", templates.size());
+        if (logger.isTraceEnabled()) {
+            templates.values().stream().map(String::valueOf).forEach(logger::trace);
         }
     }
 
@@ -109,7 +107,7 @@ public class FeatureTemplateRegistry extends ResourceLoader {
      */
     private void parseFeatureType(Element element) throws SAXException {
         String name = element.getAttribute("name");
-        if ("".equals(name)) {
+        if (name.isEmpty()) {
             throw new SAXException("feature template in device_features file has no name!");
         }
         if (templates.containsKey(name)) {
@@ -152,7 +150,7 @@ public class FeatureTemplateRegistry extends ResourceLoader {
             template.setDefaultMessageHandler(handler);
         } else {
             String command = element.getAttribute("command");
-            if ("".equals(command)) {
+            if (command.isEmpty()) {
                 throw new SAXException("undefined command hex for " + element.getNodeName());
             }
             if (!HexUtils.isValidHexString(command)) {
@@ -175,7 +173,7 @@ public class FeatureTemplateRegistry extends ResourceLoader {
             template.setDefaultCommandHandler(handler);
         } else {
             String command = element.getAttribute("command");
-            if ("".equals(command)) {
+            if (command.isEmpty()) {
                 throw new SAXException("undefined command type for " + element.getNodeName());
             }
             if (!CommandHandler.supportsCommandType(command)) {

@@ -52,9 +52,7 @@ public class ModemDBWriter implements PortListener {
     }
 
     public void write() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("starting modem database writer");
-        }
+        logger.debug("starting modem database writer");
 
         applyChanges();
 
@@ -76,9 +74,7 @@ public class ModemDBWriter implements PortListener {
     }
 
     public void stop() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("modem database writer finished");
-        }
+        logger.debug("modem database writer finished");
 
         ScheduledFuture<?> job = this.job;
         if (job != null) {

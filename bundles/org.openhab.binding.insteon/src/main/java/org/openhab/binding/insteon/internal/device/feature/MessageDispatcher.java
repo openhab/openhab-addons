@@ -50,14 +50,10 @@ public abstract class MessageDispatcher extends FeatureBaseHandler {
         int group = msg.getGroup();
         MessageHandler handler = feature.getMsgHandler(cmd1, group);
         if (handler == null) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("{}:{} ignoring msg as not for this feature", getDevice().getAddress(), feature.getName());
-            }
+            logger.trace("{}:{} ignoring msg as not for this feature", getDevice().getAddress(), feature.getName());
         } else if (handler.canHandle(msg)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("{}:{}->{} {} group:{}", getDevice().getAddress(), feature.getName(),
-                        handler.getClass().getSimpleName(), msg.getType(), group != -1 ? group : "N/A");
-            }
+            logger.debug("{}:{}->{} {} group:{}", getDevice().getAddress(), feature.getName(),
+                    handler.getClass().getSimpleName(), msg.getType(), group != -1 ? group : "N/A");
             handler.handleMessage(cmd1, msg);
         }
     }
@@ -74,10 +70,8 @@ public abstract class MessageDispatcher extends FeatureBaseHandler {
         // determine msg handler using cmd 0x19 on DIRECT ACK/NACK reply messages
         MessageHandler handler = feature.getOrDefaultMsgHandler(msg.isAckOrNackOfDirect() ? 0x19 : cmd1, group);
         if (handler.canHandle(msg)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("{}:{}->{} {} group:{}", getDevice().getAddress(), feature.getName(),
-                        handler.getClass().getSimpleName(), msg.getType(), group != -1 ? group : "N/A");
-            }
+            logger.debug("{}:{}->{} {} group:{}", getDevice().getAddress(), feature.getName(),
+                    handler.getClass().getSimpleName(), msg.getType(), group != -1 ? group : "N/A");
             handler.handleMessage(cmd1, msg);
         }
     }
@@ -91,10 +85,7 @@ public abstract class MessageDispatcher extends FeatureBaseHandler {
     protected void handleIMMessage(Msg msg, DeviceFeature feature) throws FieldException {
         byte cmd = msg.getCommand();
         MessageHandler handler = feature.getOrDefaultMsgHandler(cmd);
-        if (logger.isDebugEnabled()) {
-            logger.debug("{}:{}->{} IM", getDevice().getAddress(), feature.getName(),
-                    handler.getClass().getSimpleName());
-        }
+        logger.debug("{}:{}->{} IM", getDevice().getAddress(), feature.getName(), handler.getClass().getSimpleName());
         handler.handleMessage(cmd, msg);
     }
 
@@ -168,9 +159,7 @@ public abstract class MessageDispatcher extends FeatureBaseHandler {
         @Override
         public boolean dispatch(Msg msg) {
             if (feature.isMyDirectAckOrNack(msg)) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}:{} got poll {}", getDevice().getAddress(), feature.getName(), msg.getType());
-                }
+                logger.debug("{}:{} got poll {}", getDevice().getAddress(), feature.getName(), msg.getType());
                 return true;
             }
             return false;
@@ -189,10 +178,8 @@ public abstract class MessageDispatcher extends FeatureBaseHandler {
                 int group = msg.getGroup();
                 MessageHandler handler = feature.getDefaultMsgHandler();
                 if (handler.canHandle(msg)) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}:{}->{} {} group:{}", getDevice().getAddress(), feature.getName(),
-                                handler.getClass().getSimpleName(), msg.getType(), group != -1 ? group : "N/A");
-                    }
+                    logger.debug("{}:{}->{} {} group:{}", getDevice().getAddress(), feature.getName(),
+                            handler.getClass().getSimpleName(), msg.getType(), group != -1 ? group : "N/A");
                     handler.handleMessage(cmd1, msg);
                 }
             } catch (FieldException e) {
@@ -257,10 +244,8 @@ public abstract class MessageDispatcher extends FeatureBaseHandler {
             try {
                 byte cmd = msg.getByte("rawX10");
                 MessageHandler handler = feature.getOrDefaultMsgHandler(cmd);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}:{}->{} X10", getX10Device().getAddress(), feature.getName(),
-                            handler.getClass().getSimpleName());
-                }
+                logger.debug("{}:{}->{} X10", getX10Device().getAddress(), feature.getName(),
+                        handler.getClass().getSimpleName());
                 handler.handleMessage(cmd, msg);
             } catch (FieldException e) {
                 logger.warn("error parsing, dropping msg {}", msg);

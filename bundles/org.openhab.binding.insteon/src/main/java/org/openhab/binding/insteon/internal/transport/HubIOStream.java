@@ -168,9 +168,7 @@ public class HubIOStream extends IOStream {
      * @throws IOException
      */
     private synchronized void clearBuffer() throws IOException {
-        if (logger.isTraceEnabled()) {
-            logger.trace("clearing buffer");
-        }
+        logger.trace("clearing buffer");
         getURL("/1?XB=M=1");
         bufferIdx = 0;
     }
@@ -189,9 +187,7 @@ public class HubIOStream extends IOStream {
             b.append(String.format("%02x", msg.get()));
         }
         String hexMsg = b.toString();
-        if (logger.isTraceEnabled()) {
-            logger.trace("writing a message");
-        }
+        logger.trace("writing a message");
         getURL("/3?" + hexMsg + "=I=3");
         bufferIdx = 0;
     }
@@ -203,9 +199,7 @@ public class HubIOStream extends IOStream {
      */
     private synchronized void poll() throws IOException {
         String buffer = bufferStatus(); // fetch via http call
-        if (logger.isTraceEnabled()) {
-            logger.trace("poll: {}", buffer);
-        }
+        logger.trace("poll: {}", buffer);
         // The Hub maintains a ring buffer where the last two digits (in hex!) represent
         // the position of the last byte read.
         String data = buffer.substring(0, buffer.length() - 2); // pure data w/o index pointer
@@ -226,9 +220,7 @@ public class HubIOStream extends IOStream {
         }
 
         if (isClearedBuffer(data)) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("skip cleared buffer");
-            }
+            logger.trace("skip cleared buffer");
             bufferIdx = 0;
             return;
         }
@@ -238,21 +230,15 @@ public class HubIOStream extends IOStream {
             String msgStart = data.substring(bufferIdx, data.length());
             String msgEnd = data.substring(0, nIdx);
             if (isClearedBuffer(msgStart)) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("discard cleared buffer wrap around msg start");
-                }
+                logger.trace("discard cleared buffer wrap around msg start");
                 msgStart = "";
             }
 
             msg.append(msgStart + msgEnd);
-            if (logger.isTraceEnabled()) {
-                logger.trace("wrap around: copying new data on: {}", msg.toString());
-            }
+            logger.trace("wrap around: copying new data on: {}", msg);
         } else {
             msg.append(data.substring(bufferIdx, nIdx));
-            if (logger.isTraceEnabled()) {
-                logger.trace("no wrap:      appending new data: {}", msg.toString());
-            }
+            logger.trace("no wrap:      appending new data: {}", msg);
         }
         if (msg.length() != 0) {
             byte[] array = HexUtils.toByteArray(msg.toString());
@@ -295,9 +281,7 @@ public class HubIOStream extends IOStream {
             connection.setDoOutput(false);
             connection.setRequestProperty("Authorization", "Basic " + auth);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("getting {}", url);
-            }
+            logger.debug("getting {}", url);
 
             int responseCode = connection.getResponseCode();
             if (responseCode != 200) {

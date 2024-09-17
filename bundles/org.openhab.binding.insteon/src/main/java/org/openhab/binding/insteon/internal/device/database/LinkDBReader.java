@@ -58,9 +58,7 @@ public class LinkDBReader implements PortListener {
     }
 
     public void read(InsteonDevice device) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("starting link database reader for {}", device.getAddress());
-        }
+        logger.debug("starting link database reader for {}", device.getAddress());
 
         this.device = device;
 
@@ -94,9 +92,7 @@ public class LinkDBReader implements PortListener {
     }
 
     public void stop() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("link database reader finished for {}", device.getAddress());
-        }
+        logger.debug("link database reader finished for {}", device.getAddress());
 
         ScheduledFuture<?> job = this.job;
         if (job != null) {
@@ -220,9 +216,7 @@ public class LinkDBReader implements PortListener {
             return;
         }
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("got link db record #{} for {}", device.getLinkDB().size(), device.getAddress());
-        }
+        logger.trace("got link db record #{} for {}", device.getLinkDB().size(), device.getAddress());
 
         if (record.isLast()) {
             logger.trace("got last link db record for {}", device.getAddress());

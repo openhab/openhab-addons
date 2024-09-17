@@ -168,9 +168,7 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
         List<StateOption> options = Stream.of(stateDescriptionOptions).map(value -> new StateOption(value,
                 StringUtils.capitalizeByWhitespace(value.replace("_", " ").toLowerCase()))).toList();
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("setting state options for {} to {}", channelUID, options);
-        }
+        logger.trace("setting state options for {} to {}", channelUID, options);
 
         stateDescriptionProvider.setStateOptions(channelUID, options);
     }
@@ -312,9 +310,7 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
 
     public void reset(InsteonDevice oldDevice) {
         scheduler.schedule(() -> {
-            if (logger.isDebugEnabled()) {
-                logger.debug("resetting thing {}", getThing().getUID());
-            }
+            logger.debug("resetting thing {}", getThing().getUID());
 
             dispose();
             initialize();
@@ -346,9 +342,7 @@ public class InsteonDeviceHandler extends InsteonBaseThingHandler {
 
         int timeout = device.getHeartbeatTimeout();
         if (timeout > 0) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("setting heartbeat timeout monitor to {} min for {}", timeout, getThing().getUID());
-            }
+            logger.debug("setting heartbeat timeout monitor to {} min for {}", timeout, getThing().getUID());
 
             heartbeatJob = scheduler.schedule(() -> {
                 updateStatus(ThingStatus.OFFLINE, ThingStatusDetail.COMMUNICATION_ERROR, "Heartbeat timed out.");

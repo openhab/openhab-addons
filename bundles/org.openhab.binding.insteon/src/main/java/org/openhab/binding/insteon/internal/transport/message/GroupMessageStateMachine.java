@@ -186,9 +186,7 @@ public class GroupMessageStateMachine {
         lastCmd1 = cmd1;
         lastTimestamp = timestamp;
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("{} group:{} type:{} state:{} duplicate:{}", address, group, type, state, duplicate);
-        }
+        logger.debug("{} group:{} type:{} state:{} duplicate:{}", address, group, type, state, duplicate);
 
         return duplicate;
     }

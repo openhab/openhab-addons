@@ -210,9 +210,7 @@ public class LinkDB {
     }
 
     public synchronized void setDatabaseDelta(int delta) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("setting link db delta to {} for {}", delta, device.getAddress());
-        }
+        logger.trace("setting link db delta to {} for {}", delta, device.getAddress());
         this.delta = delta;
     }
 
@@ -225,23 +223,17 @@ public class LinkDB {
     }
 
     public synchronized void setReload(boolean reload) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("setting link db reload to {} for {}", reload, device.getAddress());
-        }
+        logger.trace("setting link db reload to {} for {}", reload, device.getAddress());
         this.reload = reload;
     }
 
     private synchronized void setUpdate(boolean update) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("setting link db update to {} for {}", update, device.getAddress());
-        }
+        logger.trace("setting link db update to {} for {}", update, device.getAddress());
         this.update = update;
     }
 
     private synchronized void setStatus(DatabaseStatus status) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("setting link db status to {} for {}", status, device.getAddress());
-        }
+        logger.trace("setting link db status to {} for {}", status, device.getAddress());
         this.status = status;
     }
 
@@ -290,9 +282,7 @@ public class LinkDB {
      * Clears this link db
      */
     public synchronized void clear() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("clearing link db for {}", device.getAddress());
-        }
+        logger.debug("clearing link db for {}", device.getAddress());
         records.clear();
         changes.clear();
         status = DatabaseStatus.EMPTY;
@@ -316,14 +306,10 @@ public class LinkDB {
     public void load(long delay) {
         DatabaseManager dbm = getDatabaseManager();
         if (!device.isAwake() || !device.isResponding()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("deferring load link db for {}, device is not awake or responding", device.getAddress());
-            }
+            logger.debug("deferring load link db for {}, device is not awake or responding", device.getAddress());
             setReload(true);
         } else if (dbm == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("unable to load link db for {}, database manager not available", device.getAddress());
-            }
+            logger.debug("unable to load link db for {}, database manager not available", device.getAddress());
         } else {
             clear();
             setStatus(DatabaseStatus.LOADING);
@@ -346,19 +332,13 @@ public class LinkDB {
     public void update(long delay) {
         DatabaseManager dbm = getDatabaseManager();
         if (getChanges().isEmpty()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("no changes to update link db for {}", device.getAddress());
-            }
+            logger.debug("no changes to update link db for {}", device.getAddress());
             setUpdate(false);
         } else if (!device.isAwake() || !device.isResponding()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("deferring update link db for {}, device is not awake or responding", device.getAddress());
-            }
+            logger.debug("deferring update link db for {}, device is not awake or responding", device.getAddress());
             setUpdate(true);
         } else if (dbm == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("unable to update link db for {}, database manager not available", device.getAddress());
-            }
+            logger.debug("unable to update link db for {}, database manager not available", device.getAddress());
         } else {
             dbm.write(device, delay);
         }
@@ -392,9 +372,7 @@ public class LinkDB {
      * @param records list of records to load
      */
     public void loadRecords(List<LinkDBRecord> records) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("loading link db records for {}", device.getAddress());
-        }
+        logger.trace("loading link db records for {}", device.getAddress());
         records.forEach(this::addRecord);
         recordsLoaded();
     }
@@ -427,9 +405,7 @@ public class LinkDB {
      * Clears the link db changes
      */
     public void clearChanges() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("clearing link db changes for {}", device.getAddress());
-        }
+        logger.debug("clearing link db changes for {}", device.getAddress());
         synchronized (changes) {
             changes.clear();
         }
@@ -444,13 +420,9 @@ public class LinkDB {
         synchronized (changes) {
             LinkDBChange prevChange = changes.put(change.getLocation(), change);
             if (prevChange == null) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("added change: {}", change);
-                }
+                logger.trace("added change: {}", change);
             } else {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("modified change from: {} to: {}", prevChange, change);
-                }
+                logger.trace("modified change from: {} to: {}", prevChange, change);
             }
         }
     }
@@ -502,9 +474,7 @@ public class LinkDB {
      */
     public void markRecordForDelete(LinkDBRecord record) {
         if (record.isAvailable()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("ignoring already deleted record: {}", record);
-            }
+            logger.debug("ignoring already deleted record: {}", record);
             return;
         }
         addChange(LinkDBChange.forDelete(record));
@@ -554,9 +524,7 @@ public class LinkDB {
      */
     public synchronized void updateStatus() {
         if (records.isEmpty()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("no link db records for {}", device.getAddress());
-            }
+            logger.debug("no link db records for {}", device.getAddress());
             setStatus(DatabaseStatus.EMPTY);
             return;
         }
@@ -565,24 +533,16 @@ public class LinkDB {
         int lastLocation = records.lastKey();
         int expected = (firstLocation - lastLocation) / RECORD_BYTE_SIZE + 1;
         if (firstLocation != getFirstRecordLocation()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("got unexpected first record location for {}", device.getAddress());
-            }
+            logger.debug("got unexpected first record location for {}", device.getAddress());
             setStatus(DatabaseStatus.PARTIAL);
         } else if (!records.lastEntry().getValue().isLast()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("got unexpected last record type for {}", device.getAddress());
-            }
+            logger.debug("got unexpected last record type for {}", device.getAddress());
             setStatus(DatabaseStatus.PARTIAL);
         } else if (records.size() != expected) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("got {} records for {} expected {}", records.size(), device.getAddress(), expected);
-            }
+            logger.debug("got {} records for {} expected {}", records.size(), device.getAddress(), expected);
             setStatus(DatabaseStatus.PARTIAL);
         } else {
-            if (logger.isDebugEnabled()) {
-                logger.debug("got complete link db records ({}) for {} ", records.size(), device.getAddress());
-            }
+            logger.debug("got complete link db records ({}) for {} ", records.size(), device.getAddress());
             setStatus(DatabaseStatus.COMPLETE);
         }
     }

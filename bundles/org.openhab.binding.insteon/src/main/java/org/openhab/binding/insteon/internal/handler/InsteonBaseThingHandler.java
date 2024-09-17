@@ -78,22 +78,16 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
 
     @Override
     public void channelLinked(ChannelUID channelUID) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("channel {} linked", channelUID);
-        }
+        logger.debug("channel {} linked", channelUID);
 
         InsteonModem modem = getModem();
         if (modem == null || !modem.getDB().isComplete()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("channel {} linking skipped because modem database not complete yet.", channelUID);
-            }
+            logger.debug("channel {} linking skipped because modem database not complete yet.", channelUID);
             return;
         }
 
         if (channelHandlers.containsKey(channelUID)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("channel {} linking skipped because it is already configured", channelUID);
-            }
+            logger.debug("channel {} linking skipped because it is already configured", channelUID);
             return;
         }
 
@@ -105,17 +99,13 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
 
         Device device = getDevice();
         if (device == null || device.getFeatures().isEmpty()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("channel {} references uninitialized device, it will be ignored", channelUID);
-            }
+            logger.debug("channel {} references uninitialized device, it will be ignored", channelUID);
             return;
         }
 
         ChannelTypeUID channelTypeUID = channel.getChannelTypeUID();
         if (channelTypeUID == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("channel {} references unknown channel type uid, it will be ignored", channelUID);
-            }
+            logger.debug("channel {} references unknown channel type uid, it will be ignored", channelUID);
             return;
         }
 
@@ -137,9 +127,7 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
 
     @Override
     public void channelUnlinked(ChannelUID channelUID) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("channel {} unlinked", channelUID);
-        }
+        logger.debug("channel {} unlinked", channelUID);
 
         InsteonChannelHandler channelHandler = channelHandlers.remove(channelUID);
         if (channelHandler != null) {
@@ -154,9 +142,7 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
 
     @Override
     public void handleCommand(ChannelUID channelUID, Command command) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("channel {} received command {}", channelUID, command);
-        }
+        logger.debug("channel {} received command {}", channelUID, command);
 
         ThingStatus status = getThing().getStatus();
         if (status != ThingStatus.ONLINE) {
@@ -174,17 +160,15 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
 
     @Override
     public void updateState(ChannelUID channelUID, State state) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("publishing state {} on {}", state, channelUID);
-        }
+        logger.debug("publishing state {} on {}", state, channelUID);
+
         super.updateState(channelUID, state);
     }
 
     @Override
     public void triggerChannel(ChannelUID channelUID, String event) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("triggering event {} on {}", event, channelUID);
-        }
+        logger.debug("triggering event {} on {}", event, channelUID);
+
         super.triggerChannel(channelUID, event);
     }
 
@@ -281,31 +265,23 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
         for (DeviceFeature feature : device.getFeatures()) {
             String featureName = feature.getName();
             if (feature.isGroupFeature()) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{} is a group feature for {}. It will not be added as a channel.", featureName,
-                            deviceTypeName);
-                }
+                logger.trace("{} is a group feature for {}. It will not be added as a channel.", featureName,
+                        deviceTypeName);
             } else if (feature.isHiddenFeature()) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("{} is a hidden feature for {}. It will not be added as a channel.", featureName,
-                            deviceTypeName);
-                }
+                logger.trace("{} is a hidden feature for {}. It will not be added as a channel.", featureName,
+                        deviceTypeName);
             } else {
                 String channelId = featureNameToChannelId(featureName);
                 Channel channel = createChannel(channelId);
                 if (channel != null) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("adding channel {}", channel.getUID());
-                    }
+                    logger.trace("adding channel {}", channel.getUID());
                     channels.add(channel);
                 } else {
                     logger.warn("unable to create channel {} for {}", channelId, deviceTypeName);
                 }
                 // add existing custom channels with the same channel type id but different channel id
                 for (Channel customChannel : getCustomChannels(channelId)) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("adding custom channel {}", customChannel.getUID());
-                    }
+                    logger.trace("adding custom channel {}", customChannel.getUID());
                     channels.add(customChannel);
                 }
             }
@@ -389,9 +365,7 @@ public abstract class InsteonBaseThingHandler extends BaseThingHandler implement
             }
         }
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("updating properties for {} to {}", getThing().getUID(), properties);
-        }
+        logger.trace("updating properties for {} to {}", getThing().getUID(), properties);
 
         updateProperties(properties);
     }

@@ -132,9 +132,8 @@ public class InsteonScene {
      * @param entry the scene entry to add
      */
     private void addEntry(SceneEntry entry) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("adding entry to scene {}: {}", group, entry);
-        }
+        logger.trace("adding entry to scene {}: {}", group, entry);
+
         synchronized (entries) {
             if (entries.add(entry)) {
                 entry.register();
@@ -168,9 +167,8 @@ public class InsteonScene {
      * @param address the device address
      */
     public void deleteEntries(InsteonAddress address) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("removing entries from scene {} for device {}", group, address);
-        }
+        logger.trace("removing entries from scene {} for device {}", group, address);
+
         getEntries(address).forEach(this::deleteEntry);
     }
 
@@ -187,9 +185,7 @@ public class InsteonScene {
             for (InsteonAddress address : modem.getDB().getRelatedDevices(group)) {
                 InsteonDevice device = modem.getInsteonDevice(address);
                 if (device == null) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("device {} part of scene {} not enabled or configured, ignoring.", address, group);
-                    }
+                    logger.debug("device {} part of scene {} not enabled or configured, ignoring.", address, group);
                 } else {
                     updateEntries(device);
                 }
@@ -204,9 +200,8 @@ public class InsteonScene {
      */
     public void updateEntries(InsteonDevice device) {
         InsteonAddress address = device.getAddress();
-        if (logger.isTraceEnabled()) {
-            logger.trace("updating entries for scene {} device {}", group, address);
-        }
+
+        logger.trace("updating entries for scene {} device {}", group, address);
 
         getEntries(address).forEach(this::deleteEntry);
 
@@ -224,9 +219,8 @@ public class InsteonScene {
      * Resets state for this scene
      */
     public void resetState() {
-        if (logger.isTraceEnabled()) {
-            logger.trace("resetting state for scene {}", group);
-        }
+        logger.trace("resetting state for scene {}", group);
+
         getEntries().forEach(entry -> entry.setState(UnDefType.NULL));
     }
 
@@ -302,9 +296,7 @@ public class InsteonScene {
         }
 
         if (!hasModemDBEntry()) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("scene {} found in the modem database.", group);
-            }
+            logger.debug("scene {} found in the modem database.", group);
             setHasModemDBEntry(true);
         }
 
@@ -315,9 +307,8 @@ public class InsteonScene {
      * Refreshes this scene
      */
     public void refresh() {
-        if (logger.isTraceEnabled()) {
-            logger.trace("refreshing scene {}", group);
-        }
+        logger.trace("refreshing scene {}", group);
+
         initialize();
 
         InsteonSceneHandler handler = getHandler();

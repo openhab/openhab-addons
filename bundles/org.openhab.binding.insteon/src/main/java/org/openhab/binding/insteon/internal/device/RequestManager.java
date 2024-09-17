@@ -75,21 +75,18 @@ public class RequestManager {
      */
     public void addQueue(Device device, long delay) {
         synchronized (requestQueues) {
-            long time = System.currentTimeMillis() + delay;
+            long now = System.currentTimeMillis();
+            long time = now + delay;
             RequestQueue queue = requestQueueHash.get(device);
             if (queue == null) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("scheduling request for device {} in {} msec", device.getAddress(), delay);
-                }
+                logger.trace("scheduling request for device {} in {} msec", device.getAddress(), delay);
                 queue = new RequestQueue(device, time);
                 requestQueues.add(queue);
                 requestQueueHash.put(device, queue);
                 requestQueues.notify();
             } else if (queue.getExpirationTime() > time) {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("rescheduling request for device {} from {} to {} msec", device.getAddress(),
-                            queue.getExpirationTime() - System.currentTimeMillis(), delay);
-                }
+                logger.trace("rescheduling request for device {} from {} to {} msec", device.getAddress(),
+                        queue.getExpirationTime() - now, delay);
                 queue.setExpirationTime(time);
             }
         }
@@ -100,9 +97,8 @@ public class RequestManager {
      */
     public void pause() {
         if (isRunning() && !paused.getAndSet(true)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("pausing request queue thread");
-            }
+            logger.debug("pausing request queue thread");
+
             synchronized (requestQueues) {
                 requestQueues.notify();
             }
@@ -114,9 +110,8 @@ public class RequestManager {
      */
     public void resume() {
         if (isRunning() && paused.getAndSet(false)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("resuming request queue thread");
-            }
+            logger.debug("resuming request queue thread");
+
             synchronized (paused) {
                 paused.notify();
             }
@@ -156,18 +151,14 @@ public class RequestManager {
                 while (!Thread.interrupted()) {
                     synchronized (paused) {
                         if (paused.get()) {
-                            if (logger.isTraceEnabled()) {
-                                logger.trace("waiting for request queue thread to resume");
-                            }
+                            logger.trace("waiting for request queue thread to resume");
                             paused.wait();
                             continue;
                         }
                     }
                     synchronized (requestQueues) {
                         if (requestQueues.isEmpty()) {
-                            if (logger.isTraceEnabled()) {
-                                logger.trace("waiting for request queues to fill");
-                            }
+                            logger.trace("waiting for request queues to fill");
                             requestQueues.wait();
                             continue;
                         }
@@ -175,14 +166,13 @@ public class RequestManager {
                         if (queue != null) {
                             long now = System.currentTimeMillis();
                             long expTime = queue.getExpirationTime();
+                            long delay = expTime - now;
                             Device device = queue.getDevice();
-                            if (expTime > now) {
+                            if (delay > 0) {
                                 // The head of the queue is not up for processing yet, wait().
-                                if (logger.isTraceEnabled()) {
-                                    logger.trace("request queue head: {} must wait for {} msec", device.getAddress(),
-                                            expTime - now);
-                                }
-                                requestQueues.wait(expTime - now);
+                                logger.trace("request queue head: {} must wait for {} msec", device.getAddress(),
+                                        delay);
+                                requestQueues.wait(delay);
                             } else {
                                 // The head of the queue has expired and can be processed!
                                 processRequestQueue(now);
@@ -211,14 +201,10 @@ public class RequestManager {
                     queue = new RequestQueue(device, nextExp);
                     requestQueues.add(queue);
                     requestQueueHash.put(device, queue);
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("device queue for {} rescheduled in {} msec", device.getAddress(), nextExp - now);
-                    }
+                    logger.trace("device queue for {} rescheduled in {} msec", device.getAddress(), nextExp - now);
                 } else {
                     // remove from hash since queue is no longer scheduled
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("device queue for {} is empty!", device.getAddress());
-                    }
+                    logger.debug("device queue for {} is empty!", device.getAddress());
                 }
             }
         }

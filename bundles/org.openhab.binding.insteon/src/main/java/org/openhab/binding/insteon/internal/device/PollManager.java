@@ -86,9 +86,8 @@ public class PollManager {
      * @param numDev approximate number of total devices
      */
     public void startPolling(Device device, long pollInterval, int numDev) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("start polling device {}", device.getAddress());
-        }
+        logger.debug("start polling device {}", device.getAddress());
+
         synchronized (pollQueue) {
             // try to spread out the scheduling when starting up
             long pollDelay = pollQueue.size() * pollInterval / (numDev + 1);
@@ -107,9 +106,7 @@ public class PollManager {
             for (Iterator<PQEntry> it = pollQueue.iterator(); it.hasNext();) {
                 if (it.next().getDevice().getAddress().equals(device.getAddress())) {
                     it.remove();
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("stopped polling device {}", device.getAddress());
-                    }
+                    logger.debug("stopped polling device {}", device.getAddress());
                 }
             }
         }
@@ -150,9 +147,7 @@ public class PollManager {
     private void addToPollQueue(Device device, long pollInterval, long time) {
         long expTime = findNextExpirationTime(device, pollInterval, time);
         PQEntry queue = new PQEntry(device, pollInterval, expTime);
-        if (logger.isTraceEnabled()) {
-            logger.trace("added entry {}", queue);
-        }
+        logger.trace("added entry {}", queue);
         pollQueue.add(queue);
     }
 
@@ -191,10 +186,8 @@ public class PollManager {
                     long prevTime = prevQueue.getExpirationTime();
                     if (currTime - prevTime >= 2 * MIN_MSEC_BETWEEN_POLLS) {
                         // found gap
-                        if (logger.isTraceEnabled()) {
-                            logger.trace("device {} time {} found slot between {} and {}", device.getAddress(), time,
-                                    prevTime, currTime);
-                        }
+                        logger.trace("device {} time {} found slot between {} and {}", device.getAddress(), time,
+                                prevTime, currTime);
                         break;
                     }
                     prevQueue = currQueue;
@@ -213,9 +206,7 @@ public class PollManager {
                 while (!Thread.interrupted()) {
                     synchronized (pollQueue) {
                         if (pollQueue.isEmpty()) {
-                            if (logger.isTraceEnabled()) {
-                                logger.trace("waiting for poll queue to fill");
-                            }
+                            logger.trace("waiting for poll queue to fill");
                             pollQueue.wait();
                             continue;
                         }
@@ -224,14 +215,10 @@ public class PollManager {
                         PQEntry queue = pollQueue.first();
                         long delay = queue.getExpirationTime() - now;
                         if (delay > 0) { // must wait for this item to expire
-                            if (logger.isTraceEnabled()) {
-                                logger.trace("waiting for {} msec until {} comes due", delay, queue);
-                            }
+                            logger.trace("waiting for {} msec until {} comes due", delay, queue);
                             pollQueue.wait(delay);
                         } else { // queue entry has expired, process it!
-                            if (logger.isTraceEnabled()) {
-                                logger.trace("poll queue {} has expired", queue);
-                            }
+                            logger.trace("poll queue {} has expired", queue);
                             processQueueEntry(now);
                         }
                     }

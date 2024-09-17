@@ -91,9 +91,7 @@ public class InsteonDiscoveryService extends AbstractDiscoveryService {
 
             if (handler.isDeviceDiscoveryEnabled()) {
                 modem.getDB().getDevices().stream().filter(address -> !modem.hasDevice(address)).forEach(address -> {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("device {} in the modem database, but not configured", address);
-                    }
+                    logger.debug("device {} in the modem database, but not configured", address);
                     addInsteonDevice(address, handler.getProductData(address));
                 });
             } else {
@@ -102,9 +100,7 @@ public class InsteonDiscoveryService extends AbstractDiscoveryService {
 
             if (handler.isSceneDiscoveryEnabled()) {
                 modem.getDB().getBroadcastGroups().stream().filter(group -> !modem.hasScene(group)).forEach(group -> {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("scene {} in the modem database, but not configured", group);
-                    }
+                    logger.debug("scene {} in the modem database, but not configured", group);
                     addInsteonScene(group);
                 });
             } else {
@@ -126,9 +122,7 @@ public class InsteonDiscoveryService extends AbstractDiscoveryService {
         thingDiscovered(DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
                 .withProperties(properties).withRepresentationProperty(PROPERTY_DEVICE_ADDRESS).build());
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("added Insteon device {} to inbox", address);
-        }
+        logger.debug("added Insteon device {} to inbox", address);
     }
 
     private void addInsteonScene(int group) {
@@ -142,9 +136,7 @@ public class InsteonDiscoveryService extends AbstractDiscoveryService {
         thingDiscovered(DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
                 .withProperties(properties).withRepresentationProperty(PROPERTY_SCENE_GROUP).build());
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("added Insteon scene {} to inbox", group);
-        }
+        logger.debug("added Insteon scene {} to inbox", group);
     }
 
     private void removeInsteonDevice(InsteonAddress address) {

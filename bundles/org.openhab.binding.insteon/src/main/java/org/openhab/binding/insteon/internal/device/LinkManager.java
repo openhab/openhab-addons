@@ -115,9 +115,8 @@ public class LinkManager implements PortListener {
 
     private void start(@Nullable InsteonAddress address) {
         long startTime = System.currentTimeMillis();
-        if (logger.isDebugEnabled()) {
-            logger.debug("starting device linker for {}", address);
-        }
+
+        logger.debug("starting device linker for {}", address);
 
         modem.getPort().registerListener(this);
         modem.getRequestManager().pause();
@@ -143,9 +142,7 @@ public class LinkManager implements PortListener {
     }
 
     public void stop() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("device linker finished for {}", address);
-        }
+        logger.debug("device linker finished for {}", address);
 
         modem.getRequestManager().resume();
         modem.getPort().unregisterListener(this);
@@ -243,7 +240,8 @@ public class LinkManager implements PortListener {
             } else if (msg.getCommand() == 0x53) {
                 // we got a linking completed message
                 handleNextLinkingRequest();
-            } else if (msg.getCommand() == 0x5C && (msg.getCommand() == 0x08 || msg.getCommand() == 0x09)) {
+            } else if (msg.getCommand() == 0x5C
+                    && (msg.getByte("command1") == 0x08 || msg.getByte("command1") == 0x09)) {
                 // we got a linking mode failure report message
                 handleLinkingModeFailure(msg);
             } else if (msg.getCommand() == 0x64) {

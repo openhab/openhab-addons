@@ -96,13 +96,11 @@ public class MsgDefinitionRegistry extends ResourceLoader {
     protected void initialize() {
         super.initialize();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("loaded {} message definitions", definitions.size());
-            if (logger.isTraceEnabled()) {
-                definitions.entrySet().stream()
-                        .map(definition -> String.format("%s->%s", definition.getKey(), definition.getValue()))
-                        .forEach(logger::trace);
-            }
+        logger.debug("loaded {} message definitions", definitions.size());
+        if (logger.isTraceEnabled()) {
+            definitions.entrySet().stream()
+                    .map(definition -> String.format("%s->%s", definition.getKey(), definition.getValue()))
+                    .forEach(logger::trace);
         }
     }
 
@@ -248,7 +246,7 @@ public class MsgDefinitionRegistry extends ResourceLoader {
      */
     private byte getByteValue(String value) throws SAXException {
         try {
-            return "".equals(value) ? 0x00 : (byte) HexUtils.toInteger(value);
+            return value.isEmpty() ? 0x00 : (byte) HexUtils.toInteger(value);
         } catch (NumberFormatException e) {
             throw new SAXException("invalid field byte value: " + value);
         }
@@ -263,7 +261,7 @@ public class MsgDefinitionRegistry extends ResourceLoader {
      */
     private InsteonAddress getAddressValue(String value) throws SAXException {
         try {
-            return "".equals(value) ? InsteonAddress.UNKNOWN : new InsteonAddress(value);
+            return value.isEmpty() ? InsteonAddress.UNKNOWN : new InsteonAddress(value);
         } catch (IllegalArgumentException e) {
             throw new SAXException("invalid field address value: " + value);
         }
@@ -286,7 +284,7 @@ public class MsgDefinitionRegistry extends ResourceLoader {
             Field field = entry.getKey();
             byte[] data = msg.getData();
             field.set(data, entry.getValue());
-            if (!"".equals(field.getName())) {
+            if (!field.getName().isEmpty()) {
                 msg.addField(field);
             }
         }

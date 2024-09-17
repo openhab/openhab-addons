@@ -66,9 +66,7 @@ public class InsteonLegacyDiscoveryService extends AbstractDiscoveryService {
             thingDiscovered(DiscoveryResultBuilder.create(thingUID).withBridge(bridgeUID).withLabel(label)
                     .withProperties(properties).withRepresentationProperty(PROPERTY_DEVICE_ADDRESS).build());
 
-            if (logger.isDebugEnabled()) {
-                logger.debug("added Insteon device {} to inbox", address);
-            }
+            logger.debug("added Insteon device {} to inbox", address);
         }
     }
 

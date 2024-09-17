@@ -88,17 +88,13 @@ public class Port {
 
     public void registerListener(PortListener listener) {
         if (listeners.add(listener)) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("added listener for {}", listener.getClass().getSimpleName());
-            }
+            logger.trace("added listener for {}", listener.getClass().getSimpleName());
         }
     }
 
     public void unregisterListener(PortListener listener) {
         if (listeners.remove(listener)) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("removed listener for {}", listener.getClass().getSimpleName());
-            }
+            logger.trace("removed listener for {}", listener.getClass().getSimpleName());
         }
     }
 
@@ -171,9 +167,7 @@ public class Port {
         }
         try {
             writeQueue.add(msg);
-            if (logger.isTraceEnabled()) {
-                logger.trace("enqueued msg ({}): {}", writeQueue.size(), msg);
-            }
+            logger.trace("enqueued msg ({}): {}", writeQueue.size(), msg);
         } catch (IllegalStateException e) {
             logger.debug("cannot write message {}, write queue is full!", msg);
         }
@@ -230,9 +224,7 @@ public class Port {
             byte[] buffer = new byte[READ_BUFFER_SIZE];
             try {
                 while (!Thread.interrupted()) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("reader checking for input data");
-                    }
+                    logger.trace("reader checking for input data");
                     // this call blocks until input data is available
                     int len = ioStream.read(buffer);
                     if (len > 0) {
@@ -255,9 +247,7 @@ public class Port {
                 try {
                     Msg msg = msgFactory.processData();
                     if (msg != null) {
-                        if (logger.isDebugEnabled()) {
-                            logger.debug("got msg: {}", msg);
-                        }
+                        logger.debug("got msg: {}", msg);
                         messageReceived(msg);
                         notifyWriter(msg);
                     }
@@ -280,9 +270,7 @@ public class Port {
                 if (replyType == ReplyType.WAITING_FOR_ACK) {
                     if (msg.isEcho()) {
                         replyType = msg.isPureNack() ? ReplyType.GOT_NACK : ReplyType.GOT_ACK;
-                        if (logger.isTraceEnabled()) {
-                            logger.trace("signaling receipt of ack: {}", replyType == ReplyType.GOT_ACK);
-                        }
+                        logger.trace("signaling receipt of ack: {}", replyType == ReplyType.GOT_ACK);
                         replyLock.notify();
                     }
                 }
@@ -297,9 +285,7 @@ public class Port {
          * @throws InterruptedException
          */
         public boolean waitForReply() throws InterruptedException {
-            if (logger.isTraceEnabled()) {
-                logger.trace("waiting for reply ack");
-            }
+            logger.trace("waiting for reply ack");
             replyType = ReplyType.WAITING_FOR_ACK;
             // There have been cases observed, in particular for
             // the Hub, where we get no ack or nack back, causing the binding
@@ -308,14 +294,10 @@ public class Port {
             // if the wait() times out.
             replyLock.wait(REPLY_TIMEOUT_TIME);
             if (replyType == ReplyType.WAITING_FOR_ACK) { // timeout expired without getting ACK or NACK
-                if (logger.isTraceEnabled()) {
-                    logger.trace("reply ack timeout expired, asking for retransmit!");
-                }
+                logger.trace("reply ack timeout expired, asking for retransmit!");
                 replyType = ReplyType.GOT_NACK;
             } else {
-                if (logger.isTraceEnabled()) {
-                    logger.trace("got reply ack: {}", replyType == ReplyType.GOT_ACK);
-                }
+                logger.trace("got reply ack: {}", replyType == ReplyType.GOT_ACK);
             }
             return replyType == ReplyType.GOT_NACK;
         }
@@ -334,22 +316,16 @@ public class Port {
             logger.debug("starting writer thread");
             try {
                 while (!Thread.interrupted()) {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("writer checking message queue");
-                    }
+                    logger.trace("writer checking message queue");
                     // this call blocks until the lock on the queue is released
                     Msg msg = writeQueue.take();
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("writing: {}", msg);
-                    }
+                    logger.debug("writing: {}", msg);
                     synchronized (reader.getReplyLock()) {
                         ioStream.write(msg.getData());
                         messageSent(msg);
                         while (reader.waitForReply()) {
                             Thread.sleep(RETRANSMIT_WAIT_TIME);
-                            if (logger.isTraceEnabled()) {
-                                logger.trace("retransmitting msg: {}", msg);
-                            }
+                            logger.trace("retransmitting msg: {}", msg);
                             ioStream.write(msg.getData());
                         }
                     }

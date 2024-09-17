@@ -130,19 +130,13 @@ public abstract class MessageHandler extends FeatureBaseHandler {
      */
     public boolean canHandle(Msg msg) {
         if (isDuplicate(msg)) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("{}:{} ignoring msg as duplicate", getDevice().getAddress(), feature.getName());
-            }
+            logger.trace("{}:{} ignoring msg as duplicate", getDevice().getAddress(), feature.getName());
             return false;
         } else if (!isValid(msg)) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("{}:{} ignoring msg as not valid", getDevice().getAddress(), feature.getName());
-            }
+            logger.trace("{}:{} ignoring msg as not valid", getDevice().getAddress(), feature.getName());
             return false;
         } else if (!matchesFilters(msg)) {
-            if (logger.isTraceEnabled()) {
-                logger.trace("{}:{} ignoring msg as unmatch filters", getDevice().getAddress(), feature.getName());
-            }
+            logger.trace("{}:{} ignoring msg as unmatch filters", getDevice().getAddress(), feature.getName());
             return false;
         }
         return true;
@@ -332,10 +326,8 @@ public abstract class MessageHandler extends FeatureBaseHandler {
                 feature.setLastMsgValue(value);
                 // update state if defined
                 if (state != null) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: device {} {} changed to {}", nm(), getInsteonDevice().getAddress(),
-                                feature.getName(), state);
-                    }
+                    logger.debug("{}: device {} {} changed to {}", nm(), getInsteonDevice().getAddress(),
+                            feature.getName(), state);
                     feature.updateState(state);
                 }
             } catch (FieldException e) {
@@ -601,9 +593,7 @@ public abstract class MessageHandler extends FeatureBaseHandler {
 
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("{}: successfully pinged device {}", nm(), getInsteonDevice().getAddress());
-            }
+            logger.debug("{}: successfully pinged device {}", nm(), getInsteonDevice().getAddress());
         }
     }
 
@@ -669,10 +659,8 @@ public abstract class MessageHandler extends FeatureBaseHandler {
             try {
                 byte cmd2 = msg.getByte("command2");
                 ButtonEvent event = ButtonEvent.valueOf(cmd1, cmd2);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: device {} {} received event {}", nm(), getInsteonDevice().getAddress(),
-                            feature.getName(), event);
-                }
+                logger.debug("{}: device {} {} received event {}", nm(), getInsteonDevice().getAddress(),
+                        feature.getName(), event);
                 feature.triggerEvent(event.toString());
                 feature.pollRelatedDevices(0L);
             } catch (FieldException e) {
@@ -719,9 +707,7 @@ public abstract class MessageHandler extends FeatureBaseHandler {
             String mode = getParameterAsString("mode", "REGULAR");
             State state = getState(mode);
             if (state != null) {
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: device {} changed to {} {}", nm(), getInsteonDevice().getAddress(), state, mode);
-                }
+                logger.debug("{}: device {} changed to {} {}", nm(), getInsteonDevice().getAddress(), state, mode);
                 feature.updateState(state);
             }
         }
@@ -984,10 +970,8 @@ public abstract class MessageHandler extends FeatureBaseHandler {
                 } else {
                     int value = msg.getByte("userData10") << 8 | msg.getByte("userData13");
                     KeypadButtonToggleMode mode = KeypadButtonToggleMode.valueOf(value, bit);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: device {} {} changed to {}", nm(), getInsteonDevice().getAddress(),
-                                feature.getName(), mode);
-                    }
+                    logger.debug("{}: device {} {} changed to {}", nm(), getInsteonDevice().getAddress(),
+                            feature.getName(), mode);
                     feature.setLastMsgValue(value);
                     feature.updateState(new StringType(mode.toString()));
                 }
@@ -1859,9 +1843,7 @@ public abstract class MessageHandler extends FeatureBaseHandler {
                 int button = getParameterAsInteger("button", 1);
                 int mask = (button - 1) << 4;
                 IMButtonEvent event = IMButtonEvent.valueOf(cmd ^ mask);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: IM {} received event {}", nm(), feature.getName(), event);
-                }
+                logger.debug("{}: IM {} received event {}", nm(), feature.getName(), event);
                 feature.triggerEvent(event.toString());
             } catch (FieldException e) {
                 logger.warn("{}: error parsing msg {}", nm(), msg, e);
@@ -1890,9 +1872,7 @@ public abstract class MessageHandler extends FeatureBaseHandler {
                 }
                 boolean isSet = BinaryUtils.isBitSet(flags, bit);
                 State state = OnOffType.from(isSet ^ getParameterAsBoolean("inverted", false));
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: IM {} changed to {}", nm(), feature.getName(), state);
-                }
+                logger.debug("{}: IM {} changed to {}", nm(), feature.getName(), state);
                 feature.setLastMsgValue(flags);
                 feature.updateState(state);
             } catch (FieldException e) {
@@ -1912,9 +1892,7 @@ public abstract class MessageHandler extends FeatureBaseHandler {
 
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("{}: device {} changed to ON", nm(), getX10Device().getAddress());
-            }
+            logger.debug("{}: device {} changed to ON", nm(), getX10Device().getAddress());
             feature.updateState(OnOffType.ON);
         }
     }
@@ -1926,9 +1904,7 @@ public abstract class MessageHandler extends FeatureBaseHandler {
 
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("{}: device {} changed to OFF", nm(), getX10Device().getAddress());
-            }
+            logger.debug("{}: device {} changed to OFF", nm(), getX10Device().getAddress());
             feature.updateState(OnOffType.OFF);
         }
     }
@@ -1940,9 +1916,7 @@ public abstract class MessageHandler extends FeatureBaseHandler {
 
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("{}: ignoring brighten message for device {}", nm(), getX10Device().getAddress());
-            }
+            logger.debug("{}: ignoring brighten message for device {}", nm(), getX10Device().getAddress());
         }
     }
 
@@ -1953,9 +1927,7 @@ public abstract class MessageHandler extends FeatureBaseHandler {
 
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("{}: ignoring dim message for device {}", nm(), getX10Device().getAddress());
-            }
+            logger.debug("{}: ignoring dim message for device {}", nm(), getX10Device().getAddress());
         }
     }
 
@@ -1966,9 +1938,7 @@ public abstract class MessageHandler extends FeatureBaseHandler {
 
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("{}: device {} changed to OPEN", nm(), getX10Device().getAddress());
-            }
+            logger.debug("{}: device {} changed to OPEN", nm(), getX10Device().getAddress());
             feature.updateState(OpenClosedType.OPEN);
         }
     }
@@ -1980,9 +1950,7 @@ public abstract class MessageHandler extends FeatureBaseHandler {
 
         @Override
         public void handleMessage(byte cmd1, Msg msg) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("{}: device {} changed to CLOSED", nm(), getX10Device().getAddress());
-            }
+            logger.debug("{}: device {} changed to CLOSED", nm(), getX10Device().getAddress());
             feature.updateState(OpenClosedType.CLOSED);
         }
     }

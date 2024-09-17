@@ -75,11 +75,9 @@ public class DeviceTypeRegistry extends ResourceLoader {
     protected void initialize() {
         super.initialize();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("loaded {} device types", deviceTypes.size());
-            if (logger.isTraceEnabled()) {
-                deviceTypes.values().stream().map(String::valueOf).forEach(logger::trace);
-            }
+        logger.debug("loaded {} device types", deviceTypes.size());
+        if (logger.isTraceEnabled()) {
+            deviceTypes.values().stream().map(String::valueOf).forEach(logger::trace);
         }
     }
 
@@ -115,7 +113,7 @@ public class DeviceTypeRegistry extends ResourceLoader {
      */
     private void parseDeviceType(Element element) throws SAXException {
         String name = element.getAttribute("name");
-        if ("".equals(name)) {
+        if (name.isEmpty()) {
             throw new SAXException("device type in device_types file has no name!");
         }
         if (deviceTypes.containsKey(name)) {
@@ -182,7 +180,7 @@ public class DeviceTypeRegistry extends ResourceLoader {
      */
     private String parseFeature(Element element, Map<String, FeatureEntry> features) throws SAXException {
         String name = element.getAttribute("name");
-        if ("".equals(name)) {
+        if (name.isEmpty()) {
             throw new SAXException("undefined feature name");
         }
         String type = element.getTextContent();
@@ -206,11 +204,11 @@ public class DeviceTypeRegistry extends ResourceLoader {
      */
     private void parseFeatureGroup(Element element, Map<String, FeatureEntry> features) throws SAXException {
         String name = element.getAttribute("name");
-        if ("".equals(name)) {
+        if (name.isEmpty()) {
             throw new SAXException("undefined feature group name");
         }
         String type = element.getAttribute("type");
-        if ("".equals(type)) {
+        if (type.isEmpty()) {
             throw new SAXException("undefined feature group type");
         }
         Map<String, String> params = getParameters(element, List.of("name", "type"));
@@ -241,7 +239,7 @@ public class DeviceTypeRegistry extends ResourceLoader {
      */
     private void parseDefaultLink(Element element, Map<String, DefaultLinkEntry> links) throws SAXException {
         String name = element.getAttribute("name");
-        if ("".equals(name)) {
+        if (name.isEmpty()) {
             throw new SAXException("undefined default link name");
         }
         boolean isController = "controller".equals(element.getAttribute("type"));
@@ -280,7 +278,7 @@ public class DeviceTypeRegistry extends ResourceLoader {
      */
     private CommandEntry getDefaultLinkCommand(Element element) throws SAXException {
         String name = element.getAttribute("name");
-        if ("".equals(name)) {
+        if (name.isEmpty()) {
             throw new SAXException("undefined default link command name");
         }
         int ext = getAttributeAsInteger(element, "ext");

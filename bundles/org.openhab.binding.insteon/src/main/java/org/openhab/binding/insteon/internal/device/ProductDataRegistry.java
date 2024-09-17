@@ -98,11 +98,9 @@ public class ProductDataRegistry extends ResourceLoader {
     protected void initialize() {
         super.initialize();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("loaded {} products", products.size());
-            if (logger.isTraceEnabled()) {
-                products.values().stream().map(String::valueOf).forEach(logger::trace);
-            }
+        logger.debug("loaded {} products", products.size());
+        if (logger.isTraceEnabled()) {
+            products.values().stream().map(String::valueOf).forEach(logger::trace);
         }
     }
 

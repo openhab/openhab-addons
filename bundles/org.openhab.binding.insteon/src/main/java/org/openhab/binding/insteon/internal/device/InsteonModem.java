@@ -253,9 +253,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
 
         initialized = true;
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("modem discovered: {}", this);
-        }
+        logger.debug("modem discovered: {}", this);
 
         InsteonBridgeHandler handler = getHandler();
         if (handler != null) {
@@ -264,32 +262,28 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     }
 
     public void logDeviceStatistics() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("devices: {} configured, {} polling, msgs received: {}", getDevices().size(),
-                    getPollManager().getSizeOfQueue(), msgsReceived);
-        }
+        logger.debug("devices: {} configured, {} polling, msgs received: {}", getDevices().size(),
+                getPollManager().getSizeOfQueue(), msgsReceived);
         msgsReceived = 0;
     }
 
     private void logDevicesAndScenes() {
-        if (logger.isDebugEnabled()) {
-            if (!getInsteonDevices().isEmpty()) {
-                logger.debug("configured {} insteon devices", getInsteonDevices().size());
-                if (logger.isTraceEnabled()) {
-                    getInsteonDevices().stream().map(String::valueOf).forEach(logger::trace);
-                }
+        if (!getInsteonDevices().isEmpty()) {
+            logger.debug("configured {} insteon devices", getInsteonDevices().size());
+            if (logger.isTraceEnabled()) {
+                getInsteonDevices().stream().map(String::valueOf).forEach(logger::trace);
             }
-            if (!getX10Devices().isEmpty()) {
-                logger.debug("configured {} x10 devices", getX10Devices().size());
-                if (logger.isTraceEnabled()) {
-                    getX10Devices().stream().map(String::valueOf).forEach(logger::trace);
-                }
+        }
+        if (!getX10Devices().isEmpty()) {
+            logger.debug("configured {} x10 devices", getX10Devices().size());
+            if (logger.isTraceEnabled()) {
+                getX10Devices().stream().map(String::valueOf).forEach(logger::trace);
             }
-            if (!getScenes().isEmpty()) {
-                logger.debug("configured {} insteon scenes", getScenes().size());
-                if (logger.isTraceEnabled()) {
-                    getScenes().stream().map(String::valueOf).forEach(logger::trace);
-                }
+        }
+        if (!getScenes().isEmpty()) {
+            logger.debug("configured {} insteon scenes", getScenes().size());
+            if (logger.isTraceEnabled()) {
+                getScenes().stream().map(String::valueOf).forEach(logger::trace);
             }
         }
     }
@@ -303,9 +297,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     public void pollRelatedDevices(int group, long delay) {
         modemDB.getRelatedDevices(group).stream().map(this::getInsteonDevice).filter(Objects::nonNull)
                 .map(Objects::requireNonNull).forEach(device -> {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("polling related device {} to broadcast group {}", device.getAddress(), group);
-                    }
+                    logger.debug("polling related device {} to broadcast group {}", device.getAddress(), group);
                     device.pollResponders(address, group, delay);
                 });
     }
@@ -341,9 +333,8 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         if (!modemDB.isComplete()) {
             return;
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("modem database link updated for device {} group {} 2way {}", address, group, is2Way);
-        }
+        logger.debug("modem database link updated for device {} group {} 2way {}", address, group, is2Way);
+
         InsteonDevice device = getInsteonDevice(address);
         if (device != null) {
             device.refresh();
@@ -372,9 +363,8 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
         if (!modemDB.isComplete()) {
             return;
         }
-        if (logger.isDebugEnabled()) {
-            logger.debug("product data updated for device {} {}", address, productData);
-        }
+        logger.debug("product data updated for device {} {}", address, productData);
+
         InsteonDevice device = getInsteonDevice(address);
         if (device != null) {
             device.updateProductData(productData);
@@ -389,9 +379,8 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
      * Notifies that the modem reset process has been initiated
      */
     public void resetInitiated() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("modem reset initiated");
-        }
+        logger.debug("modem reset initiated");
+
         InsteonBridgeHandler handler = getHandler();
         if (handler != null) {
             handler.reset(RESET_TIME);
@@ -403,9 +392,8 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
      */
     @Override
     public void disconnected() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("modem port disconnected");
-        }
+        logger.debug("modem port disconnected");
+
         InsteonBridgeHandler handler = getHandler();
         if (handler != null) {
             handler.reconnect(this);
@@ -499,9 +487,7 @@ public class InsteonModem extends BaseDevice<InsteonAddress, InsteonBridgeHandle
     private void handleMessage(DeviceAddress address, Msg msg) throws FieldException {
         Device device = getDevice(address);
         if (device == null) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("unknown device with address {}, dropping message", address);
-            }
+            logger.debug("unknown device with address {}, dropping message", address);
         } else if (msg.isReply()) {
             device.requestReplied(msg);
         } else {

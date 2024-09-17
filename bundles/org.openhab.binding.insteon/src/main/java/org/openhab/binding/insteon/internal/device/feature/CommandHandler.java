@@ -480,15 +480,11 @@ public abstract class CommandHandler extends FeatureBaseHandler {
                 int group = getGroup(config);
                 // ignore request if cmd1/level not defined, send broadcast msg if group defined, otherwise direct msg
                 if (cmd1 == -1 || level == -1) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: unable to determine cmd1 or level value, ignoring request", nm());
-                    }
+                    logger.debug("{}: unable to determine cmd1 or level value, ignoring request", nm());
                 } else if (group != -1) {
                     Msg msg = Msg.makeBroadcastMessage(group, (byte) cmd1, (byte) level);
                     feature.sendRequest(msg);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: sent broadcast {} request to group {}", nm(), cmd, group);
-                    }
+                    logger.debug("{}: sent broadcast {} request to group {}", nm(), cmd, group);
                     // poll related devices to broadcast group,
                     // allowing each responder feature to determine its own poll delay
                     feature.pollRelatedDevices(group, -1);
@@ -504,9 +500,7 @@ public abstract class CommandHandler extends FeatureBaseHandler {
                         msg = Msg.makeStandardMessage(address, (byte) cmd1, (byte) level);
                     }
                     feature.sendRequest(msg);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: sent {} request to {}", nm(), cmd, address);
-                    }
+                    logger.debug("{}: sent {} request to {}", nm(), cmd, address);
                     // adjust related devices if original channel config (initial request) and device sync enabled
                     if (config.isOriginal() && getInsteonDevice().isDeviceSyncEnabled()) {
                         feature.adjustRelatedDevices(config, cmd);
@@ -538,9 +532,7 @@ public abstract class CommandHandler extends FeatureBaseHandler {
                 level = (state instanceof PercentType percent ? percent : PercentType.HUNDRED).intValue();
 
             }
-            if (logger.isTraceEnabled()) {
-                logger.trace("{}: using on level {}%", nm(), level);
-            }
+            logger.trace("{}: using on level {}%", nm(), level);
             return (int) Math.ceil(level * 255.0 / 100); // round up
         }
     }
@@ -784,9 +776,7 @@ public abstract class CommandHandler extends FeatureBaseHandler {
                 int cmd2 = getEncodedValue(level, rampRate.getValue());
                 Msg msg = Msg.makeStandardMessage(address, (byte) cmd1, (byte) cmd2);
                 feature.sendRequest(msg);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: sent level {} with ramp time {} to {}", nm(), cmd, rampRate, address);
-                }
+                logger.debug("{}: sent level {} with ramp time {} to {}", nm(), cmd, rampRate, address);
                 if (config.isOriginal() && getInsteonDevice().isDeviceSyncEnabled()) {
                     feature.adjustRelatedDevices(config, cmd);
                 }
@@ -1011,23 +1001,17 @@ public abstract class CommandHandler extends FeatureBaseHandler {
             if (KeypadButtonToggleMode.ALWAYS_ON.equals(toggleMode) && OnOffType.OFF.equals(onOffCmd)
                     || KeypadButtonToggleMode.ALWAYS_OFF.equals(toggleMode) && OnOffType.ON.equals(onOffCmd)) {
                 // ignore command when keypad button toggle mode is always on or off
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: {} toggle mode is {}, ignoring {} command", nm(), feature.getName(), toggleMode,
-                            onOffCmd);
-                }
+                logger.debug("{}: {} toggle mode is {}, ignoring {} command", nm(), feature.getName(), toggleMode,
+                        onOffCmd);
             } else if (group != -1) {
                 // send broadcast message if group defined
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: sending broadcast message", nm());
-                }
+                logger.debug("{}: sending broadcast message", nm());
                 sendBroadcastOnOff(config, onOffCmd);
                 // update state since button channels not automatically updated by the framework
                 feature.updateState(onOffCmd);
             } else {
                 // set button led bitmask otherwise
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: setting button led bitmask", nm());
-                }
+                logger.debug("{}: setting button led bitmask", nm());
                 super.handleCommand(config, onOffCmd);
                 // update state since button channels not automatically updated by the framework
                 feature.updateState(onOffCmd);
@@ -1052,9 +1036,7 @@ public abstract class CommandHandler extends FeatureBaseHandler {
                 int offMask = getInsteonDevice().getLastMsgValueAsInteger(FEATURE_TYPE_KEYPAD_BUTTON_OFF_MASK,
                         feature.getGroup(), -1);
                 if (onMask == -1 || offMask == -1) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: undefined button on/off mask last values for {}", nm(), feature.getName());
-                    }
+                    logger.debug("{}: undefined button on/off mask last values for {}", nm(), feature.getName());
                     bitmask = -1;
                 } else {
                     if (logger.isTraceEnabled()) {
@@ -1502,9 +1484,7 @@ public abstract class CommandHandler extends FeatureBaseHandler {
                     InsteonAddress address = getInsteonDevice().getAddress();
                     Msg msg = Msg.makeStandardMessage(address, (byte) cmd1, (byte) 0x00);
                     feature.sendRequest(msg);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: sent {} request to {}", nm(), feature.getName(), address);
-                    }
+                    logger.debug("{}: sent {} request to {}", nm(), feature.getName(), address);
                 } else {
                     logger.warn("{}: no cmd1 field specified", nm());
                 }
@@ -1537,10 +1517,8 @@ public abstract class CommandHandler extends FeatureBaseHandler {
                     byte[] data = getOpFlagData(cmd);
                     Msg msg = getOpFlagMessage(cmd2, data);
                     feature.sendRequest(msg);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: sent op flag {} {} request to {}", nm(), feature.getName(), cmd,
-                                getInsteonDevice().getAddress());
-                    }
+                    logger.debug("{}: sent op flag {} {} request to {}", nm(), feature.getName(), cmd,
+                            getInsteonDevice().getAddress());
                     // update state if not retrievable (e.g. stayAwake)
                     if (!isStateRetrievable()) {
                         feature.updateState((State) cmd);
@@ -1598,10 +1576,8 @@ public abstract class CommandHandler extends FeatureBaseHandler {
                 for (Map.Entry<Integer, String> entry : getOpFlagCommands(cmd).entrySet()) {
                     Msg msg = getOpFlagMessage(entry.getKey(), new byte[0]);
                     feature.sendRequest(msg);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: sent op flag {} request to {}", nm(), entry.getValue(),
-                                getInsteonDevice().getAddress());
-                    }
+                    logger.debug("{}: sent op flag {} request to {}", nm(), entry.getValue(),
+                            getInsteonDevice().getAddress());
                 }
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
@@ -1636,9 +1612,7 @@ public abstract class CommandHandler extends FeatureBaseHandler {
                     boolean setCRC = getInsteonDevice().getInsteonEngine().supportsChecksum();
                     Msg msg = Msg.makeExtendedMessage(address, (byte) 0x2E, (byte) 0x00, data, setCRC);
                     feature.sendRequest(msg);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: sent ramp time {} to {}", nm(), rampRate, address);
-                    }
+                    logger.debug("{}: sent ramp time {} to {}", nm(), rampRate, address);
                 } else {
                     logger.warn("{}: got unexpected ramp rate command {}, ignoreing request", nm(), cmd);
                 }
@@ -2079,9 +2053,7 @@ public abstract class CommandHandler extends FeatureBaseHandler {
                         (byte) time.getMinute(), (byte) time.getSecond() };
                 Msg msg = Msg.makeExtendedMessageCRC2(address, (byte) 0x2E, (byte) 0x02, data);
                 feature.sendRequest(msg);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: sent set time data request to {}", nm(), address);
-                }
+                logger.debug("{}: sent set time data request to {}", nm(), address);
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
             } catch (FieldException e) {
@@ -2103,9 +2075,7 @@ public abstract class CommandHandler extends FeatureBaseHandler {
             try {
                 Msg msg = getIMMessage(cmd);
                 feature.sendRequest(msg);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: sent {} request to {}", nm(), cmd, getInsteonModem().getAddress());
-                }
+                logger.debug("{}: sent {} request to {}", nm(), cmd, getInsteonModem().getAddress());
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
             } catch (FieldException e) {
@@ -2187,9 +2157,7 @@ public abstract class CommandHandler extends FeatureBaseHandler {
                     Msg msg = Msg.makeMessage("SetIMConfig");
                     msg.setByte("IMConfigurationFlags", (byte) bitmask);
                     feature.sendRequest(msg);
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("{}: sent {} request to {}", nm(), cmd, getInsteonModem().getAddress());
-                    }
+                    logger.debug("{}: sent {} request to {}", nm(), cmd, getInsteonModem().getAddress());
                 }
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
@@ -2216,9 +2184,7 @@ public abstract class CommandHandler extends FeatureBaseHandler {
                 feature.sendRequest(addrMsg);
                 Msg cmdMsg = Msg.makeX10CommandMessage((byte) cmdCode);
                 feature.sendRequest(cmdMsg);
-                if (logger.isDebugEnabled()) {
-                    logger.debug("{}: sent {} request to {}", nm(), cmd, address);
-                }
+                logger.debug("{}: sent {} request to {}", nm(), cmd, address);
             } catch (InvalidMessageTypeException e) {
                 logger.warn("{}: invalid message: ", nm(), e);
             } catch (FieldException e) {

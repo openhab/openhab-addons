@@ -332,7 +332,9 @@ public abstract class LegacyMessageHandler {
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            logger.debug("{} ignoring unimpl message with cmd1:{}", nm(), HexUtils.getHexString(cmd1));
+            if (logger.isDebugEnabled()) {
+                logger.debug("{} ignoring unimpl message with cmd1:{}", nm(), HexUtils.getHexString(cmd1));
+            }
         }
     }
 
@@ -343,7 +345,9 @@ public abstract class LegacyMessageHandler {
 
         @Override
         public void handleMessage(int group, byte cmd1, Msg msg, LegacyDeviceFeature f) {
-            logger.trace("{} ignore msg {}: {}", nm(), HexUtils.getHexString(cmd1), msg);
+            if (logger.isTraceEnabled()) {
+                logger.trace("{} ignore msg {}: {}", nm(), HexUtils.getHexString(cmd1), msg);
+            }
         }
     }
 

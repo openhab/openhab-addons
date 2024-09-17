@@ -158,9 +158,7 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
 
     @Override
     public void initialize() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("starting bridge {}", getThing().getUID());
-        }
+        logger.debug("starting bridge {}", getThing().getUID());
 
         InsteonBridgeConfiguration config = getBridgeConfig();
         if (isDuplicateBridge(config)) {
@@ -202,9 +200,7 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
 
     @Override
     public void dispose() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("shutting down bridge {}", getThing().getUID());
-        }
+        logger.debug("shutting down bridge {}", getThing().getUID());
 
         cancelJob(connectJob, true);
         cancelJob(reconnectJob, true);
@@ -236,16 +232,12 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
 
     @Override
     public void childHandlerInitialized(ThingHandler childHandler, Thing childThing) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("added thing {}", childThing.getUID());
-        }
+        logger.debug("added thing {}", childThing.getUID());
     }
 
     @Override
     public void childHandlerDisposed(ThingHandler childHandler, Thing childThing) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("removed thing {}", childThing.getUID());
-        }
+        logger.debug("removed thing {}", childThing.getUID());
     }
 
     @Override
@@ -335,9 +327,7 @@ public class InsteonBridgeHandler extends InsteonBaseThingHandler implements Bri
 
     public void reset(long delay) {
         scheduler.execute(() -> {
-            if (logger.isTraceEnabled()) {
-                logger.trace("resetting bridge {}", getThing().getUID());
-            }
+            logger.trace("resetting bridge {}", getThing().getUID());
 
             dispose();
 

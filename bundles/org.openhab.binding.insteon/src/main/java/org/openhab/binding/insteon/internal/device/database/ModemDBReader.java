@@ -62,9 +62,7 @@ public class ModemDBReader implements PortListener {
     }
 
     public void read() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("starting modem database reader");
-        }
+        logger.debug("starting modem database reader");
 
         getAllRecords();
 
@@ -84,9 +82,7 @@ public class ModemDBReader implements PortListener {
     }
 
     public void stop() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("modem database reader finished");
-        }
+        logger.debug("modem database reader finished");
 
         ScheduledFuture<?> job = this.job;
         if (job != null) {
