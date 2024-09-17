@@ -48,6 +48,9 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
 
     public main.java.org.openhab.binding.metofficedatahub.internal.RequestLimiter forecastDataLimiter = new RequestLimiter();
 
+    private volatile MetOfficeDataHubBridgeConfiguration config = getConfigAs(
+            MetOfficeDataHubBridgeConfiguration.class);
+
     public MetOfficeDataHubBridgeHandler(final Bridge bridge) {
         super(bridge);
     }
@@ -75,22 +78,13 @@ public class MetOfficeDataHubBridgeHandler extends BaseBridgeHandler {
     @Override
     public void initialize() {
         updateLimiterStats();
-        final MetOfficeDataHubBridgeConfiguration config = getConfigAs(MetOfficeDataHubBridgeConfiguration.class);
+        config = getConfigAs(MetOfficeDataHubBridgeConfiguration.class);
         forecastDataLimiter.updateLimit(config.siteSpecificRateDailyLimit);
         configuredApiKey = config.siteSpecificApiKey;
 
         updateStatus(ThingStatus.UNKNOWN);
 
-        // Example for background initialization:
-        scheduler.execute(() -> {
-            boolean thingReachable = true;
-            // when done do:
-            if (thingReachable) {
-                updateStatus(ThingStatus.ONLINE);
-            } else {
-                updateStatus(ThingStatus.OFFLINE);
-            }
-        });
+        scheduler.execute(() -> updateStatus(ThingStatus.ONLINE));
 
         scheduleResetDailyLimiters();
     }
