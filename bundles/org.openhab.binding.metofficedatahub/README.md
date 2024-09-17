@@ -93,11 +93,11 @@ For a thing called "current-forecast":
 
 1 hour into the future to get the site-scn-temp it would be:
 
-current-forecast**Plus01**#site-scn-temp
+current-forecast-**plus01**#site-scn-temp
 
 2 hour's into the future to get the site-scn-temp it would be:
 
-current-forecast**Plus02**#site-scn-temp
+current-forecast-**plus02**#site-scn-temp
 
 
 #### Channel groups for Hourly Forecast Channels:
