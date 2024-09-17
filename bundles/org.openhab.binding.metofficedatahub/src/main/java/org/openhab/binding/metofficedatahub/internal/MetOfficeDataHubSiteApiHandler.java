@@ -460,19 +460,21 @@ public class MetOfficeDataHubSiteApiHandler extends BaseThingHandler implements 
             @Override
             public void onComplete(@Nullable Result result) {
                 if (result != null && !result.isFailed()) {
-                    final byte[] responseContent = getContent();
-                    scheduler.execute(() -> {
-                        logger.trace("Processing response");
-                        if (daily) {
-                            lastDailyResponse = new String(responseContent);
-                            pollForDataDailyData(lastDailyResponse);
-                        } else {
-                            lastHourlyResponse = new String(responseContent);
-                            pollForDataHourlyData(lastHourlyResponse);
+                    final String response = getContentAsString();
+                    if (response != null) {
+                        scheduler.execute(() -> {
+                            logger.trace("Processing response");
+                            if (daily) {
+                                lastDailyResponse = response;
+                                pollForDataDailyData(lastDailyResponse);
+                            } else {
+                                lastHourlyResponse = response;
+                                pollForDataHourlyData(lastHourlyResponse);
+                            }
+                        });
+                        if (authFailedPreviously && getThing().getStatus().equals(ThingStatus.ONLINE)) {
+                            updateStatus(ThingStatus.ONLINE);
                         }
-                    });
-                    if (authFailedPreviously && getThing().getStatus().equals(ThingStatus.ONLINE)) {
-                        updateStatus(ThingStatus.ONLINE);
                     }
                 } else {
                     logger.debug("Failed to get latest MET office forecast");
